@@ -24,6 +24,69 @@ form {
 	.question_container {
 		margin-top:0px;
 
+		#question {
+			background-color: white;
+			border-bottom-color: rgba(175, 195, 211, 0.941406);
+			border-bottom-left-radius: 3px;
+			border-bottom-right-radius: 3px;
+			border-bottom-style: solid;
+			border-bottom-width: 1px;
+			border-left-color: rgba(175, 195, 211, 0.941406);
+			border-left-style: solid;
+			border-left-width: 1px;
+			border-right-color: rgba(175, 195, 211, 0.941406);
+			border-right-style: solid;
+			border-right-width: 1px;
+			border-top-color: rgba(175, 195, 211, 0.941406);
+			border-top-left-radius: 3px;
+			border-top-right-radius: 3px;
+			border-top-style: solid;
+			border-top-width: 1px;
+			box-shadow: rgba(0, 0, 0, 0.0742188) 0px 1px 1px 0px inset, rgba(83, 166, 231, 0.167969) 0px 0px 2px 0px;
+			color: #555;
+			cursor: auto;
+			display: inline-block;
+			float: none;
+			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+			font-size: 13px;
+			font-weight: normal;
+			height: 54px;
+			letter-spacing: normal;
+			line-height: 18px;
+			margin-bottom: 0px;
+			margin-left: 0px;
+			margin-right: 0px;
+			margin-top: 0px;
+			overflow-x: auto;
+			overflow-y: auto;
+			padding-bottom: 4px;
+			padding-left: 4px;
+			padding-right: 4px;
+			padding-top: 4px;
+			resize: both;
+			text-align: -webkit-auto;
+			text-indent: 0px;
+			text-shadow: none;
+			text-transform: none;
+			vertical-align: top;
+			width: 360px;
+			word-spacing: 0px;
+			word-wrap: break-word;	
+
+			span {
+				outline: none;
+			}
+
+			#tweet {
+				display: none;
+			}
+
+			#link {
+				color: #bbb;
+				display:none;
+			}
+		}
+
 		#character_count {
 			float: right;
 			padding-top: 5px;
@@ -37,6 +100,10 @@ form {
 		.answer {
 			display: block;
 			margin: 5px;			
+		}
+
+		#add_answer {
+			float: right;
 		}
 	}
 
