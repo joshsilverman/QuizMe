@@ -28,6 +28,7 @@ class QuestionsController < ApplicationController
   def new
     topic = Account.find(params[:account_id]).topics.first
     @topic_tag = topic.id if topic
+    @account_id = params[:account_id]
     @question = Question.new
 
     respond_to do |format|
@@ -94,6 +95,7 @@ class QuestionsController < ApplicationController
     @question.text = params[:question]
     @question.user_id = current_user.id
     @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
+    @question.created_for_account_id = params[:account_id] unless params[:account_id].nil?
     @question.save
 
     @question.answers << Answer.create(:text => params[:canswer], :correct => true)
@@ -110,6 +112,16 @@ class QuestionsController < ApplicationController
   def moderate_update
     question = Question.find(params[:question_id])
     accepted = params[:accepted].match(/(true|t|yes|y|1)$/i) != nil
+    if accepted
+      question.update_attributes(:status => 1)
+      a = Account.find(question.created_for_account_id)
+      Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
+    else
+      question.update_attributes(:status => -1)
+      a = Account.find(question.created_for_account_id)
+      Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
+    end
+    render :nothing => true, :status => 200
   end
 
   def import_data_from_qmm

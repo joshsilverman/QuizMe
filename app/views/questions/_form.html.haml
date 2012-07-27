@@ -19,5 +19,6 @@
           = text_field_tag 'ianswer1',  nil, :placeholder => 'Enter incorrect answer...', :class => 'answer input-xlarge span4'
           %a Add answer
           =hidden_field_tag 'topic_tag', @topic_tag
+          =hidden_field_tag 'account_id', @account_id
         .footer
           = submit_tag 'Save', :class => 'btn'
