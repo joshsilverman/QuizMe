@@ -1,19 +1,21 @@
-#form_container
-  .header
-    Post a Question.
-  #form_content
-    - unless current_user
-      .auth_container
-        %p.instruction Authenticate with Twitter.
-        %p.explanation Explanation
-    .question_container
-      %p.instruction Write your question.
-      %p.explanation Explanation
-      %textarea
-    .answers_container
-      %p.instruction Write some answers.
-      %p.explanation Explanation
-      %input.answer
-      %input.answer
-  .footer
-    Submit
+%form.well.span5
+  #form_container
+    / %p.header Post a Question.
+    #form_content.form-horizontal
+      - unless current_user
+        .auth_container.row
+          %label.instruction Authenticate with Twitter.
+          %p.explanation Sign in so we know who you are.
+          %button.btn Sign In
+      .question_container.row
+        %label.instruction Write your question.
+        %p.explanation The question you would like posted to QuizMe.
+        %textarea.question.input-xlarge.span4{:rows => "3"}
+      .answers_container.row
+        %label.instruction Write some answers.
+        %p.explanation A correct answer, at least one incorrect.
+        %input.answer.input-xlarge.span4{:type => "text"}
+        %input.answer.input-xlarge.span4{:type => "text"}
+        %a Add answer
+    .footer
+      %button.btn Submit
