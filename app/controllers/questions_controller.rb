@@ -1,8 +1,9 @@
 class QuestionsController < ApplicationController
+  before_filter :authenticate_user
   # GET /questions
   # GET /questions.json
   def index
-    @questions = Question.all
+    @questions = current_user.questions
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +14,8 @@ class QuestionsController < ApplicationController
   # GET /questions/1
   # GET /questions/1.json
   def show
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
 
     respond_to do |format|
       format.html # show.html.erb
@@ -34,7 +36,8 @@ class QuestionsController < ApplicationController
 
   # GET /questions/1/edit
   def edit
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
   end
 
   # POST /questions
@@ -56,7 +59,8 @@ class QuestionsController < ApplicationController
   # PUT /questions/1
   # PUT /questions/1.json
   def update
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
 
     respond_to do |format|
       if @question.update_attributes(params[:question])
@@ -72,7 +76,8 @@ class QuestionsController < ApplicationController
   # DELETE /questions/1
   # DELETE /questions/1.json
   def destroy
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
     @question.destroy
 
     respond_to do |format|
