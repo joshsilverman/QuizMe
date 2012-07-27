@@ -1,0 +1,19 @@
+#form_container
+  .header
+    Post a Question.
+  #form_content
+    - unless current_user
+      .auth_container
+        %p.instruction Authenticate with Twitter.
+        %p.explanation Explanation
+    .question_container
+      %p.instruction Write your question.
+      %p.explanation Explanation
+      %textarea
+    .answers_container
+      %p.instruction Write some answers.
+      %p.explanation Explanation
+      %input.answer
+      %input.answer
+  .footer
+    Submit

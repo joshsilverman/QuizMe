@@ -1,3 +1,65 @@
 // Place all the styles related to the questions controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+#form_container {
+	width: 550px;
+	margin: auto;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);
+	-webkit-box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);
+	box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);	
+
+	.header {
+		height: 50px;
+		background: #ddd;
+		font-size: 28px;
+		line-height: 50px;
+		padding-left: 15px;
+	}
+
+	#form_content {
+
+		div {
+			padding: 15px;
+		}
+
+		.auth_container {
+			border-bottom-style: dotted;
+			border-bottom-width: 1px;
+			border-bottom-color: #ccc;
+		}
+
+		.question_container {
+			border-bottom-style: dotted;
+			border-bottom-width: 1px;
+			border-bottom-color: #ccc;
+
+		}
+			
+		.answers_container {
+			.answer {
+				display: block;
+				margin: 5px;
+			}
+		}
+		
+		.instruction {
+			font-size: 24px;
+		}
+
+		.explanation {
+			color: gray;
+		}
+	}
+
+	.footer {
+		height: 50px;
+		background: #ddd;
+	}
+}
