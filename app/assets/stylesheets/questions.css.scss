@@ -23,6 +23,12 @@ form {
 
 	.question_container {
 		margin-top:0px;
+
+		#character_count {
+			float: right;
+			padding-top: 5px;
+			padding-right: 5px;
+		}
 	}
 
 	.answers_container {
