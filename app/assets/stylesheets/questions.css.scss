@@ -2,6 +2,56 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+form {
+	/*width: 500px;*/
+	/*margin: auto;*/
+
+/*	#form_container {
+		margin: auto;
+
+		.header {
+			color:black;	
+			font-size: 32px;
+		}		
+
+		div {
+			padding: 30px 15px 30px 15px;
+		}
+
+		.auth_container {
+			border-bottom-style: dotted;
+			border-bottom-width: 1px;
+			border-bottom-color: #ccc;
+		}
+
+		.question_container {
+			border-bottom-style: dotted;
+			border-bottom-width: 1px;
+			border-bottom-color: #ccc;
+
+			.question {
+			}
+		}		
+
+		.instruction {
+			font-size: 24px;
+			padding-bottom: 2px;
+		}
+
+		.explanation {
+			color: gray;
+		}
+		.answers_container {
+			.answer {
+				display: block;
+				margin: 5px;
+			}
+		}		
+	}*/
+}
+
+/*
+
 #form_container {
 	width: 550px;
 	margin: auto;
@@ -11,9 +61,9 @@
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
-	-moz-box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);
-	-webkit-box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);
-	box-shadow:0px 0px 10px 0px rgba(119, 119, 119, 0.97);	
+	-moz-box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);
+	-webkit-box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);
+	box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);	
 
 	.header {
 		height: 50px;
@@ -21,6 +71,9 @@
 		font-size: 28px;
 		line-height: 50px;
 		padding-left: 15px;
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-bottom-color: #ccc;		
 	}
 
 	#form_content {
@@ -62,4 +115,4 @@
 		height: 50px;
 		background: #ddd;
 	}
-}
+}*/

@@ -107,6 +107,11 @@ class QuestionsController < ApplicationController
     @questions = Question.where(:status => 0)    
   end
 
+  def moderate_update
+    question = Question.find(params[:question_id])
+    accepted = params[:accepted].match(/(true|t|yes|y|1)$/i) != nil
+  end
+
   def import_data_from_qmm
     questions = Question.import_data_from_qmm
     qs = questions

@@ -15,6 +15,7 @@ Quizmemanager::Application.routes.draw do
   post "questions/save_question_and_answers"
   match "questions/new/:account_id" => "questions#new"
   match "/moderate" => "questions#moderate"
+  match "/moderate/update" => "questions#moderate_update"
   match 'auth/:provider/callback' => 'sessions#create'
   match "/signout" => "sessions#destroy", :as => :signout
 

@@ -1,10 +1,20 @@
--@questions.each do |q|
-	.question_container{:id => "#{q.id}"}
-		.question= q.text
-		.answers
-			%ul
-				-q.answers.each do |a|
-					%li{:style => "color: #{a.correct ? 'green' : 'black'}"}= a.text
-		.moderate
-			%button.btn.btn-success Accept
-			%button.btn.btn-danger Reject
+- model_class = Question.new.class
+.page-header
+  %h1= t '.title', :default => model_class.model_name.human.pluralize
+%table.table.table-striped
+  %thead
+    %tr
+      %th.span10= model_class.human_attribute_name(:text)
+      %th= model_class.human_attribute_name(:topic_id)
+      %th= model_class.human_attribute_name(:created_at)
+      %th= t '.actions', :default => t("helpers.actions")
+  %tbody
+    - @questions.each do |question|
+      %tr
+        %td.span10= question.text
+        %td= question.topic_id
+        %td= question.created_at
+        %td
+          .btn-group
+            %button.btn.btn-success{:qid => question.id} Accept
+            %button.btn.btn-danger{:qid => question.id} Reject
