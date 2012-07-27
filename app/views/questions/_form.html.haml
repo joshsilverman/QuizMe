@@ -2,18 +2,26 @@
   .header
     Post a Question.
   #form_content
-    - unless current_user
-      .auth_container
-        %p.instruction Authenticate with Twitter.
+    = form_tag('/questions/save_question_and_answers', :method => 'POST') do
+      - unless current_user
+        .auth_container
+          %p.instruction= link_to "Authenticat with Twitter", "/auth/twitter"
+          %p.explanation Explanation
+      .question_container
+        %p.instruction Write your question.
         %p.explanation Explanation
-    .question_container
-      %p.instruction Write your question.
-      %p.explanation Explanation
-      %textarea
-    .answers_container
-      %p.instruction Write some answers.
-      %p.explanation Explanation
-      %input.answer
-      %input.answer
-  .footer
-    Submit
+        = text_area_tag 'question', nil, :placeholder => 'Enter question here...'
+      .answers_container
+        %p.instruction Write some answers.
+        %p.explanation Explanation
+        %br
+        = text_field_tag 'canswer',  nil, :placeholder => 'Enter correct answer...'
+        %br
+        = text_field_tag 'ianswer1',  nil, :placeholder => 'Enter incorrect answer...'
+        %br
+        = text_field_tag 'ianswer2',  nil, :placeholder => 'Enter incorrect answer...'
+        %br
+        = text_field_tag 'ianswer3',  nil, :placeholder => 'Enter incorrect answer...'
+      =hidden_field_tag 'topic_tag', @topic_tag
+      .footer
+        = submit_tag 'Save' 

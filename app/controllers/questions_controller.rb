@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user
+  before_filter :authenticate_user, :except => [:new]
   # GET /questions
   # GET /questions.json
   def index
@@ -26,6 +26,8 @@ class QuestionsController < ApplicationController
   # GET /questions/new
   # GET /questions/new.json
   def new
+    topic = Account.find(params[:account_id]).topics.first
+    @topic_tag = topic.id if topic
     @question = Question.new
 
     respond_to do |format|
@@ -84,6 +86,25 @@ class QuestionsController < ApplicationController
       format.html { redirect_to questions_url }
       format.json { head :ok }
     end
+  end
+
+  def save_question_and_answers
+    return if params[:question].nil? or params[:canswer].nil? or params[:question].blank? or params[:canswer].blank?
+    @question = Question.new
+    @question.text = params[:question]
+    @question.user_id = current_user.id
+    @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
+    @question.save
+
+    @question.answers << Answer.create(:text => params[:canswer], :correct => true)
+    @question.answers << Answer.create(:text => params[:ianswer1], :correct => false) unless params[:ianswer1].nil? or params[:ianswer1].blank? 
+    @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
+    @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
+    redirect_to "/questions"
+  end
+
+  def moderate
+    @questions = Question.where(:status => 0)    
   end
 
   def import_data_from_qmm

@@ -1,0 +1,10 @@
+-@questions.each do |q|
+	.question_container{:id => "#{q.id}"}
+		.question= q.text
+		.answers
+			%ul
+				-q.answers.each do |a|
+					%li{:style => "color: #{a.correct ? 'green' : 'black'}"}= a.text
+		.moderate
+			%button.btn.btn-success Accept
+			%button.btn.btn-danger Reject
