@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120723212146) do
+ActiveRecord::Schema.define(:version => 20120727174302) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20120723212146) do
     t.timestamp "updated_at"
     t.integer   "posts_per_day",       :default => 1
     t.text      "description"
+    t.boolean   "link_to_quizme",      :default => false
   end
 
   create_table "accountstopics", :force => true do |t|
@@ -48,15 +49,15 @@ ActiveRecord::Schema.define(:version => 20120723212146) do
   end
 
   create_table "mentions", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "post_id"
-    t.text     "text"
-    t.boolean  "responded",                 :default => false
-    t.string   "twi_tweet_id"
-    t.string   "twi_in_reply_to_status_id"
-    t.datetime "sent_date"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "user_id"
+    t.integer   "post_id"
+    t.text      "text"
+    t.boolean   "responded",                 :default => false
+    t.string    "twi_tweet_id"
+    t.string    "twi_in_reply_to_status_id"
+    t.timestamp "sent_date"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "post_queues", :force => true do |t|
@@ -87,6 +88,10 @@ ActiveRecord::Schema.define(:version => 20120723212146) do
     t.integer   "topic_id"
     t.timestamp "created_at"
     t.timestamp "updated_at"
+    t.integer   "qb_lesson_id"
+    t.integer   "qb_q_id"
+    t.integer   "user_id"
+    t.integer   "status",       :default => 0
   end
 
   create_table "reps", :force => true do |t|

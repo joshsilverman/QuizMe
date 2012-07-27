@@ -1,17 +1,47 @@
 %form.well.row.form-horizontal.span5
   .header
     %p.lead Post a New Question
-  - unless current_user
-    .auth_container.row.span4.page-header
-      %h3 Authenticate with Twitter.
-      = image_tag "twitter-sign-in.png"
-  .question_container.row.span4.page-header
-    %h3 Write your question.
-    %textarea.question.input-xlarge.span4{:rows => "3"}
-  .answers_container.row.span4.page-header
-    %h3 Write answers.
-    %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Correct answer"}
-    %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Incorrect answer"}
-    %a Add answer
-  .submit_container.row.span4
-    %button.btn.btn-primary{:type => "submit"} Submit
+  = form_tag('/questions/save_question_and_answers', :method => 'POST') do
+    - unless current_user
+      .auth_container.row.span4.page-header
+        %h3 Authenticate with Twitter.
+        = image_tag "twitter-sign-in.png"
+    .question_container.row.span4.page-header
+      %h3 Write your question.
+      / %textarea.question.input-xlarge.span4{:rows => "3"}
+      = text_area_tag 'question', nil, :placeholder => 'Enter question here...', :rows => 3, :class => 'question input-xlarge span4'      
+    .answers_container.row.span4.page-header
+      %h3 Write answers.
+      / %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Correct answer"}
+      / %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Incorrect answer"}
+      = text_field_tag 'canswer',  nil, :placeholder => 'Correct answer...', :class => 'answer input-xlarge span4'
+      = text_field_tag 'ianswer1',  nil, :placeholder => 'Incorrect answer...', :class => 'answer input-xlarge span4'      
+      %a Add answer
+      =hidden_field_tag 'topic_tag', @topic_tag
+    .submit_container.row.span4
+      = submit_tag 'Submit', :class => 'btn btn-primary'
+/ =======
+/ .well.span5
+/   #form_container
+/     / %p.header Post a Question.
+/     #form_content.form-horizontal
+/       = form_tag('/questions/save_question_and_answers', :method => 'POST') do
+/         - unless current_user
+/           .auth_container.row
+/             %label.instruction Authenticate with Twitter.
+/             %p.explanation Sign in so we know who you are.
+/             %button.btn Sign In
+/         .question_container.row
+/           %label.instruction Write your question.
+/           %p.explanation The question you would like posted to QuizMe.
+/           = text_area_tag 'question', nil, :placeholder => 'Enter question here...', :rows => 3, :class => 'question input-xlarge span4'
+/         .answers_container.row
+/           %label.instruction Write some answers.
+/           %p.explanation A correct answer, at least one incorrect.
+/           = text_field_tag 'canswer',  nil, :placeholder => 'Enter correct answer...', :class => 'answer input-xlarge span4'
+/           = text_field_tag 'ianswer1',  nil, :placeholder => 'Enter incorrect answer...', :class => 'answer input-xlarge span4'
+/           %a Add answer
+/           =hidden_field_tag 'topic_tag', @topic_tag
+/         .footer
+/           = submit_tag 'Save', :class => 'btn'
+/ >>>>>>> 4992f22af4fcd59168acb7b93ce4c74270b5a238
