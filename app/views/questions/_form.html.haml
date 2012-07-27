@@ -4,13 +4,14 @@
   = form_tag('/questions/save_question_and_answers', :method => 'POST') do
     - unless current_user
       .auth_container.row.span4.page-header
-        %h3 Authenticate with Twitter.
+        %h3 Sign in with Twitter.
         = image_tag "twitter-sign-in.png", :id => "sign_in"
     .question_container.row.span4.page-header
       %h3 Write your question.
-      #question.input
-        %span#tweet{:contenteditable => true} Your question
-        %span#link @QuizMeBio http://bit.ly/LVJ5VQ
+      #question_dummy.input
+        %span#account= "@QuizMeChem "
+        %span#question{:contenteditable => true} Your question
+        %span#link= " http://bit.ly/LVJ5VQ"
         / = text_area_tag 'question', nil, :placeholder => 'Enter question here...', :rows => 3, :class => 'question input-xlarge span4'  
       %p#character_count 140
     .answers_container.row.span4.page-header

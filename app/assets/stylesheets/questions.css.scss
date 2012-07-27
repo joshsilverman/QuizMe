@@ -18,13 +18,15 @@ form {
 		img {
 			display: inline;
 			cursor: pointer;
+			margin-top: -5px;	
+			margin-left: 27px;
 		}
 	}
 
 	.question_container {
 		margin-top:0px;
 
-		#question {
+		#question_dummy {
 			background-color: white;
 			border-bottom-color: rgba(175, 195, 211, 0.941406);
 			border-bottom-left-radius: 3px;
@@ -77,8 +79,13 @@ form {
 				outline: none;
 			}
 
-			#tweet {
+			#question {
 				display: none;
+			}
+
+			#account {
+				color: #bbb;
+				display:none;				
 			}
 
 			#link {
@@ -112,120 +119,4 @@ form {
 			float: right;
 		}
 	}
-
-	div {
-		/*padding-bottom: 45px !important;*/
-	}
-	/*width: 500px;*/
-	/*margin: auto;*/
-
-/*	#form_container {
-		margin: auto;
-
-		.header {
-			color:black;	
-			font-size: 32px;
-		}		
-
-		div {
-			padding: 30px 15px 30px 15px;
-		}
-
-		.auth_container {
-			border-bottom-style: dotted;
-			border-bottom-width: 1px;
-			border-bottom-color: #ccc;
-		}
-
-		.question_container {
-			border-bottom-style: dotted;
-			border-bottom-width: 1px;
-			border-bottom-color: #ccc;
-
-			.question {
-			}
-		}		
-
-		.instruction {
-			font-size: 24px;
-			padding-bottom: 2px;
-		}
-
-		.explanation {
-			color: gray;
-		}
-		.answers_container {
-			.answer {
-				display: block;
-				margin: 5px;
-			}
-		}		
-	}*/
 }
-
-/*
-
-#form_container {
-	width: 550px;
-	margin: auto;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #ccc;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-moz-box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);
-	-webkit-box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);
-	box-shadow:0px 0px 8px 0px rgba(119, 119, 119, 0.97);	
-
-	.header {
-		height: 50px;
-		background: #ddd;
-		font-size: 28px;
-		line-height: 50px;
-		padding-left: 15px;
-		border-bottom-style: solid;
-		border-bottom-width: 1px;
-		border-bottom-color: #ccc;		
-	}
-
-	#form_content {
-
-		div {
-			padding: 15px;
-		}
-
-		.auth_container {
-			border-bottom-style: dotted;
-			border-bottom-width: 1px;
-			border-bottom-color: #ccc;
-		}
-
-		.question_container {
-			border-bottom-style: dotted;
-			border-bottom-width: 1px;
-			border-bottom-color: #ccc;
-
-		}
-			
-		.answers_container {
-			.answer {
-				display: block;
-				margin: 5px;
-			}
-		}
-		
-		.instruction {
-			font-size: 24px;
-		}
-
-		.explanation {
-			color: gray;
-		}
-	}
-
-	.footer {
-		height: 50px;
-		background: #ddd;
-	}
-}*/

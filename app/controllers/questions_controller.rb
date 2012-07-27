@@ -26,9 +26,10 @@ class QuestionsController < ApplicationController
   # GET /questions/new
   # GET /questions/new.json
   def new
-    topic = Account.find(params[:account_id]).topics.first
+    @account = Account.find(params[:account_id])
+    topic = @account.topics.first
     @topic_tag = topic.id if topic
-    @account_id = params[:account_id]
+    @account_id = @account.id
     @question = Question.new
 
     respond_to do |format|
