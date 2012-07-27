@@ -3,6 +3,45 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 form {
+	margin: auto !important;
+
+	.header {
+		text-align: center;
+		padding-top: 15px;
+	}
+
+	.auth_container {
+		h3 {
+			display: inline;
+		}
+		
+		img {
+			display: inline;
+		}
+	}
+
+	.question_container {
+		margin-top:0px;
+	}
+
+	.answers_container {
+		margin-top:0px;
+
+		.answer {
+			display: block;
+			margin: 5px;			
+		}
+	}
+
+	.submit_container {
+		.btn {
+			float: right;
+		}
+	}
+
+	div {
+		/*padding-bottom: 45px !important;*/
+	}
 	/*width: 500px;*/
 	/*margin: auto;*/
 

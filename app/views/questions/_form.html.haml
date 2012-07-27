@@ -1,21 +1,17 @@
-%form.well.span5
-  #form_container
-    / %p.header Post a Question.
-    #form_content.form-horizontal
-      - unless current_user
-        .auth_container.row
-          %label.instruction Authenticate with Twitter.
-          %p.explanation Sign in so we know who you are.
-          %button.btn Sign In
-      .question_container.row
-        %label.instruction Write your question.
-        %p.explanation The question you would like posted to QuizMe.
-        %textarea.question.input-xlarge.span4{:rows => "3"}
-      .answers_container.row
-        %label.instruction Write some answers.
-        %p.explanation A correct answer, at least one incorrect.
-        %input.answer.input-xlarge.span4{:type => "text"}
-        %input.answer.input-xlarge.span4{:type => "text"}
-        %a Add answer
-    .footer
-      %button.btn Submit
+%form.well.row.form-horizontal.span5
+  .header
+    %p.lead Post a New Question
+  - unless current_user
+    .auth_container.row.span4.page-header
+      %h3 Authenticate with Twitter.
+      = image_tag "twitter-sign-in.png"
+  .question_container.row.span4.page-header
+    %h3 Write your question.
+    %textarea.question.input-xlarge.span4{:rows => "3"}
+  .answers_container.row.span4.page-header
+    %h3 Write answers.
+    %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Correct answer"}
+    %input.answer.input-xlarge.span4{:type => "text", :placeholder => "Incorrect answer"}
+    %a Add answer
+  .submit_container.row.span4
+    %button.btn.btn-primary{:type => "submit"} Submit
