@@ -1,6 +1,7 @@
 %form.well.row.form-horizontal.span5
   .header.page-header
-    %p.lead Post a New Question
+    %h2.lead 
+      Post a New Question
   = form_tag('/questions/save_question_and_answers', :method => 'POST') do
     - count = 1
     - if current_user
@@ -29,3 +30,5 @@
     =hidden_field_tag 'account_id', @account_id
     .submit_container.row.span4
       = submit_tag 'Submit', :class => 'btn btn-primary'
+.row &nbsp;
+.row &nbsp;

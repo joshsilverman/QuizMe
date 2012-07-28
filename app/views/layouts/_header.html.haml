@@ -1,17 +1,15 @@
 .navbar.navbar-fixed-top
 	.navbar-inner
 		.container
-			%a.brand{:href => "/"} QuizMe
-			%ul.nav
-				/%li.active
-				/	%a{:href => "/"} Home
-				-if current_acct
-					%li
-						%a{:href => "/accounts/#{current_acct.id}/edit"} Edit
-			-if current_user
-				.span4{:style => 'float:right;'}
-					= link_to "Sign Out", signout_path, :style => 'float:right;'
-					%h3{:style => 'float:right;'}= "Welcome #{current_user.twi_screen_name}!"
-					= image_tag(current_user.twi_profile_img_url, :style => 'float:right;') 
-			-else
-				= link_to "Sign in with Twitter", "/auth/twitter"
+			.nav-collapse.in.collapse
+				%a.brand{:href => "/"} QuizMe
+				%ul.nav{:style => 'float:right;'}
+					-if current_acct
+						%li
+							%a{:href => "/accounts/#{current_acct.id}/edit"} Edit					
+					-if current_user
+						%li= link_to "Welcome #{current_user.twi_screen_name}!", ''
+						%li= link_to "Sign Out", signout_path
+						=# image_tag(current_user.twi_profile_img_url, :style => 'float:right;') 
+					-else
+						%li= link_to "Sign in with Twitter", "/auth/twitter"
