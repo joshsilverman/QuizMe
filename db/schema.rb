@@ -83,7 +83,6 @@ ActiveRecord::Schema.define(:version => 20120727195718) do
   end
 
   create_table "questions", :force => true do |t|
-<<<<<<< HEAD
     t.text      "text"
     t.string    "url"
     t.integer   "topic_id"
@@ -92,19 +91,8 @@ ActiveRecord::Schema.define(:version => 20120727195718) do
     t.integer   "qb_lesson_id"
     t.integer   "qb_q_id"
     t.integer   "user_id"
-    t.integer   "status",       :default => 0
-=======
-    t.text     "text"
-    t.string   "url"
-    t.integer  "topic_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "qb_lesson_id"
-    t.integer  "qb_q_id"
-    t.integer  "user_id"
-    t.integer  "status",                 :default => 0
-    t.integer  "created_for_account_id"
->>>>>>> 6e7b6e87474cf59d91ba76905a903869dd449eb0
+    t.integer   "status",                 :default => 0
+    t.integer   "created_for_account_id"
   end
 
   create_table "reps", :force => true do |t|

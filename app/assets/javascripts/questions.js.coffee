@@ -9,30 +9,35 @@ $ ->
 	$('.btn.btn-danger').click -> 
 		respond(false, $(this).attr('qid'))
 	$("#question_dummy").on "keyup", (e) => 
-		$("#character_count").text(140 - ($("#question").text().length + $("#link").text().length + 2))
+		count = 140 - ($("#question").text().length + $("#link").text().length + 2)
+		if count < 0
+			$("#character_count").css("color", "red")
+			$("#question_dummy").css("border-color", "red")
+		else
+			$("#character_count").css("color", "black")
+			$("#question_dummy").css("border-color", "rgba(175, 195, 211, 0.941)")
+		$("#character_count").text(String(count))
 	$("#question_dummy").on "click", => select_question_span()
 	$("#add_answer").on "click", => 
 		count = $(".answer").length
 		return if count > 3
 		$("#ianswer1").clone().attr("id", "ianswer#{count}").attr("name", "ianswer#{count}").val("").appendTo("#answers").focus()
-	$("#sign_in").on "click", => select_question_span()
-
 	$(".submit_container .btn").on "click", (e) => 
-		# TODO: form validations
 		e.preventDefault()
-		data =
-			"question" : $("#question").text()
-			"topic_tag" : $("#topic_tag").val()
-			"account_id" : $("#account_id").val()
-			"canswer" : $("#canswer").val()
-			"ianswer1" : $("#ianswer1").val()
-			# "ianswer2" : $("")
-			# "ianswer3" : $("")
-		$.ajax
-			url: "/questions/save_question_and_answers",
-			type: "POST",
-			data: data,
-			success: => console.log "yo"
+		alert "Question is too long!" if $("#character_count").text() < 0
+		# data =
+		# 	"question" : $("#question").text()
+		# 	"topic_tag" : $("#topic_tag").val()
+		# 	"account_id" : $("#account_id").val()
+		# 	"canswer" : $("#canswer").val()
+		# 	"ianswer1" : $("#ianswer1").val()
+		# 	"ianswer2" : $("#ianswer2").val()
+		# 	"ianswer3" : $("#ianswer3").val()
+		# $.ajax
+		# 	url: "/questions/save_question_and_answers",
+		# 	type: "POST",
+		# 	data: data,
+		# 	success: (e) => console.log e
 
 	select_question_span = ->
 		$("#link, #question, #account").show()
