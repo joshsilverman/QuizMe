@@ -15,7 +15,7 @@
       %h3= "#{count}. Question:"
       #question_dummy.input
         %span#account= "@#{name}"
-        %span#question{:contenteditable => true}= "Your q"
+        %span#question{:contenteditable => true}= "Your question"
         %span#link= "http://bit.ly/LVJ5VQ"
         - count += 1
       %p#character_count 140
@@ -27,5 +27,6 @@
       %a#add_answer.row.span4 Add answer
     =hidden_field_tag 'topic_tag', @topic_tag
     =hidden_field_tag 'account_id', @account_id
+    =hidden_field_tag 'name', name
     .submit_container.row.span4
       = submit_tag 'Submit', :class => 'btn btn-primary'

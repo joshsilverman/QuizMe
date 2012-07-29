@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-	# TODO => click on question area adds mandatory text + selects span when signed in
+	console.log $("#name").val()
 	$('.btn.btn-success').click -> 
 		respond(true, $(this).attr('qid'))
 	$('.btn.btn-danger').click -> 
@@ -17,27 +17,43 @@ $ ->
 			$("#character_count").css("color", "black")
 			$("#question_dummy").css("border-color", "rgba(175, 195, 211, 0.941)")
 		$("#character_count").text(String(count))
-	$("#question_dummy").on "click", => select_question_span()
+	$("#question_dummy").on "click", => 
+		if $("#name").val()
+			select_question_span()
+		else
+			alert "Please sign in first!"
+	$(".answer").on "click", => alert "Please sign in first!" unless $("#name").val()
 	$("#add_answer").on "click", => 
+		unless $("#name").val()
+			alert "Please sign in first!"
+			return
 		count = $(".answer").length
 		return if count > 3
 		$("#ianswer1").clone().attr("id", "ianswer#{count}").attr("name", "ianswer#{count}").val("").appendTo("#answers").focus()
+		$("#add_answer").hide() if count == 3
 	$(".submit_container .btn").on "click", (e) => 
+		console.log $("#ianswer1").val()
 		e.preventDefault()
-		alert "Question is too long!" if $("#character_count").text() < 0
-		# data =
-		# 	"question" : $("#question").text()
-		# 	"topic_tag" : $("#topic_tag").val()
-		# 	"account_id" : $("#account_id").val()
-		# 	"canswer" : $("#canswer").val()
-		# 	"ianswer1" : $("#ianswer1").val()
-		# 	"ianswer2" : $("#ianswer2").val()
-		# 	"ianswer3" : $("#ianswer3").val()
-		# $.ajax
-		# 	url: "/questions/save_question_and_answers",
-		# 	type: "POST",
-		# 	data: data,
-		# 	success: (e) => console.log e
+		if $("#character_count").text() < 0
+			alert "Your question is too long!" 
+		else if $("#question").text().length == 0 or $("#question").text() == "Your question"
+			alert "Please enter a question!"
+		else if $("#canswer").val().length == 0 or $("#ianswer1").val().length == 0
+			alert "Please enter at least one correct and incorrect answer!"
+		else
+			data =
+				"question" : $("#question").text()
+				"topic_tag" : $("#topic_tag").val()
+				"account_id" : $("#account_id").val()
+				"canswer" : $("#canswer").val()
+				"ianswer1" : $("#ianswer1").val()
+				"ianswer2" : $("#ianswer2").val()
+				"ianswer3" : $("#ianswer3").val()
+			$.ajax
+				url: "/questions/save_question_and_answers",
+				type: "POST",
+				data: data,
+				success: (e) => document.location.reload(true)
 
 	select_question_span = ->
 		$("#link, #question, #account").show()
