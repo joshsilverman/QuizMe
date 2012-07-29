@@ -2,31 +2,33 @@
   .header.page-header
     %p.lead Post a New Question
   = form_tag('/questions/save_question_and_answers', :method => 'POST') do
-    - count = 1
-    - if current_user
-      - name = current_user.twi_screen_name
-    - else
-      .auth_container.row.span4.page-header
-        %h3= "#{count}. Sign in:"
-        %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
-          = image_tag "twitter-sign-in.png", :id => "sign_in"
-        - count += 1
-    .question_container.row.span4.page-header
-      %h3= "#{count}. Question:"
-      #question_dummy.input
-        %span#account= "@#{name}"
-        %span#question{:contenteditable => true}= "Your question"
-        %span#link= "http://bit.ly/LVJ5VQ"
-        - count += 1
-      %p#character_count 140
-    .answers_container.row.span4.page-header
-      %h3= "#{count}. Answers:"
-      #answers
-        = text_field_tag 'canswer',  nil, :placeholder => 'Correct answer', :class => 'answer input-xlarge span4'
-        = text_field_tag 'ianswer1',  nil, :placeholder => 'Incorrect answer', :class => 'answer input-xlarge span4'      
-      %a#add_answer.row.span4 Add answer
-    =hidden_field_tag 'topic_tag', @topic_tag
-    =hidden_field_tag 'account_id', @account_id
-    =hidden_field_tag 'name', name
-    .submit_container.row.span4
-      = submit_tag 'Submit', :class => 'btn btn-primary'
+    #form_container
+      - count = 1
+      - if current_user
+        - name = current_user.twi_screen_name
+      - else
+        .auth_container.row.span4.page-header
+          %h3= "#{count}. Sign in:"
+          %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
+            = image_tag "twitter-sign-in.png", :id => "sign_in"
+          - count += 1
+      .question_container.row.span4.page-header
+        %h3= "#{count}. Question:"
+        #question_dummy.input
+          %span#account= "@#{name}"
+          %span#question{:contenteditable => true}= "Your question"
+          %p#placeholder
+          %span#link= "http://bit.ly/LVJ5VQ"
+          - count += 1
+        %p#character_count 140
+      .answers_container.row.span4.page-header
+        %h3= "#{count}. Answers:"
+        #answers
+          = text_field_tag 'canswer',  nil, :placeholder => 'Correct answer', :class => 'answer input-xlarge span4'
+          = text_field_tag 'ianswer1',  nil, :placeholder => 'Incorrect answer', :class => 'answer input-xlarge span4'      
+        %a#add_answer.row.span4 Add answer
+      =hidden_field_tag 'topic_tag', @topic_tag
+      =hidden_field_tag 'account_id', @account_id
+      =hidden_field_tag 'name', name
+      .submit_container.row.span4
+        = submit_tag 'Submit', :class => 'btn btn-primary'
