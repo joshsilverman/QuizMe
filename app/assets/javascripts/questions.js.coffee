@@ -6,7 +6,7 @@ $ ->
 	$('.btn.btn-success').click -> respond(true, $(this).attr('qid'))
 	$('.btn.btn-danger').click -> respond(false, $(this).attr('qid'))
 	$("#question_dummy").on "keyup", (e) => update_character_count()
-	$("#question_dummy").on "click", => if $("#name").val() then select_question_span()	else alert "Please sign in first!"
+	$("#question_dummy").on "click", (e) => if $("#name").val() then select_question_span(e)	else alert "Please sign in first!"
 	$(".answer").on "click", => alert "Please sign in first!" unless $("#name").val()
 	$("#add_answer").on "click", => add_answer()
 	$(".submit_container .btn").on "click", (e) => 
@@ -32,7 +32,8 @@ $ ->
 			$("#question_dummy").css("border-color", "rgba(175, 195, 211, 0.941)")
 		$("#character_count").text(String(count))
 
-	select_question_span = ->
+	select_question_span = (element) ->
+		return if $(element.target).attr("id") == "question"
 		$("#link, #question, #account").show()
 		$("#question").text("Your question") unless $("#question").text()
 		selection = window.getSelection()
