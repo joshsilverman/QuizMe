@@ -29,10 +29,10 @@ $ ->
 		# 	"question" : $("#question").text()
 		# 	"topic_tag" : $("#topic_tag").val()
 		# 	"account_id" : $("#account_id").val()
-		# 	"canswer" : $("#canswer").val()
-		# 	"ianswer1" : $("#ianswer1").val()
-		# 	"ianswer2" : $("#ianswer2").val()
-		# 	"ianswer3" : $("#ianswer3").val()
+		# 	"canswer" : $("#canswer input").val()
+		# 	"ianswer1" : $("#ianswer1 input").val()
+		# 	"ianswer2" : $("#ianswer2 input").val()
+		# 	"ianswer3" : $("#ianswer3 input").val()
 		# $.ajax
 		# 	url: "/questions/save_question_and_answers",
 		# 	type: "POST",
