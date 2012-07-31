@@ -2,6 +2,7 @@ class Question < ActiveRecord::Base
 	has_many :posts
   has_many :answers
   belongs_to :topic
+  belongs_to :user
 
   def is_tweetable?
       return false if self.text =~ /image/ or self.text =~ /picture/

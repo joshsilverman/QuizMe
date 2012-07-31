@@ -179,8 +179,8 @@ GEM
       hashie (~> 1.2.0)
       multi_json (~> 1.3.5)
       simple_oauth (~> 0.1.8)
-    turn (0.8.2)
-      ansi (>= 1.2.2)
+    turn (0.9.3)
+      ansi
     twitter (3.0.2)
       faraday (~> 0.8)
       multi_json (~> 1.3)

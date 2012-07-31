@@ -77,7 +77,7 @@ class Post
 			if answer.correct
 				answer.element.css("color", "#003B05")
 			else
-				answer.element.css("color", "#A3A3A3")
+				answer.element.css("color", "#bbb")
 
 
 class Answer

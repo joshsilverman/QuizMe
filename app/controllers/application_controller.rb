@@ -8,6 +8,10 @@ class ApplicationController < ActionController::Base
   	session[:account_id] = nil
   end
 
+  def authenticate_user
+    redirect_to '/' unless current_user 
+  end
+
 	private
 
 	def current_acct
