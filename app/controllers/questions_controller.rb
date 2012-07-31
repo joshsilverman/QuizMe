@@ -31,6 +31,7 @@ class QuestionsController < ApplicationController
     @topic_tag = topic.id if topic
     @account_id = @account.id
     @question = Question.new
+    @success = params[:success] if params[:success]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -103,7 +104,7 @@ class QuestionsController < ApplicationController
     @question.answers << Answer.create(:text => params[:ianswer1], :correct => false) unless params[:ianswer1].nil? or params[:ianswer1].blank? 
     @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
     @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
-    redirect_to "/questions"
+    redirect_to "/questions/new?account_id=#{params[:account_id]}&success=1"
   end
 
   def moderate

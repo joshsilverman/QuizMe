@@ -5,8 +5,8 @@
 $ ->
 	$('.btn.btn-success').click -> respond(true, $(this).attr('qid'))
 	$('.btn.btn-danger').click -> respond(false, $(this).attr('qid'))
-	$("#question_dummy").on "keyup", (e) => update_character_count()
-	$("#question_dummy").on "click", (e) => if $("#name").val() then select_question_span(e)	else alert "Please sign in first!"
+	$("#question_container").on "keyup", (e) => update_character_count()
+	$("#question_container").on "click", (e) => if $("#name").val() then select_question_span(e)	else alert "Please sign in first!"
 	$(".answer").on "click", => alert "Please sign in first!" unless $("#name").val()
 	$("#add_answer").on "click", => add_answer()
 	$(".submit_container .btn").on "click", (e) => 
@@ -17,7 +17,8 @@ $ ->
 		if $("#name").val()
 			count = $(".answer").length
 			return if count > 3
-			$("#ianswer1").clone().attr("id", "ianswer#{count}").attr("name", "ianswer#{count}").val("").appendTo("#answers").focus()
+			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
 			$("#add_answer").hide() if count == 3
 		else
 			alert "Please sign in first!"
@@ -26,23 +27,14 @@ $ ->
 		count = 140 - ($("#question").text().length + $("#link").text().length + 2)
 		if count < 0
 			$("#character_count").css("color", "red")
-			$("#question_dummy").css("border-color", "red")
+			$("#question_container").css("border-color", "red")
 		else
 			$("#character_count").css("color", "black")
-			$("#question_dummy").css("border-color", "rgba(175, 195, 211, 0.941)")
+			$("#question_container").css("border-color", "rgba(175, 195, 211, 0.941)")
 		$("#character_count").text(String(count))
-	# $("#question_dummy").on "click", => select_question_span()
-	# $("#add_answer").on "click", => 
-	# 	count = $(".answer").length
-	# 	return if count > 3
-	# 	$("#ianswer1").clone().attr("id", "ianswer#{count}").attr("name", "ianswer#{count}").val("").appendTo("#answers").focus()
-	# $(".submit_container .btn").on "click", (e) => 
-	# 	e.preventDefault()
-	# 	alert "Question is too long!" if $("#character_count").text() < 0
-
 
 	select_question_span = (element) ->
-		return if $(element.target).attr("id") == "question"
+		return if $(element.target).attr("id") == "question" and $(element.target).text() != "Your question"
 		$("#link, #question, #account").show()
 		$("#question").text("Your question") unless $("#question").text()
 		selection = window.getSelection()
@@ -58,15 +50,16 @@ $ ->
 				"question" : $("#question").text()
 				"topic_tag" : $("#topic_tag").val()
 				"account_id" : $("#account_id").val()
-				"canswer" : $("#canswer").val()
-				"ianswer1" : $("#ianswer1").val()
-				"ianswer2" : $("#ianswer2").val()
-				"ianswer3" : $("#ianswer3").val()
+				"canswer" : $("#canswer input").val()
+				"ianswer1" : $("#ianswer1 input").val()
+				"ianswer2" : $("#ianswer2 input").val()
+				"ianswer3" : $("#ianswer3 input").val()
 			$.ajax
 				url: "/questions/save_question_and_answers",
 				type: "POST",
 				data: data,
-				success: (e) => document.location.reload(true)
+				error: => $("#error").fadeIn(), 
+				success: (e) => window.location.replace("/questions/new?account_id=#{$("#account_id").val()}&success=1")
 
 	validate_form = ->
 		if $("#character_count").text() < 0
@@ -75,7 +68,7 @@ $ ->
 		else if $("#question").text().length == 0 or $("#question").text() == "Your question"
 			alert "Please enter a question!"
 			return false
-		else if $("#canswer").val().length == 0 or $("#ianswer1").val().length == 0
+		else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
 			alert "Please enter at least one correct and incorrect answer!"
 			return false
 		else

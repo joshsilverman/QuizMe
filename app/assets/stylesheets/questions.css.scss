@@ -38,6 +38,10 @@ form {
 		}
 	}
 
+	#placeholder {
+		display: inline;
+	}
+	
 	#answers {
 		position:relative;
 		left:20px;
@@ -60,9 +64,7 @@ form {
 			display:none;
 		}
 
-		#placeholder {
-			display: inline;
-		}
+
 
 		> div {
 			margin-top:5px;
@@ -122,3 +124,4 @@ form {
 		// margin-right:20px;
 	}
 }
+
