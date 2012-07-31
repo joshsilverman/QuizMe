@@ -1,34 +1,123 @@
-%form.well.row.form-horizontal.span5
-  .header.page-header
-    %p.lead Post a New Question
-  = form_tag('/questions/save_question_and_answers', :method => 'POST') do
-    #form_container
-      - count = 1
-      - if current_user
-        - name = current_user.twi_screen_name
-      - else
-        .auth_container.row.span4.page-header
-          %h3= "#{count}. Sign in:"
-          %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
-            = image_tag "twitter-sign-in.png", :id => "sign_in"
-          - count += 1
-      .question_container.row.span4.page-header
-        %h3= "#{count}. Question:"
-        #question_dummy.input
-          %span#account= "@#{name}"
-          %span#question{:contenteditable => true}= "Your question"
-          %p#placeholder
-          %span#link= "http://bit.ly/LVJ5VQ"
-          - count += 1
-        %p#character_count 140
-      .answers_container.row.span4.page-header
-        %h3= "#{count}. Answers:"
-        #answers
-          = text_field_tag 'canswer',  nil, :placeholder => 'Correct answer', :class => 'answer input-xlarge span4'
-          = text_field_tag 'ianswer1',  nil, :placeholder => 'Incorrect answer', :class => 'answer input-xlarge span4'      
-        %a#add_answer.row.span4 Add answer
-      =hidden_field_tag 'topic_tag', @topic_tag
-      =hidden_field_tag 'account_id', @account_id
-      =hidden_field_tag 'name', name
-      .submit_container.row.span4
-        = submit_tag 'Submit', :class => 'btn btn-primary'
+/ %form.well.row.form-horizontal.span5
+/   .header.page-header
+/     %p.lead Post a New Question
+/   = form_tag('/questions/save_question_and_answers', :method => 'POST') do
+/     #form_container
+/       - count = 1
+/       - if current_user
+/         - name = current_user.twi_screen_name
+/       - else
+/         .auth_container.row.span4.page-header
+/           %h3= "#{count}. Sign in:"
+/           %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
+/             = image_tag "twitter-sign-in.png", :id => "sign_in"
+/           - count += 1
+/       .question_container.row.span4.page-header
+/         %h3= "#{count}. Question:"
+/         #question_dummy.input
+/           %span#account= "@#{name}"
+/           %span#question{:contenteditable => true}= "Your question"
+/           %p#placeholder
+/           %span#link= "http://bit.ly/LVJ5VQ"
+/           - count += 1
+/         %p#character_count 140
+/       .answers_container.row.span4.page-header
+/         %h3= "#{count}. Answers:"
+/         #answers
+/           = text_field_tag 'canswer',  nil, :placeholder => 'Correct answer', :class => 'answer input-xlarge span4'
+/           = text_field_tag 'ianswer1',  nil, :placeholder => 'Incorrect answer', :class => 'answer input-xlarge span4'      
+/         %a#add_answer.row.span4 Add answer
+/       =hidden_field_tag 'topic_tag', @topic_tag
+/       =hidden_field_tag 'account_id', @account_id
+/       =hidden_field_tag 'name', name
+/       .submit_container.row.span4
+/         = submit_tag 'Submit', :class => 'btn btn-primary'
+/ .row
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;  
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+/   .span1{:style => 'background:red;'} &nbsp;
+
+.row
+  .span1 &nbsp;
+
+.row
+  .span6
+    = form_tag('/questions/save_question_and_answers', :method => 'POST', :class => 'row') do
+
+
+      .row
+        .span6.well.form-horizontal.offset3 
+
+          .header.page-header
+            %h2
+              %i.icon-pencil
+              Post a New Question
+
+          - if current_user
+            - name = current_user.twi_screen_name
+          - else
+            .header.page-header        
+              .auth_container
+                %h3 
+                  %i.icon-user
+                  Sign in
+                  %span#sign_in_container
+                    %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
+                      = image_tag "twitter-sign-in.png", :id => "sign_in"
+
+          .page-header
+            %h3
+              %i.icon-question-sign
+              Question
+            .span5#question_container.input{:type => 'text'}
+              %span#question{:contenteditable => true}= "Your q"
+              %span#link= "http://bit.ly/LVJ5VQ"
+              %span#account= " via @#{name}"
+            .span5
+              #character_count_container
+                #character_count 140
+            .row &nbsp;
+
+          .page-header
+            %h3
+              %i.icon-info-sign 
+              Answers
+            #answers
+              #canswer
+                .input-prepend.answer
+                  %span.add-on
+                    %i.icon-ok
+                  %input.span5{:type=>"text", :name => 'canswer', :placeholder => 'Correct answer'}>
+
+              #ianswer1
+                .input-prepend.answer
+                  %span.add-on
+                    %i.icon-remove
+                  %input.span5{:type=>"text", :name => 'ianswer1', :placeholder => 'Inorrect answer'}>
+
+            .row
+              %div
+                %a#add_answer.span4 
+                  Add answer
+
+                =hidden_field_tag 'topic_tag', @topic_tag
+                =hidden_field_tag 'account_id', @account_id
+
+          %div
+            .span5
+              .submit_container
+                = submit_tag 'Submit', :class => 'btn btn-primary'
+            .row
+
+  .row &nbsp;
+  .row &nbsp;
+>>>>>>> 61cdecaa5eb9f6d1b047f0c9c70d037194a2f0e7

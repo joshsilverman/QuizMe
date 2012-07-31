@@ -31,6 +31,15 @@ $ ->
 			$("#character_count").css("color", "black")
 			$("#question_dummy").css("border-color", "rgba(175, 195, 211, 0.941)")
 		$("#character_count").text(String(count))
+	# $("#question_dummy").on "click", => select_question_span()
+	# $("#add_answer").on "click", => 
+	# 	count = $(".answer").length
+	# 	return if count > 3
+	# 	$("#ianswer1").clone().attr("id", "ianswer#{count}").attr("name", "ianswer#{count}").val("").appendTo("#answers").focus()
+	# $(".submit_container .btn").on "click", (e) => 
+	# 	e.preventDefault()
+	# 	alert "Question is too long!" if $("#character_count").text() < 0
+
 
 	select_question_span = (element) ->
 		return if $(element.target).attr("id") == "question"
