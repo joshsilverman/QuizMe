@@ -1,7 +1,7 @@
 class Stat < ActiveRecord::Base
 	belongs_to :account
 	
-	def self.collect_daily_stats_for(current_acct)
+	def self.save_daily_stats_for_account(current_acct)
 		d = Date.today
 		last_post_id = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first.provider_post_id.to_i
 		today_stat = Stat.find_or_create_by_date_and_account_id((d - 1).to_s, current_acct.id)
@@ -15,24 +15,24 @@ class Stat < ActiveRecord::Base
 		friends = twi_account.friend_count
 		rts = client.retweets_of_me({:count => 100, :since_id => last_post_id}).count
 		mentions = client.mentions({:count => 100, :since_id => last_post_id}).count
-		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", Date.today-1, Date.today).collect(&:question_id).to_set
-		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", Date.today-1, Date.today).collect(&:question_id).to_set
-		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", Date.today-1, Date.today).collect(&:question_id).to_set
-		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", Date.today-1, Date.today).collect(&:question_id).to_set
+		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", Date.today-1, Date.today).collect(&:question_id).to_set.count
+		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", Date.today-1, Date.today).collect(&:question_id).to_set.count
+		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", Date.today-1, Date.today).collect(&:question_id).to_set.count
+		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", Date.today-1, Date.today).collect(&:question_id).to_set.count
 		
-		twitter_answers = 
-		internal_answers = 
-		facebook_answers =
-		tumblr_answers =
+		twitter_answers = current_acct.engagements.twitter_answers.where(:date => (d - 1).to_s).count
+		internal_answers = current_acct.engagements.internal_answers.where(:date => (d - 1).to_s).count
+		facebook_answers =current_acct.engagements.facebook_answers.where(:date => (d - 1).to_s).count
+		tumblr_answers =current_acct.engagements.tumblr_answers.where(:date => (d - 1).to_s).count
 
-		active = Mention.where("created_at > ? and correct != null", d - 1.day).group(:user_id).count.map{|k,v| k}.to_set
-		three_day = Mention.where("created_at > ? and correct != null", d - 8.days).group(:user_id).count.map{|k,v| k}.to_set
-		one_week = Mention.where("created_at > ? and correct != null", d - 30.days).group(:user_id).count.map{|k,v| k}.to_set
-		one_month = Mention.where("correct != null").group(:user_id).count.map{|k,v| k}.to_set
-		unique_active_users = active.count
-		three_day_inactive_users = (three_day - active).count
-		one_week_inactive_users = (one_week - three_day - active).count
-		one_month_plus_inactive_users = (one_month - one_week - three_day - active).count
+		# active = Mention.where("created_at > ? and correct != null", d - 1.day).group(:user_id).count.map{|k,v| k}.to_set
+		# three_day = Mention.where("created_at > ? and correct != null", d - 8.days).group(:user_id).count.map{|k,v| k}.to_set
+		# one_week = Mention.where("created_at > ? and correct != null", d - 30.days).group(:user_id).count.map{|k,v| k}.to_set
+		# one_month = Mention.where("correct != null").group(:user_id).count.map{|k,v| k}.to_set
+		# unique_active_users = active.count
+		# three_day_inactive_users = (three_day - active).count
+		# one_week_inactive_users = (one_week - three_day - active).count
+		# one_month_plus_inactive_users = (one_month - one_week - three_day - active).count
 
 		Stat.create(:account_id => account_id,
 			:date => (Date.today - 1).to_s,
