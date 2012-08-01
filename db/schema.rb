@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120723214325) do
+ActiveRecord::Schema.define(:version => 20120730210528) do
 
   create_table "accounts", :force => true do |t|
     t.string   "name"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20120723214325) do
     t.datetime "updated_at"
     t.integer  "posts_per_day",       :default => 1
     t.boolean  "link_to_quizme",      :default => false
+    t.text     "description"
   end
 
   create_table "accountstopics", :force => true do |t|
@@ -67,14 +68,6 @@ ActiveRecord::Schema.define(:version => 20120723214325) do
     t.datetime "updated_at"
   end
 
-  create_table "post_queues", :force => true do |t|
-    t.integer   "account_id"
-    t.integer   "index"
-    t.integer   "question_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-  end
-
   create_table "posts", :force => true do |t|
     t.integer  "account_id"
     t.integer  "question_id"
@@ -97,6 +90,9 @@ ActiveRecord::Schema.define(:version => 20120723214325) do
     t.datetime "updated_at"
     t.integer  "qb_lesson_id"
     t.integer  "qb_q_id"
+    t.integer  "user_id"
+    t.integer  "status",                 :default => 0
+    t.integer  "created_for_account_id"
   end
 
   create_table "reps", :force => true do |t|
@@ -110,24 +106,39 @@ ActiveRecord::Schema.define(:version => 20120723214325) do
   create_table "stats", :force => true do |t|
     t.string   "date"
     t.integer  "followers"
-    t.integer  "followers_delta"
     t.integer  "friends"
-    t.integer  "friends_delta"
-    t.integer  "tweets"
-    t.integer  "tweets_delta"
     t.integer  "rts"
-    t.integer  "rts_today"
     t.integer  "mentions"
-    t.integer  "mentions_today"
-    t.integer  "questions_answered"
-    t.integer  "questions_answered_today",      :default => 0
-    t.integer  "unique_active_users"
-    t.integer  "three_day_inactive_users"
-    t.integer  "one_week_inactive_users"
-    t.integer  "one_month_plus_inactive_users"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "account_id"
+    t.integer  "one_week_inactive_users"
+    t.integer  "twitter_posts",                     :default => 0
+    t.integer  "tumblr_posts",                      :default => 0
+    t.integer  "facebook_posts",                    :default => 0
+    t.integer  "internal_posts",                    :default => 0
+    t.integer  "twitter_answers",                   :default => 0
+    t.integer  "tumblr_answers",                    :default => 0
+    t.integer  "facebook_answers",                  :default => 0
+    t.integer  "internal_answers",                  :default => 0
+    t.integer  "twitter_daily_active_users"
+    t.integer  "twitter_weekly_active_users"
+    t.integer  "twitter_monthly_active_users"
+    t.integer  "twitter_one_day_inactive_users"
+    t.integer  "twitter_one_week_inactive_users"
+    t.integer  "twitter_one_month_inactive_users"
+    t.integer  "twitter_daily_churn"
+    t.integer  "twitter_weekly_churn"
+    t.integer  "twitter_monthly_churn"
+    t.integer  "internal_daily_active_users"
+    t.integer  "internal_weekly_active_users"
+    t.integer  "internal_monthly_active_users"
+    t.integer  "internal_one_day_inactive_users"
+    t.integer  "internal_one_week_inactive_users"
+    t.integer  "internal_one_month_inactive_users"
+    t.integer  "internal_daily_churn"
+    t.integer  "internal_weekly_churn"
+    t.integer  "internal_monthly_churn"
   end
 
   create_table "topics", :force => true do |t|
