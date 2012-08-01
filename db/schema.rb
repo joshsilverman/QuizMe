@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120730210528) do
+ActiveRecord::Schema.define(:version => 20120801174322) do
 
   create_table "accounts", :force => true do |t|
     t.string   "name"
@@ -45,6 +45,18 @@ ActiveRecord::Schema.define(:version => 20120730210528) do
     t.boolean  "correct"
     t.integer  "question_id"
     t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "engagements", :force => true do |t|
+    t.string   "date"
+    t.integer  "user_id"
+    t.integer  "account_id"
+    t.integer  "mention_id"
+    t.string   "provider"
+    t.string   "engagement_type"
+    t.boolean  "first_engagement"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
