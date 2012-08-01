@@ -22,7 +22,8 @@ class Post < ActiveRecord::Base
 	end
 
 	def self.tweet(current_acct, tweet, url, lt, question_id)
-		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id, current_acct.link_to_quizme)
+    short_url = nil
+		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id, current_acct.link_to_quizme) if url
     res = current_acct.twitter.update("#{tweet} #{short_url}")
     Post.create(:account_id => current_acct.id,
                 :question_id => question_id,
