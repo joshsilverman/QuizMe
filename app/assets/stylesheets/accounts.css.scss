@@ -14,9 +14,9 @@
 	.widget.header{
 		margin-bottom:10px;
 		//padding:5px 5px 1px 5px;
-		height:100px;
+		height:120px;
 		.heading{
-			margin: 15px 0px 25px 0px;
+			margin: 10px 0px;
 			text-align:center;
 			h2{
 				font-size:16px;
@@ -30,7 +30,15 @@
 		}
 		.badge{
 			font-size:32px;
-			margin:10px 0;
+			margin:0;
+			display:block;
+			line-height:32px;
+		}
+		.delta{
+			font-size:16px !important;
+			line-height: 16px !important;
+			margin-top:7px;
+
 		}
 	}
 	.widget.small, .widget.large{

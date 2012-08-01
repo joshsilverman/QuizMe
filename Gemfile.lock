@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/bderusha/mixpanel_client.git
+  revision: d31caf3187f1d12a94769eed669c1b2c826c899b
+  specs:
+    mixpanel_client (2.2.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -210,6 +216,7 @@ DEPENDENCIES
   haml
   hirb
   jquery-rails
+  mixpanel_client!
   newrelic_rpm
   omniauth
   omniauth-facebook

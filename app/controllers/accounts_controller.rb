@@ -77,7 +77,15 @@ class AccountsController < ApplicationController
   end
 
   def stats
-    @headsup_stats = Stat.get_headsup
+    @headsup_stats = Stat.get_all_headsup
+    @rts = Stat.get_all_retweets(30)
+    @qa = Stat.get_all_questions_answered(30)
+    @dau = Stat.get_all_dau(30)
+    #@retention = {"2012-07-28"=>{"counts"=>[13, 0], "first"=>33}, "2012-07-29"=>{"counts"=>[36, 6], "first"=>76}, "2012-07-20"=>{"counts"=>[44, 7], "first"=>99}, "2012-07-21"=>{"counts"=>[37, 10], "first"=>101}, "2012-07-22"=>{"counts"=>[38, 5], "first"=>120}, "2012-07-23"=>{"counts"=>[40, 7], "first"=>121}, "2012-07-24"=>{"counts"=>[33, 6], "first"=>84}, "2012-07-25"=>{"counts"=>[34, 7], "first"=>75}, "2012-07-26"=>{"counts"=>[47, 3], "first"=>84}, "2012-07-27"=>{"counts"=>[30, 3], "first"=>67}, "2012-07-15"=>{"counts"=>[0, 0], "first"=>0}, "2012-07-17"=>{"counts"=>[53, 10], "first"=>135}, "2012-07-16"=>{"counts"=>[25, 7], "first"=>58}, "2012-07-30"=>{"counts"=>[40, 4], "first"=>79}, "2012-07-19"=>{"counts"=>[55, 8], "first"=>124}, "2012-07-18"=>{"counts"=>[47, 11], "first"=>138}} 
+    @weekly_int_ret = Stat.internal_retention(70, 'week')
+    @daily_int_ret = Stat.internal_retention(10, 'day')
+    @weekly_twi_ret = Stat.twitter_retention(70)
+    @daily_twi_ret = Stat.twitter_retention(10)
   end
 
   def account_rts
