@@ -1,17 +1,58 @@
-#account {
-	height: 150px;
-	background: gray;
+#wrapper {
+	/*background: #ccc;*/
+	height: 500px;
+	/*margin-top: -25px !important;*/
+	margin: auto;
+	float: none;
+
+	#header {
+		margin-bottom: 30px;
+
+		#account {
+			height: 150px;
+			border-style: dotted;
+			border-width: 1px;
+			border-color: gray;
+		}
+	}
+
+	#feed {	
+		margin-bottom: 30px;
+
+		#left_column {
+			
+			#scoreboard {
+				height: 200px;
+				border-style: dotted;
+				border-width: 1px;
+				border-color: gray;		
+				margin-bottom: 30px;	
+			}
+
+			#related {
+				height: 200px;
+				border-style: dotted;
+				border-width: 1px;
+				border-color: gray;			
+			}
+		}
+
+		#right_column {
+			height: 200px;
+
+			#posts {
+				.post {
+					height: 100px;
+					border-style: dotted;
+					border-width: 1px;
+					border-color: gray;
+				}
+			}
+		}
+	}
 }
 
-#left_column {
-	height: 200px;
-	background: blue;
-}
 
-#right_column {
-	height: 200px;
-	background: red;
-}
 /*#feed_container {
 	position: relative;
 	margin:	auto;

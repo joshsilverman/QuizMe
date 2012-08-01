@@ -1,9 +1,22 @@
-#header.row
-	#account.span10.offset1
+/ #wrapper.span9
+/ 	#header.row
+/ 		#account.span9
 
-#feed.row
-	#left_column.span4.offset1.hidden-phone
-	#right_column.span6
+#wrapper
+	#header.row
+		#account.span10.offset1
+			%a.scoreboard_link.visible-phone{:href => "#"}
+				Go to the scoreboard.
+	#feed.row
+		#left_column.span4.offset1.hidden-phone
+			#scoreboard
+			#related
+		#right_column.span6
+			#posts
+				- @posts.each do |post|
+					.post
+						=post.text
+
 
 / = hidden_field_tag :feed_id, @account.id
 / = hidden_field_tag :feed_name, @account.name
