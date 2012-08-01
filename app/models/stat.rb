@@ -3,6 +3,73 @@ class Stat < ActiveRecord::Base
 	
 	def self.collect_daily_stats_for(current_acct)
 		d = Date.today
+		last_post_id = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first.provider_post_id.to_i
+		today_stat = Stat.find_or_create_by_date_and_account_id((d - 1).to_s, current_acct.id)
+		yesterday_stat = Stat.get_yesterday(current_acct.id)
+		client = current_acct.twitter
+		twi_account = client.user
+
+		##get all the stats
+
+		followers = twi_account.follower_count
+		friends = twi_account.friend_count
+		rts = client.retweets_of_me({:count => 100, :since_id => last_post_id}).count
+		mentions = client.mentions({:count => 100, :since_id => last_post_id}).count
+		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", Date.today-1, Date.today).collect(&:question_id).to_set
+		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", Date.today-1, Date.today).collect(&:question_id).to_set
+		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", Date.today-1, Date.today).collect(&:question_id).to_set
+		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", Date.today-1, Date.today).collect(&:question_id).to_set
+		
+		twitter_answers = 
+		internal_answers = 
+		facebook_answers =
+		tumblr_answers =
+
+		active = Mention.where("created_at > ? and correct != null", d - 1.day).group(:user_id).count.map{|k,v| k}.to_set
+		three_day = Mention.where("created_at > ? and correct != null", d - 8.days).group(:user_id).count.map{|k,v| k}.to_set
+		one_week = Mention.where("created_at > ? and correct != null", d - 30.days).group(:user_id).count.map{|k,v| k}.to_set
+		one_month = Mention.where("correct != null").group(:user_id).count.map{|k,v| k}.to_set
+		unique_active_users = active.count
+		three_day_inactive_users = (three_day - active).count
+		one_week_inactive_users = (one_week - three_day - active).count
+		one_month_plus_inactive_users = (one_month - one_week - three_day - active).count
+
+		Stat.create(:account_id => account_id,
+			:date => (Date.today - 1).to_s,
+	    :followers => followers,
+	    :friends => friends,
+	    :rts => rts,
+	    :mentions => mentions,
+	    :twitter_posts => 8,
+	    :tumblr_posts => 0,
+	    :facebook_posts => 0,
+	    :internal_posts => 8,
+	    :twitter_answers => rand(5)*7,
+	    :tumblr_answers => 0,
+	    :facebook_answers => 0,
+	    :internal_answers => rand(10)*7,
+	    :twitter_daily_active_users => rand(50) + 2*days,
+	    :twitter_weekly_active_users => rand(20) + 2*days,
+	    :twitter_monthly_active_users => rand(10) + 2*days,
+	    :twitter_one_day_inactive_users => rand(10) + days,
+	    :twitter_one_week_inactive_users => rand(10) + days,
+	    :twitter_one_month_inactive_users => rand(10) + days,
+	    :twitter_daily_churn => rand(10) + days/2,
+	    :twitter_weekly_churn => rand(10) + days/2,
+	    :twitter_monthly_churn => rand(10) + days/2,
+	    :internal_daily_active_users => rand(50) + 2*days,
+	    :internal_weekly_active_users => rand(20) + 2*days,
+	    :internal_monthly_active_users => rand(10) + 2*days,
+	    :internal_one_day_inactive_users => rand(10) + days,
+	    :internal_one_week_inactive_users => rand(10) + days,
+	    :internal_one_month_inactive_users => rand(10) + days,
+	    :internal_daily_churn => rand(10) + days/2,
+	    :internal_weekly_churn => rand(10) + days/2,
+	    :internal_monthly_churn => rand(10) + days/2)
+	end
+
+	def self.collect_daily_stats_for(current_acct)
+		d = Date.today
 		last_post_id = current_acct.posts.where("updated_at > ? and provider = 'twitter' ", Time.now-1.days).first.provider_post_id.to_i
 		today = Stat.find_or_create_by_date_and_account_id((d - 1.days).to_s, current_acct.id)
 		client = current_acct.twitter
