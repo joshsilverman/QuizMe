@@ -1,4 +1,18 @@
-#feed_container {
+#account {
+	height: 150px;
+	background: gray;
+}
+
+#left_column {
+	height: 200px;
+	background: blue;
+}
+
+#right_column {
+	height: 200px;
+	background: red;
+}
+/*#feed_container {
 	position: relative;
 	margin:	auto;
 	width: 980px;
@@ -167,8 +181,6 @@
   width: 500px;
   margin: auto;
   margin-top: 30px;
-  /*min-height: 100%;*/
-
 
   .title {
   	margin-bottom: 10px;
@@ -232,4 +244,4 @@
 			}
 		}	
   }
-}
+}*/

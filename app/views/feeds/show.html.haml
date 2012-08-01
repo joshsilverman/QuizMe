@@ -1,39 +1,46 @@
-= hidden_field_tag :feed_id, @account.id
-= hidden_field_tag :feed_name, @account.name
+#header.row
+	#account.span10.offset1
 
-#feed_container
-	#feed_header
-		#feed_image
-			= image_tag(@account.twi_profile_img_url)
-		#feed_description_container
-			#feed_title
-				= @account.name
-			#feed_description
-				= @account.description
-				- if @account.id == 3
-					%p
-						Check out
-						%a#gotham{:href => "http://www.bikegotham.com/", :target => "_blank"}= "our friends at Gotham"
-						for some cool bike gear, including an awesome theft-proof bike light.
-		#feed_stats
-	#feed_content
-		- @posts.each do |post|
-			.post{:id => "question_#{post.question.id}", :post_id => post.id}
-				.header
-					%p.bot_name= "#{@account.name}:"
-					/ %p.bot_name BioBot:
-					.question
-						%p= post.text
-				.answers
-					- post.question.answers.shuffle.each do |answer|
-						.answer{:class => ("correct" if answer.correct)}
-							= answer.text
-		#show_more
-			Show More
+#feed.row
+	#left_column.span4.offset1.hidden-phone
+	#right_column.span6
 
-#post_template
-	.header
-		%p.bot_name QuizMeBot
-		.question
-			%p Oops!
-	.answers
+/ = hidden_field_tag :feed_id, @account.id
+/ = hidden_field_tag :feed_name, @account.name
+
+/ #feed_container
+/ 	#feed_header
+/ 		#feed_image
+/ 			= image_tag(@account.twi_profile_img_url)
+/ 		#feed_description_container
+/ 			#feed_title
+/ 				= @account.name
+/ 			#feed_description
+/ 				= @account.description
+/ 				- if @account.id == 3
+/ 					%p
+/ 						Check out
+/ 						%a#gotham{:href => "http://www.bikegotham.com/", :target => "_blank"}= "our friends at Gotham"
+/ 						for some cool bike gear, including an awesome theft-proof bike light.
+/ 		#feed_stats
+/ 	#feed_content
+/ 		- @posts.each do |post|
+/ 			.post{:id => "question_#{post.question.id}", :post_id => post.id}
+/ 				.header
+/ 					%p.bot_name= "#{@account.name}:"
+/ 					/ %p.bot_name BioBot:
+/ 					.question
+/ 						%p= post.text
+/ 				.answers
+/ 					- post.question.answers.shuffle.each do |answer|
+/ 						.answer{:class => ("correct" if answer.correct)}
+/ 							= answer.text
+/ 		#show_more
+/ 			Show More
+
+/ #post_template
+/ 	.header
+/ 		%p.bot_name QuizMeBot
+/ 		.question
+/ 			%p Oops!
+/ 	.answers
