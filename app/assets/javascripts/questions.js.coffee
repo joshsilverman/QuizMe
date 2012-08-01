@@ -3,9 +3,10 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-	if $("#question_form").length > 0
+	if $('#moderate_questions').length > 0
 		$('.btn.btn-success').click -> respond(true, $(this).attr('qid'))
 		$('.btn.btn-danger').click -> respond(false, $(this).attr('qid'))
+	if $("#question_form").length > 0
 		$("#question_container").on "keyup", (e) => update_character_count()
 		$("#question_container").on "click", (e) => if $("#name").val() then select_question_span(e)	else alert "Please sign in first!"
 		$(".answer").on "click", => alert "Please sign in first!" unless $("#name").val()
