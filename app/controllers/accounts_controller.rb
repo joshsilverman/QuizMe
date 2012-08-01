@@ -1,4 +1,5 @@
 class AccountsController < ApplicationController
+  before_filter :admin?
   
   def index
     @accounts = Account.all

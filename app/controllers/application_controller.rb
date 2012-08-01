@@ -12,6 +12,14 @@ class ApplicationController < ActionController::Base
     redirect_to '/' unless current_user 
   end
 
+  def admin?
+    if current_user
+      redirect_to '/' unless current_user.twi_screen_name == 'StudyEgg'
+    else
+      redirect_to '/'
+    end
+  end
+
 	private
 
 	def current_acct
