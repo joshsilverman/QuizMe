@@ -1,21 +1,41 @@
-/ #wrapper.span9
-/ 	#header.row
-/ 		#account.span9
-
-#wrapper
-	#header.row
-		#account.span10.offset1
-			%a.scoreboard_link.visible-phone{:href => "#"}
-				Go to the scoreboard.
-	#feed.row
-		#left_column.span4.offset1.hidden-phone
-			#scoreboard
-			#related
-		#right_column.span6
-			#posts
-				- @posts.each do |post|
-					.post
-						=post.text
+.row
+	#wrapper.span10.offset1
+		#header.row
+			#account.span10.rounded
+				#account_information
+					= image_tag(@account.twi_profile_img_url, :class => "rounded")
+					= @account.description
+					%a.scoreboard_link.visible-phone{:href => "#"}
+						Go to the scoreboard.
+		#feed.row
+			#left_column.span4.hidden-phone
+				#scoreboard.rounded
+					.header
+						%h4
+							Leaderboard
+				#related.rounded
+					.header
+						%h4
+							Related
+			#right_column.span6
+				#posts.rounded
+					.header
+						%h3
+							Posts
+					- @posts.each do |post|
+						.post.inactive
+							.content
+								= image_tag(@account.twi_profile_img_url, :class => "rounded")							
+								%h5= @account.name
+								= post.text
+							.answers.rounded{:style => "display: none;"}
+								- post.question.answers.each do |answer|
+									%h3= answer.text
+									.text_container
+										%textarea
+											= "@#{@account.name} #{answer.text}"
+					#posts_more
+						%a{:href => "#"} Load more
 
 
 / = hidden_field_tag :feed_id, @account.id

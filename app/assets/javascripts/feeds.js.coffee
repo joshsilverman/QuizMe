@@ -4,6 +4,27 @@ class Feed
 	questions: []
 	answered: 0
 	constructor: ->
+		$(".post").on "click", (e) => 
+			return if $(e.target).parent(".answers").length > 0
+			if $(e.target).hasClass("post") then post = $(e.target) else post = $(e.target).closest(".post")
+			if post.hasClass("active")
+				post.toggleClass("active", 50) 
+				post.next(".post").removeClass("active_next")
+				post.prev(".post").removeClass("active_prev")	
+				post.find(".answers").hide()
+			else 
+				post.toggleClass("active", 50)
+				post.next(".post").addClass("active_next")
+				post.prev(".post").addClass("active_prev")
+				answers = post.find(".answers")
+				answers.accordion({
+					collapsible: true, 
+					autoHeight: false,
+					active: false, 
+					icons: false
+				})
+				answers.toggle(200)
+		$(".text_container").on "click", (e) => e.preventDefault()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		# @initializeNewPostListener()
@@ -94,4 +115,4 @@ class Answer
 			answer.element.off "click" for answer in @post.answers
 
 
-$ -> window.feed = new Feed if $("#feed_id").length > 0
+$ -> window.feed = new Feed# if $("#feed_id").length > 0
