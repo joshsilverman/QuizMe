@@ -48,11 +48,11 @@ class Stat < ActiveRecord::Base
 		tumblr_answers =current_acct.engagements.tumblr_answers.where(:date => y.to_s).count
 		
 		twitter_daily_active_users = Engagement.twitter_answers.where(:date => y.to_s).collect(&:user_id)
-		twitter_weekly_active_users = Engagement.twitter_answers.where(:date => week_s_ary).collect(&:user_id)
-		twitter_monthly_active_users = Engagement.twitter_answers.where(:date => month_s_ary).collect(&:user_id)
-		twitter_yesterday_active_users = Engagement.twitter_answers.where(:date => y.to_s).collect(&:user_id)
-		twitter_last_week_active_users = Engagement.twitter_answers.where(:date => week_s_ary).collect(&:user_id)
-		twitter_last_month_active_users = Engagement.twitter_answers.where(:date => month_s_ary).collect(&:user_id)
+		twitter_weekly_active_users = Engagement.twitter_answers.where(:date => this_week_ary_of_days).collect(&:user_id)
+		twitter_monthly_active_users = Engagement.twitter_answers.where(:date => this_month_ary_of_days).collect(&:user_id)
+		twitter_yesterday_active_users = Engagement.twitter_answers.where(:date => (y-1).to_s).collect(&:user_id)
+		twitter_last_week_active_users = Engagement.twitter_answers.where(:date => last_week_ary_of_days).collect(&:user_id)
+		twitter_last_month_active_users = Engagement.twitter_answers.where(:date => last_month_ary_of_days).collect(&:user_id)
 		twitter_one_day_inactive_users = twitter_yesterday_active_users.to_set - twitter_daily_active_users.to_set
 		twitter_one_week_inactive_users = twitter_last_week_active_users.to_set - twitter_weekly_active_users.to_set
 		twitter_one_month_inactive_users = twitter_last_month_active_users.to_set - twitter_monthly_active_users.to_set
@@ -61,11 +61,11 @@ class Stat < ActiveRecord::Base
 		twitter_monthly_churn = twitter_one_month_inactive_users.count/twitter_monthly_active_users.count.to_f
 
 		internal_daily_active_users = Engagement.internal_answers.where(:date => y.to_s).collect(&:user_id)
-		internal_weekly_active_users = Engagement.internal_answers.where(:date => week_s_ary).collect(&:user_id)
-		internal_monthly_active_users = Engagement.internal_answers.where(:date => month_s_ary).collect(&:user_id)
-		internal_yesterday_active_users = Engagement.internal_answers.where(:date => y.to_s).collect(&:user_id)
-		internal_last_week_active_users = Engagement.internal_answers.where(:date => week_s_ary).collect(&:user_id)
-		internal_last_month_active_users = Engagement.internal_answers.where(:date => month_s_ary).collect(&:user_id)
+		internal_weekly_active_users = Engagement.internal_answers.where(:date => this_week_ary_of_days).collect(&:user_id)
+		internal_monthly_active_users = Engagement.internal_answers.where(:date => this_month_ary_of_days).collect(&:user_id)
+		internal_yesterday_active_users = Engagement.internal_answers.where(:date => (y-1).to_s).collect(&:user_id)
+		internal_last_week_active_users = Engagement.internal_answers.where(:date => last_week_ary_of_days).collect(&:user_id)
+		internal_last_month_active_users = Engagement.internal_answers.where(:date => last_month_ary_of_days).collect(&:user_id)
 		internal_one_day_inactive_users = internal_yesterday_active_users.to_set - internal_daily_active_users.to_set
 		internal_one_week_inactive_users = internal_last_week_active_users.to_set - internal_weekly_active_users.to_set
 		internal_one_month_inactive_users = internal_last_month_active_users.to_set - internal_monthly_active_users.to_set
