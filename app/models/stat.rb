@@ -56,9 +56,9 @@ class Stat < ActiveRecord::Base
 		twitter_one_day_inactive_users = twitter_yesterday_active_users.to_set - twitter_daily_active_users.to_set
 		twitter_one_week_inactive_users = twitter_last_week_active_users.to_set - twitter_weekly_active_users.to_set
 		twitter_one_month_inactive_users = twitter_last_month_active_users.to_set - twitter_monthly_active_users.to_set
-		twitter_daily_churn = twitter_one_day_inactive_users.count*1000/twitter_daily_active_users.count
-		twitter_weekly_churn = twitter_one_week_inactive_users.count*1000/twitter_weekly_active_users.count
-		twitter_monthly_churn = twitter_one_month_inactive_users.count*1000/twitter_monthly_active_users.count
+		twitter_daily_churn = twitter_daily_active_users.count == 0 ? 0 : twitter_one_day_inactive_users.count*1000/twitter_daily_active_users.count
+		twitter_weekly_churn = twitter_weekly_active_users.count == 0 ? 0 : twitter_one_week_inactive_users.count*1000/twitter_weekly_active_users.count
+		twitter_monthly_churn = twitter_monthly_active_users.count == 0 ? 0 : twitter_one_month_inactive_users.count*1000/twitter_monthly_active_users.count
 
 		internal_daily_active_users = Engagement.internal_answers.where(:date => y.to_s).collect(&:user_id)
 		internal_weekly_active_users = Engagement.internal_answers.where(:date => this_week_ary_of_days).collect(&:user_id)
@@ -69,9 +69,9 @@ class Stat < ActiveRecord::Base
 		internal_one_day_inactive_users = internal_yesterday_active_users.to_set - internal_daily_active_users.to_set
 		internal_one_week_inactive_users = internal_last_week_active_users.to_set - internal_weekly_active_users.to_set
 		internal_one_month_inactive_users = internal_last_month_active_users.to_set - internal_monthly_active_users.to_set
-		internal_daily_churn = internal_one_day_inactive_users.count*1000/internal_daily_active_users.count
-		internal_weekly_churn = internal_one_week_inactive_users.count*1000/internal_weekly_active_users.count
-		internal_monthly_churn = internal_one_month_inactive_users.count*1000/internal_monthly_active_users.count
+		internal_daily_churn = internal_daily_active_users.count == 0 ? 0 : internal_one_day_inactive_users.count*1000/internal_daily_active_users.count
+		internal_weekly_churn = internal_weekly_active_users.count == 0 ? 0 : internal_one_week_inactive_users.count*1000/internal_weekly_active_users.count
+		internal_monthly_churn = internal_monthly_active_users.count == 0 ? 0 : internal_one_month_inactive_users.count*1000/internal_monthly_active_users.count
 
 		Stat.create(:account_id => current_acct.id,
 			:date => y.to_s,
