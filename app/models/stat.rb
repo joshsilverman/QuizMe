@@ -3,8 +3,31 @@ class Stat < ActiveRecord::Base
 	
 	def self.save_daily_stats_for_account(current_acct)
 		d = Date.today
-		last_post_id = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first.provider_post_id.to_i
-		today_stat = Stat.find_or_create_by_date_and_account_id((d - 1).to_s, current_acct.id)
+		y = d - 1
+		this_week_ary_of_days = []
+		this_month_ary_of_days = []
+		last_week_ary_of_days = []
+		last_month_ary_of_days = []
+
+
+		for i in 1..60
+			this_week_ary_of_days << (d-i).to_s if i < 8
+			this_month_ary_of_days << (d-i).to_s if i < 31
+			last_week_ary_of_days << (d-i).to_s if i > 7 and i < 15
+			last_month_ary_of_days << (d-i).to_s if i > 30
+		end
+
+		this_week_ary_of_days.sort!
+		this_month_ary_of_days.sort!
+		last_week_ary_of_days.sort!
+		last_month_ary_of_days.sort!
+
+		puts this_week_ary_of_days
+
+
+		last_post = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first
+		last_post_id = last_post.nil? ? nil : last_post.provider_post_id.to_i
+		today_stat = Stat.find_or_create_by_date_and_account_id(y.to_s, current_acct.id)
 		yesterday_stat = Stat.get_yesterday(current_acct.id)
 		client = current_acct.twitter
 		twi_account = client.user
@@ -15,57 +38,74 @@ class Stat < ActiveRecord::Base
 		friends = twi_account.friend_count
 		rts = client.retweets_of_me({:count => 100, :since_id => last_post_id}).count
 		mentions = client.mentions({:count => 100, :since_id => last_post_id}).count
-		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", Date.today-1, Date.today).collect(&:question_id).to_set.count
-		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", Date.today-1, Date.today).collect(&:question_id).to_set.count
-		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", Date.today-1, Date.today).collect(&:question_id).to_set.count
-		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", Date.today-1, Date.today).collect(&:question_id).to_set.count
+		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", y, d).collect(&:question_id).to_set.count
+		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", y, d).collect(&:question_id).to_set.count
+		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", y, d).collect(&:question_id).to_set.count
+		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", y, d).collect(&:question_id).to_set.count
 		
-		twitter_answers = current_acct.engagements.twitter_answers.where(:date => (d - 1).to_s).count
-		internal_answers = current_acct.engagements.internal_answers.where(:date => (d - 1).to_s).count
-		facebook_answers =current_acct.engagements.facebook_answers.where(:date => (d - 1).to_s).count
-		tumblr_answers =current_acct.engagements.tumblr_answers.where(:date => (d - 1).to_s).count
+		twitter_answers = current_acct.engagements.twitter_answers.where(:date => y.to_s).count
+		internal_answers = current_acct.engagements.internal_answers.where(:date => y.to_s).count
+		facebook_answers =current_acct.engagements.facebook_answers.where(:date => y.to_s).count
+		tumblr_answers =current_acct.engagements.tumblr_answers.where(:date => y.to_s).count
+		
+		twitter_daily_active_users = Engagement.twitter_answers.where(:date => y.to_s).collect(&:user_id)
+		twitter_weekly_active_users = Engagement.twitter_answers.where(:date => week_s_ary).collect(&:user_id)
+		twitter_monthly_active_users = Engagement.twitter_answers.where(:date => month_s_ary).collect(&:user_id)
+		twitter_yesterday_active_users = Engagement.twitter_answers.where(:date => y.to_s).collect(&:user_id)
+		twitter_last_week_active_users = Engagement.twitter_answers.where(:date => week_s_ary).collect(&:user_id)
+		twitter_last_month_active_users = Engagement.twitter_answers.where(:date => month_s_ary).collect(&:user_id)
+		twitter_one_day_inactive_users = twitter_yesterday_active_users.to_set - twitter_daily_active_users.to_set
+		twitter_one_week_inactive_users = twitter_last_week_active_users.to_set - twitter_weekly_active_users.to_set
+		twitter_one_month_inactive_users = twitter_last_month_active_users.to_set - twitter_monthly_active_users.to_set
+		twitter_daily_churn = twitter_one_day_inactive_users.count/twitter_daily_active_users.count.to_f
+		twitter_weekly_churn = twitter_one_week_inactive_users.count/twitter_weekly_active_users.count.to_f
+		twitter_monthly_churn = twitter_one_month_inactive_users.count/twitter_monthly_active_users.count.to_f
 
-		# active = Mention.where("created_at > ? and correct != null", d - 1.day).group(:user_id).count.map{|k,v| k}.to_set
-		# three_day = Mention.where("created_at > ? and correct != null", d - 8.days).group(:user_id).count.map{|k,v| k}.to_set
-		# one_week = Mention.where("created_at > ? and correct != null", d - 30.days).group(:user_id).count.map{|k,v| k}.to_set
-		# one_month = Mention.where("correct != null").group(:user_id).count.map{|k,v| k}.to_set
-		# unique_active_users = active.count
-		# three_day_inactive_users = (three_day - active).count
-		# one_week_inactive_users = (one_week - three_day - active).count
-		# one_month_plus_inactive_users = (one_month - one_week - three_day - active).count
+		internal_daily_active_users = Engagement.internal_answers.where(:date => y.to_s).collect(&:user_id)
+		internal_weekly_active_users = Engagement.internal_answers.where(:date => week_s_ary).collect(&:user_id)
+		internal_monthly_active_users = Engagement.internal_answers.where(:date => month_s_ary).collect(&:user_id)
+		internal_yesterday_active_users = Engagement.internal_answers.where(:date => y.to_s).collect(&:user_id)
+		internal_last_week_active_users = Engagement.internal_answers.where(:date => week_s_ary).collect(&:user_id)
+		internal_last_month_active_users = Engagement.internal_answers.where(:date => month_s_ary).collect(&:user_id)
+		internal_one_day_inactive_users = internal_yesterday_active_users.to_set - internal_daily_active_users.to_set
+		internal_one_week_inactive_users = internal_last_week_active_users.to_set - internal_weekly_active_users.to_set
+		internal_one_month_inactive_users = internal_last_month_active_users.to_set - internal_monthly_active_users.to_set
+		internal_daily_churn = ((internal_one_day_inactive_users.count/internal_daily_active_users.count.to_f)*1000).floor
+		internal_weekly_churn = ((internal_one_week_inactive_users.count/internal_weekly_active_users.count.to_f)*1000).floor
+		internal_monthly_churn = ((internal_one_month_inactive_users.count/internal_monthly_active_users.count.to_f)*1000).floor
 
-		Stat.create(:account_id => account_id,
-			:date => (Date.today - 1).to_s,
+		Stat.create(:account_id => current_acct.id,
+			:date => y.to_s,
 	    :followers => followers,
 	    :friends => friends,
 	    :rts => rts,
 	    :mentions => mentions,
-	    :twitter_posts => 8,
-	    :tumblr_posts => 0,
-	    :facebook_posts => 0,
-	    :internal_posts => 8,
-	    :twitter_answers => rand(5)*7,
-	    :tumblr_answers => 0,
-	    :facebook_answers => 0,
-	    :internal_answers => rand(10)*7,
-	    :twitter_daily_active_users => rand(50) + 2*days,
-	    :twitter_weekly_active_users => rand(20) + 2*days,
-	    :twitter_monthly_active_users => rand(10) + 2*days,
-	    :twitter_one_day_inactive_users => rand(10) + days,
-	    :twitter_one_week_inactive_users => rand(10) + days,
-	    :twitter_one_month_inactive_users => rand(10) + days,
-	    :twitter_daily_churn => rand(10) + days/2,
-	    :twitter_weekly_churn => rand(10) + days/2,
-	    :twitter_monthly_churn => rand(10) + days/2,
-	    :internal_daily_active_users => rand(50) + 2*days,
-	    :internal_weekly_active_users => rand(20) + 2*days,
-	    :internal_monthly_active_users => rand(10) + 2*days,
-	    :internal_one_day_inactive_users => rand(10) + days,
-	    :internal_one_week_inactive_users => rand(10) + days,
-	    :internal_one_month_inactive_users => rand(10) + days,
-	    :internal_daily_churn => rand(10) + days/2,
-	    :internal_weekly_churn => rand(10) + days/2,
-	    :internal_monthly_churn => rand(10) + days/2)
+	    :twitter_posts =>twitter_posts,
+	    :tumblr_posts => tumblr_posts,
+	    :facebook_posts => facebook_posts,
+	    :internal_posts => internal_posts,
+	    :twitter_answers => twitter_answers,
+	    :tumblr_answers => tumblr_answers,
+	    :facebook_answers => facebook_answers,
+	    :internal_answers => internal_answers,
+	    :twitter_daily_active_users => twitter_daily_active_users.to_set.count,
+	    :twitter_weekly_active_users => twitter_weekly_active_users.to_set.count,
+	    :twitter_monthly_active_users => twitter_monthly_active_users.to_set.count,
+	    :twitter_one_day_inactive_users => twitter_one_day_inactive_users.to_set.count,
+	    :twitter_one_week_inactive_users => twitter_one_week_inactive_users.to_set.count,
+	    :twitter_one_month_inactive_users => twitter_one_month_inactive_users.to_set.count,
+	    :twitter_daily_churn => twitter_daily_churn,
+	    :twitter_weekly_churn => twitter_weekly_churn,
+	    :twitter_monthly_churn => twitter_monthly_churn,
+	    :internal_daily_active_users => internal_daily_active_users.to_set.count,
+	    :internal_weekly_active_users => internal_weekly_active_users.to_set.count,
+	    :internal_monthly_active_users => internal_monthly_active_users.to_set.count,
+	    :internal_one_day_inactive_users => internal_one_day_inactive_users.to_set.count,
+	    :internal_one_week_inactive_users => internal_one_week_inactive_users.to_set.count,
+	    :internal_one_month_inactive_users => internal_one_month_inactive_users.to_set.count,
+	    :internal_daily_churn => internal_daily_churn,
+	    :internal_weekly_churn => internal_weekly_churn,
+	    :internal_monthly_churn => internal_monthly_churn)
 	end
 
 	def self.collect_daily_stats_for(current_acct)
