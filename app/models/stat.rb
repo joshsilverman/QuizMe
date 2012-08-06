@@ -26,7 +26,6 @@ class Stat < ActiveRecord::Base
 
 
 		last_post = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first
-		last_post_id = last_post.nil? ? nil : last_post.provider_post_id.to_i
 		today_stat = Stat.find_or_create_by_date_and_account_id(y.to_s, current_acct.id)
 		yesterday_stat = Stat.get_yesterday(current_acct.id)
 		client = current_acct.twitter
@@ -36,8 +35,8 @@ class Stat < ActiveRecord::Base
 
 		followers = twi_account.follower_count
 		friends = twi_account.friend_count
-		rts = client.retweets_of_me({:count => 100, :since_id => last_post_id}).count
-		mentions = client.mentions({:count => 100, :since_id => last_post_id}).count
+		rts = last_post.nil? ? 0 : client.retweets_of_me({:count => 100, :since_id => last_post.provider_post_id.to_i}).count 
+		mentions = last_post.nil? ? 0 : client.mentions({:count => 100, :since_id => last_post.provider_post_id.to_i}).count
 		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", y, d).collect(&:question_id).to_set.count
 		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", y, d).collect(&:question_id).to_set.count
 		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", y, d).collect(&:question_id).to_set.count
