@@ -16,8 +16,8 @@ class Engagement < ActiveRecord::Base
 		where(:provider => 'twitter', :engagement_type => ['answer', 'nonanswer_mention'])
 	end
 
-	def self.twitter_retweets
-		where(:provider => 'twitter', :engagement_type => 'retweet')
+	def self.twitter_shares
+		where(:provider => 'twitter', :engagement_type => 'share')
 	end
 
 	### Facebook
@@ -25,8 +25,16 @@ class Engagement < ActiveRecord::Base
 		where(:provider => 'facebook', :engagement_type => 'answer')
 	end
 
+	def self.facebook_shares
+		where(:provider => 'facebook', :engagement_type => 'share')
+	end
+
 	### Tumblr
 	def self.tumblr_answers
+		where(:provider => 'tumblr', :engagement_type => 'answer')
+	end
+
+	def self.tumblr_shares
 		where(:provider => 'tumblr', :engagement_type => 'answer')
 	end
 
