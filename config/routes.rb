@@ -1,4 +1,10 @@
 Quizmemanager::Application.routes.draw do
+  resources :accounts
+  resources :users
+  resources :questions
+  resources :posts
+  resources :mentions
+  
   get "feeds/index"
 
   match "feeds/:id/scores" => "feeds#scores"
@@ -6,18 +12,17 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id" => "feeds#show"
 
   post "mentions/update"
-
+  post "questions/save_question_and_answers"
+  match "questions/new/:account_id" => "questions#new"
+  match "/moderate" => "questions#moderate"
+  match "/moderate/update" => "questions#moderate_update"
   match 'auth/:provider/callback' => 'sessions#create'
   match "/signout" => "sessions#destroy", :as => :signout
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
 
-  resources :accounts
-  resources :users
-  resources :questions
-  resources :posts
-  resources :mentions
+
 
   root :to => 'feeds#index'
 end

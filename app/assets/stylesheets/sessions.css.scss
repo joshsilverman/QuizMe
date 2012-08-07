@@ -1,3 +1,32 @@
 // Place all the styles related to the sessions controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.navbar {
+	.navbar-inner {
+		.container {
+			.sign_in {
+				float: right;
+				line-height: 38px;
+			}
+
+			.span4 {
+				float: right;
+
+				h3 {
+					line-height: 36px;
+					float: right;
+					margin-right: 10px;
+				}
+
+				a {
+					line-height: 38px;
+				}
+
+				img {
+
+				}
+			}
+		}
+	}
+}

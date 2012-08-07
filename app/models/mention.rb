@@ -75,9 +75,14 @@ class Mention < ActiveRecord::Base
 	def self.check_mentions(current_acct)
 		client = current_acct.twitter
 		return if client.nil?
-		mentions = client.mentions({:count => 200})
+		mentions = client.mentions({:count => 100})
+		retweets = client.retweets_of_me({:count => 100})
 		mentions.each do |m|
 			Mention.save_mention_data(m)
+		end
+
+		retweets.each do |r|
+			Mention.save_retweet_data(r)
 		end
 		true
 	end
@@ -97,6 +102,10 @@ class Mention < ActiveRecord::Base
 		end
 		mention.link_mention_to_post
 
+	end
+
+	def self.save_retweet_data(r)
+		puts r
 	end
 
 	def link_mention_to_post

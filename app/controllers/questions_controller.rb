@@ -1,8 +1,9 @@
 class QuestionsController < ApplicationController
+  before_filter :authenticate_user, :except => [:new]
   # GET /questions
   # GET /questions.json
   def index
-    @questions = Question.all
+    @questions = current_user.questions
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +14,8 @@ class QuestionsController < ApplicationController
   # GET /questions/1
   # GET /questions/1.json
   def show
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
 
     respond_to do |format|
       format.html # show.html.erb
@@ -24,7 +26,12 @@ class QuestionsController < ApplicationController
   # GET /questions/new
   # GET /questions/new.json
   def new
+    @account = Account.find(params[:account_id])
+    topic = @account.topics.first
+    @topic_tag = topic.id if topic
+    @account_id = @account.id
     @question = Question.new
+    @success = params[:success] if params[:success]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -34,7 +41,8 @@ class QuestionsController < ApplicationController
 
   # GET /questions/1/edit
   def edit
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
   end
 
   # POST /questions
@@ -56,7 +64,8 @@ class QuestionsController < ApplicationController
   # PUT /questions/1
   # PUT /questions/1.json
   def update
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
 
     respond_to do |format|
       if @question.update_attributes(params[:question])
@@ -72,13 +81,50 @@ class QuestionsController < ApplicationController
   # DELETE /questions/1
   # DELETE /questions/1.json
   def destroy
-    @question = Question.find(params[:id])
+    @question = current_user.questions.find(params[:id])
+    redirect_to "/" unless @question
     @question.destroy
 
     respond_to do |format|
       format.html { redirect_to questions_url }
       format.json { head :ok }
     end
+  end
+
+  def save_question_and_answers
+    return if params[:question].nil? or params[:canswer].nil? or params[:question].blank? or params[:canswer].blank?
+    @question = Question.new
+    @question.text = params[:question]
+    @question.user_id = current_user.id
+    @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
+    @question.created_for_account_id = params[:account_id] unless params[:account_id].nil?
+    @question.save
+
+    @question.answers << Answer.create(:text => params[:canswer], :correct => true)
+    @question.answers << Answer.create(:text => params[:ianswer1], :correct => false) unless params[:ianswer1].nil? or params[:ianswer1].blank? 
+    @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
+    @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
+    render :json => @question
+    # redirect_to "/questions/new?account_id=#{params[:account_id]}&success=1"
+  end
+
+  def moderate
+    @questions = Question.where(:status => 0)    
+  end
+
+  def moderate_update
+    question = Question.find(params[:question_id])
+    accepted = params[:accepted].match(/(true|t|yes|y|1)$/i) != nil
+    if accepted
+      question.update_attributes(:status => 1)
+      a = Account.find(question.created_for_account_id)
+      Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
+    else
+      question.update_attributes(:status => -1)
+      a = Account.find(question.created_for_account_id)
+      Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
+    end
+    render :nothing => true, :status => 200
   end
 
   def import_data_from_qmm

@@ -30,7 +30,6 @@ ActiveRecord::Schema.define(:version => 20120801174322) do
     t.datetime "updated_at"
     t.integer  "posts_per_day",       :default => 1
     t.boolean  "link_to_quizme",      :default => false
-    t.text     "description"
   end
 
   create_table "accountstopics", :force => true do |t|
@@ -61,15 +60,15 @@ ActiveRecord::Schema.define(:version => 20120801174322) do
   end
 
   create_table "mentions", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "post_id"
-    t.text     "text"
-    t.boolean  "responded",                 :default => false
-    t.string   "twi_tweet_id"
-    t.string   "twi_in_reply_to_status_id"
-    t.datetime "sent_date"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "user_id"
+    t.integer   "post_id"
+    t.text      "text"
+    t.boolean   "responded",                 :default => false
+    t.string    "twi_tweet_id"
+    t.string    "twi_in_reply_to_status_id"
+    t.timestamp "sent_date"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "post_queues", :force => true do |t|
