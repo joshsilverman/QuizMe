@@ -34,7 +34,7 @@ end
 task :save_stats => :environment do
 	accounts = Account.where('twi_oauth_token is not null')
 	accounts.each do |a|
-		Stat.collect_daily_stats_for(a)
+		Stat.save_daily_stats_for_account(a)
 		sleep(10)
 	end
 end
