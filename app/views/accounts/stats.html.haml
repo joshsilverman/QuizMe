@@ -26,22 +26,28 @@
 		.row.data
 			.span2.headsup
 				%span.badge= @headsup_stats['followers'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['followers'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['followers'][1] >= 0 ? '+' : ''}#{@headsup_stats['followers'][1]}%"
+				-unless @headsup_stats['followers'][1].nil?
+					%span.badge.delta{:class => "#{@headsup_stats['followers'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['followers'][1] >= 0 ? '+' : ''}#{@headsup_stats['followers'][1]}%"
 			.span2.headsup
 				%span.badge= @headsup_stats['tweets'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['tweets'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['tweets'][1] >= 0 ? '+' : ''} #{@headsup_stats['tweets'][1]}%"
+				- unless @headsup_stats['tweets'][1].nil?
+					%span.badge.delta{:class => "#{@headsup_stats['tweets'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['tweets'][1] >= 0 ? '+' : ''} #{@headsup_stats['tweets'][1]}%"
 			.span2.headsup
 				%span.badge= @headsup_stats['questions_answered'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['questions_answered'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['questions_answered'][1] >= 0 ? '+' : ''} #{@headsup_stats['questions_answered'][1]}%"
+				- unless @headsup_stats['questions_answered'][1]
+					%span.badge.delta{:class => "#{@headsup_stats['questions_answered'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['questions_answered'][1] >= 0 ? '+' : ''} #{@headsup_stats['questions_answered'][1]}%"
 			.span2.headsup
 				%span.badge= @headsup_stats['average_daily_active_users'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['average_daily_active_users'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['average_daily_active_users'][1] >= 0 ? '+' : ''} #{@headsup_stats['average_daily_active_users'][1]}%"
+				- unless @headsup_stats['average_daily_active_users'][1].nil?
+					%span.badge.delta{:class => "#{@headsup_stats['average_daily_active_users'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['average_daily_active_users'][1] >= 0 ? '+' : ''} #{@headsup_stats['average_daily_active_users'][1]}%"
 			.span2.headsup
 				%span.badge= @headsup_stats['rts'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['rts'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['rts'][1] >= 0 ? '+' : ''} #{@headsup_stats['rts'][1]}%"
+				- unless @headsup_stats['rts'][1].nil?
+					%span.badge.delta{:class => "#{@headsup_stats['rts'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['rts'][1] >= 0 ? '+' : ''} #{@headsup_stats['rts'][1]}%"
 			.span2.headsup
 				%span.badge= @headsup_stats['weekly_churn'][0]
-				%span.badge.delta{:class => "#{@headsup_stats['weekly_churn'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['weekly_churn'][1] >= 0 ? '+' : ''} #{@headsup_stats['weekly_churn'][1]}%"
+				- unless @headsup_stats['weekly_churn'][1].nil?
+					%span.badge.delta{:class => "#{@headsup_stats['weekly_churn'][1] >= 0 ? 'badge-success' : 'badge-important'}"}= "#{@headsup_stats['weekly_churn'][1] >= 0 ? '+' : ''} #{@headsup_stats['weekly_churn'][1]}%"
 	.row
 		.span4.widget.small
 			%h2 Questions Answered
