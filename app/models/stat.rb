@@ -279,12 +279,12 @@ class Stat < ActiveRecord::Base
 		rts = 0
 		return {} if weekly_stats.nil? or weekly_stats.empty?
 		weekly_stats.each do |w|
-			followers += w.followers
-			tweets += w.twitter_posts
-			questions_answered += w.twitter_answers
-			questions_answered += w.internal_answers
+			followers += w.followers.nil? ? 0 : w.followers
+			tweets += w.twitter_posts.nil? ? 0 : w.twitter_posts
+			questions_answered += w.twitter_answers.nil? ? 0 : w.twitter_answers
+			questions_answered += w.internal_answers.nil? ? 0 : w.internal_answers
 			dau += w.internal_daily_active_users.nil? ? 0 : w.internal_daily_active_users
-			rts += w.rts
+			rts += w.rts.nil? ? 0 : w.rts
 		end
 		headsup= {'followers' => followers,
 							'tweets' => tweets,
