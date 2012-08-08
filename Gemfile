@@ -15,8 +15,8 @@ group :production do
 end
 
 group :development do
-  gem "guard"
-  gem "guard-livereload"
+  # gem "guard"
+  # gem "guard-livereload"
 end
 
 group :assets do
