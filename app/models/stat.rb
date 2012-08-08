@@ -206,7 +206,7 @@ class Stat < ActiveRecord::Base
 		rts_json = {}
 		rts.each do |rt|
 			rts_json[rt.date]=0 if rts_json[rt.date].nil?
-			rts_json[rt.date]+= rt.rts
+			rts_json[rt.date]+= rt.rts.nil? ? 0 : rt.rts
 		end
 		rts_json
 	end
@@ -216,10 +216,12 @@ class Stat < ActiveRecord::Base
 		puts dau
 		dau_json = {}
 		dau.each do |d|
+			tdau = d.twitter_daily_active_users.nil? ? 0 : d.twitter_daily_active_users
+			idau = d.internal_daily_active_users.nil? ? 0 : d.internal_daily_active_users  
 			dau_json[d.date]=[0,0,0] if dau_json[d.date].nil?
-			dau_json[d.date][0]+= d.twitter_daily_active_users
-			dau_json[d.date][1]+= d.internal_daily_active_users
-			dau_json[d.date][2]+= d.twitter_daily_active_users + d.internal_daily_active_users
+			dau_json[d.date][0]+= tdau
+			dau_json[d.date][1]+= idau 
+			dau_json[d.date][2]+= tdau + idau
 		end
 		puts dau_json
 		dau_json
@@ -229,10 +231,13 @@ class Stat < ActiveRecord::Base
 		questions = Stat.where('updated_at > ? and updated_at < ?', Date.today - days, Date.today)
 		q_json = {}
 		questions.each do |q|
+			ta = q.twitter_answers.nil? ? 0 : q.twitter_answers
+			ia = q.internal_answers.nil? ? 0 : q.internal_answers
+
 			q_json[q.date]=[0,0,0] if q_json[q.date].nil?
-			q_json[q.date][0]+= q.twitter_answers
-			q_json[q.date][1]+= q.internal_answers
-			q_json[q.date][2]+= q.twitter_answers + q.internal_answers
+			q_json[q.date][0]+= ta
+			q_json[q.date][1]+= ia
+			q_json[q.date][2]+= ta + ia
 		end
 		q_json
 	end
