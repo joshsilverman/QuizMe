@@ -165,23 +165,39 @@ class Stat < ActiveRecord::Base
 		end
 		if yesterday.nil?
 			yesterday = Stat.new
-			yesterday.followers = 0
-      yesterday.followers_delta = 0
-      yesterday.friends = 0
-      yesterday.friends_delta = 0
-      yesterday.tweets = 0
-      yesterday.tweets_delta = 0
-      yesterday.rts = 0
-      yesterday.rts_today = 0
-      yesterday.mentions = 0
-      yesterday.mentions_today = 0
-      yesterday.questions_answered = 0
-      yesterday.questions_answered_today = 0
-      yesterday.unique_active_users = 0
-      yesterday.three_day_inactive_users = 0
-      yesterday.one_week_inactive_users = 0
-      yesterday.one_month_plus_inactive_users = 0
-		end
+			account_id = 0
+			date = nil
+	    followers = 0
+	    friends = 0
+	    rts = 0 
+	    mentions = 0
+	    twitter_posts = 0
+	    tumblr_posts = 0
+	    facebook_posts = 0
+	    internal_posts = 0
+	    twitter_answers = 0
+	    tumblr_answers = 0
+	    facebook_answers = 0
+	    internal_answers = 0
+	    twitter_daily_active_users = 0
+	    twitter_weekly_active_users = 0
+	    twitter_monthly_active_users = 0
+	    twitter_one_day_inactive_users = 0
+	    twitter_one_week_inactive_users = 0
+	    twitter_one_month_inactive_users = 0
+	    twitter_daily_churn = 0
+			twitter_weekly_churn = 0
+	    twitter_monthly_churn = 0
+	    internal_daily_active_users = 0
+	    internal_weekly_active_users = 0
+	    internal_monthly_active_users = 0
+	    internal_one_day_inactive_users = 0
+	    internal_one_week_inactive_users = 0
+	    internal_one_month_inactive_users = 0
+	    internal_daily_churn = 0
+	    internal_weekly_churn = 0
+	    internal_monthly_churn = 0
+	  end
 		yesterday
 	end
 
