@@ -7,6 +7,7 @@ class AccountsController < ApplicationController
 
   def show
     @account = Account.find(params[:id])
+    @engagements = @account.engagements.where(:provider => 'twitter')
     session[:account_id] = params[:id]
   end
 

@@ -1,5 +1,4 @@
 class User < ActiveRecord::Base
-	has_many :mentions
 	has_many :reps
 	has_many :questions
 	has_many :engagements

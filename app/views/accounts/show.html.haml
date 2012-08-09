@@ -1,19 +1,20 @@
--@account.posts.each do |p|
-  -next if p.mentions.unanswered.empty?
-  .row.well{'p_id' => p.id}
-    .span11
-      %h3{:style=>'text-align:center;'}= p.text
-    .span11
-      %h1{:style=>'text-align:center;'}= p.question.answers.correct.text if p.question
-    -p.mentions.unanswered.each do |m|
-      .well.span5{'m_id' => m.id}
-        .span4
-          %h5= "@#{m.user.twi_screen_name}" if m.user
-          %h5= "#{m.sent_date}" if m.sent_date
-          %h3= raw m.text
+-@engagements.each do |e|
+  .row{'e_id' => e.id}
+    .span12.well
+      .row
+        .span11
+          %h3{:style=>'text-align:center;'}= "Q. #{e.post.text if e.post}"
+      .row  
+        .span11
+          %h3{:style=>'text-align:center;'}= "A. #{e.post.question.answers.correct.text if e.post and e.post.question}"
+      .row
+        .span5
+          %h5= "@#{e.user.twi_screen_name}" if e.user
+          %h5= "#{e.created_at}"
+          %h3= raw e.text
         .span4
           .btn-group
-            %button.btn.btn-success.first{'m_id' => m.id} First
-            %button.btn.btn-success.correct{'m_id' => m.id} Correct
-          %button.btn.btn-danger.incorrect{'m_id' => m.id} Incorrect
-          %button.btn.btn-warning.skip{'m_id' => m.id} Skip
+            %button.btn.btn-success.first{'e_id' => e.id} First
+            %button.btn.btn-success.correct{'e_id' => e.id} Correct
+            %button.btn.btn-danger.incorrect{'e_id' => e.id} Incorrect
+          %button.btn.btn-warning.skip{'e_id' => e.id} Skip

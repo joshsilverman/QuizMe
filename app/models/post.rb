@@ -1,7 +1,7 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :account
-	has_many :mentions
+	has_many :engagements
 	has_many :reps
 
 	def repost_tweet
