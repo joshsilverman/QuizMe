@@ -1,7 +1,10 @@
 @import "twitter/bootstrap/bootstrap";
+
 body { 
 	padding-top: 60px;
+	padding-bottom: 40px;
 	/*padding-left: 20px;*/
+	background: url("dust.png");
 }
 
 .navbar {
@@ -15,15 +18,54 @@ body {
 }
 
 .well .header h2 {text-align:center;}
-@media (min-width: 768px) {
-	.grid-well {
-		/*position:relative;*/
-		/*left:30px;*/
-		/*width:530px !important;*/
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+	body {
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+	.navbar-fixed-top {
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+	}	
+	#wrapper {
+
+		/*width: 480px;*/
+
+	}
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+	#wrapper {
+		margin-top: -36px;
+		#account {
+			height: 116px !important;
+
+			img {
+				height: 96px !important;
+			}
+		}
+	}
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+	#wrapper {
+		/*width: 768px;*/
+	}
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+	#wrapper {
+		/*width: 1200px;*/
 	}
 }
 
 @import "twitter/bootstrap/responsive";
+/*@gridGutterWidth: 15px;*/
 
 // Set the correct sprite paths
 @iconSpritePath: asset-path('twitter/bootstrap/glyphicons-halflings.png');

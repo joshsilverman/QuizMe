@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(:version => 20120801174322) do
     t.integer   "posts_per_day",       :default => 1
     t.text      "description"
     t.boolean   "link_to_quizme",      :default => false
+
   end
 
   create_table "accountstopics", :force => true do |t|

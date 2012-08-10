@@ -1,20 +1,32 @@
--@engagements.each do |e|
-  .row{'e_id' => e.id}
-    .span12.well
-      .row
-        .span11
-          %h3{:style=>'text-align:center;'}= "Q. #{e.post.text if e.post}"
-      .row  
-        .span11
-          %h3{:style=>'text-align:center;'}= "A. #{e.post.question.answers.correct.text if e.post and e.post.question}"
-      .row
-        .span5
-          %h5= "@#{e.user.twi_screen_name}" if e.user
-          %h5= "#{e.created_at}"
-          %h3= raw e.text
-        .span4
-          .btn-group
-            %button.btn.btn-success.first{'e_id' => e.id} First
-            %button.btn.btn-success.correct{'e_id' => e.id} Correct
-            %button.btn.btn-danger.incorrect{'e_id' => e.id} Incorrect
-          %button.btn.btn-warning.skip{'e_id' => e.id} Skip
+#posts.rounded.span8.offset2
+  -@engagements.each do |e|
+    .post.active
+      .content
+        .row
+          .span8
+            - if e.post
+              %h4= "Q. #{e.post.text if e.post}"
+              %h4= "A. #{e.post.question.answers.correct.text if e.post and e.post.question}"
+            - else
+              %a{:href=>'#'} Manually Link To Post
+      %hr{:style => 'margin: 3px;'}
+      .content
+        .row
+          .span4
+            = image_tag(e.user.twi_profile_img_url, :class => "rounded")
+            %h5= "@#{e.user.twi_screen_name}" if e.user
+            %h5= "#{e.created_at}"
+            %h4= raw e.text
+          .span3
+            .btn-group
+              %button.btn.btn-warning.skip{'e_id' => e.id} RT
+              %button.btn.btn-warning.skip{'e_id' => e.id} Skip
+            %br
+            .btn-group
+              %button.btn.btn-success.first{'e_id' => e.id} First
+              %button.btn.btn-success.correct{'e_id' => e.id} Correct
+              %button.btn.btn-danger.incorrect{'e_id' => e.id} Incorrect
+              %button.btn.btn-danger.incorrect{'e_id' => e.id} Close
+        .row{:style=> 'display:none;'}
+          .text_container
+            %textarea

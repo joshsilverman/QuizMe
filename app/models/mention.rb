@@ -141,6 +141,10 @@ class Mention < ActiveRecord::Base
 		end
 	end
 
+	def self.save_retweet_data(r)
+		puts r
+	end
+
 	def link_mention_to_post
 		if self.twi_in_reply_to_status_id
 			p = Post.find_by_provider_post_id(self.twi_in_reply_to_status_id.to_s)

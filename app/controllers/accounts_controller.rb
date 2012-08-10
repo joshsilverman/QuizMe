@@ -7,7 +7,7 @@ class AccountsController < ApplicationController
 
   def show
     @account = Account.find(params[:id])
-    @engagements = @account.engagements.where(:provider => 'twitter')
+    @engagements = @account.engagements.where("provider = 'twitter' and created_at > ?", Time.now - 7.days).order('created_at DESC')
     session[:account_id] = params[:id]
   end
 

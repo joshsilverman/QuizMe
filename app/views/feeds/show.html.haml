@@ -1,39 +1,79 @@
-= hidden_field_tag :feed_id, @account.id
-= hidden_field_tag :feed_name, @account.name
+.row
+	#wrapper.span10.offset1
+		#header.row
+			#account.span10.rounded
+				#account_information
+					= image_tag(@account.twi_profile_img_url, :class => "rounded")
+					= @account.description
+					%a.scoreboard_link.visible-phone{:href => "#"}
+						Go to the scoreboard.
+		#feed.row
+			#left_column.span4.hidden-phone
+				#scoreboard.rounded
+					.header
+						%h4
+							Leaderboard
+				#related.rounded
+					.header
+						%h4
+							Related
+			#right_column.span6
+				#posts.rounded
+					.header
+						%h3
+							Posts
+					- @posts.each do |post|
+						.post.inactive
+							.content
+								= image_tag(@account.twi_profile_img_url, :class => "rounded")							
+								%h5= @account.name
+								= post.text
+							.answers.rounded{:style => "display: none;"}
+								- post.question.answers.each do |answer|
+									%h3= answer.text
+									.text_container
+										%textarea
+											= "@#{@account.name} #{answer.text}"
+					#posts_more
+						%a{:href => "#"} Load more
 
-#feed_container
-	#feed_header
-		#feed_image
-			= image_tag(@account.twi_profile_img_url)
-		#feed_description_container
-			#feed_title
-				= @account.name
-			#feed_description
-				= @account.description
-				- if @account.id == 3
-					%p
-						Check out
-						%a#gotham{:href => "http://www.bikegotham.com/", :target => "_blank"}= "our friends at Gotham"
-						for some cool bike gear, including an awesome theft-proof bike light.
-		#feed_stats
-	#feed_content
-		- @posts.each do |post|
-			.post{:id => "question_#{post.question.id}", :post_id => post.id}
-				.header
-					%p.bot_name= "#{@account.name}:"
-					/ %p.bot_name BioBot:
-					.question
-						%p= post.text
-				.answers
-					- post.question.answers.shuffle.each do |answer|
-						.answer{:class => ("correct" if answer.correct)}
-							= answer.text
-		#show_more
-			Show More
 
-#post_template
-	.header
-		%p.bot_name QuizMeBot
-		.question
-			%p Oops!
-	.answers
+/ = hidden_field_tag :feed_id, @account.id
+/ = hidden_field_tag :feed_name, @account.name
+
+/ #feed_container
+/ 	#feed_header
+/ 		#feed_image
+/ 			= image_tag(@account.twi_profile_img_url)
+/ 		#feed_description_container
+/ 			#feed_title
+/ 				= @account.name
+/ 			#feed_description
+/ 				= @account.description
+/ 				- if @account.id == 3
+/ 					%p
+/ 						Check out
+/ 						%a#gotham{:href => "http://www.bikegotham.com/", :target => "_blank"}= "our friends at Gotham"
+/ 						for some cool bike gear, including an awesome theft-proof bike light.
+/ 		#feed_stats
+/ 	#feed_content
+/ 		- @posts.each do |post|
+/ 			.post{:id => "question_#{post.question.id}", :post_id => post.id}
+/ 				.header
+/ 					%p.bot_name= "#{@account.name}:"
+/ 					/ %p.bot_name BioBot:
+/ 					.question
+/ 						%p= post.text
+/ 				.answers
+/ 					- post.question.answers.shuffle.each do |answer|
+/ 						.answer{:class => ("correct" if answer.correct)}
+/ 							= answer.text
+/ 		#show_more
+/ 			Show More
+
+/ #post_template
+/ 	.header
+/ 		%p.bot_name QuizMeBot
+/ 		.question
+/ 			%p Oops!
+/ 	.answers
