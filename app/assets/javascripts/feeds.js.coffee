@@ -4,18 +4,19 @@ class Feed
 	questions: []
 	answered: 0
 	constructor: ->
-		$(".post").on "click", (e) => 
-			return if $(e.target).parent(".answers").length > 0
-			if $(e.target).hasClass("post") then post = $(e.target) else post = $(e.target).closest(".post")
+		$(".conversation").on "click", (e) => 
+			return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
+			if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 			if post.hasClass("active")
 				post.toggleClass("active", 50) 
-				post.next(".post").removeClass("active_next")
-				post.prev(".post").removeClass("active_prev")	
+				post.next(".conversation").removeClass("active_next")
+				post.prev(".conversation").removeClass("active_prev")	
+				post.find(".subsidiary").hide()
 				post.find(".answers").hide()
 			else 
 				post.toggleClass("active", 50)
-				post.next(".post").addClass("active_next")
-				post.prev(".post").addClass("active_prev")
+				post.next(".conversation").addClass("active_next")
+				post.prev(".conversation").addClass("active_prev")
 				answers = post.find(".answers")
 				answers.accordion({
 					collapsible: true, 
@@ -23,17 +24,17 @@ class Feed
 					active: false, 
 					icons: false
 				})
+				post.find(".subsidiary").show()
 				answers.toggle(200)
-		$(".text_container").on "click", (e) => e.preventDefault()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
-		# @initializeNewPostListener()
 		@initializeQuestions()
-		$("#show_more").on "click", => @showMore()
-		$(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
-		mixpanel.track("page_loaded", {"account" : @name, "source": source})
-		$("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
-	initializeQuestions: => @questions.push(new Post post) for post in $(".post")
+		# @initializeNewPostListener()
+		# $("#show_more").on "click", => @showMore()
+		# $(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		# mixpanel.track("page_loaded", {"account" : @name, "source": source})
+		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
+	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	initializeNewPostListener: =>
 		pusher = new Pusher('bffe5352760b25f9b8bd')
 		channel = pusher.subscribe(@name)
@@ -83,22 +84,39 @@ class Post
 	constructor: (element) ->
 		@answers = []
 		@element = $(element)
-		@id = @element.attr "post_id"
+		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-	answered: (correct) =>
-		window.feed.answered += 1
-		mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source})
-		if correct
-			@element.css("background", "rgba(0, 59, 5, .2)")
-		else
-			@element.css("background", "rgba(128, 0, 0, .1)")
-		for answer in @answers
-			answer.element.css("background", "gray")
-			if answer.correct
-				answer.element.css("color", "#003B05")
-			else
-				answer.element.css("color", "#bbb")
+		@element.find(".btn").on "click", (e) => 
+			parent = $(e.target).parents(".answer_container").prev("h3")
+			@answer("@#{window.feed.name} #{parent.text()}", parent.attr("correct"))
+	answer: (text, correct) =>
+		answers = @element.find(".answers")
+		answers.toggle(200, => answers.remove())
+		@tweet(text, correct)
+	tweet: (text, correct) =>
+		subsidiary = $("#post_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary.find("p").text(text)
+		loading = @element.find(".loading")
+		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
+	submit_answer: (correct, parent) =>
+		response = $("#post_template").clone().addClass("subsidiary").removeAttr("id")
+		if correct == "true" then response.find("p").text("Correct! Booyah!") else response.find("p").text("Sorry, thats incorrect!")
+		loading = @element.find(".loading")
+		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))))		
+	# answered: (correct) =>
+	# 	window.feed.answered += 1
+	# 	mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source})
+	# 	if correct
+	# 		@element.css("background", "rgba(0, 59, 5, .2)")
+	# 	else
+	# 		@element.css("background", "rgba(128, 0, 0, .1)")
+	# 	for answer in @answers
+	# 		answer.element.css("background", "gray")
+	# 		if answer.correct
+	# 			answer.element.css("color", "#003B05")
+	# 		else
+	# 			answer.element.css("color", "#bbb")
 
 
 class Answer
