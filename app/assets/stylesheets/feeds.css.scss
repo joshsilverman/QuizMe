@@ -15,21 +15,49 @@
 		border-radius: 5px;
 	}
 
-	#account {
+	#header {
 		background: white;
 		margin-bottom: 10px;
+		margin-left: 0px;
 		height: 148px;
 		border-style: solid;
 		border-width: 1px;
 		border-color: #ddd;
 
 		#account_information {
-			padding: 10px;
-			
-			img {
-				height: 128px;
-				float: left;
-			}			
+			height: inherit;
+			margin-left: 0px;
+
+			.container {
+				margin-left: 0px;
+				width: inherit;
+
+				.inner_container {
+					padding: 10px;
+				}
+			}
+
+			.account_image {
+				img {
+					height: 128px;
+					position: absolute;
+					float: left;
+				}					
+			}
+
+			h3, p, a {
+				margin-left: 138px;
+			}	
+
+			#account_stats {
+
+			}
+		}
+
+		#account_stats {
+			margin-left: 0px;
+			height: inherit;
+			float: right;
 		}
 	}
 
@@ -99,7 +127,7 @@
 						border-top-style: dotted;
 						border-top-width: 1px;
 						border-top-color: #ddd;	
-						height: 50px;
+						height: 37px;
 						text-align: center;	
 						padding-top: 20px;					
 						background-color: #FAFAFA;
@@ -165,6 +193,10 @@
 								-webkit-border-radius: 5px;
 								-moz-border-radius: 5px;
 								border-radius: 5px;
+								-webkit-box-shadow: 0 2px 2px 0px #ccc;
+								-moz-box-shadow: 0 2px 2px 0px #ccc;
+								box-shadow: 0 2px 2px 0px #ccc;		
+								z-index: 1;						
 							}
 							#question_container {
 								height: 100px;
@@ -201,7 +233,14 @@
 
 								.answer_controls {
 									padding: 5px;
+									height: 28px;
 									cursor: default;
+									border-bottom-style: solid !important;
+									border-bottom-width: 1px !important;
+									border-bottom-color: #ddd !important;	
+									-webkit-box-shadow: 0 -2px 2px 0px #ccc;
+									-moz-box-shadow: 0 -2px 2px 0px #ccc;
+									box-shadow: 0 -2px 2px 0px #ccc;
 
 									.btn {
 										float: right;
@@ -209,6 +248,18 @@
 								}			
 							}
 						}
+					}
+				}
+
+				.conversation {
+					.parent.answered {
+						border-bottom-width: 0px;
+					}
+				}
+
+				.conversation.active {
+					.parent.answered {
+						border-bottom-width: 1px;
 					}
 				}
 
@@ -249,6 +300,7 @@
 					border-style: solid;
 					border-width: 1px;
 					border-color: #ddd;	
+					border-top-width: 0px;
 					background: white;	
 					-webkit-border-bottom-left-radius: 5px;
 					-moz-border-bottom-left-radius: 5px;
@@ -257,6 +309,7 @@
 					-moz-border-bottom-right-radius: 5px;
 					border-bottom-right-radius: 5px;	
 					padding: 10px;	
+					text-align: center;
 				}				
 
 				.active {
@@ -267,6 +320,9 @@
 					border-top-style: solid;
 					border-top-width: 1px;
 					border-top-color: #ddd;	
+					border-bottom-style: solid;
+					border-bottom-width: 1px;
+					border-bottom-color: #ddd;						
 				}
 
 				.inactive {

@@ -1,12 +1,19 @@
 .row
 	#wrapper.span10.offset1
-		#header.row
-			#account.span10.rounded
-				#account_information
-					= image_tag(@account.twi_profile_img_url, :class => "rounded")
-					= @account.description
-					%a.scoreboard_link.visible-phone{:href => "#"}
-						Go to the scoreboard.
+		#header.row.rounded
+			/ #account.span10.rounded
+			#account_information.span6
+				.container
+					.inner_container
+						.account_image
+							= image_tag(@account.twi_profile_img_url, :class => "rounded")
+						.account_text
+							%h3= @account.name
+							%p= @account.description
+							/ %a.scoreboard_link.visible-phone{:href => "#"}
+							/ 	Go to the scoreboard.
+			#account_stats.span3.hidden-phone
+				Yo deez are the stats
 		#feed.row
 			#left_column.span4.hidden-phone
 				#scoreboard.rounded
@@ -24,7 +31,7 @@
 							Posts
 					- @posts.each do |post|
 						.conversation
-							.post
+							.post.parent{:post_id => post.id}
 								.content
 									= image_tag(@account.twi_profile_img_url, :class => "rounded")
 									%h5= @account.name
@@ -45,14 +52,35 @@
 					#posts_more
 						%a{:href => "#"} Load more
 
-#post_template.post{:style => "display: none;"}
+
+
+#post_template.conversation{:style => "display: none;"}
+	.post.parent
+		.content
+			= image_tag(@account.twi_profile_img_url, :class => "rounded")
+			%h5= @account.name
+			%p Post content
+		.answers.rounded{:style => "display: none;"}
+	.loading{:style => "display: none;"}
+		Loading...
+
+#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+	.tweet
+		%span#account= "@#{@account.name}"
+		%span#answer= " Answer text"
+		/ %span#additional{:contenteditable => true}
+	.answer_controls
+		.btn.btn-primary Tweet!
+
+#subsidiary_template.post{:style => "display: none;"}
 	.content
 		= image_tag(@account.twi_profile_img_url, :class => "rounded")							
-		%h5= "User Name"
+		%h5= "user name"
 		%p= "Post content"
 
 = hidden_field_tag :feed_id, @account.id
 = hidden_field_tag :feed_name, @account.name
+= hidden_field_tag :user_name, current_user.twi_name
 
 / #feed_container
 / 	#feed_header

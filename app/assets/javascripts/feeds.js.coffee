@@ -3,35 +3,15 @@ class Feed
 	name: null 
 	questions: []
 	answered: 0
+	user_name: null
 	constructor: ->
-		$(".conversation").on "click", (e) => 
-			return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
-			if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
-			if post.hasClass("active")
-				post.toggleClass("active", 50) 
-				post.next(".conversation").removeClass("active_next")
-				post.prev(".conversation").removeClass("active_prev")	
-				post.find(".subsidiary").hide()
-				post.find(".answers").hide()
-			else 
-				post.toggleClass("active", 50)
-				post.next(".conversation").addClass("active_next")
-				post.prev(".conversation").addClass("active_prev")
-				answers = post.find(".answers")
-				answers.accordion({
-					collapsible: true, 
-					autoHeight: false,
-					active: false, 
-					icons: false
-				})
-				post.find(".subsidiary").show()
-				answers.toggle(200)
+		@user_name = $("#user_name").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		@initializeQuestions()
 		# @initializeNewPostListener()
 		# $("#show_more").on "click", => @showMore()
-		# $(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		$(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
 		# mixpanel.track("page_loaded", {"account" : @name, "source": source})
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
@@ -39,27 +19,33 @@ class Feed
 		pusher = new Pusher('bffe5352760b25f9b8bd')
 		channel = pusher.subscribe(@name)
 		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
-	displayNewPost: (data, insertType) => 
+	displayNewPost: (data, insert_type) => 
 		# $("#feed_content").first().animate({"top": "200px"})
-		post = $("#post_template").clone().removeAttr("id").addClass("post").attr("post_id", data.id)
-		post.find(".header p").text("#{@name} (3m ago):")
-		post.find(".question p").text(data.text)
-		post.css "visibility", "hidden"
-		answers = post.find(".answers")
-		for answer in data.question.answers#@randomize(data.answers)
+		conversation = $("#post_template").clone().removeAttr("id").show()
+		post = conversation.find(".post")
+		post.attr("post_id", data.id)
+		post.find("p").text(data.text)
+		conversation.css "visibility", "hidden"
+		answers_element = post.find(".answers")
+		answers = data.question.answers
+		for answer, i in answers#@randomize(data.answers)
+			if i < (answers.length - 1) then border = "bottom_border" else border = ""
 			if answer.correct
-				answers.append("<div class='answer correct'>#{answer.text}</div>")
+				answers_element.append("<h3 correct='true' class='#{border}'>#{answer.text}</h3>")
 			else
-				answers.append("<div class='answer'>#{answer.text}</div>")
-		if insertType == "prepend"
-			$("#feed_content").prepend(post)
+				answers_element.append("<h3 correct='false' class='#{border}'>#{answer.text}</h3>")
+			clone = $("#answer_template").clone().removeAttr('id')
+			clone.find("#answer").text(answer.text)
+			answers_element.append(clone)
+		if insert_type == "prepend"
+			$("#feed_content").prepend(conversation)
 		else
-			post.insertBefore("#show_more")
-		post.css('visibility','visible').hide().fadeIn('slow')
-		@questions.push(new Post post)
+			conversation.insertBefore("#posts_more")
+		conversation.css('visibility','visible').hide().fadeIn('slow')
+		@questions.push(new Post conversation)
 	showMore: => 
-		lastPostID = $(".post").last().attr "post_id"
-		$.getJSON "/feeds/#{@id}/more/#{lastPostID}", (posts) => 
+		last_post_id = $(".post.parent:visible").last().attr "post_id"
+		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
 			if posts.length > 0
 				@displayNewPost(post, "append") for post in posts
 			else
@@ -87,22 +73,47 @@ class Post
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
+		@element.on "click", (e) => @expand(e)
 		@element.find(".btn").on "click", (e) => 
 			parent = $(e.target).parents(".answer_container").prev("h3")
 			@answer("@#{window.feed.name} #{parent.text()}", parent.attr("correct"))
+	expand: (e) =>
+		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
+		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
+		if post.hasClass("active")
+			post.toggleClass("active", 50) 
+			post.next(".conversation").removeClass("active_next")
+			post.prev(".conversation").removeClass("active_prev")	
+			post.find(".subsidiary").hide()
+			post.find(".answers").hide()
+		else 
+			post.toggleClass("active", 50)
+			post.next(".conversation").addClass("active_next")
+			post.prev(".conversation").addClass("active_prev")
+			answers = post.find(".answers")
+			answers.accordion({
+				collapsible: true, 
+				autoHeight: false,
+				active: false, 
+				icons: false
+			})
+			post.find(".subsidiary").toggle(50)
+			answers.toggle(200)	
 	answer: (text, correct) =>
 		answers = @element.find(".answers")
 		answers.toggle(200, => answers.remove())
 		@tweet(text, correct)
 	tweet: (text, correct) =>
-		subsidiary = $("#post_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		subsidiary.find("p").text(text)
-		loading = @element.find(".loading")
+		subsidiary.find("h5").text(window.feed.user_name)
+		loading = @element.find(".loading").text("Tweeting your answer...")
 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
 	submit_answer: (correct, parent) =>
-		response = $("#post_template").clone().addClass("subsidiary").removeAttr("id")
+		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		if correct == "true" then response.find("p").text("Correct! Booyah!") else response.find("p").text("Sorry, thats incorrect!")
-		loading = @element.find(".loading")
+		response.find("h5").text(window.feed.name)
+		loading = @element.find(".loading").text("Thinking...")
 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))))		
 	# answered: (correct) =>
 	# 	window.feed.answered += 1
