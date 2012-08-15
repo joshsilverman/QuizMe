@@ -145,13 +145,19 @@
 						/*border-bottom-color: #ddd;	*/
 						/*background: white;*/
 						padding: 10px;
-						min-height: 48px;
+						/*min-height: 48px;*/
 						position: relative;
 						cursor: pointer;
 
+						i {
+							position: absolute;
+							top: 10px;
+							right: 10px;
+						}
+
 						.content {
 							margin-left: 58px;
-							min-height: 58px;
+							min-height: 49px;
 							
 							img {
 								position: absolute;
@@ -193,11 +199,22 @@
 								-webkit-border-radius: 5px;
 								-moz-border-radius: 5px;
 								border-radius: 5px;
-								-webkit-box-shadow: 0 2px 2px 0px #ccc;
-								-moz-box-shadow: 0 2px 2px 0px #ccc;
-								box-shadow: 0 2px 2px 0px #ccc;		
-								z-index: 1;						
+								z-index: 1;
 							}
+
+							.ui-accordion-header.ui-state-active {
+								box-shadow: 0 2px 2px 0px #CCC;
+								border-bottom-width: 0px !important;
+								border-bottom-right-radius: 0px !important;
+								border-bottom-left-radius: 0px !important;
+							}
+
+							.ui-accordion-header.active_next {
+								box-shadow: 0 -2px 2px 0px #CCC;
+								border-top-right-radius: 0px !important;
+								border-top-left-radius: 0px !important;								
+							}
+
 							#question_container {
 								height: 100px;
 								color:#555;
@@ -233,14 +250,18 @@
 
 								.answer_controls {
 									padding: 5px;
-									height: 28px;
+									height: 27px;
 									cursor: default;
+									background: #eeeeee;
+									border-top-width: 1px;
+									border-top-style: dotted;
+									border-top-color: #F0F0F0;
 									border-bottom-style: solid !important;
 									border-bottom-width: 1px !important;
 									border-bottom-color: #ddd !important;	
-									-webkit-box-shadow: 0 -2px 2px 0px #ccc;
-									-moz-box-shadow: 0 -2px 2px 0px #ccc;
-									box-shadow: 0 -2px 2px 0px #ccc;
+									/*-webkit-box-shadow: 0 -2px 2px 0px #ccc;*/
+									/*-moz-box-shadow: 0 -2px 2px 0px #ccc;*/
+									/*box-shadow: 0 -2px 2px 0px #ccc;*/
 
 									.btn {
 										float: right;

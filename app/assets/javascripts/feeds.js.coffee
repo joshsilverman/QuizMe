@@ -66,6 +66,7 @@ class Post
 	id: null
 	element: null
 	question: null
+	correct: null
 	answers: []
 	constructor: (element) ->
 		@answers = []
@@ -77,6 +78,24 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			parent = $(e.target).parents(".answer_container").prev("h3")
 			@answer("@#{window.feed.name} #{parent.text()}", parent.attr("correct"))
+		@element.on "mouseenter", => 
+			if @correct == true
+				@element.find("i").animate({color: "#0B7319"}, 0)
+			else
+				@element.find("i").animate({color: "#C43939"}, 0)
+		@element.on "mouseleave", => @element.find("i").animate({color: "black"}, 0)
+		answers = @element.find(".answers")
+		answers.accordion({
+			collapsible: true, 
+			autoHeight: false,
+			active: false, 
+			icons: false
+		})		
+		answers.on "accordionchange", (e, ui) => 
+			if ui.newHeader.length > 0
+				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
+			else
+				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
@@ -86,19 +105,17 @@ class Post
 			post.prev(".conversation").removeClass("active_prev")	
 			post.find(".subsidiary").hide()
 			post.find(".answers").hide()
+			# @element.find("i").animate({color: "black"}, 0)
 		else 
 			post.toggleClass("active", 50)
 			post.next(".conversation").addClass("active_next")
 			post.prev(".conversation").addClass("active_prev")
-			answers = post.find(".answers")
-			answers.accordion({
-				collapsible: true, 
-				autoHeight: false,
-				active: false, 
-				icons: false
-			})
 			post.find(".subsidiary").toggle(50)
-			answers.toggle(200)	
+			post.find(".answers").toggle(200)	
+			# if @correct == true
+			# 	@element.find("i").animate({color: "#0B7319"}, 0)
+			# else
+			# 	@element.find("i").animate({color: "#C43939"}, 0)			
 	answer: (text, correct) =>
 		answers = @element.find(".answers")
 		answers.toggle(200, => answers.remove())
@@ -111,10 +128,18 @@ class Post
 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
 	submit_answer: (correct, parent) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		if correct == "true" then response.find("p").text("Correct! Booyah!") else response.find("p").text("Sorry, thats incorrect!")
+		if correct == "true" 
+			response.find("p").text("Correct! Booyah!") 
+			@correct = true
+		else 
+			response.find("p").text("Sorry, thats incorrect!")
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
-		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))))		
+		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+				@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
+				@element.find("i").show()
+			)
+		)		
 	# answered: (correct) =>
 	# 	window.feed.answered += 1
 	# 	mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source})
