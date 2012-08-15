@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120801174322) do
+ActiveRecord::Schema.define(:version => 20120814194811) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -31,7 +31,6 @@ ActiveRecord::Schema.define(:version => 20120801174322) do
     t.integer   "posts_per_day",       :default => 1
     t.text      "description"
     t.boolean   "link_to_quizme",      :default => false
-
   end
 
   create_table "accountstopics", :force => true do |t|
@@ -173,6 +172,7 @@ ActiveRecord::Schema.define(:version => 20120801174322) do
     t.timestamp "updated_at"
     t.string    "provider"
     t.integer   "uid"
+    t.string    "role"
   end
 
 end

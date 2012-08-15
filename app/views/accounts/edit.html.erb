@@ -3,7 +3,7 @@
   <h1><%=t '.title', :default => t('helpers.titles.edit', :model => model_class.model_name.human,
                                    :default => "Edit #{model_class.model_name.human}") %></h1>
 </div>
-<%= link_to 'Add/Update Twitter', '/auth/twitter' %><br />
+<%= link_to 'Add/Update Twitter', '/auth/twitter?asker=1' %><br />
 <%= link_to 'Add/Update Facebook', '/auth/facebook' %><br />
 <%= link_to 'Add/Update Tumblr', '/auth/tumblr' %><br />
 

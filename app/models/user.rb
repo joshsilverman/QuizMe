@@ -13,6 +13,11 @@ class User < ActiveRecord::Base
 	    user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
 	    user.twi_oauth_token = auth['credentials']['token']
 			user.twi_oauth_secret = auth['credentials']['secret']
+			if request.env["omniauth.params"]["asker"] == 1
+				user.role = 'asker'
+			else
+				user.role = 'user'
+			end
 	  end
 	end
 
