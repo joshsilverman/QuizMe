@@ -28,14 +28,14 @@ class SessionsController < ApplicationController
     else #else login with twitter
   	  user = User.find_by_provider_and_twi_user_id(auth["provider"], auth["uid"]) || User.create_with_omniauth(auth)
       session[:user_id] = user.id
-      if request.env["omniauth.params"]["account_id"]
-        redirect_to "/questions/new?account_id=#{request.env['omniauth.params']['account_id']}"
+      if omni_params["account_id"]
+        redirect_to "/questions/new?account_id=#{omni_params['account_id']}"
+      elsif omni_params["feed_id"]
+        redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
       else
         redirect_to root_url, :notice => "Signed in!"    
       end
     end
-    
-	  
   end
 
   def destroy

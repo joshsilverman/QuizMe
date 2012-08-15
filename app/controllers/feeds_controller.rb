@@ -6,6 +6,8 @@ class FeedsController < ApplicationController
   def show
     @account = User.asker(params[:id])
     @posts = @account.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
 
     respond_to do |format|
       format.html # show.html.erb

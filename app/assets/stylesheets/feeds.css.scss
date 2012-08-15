@@ -15,11 +15,15 @@
 		border-radius: 5px;
 	}
 
+	p {
+		margin: 0px;
+	}
+
 	#header {
 		background: white;
 		margin-bottom: 10px;
 		margin-left: 0px;
-		height: 148px;
+		min-height: 148px;
 		border-style: solid;
 		border-width: 1px;
 		border-color: #ddd;
@@ -46,7 +50,7 @@
 			}
 
 			h3, p, a {
-				margin-left: 138px;
+				margin: 0px 0px 0px 138px;
 			}	
 
 			#account_stats {
@@ -171,6 +175,7 @@
 							border-color: #ddd;
 							border-width: 1px;
 							border-style: solid;	
+							margin-top: 10px;
 
 							.bottom_border {
 								border-bottom-style: dotted !important;
@@ -259,12 +264,10 @@
 									border-bottom-style: solid !important;
 									border-bottom-width: 1px !important;
 									border-bottom-color: #ddd !important;	
-									/*-webkit-box-shadow: 0 -2px 2px 0px #ccc;*/
-									/*-moz-box-shadow: 0 -2px 2px 0px #ccc;*/
-									/*box-shadow: 0 -2px 2px 0px #ccc;*/
 
 									.btn {
 										float: right;
+										color: white;
 									}
 								}			
 							}
