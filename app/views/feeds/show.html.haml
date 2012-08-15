@@ -49,7 +49,7 @@
 												%span#answer= " #{truncate(answer.text, :length => truncate)}"
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
-												.btn.btn-primary Tweet!
+												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@account.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more
@@ -85,4 +85,4 @@
 = hidden_field_tag :feed_name, @account.name
 = hidden_field_tag :post_id, @post_id
 = hidden_field_tag :answer_id, @answer_id
-= hidden_field_tag :user_name, current_user.twi_name if current_user
+= hidden_field_tag :user_name, current_user.twi_screen_name if current_user

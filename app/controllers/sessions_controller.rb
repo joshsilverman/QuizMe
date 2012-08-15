@@ -5,10 +5,11 @@ class SessionsController < ApplicationController
 	  session[:user_id] = user.id
     if request.env["omniauth.params"]["account_id"]
       redirect_to "/questions/new?account_id=#{request.env['omniauth.params']['account_id']}"
+    elsif request.env["omniauth.params"]["feed_id"]
+      redirect_to "/feeds/#{request.env['omniauth.params']['feed_id']}/#{request.env['omniauth.params']['post_id']}/#{request.env['omniauth.params']['answer_id']}"
     else
       redirect_to root_url, :notice => "Signed in!"    
     end
-	  
   end
 
   def destroy
