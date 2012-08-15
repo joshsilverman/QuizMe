@@ -1,12 +1,18 @@
 .row
 	#wrapper.span10.offset1
-		#header.row
-			#account.span10.rounded
-				#account_information
-					= image_tag(@account.twi_profile_img_url, :class => "rounded")
-					= @account.description
-					%a.scoreboard_link.visible-phone{:href => "#"}
-						Go to the scoreboard.
+		#header.row.rounded
+			#account_information.span6
+				.container
+					.inner_container
+						.account_image
+							= image_tag(@account.twi_profile_img_url, :class => "rounded")
+						.account_text
+							%h3= @account.name
+							%p= @account.description
+							/ %a.scoreboard_link.visible-phone{:href => "#"}
+							/ 	Go to the scoreboard.
+			#account_stats.span3.hidden-phone
+				Yo deez are the stats
 		#feed.row
 			#left_column.span4.hidden-phone
 				#scoreboard.rounded
@@ -23,57 +29,57 @@
 						%h3
 							Posts
 					- @posts.each do |post|
-						.post.inactive
-							.content
-								= image_tag(@account.twi_profile_img_url, :class => "rounded")							
-								%h5= @account.name
-								= post.text
-							.answers.rounded{:style => "display: none;"}
-								- post.question.answers.each do |answer|
-									%h3= answer.text
-									.text_container
-										%textarea
-											= "@#{@account.name} #{answer.text}"
+						.conversation
+							.post.parent{:post_id => post.id}
+								%i.icon-share-alt{:style => "display: none;"}
+								.content
+									= image_tag(@account.twi_profile_img_url, :class => "rounded")
+									%h5= @account.name
+									%p= post.text
+								.answers.rounded{:style => "display: none;"}
+									- answers = post.question.answers
+									- answers.each_with_index do |answer, i|
+										%h3{:class => ("bottom_border" if i < (answers.count - 1)), :correct => answer["correct"].to_s}= answer.text
+										.answer_container.input{:type => 'text'}
+											.tweet
+												- overage = (140 - "@#{@account.name} ".length - answer.text.length)
+												- overage < 0 ? truncate = answer.text.length - overage.abs : truncate = answer.text.length
+												%span#account= "@#{@account.name}"
+												%span#answer= " #{truncate(answer.text, :length => truncate)}"
+												/ %span#additional{:contenteditable => true}
+											.answer_controls
+												.btn.btn-primary Tweet!
+							.loading{:style => "display: none;"}
+								Loading...
 					#posts_more
 						%a{:href => "#"} Load more
 
 
-/ = hidden_field_tag :feed_id, @account.id
-/ = hidden_field_tag :feed_name, @account.name
 
-/ #feed_container
-/ 	#feed_header
-/ 		#feed_image
-/ 			= image_tag(@account.twi_profile_img_url)
-/ 		#feed_description_container
-/ 			#feed_title
-/ 				= @account.name
-/ 			#feed_description
-/ 				= @account.description
-/ 				- if @account.id == 3
-/ 					%p
-/ 						Check out
-/ 						%a#gotham{:href => "http://www.bikegotham.com/", :target => "_blank"}= "our friends at Gotham"
-/ 						for some cool bike gear, including an awesome theft-proof bike light.
-/ 		#feed_stats
-/ 	#feed_content
-/ 		- @posts.each do |post|
-/ 			.post{:id => "question_#{post.question.id}", :post_id => post.id}
-/ 				.header
-/ 					%p.bot_name= "#{@account.name}:"
-/ 					/ %p.bot_name BioBot:
-/ 					.question
-/ 						%p= post.text
-/ 				.answers
-/ 					- post.question.answers.shuffle.each do |answer|
-/ 						.answer{:class => ("correct" if answer.correct)}
-/ 							= answer.text
-/ 		#show_more
-/ 			Show More
+#post_template.conversation{:style => "display: none;"}
+	.post.parent
+		.content
+			= image_tag(@account.twi_profile_img_url, :class => "rounded")
+			%h5= @account.name
+			%p Post content
+		.answers.rounded{:style => "display: none;"}
+	.loading{:style => "display: none;"}
+		Loading...
 
-/ #post_template
-/ 	.header
-/ 		%p.bot_name QuizMeBot
-/ 		.question
-/ 			%p Oops!
-/ 	.answers
+#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+	.tweet
+		%span#account= "@#{@account.name}"
+		%span#answer= " Answer text"
+		/ %span#additional{:contenteditable => true}
+	.answer_controls
+		.btn.btn-primary Tweet!
+
+#subsidiary_template.post{:style => "display: none;"}
+	.content
+		= image_tag(@account.twi_profile_img_url, :class => "rounded")							
+		%h5= "User Name"
+		%p= "Post content"
+
+= hidden_field_tag :feed_id, @account.id
+= hidden_field_tag :feed_name, @account.name
+= hidden_field_tag :user_name, current_user.twi_name if current_user
