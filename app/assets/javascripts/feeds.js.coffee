@@ -93,6 +93,7 @@ class Post
 		})		
 		answers.on "accordionchange", (e, ui) => 
 			if ui.newHeader.length > 0
+				$(e.target).find("h3").removeClass("active_next")
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
 				$(e.target).find("h3").removeClass("active_next")
