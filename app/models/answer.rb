@@ -6,6 +6,6 @@ class Answer < ActiveRecord::Base
 	end
 
 	def tweetable(asker_name)
-		puts "yooo"
+		puts asker_name
 	end
 end
