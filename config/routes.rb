@@ -9,7 +9,7 @@ Quizmemanager::Application.routes.draw do
 
   match "feeds/:id/scores" => "feeds#scores"
   match "feeds/:id/more/:last_post_id" => "feeds#more"
-  match "feeds/:id" => "feeds#show"
+  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
 
   post "mentions/update"
   post "questions/save_question_and_answers"
@@ -20,8 +20,6 @@ Quizmemanager::Application.routes.draw do
   match "/signout" => "sessions#destroy", :as => :signout
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
-
-
 
   root :to => 'feeds#index'
 end

@@ -38,8 +38,9 @@
 									%p= post.text
 								.answers.rounded{:style => "display: none;"}
 									- answers = post.question.answers
+									- count = answers.count
 									- answers.each_with_index do |answer, i|
-										%h3{:class => ("bottom_border" if i < (answers.count - 1)), :correct => answer["correct"].to_s}= answer.text
+										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 										.answer_container.input{:type => 'text'}
 											.tweet
 												- overage = (140 - "@#{@account.name} ".length - answer.text.length)
@@ -82,4 +83,6 @@
 
 = hidden_field_tag :feed_id, @account.id
 = hidden_field_tag :feed_name, @account.name
+= hidden_field_tag :post_id, @post_id
+= hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_name if current_user

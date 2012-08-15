@@ -9,9 +9,14 @@ class Feed
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		@initializeQuestions()
+		target = $(".post[post_id=#{$('#post_id').val()}]")
+		if target.length > 0
+			$.scrollTo(target, 500)
+			target.click()
+			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
+		$(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
 		# @initializeNewPostListener()
 		# $("#show_more").on "click", => @showMore()
-		$(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
 		# mixpanel.track("page_loaded", {"account" : @name, "source": source})
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
@@ -78,12 +83,12 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			parent = $(e.target).parents(".answer_container").prev("h3")
 			@answer("@#{window.feed.name} #{parent.text()}", parent.attr("correct"))
-		@element.on "mouseenter", => 
-			if @correct == true
-				@element.find("i").animate({color: "#0B7319"}, 0)
-			else
-				@element.find("i").animate({color: "#C43939"}, 0)
-		@element.on "mouseleave", => @element.find("i").animate({color: "black"}, 0)
+		# @element.on "mouseenter", => 
+		# 	if @correct == true
+		# 		@element.find("i").animate({color: "#0B7319"}, 0)
+		# 	else
+		# 		@element.find("i").animate({color: "#C43939"}, 0)
+		# @element.on "mouseleave", => @element.find("i").animate({color: "black"}, 0)
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 
