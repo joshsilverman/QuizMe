@@ -19,7 +19,7 @@
 		background: white;
 		margin-bottom: 10px;
 		margin-left: 0px;
-		height: 148px;
+		min-height: 148px;
 		border-style: solid;
 		border-width: 1px;
 		border-color: #ddd;
@@ -46,7 +46,7 @@
 			}
 
 			h3, p, a {
-				margin-left: 138px;
+				margin: 0px 0px 0px 138px;
 			}	
 
 			#account_stats {
