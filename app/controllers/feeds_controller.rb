@@ -4,7 +4,6 @@ class FeedsController < ApplicationController
   end
 
   def show
-    puts params.to_json
     @account = Account.find(params[:id])
     @posts = @account.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
     @post_id = params[:post_id]
