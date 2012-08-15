@@ -107,53 +107,6 @@ class Stat < ActiveRecord::Base
 	    :internal_monthly_churn => internal_monthly_churn)
 	end
 
-	def self.collect_daily_stats_for(current_acct)
-		d = Date.today
-		last_post_id = current_acct.posts.where("updated_at > ? and provider = 'twitter' ", Time.now-1.days).first.provider_post_id.to_i
-		today = Stat.find_or_create_by_date_and_account_id((d - 1.days).to_s, current_acct.id)
-		client = current_acct.twitter
-		yesterday = Stat.get_yesterday(current_acct.id)
-		twi_account = client.user
-		
-		followers = twi_account.follower_count
-		followers_delta = followers - yesterday.followers
-		friends = twi_account.friend_count
-		friends_delta = friends - yesterday.friends
-		tweets = twi_account.tweet_count
-		tweets_delta = tweets - yesterday.tweets
-		rts_today = client.retweets_of_me({:count => 100, :since_id => last_post_id}).count
-		rts = rts_today + yesterday.rts
-		mentions_today = client.mentions({:count => 100, :since_id => last_post_id}).count
-		mentions = mentions_today + yesterday.mentions
-		today.questions_answered_today = 0
-		questions_answered = today.questions_answered_today + yesterday.questions_answered
-		
-		active = Mention.where("created_at > ? and correct != null", d - 1.day).group(:user_id).count.map{|k,v| k}.to_set
-		three_day = Mention.where("created_at > ? and correct != null", d - 8.days).group(:user_id).count.map{|k,v| k}.to_set
-		one_week = Mention.where("created_at > ? and correct != null", d - 30.days).group(:user_id).count.map{|k,v| k}.to_set
-		one_month = Mention.where("correct != null").group(:user_id).count.map{|k,v| k}.to_set
-		unique_active_users = active.count
-		three_day_inactive_users = (three_day - active).count
-		one_week_inactive_users = (one_week - three_day - active).count
-		one_month_plus_inactive_users = (one_month - one_week - three_day - active).count
-
-		today.update_attributes(:followers => followers,
-														:followers_delta => followers_delta,
-														:friends => friends,
-														:friends_delta => friends_delta,
-														:tweets => tweets,
-														:tweets_delta => tweets_delta,
-														:rts => rts,
-														:rts_today => rts_today,
-														:mentions => mentions,
-														:mentions_today => mentions_today,
-														:questions_answered => questions_answered,
-														:unique_active_users => unique_active_users,
-														:three_day_inactive_users => three_day_inactive_users,
-														:one_week_inactive_users => one_week_inactive_users,
-														:one_month_plus_inactive_users => one_month_plus_inactive_users)
-	end
-
 	def self.get_yesterday(id)
 		###get yesterdays stats or create dummy yesterday for math
 		d = Date.today
@@ -165,23 +118,39 @@ class Stat < ActiveRecord::Base
 		end
 		if yesterday.nil?
 			yesterday = Stat.new
-			yesterday.followers = 0
-      yesterday.followers_delta = 0
-      yesterday.friends = 0
-      yesterday.friends_delta = 0
-      yesterday.tweets = 0
-      yesterday.tweets_delta = 0
-      yesterday.rts = 0
-      yesterday.rts_today = 0
-      yesterday.mentions = 0
-      yesterday.mentions_today = 0
-      yesterday.questions_answered = 0
-      yesterday.questions_answered_today = 0
-      yesterday.unique_active_users = 0
-      yesterday.three_day_inactive_users = 0
-      yesterday.one_week_inactive_users = 0
-      yesterday.one_month_plus_inactive_users = 0
-		end
+			account_id = 0
+			date = nil
+	    followers = 0
+	    friends = 0
+	    rts = 0 
+	    mentions = 0
+	    twitter_posts = 0
+	    tumblr_posts = 0
+	    facebook_posts = 0
+	    internal_posts = 0
+	    twitter_answers = 0
+	    tumblr_answers = 0
+	    facebook_answers = 0
+	    internal_answers = 0
+	    twitter_daily_active_users = 0
+	    twitter_weekly_active_users = 0
+	    twitter_monthly_active_users = 0
+	    twitter_one_day_inactive_users = 0
+	    twitter_one_week_inactive_users = 0
+	    twitter_one_month_inactive_users = 0
+	    twitter_daily_churn = 0
+			twitter_weekly_churn = 0
+	    twitter_monthly_churn = 0
+	    internal_daily_active_users = 0
+	    internal_weekly_active_users = 0
+	    internal_monthly_active_users = 0
+	    internal_one_day_inactive_users = 0
+	    internal_one_week_inactive_users = 0
+	    internal_one_month_inactive_users = 0
+	    internal_daily_churn = 0
+	    internal_weekly_churn = 0
+	    internal_monthly_churn = 0
+	  end
 		yesterday
 	end
 
@@ -190,7 +159,7 @@ class Stat < ActiveRecord::Base
 		rts_json = {}
 		rts.each do |rt|
 			rts_json[rt.date]=0 if rts_json[rt.date].nil?
-			rts_json[rt.date]+= rt.rts
+			rts_json[rt.date]+= rt.rts.nil? ? 0 : rt.rts
 		end
 		rts_json
 	end
@@ -200,10 +169,12 @@ class Stat < ActiveRecord::Base
 		puts dau
 		dau_json = {}
 		dau.each do |d|
+			tdau = d.twitter_daily_active_users.nil? ? 0 : d.twitter_daily_active_users
+			idau = d.internal_daily_active_users.nil? ? 0 : d.internal_daily_active_users  
 			dau_json[d.date]=[0,0,0] if dau_json[d.date].nil?
-			dau_json[d.date][0]+= d.twitter_daily_active_users
-			dau_json[d.date][1]+= d.internal_daily_active_users
-			dau_json[d.date][2]+= d.twitter_daily_active_users + d.internal_daily_active_users
+			dau_json[d.date][0]+= tdau
+			dau_json[d.date][1]+= idau 
+			dau_json[d.date][2]+= tdau + idau
 		end
 		puts dau_json
 		dau_json
@@ -213,10 +184,13 @@ class Stat < ActiveRecord::Base
 		questions = Stat.where('updated_at > ? and updated_at < ?', Date.today - days, Date.today)
 		q_json = {}
 		questions.each do |q|
+			ta = q.twitter_answers.nil? ? 0 : q.twitter_answers
+			ia = q.internal_answers.nil? ? 0 : q.internal_answers
+
 			q_json[q.date]=[0,0,0] if q_json[q.date].nil?
-			q_json[q.date][0]+= q.twitter_answers
-			q_json[q.date][1]+= q.internal_answers
-			q_json[q.date][2]+= q.twitter_answers + q.internal_answers
+			q_json[q.date][0]+= ta
+			q_json[q.date][1]+= ia
+			q_json[q.date][2]+= ta + ia
 		end
 		q_json
 	end
@@ -263,12 +237,12 @@ class Stat < ActiveRecord::Base
 		rts = 0
 		return {} if weekly_stats.nil? or weekly_stats.empty?
 		weekly_stats.each do |w|
-			followers += w.followers
-			tweets += w.twitter_posts
-			questions_answered += w.twitter_answers
-			questions_answered += w.internal_answers
+			followers += w.followers.nil? ? 0 : w.followers
+			tweets += w.twitter_posts.nil? ? 0 : w.twitter_posts
+			questions_answered += w.twitter_answers.nil? ? 0 : w.twitter_answers
+			questions_answered += w.internal_answers.nil? ? 0 : w.internal_answers
 			dau += w.internal_daily_active_users.nil? ? 0 : w.internal_daily_active_users
-			rts += w.rts
+			rts += w.rts.nil? ? 0 : w.rts
 		end
 		headsup= {'followers' => followers,
 							'tweets' => tweets,

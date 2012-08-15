@@ -1,8 +1,8 @@
 class User < ActiveRecord::Base
-	has_many :mentions
 	has_many :reps
 	has_many :engagements
 	has_many :questions
+	has_many :engagements
 
 	def self.create_with_omniauth(auth)
 	  create! do |user|
@@ -13,6 +13,11 @@ class User < ActiveRecord::Base
 	    user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
 	    user.twi_oauth_token = auth['credentials']['token']
 			user.twi_oauth_secret = auth['credentials']['secret']
+			if request.env["omniauth.params"]["asker"] == 1
+				user.role = 'asker'
+			else
+				user.role = 'user'
+			end
 	  end
 	end
 

@@ -73,16 +73,17 @@ class Mention < ActiveRecord::Base
 
 
 	def self.check_mentions(current_acct)
+		last_mention = Mention.where('twi_tweet_id is not null').last
 		client = current_acct.twitter
 		return if client.nil?
-		mentions = client.mentions({:count => 100})
-		retweets = client.retweets_of_me({:count => 100})
+		mentions = client.mentions({:count => 50, :since_id => last_mention.twi_tweet_id})
+		retweets = client.retweets_of_me({:count => 50, :since_id => last_mention.twi_tweet_id})
 		mentions.each do |m|
 			Mention.save_mention_data(m)
 		end
 
 		retweets.each do |r|
-			Mention.save_retweet_data(r)
+			Mention.save_retweet_data(client, r)
 		end
 		true
 	end
@@ -95,13 +96,49 @@ class Mention < ActiveRecord::Base
 		mention = Mention.find_or_create_by_twi_tweet_id(m.id.to_s)
 		unless mention.text == m.text and 
 			mention.twi_in_reply_to_status_id == m.in_reply_to_status_id.to_s and
-			mention.user_id == u.id
+			mention.user_id == u.id and
+			mention.sent_date == m.created_at
 				mention.update_attributes(:text => m.text,
 					:twi_in_reply_to_status_id => m.in_reply_to_status_id.to_s,
-					:user_id => u.id)
+					:user_id => u.id,
+					:sent_date => m.created_at)
 		end
 		mention.link_mention_to_post
+		if mention.post
+			eng = Engagement.find_or_create_by_user_id_and_mention_id(u.id, mention.id)
+			eng.update_attributes(:date => Date.today.to_s,
+														:account_id => mention.post.account_id,
+														:provider => mention.post.provider,
+														:engagement_type => 'answer')
+		end
+	end
 
+	def self.save_retweet_data(client, r)
+		post = Post.find_by_provider_post_id(r.id.to_s)
+		if post
+			users = client.retweeters_of(r.id)
+			users.each do |u|
+				user = User.find_or_create_by_twi_user_id(u.id)
+				user.update_attributes(:twi_name => u.name,
+														:twi_screen_name => u.screen_name,
+														:twi_profile_img_url => u.status.nil? ? nil : u.status.user.profile_image_url)
+				mention = Mention.create()
+				unless mention.text == r.text and 
+					mention.twi_in_reply_to_status_id == r.in_reply_to_status_id.to_s and
+					mention.user_id == user.id and
+					mention.sent_date == m.created_at
+						mention.update_attributes(:text => r.text,
+							:twi_in_reply_to_status_id => r.in_reply_to_status_id.to_s,
+							:user_id => user.id,
+							:sent_date => Time.now)
+				end
+				eng = Engagement.find_or_create_by_user_id_and_mention_id(user.id, mention.id)
+				eng.update_attributes(:date => Date.today.to_s,
+															:account_id => post.account_id,
+															:provider => post.provider,
+															:engagement_type => 'share')
+			end
+		end
 	end
 
 	def self.save_retweet_data(r)

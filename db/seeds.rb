@@ -44,15 +44,19 @@
 # 	 #    :internal_monthly_churn => rand(10) + days/2)
 # 	end
 # end
-
-for days in 0..30
+a = Account.first
+for d in 0..30
 	for i in 1..rand(10)+1
 		p = [['twitter',['answer','retweet']], ['quizme',['answer']]].sample
-		Engagement.create(:account_id => 1,
-											:date => (Date.today - 30 + days).to_s,
+		Engagement.create(:account_id => a.id,
+											:date => (Date.today - 30 + d).to_s,
 											:user_id => i,
-											:mention_id => 0,
 											:provider => p[0],
-											:engagement_type => p[1].sample)
+											:engagement_type => p[1].sample,
+										  :text => 'Today is #{(Date.today - 30 + days).to_s} and my fav number is #{i}',
+										  :provider_post_id => "00000",
+										  :twi_in_reply_to_status_id => nil,
+										  :post_id => 100,
+										  :created_at => Time.now - 30.days + d.days)
 	end
 end

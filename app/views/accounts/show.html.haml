@@ -1,19 +1,32 @@
--@account.posts.each do |p|
-  -next if p.mentions.unanswered.empty?
-  .row.well{'p_id' => p.id}
-    .span11
-      %h3{:style=>'text-align:center;'}= p.text
-    .span11
-      %h1{:style=>'text-align:center;'}= p.question.answers.correct.text if p.question
-    -p.mentions.unanswered.each do |m|
-      .well.span5{'m_id' => m.id}
-        .span4
-          %h5= "@#{m.user.twi_screen_name}" if m.user
-          %h5= "#{m.sent_date}" if m.sent_date
-          %h3= raw m.text
-        .span4
-          .btn-group
-            %button.btn.btn-success.first{'m_id' => m.id} First
-            %button.btn.btn-success.correct{'m_id' => m.id} Correct
-          %button.btn.btn-danger.incorrect{'m_id' => m.id} Incorrect
-          %button.btn.btn-warning.skip{'m_id' => m.id} Skip
+#posts.rounded.span8.offset2
+  -@engagements.each do |e|
+    .post.active
+      .content
+        .row
+          .span8
+            - if e.post
+              %h4= "Q. #{e.post.text if e.post}"
+              %h4= "A. #{e.post.question.answers.correct.text if e.post and e.post.question}"
+            - else
+              %a{:href=>'#'} Manually Link To Post
+      %hr{:style => 'margin: 3px;'}
+      .content
+        .row
+          .span4
+            = image_tag(e.user.twi_profile_img_url, :class => "rounded")
+            %h5= "@#{e.user.twi_screen_name}" if e.user
+            %h5= "#{e.created_at}"
+            %h4= raw e.text
+          .span3
+            .btn-group
+              %button.btn.btn-warning.skip{'e_id' => e.id} RT
+              %button.btn.btn-warning.skip{'e_id' => e.id} Skip
+            %br
+            .btn-group
+              %button.btn.btn-success.first{'e_id' => e.id} First
+              %button.btn.btn-success.correct{'e_id' => e.id} Correct
+              %button.btn.btn-danger.incorrect{'e_id' => e.id} Incorrect
+              %button.btn.btn-danger.close{'e_id' => e.id} Close
+        .row{:style=> 'display:none;'}
+          .text_container
+            %textarea

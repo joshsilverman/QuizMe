@@ -43,7 +43,7 @@ class Account < ActiveRecord::Base
 	def unanswered
 		count = 0
 		self.posts.each do |p|
-			count += p.mentions.unanswered.count
+			count += p.engagements.where(:engagement_type => nil).count
 		end
 		count
 	end
