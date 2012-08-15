@@ -49,9 +49,20 @@
 				}					
 			}
 
-			h3, p, a {
+			h2, h3, p, a {
 				margin: 0px 0px 0px 138px;
 			}	
+
+			h3 {
+				color: #777;
+				font-weight: normal;
+				margin-top: -5px;
+			}
+
+			p {
+				font-style: italic;
+				color: #777;
+			}
 
 			#account_stats {
 

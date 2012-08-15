@@ -18,7 +18,7 @@
 			.nav-collapse.in.collapse
 				%ul.nav{:style => 'float:right;'}			
 					-if current_user
-						%li= link_to "Welcome #{current_user.twi_screen_name}!", ''
+						/ %li= link_to "Welcome #{current_user.twi_screen_name}!", ''
 						%li= link_to "Sign Out", signout_path
 						=# image_tag(current_user.twi_profile_img_url, :style => 'float:right;') 
 					-else

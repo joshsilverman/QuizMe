@@ -18,9 +18,9 @@ class Feed
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
-		$.scrollTo(target, 500)
 		target.click()
 		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()	
+		$.scrollTo(target, 500)
 	initializeNewPostListener: =>
 		pusher = new Pusher('bffe5352760b25f9b8bd')
 		channel = pusher.subscribe(@name)
