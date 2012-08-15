@@ -44,6 +44,7 @@
 										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 										.answer_container.input{:type => 'text'}
 											.tweet
+												- answer.tweetable(@asker.name)
 												- overage = (140 - "@#{@account.name} ".length - answer.text.length)
 												- overage < 0 ? truncate = answer.text.length - overage.abs : truncate = answer.text.length
 												%span#account= "@#{@account.name}"
