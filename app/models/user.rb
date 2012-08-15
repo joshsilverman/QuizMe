@@ -1,9 +1,9 @@
 class User < ActiveRecord::Base
 	has_many :reps
-	has_many :engagements, :foreign_key => 'asker_id'
 	has_many :questions
 	has_many :topics, :through => :askertopics
-	has_many :askertopics
+	has_many :askertopics, :foreign_key => 'asker_id'
+	has_many :engagements, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts, :foreign_key => 'asker_id'
 
@@ -33,13 +33,13 @@ class User < ActiveRecord::Base
 	  end
 	end
 
-	def self.askers
-		where(:role => 'asker')
-	end
+	# def self.askers
+	# 	where(:role => 'asker')
+	# end
 
-	def self.asker(id)
-		find_by_role_and_id('asker', id)
-	end
+	# def self.asker(id)
+	# 	find_by_role_and_id('asker', id)
+	# end
 
 	def is_role?(role)
 		self.role == role.downcase
@@ -82,7 +82,7 @@ class User < ActiveRecord::Base
 
 
 	###
-	### NEEDS TO BE FIXED FOR NEW USER ROLE ASKERS
+	### NEEDS TO BE FIXED FOR NEW USER ROLE- ASKERS
 	###
 	# def self.get_top_scorers(id, data = {}, scores = [])
 	# 	account = Account.select([:name, :id]).find(id)
