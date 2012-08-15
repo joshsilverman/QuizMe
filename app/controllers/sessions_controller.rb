@@ -4,8 +4,8 @@ class SessionsController < ApplicationController
     omni_params = request.env["omniauth.params"]
     provider = auth['provider']
 
-    if omni_params['asker'] #if asker update account
-      user = User.find(omni_params['asker'])
+    if omni_params['update_asker_id'] #if asker update account
+      user = User.asker(omni_params['update_asker_id'])
       case provider
       when 'twitter'
         user.twi_user_id = auth["uid"]
@@ -24,12 +24,12 @@ class SessionsController < ApplicationController
         puts "provider unknown: #{provider}"
       end
       user.save
-      redirect_to "/askers/#{omni_params['asker']}/edit"
+      redirect_to "/askers/#{omni_params['update_asker_id']}/edit"
     else #else login with twitter
-  	  user = User.find_by_provider_and_twi_user_id(auth["provider"], auth["uid"]) || User.create_with_omniauth(auth)
+  	  user = User.find_by_twi_user_id(auth["uid"]) || User.create_with_omniauth(auth)
       session[:user_id] = user.id
-      if omni_params["account_id"]
-        redirect_to "/questions/new?account_id=#{omni_params['account_id']}"
+      if omni_params["new_question_asker_id"]
+        redirect_to "/questions/new?account_id=#{omni_params['new_question_asker_id']}"
       elsif omni_params["feed_id"]
         redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
       else

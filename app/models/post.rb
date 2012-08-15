@@ -1,6 +1,6 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
-	belongs_to :account
+	belongs_to :asker, :classname => 'User', :foreign_key => 'asker_id'
 	has_many :engagements
 	has_many :reps
 
@@ -33,6 +33,15 @@ class Post < ActiveRecord::Base
                 :link_type => lt,
                 :post_type => 'status',
                 :provider_post_id => res.id.to_s)
+    res
+  end
+
+  def self.tweet_from_wisr(current_acct, tweet, url, lt, question_id, correct)
+    res = Post.tweet(current_acct, tweet, url, lt, question_id)
+    eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
+    tweet_response= eng.generate_response(correct)
+    Post.tweet(@asker, tweet_response, url, lt, nil)
+    tweet_response
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)

@@ -1,4 +1,4 @@
 class Topic < ActiveRecord::Base
-	has_many :accounts, :through => :accountstopics
-	has_many :accountstopics
+	has_many :askers, :through => :askertopics, :source => 'User'
+	# has_many :askertopics
 end

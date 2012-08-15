@@ -1,4 +1,4 @@
-<%= link_to 'Add/Update Twitter', "/auth/twitter?asker=#{@asker.id}" %><br />
+<%= link_to 'Add/Update Twitter', "/auth/twitter?update_asker_id=#{@asker.id}" %><br />
 <% if @asker.twi_user_id %>
 	<h3><%= @asker.twi_name%></h3>
 	<h3><%= @asker.twi_screen_name%></h3>
