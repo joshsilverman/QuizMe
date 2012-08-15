@@ -7,7 +7,8 @@
 						.account_image
 							= image_tag(@account.twi_profile_img_url, :class => "rounded")
 						.account_text
-							%h3= @account.name
+							%h2= @account.name
+							%h3= "@#{@account.twi_name}"
 							%p= @account.description
 							/ %a.scoreboard_link.visible-phone{:href => "#"}
 							/ 	Go to the scoreboard.
