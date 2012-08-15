@@ -33,19 +33,19 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
     t.boolean   "link_to_quizme",      :default => false
   end
 
-  create_table "accountstopics", :force => true do |t|
-    t.integer   "account_id"
-    t.integer   "topic_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-  end
-
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
     t.integer   "question_id"
     t.text      "text"
     t.timestamp "created_at"
     t.timestamp "updated_at"
+  end
+
+  create_table "askertopics", :force => true do |t|
+    t.integer  "asker_id"
+    t.integer  "topic_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "engagements", :force => true do |t|
@@ -56,10 +56,11 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
     t.string   "provider_post_id"
     t.string   "twi_in_reply_to_status_id"
     t.integer  "user_id"
-    t.integer  "account_id"
     t.integer  "post_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "responded_to"
+    t.integer  "asker_id"
   end
 
   create_table "mentions", :force => true do |t|
@@ -75,38 +76,38 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
   end
 
   create_table "post_queues", :force => true do |t|
-    t.integer   "account_id"
-    t.integer   "index"
-    t.integer   "question_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
+    t.integer  "index"
+    t.integer  "question_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "asker_id"
   end
 
   create_table "posts", :force => true do |t|
-    t.integer   "account_id"
-    t.integer   "question_id"
-    t.string    "provider"
-    t.text      "text"
-    t.string    "url"
-    t.string    "link_type"
-    t.string    "post_type"
-    t.string    "provider_post_id"
-    t.integer   "to_twi_user_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
+    t.integer  "question_id"
+    t.string   "provider"
+    t.text     "text"
+    t.string   "url"
+    t.string   "link_type"
+    t.string   "post_type"
+    t.string   "provider_post_id"
+    t.integer  "to_twi_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "asker_id"
   end
 
   create_table "questions", :force => true do |t|
-    t.text      "text"
-    t.string    "url"
-    t.integer   "topic_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "qb_lesson_id"
-    t.integer   "qb_q_id"
-    t.integer   "user_id"
-    t.integer   "status",                 :default => 0
-    t.integer   "created_for_account_id"
+    t.text     "text"
+    t.string   "url"
+    t.integer  "topic_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "qb_lesson_id"
+    t.integer  "qb_q_id"
+    t.integer  "user_id"
+    t.integer  "status",               :default => 0
+    t.integer  "created_for_asker_id"
   end
 
   create_table "reps", :force => true do |t|
@@ -126,7 +127,6 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
     t.integer  "one_week_inactive_users"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "account_id"
     t.integer  "twitter_posts",                     :default => 0
     t.integer  "tumblr_posts",                      :default => 0
     t.integer  "facebook_posts",                    :default => 0
@@ -153,6 +153,7 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
     t.integer  "internal_daily_churn"
     t.integer  "internal_weekly_churn"
     t.integer  "internal_monthly_churn"
+    t.integer  "asker_id"
   end
 
   create_table "topics", :force => true do |t|
@@ -162,17 +163,25 @@ ActiveRecord::Schema.define(:version => 20120814194811) do
   end
 
   create_table "users", :force => true do |t|
-    t.string    "twi_name"
-    t.string    "twi_screen_name"
-    t.integer   "twi_user_id"
-    t.text      "twi_profile_img_url"
-    t.string    "twi_oauth_token"
-    t.string    "twi_oauth_secret"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.string    "provider"
-    t.integer   "uid"
-    t.string    "role"
+    t.string   "twi_name"
+    t.string   "twi_screen_name"
+    t.integer  "twi_user_id"
+    t.text     "twi_profile_img_url"
+    t.string   "twi_oauth_token"
+    t.string   "twi_oauth_secret"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "role",                :default => "user"
+    t.string   "name"
+    t.integer  "fb_user_id"
+    t.string   "fb_oauth_token"
+    t.string   "fb_oauth_secret"
+    t.integer  "tum_user_id"
+    t.string   "tum_oauth_token"
+    t.string   "tum_oauth_secret"
+    t.string   "tum_url"
+    t.integer  "posts_per_day"
+    t.text     "description"
   end
 
 end

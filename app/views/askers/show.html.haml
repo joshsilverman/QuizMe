@@ -1,4 +1,6 @@
 #posts.rounded.span8.offset2
+  -if @engagements.empty?
+    %h2 No Recent Engagements
   -@engagements.each do |e|
     .post.active
       .content

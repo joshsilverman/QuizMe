@@ -1,0 +1,19 @@
+<%= link_to 'Add/Update Twitter', "/auth/twitter?asker=#{@asker.id}" %><br />
+<% if @asker.twi_user_id %>
+	<h3><%= @asker.twi_name%></h3>
+	<h3><%= @asker.twi_screen_name%></h3>
+	<h3><%= @asker.twi_profile_img_url%></h3>
+	<h3><%= @asker.twi_user_id%></h3>
+	<h3><%= @asker.twi_oauth_token%></h3>
+	<h3><%= @asker.twi_oauth_secret%></h3>
+<% end %>
+<!--<%= link_to 'Add/Update Facebook', '/auth/facebook' %><br />
+<%= link_to 'Add/Update Tumblr', '/auth/tumblr' %><br />-->
+
+<%= render :partial => 'form' %>
+
+<%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              asker_path(@asker),
+              :method => 'delete',
+              :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+              :class => 'btn btn-danger' %>

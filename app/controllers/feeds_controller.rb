@@ -4,7 +4,7 @@ class FeedsController < ApplicationController
   end
 
   def show
-    @account = Account.find(params[:id])
+    @account = User.asker(params[:id])
     @posts = @account.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
 
     respond_to do |format|
