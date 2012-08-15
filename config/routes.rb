@@ -1,12 +1,11 @@
 Quizmemanager::Application.routes.draw do
-  resources :accounts
   resources :users
   resources :questions
   resources :posts
   resources :mentions
+  resources :askers
   
   get "feeds/index"
-
   match "feeds/:id/scores" => "feeds#scores"
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
@@ -20,6 +19,7 @@ Quizmemanager::Application.routes.draw do
   match "/signout" => "sessions#destroy", :as => :signout
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
+  match '/stats' => 'accounts#stats'
 
   root :to => 'feeds#index'
 end

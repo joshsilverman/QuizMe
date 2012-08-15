@@ -1,3 +1,206 @@
 // Place all the styles related to the accounts controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.stats{
+	.widget{
+		background: #e1e1e1;
+		border-radius: 5px; // 5px 0px 0px; 
+		-moz-border-radius: 5px; // 5px 0px 0px; 
+		-webkit-border-radius: 5px; // 5px 0px 0px;
+		border: 0px;
+		
+	}
+	.widget.header{
+		margin-bottom:10px;
+		//padding:5px 5px 1px 5px;
+		height:120px;
+		.heading{
+			margin: 10px 0px;
+			text-align:center;
+			h2{
+				font-size:16px;
+				line-height:16px;
+				color:#454545;
+			}
+		}
+		.data{
+			text-align:center;
+			margin:10px 0px;
+		}
+		.badge{
+			font-size:32px;
+			margin:0;
+			display:block;
+			line-height:32px;
+		}
+		.delta{
+			font-size:16px !important;
+			line-height: 16px !important;
+			margin-top:7px;
+
+		}
+	}
+	.widget.small, .widget.large{
+		//height:200px;
+		margin:10px !important;
+		padding:5px 5px 1px 5px;
+		h2{
+			padding:2px 7px;
+			margin-bottom:5px;
+		}
+	}
+	.widget.small{
+		float:left;
+	}
+
+	.widget.large{
+		float:right;
+	}
+
+	.blank-cell{
+		background: #E1E1E1;
+		border: 1px solid #E1E1E1;
+	}
+
+	h2{
+		color:#858585;
+	}
+}
+
+#posts {
+				.header {
+					border-style: solid;
+					border-width: 1px;
+					border-color: #ddd;	
+				}
+
+				.post {
+					border-bottom-style: dotted;
+					border-bottom-width: 1px;
+					border-bottom-color: #ddd;
+					border-right-style: solid;
+					border-right-width: 1px;
+					border-right-color: #ddd;	
+					border-left-style: solid;
+					border-left-width: 1px;
+					border-left-color: #ddd;						
+					background: white;
+					padding: 10px;
+					min-height: 48px;
+					position: relative;
+
+					.content {
+						margin-left: 58px;
+						min-height: 58px;
+						
+						img {
+							position: absolute;
+							//top: 10px;
+							left: 10px;
+							height: 48px;
+						}
+					}
+
+					.answers {
+						border-color: #ddd;
+						border-width: 1px;
+						border-style: solid;	
+
+						.ui-accordion-header {
+							margin-top: 0px;
+							padding: 10px;
+							padding-left: 14px;
+							background: #fdfdfd;
+							border-color: #ddd;
+							border-width: 0px;
+
+							/*border-bottom-width: 1px;*/
+							/*border-bottom-style: dotted;*/
+							/*border-top-width: 1px;*/
+							/*border-top-style: dotted;							*/
+							/*border-bottom-width: 1px;*/
+							color: #333;
+							-webkit-border-radius: 5px;
+							-moz-border-radius: 5px;
+							border-radius: 5px;
+						}
+						.text_container {
+							width: 100%;
+							padding: 0px;
+							margin: 0px;
+							height: 100px;
+							border-right: 0px solid #DDD !important;
+							border-left: 0px solid #DDD !important;
+
+							textarea {
+								width: 100%;
+								height: 100%;
+								-webkit-box-sizing: border-box;
+								-moz-box-sizing: border-box;
+								box-sizing: border-box;							
+								outline: none;
+								background: white;
+								-webkit-border-radius: 0px;
+								-moz-border-radius: 0px;
+								border-radius: 0px;		
+								padding: 10px;
+								margin-top: 0px !important;
+								margin-bottom: 0px;
+								resize: none; 
+								border-left: 0px solid #DDD;
+								border-right: 0px solid #DDD;
+							}							
+						}
+
+					}
+				}
+
+				#posts_more {
+					border-style: solid;
+					border-width: 1px;
+					border-color: #ddd;	
+					background: white;	
+					-webkit-border-bottom-left-radius: 5px;
+					-moz-border-bottom-left-radius: 5px;
+					border-bottom-left-radius: 5px;					
+					-webkit-border-bottom-right-radius: 5px;
+					-moz-border-bottom-right-radius: 5px;
+					border-bottom-right-radius: 5px;	
+					padding: 10px;	
+				}				
+
+				.active {
+					margin: 10px 0px;
+					-webkit-border-radius: 5px;
+					-moz-border-radius: 5px;
+					border-radius: 5px;	
+					border-top-style: solid;
+					border-top-width: 1px;
+					border-top-color: #ddd;	
+				}
+
+				.active_prev {
+					-webkit-border-bottom-right-radius: 5px;
+					-moz-border-bottom-right-radius: 5px;
+					border-bottom-right-radius: 5px;	
+					-webkit-border-bottom-left-radius: 5px;
+					-moz-border-bottom-left-radius: 5px;
+					border-bottom-left-radius: 5px;						
+					border-bottom-style: solid;
+					border-bottom-width: 1px;
+					border-bottom-color: #ddd;	
+				}
+				
+				.active_next {
+					-webkit-border-top-right-radius: 5px;
+					-moz-border-top-right-radius: 5px;
+					border-top-right-radius: 5px;	
+					-webkit-border-top-left-radius: 5px;
+					-moz-border-top-left-radius: 5px;
+					border-top-left-radius: 5px;						
+					border-top-style: solid;
+					border-top-width: 1px;
+					border-top-color: #ddd;	
+				}				
+			}	

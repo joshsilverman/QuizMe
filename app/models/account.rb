@@ -2,6 +2,8 @@ class Account < ActiveRecord::Base
 	has_many :posts
 	has_many :topics, :through => :accountstopics
 	has_many :accountstopics
+	has_many :stats
+	has_many :engagements
 
 	def twitter_enabled?
 		return true if self.twi_oauth_token and self.twi_oauth_secret
@@ -41,7 +43,7 @@ class Account < ActiveRecord::Base
 	def unanswered
 		count = 0
 		self.posts.each do |p|
-			count += p.mentions.unanswered.count
+			count += p.engagements.where(:engagement_type => nil).count
 		end
 		count
 	end

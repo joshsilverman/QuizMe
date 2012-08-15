@@ -16,10 +16,7 @@
 			/ - else
 			/ 	= link_to "Sign in with Twitter", "/auth/twitter", {:class => "sign_in"}
 			.nav-collapse.in.collapse
-				%ul.nav{:style => 'float:right;'}
-					-if current_acct
-						%li
-							%a{:href => "/accounts/#{current_acct.id}/edit"} Edit					
+				%ul.nav{:style => 'float:right;'}			
 					-if current_user
 						/ %li= link_to "Welcome #{current_user.twi_screen_name}!", ''
 						%li= link_to "Sign Out", signout_path

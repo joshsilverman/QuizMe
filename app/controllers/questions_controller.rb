@@ -1,5 +1,6 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new]
+  before_filter :admin?, :only => [:moderate, :moderate_update]
   # GET /questions
   # GET /questions.json
   def index
@@ -26,10 +27,10 @@ class QuestionsController < ApplicationController
   # GET /questions/new
   # GET /questions/new.json
   def new
-    @account = Account.find(params[:account_id])
-    topic = @account.topics.first
+    @asker = User.asker(params[:asker_id])
+    topic = @asker.topics.first
     @topic_tag = topic.id if topic
-    @account_id = @account.id
+    @asker_id = @asker.id
     @question = Question.new
     @success = params[:success] if params[:success]
 
@@ -97,7 +98,7 @@ class QuestionsController < ApplicationController
     @question.text = params[:question]
     @question.user_id = current_user.id
     @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
-    @question.created_for_account_id = params[:account_id] unless params[:account_id].nil?
+    @question.created_for_asker_id = params[:asker_id] unless params[:asker_id].nil?
     @question.save
 
     @question.answers << Answer.create(:text => params[:canswer], :correct => true)
@@ -117,11 +118,11 @@ class QuestionsController < ApplicationController
     accepted = params[:accepted].match(/(true|t|yes|y|1)$/i) != nil
     if accepted
       question.update_attributes(:status => 1)
-      a = Account.find(question.created_for_account_id)
+      a = User.asker(question.created_for_asker_id)
       Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
     else
       question.update_attributes(:status => -1)
-      a = Account.find(question.created_for_account_id)
+      a = User.asker(question.created_for_asker_id)
       Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
     end
     render :nothing => true, :status => 200
@@ -138,7 +139,7 @@ class QuestionsController < ApplicationController
 
       unless q['question']['posts'].nil? or q['question']['posts'].empty?
         q['question']['posts'].each do |p|
-          new_p = Post.create(:account_id => p['post']['account_id'].to_i+100,
+          new_p = Post.create(:asker_id => p['post']['account_id'].to_i+100,
                 :question_id => real_q.id,
                 :to_twi_user_id => p['post']['to_twi_user_id'].to_i,
                 :provider => p['post']['provider'],

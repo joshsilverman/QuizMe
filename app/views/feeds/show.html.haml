@@ -5,11 +5,11 @@
 				.container
 					.inner_container
 						.account_image
-							= image_tag(@account.twi_profile_img_url, :class => "rounded")
+							= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 						.account_text
-							%h2= @account.name
-							%h3= "@#{@account.twi_name}"
-							%p= @account.description
+							%h2= @asker.name
+							%h3= "@#{@asker.twi_name}"
+							%p= @asker.description
 							/ %a.scoreboard_link.visible-phone{:href => "#"}
 							/ 	Go to the scoreboard.
 			#account_stats.span3.hidden-phone
@@ -34,8 +34,8 @@
 							.post.parent{:post_id => post.id}
 								%i.icon-share-alt{:style => "display: none;"}
 								.content
-									= image_tag(@account.twi_profile_img_url, :class => "rounded")
-									%h5= @account.name
+									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+									%h5= @asker.name
 									%p= post.text
 								.answers.rounded{:style => "display: none;"}
 									- answers = post.question.answers
@@ -45,13 +45,13 @@
 										.answer_container.input{:type => 'text'}
 											.tweet
 												- answer.tweetable(@asker.name)
-												- overage = (140 - "@#{@account.name} ".length - answer.text.length)
+												- overage = (140 - "@#{@asker.name} ".length - answer.text.length)
 												- overage < 0 ? truncate = answer.text.length - overage.abs : truncate = answer.text.length
-												%span#account= "@#{@account.name}"
+												%span#account= "@#{@asker.name}"
 												%span#answer= " #{truncate(answer.text, :length => truncate)}"
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
-												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@account.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more
@@ -62,8 +62,8 @@
 #post_template.conversation{:style => "display: none;"}
 	.post.parent
 		.content
-			= image_tag(@account.twi_profile_img_url, :class => "rounded")
-			%h5= @account.name
+			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+			%h5= @asker.name
 			%p Post content
 		.answers.rounded{:style => "display: none;"}
 	.loading{:style => "display: none;"}
@@ -71,7 +71,7 @@
 
 #answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
 	.tweet
-		%span#account= "@#{@account.name}"
+		%span#account= "@#{@asker.name}"
 		%span#answer= " Answer text"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
@@ -79,12 +79,12 @@
 
 #subsidiary_template.post{:style => "display: none;"}
 	.content
-		= image_tag(@account.twi_profile_img_url, :class => "rounded")							
+		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
 		%h5= "User Name"
 		%p= "Post content"
 
-= hidden_field_tag :feed_id, @account.id
-= hidden_field_tag :feed_name, @account.name
+= hidden_field_tag :feed_id, @asker.id
+= hidden_field_tag :feed_name, @asker.name
 = hidden_field_tag :post_id, @post_id
 = hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user

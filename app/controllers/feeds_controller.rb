@@ -4,8 +4,8 @@ class FeedsController < ApplicationController
   end
 
   def show
-    @account = Account.find(params[:id])
-    @posts = @account.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
+    @asker = User.asker(params[:id])
+    @posts = @asker.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
@@ -17,7 +17,7 @@ class FeedsController < ApplicationController
 
   def more
     post = Post.find(params[:last_post_id])
-    render :json => Account.find(params[:id]).posts.where("CREATED_AT > ? AND ID IS NOT ?", post.created_at, post.id).order(:created_at).limit(5).includes(:question => :answers).as_json(:include => {:question => {:include => :answers}})
+    render :json => User.asker(params[:id]).posts.where("CREATED_AT > ? AND ID IS NOT ?", post.created_at, post.id).order(:created_at).limit(5).includes(:question => :answers).as_json(:include => {:question => {:include => :answers}})
   end
 
   def scores
