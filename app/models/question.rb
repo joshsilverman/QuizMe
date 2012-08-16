@@ -39,7 +39,7 @@ class Question < ActiveRecord::Base
     return unless pq
     q_id = pq.question_id
     q = Question.find(q_id)
-    post = Post.quizme(current_acct, q.text, q.id)
+    post = Post.app_post(current_acct, q.text, q.id)
     url = "http://www.studyegg.com/review/#{q.qb_lesson_id}/#{q.qb_q_id}"
     url = "http://studyegg-quizme.herokuapp.com/feeds/#{current_acct.id}" if current_acct.link_to_quizme
     puts "TWEET: #{q.text}"

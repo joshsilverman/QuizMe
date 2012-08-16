@@ -40,24 +40,24 @@ class Engagement < ActiveRecord::Base
 	###################
 
 	def self.unanswered
-		where(:engagement_type => nil)
+		where(:responded_to => false)
 	end
 
 	### Twitter
 	def self.twitter_answers
-		where(:provider => 'twitter', :engagement_type => 'answer')
+		where("provider = 'twitter' and engagement_type like ?",'%answer%')
 	end
 	
 	def self.twitter_nonanswer_mentions
-		where(:provider => 'twitter', :engagement_type => 'nonanswer_mention')
+		where("provider = 'twitter' and engagement_type like ?",'%nonanswer%')
 	end
 
 	def self.twitter_mentions
-		where(:provider => 'twitter', :engagement_type => ['answer', 'nonanswer_mention'])
+		where("provider = 'twitter' and engagement_type like ?",'%mention%')
 	end
 
 	def self.twitter_shares
-		where(:provider => 'twitter', :engagement_type => 'share')
+		where("provider = 'twitter' and engagement_type like ?",'%share%')
 	end
 
 	### Facebook
@@ -75,16 +75,17 @@ class Engagement < ActiveRecord::Base
 	end
 
 	def self.tumblr_shares
-		where(:provider => 'tumblr', :engagement_type => 'answer')
+		where(:provider => 'tumblr', :engagement_type => 'share')
 	end
 
 	### Internal
 	def self.internal_answers
-		where(:provider => 'quizme', :engagement_type => 'answer')
+		where(:provider => 'app', :engagement_type => 'answer')
 	end
 
 	def self.check_for_engagement(current_acct)
-		last_engagement = Engagement.where('provider_post_id is not null').last
+		#twitter engagements
+		last_engagement = Engagement.where('provider = "twitter" and provider_post_id is not null').last
 		client = current_acct.twitter
 		return if client.nil?
 		mentions = client.mentions({:count => 50, :since_id => last_engagement.provider_post_id.to_i})
@@ -151,4 +152,32 @@ class Engagement < ActiveRecord::Base
 		end
 		tweet
 	end
+
+	def respond(correct)
+		self.update_attributes(:responded => true)
+  	Rep.create(:user_id => self.user_id,
+  						 :post_id => self.post_id,
+  						 :correct => correct) unless correct.nil?
+
+  	case correct
+  	when true
+	  	stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, self.post.asker_id)
+	  	stat.increment(:twitter_answers) if self.provider.include? 'twitter'
+	  	stat.increment(:facebook_answers) if self.provider.include? 'facebook'
+	  	stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
+	  	stat.increment(:internal_answers) if self.provider.include? 'app'
+  	when false
+  		stat = Stat.find_or_create_by_date_and_account_id(Date.today.to_s, self.post.account_id)
+	  	stat.increment(:twitter_answers) if self.provider.include? 'twitter'
+	  	stat.increment(:facebook_answers) if self.provider.include? 'facebook'
+	  	stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
+	  	stat.increment(:internal_answers) if self.provider.include? 'app'
+  	when nil
+  		puts 'skipped'
+  	else
+  		puts 'an error has occurred:: EngagementsModel :: LINE 178'
+  	end
+	end
+
+
 end

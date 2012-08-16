@@ -1,23 +1,17 @@
-class MentionsController < ApplicationController
-
-	def index
-		@orphans = Mention.where('post_id is null')
-		@posts = current_acct.posts.where('question_id is not null and provider = "twitter"').order('created_at DESC').limit(25)
-	end
+class EngagementsController < ApplicationController
 
 	def update
-		m = Mention.find(params[:mention_id])
-		first = params[:first].match(/(true|t|yes|y|1)$/i) != nil
+		eng = Engagement.find(params[:engagement_id])
 		correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
 
-		puts m.inspect
-		if m
-	  	m.update_attributes(:responded => true)
-	  	Rep.create(:user_id => m.user_id, :post_id => m.post_id, :correct => correct) if correct
+		puts eng.inspect
+		if eng
+	  	eng.update_attributes(:responded => true)
+	  	Rep.create(:user_id => eng.user_id, :post_id => eng.post_id, :correct => correct) unless correct.nil?
 
 	  	case correct
 	  	when true
-		  	stat = Stat.find_or_create_by_date_and_account_id(Date.today.to_s, m.post.account_id)
+		  	stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, m.post.asker_id)
 		  	stat.increment(:questions_answered_today)
 		  	#m.post.mentions.order('sent_date DESC').limit(10).first
 		  	if first

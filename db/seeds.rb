@@ -47,7 +47,7 @@
 a = Account.first
 for d in 0..30
 	for i in 1..rand(10)+1
-		p = [['twitter',['answer','retweet']], ['quizme',['answer']]].sample
+		p = [['twitter',['answer','retweet']], ['app',['answer']]].sample
 		Engagement.create(:account_id => a.id,
 											:date => (Date.today - 30 + d).to_s,
 											:user_id => i,
