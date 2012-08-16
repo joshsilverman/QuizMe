@@ -39,7 +39,7 @@
 									%p= post.text
 								.answers.rounded{:style => "display: none;"}
 									- answers = post.question.answers
-									- count = answers.count
+									- count = answers.size
 									- answers.each_with_index do |answer, i|
 										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 										.answer_container.input{:type => 'text'}
