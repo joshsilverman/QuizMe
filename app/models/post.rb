@@ -6,21 +6,16 @@ class Post < ActiveRecord::Base
   belongs_to :parent, :class_name => 'Post', :foreign_key => 'parent_id'
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
-	def self.shorten_url(url, source, lt, campaign, question_id, link_to_quizme=false)
+	def self.shorten_url(url, source, lt, campaign, question_id)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
     shortener = UrlShortener::Client.new authorize
-    short_url = nil
-    if link_to_quizme
-      short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#question_#{question_id}").urls
-    else
-      short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
-    end
+    short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
     short_url
 	end
 
 	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id)
     short_url = nil
-		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id, current_acct.link_to_quizme) if url
+		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
     res = current_acct.twitter.update("#{tweet} #{short_url}")
     Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
@@ -38,7 +33,7 @@ class Post < ActiveRecord::Base
     answer = Answer.select([:text, :correct]).find(answer_id)
     handle = User.select(:twi_name).asker(asker_id).twi_name
     tweet = "@#{handle} #{answer.tweetable(handle)}"
-    # res = Post.tweet(current_acct, tweet, url, lt, question_id)
+    # res = Post.tweet(current_user, tweet, nil, nil, question_id, )
   #   eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
   #   tweet_response= eng.generate_response(correct)
   #   Post.tweet(@asker, tweet_response, url, lt, nil)

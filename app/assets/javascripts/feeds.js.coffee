@@ -110,23 +110,18 @@ class Post
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
-			if post.find(".subsidiary").length > 0
-				count = 0
-				post.find(".subsidiary").toggle(200, =>
-					post.toggleClass("active", 200) if count < 1
-					count += 1
-				)
-			else
-				post.toggleClass("active", 200)
+			post.find(".subsidiaries, .loading").hide()
+			post.toggleClass("active", 200)
 			post.next(".conversation").removeClass("active_next")
 			post.prev(".conversation").removeClass("active_prev")	
 			post.find(".answers").hide()
 			# @element.find("i").animate({color: "black"}, 0)
 		else 
+			post.find(".subsidiaries").show()
 			post.toggleClass("active", 200)
 			post.next(".conversation").addClass("active_next")
 			post.prev(".conversation").addClass("active_prev")
-			post.find(".subsidiary").toggle(200)
+			# post.find(".subsidiary").toggle(200)
 			post.find(".answers").toggle(200)	
 			# if @correct == true
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
@@ -135,19 +130,24 @@ class Post
 	respond: (text, answer_id) =>
 		answers = @element.find(".answers")
 		answers.toggle(200, => answers.remove())
-		params =
-			"asker_id" : window.feed.id
-			"answer_id" : answer_id
-			# "text" : text #This will eventually be any custom text (?)
-		$.ajax '/respond',
-			type: 'POST'
-			data: params
-		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		# subsidiary.find("p").text(text)
-		# subsidiary.find("h5").text(window.feed.user_name)
-		# loading = @element.find(".loading").text("Tweeting your answer...")
-		# loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
-	submit_answer: (correct, parent) =>
+		# params =
+		# 	"asker_id" : window.feed.id
+		# 	"answer_id" : answer_id
+		# 	# "text" : text #This will eventually be any custom text (?)
+		# $.ajax '/respond',
+		# 	type: 'POST'
+		# 	data: params
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary.find("p").text(text)
+		subsidiary.find("h5").text(window.feed.user_name)
+		loading = @element.find(".loading").text("Tweeting your answer...")
+		loading.fadeIn(500, => 
+			loading.delay(1000).fadeOut(500, => 
+				@element.find(".post").addClass("answered")
+				@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @submit_answer(true)))
+			)
+		)
+	submit_answer: (correct) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		if correct == "true" 
 			response.find("p").text("Correct! Booyah!") 
@@ -156,11 +156,15 @@ class Post
 			response.find("p").text("Sorry, thats incorrect!")
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
-		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-				@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
-				@element.find("i").show()
+		if @element.find(".subsidiaries:visible").length > 0
+			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+					@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
+					@element.find("i").show()
+				)
 			)
-		)		
+		else
+			@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
+			@element.find("i").show()		
 	# answered: (correct) =>
 	# 	window.feed.answered += 1
 	# 	mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source})

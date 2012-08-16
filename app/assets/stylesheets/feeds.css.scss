@@ -75,10 +75,17 @@
 		}
 
 		#account_stats {
-			background: blue;
 			margin-left: 0px;
 			min-height: inherit;
 			float: right;
+
+			ul {
+				list-style: none;
+
+				li {
+
+				}
+			}
 		}
 	}
 

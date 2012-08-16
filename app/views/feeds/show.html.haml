@@ -13,10 +13,6 @@
 							/ %a.scoreboard_link.visible-phone{:href => "#"}
 							/ 	Go to the scoreboard.
 			#account_stats.span3.hidden-phone
-				%ul
-					%li
-					%li
-					%li 158 Questions
 		#feed.row
 			#left_column.span4.hidden-phone
 				#scoreboard.rounded
@@ -41,7 +37,7 @@
 									%h5= @asker.name
 									%p= post.text
 								.answers.rounded{:style => "display: none;"}
-									- answers = post.question.answers
+									- answers = post.question.answers.shuffle
 									- count = answers.size
 									- answers.each_with_index do |answer, i|
 										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
@@ -52,6 +48,7 @@
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
 												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+							.subsidiaries
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more
