@@ -29,7 +29,7 @@ class SessionsController < ApplicationController
   	  user = User.find_by_twi_user_id(auth["uid"]) || User.create_with_omniauth(auth)
       session[:user_id] = user.id
       if omni_params["new_question_asker_id"]
-        redirect_to "/questions/new?account_id=#{omni_params['new_question_asker_id']}"
+        redirect_to "/questions/new?asker_id=#{omni_params['new_question_asker_id']}"
       elsif omni_params["feed_id"]
         redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
       else

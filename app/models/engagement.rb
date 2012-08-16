@@ -112,7 +112,7 @@ class Engagement < ActiveRecord::Base
 															 	 :provider => 'twitter',
 															 	 :twi_in_reply_to_status_id => m.in_reply_to_status_id.to_s,
 															 	 :user_id => u.id,
-															 	 :account_id => current_acct.id,
+															 	 :asker_id => current_acct.id,
 															 	 :post_id => p ? p.id : nil,
 															 	 :created_at => m.created_at)
 	end
@@ -132,7 +132,7 @@ class Engagement < ActiveRecord::Base
 																 	 :provider => 'twitter',
 																 	 :twi_in_reply_to_status_id => nil,
 																 	 :user_id => u.id,
-																 	 :account_id => current_acct.id,
+																 	 :asker_id => current_acct.id,
 																 	 :post_id => p ? p.id : nil)
 		end
 	end

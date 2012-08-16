@@ -185,4 +185,4 @@ class Answer
 			answer.element.off "click" for answer in @post.answers
 
 
-$ -> window.feed = new Feed# if $("#feed_id").length > 0
+$ -> window.feed = new Feed if $("#feed").length > 0

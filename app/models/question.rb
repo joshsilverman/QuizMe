@@ -35,7 +35,7 @@ class Question < ActiveRecord::Base
   end
 
   def self.post_question(current_acct, queue_index, shift)
-    pq = PostQueue.find_by_account_id_and_index(current_acct.id, queue_index)
+    pq = PostQueue.find_by_asker_id_and_index(current_acct.id, queue_index)
     return unless pq
     q_id = pq.question_id
     q = Question.find(q_id)

@@ -5,8 +5,8 @@ class Post < ActiveRecord::Base
 	has_many :reps
 
 	def repost_tweet
-		account = Account.find(self.account_id)
-		Post.tweet(account, self.text, self.question.url, "repost", self.question_id)
+		asker = User.asker(self.asker_id)
+		Post.tweet(asker, self.text, self.question.url, "repost", self.question_id)
 	end
 
 	def self.shorten_url(url, source, lt, campaign, question_id, link_to_quizme=false)
@@ -25,7 +25,7 @@ class Post < ActiveRecord::Base
     short_url = nil
 		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id, current_acct.link_to_quizme) if url
     res = current_acct.twitter.update("#{tweet} #{short_url}")
-    Post.create(:account_id => current_acct.id,
+    Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'twitter',
                 :text => tweet,
@@ -47,7 +47,7 @@ class Post < ActiveRecord::Base
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
   	short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
     res = current_acct.twitter.direct_message_create(user_id, "#{tweet} #{short_url if short_url}")
-    Post.create(:account_id => current_acct.id,
+    Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :to_twi_user_id => user_id,
                 :provider => 'twitter',
@@ -59,7 +59,7 @@ class Post < ActiveRecord::Base
   end
   
   def self.quizme(current_acct, question, question_id)
-  	Post.create(:account_id => current_acct.id,
+  	Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'quizme',
                 :text => question,
@@ -71,7 +71,7 @@ class Post < ActiveRecord::Base
     res = current_acct.tumblr.text(current_acct.tum_url,
                                     :title => "Daily Quiz!",
                                     :body => "#{text} #{short_url}")
-    Post.create(:account_id => current_acct.id,
+    Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'tumblr',
                 :text => text,

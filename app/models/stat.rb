@@ -1,7 +1,7 @@
 class Stat < ActiveRecord::Base
 	belongs_to :asker, :classname => 'User', :foreign_key => 'asker_id'
 	
-	def self.save_daily_stats_for_account(current_acct)
+	def self.save_daily_stats_for_asker(current_acct)
 		d = Date.today
 		y = d - 1
 		this_week_ary_of_days = []
@@ -26,7 +26,7 @@ class Stat < ActiveRecord::Base
 
 
 		last_post = current_acct.posts.where("updated_at > ? and updated_at < ? and provider = 'twitter' ", Date.today-2, Date.today).first
-		today_stat = Stat.find_or_create_by_date_and_account_id(y.to_s, current_acct.id)
+		today_stat = Stat.find_or_create_by_date_and_asker_id(y.to_s, current_acct.id)
 		yesterday_stat = Stat.get_yesterday(current_acct.id)
 		client = current_acct.twitter
 		twi_account = client.user
@@ -73,7 +73,7 @@ class Stat < ActiveRecord::Base
 		internal_weekly_churn = internal_weekly_active_users.count == 0 ? 0 : internal_one_week_inactive_users.count*1000/internal_weekly_active_users.count
 		internal_monthly_churn = internal_monthly_active_users.count == 0 ? 0 : internal_one_month_inactive_users.count*1000/internal_monthly_active_users.count
 
-		Stat.create(:account_id => current_acct.id,
+		Stat.create(:asker_id => current_acct.id,
 			:date => y.to_s,
 	    :followers => followers,
 	    :friends => friends,
@@ -111,14 +111,14 @@ class Stat < ActiveRecord::Base
 		###get yesterdays stats or create dummy yesterday for math
 		d = Date.today
 		num_days_back = 2
-		yesterday = Stat.find_by_date_and_account_id((d - num_days_back.days).to_s, id)
+		yesterday = Stat.find_by_date_and_asker_id((d - num_days_back.days).to_s, id)
 		while yesterday.nil? and num_days_back <= 8
 			num_days_back += 1
-			yesterday = Stat.find_by_date_and_account_id((d - num_days_back.days).to_s, id)
+			yesterday = Stat.find_by_date_and_asker_id((d - num_days_back.days).to_s, id)
 		end
 		if yesterday.nil?
 			yesterday = Stat.new
-			account_id = 0
+			asker_id = 0
 			date = nil
 	    followers = 0
 	    friends = 0
