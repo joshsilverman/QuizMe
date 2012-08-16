@@ -13,7 +13,7 @@ class Question < ActiveRecord::Base
   def self.select_questions_to_post(current_acct, num_days_back_to_exclude)
     recent_question_ids = current_acct.posts.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
-    questions = Question.where("topic_id in (?) and id not in (?)", current_acct.topics.collect(&:id), recent_question_ids).includes(:answers)
+    questions = Question.where("topic_id in (?) and id not in (?) and status = 1", current_acct.topics.collect(&:id), recent_question_ids).includes(:answers)
     puts questions.count
     q = questions.sample
     queue = []
@@ -35,7 +35,7 @@ class Question < ActiveRecord::Base
   end
 
   def self.post_question(current_acct, queue_index, shift)
-    pq = PostQueue.find_by_account_id_and_index(current_acct.id, queue_index)
+    pq = PostQueue.find_by_asker_id_and_index(current_acct.id, queue_index)
     return unless pq
     q_id = pq.question_id
     q = Question.find(q_id)

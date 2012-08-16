@@ -4,20 +4,19 @@
 
 $ ->
 	$('.btn.btn-success.correct').click -> 
-		respond(true, false, $(this).attr('m_id'))
+		getResponse('correct')
 	$('.btn.btn-success.first').click -> 
-		respond(true, true, $(this).attr('m_id'))
+		getResponse('fast')
 	$('.btn.btn-danger.incorrect').click -> 
-		respond(false, null, $(this).attr('m_id'))
+		getResponse('incorrect')
+	$('.btn.btn-danger.close').click -> 
+		getResponse('close')
 	$('.btn.btn-warning.skip').click -> 
-		respond(null, null, $(this).attr('m_id'))
+		updateEngagement({''})
 
-	respond = (correct, first, id) ->
-		mem = {}
-		mem['mention_id'] = parseInt id
-		mem['correct'] = correct
-		mem['first'] = first
-		console.log mem
+	getResponse = (response) ->
+		response = {}
+		response['type'] = response
 		$.ajax '/mentions/update',
 			type: 'POST'
 			dataType: 'html'
@@ -26,4 +25,4 @@ $ ->
 				console.log "AJAX Error: #{errorThrown}"
 			success: (data, textStatus, jqXHR) ->
 				console.log "Success"
-				$(".well[m_id=#{id}]").hide()
+				console.log data

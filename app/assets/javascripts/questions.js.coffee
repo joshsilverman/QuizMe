@@ -3,9 +3,10 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-	if $("#question_form").length > 0
+	if $('#moderate_questions').length > 0
 		$('.btn.btn-success').click -> respond(true, $(this).attr('qid'))
 		$('.btn.btn-danger').click -> respond(false, $(this).attr('qid'))
+	if $("#question_form").length > 0
 		$("#question_container").on "keyup", (e) => update_character_count()
 		$("#question_container").on "click", (e) => if $("#name").val() then select_question_span(e)	else alert "Please sign in first!"
 		$(".answer").on "click", => alert "Please sign in first!" unless $("#name").val()
@@ -50,7 +51,7 @@ $ ->
 			data =
 				"question" : $("#question").text()
 				"topic_tag" : $("#topic_tag").val()
-				"account_id" : $("#account_id").val()
+				"asker_id" : $("#asker_id").val()
 				"canswer" : $("#canswer input").val()
 				"ianswer1" : $("#ianswer1 input").val()
 				"ianswer2" : $("#ianswer2 input").val()
@@ -60,7 +61,7 @@ $ ->
 				type: "POST",
 				data: data,
 				error: => $("#error").fadeIn(), 
-				success: (e) => window.location.replace("/questions/new?account_id=#{$("#account_id").val()}&success=1")
+				success: (e) => window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
 
 	validate_form = ->
 		if $("#character_count").text() < 0

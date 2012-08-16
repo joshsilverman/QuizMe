@@ -1,7 +1,6 @@
 = hidden_field_tag 'topic_tag', @topic_tag
-= hidden_field_tag 'account_id', @account_id
+= hidden_field_tag 'asker_id', @asker_id
 = hidden_field_tag 'name', current_user.twi_screen_name if current_user
-
 .row
   .span6.offset3#form_container
     - if @success
@@ -24,7 +23,7 @@
                 %i.icon-user
                 Sign in
                 %span#sign_in_container
-                  %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&account_id=#{@account_id}"}
+                  %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&new_question_asker_id=#{@asker_id}"}
                     = image_tag "twitter-sign-in.png", :id => "sign_in"
         .page-header
           %h3

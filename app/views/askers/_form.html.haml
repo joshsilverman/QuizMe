@@ -1,0 +1,8 @@
+= form_tag('/askers', :method => 'POST', :class => 'row') do    
+  %input{:type=>"text", :name => 'name', :placeholder => 'Name', :value => @asker.name}
+  %br
+  %textarea{:name => 'description', :placeholder => 'Profile Description'}= @asker.description
+  %br
+  %input{:type=>"text", :name => 'posts_per_day', :placeholder => 'Posts Per Day', :value => @asker.posts_per_day}
+  %br
+  = submit_tag 'Submit', :class => 'btn btn-primary'
