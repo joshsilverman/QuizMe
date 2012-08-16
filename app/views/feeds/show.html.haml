@@ -44,11 +44,8 @@
 										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 										.answer_container.input{:type => 'text'}
 											.tweet
-												- answer.tweetable(@asker.name)
-												- overage = (140 - "@#{@asker.name} ".length - answer.text.length)
-												- overage < 0 ? truncate = answer.text.length - overage.abs : truncate = answer.text.length
 												%span#account= "@#{@asker.name}"
-												%span#answer= " #{truncate(answer.text, :length => truncate)}"
+												%span#answer= " #{answer.tweetable(@asker.name)}"
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
 												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!

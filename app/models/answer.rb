@@ -1,4 +1,5 @@
 class Answer < ActiveRecord::Base
+	include ActionView::Helpers::TextHelper
 	belongs_to :question
 
 	def self.correct
@@ -6,6 +7,9 @@ class Answer < ActiveRecord::Base
 	end
 
 	def tweetable(asker_name)
-		puts asker_name
+		length = self.text.length
+		overage = (140 - asker_name.length - 2 - length)
+		overage < 0 ? truncate = length - overage.abs : truncate = length		
+		truncate(self.text, :length => truncate)
 	end
 end
