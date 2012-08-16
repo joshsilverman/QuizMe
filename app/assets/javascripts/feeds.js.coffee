@@ -86,7 +86,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@answer("@#{window.feed.name} #{parent.text()}", parent.attr("correct"))
+				@respond("@#{window.feed.name} #{parent.text()}", parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -132,16 +132,21 @@ class Post
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
 			# else
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
-	answer: (text, correct) =>
+	respond: (text, answer_id) =>
 		answers = @element.find(".answers")
 		answers.toggle(200, => answers.remove())
-		@tweet(text, correct)
-	tweet: (text, correct) =>
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		subsidiary.find("p").text(text)
-		subsidiary.find("h5").text(window.feed.user_name)
-		loading = @element.find(".loading").text("Tweeting your answer...")
-		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
+		params =
+			"asker_id" : window.feed.id
+			"answer_id" : answer_id
+			# "text" : text #This will eventually be any custom text (?)
+		$.ajax '/respond',
+			type: 'POST'
+			data: params
+		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		# subsidiary.find("p").text(text)
+		# subsidiary.find("h5").text(window.feed.user_name)
+		# loading = @element.find(".loading").text("Tweeting your answer...")
+		# loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => @element.find(".post").addClass("answered").after(subsidiary.fadeIn(500, => @submit_answer(correct, subsidiary)))))
 	submit_answer: (correct, parent) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		if correct == "true" 

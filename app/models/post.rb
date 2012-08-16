@@ -36,13 +36,16 @@ class Post < ActiveRecord::Base
     res
   end
 
-  # def self.tweet_from_wisr(current_acct, tweet, url, lt, question_id, correct)
-  #   res = Post.tweet(current_acct, tweet, url, lt, question_id)
+  def self.respond_wisr(asker_id, answer_id)
+    answer = Answer.select([:text, :correct]).find(answer_id)
+    handle = User.select(:twi_name).asker(asker_id).twi_name
+    tweet = "@#{handle} #{answer.tweetable(handle)}"
+    # res = Post.tweet(current_acct, tweet, url, lt, question_id)
   #   eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
   #   tweet_response= eng.generate_response(correct)
   #   Post.tweet(@asker, tweet_response, url, lt, nil)
   #   tweet_response
-  # end
+  end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
   	short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url

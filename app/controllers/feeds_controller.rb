@@ -23,4 +23,8 @@ class FeedsController < ApplicationController
   def scores
     @scores = User.get_top_scorers(params[:id])
   end
+
+  def respond
+    render :json => Post.respond_wisr(params["asker_id"], params["answer_id"])
+  end
 end

@@ -9,6 +9,7 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/scores" => "feeds#scores"
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  match "/respond" => "feeds#respond"
 
   post "mentions/update"
   post "questions/save_question_and_answers"
