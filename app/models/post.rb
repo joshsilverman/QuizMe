@@ -1,6 +1,6 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
-	belongs_to :asker, :foreign_key => 'asker_id'
+	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	has_many :engagements
 	has_many :reps
 

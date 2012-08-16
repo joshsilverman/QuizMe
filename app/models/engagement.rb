@@ -1,6 +1,6 @@
 class Engagement < ActiveRecord::Base
 	belongs_to :user
-	belongs_to :asker, :classname => 'User', :foreign_key => 'asker_id'
+	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	belongs_to :post
 
 	###Respose Bank ###
