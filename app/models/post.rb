@@ -33,7 +33,7 @@ class Post < ActiveRecord::Base
     asker = User.asker(asker_id)
     post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
-    tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name)}"
+    tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
     res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id)
     eng = Engagement.create(
       :text => res.text, 
@@ -67,16 +67,19 @@ class Post < ActiveRecord::Base
   end
   
   def self.app_post(current_acct, question, question_id, parent_id)
-  	Post.create(:asker_id => current_acct.id,
+    post = Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'app',
                 :text => question,
                 :post_type => 'question',
                 :parent_id => parent_id)
+    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{current_acct.id}/#{post.id}", 'app', "ans", current_acct.twi_screen_name, question_id)
+    post.update_attribute(:url, short_url)
+    post
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
-    short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name)
+    short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
     res = current_acct.tumblr.text(current_acct.tum_url,
                                     :title => "Daily Quiz!",
                                     :body => "#{text} #{short_url}")

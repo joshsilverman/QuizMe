@@ -44,8 +44,8 @@
 										.answer_container.input{:type => 'text'}
 											.tweet
 												%span#account= "@#{@asker.name}"
-												%span#answer= " #{answer.tweetable(@asker.name)}"
-												/ %span#account= " bit.ly/xxxxxx"
+												%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
+												%span#url= " #{post.url}"
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
 												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
