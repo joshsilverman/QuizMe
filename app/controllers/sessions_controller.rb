@@ -3,7 +3,6 @@ class SessionsController < ApplicationController
   	auth = request.env["omniauth.auth"]
     omni_params = request.env["omniauth.params"]
     provider = auth['provider']
-
     if omni_params['update_asker_id'] #if asker update account
       user = User.asker(omni_params['update_asker_id'])
       case provider

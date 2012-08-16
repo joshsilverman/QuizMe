@@ -21,7 +21,7 @@ class Feed
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
 		target.click()
-		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()	
+		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 		$.scrollTo(target, 500)
 	initializeNewPostListener: =>
 		pusher = new Pusher('bffe5352760b25f9b8bd')
