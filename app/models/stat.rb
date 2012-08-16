@@ -1,5 +1,5 @@
 class Stat < ActiveRecord::Base
-	belongs_to :asker, :classname => 'User', :foreign_key => 'asker_id'
+	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	
 	def self.save_daily_stats_for_asker(current_acct)
 		d = Date.today
