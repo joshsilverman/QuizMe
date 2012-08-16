@@ -8,7 +8,6 @@ class User < ActiveRecord::Base
 	has_many :posts, :foreign_key => 'asker_id'
 
 	def self.create_with_omniauth(auth)
-		puts "yo son"
 	  create! do |user|
 	  	provider = auth['provider']
 	    
