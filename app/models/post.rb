@@ -13,10 +13,10 @@ class Post < ActiveRecord::Base
     short_url
 	end
 
-	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id)
+	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id=nil)
     short_url = nil
 		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.update("#{tweet} #{short_url}")
+    res = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
     Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'twitter',
@@ -111,5 +111,9 @@ class Post < ActiveRecord::Base
 
   def sibling(provider)
     self.parent.posts.where(:provider => provider).first
+  end
+
+  def child(provider)
+    self.posts.where(:provider => provider).first
   end
 end
