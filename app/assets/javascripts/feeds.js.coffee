@@ -11,9 +11,11 @@ class Feed
 		@initializeQuestions()
 		target = $(".post[post_id=#{$('#post_id').val()}]")
 		@scroll_to_question(target) if target.length > 0
-		$(window).on "scroll", => @showMore() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		$("#posts_more").on "click", (e) => 
+			e.preventDefault()
+			@show_more()
 		# @initializeNewPostListener()
-		# $("#show_more").on "click", => @showMore()
 		# mixpanel.track("page_loaded", {"account" : @name, "source": source})
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
@@ -49,13 +51,13 @@ class Feed
 			conversation.insertBefore("#posts_more")
 		conversation.css('visibility','visible').hide().fadeIn('slow')
 		@questions.push(new Post conversation)
-	showMore: => 
+	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
 			if posts.length > 0
 				@displayNewPost(post, "append") for post in posts
 			else
-				$("#show_more").text("Last Post Reached")
+				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
 	randomize: (myArray) =>
 		i = myArray.length
@@ -108,17 +110,23 @@ class Post
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
-			post.toggleClass("active", 50) 
+			if post.find(".subsidiary").length > 0
+				count = 0
+				post.find(".subsidiary").toggle(200, =>
+					post.toggleClass("active", 200) if count < 1
+					count += 1
+				)
+			else
+				post.toggleClass("active", 200)
 			post.next(".conversation").removeClass("active_next")
 			post.prev(".conversation").removeClass("active_prev")	
-			post.find(".subsidiary").hide()
 			post.find(".answers").hide()
 			# @element.find("i").animate({color: "black"}, 0)
 		else 
-			post.toggleClass("active", 50)
+			post.toggleClass("active", 200)
 			post.next(".conversation").addClass("active_next")
 			post.prev(".conversation").addClass("active_prev")
-			post.find(".subsidiary").toggle(50)
+			post.find(".subsidiary").toggle(200)
 			post.find(".answers").toggle(200)	
 			# if @correct == true
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)

@@ -332,6 +332,7 @@
 				}
 
 				#posts_more {
+					cursor: default;
 					border-style: solid;
 					border-width: 1px;
 					border-color: #ddd;	
@@ -345,6 +346,10 @@
 					border-bottom-right-radius: 5px;	
 					padding: 10px;	
 					text-align: center;
+
+					a {
+						cursor: pointer;
+					}
 				}				
 
 				.active {
