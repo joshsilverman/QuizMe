@@ -58,10 +58,10 @@ class Post < ActiveRecord::Base
                 :provider_post_id => res.id.to_s)
   end
   
-  def self.quizme(current_acct, question, question_id)
+  def self.app_post(current_acct, question, question_id)
   	Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
-                :provider => 'quizme',
+                :provider => 'app',
                 :text => question,
                 :post_type => 'question')
   end
