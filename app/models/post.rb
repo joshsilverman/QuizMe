@@ -34,7 +34,7 @@ class Post < ActiveRecord::Base
     post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
     tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
-    res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id)
+    res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id, post.sibling('twitter').provider_post_id)
     eng = Engagement.create(
       :text => res.text, 
       :date => "#{res.created_at.year}-#{res.created_at.month}-#{res.created_at.day}",
@@ -48,7 +48,7 @@ class Post < ActiveRecord::Base
       :asker_id => asker_id
     )
     tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
-    Post.tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil)
+    Post.tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil, res.id)
     eng.respond(answer.correct)
   end
 
