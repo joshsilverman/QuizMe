@@ -21,6 +21,6 @@ class FeedsController < ApplicationController
   end
 
   def scores
-    @scores = Account.get_top_scorers(params[:id])
+    @scores = User.get_top_scorers(params[:id])
   end
 end

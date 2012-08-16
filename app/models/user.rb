@@ -33,13 +33,13 @@ class User < ActiveRecord::Base
 	  end
 	end
 
-	# def self.askers
-	# 	where(:role => 'asker')
-	# end
+	def self.askers
+		where(:role => 'asker')
+	end
 
-	# def self.asker(id)
-	# 	find_by_role_and_id('asker', id)
-	# end
+	def self.asker(id)
+		find_by_role_and_id('asker', id)
+	end
 
 	def is_role?(role)
 		self.role == role.downcase

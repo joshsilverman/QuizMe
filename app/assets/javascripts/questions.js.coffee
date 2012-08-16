@@ -51,7 +51,7 @@ $ ->
 			data =
 				"question" : $("#question").text()
 				"topic_tag" : $("#topic_tag").val()
-				"account_id" : $("#account_id").val()
+				"asker_id" : $("#asker_id").val()
 				"canswer" : $("#canswer input").val()
 				"ianswer1" : $("#ianswer1 input").val()
 				"ianswer2" : $("#ianswer2 input").val()
@@ -61,7 +61,7 @@ $ ->
 				type: "POST",
 				data: data,
 				error: => $("#error").fadeIn(), 
-				success: (e) => window.location.replace("/questions/new?account_id=#{$("#account_id").val()}&success=1")
+				success: (e) => window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
 
 	validate_form = ->
 		if $("#character_count").text() < 0
