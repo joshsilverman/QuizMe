@@ -15,21 +15,7 @@ class Question < ActiveRecord::Base
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
     questions = Question.where("topic_id in (?) and id not in (?) and status = 1", current_acct.topics.collect(&:id), recent_question_ids).includes(:answers)
     puts questions.count
-    q = questions.sample
-    queue = []
-    queue = questions if questions.size < current_acct.posts_per_day
-    i = 0
-    while queue.size < current_acct.posts_per_day and i < (questions.size*2)
-      if q.is_tweetable? && !queue.include?(q)
-        puts 'added'
-        queue << q
-        q = questions.sample
-      else
-        puts 'finding new q'
-        q = questions.sample
-      end
-      i+=1
-    end
+    queue = questions.sample(current_acct.posts_per_day)
     puts "WARNING THE QUEUE FOR #{current_acct.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{queue.size} of #{current_acct.posts_per_day} POSTS SCHEDULED" if queue.size < current_acct.posts_per_day
     PostQueue.enqueue_questions(current_acct, queue)
   end
@@ -41,11 +27,11 @@ class Question < ActiveRecord::Base
     post = Post.app_post(current_acct, parent.text, parent.question_id, parent.id)
     url = "http://wisr.com/feeds/#{current_acct.id}/#{post.id}"
     puts "TWEET: #{parent.text}"
-    begin
+    #begin
       Post.tweet(current_acct, parent.text, url, "initial#{shift}", parent.question_id, parent.id) if current_acct.twitter_enabled?
-    rescue
-      puts "Failed to post to Twitter, check logs."
-    end
+    #rescue
+    #  puts "Failed to post to Twitter, check logs."
+    #end
 
     puts "TUMBLR: #{parent.text}"
     begin
