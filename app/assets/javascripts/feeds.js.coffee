@@ -110,17 +110,21 @@ class Post
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
-			post.toggleClass("active", 50) 
+			count = 0
+			post.find(".subsidiary").toggle(200, =>
+				post.toggleClass("active", 200) if count < 1
+				count += 1
+			)
 			post.next(".conversation").removeClass("active_next")
 			post.prev(".conversation").removeClass("active_prev")	
-			post.find(".subsidiary").hide()
 			post.find(".answers").hide()
 			# @element.find("i").animate({color: "black"}, 0)
 		else 
+
 			post.toggleClass("active", 50)
 			post.next(".conversation").addClass("active_next")
 			post.prev(".conversation").addClass("active_prev")
-			post.find(".subsidiary").toggle(50)
+			post.find(".subsidiary").toggle(200)
 			post.find(".answers").toggle(200)	
 			# if @correct == true
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
