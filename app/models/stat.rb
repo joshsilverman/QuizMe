@@ -1,5 +1,5 @@
 class Stat < ActiveRecord::Base
-	belongs_to :asker, :classname => 'User', :foreign_key => 'asker_id'
+	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	
 	def self.save_daily_stats_for_asker(current_acct)
 		d = Date.today
@@ -38,7 +38,7 @@ class Stat < ActiveRecord::Base
 		rts = last_post.nil? ? 0 : client.retweets_of_me({:count => 100, :since_id => last_post.provider_post_id.to_i}).count 
 		mentions = last_post.nil? ? 0 : client.mentions({:count => 100, :since_id => last_post.provider_post_id.to_i}).count
 		twitter_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'twitter' and post_type = 'status' and link_type like 'initial%'", y, d).collect(&:question_id).to_set.count
-		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'quizme'", y, d).collect(&:question_id).to_set.count
+		internal_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'app'", y, d).collect(&:question_id).to_set.count
 		facebook_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'facebook'", y, d).collect(&:question_id).to_set.count
 		tumblr_posts = current_acct.posts.select(:question_id).where("updated_at > ? and updated_at < ? and provider = 'tumblr'", y, d).collect(&:question_id).to_set.count
 		

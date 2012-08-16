@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
 	end
 
 	def is_role?(role)
-		self.role == role.downcase
+		self.role.include? role.downcase
 	end
 
 	def twitter_enabled?

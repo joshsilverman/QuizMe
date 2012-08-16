@@ -25,7 +25,7 @@ $ ->
 		data = new google.visualization.DataTable()
 		data.addColumn "string", "Date"
 		data.addColumn "number", "Twitter"
-		data.addColumn "number", "QuizMe"
+		data.addColumn "number", "App"
 		data.addColumn "number", "Total"
 
 		qa = $.parseJSON($("#qa").attr("value"))
@@ -43,7 +43,7 @@ $ ->
 		data = new google.visualization.DataTable()
 		data.addColumn "string", "Date"
 		data.addColumn "number", "Twitter"
-		data.addColumn "number", "QuizMe"
+		data.addColumn "number", "App"
 		data.addColumn "number", "Total"
 		dau = $.parseJSON($("#dau").attr("value"))
 		$.each dau, (date,ds)->

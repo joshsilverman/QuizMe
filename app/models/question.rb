@@ -37,21 +37,19 @@ class Question < ActiveRecord::Base
   def self.post_question(current_acct, queue_index, shift)
     pq = PostQueue.find_by_asker_id_and_index(current_acct.id, queue_index)
     return unless pq
-    q_id = pq.question_id
-    q = Question.find(q_id)
-    post = Post.quizme(current_acct, q.text, q.id)
-    url = "http://www.studyegg.com/review/#{q.qb_lesson_id}/#{q.qb_q_id}"
-    url = "http://studyegg-quizme.herokuapp.com/feeds/#{current_acct.id}" if current_acct.link_to_quizme
-    puts "TWEET: #{q.text}"
+    parent = Post.find(pq.post_id)
+    post = Post.app_post(current_acct, parent.text, parent.question_id, parent.id)
+    url = "http://wisr.com/feeds/#{current_acct.id}/#{post.id}"
+    puts "TWEET: #{parent.text}"
     begin
-      Post.tweet(current_acct, q.text, url, "initial#{shift}", q.id) if current_acct.twitter_enabled?
+      Post.tweet(current_acct, parent.text, url, "initial#{shift}", parent.question_id, parent.id) if current_acct.twitter_enabled?
     rescue
       puts "Failed to post to Twitter, check logs."
     end
 
-    puts "TUMBLR: #{q.text}"
+    puts "TUMBLR: #{parent.text}"
     begin
-      Post.create_tumblr_post(current_acct, q.text, url, "initial#{shift}", q.id) if current_acct.tumblr_enabled?
+      Post.create_tumblr_post(current_acct, parent.text, url, "initial#{shift}", parent.question_id, parent.id) if current_acct.tumblr_enabled?
     rescue
       puts "Failed to post to Tumblr, check logs."
     end

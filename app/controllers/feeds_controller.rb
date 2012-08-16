@@ -5,7 +5,7 @@ class FeedsController < ApplicationController
 
   def show
     @asker = User.asker(params[:id])
-    @posts = @asker.posts.where(:provider => "quizme").order("created_at DESC").limit(15).includes(:question => :answers)
+    @posts = @asker.posts.where(:provider => "app").order("created_at DESC").limit(15).includes(:question => :answers)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
@@ -22,5 +22,9 @@ class FeedsController < ApplicationController
 
   def scores
     @scores = User.get_top_scorers(params[:id])
+  end
+
+  def respond
+    render :json => Post.respond_wisr(params["asker_id"], params["answer_id"])
   end
 end

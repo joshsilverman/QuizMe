@@ -29,16 +29,21 @@ class AddRoleToUsers < ActiveRecord::Migration
     end
 
     #update all account_id fks with asker_id
-    remove_column :engagements, :account_id
-    add_column :engagements, :asker_id, :integer
-    remove_column :posts, :account_id
-    add_column :posts, :asker_id, :integer
-    remove_column :post_queues, :account_id
-    add_column :post_queues, :asker_id, :integer
-    remove_column :stats, :account_id
-    add_column :stats, :asker_id, :integer
-    remove_column :questions, :created_for_account_id
-    add_column :questions, :created_for_asker_id, :integer
+
+    rename_column :engagements, :account_id, :asker_id
+    rename_column :posts, :account_id, :asker_id
+    rename_column :post_queues, :account_id, :asker_id
+    rename_column :stats, :account_id, :asker_id
+    rename_column :questions, :created_for_account_id, :created_for_asker_id
+
+    # remove_column :posts, :account_id
+    # add_column :posts, :asker_id, :integer
+    # remove_column :post_queues, :account_id
+    # add_column :post_queues, :asker_id, :integer
+    # remove_column :stats, :account_id
+    # add_column :stats, :asker_id, :integer
+    # remove_column :questions, :created_for_account_id
+    # add_column :questions, :created_for_asker_id, :integer
 
   end
 end
