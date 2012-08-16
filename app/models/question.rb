@@ -17,6 +17,7 @@ class Question < ActiveRecord::Base
     puts questions.count
     queue = questions.sample(current_acct.posts_per_day)
     puts "WARNING THE QUEUE FOR #{current_acct.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{queue.size} of #{current_acct.posts_per_day} POSTS SCHEDULED" if queue.size < current_acct.posts_per_day
+    #@TODO email or some notification that I will actually read if not filled
     PostQueue.enqueue_questions(current_acct, queue)
   end
 
@@ -25,7 +26,7 @@ class Question < ActiveRecord::Base
     return unless pq
     parent = Post.find(pq.post_id)
     post = Post.app_post(current_acct, parent.text, parent.question_id, parent.id)
-    url = "http://wisr.com/feeds/#{current_acct.id}/#{post.id}"
+    url = "http://studyegg-quizme-staging.herokuapp.com/feeds/#{current_acct.id}/#{post.id}"
     puts "TWEET: #{parent.text}"
     #begin
       Post.tweet(current_acct, parent.text, url, "initial#{shift}", parent.question_id, parent.id) if current_acct.twitter_enabled?
