@@ -1,6 +1,6 @@
 class AddPostIdToPostqueue < ActiveRecord::Migration
   def change
-  	remove_column :postqueues, :question_id
-    add_column :postqueues, :post_id, :integer
+  	remove_column :post_queues, :question_id
+    add_column :post_queues, :post_id, :integer
   end
 end
