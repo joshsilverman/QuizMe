@@ -83,7 +83,7 @@ class Engagement < ActiveRecord::Base
 		where(:provider => 'app', :engagement_type => 'answer')
 	end
 
-	def self.check_for_engagement(current_acct)
+	def self.check_for_engagements(current_acct)
 		#twitter engagements
 		last_engagement = Engagement.where('provider = "twitter" and provider_post_id is not null').last
 		client = current_acct.twitter
@@ -154,28 +154,18 @@ class Engagement < ActiveRecord::Base
 	end
 
 	def respond(correct)
-		self.update_attributes(:responded => true)
+		#@TODO update engagement_type
+		self.update_attributes(:responded_to => true)
   	Rep.create(:user_id => self.user_id,
   						 :post_id => self.post_id,
   						 :correct => correct) unless correct.nil?
 
-  	case correct
-  	when true
+  	unless correct.nil?
 	  	stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, self.post.asker_id)
 	  	stat.increment(:twitter_answers) if self.provider.include? 'twitter'
 	  	stat.increment(:facebook_answers) if self.provider.include? 'facebook'
 	  	stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
 	  	stat.increment(:internal_answers) if self.provider.include? 'app'
-  	when false
-  		stat = Stat.find_or_create_by_date_and_account_id(Date.today.to_s, self.post.account_id)
-	  	stat.increment(:twitter_answers) if self.provider.include? 'twitter'
-	  	stat.increment(:facebook_answers) if self.provider.include? 'facebook'
-	  	stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
-	  	stat.increment(:internal_answers) if self.provider.include? 'app'
-  	when nil
-  		puts 'skipped'
-  	else
-  		puts 'an error has occurred:: EngagementsModel :: LINE 178'
   	end
 	end
 
