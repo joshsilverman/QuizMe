@@ -34,12 +34,13 @@ class Post < ActiveRecord::Base
     res
   end
 
-  def self.respond_wisr(asker_id, answer_id)
+  def self.respond_wisr(asker_id, post_id, answer_id)
+    user = User.select(:twi_name).asker(asker_id)
+    post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
-    handle = User.select(:twi_name).asker(asker_id).twi_name
-    tweet = "@#{handle} #{answer.tweetable(handle)}"
-    # res = Post.tweet(current_user, tweet, nil, nil, question_id, )
-  #   eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
+    tweet = "@#{user.twi_name} #{answer.tweetable(handle)}"
+    res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id)
+    # eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
   #   tweet_response= eng.generate_response(correct)
   #   Post.tweet(@asker, tweet_response, url, lt, nil)
   #   tweet_response

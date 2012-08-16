@@ -129,24 +129,25 @@ class Post
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
 	respond: (text, answer_id) =>
 		answers = @element.find(".answers")
-		answers.toggle(200, => answers.remove())
-		# params =
-		# 	"asker_id" : window.feed.id
-		# 	"answer_id" : answer_id
-		# 	# "text" : text #This will eventually be any custom text (?)
-		# $.ajax '/respond',
-		# 	type: 'POST'
-		# 	data: params
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		subsidiary.find("p").text(text)
-		subsidiary.find("h5").text(window.feed.user_name)
-		loading = @element.find(".loading").text("Tweeting your answer...")
-		loading.fadeIn(500, => 
-			loading.delay(1000).fadeOut(500, => 
-				@element.find(".post").addClass("answered")
-				@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @submit_answer(true)))
-			)
-		)
+		# answers.toggle(200, => answers.remove())
+		params =
+			"asker_id" : window.feed.id
+			"post_id" : @id
+			"answer_id" : answer_id
+			# "text" : text #This will eventually be any custom text (?)
+		$.ajax '/respond',
+			type: 'POST'
+			data: params
+		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		# subsidiary.find("p").text(text)
+		# subsidiary.find("h5").text(window.feed.user_name)
+		# loading = @element.find(".loading").text("Tweeting your answer...")
+		# loading.fadeIn(500, => 
+		# 	loading.delay(1000).fadeOut(500, => 
+		# 		@element.find(".post").addClass("answered")
+		# 		@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @submit_answer(true)))
+		# 	)
+		# )
 	submit_answer: (correct) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		if correct == "true" 

@@ -25,6 +25,6 @@ class FeedsController < ApplicationController
   end
 
   def respond
-    render :json => Post.respond_wisr(params["asker_id"], params["answer_id"])
+    render :json => Post.respond_wisr(params["asker_id"], params["post_id"], params["answer_id"])
   end
 end
