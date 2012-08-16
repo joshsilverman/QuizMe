@@ -27,12 +27,13 @@ class Question < ActiveRecord::Base
     parent = Post.find(pq.post_id)
     post = Post.app_post(current_acct, parent.text, parent.question_id, parent.id)
     url = "http://studyegg-quizme-staging.herokuapp.com/feeds/#{current_acct.id}/#{post.id}"
+    #url = "#{Rails.root}/feeds/#{current_acct.id}/#{post.id}"
     puts "TWEET: #{parent.text}"
-    #begin
+    begin
       Post.tweet(current_acct, parent.text, url, "initial#{shift}", parent.question_id, parent.id) if current_acct.twitter_enabled?
-    #rescue
-    #  puts "Failed to post to Twitter, check logs."
-    #end
+    rescue
+      puts "Failed to post to Twitter, check logs."
+    end
 
     puts "TUMBLR: #{parent.text}"
     begin

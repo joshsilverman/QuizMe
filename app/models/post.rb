@@ -29,15 +29,27 @@ class Post < ActiveRecord::Base
     res
   end
 
-  def self.respond_wisr(asker_id, answer_id)
+  def self.respond_wisr(current_user, asker_id, post_id, answer_id)
+    asker = User.asker(asker_id)
+    post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
-    handle = User.select(:twi_name).asker(asker_id).twi_name
-    tweet = "@#{handle} #{answer.tweetable(handle)}"
-    # res = Post.tweet(current_user, tweet, nil, nil, question_id, )
-  #   eng = Engagement.create(:text => res.text ...) #@TODO fill out engagement creation
-  #   tweet_response= eng.generate_response(correct)
-  #   Post.tweet(@asker, tweet_response, url, lt, nil)
-  #   tweet_response
+    tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name)}"
+    res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id)
+    eng = Engagement.create(
+      :text => res.text, 
+      :date => "#{res.created_at.year}-#{res.created_at.month}-#{res.created_at.day}",
+      :engagement_type => "answer mention",
+      :provider => "app",
+      :provider_post_id => res.id,
+      :twi_in_reply_to_status_id => post.sibling("twitter"),
+      :user_id => current_user.id,
+      :post_id => post.id,
+      :created_at => res.created_at,
+      :asker_id => asker_id
+    )
+    tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
+    Post.tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil)
+    eng.respond(answer.correct)
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
@@ -95,5 +107,9 @@ class Post < ActiveRecord::Base
               id)
       sleep(1)
     end
+  end
+
+  def sibling(provider)
+    self.parent.posts.where(:provider => provider).first
   end
 end

@@ -17,7 +17,7 @@ class FeedsController < ApplicationController
 
   def more
     post = Post.find(params[:last_post_id])
-    render :json => User.asker(params[:id]).posts.where("CREATED_AT > ? AND ID IS NOT ?", post.created_at, post.id).order(:created_at).limit(5).includes(:question => :answers).as_json(:include => {:question => {:include => :answers}})
+    render :json => User.asker(params[:id]).posts.where("CREATED_AT < ? AND ID IS NOT ? AND provider = 'app'", post.created_at, post.id).order(:created_at).limit(5).includes(:question => :answers).as_json(:include => {:question => {:include => :answers}})
   end
 
   def scores
@@ -25,6 +25,6 @@ class FeedsController < ApplicationController
   end
 
   def respond
-    render :json => Post.respond_wisr(params["asker_id"], params["answer_id"])
+    render :json => Post.respond_wisr(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 end

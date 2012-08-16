@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
 	has_many :posts, :foreign_key => 'asker_id'
 
 	def self.create_with_omniauth(auth)
+		puts "yo son"
 	  create! do |user|
 	  	provider = auth['provider']
 	    
@@ -18,7 +19,7 @@ class User < ActiveRecord::Base
 		    user.twi_name = auth["info"]["name"]
 		    user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
 		    user.twi_oauth_token = auth['credentials']['token']
-				user.twi_oauth_secret = auth['credentials']['secret']
+			user.twi_oauth_secret = auth['credentials']['secret']
 	    when 'tumblr'
 		    user.tum_user_id = auth["uid"]
 	    	user.tum_oauth_token = auth['credentials']['token']
@@ -67,6 +68,7 @@ class User < ActiveRecord::Base
 																 :oauth_token => self.twi_oauth_token,
 																 :oauth_token_secret => self.twi_oauth_secret)
 		end
+		puts client.to_json
 		client
 	end
 
