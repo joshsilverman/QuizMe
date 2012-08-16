@@ -67,7 +67,6 @@ class User < ActiveRecord::Base
 																 :oauth_token => self.twi_oauth_token,
 																 :oauth_token_secret => self.twi_oauth_secret)
 		end
-		puts client.to_json
 		client
 	end
 

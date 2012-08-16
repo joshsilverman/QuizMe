@@ -29,9 +29,11 @@
 						%h3
 							Posts
 					- @posts.each do |post|
+						- response = @responses[post.parent_id]
+						- response ? responded = true : responded = false
 						.conversation
-							.post.parent{:post_id => post.id}
-								%i.icon-share-alt{:style => "display: none;"}
+							.post.parent{:class => ("answered" if responded), :post_id => post.id}
+								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
 									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 									%h5= @asker.name
@@ -49,7 +51,14 @@
 												/ %span#additional{:contenteditable => true}
 											.answer_controls
 												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
-							.subsidiaries
+							.subsidiaries{:style => "display: none;"}
+								- if responded
+									- response = response[0]["text"]
+									.subsidiary.post.answered
+										.content
+											= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+											%h5= current_user.twi_screen_name
+											%p= response					
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more

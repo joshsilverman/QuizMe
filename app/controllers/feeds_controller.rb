@@ -6,6 +6,7 @@ class FeedsController < ApplicationController
   def show
     @asker = User.asker(params[:id])
     @posts = @asker.posts.where(:provider => "app").order("created_at DESC").limit(15).includes(:question => :answers)
+    @responses = current_user.posts.select([:text, :parent_id]).where(:parent_id => @posts.collect(&:parent_id)).group_by(&:parent_id)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
@@ -25,6 +26,6 @@ class FeedsController < ApplicationController
   end
 
   def respond
-    render :json => Post.respond_wisr(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    render :text => Post.respond_wisr(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 end

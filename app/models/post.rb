@@ -13,6 +13,28 @@ class Post < ActiveRecord::Base
     short_url
 	end
 
+  def self.user_tweet()
+    short_url = nil
+    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
+    res = current_acct.twitter.update("#{tweet} #{short_url}")
+  end
+
+  def self.asker_tweet()
+    short_url = nil
+    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
+    res = current_acct.twitter.update("#{tweet} #{short_url}")
+    Post.create(:asker_id => current_acct.id,
+                :question_id => question_id,
+                :provider => 'twitter',
+                :text => tweet,
+                :url => short_url,
+                :link_type => lt,
+                :post_type => 'status',
+                :provider_post_id => res.id.to_s,
+                :parent_id => parent_id)
+    res    
+  end
+
 	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id)
     short_url = nil
 		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
@@ -50,6 +72,7 @@ class Post < ActiveRecord::Base
     tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
     Post.tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil)
     eng.respond(answer.correct)
+    return tweet_response
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
