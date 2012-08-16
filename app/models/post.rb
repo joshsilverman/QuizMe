@@ -13,16 +13,28 @@ class Post < ActiveRecord::Base
     short_url
 	end
 
-  def self.user_tweet()
-    short_url = nil
-    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.update("#{tweet} #{short_url}")
+  def self.user_tweet(current_user, tweet, asker_id, post_id, in_reply_to_status_id)
+    res = current_user.twitter.update("#{tweet}", {'in_reply_to_status_id' => in_reply_to_status_id})
+    eng = Engagement.create(
+      :text => res.text, 
+      :date => "#{res.created_at.year}-#{res.created_at.month}-#{res.created_at.day}",
+      :engagement_type => "answer mention",
+      :provider => "app",
+      :provider_post_id => res.id,
+      :twi_in_reply_to_status_id => in_reply_to_status_id,
+      :user_id => current_user.id,
+      :post_id => post_id,
+      :created_at => res.created_at,
+      :asker_id => asker_id
+    )  
+    eng  
   end
 
-  def self.asker_tweet()
+  def self.asker_tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id=nil)
     short_url = nil
-    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.update("#{tweet} #{short_url}")
+    ## TODO new param for source (app for responses through wisr, twi for to twitter)
+    short_url = Post.shorten_url(url, 'app', lt, current_acct.twi_screen_name, question_id) if url
+    res = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
     Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'twitter',
@@ -32,13 +44,13 @@ class Post < ActiveRecord::Base
                 :post_type => 'status',
                 :provider_post_id => res.id.to_s,
                 :parent_id => parent_id)
-    res    
+    res 
   end
 
-	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id)
+	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id=nil)
     short_url = nil
 		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.update("#{tweet} #{short_url}")
+    res = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
     Post.create(:asker_id => current_acct.id,
                 :question_id => question_id,
                 :provider => 'twitter',
@@ -56,23 +68,11 @@ class Post < ActiveRecord::Base
     post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
     tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
-    res = Post.tweet(current_user, tweet, nil, nil, post.question_id, post.parent.id)
-    eng = Engagement.create(
-      :text => res.text, 
-      :date => "#{res.created_at.year}-#{res.created_at.month}-#{res.created_at.day}",
-      :engagement_type => "answer mention",
-      :provider => "app",
-      :provider_post_id => res.id,
-      :twi_in_reply_to_status_id => post.sibling("twitter"),
-      :user_id => current_user.id,
-      :post_id => post.id,
-      :created_at => res.created_at,
-      :asker_id => asker_id
-    )
+    eng = Post.user_tweet(current_user, tweet, asker_id, post_id, post.sibling('twitter').provider_post_id)
     tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
-    Post.tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil)
+    Post.asker_tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil, eng.provider_post_id)
     eng.respond(answer.correct)
-    return tweet_response
+    return eng.text 
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
@@ -137,5 +137,9 @@ class Post < ActiveRecord::Base
 
   def sibling(provider)
     self.parent.posts.where(:provider => provider).first
+  end
+
+  def child(provider)
+    self.posts.where(:provider => provider).first
   end
 end
