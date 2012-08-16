@@ -1,5 +1,9 @@
 class CreateEngagements < ActiveRecord::Migration
   def change
+    if table_exists?(:engagements)
+      drop_table :engagements
+    end
+    
     create_table :engagements do |t|
       t.string :date
       t.string :engagement_type
