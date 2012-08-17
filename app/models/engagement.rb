@@ -156,11 +156,11 @@ class Engagement < ActiveRecord::Base
 	def respond(correct)
 		#@TODO update engagement_type
 		self.update_attributes(:responded_to => true)
-  	Rep.create(:user_id => self.user_id,
-  						 :post_id => self.post_id,
-  						 :correct => correct) unless correct.nil?
-
   	unless correct.nil?
+  		Rep.create(:user_id => self.user_id,
+  						 :post_id => self.post_id,
+  						 :correct => correct)
+
 	  	stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, self.post.asker_id)
 	  	stat.increment(:twitter_answers) if self.provider.include? 'twitter'
 	  	stat.increment(:facebook_answers) if self.provider.include? 'facebook'

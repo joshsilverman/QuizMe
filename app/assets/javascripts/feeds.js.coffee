@@ -21,7 +21,7 @@ class Feed
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
 		target.click()
-		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()	
+		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 		$.scrollTo(target, 500)
 	initializeNewPostListener: =>
 		pusher = new Pusher('bffe5352760b25f9b8bd')
@@ -129,31 +129,30 @@ class Post
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
 	respond: (text, answer_id) =>
 		answers = @element.find(".answers")
-		answers.toggle(200, => answers.remove())
-		# params =
-		# 	"asker_id" : window.feed.id
-		# 	"answer_id" : answer_id
-		# 	# "text" : text #This will eventually be any custom text (?)
-		# $.ajax '/respond',
-		# 	type: 'POST'
-		# 	data: params
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		subsidiary.find("p").text(text)
-		subsidiary.find("h5").text(window.feed.user_name)
 		loading = @element.find(".loading").text("Tweeting your answer...")
-		loading.fadeIn(500, => 
-			loading.delay(1000).fadeOut(500, => 
-				@element.find(".post").addClass("answered")
-				@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @submit_answer(true)))
-			)
-		)
-	submit_answer: (correct) =>
+		loading.fadeIn(500)
+		answers.toggle(200, => answers.remove())
+		params =
+			"asker_id" : window.feed.id
+			"post_id" : @id
+			"answer_id" : answer_id
+			# "text" : text #This will eventually be any custom text (?)
+		$.ajax '/respond',
+			type: 'POST'
+			data: params
+			success: (e) => 
+				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+				subsidiary.find("p").text(text)
+				subsidiary.find("h5").text(window.feed.user_name)
+				loading.fadeOut(500, => 
+					@element.find(".post").addClass("answered")
+					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
+				)
+			error: => 
+				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
+	populate_response: (message) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		if correct == "true" 
-			response.find("p").text("Correct! Booyah!") 
-			@correct = true
-		else 
-			response.find("p").text("Sorry, thats incorrect!")
+		response.find("p").text(message) 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0

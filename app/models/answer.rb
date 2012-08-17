@@ -6,10 +6,12 @@ class Answer < ActiveRecord::Base
 		where(:correct => true).first
 	end
 
-	def tweetable(asker_name)
-		length = self.text.length
-		overage = (140 - asker_name.length - 2 - length)
-		overage < 0 ? truncate = length - overage.abs : truncate = length		
+	def tweetable(asker_name, url)
+		answer_length = self.text.length
+		asker_length = asker_name.length
+		url ? url_length = url.length : url_length = 0
+		overage = (140 - asker_length - 1 - answer_length - 1 - url_length - 1)
+		overage < 0 ? truncate = answer_length - overage.abs : truncate = answer_length		
 		truncate(self.text, :length => truncate)
 	end
 end

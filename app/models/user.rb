@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
 		    user.twi_name = auth["info"]["name"]
 		    user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
 		    user.twi_oauth_token = auth['credentials']['token']
-				user.twi_oauth_secret = auth['credentials']['secret']
+			user.twi_oauth_secret = auth['credentials']['secret']
 	    when 'tumblr'
 		    user.tum_user_id = auth["uid"]
 	    	user.tum_oauth_token = auth['credentials']['token']
