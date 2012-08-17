@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
 	end
 
 	#here is an example of a function that cannot scale
-	def self.get_top_scorers(id, data = {}, scores = [])
+	def self.leaderboard(id, data = {}, scores = [])
 		asker = User.includes(:posts).asker(id)
 		reps = Rep.where(:post_id => asker.posts, :correct => true).select([:user_id, :id]).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..9]
 		user_ids = reps.collect { |rep| rep[1][0][:user_id] }
