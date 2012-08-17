@@ -41,19 +41,20 @@
 									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 									%h5= @asker.name
 									%p= post.text
-								.answers.rounded{:style => "display: none;"}
-									- answers = post.question.answers.shuffle
-									- count = answers.size
-									- answers.each_with_index do |answer, i|
-										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
-										.answer_container.input{:type => 'text'}
-											.tweet
-												%span#account= "@#{@asker.name}"
-												%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
-												%span#url= " #{post.url}"
-												/ %span#additional{:contenteditable => true}
-											.answer_controls
-												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+								- unless responded
+									.answers.rounded{:style => "display: none;"}
+										- answers = post.question.answers.shuffle
+										- count = answers.size
+										- answers.each_with_index do |answer, i|
+											%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+											.answer_container.input{:type => 'text'}
+												.tweet
+													%span#account= "@#{@asker.name}"
+													%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
+													%span#url= " #{post.url}"
+													/ %span#additional{:contenteditable => true}
+												.answer_controls
+													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 							.subsidiaries{:style => "display: none;"}
 								- if responded
 									- response = response[0]["text"]
