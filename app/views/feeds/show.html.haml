@@ -25,7 +25,15 @@
 				#related.rounded
 					.header
 						%h4
-							Related
+							Other Feeds
+					%ul.unstyled
+						- @related.each_with_index do |related, i|
+							%a{:href => "/feeds/#{related.id}"}
+								%li{:class => ("bottom_bordered" if i < 2)}
+									.content
+										= image_tag(related.twi_profile_img_url, :class => "rounded")
+										%h5= related.twi_name
+										%p= related.description
 			#right_column.span5
 				#posts.rounded
 					.header

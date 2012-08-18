@@ -5,6 +5,7 @@ class FeedsController < ApplicationController
 
   def show
     @asker = User.asker(params[:id])
+    @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID is not ?", @asker.id).sample(3)
     @posts = @asker.posts.where(:provider => "app").order("created_at DESC").limit(15).includes(:question => :answers)
     @responses = current_user.posts.select([:text, :parent_id]).where(:parent_id => @posts.collect(&:parent_id)).group_by(&:parent_id)
     @post_id = params[:post_id]

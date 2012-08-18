@@ -13,8 +13,6 @@ class Post < ActiveRecord::Base
     short_url
 	end
 
-
-	# def self.tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id = nil)
   def self.tweet(account, tweet, params)
     if account[:role] == "asker"
       return Post.asker_tweet(account, tweet, params[:url], params[:link_type], params[:question_id], params[:parent_id], params[:in_reply_to_status_id], params[:short_url])
