@@ -19,7 +19,7 @@
 					.header
 						%h4
 							Leaderboard
-							-User.leaderboard(@asker.id)[:scores].each do |leader|
+							- User.leaderboard(@asker.id)[:scores].each do |leader|
 								%p
 									=leader[:handle]
 				#related.rounded

@@ -30,24 +30,26 @@ class Post < ActiveRecord::Base
     eng  
   end
 
-  def self.asker_tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id=nil)
-    short_url = nil
+  def self.asker_tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id = nil, short_url = nil)
     ## TODO new param for source (app for responses through wisr, twi for to twitter)
     short_url = Post.shorten_url(url, 'app', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
-    Post.create(:asker_id => current_acct.id,
-                :question_id => question_id,
-                :provider => 'twitter',
-                :text => tweet,
-                :url => short_url,
-                :link_type => lt,
-                :post_type => 'status',
-                :provider_post_id => res.id.to_s,
-                :parent_id => parent_id)
-    res 
+    response = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
+    Post.create(
+      :asker_id => current_acct.id,
+      :question_id => question_id,
+      :provider => 'twitter',
+      :text => tweet,
+      :url => short_url,
+      :link_type => lt,
+      :post_type => 'status',
+      :provider_post_id => response.id.to_s,
+      :parent_id => parent_id
+    )
+    return response 
   end
 
-	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id=nil)
+	def self.tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id = nil)
+    # puts params.to_json
     short_url = nil
 		short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
     res = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
@@ -68,7 +70,8 @@ class Post < ActiveRecord::Base
     post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
     tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
-    eng = Post.user_tweet(current_user, tweet, asker_id, post_id, post.sibling('twitter').provider_post_id)
+    eng = Post.tweet(current_user, tweet, asker_id, post_id, post.sibling('twitter').provider_post_id)
+    # eng = Post.user_tweet(current_user, tweet, asker_id, post_id, post.sibling('twitter').provider_post_id)
     tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
     Post.asker_tweet(asker, tweet_response, "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}", answer.correct ? 'cor' : 'inc', nil, nil, eng.provider_post_id)
     eng.respond(answer.correct)

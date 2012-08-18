@@ -117,12 +117,12 @@ class Post
 			post.find(".answers").hide()
 			# @element.find("i").animate({color: "black"}, 0)
 		else 
-			post.find(".subsidiaries").show()
-			post.toggleClass("active", 200)
-			post.next(".conversation").addClass("active_next")
-			post.prev(".conversation").addClass("active_prev")
-			# post.find(".subsidiary").toggle(200)
-			post.find(".answers").toggle(200)	
+			post.find(".answers").toggle(200)
+			post.find(".subsidiaries").toggle(200, => 
+				post.toggleClass("active", 200)
+				post.next(".conversation").addClass("active_next")
+				post.prev(".conversation").addClass("active_prev")
+			)
 			# if @correct == true
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
 			# else
