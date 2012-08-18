@@ -86,7 +86,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond("@#{window.feed.name} #{parent.text()}", parent.attr("answer_id"))
+				@respond("@#{window.feed.name} #{parent.text()}#{$('#url').text()}", parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -141,6 +141,7 @@ class Post
 			type: 'POST'
 			data: params
 			success: (e) => 
+				console.log e
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text(text)
 				subsidiary.find("h5").text(window.feed.user_name)
