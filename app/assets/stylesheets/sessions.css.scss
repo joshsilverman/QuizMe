@@ -5,6 +5,14 @@
 .navbar {
 	.navbar-inner {
 		.container {
+			li, .brand {
+				padding: 9px 10px 11px;
+			}
+
+			a {
+				padding: 0px
+			}
+
 			.sign_in {
 				float: right;
 				line-height: 38px;
@@ -12,6 +20,8 @@
 
 			.span4 {
 				float: right;
+
+
 
 				h3 {
 					line-height: 36px;
