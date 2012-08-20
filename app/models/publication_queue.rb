@@ -13,13 +13,8 @@ class PublicationQueue < ActiveRecord::Base
     end
   end
 
-  def self.clear_queue(current_acct = nil)
-  	if current_acct
-      # current_acct.publication_queue.
-  		PublicationQueue.where(:asker_id => current_acct.id).destroy_all
-  	else
-  		PublicationQueue.destroy_all
-  	end
+  def self.clear_queue(asker)
+    asker.publication_queue.publications.destroy_all
   end
 
   def increment_index(posts_per_day)

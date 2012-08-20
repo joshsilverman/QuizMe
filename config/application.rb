@@ -9,7 +9,7 @@ if defined?(Bundler)
   # Bundler.require(:default, :assets, Rails.env)
 end
 
-PROVIDERS = ["wisr", "twitter", "tumblr"]
+PROVIDERS = ["twitter", "tumblr"]
 
 module Quizmemanager
   class Application < Rails::Application

@@ -10,6 +10,7 @@ class AddPublicationAndConversationModels < ActiveRecord::Migration
     create_table :conversations do |t|
       t.integer :publication_id
       t.integer :post_id
+      t.integer :user_id
 
       t.timestamps
     end  
