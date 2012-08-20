@@ -1,9 +1,11 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
-	has_many :engagements
+  belongs_to :publication
+	belongs_to :parent, :class_name => 'Post', :foreign_key => 'parent_id'
+  has_many :engagements
+  has_many :conversations
 	has_many :reps
-  belongs_to :parent, :class_name => 'Post', :foreign_key => 'parent_id'
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
 	def self.shorten_url(url, source, lt, campaign, question_id)
@@ -12,6 +14,24 @@ class Post < ActiveRecord::Base
     short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
     short_url
 	end
+
+  def self.publish(provider, asker, publication)
+    question = Question.find(publication.question_id)
+    publication.posts << Post.create(
+      :asker_id => asker.id,
+      :question_id => question.id,
+      :provider => provider,
+      :text => question.text,
+      :post_type => 'question', 
+      :is_parent => true
+    )
+    ## Update to production
+    short_url = Post.shorten_url("http://localhost:3000/feeds/#{current_acct.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
+    post.update_attribute(:url, short_url)
+    return post    
+  end
+
+
 
   def self.tweet(account, tweet, params)
     if account[:role] == "asker"
@@ -81,27 +101,31 @@ class Post < ActiveRecord::Base
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
   	short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
     res = current_acct.twitter.direct_message_create(user_id, "#{tweet} #{short_url if short_url}")
-    Post.create(:asker_id => current_acct.id,
-                :question_id => question_id,
-                :to_twi_user_id => user_id,
-                :provider => 'twitter',
-                :text => tweet,
-                :url => url.nil? ? nil : short_url,
-                :link_type => lt,
-                :post_type => 'dm',
-                :provider_post_id => res.id.to_s)
+    Post.create(
+      :asker_id => current_acct.id,
+      :question_id => question_id,
+      :to_twi_user_id => user_id,
+      :provider => 'twitter',
+      :text => tweet,
+      :url => url.nil? ? nil : short_url,
+      :link_type => lt,
+      :post_type => 'dm',
+      :provider_post_id => res.id.to_s
+    )
   end
   
   def self.app_post(current_acct, question, question_id, parent_id)
-    post = Post.create(:asker_id => current_acct.id,
-                :question_id => question_id,
-                :provider => 'app',
-                :text => question,
-                :post_type => 'question',
-                :parent_id => parent_id)
+    post = Post.create(
+      :asker_id => current_acct.id,
+      :question_id => question_id,
+      :provider => 'app',
+      :text => question,
+      :post_type => 'question',
+      :parent_id => parent_id
+    )
     short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{current_acct.id}/#{post.id}", 'app', "ans", current_acct.twi_screen_name, question_id)
     post.update_attribute(:url, short_url)
-    post
+    return post
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
@@ -109,15 +133,17 @@ class Post < ActiveRecord::Base
     res = current_acct.tumblr.text(current_acct.tum_url,
                                     :title => "Daily Quiz!",
                                     :body => "#{text} #{short_url}")
-    Post.create(:asker_id => current_acct.id,
-                :question_id => question_id,
-                :provider => 'tumblr',
-                :text => text,
-                :url => short_url,
-                :link_type => lt,
-                :post_type => 'text',
-                :provider_post_id => res.id.to_s,
-                :parent_id => parent_id)
+    Post.create(
+      :asker_id => current_acct.id,
+      :question_id => question_id,
+      :provider => 'tumblr',
+      :text => text,
+      :url => short_url,
+      :link_type => lt,
+      :post_type => 'text',
+      :provider_post_id => res.id.to_s,
+      :parent_id => parent_id
+    )
   end
 
   def self.dm_new_followers(current_acct)

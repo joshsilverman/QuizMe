@@ -1,8 +1,8 @@
 #lib/tasks/cron.rake
-require 'pusher'
-Pusher.app_id = '23912'
-Pusher.key = 'bffe5352760b25f9b8bd'
-Pusher.secret = '782e6b3a20d17f5896dc'
+# require 'pusher'
+# Pusher.app_id = '23912'
+# Pusher.key = 'bffe5352760b25f9b8bd'
+# Pusher.secret = '782e6b3a20d17f5896dc'
 
 task :check_mentions => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
@@ -13,21 +13,21 @@ task :check_mentions => :environment do
 end
 
 task :post_question => :environment do
-	t = Time.now
-	askers = User.askers
-	askers.each do |a|
-		shift = (t.hour/a.posts_per_day.to_f).floor + 1
-		queue_index = t.hour%a.posts_per_day
-		Question.post_question(a, queue_index, shift)
+	# t = Time.now
+	User.askers.each do |a|
+		# shift = (t.hour/a.posts_per_day.to_f).floor + 1
+		# queue_index = t.hour%a.posts_per_day
+		# Question.post_question(a, queue_index, shift)
+		a.publish_question()
 		sleep(10)
 	end
 end
 
 task :fill_queue => :environment do
-	PostQueue.clear_queue
+	PublicationQueue.clear_queue
 	askers = User.askers
 	askers.each do |a|
-		Question.select_questions_to_post(a, 7)
+		PublicationQueue.enqueue_questions(current_acct, Question.select_questions_to_post(a, 7))
 	end
 end
 

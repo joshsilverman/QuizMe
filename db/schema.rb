@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120816160701) do
+ActiveRecord::Schema.define(:version => 20120820160053) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -48,6 +48,13 @@ ActiveRecord::Schema.define(:version => 20120816160701) do
     t.timestamp "updated_at"
   end
 
+  create_table "conversations", :force => true do |t|
+    t.integer  "publication_id"
+    t.integer  "post_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "engagements", :force => true do |t|
     t.string    "date"
     t.string    "engagement_type"
@@ -75,27 +82,38 @@ ActiveRecord::Schema.define(:version => 20120816160701) do
     t.timestamp "updated_at"
   end
 
-  create_table "post_queues", :force => true do |t|
-    t.integer   "asker_id"
-    t.integer   "index"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "post_id"
+  create_table "posts", :force => true do |t|
+    t.integer  "asker_id"
+    t.integer  "question_id"
+    t.string   "provider"
+    t.text     "text"
+    t.string   "url"
+    t.string   "link_type"
+    t.string   "post_type"
+    t.string   "provider_post_id"
+    t.integer  "to_twi_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "parent_id"
+    t.integer  "queue_id"
+    t.boolean  "is_parent",        :default => false
+    t.integer  "publication_id"
+    t.integer  "conversation_id"
   end
 
-  create_table "posts", :force => true do |t|
-    t.integer   "asker_id"
-    t.integer   "question_id"
-    t.string    "provider"
-    t.text      "text"
-    t.string    "url"
-    t.string    "link_type"
-    t.string    "post_type"
-    t.string    "provider_post_id"
-    t.integer   "to_twi_user_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "parent_id"
+  create_table "publication_queues", :force => true do |t|
+    t.integer  "asker_id"
+    t.integer  "index"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "publications", :force => true do |t|
+    t.integer  "question_id"
+    t.integer  "asker_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "publication_queue_id"
   end
 
   create_table "questions", :force => true do |t|
