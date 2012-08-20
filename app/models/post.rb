@@ -17,7 +17,7 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
-    publication.posts << Post.create(
+    publication.posts << post = Post.create(
       :asker_id => asker.id,
       :question_id => question.id,
       :provider => provider,
@@ -26,20 +26,38 @@ class Post < ActiveRecord::Base
       :is_parent => true
     )
     ## Update to production
-    short_url = Post.shorten_url("http://localhost:3000/feeds/#{current_acct.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
+    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
     post.update_attribute(:url, short_url)
-    return post    
-  end
-
-
-
-  def self.tweet(account, tweet, params)
-    if account[:role] == "asker"
-      return Post.asker_tweet(account, tweet, params[:url], params[:link_type], params[:question_id], params[:parent_id], params[:in_reply_to_status_id], params[:short_url])
-    else
-      return Post.user_tweet(account, tweet, params[:asker_id], params[:post_id], params[:in_reply_to_status_id])
+    case provider
+    when "twitter"
+      response = asker.twitter.update(tweet)
+    when "tumblr"
+      response = asker.tumblr.text(
+        asker.tum_url,
+        :title => "Daily Quiz!",
+        :body => "#{text} #{short_url}"
+      )
     end
+    return post
   end
+
+  def self.tweet(account, tweet)
+    res = account.twitter.update(tweet)
+    # res = account.twitter.update(tweet, {'in_reply_to_status_id' => in_reply_to_status_id})
+  end
+
+  def self.tumbl()
+
+  end
+
+
+  # def self.tweet(account, tweet, params)
+  #   if account[:role] == "asker"
+  #     return Post.asker_tweet(account, tweet, params[:url], params[:link_type], params[:question_id], params[:parent_id], params[:in_reply_to_status_id], params[:short_url])
+  #   else
+  #     return Post.user_tweet(account, tweet, params[:asker_id], params[:post_id], params[:in_reply_to_status_id])
+  #   end
+  # end
 
   def self.user_tweet(current_user, tweet, asker_id, post_id, in_reply_to_status_id)
     res = current_user.twitter.update("#{tweet}", {'in_reply_to_status_id' => in_reply_to_status_id})

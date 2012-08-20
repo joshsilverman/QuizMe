@@ -26,8 +26,8 @@ end
 task :fill_queue => :environment do
 	PublicationQueue.clear_queue
 	askers = User.askers
-	askers.each do |a|
-		PublicationQueue.enqueue_questions(current_acct, Question.select_questions_to_post(a, 7))
+	askers.each do |asker|
+		PublicationQueue.enqueue_questions(asker)
 	end
 end
 

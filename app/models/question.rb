@@ -14,8 +14,8 @@ class Question < ActiveRecord::Base
     recent_question_ids = current_acct.posts.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
     questions = Question.where("topic_id in (?) and id not in (?) and status = 1", current_acct.topics.collect(&:id), recent_question_ids).includes(:answers)
-    return questions.sample(current_acct.posts_per_day)
     puts "WARNING THE QUEUE FOR #{current_acct.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{queue.size} of #{current_acct.posts_per_day} POSTS SCHEDULED" if queue.size < current_acct.posts_per_day
+    return questions.sample(current_acct.posts_per_day)
     #@TODO email or some notification that I will actually read if not filled
   end
 

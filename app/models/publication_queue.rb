@@ -2,12 +2,12 @@ class PublicationQueue < ActiveRecord::Base
   has_many :publications
   belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	
-	def self.enqueue_questions(current_acct, question_array)
-    queue = PublicationQueue.find_or_create_by_asker_id(current_acct.id)
-    question_array.each do |q|
+	def self.enqueue_questions(asker, question_array)
+    queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
+    Question.select_questions_to_post(asker, 7).each do |question|
       queue.publications << Publication.create(
-        :question_id => q.id,
-        :asker_id => current_acct.id, 
+        :question_id => question.id,
+        :asker_id => asker.id, 
         :publication_queue_id => queue.id
       )
     end
