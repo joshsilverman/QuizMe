@@ -25,14 +25,8 @@
 		border-radius: 5px;
 	}
 
-	.border {
-		border-width:1px;
-		border-color:rgba(0, 0, 0, 0.17);
-		border-style: solid;
-	}
-
 	.border-color {
-		border-color:rgba(0, 0, 0, 0.17);
+		border-color: rgba(0,0,0,.21);
 	}
 
 	p {
@@ -44,7 +38,8 @@
 		margin-bottom: 15px;
 		margin-left: 0px;
 		min-height: 148px;
-		/*border-color: #ddd;*/
+		border-style: solid;
+		border-width: 1px;
 
 		#account_information {
 			height: inherit;
@@ -118,6 +113,9 @@
 
 		#left_column {
 			
+			@media (min-width: 1200px) {
+				width: 285px;
+			}
 
 			#related, #scoreboard {
 				background: white;
@@ -174,7 +172,7 @@
 				border-style: solid;
 				border-width: 1px;
 				margin-bottom: 15px;
-				background-color:rgba(245, 245, 245, 0.85);
+				background-color: rgba(250, 250, 250, .85);
 
 				.header {
 					background: none;
@@ -196,11 +194,12 @@
 
 							.place{		
 								position: absolute;
-								top: 18px;
+								top: 20px;
 								/*margin-top: 4px;*/
 								left: 12px;
-								font-size: 14pt;
+								font-size: 12pt;
 								width: 10px;
+								color:grey;
 							}
 
 							img {
@@ -225,7 +224,6 @@
 			/*margin-left: 14px;*/
 
 			@media (min-width: 1200px) {
-				width: 485px;
 				margin-left: 15px;
 			}
 
@@ -233,7 +231,7 @@
 				.header {
 					border-style: solid;
 					border-width: 1px;
-					border-color: #ddd;	
+					/*border-color: #ddd;	*/
 				}
 
 				.conversation {
@@ -448,6 +446,9 @@
 
 				#posts_more {
 					cursor: default;
+					border-style: solid;
+					border-width: 1px;
+					/*border-color: #ddd;	*/
 					border-top-width: 0px;
 					background: white;	
 					-webkit-border-bottom-left-radius: 5px;
@@ -471,10 +472,10 @@
 					border-radius: 5px !important;	
 					border-top-style: solid;
 					border-top-width: 1px;
-					border-top-color: #ddd;	
+					/*border-top-color: #ddd;	*/
 					border-bottom-style: solid;
 					border-bottom-width: 1px;
-					border-bottom-color: #ddd;						
+					/*border-bottom-color: #ddd;						*/
 				}
 
 				.inactive {
@@ -496,7 +497,7 @@
 					border-bottom-left-radius: 5px;						
 					border-bottom-style: solid;
 					border-bottom-width: 1px;
-					border-bottom-color: #ddd;	
+					/*border-bottom-color: #ddd;	*/
 				}
 				
 				.active_next {
@@ -508,7 +509,7 @@
 					border-top-left-radius: 5px;						
 					border-top-style: solid;
 					border-top-width: 1px;
-					border-top-color: #ddd;	
+					/*border-top-color: #ddd;	*/
 				}				
 			}	
 		}

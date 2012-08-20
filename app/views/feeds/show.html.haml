@@ -1,6 +1,6 @@
 #feed_container.span10
 	#wrapper.span9
-		#header.row.rounded.border
+		#header.row.rounded.border-color
 			#account_information.span6
 				.container
 					.inner_container
@@ -14,8 +14,8 @@
 							/ 	Go to the scoreboard.
 			#account_stats.span3.hidden-phone
 		#feed.row
-			#left_column.span4.hidden-phone
-				#scoreboard.rounded.border
+			#left_column.span3.hidden-phone
+				#scoreboard.rounded.border-color
 					.header
 						%h4
 							Leaderboard
@@ -33,7 +33,7 @@
 								.clr
 					.clr
 				.clr
-				#related.rounded.border
+				#related.rounded.border-color
 					.header
 						%h4
 							Other Feeds
@@ -45,9 +45,9 @@
 										= image_tag(related.twi_profile_img_url, :class => "rounded")
 										%h5= related.twi_name
 										%p= related.description
-			#right_column.span5
+			#right_column.span6
 				#posts.rounded
-					.header
+					.header.border-color
 						%h3
 							Posts
 					- @posts.each do |post|
@@ -84,7 +84,7 @@
 											%p= response					
 							.loading{:style => "display: none;"}
 								Loading...
-					#posts_more
+					#posts_more.border-color
 						%a{:href => "#"} Load more
 
 
