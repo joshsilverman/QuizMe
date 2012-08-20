@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820203518) do
+ActiveRecord::Schema.define(:version => 20120820213937) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -53,33 +53,6 @@ ActiveRecord::Schema.define(:version => 20120820203518) do
     t.integer  "post_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "engagements", :force => true do |t|
-    t.string    "date"
-    t.string    "engagement_type"
-    t.string    "text"
-    t.string    "provider"
-    t.string    "provider_post_id"
-    t.string    "twi_in_reply_to_status_id"
-    t.integer   "user_id"
-    t.integer   "asker_id"
-    t.integer   "post_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.boolean   "responded_to",              :default => false
-  end
-
-  create_table "mentions", :force => true do |t|
-    t.integer   "user_id"
-    t.integer   "post_id"
-    t.text      "text"
-    t.boolean   "responded",                 :default => false
-    t.string    "twi_tweet_id"
-    t.string    "twi_in_reply_to_status_id"
-    t.timestamp "sent_date"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
   end
 
   create_table "posts", :force => true do |t|
