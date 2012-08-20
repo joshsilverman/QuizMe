@@ -14,13 +14,49 @@ body {
 	font-weight: bold;
 	color: #777;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
-
-
 }
 .brand:hover {
 	color: white;
 }
 .well .header h2 {text-align:center;}
+
+.navbar-inner {
+  @lightgrad:rgba(98,98,98,.4);
+  @darkgrad:rgba(71,71,71,.4);
+  min-height: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: @lightgrad;
+  background-image: -moz-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -ms-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@lightgrad), to(@darkgrad));
+  background-image: -webkit-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -o-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: linear-gradient(top, @lightgrad, @darkgrad);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@lightgrad', endColorstr='@darkgrad', GradientType=0);
+  background-color: @lightgrad;
+  background-image: -moz-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -ms-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@lightgrad), to(@darkgrad));
+  background-image: -webkit-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: -o-linear-gradient(top, @lightgrad, @darkgrad);
+  background-image: linear-gradient(top, @lightgrad, @darkgrad);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@lightgrad', endColorstr='@darkgrad', GradientType=0);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+  -moz-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+  -moz-box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+}
 
 /* Landscape phones and down */
 @media (max-width: 480px) {
