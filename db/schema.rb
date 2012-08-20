@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820160053) do
+ActiveRecord::Schema.define(:version => 20120820203518) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -83,22 +83,19 @@ ActiveRecord::Schema.define(:version => 20120820160053) do
   end
 
   create_table "posts", :force => true do |t|
-    t.integer  "asker_id"
-    t.integer  "question_id"
+    t.integer  "user_id"
     t.string   "provider"
     t.text     "text"
-    t.string   "url"
-    t.string   "link_type"
-    t.string   "post_type"
+    t.string   "engagement_type"
     t.string   "provider_post_id"
-    t.integer  "to_twi_user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "parent_id"
-    t.integer  "queue_id"
-    t.boolean  "is_parent",        :default => false
+    t.integer  "in_reply_to_post_id"
     t.integer  "publication_id"
     t.integer  "conversation_id"
+    t.boolean  "responded_to",        :default => false
+    t.integer  "in_reply_to_user_id"
+    t.boolean  "posted_via_app"
   end
 
   create_table "publication_queues", :force => true do |t|
