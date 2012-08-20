@@ -1,6 +1,6 @@
 #feed_container.span10
 	#wrapper.span9
-		#header.row.rounded
+		#header.row.rounded.border
 			#account_information.span6
 				.container
 					.inner_container
@@ -15,14 +15,15 @@
 			#account_stats.span3.hidden-phone
 		#feed.row
 			#left_column.span4.hidden-phone
-				#scoreboard.rounded
+				#scoreboard.rounded.border
 					.header
 						%h4
 							Leaderboard
 					%ul.unstyled
 						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
 							/ {:href => "/feeds/#{related.id}"}
-							%li{:class => ("border_bottom" if i < 3)}
+							%li 
+								/ {:class => ("border_bottom" if i < 3)}
 								.content
 									.place= i + 1
 									= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
@@ -30,10 +31,9 @@
 									%p= "#{leader[:correct]} correct answers"
 									.clr
 								.clr
-							.clr
 					.clr
 				.clr
-				#related.rounded
+				#related.rounded.border
 					.header
 						%h4
 							Other Feeds
@@ -53,7 +53,7 @@
 					- @posts.each do |post|
 						- response = @responses[post.parent_id.to_i]
 						- response ? responded = true : responded = false
-						.conversation
+						.conversation.border-color
 							.post.parent{:class => ("answered" if responded), :post_id => post.id}
 								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
@@ -61,7 +61,7 @@
 									%h5= @asker.name
 									%p= post.text
 								- unless responded
-									.answers.rounded{:style => "display: none;"}
+									.answers.rounded.border{:style => "display: none;"}
 										- answers = post.question.answers.shuffle
 										- count = answers.size
 										- answers.each_with_index do |answer, i|
@@ -95,7 +95,7 @@
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 			%h5= @asker.name
 			%p Post content
-		.answers.rounded{:style => "display: none;"}
+		.answers.rounded.border{:style => "display: none;"}
 	.loading{:style => "display: none;"}
 		Loading...
 

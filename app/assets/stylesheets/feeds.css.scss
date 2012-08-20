@@ -5,19 +5,34 @@
 
 #wrapper {
 	padding: 14px;
+
 	margin-top: -18px;
+	@media (min-width: 980px) {
+		margin-top: -20px;
+	}
+
 	margin-bottom: -40px;
-	padding-top: 8px;
-	background-color: rgba(208, 225, 236, 0.5);
-	box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
+	padding-top: 14px;
+	background: url(https://twimg0-a.akamaihd.net/a/1345161153/t1/img/wash-white-30.png);
+	/*box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
 	-moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
 	-webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: rgba(0,0,0,0);*/
 
 	.rounded {
 		-webkit-border-radius: 5px;
 		-moz-border-radius: 5px;
 		border-radius: 5px;
+	}
+
+	.border {
+		border-width:1px;
+		border-color:rgba(0, 0, 0, 0.17);
+		border-style: solid;
+	}
+
+	.border-color {
+		border-color:rgba(0, 0, 0, 0.17);
 	}
 
 	p {
@@ -26,12 +41,10 @@
 
 	#header {
 		background: white;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 		margin-left: 0px;
 		min-height: 148px;
-		border-style: solid;
-		border-width: 1px;
-		border-color: #ddd;
+		/*border-color: #ddd;*/
 
 		#account_information {
 			height: inherit;
@@ -109,8 +122,7 @@
 			#related, #scoreboard {
 				background: white;
 				border-style: solid;
-				border-width: 1px;
-				border-color: #ddd;		
+				border-width: 1px;	
 				position: relative;
 
 				a:hover {
@@ -128,7 +140,7 @@
 						&.border_bottom {
 							border-bottom-style: dotted;
 							border-bottom-width: 1px;
-							border-bottom-color: #ddd;	
+							border-bottom-color: #ddd;
 						}
 															
 						.content {
@@ -161,12 +173,23 @@
 				background: white;
 				border-style: solid;
 				border-width: 1px;
-				border-color: #ddd;		
-				margin-bottom: 10px;
-				background-color: #fafafa;
+				margin-bottom: 15px;
+				background-color:rgba(245, 245, 245, 0.85);
+
+				.header {
+					background: none;
+				}
 
 				ul {
 					li {
+						border-bottom-style: dotted;
+						border-bottom-width: 1px;
+						border-bottom-color: #ddd;
+
+						&:last-child {
+							border:none !important;
+						}
+
 						.content {
 							margin-left: 58px;
 							min-height: 34px;
@@ -201,6 +224,11 @@
 
 			/*margin-left: 14px;*/
 
+			@media (min-width: 1200px) {
+				width: 485px;
+				margin-left: 15px;
+			}
+
 			#posts {
 				.header {
 					border-style: solid;
@@ -213,13 +241,13 @@
 					background: white;
 					border-right-style: solid;
 					border-right-width: 1px;
-					border-right-color: #ddd;	
+					/*border-right-color: #ddd;	*/
 					border-left-style: solid;
 					border-left-width: 1px;
-					border-left-color: #ddd;	
+					/*border-left-color: #ddd;	*/
 					border-bottom-style: dotted;
 					border-bottom-width: 1px;
-					border-bottom-color: #ddd;					
+					/*border-bottom-color: #ddd;					*/
 
 					.loading {
 						border-top-style: dotted;
@@ -420,9 +448,6 @@
 
 				#posts_more {
 					cursor: default;
-					border-style: solid;
-					border-width: 1px;
-					border-color: #ddd;	
 					border-top-width: 0px;
 					background: white;	
 					-webkit-border-bottom-left-radius: 5px;
