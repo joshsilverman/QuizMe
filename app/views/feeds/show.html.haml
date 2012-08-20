@@ -1,11 +1,13 @@
 #feed_container.span10
 	#wrapper.span9
-		#header.row.rounded
+		#header.row.rounded.border-color
 			#account_information.span6
 				.container
 					.inner_container
 						.account_image
-							= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+							- puts @asker.twi_profile_img_url
+							- puts @asker.twi_profile_img_url.sub(/_normal\.png$/, "_reasonably_small.png")
+							= image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
 						.account_text
 							%h2= @asker.name
 							%h3= "@#{@asker.twi_name}"
@@ -14,47 +16,79 @@
 							/ 	Go to the scoreboard.
 			#account_stats.span3.hidden-phone
 		#feed.row
-			#left_column.span4.hidden-phone
-				#scoreboard.rounded
-					.header
-						%h4
-							Leaderboard
-				#related.rounded
-					.header
-						%h4
-							Related
-			#right_column.span5
+			#right_column.span6
 				#posts.rounded
-					.header
+					.header.border-color
 						%h3
 							Posts
 					- @posts.each do |post|
-						.conversation
-							.post.parent{:post_id => post.id}
-								%i.icon-share-alt{:style => "display: none;"}
+						- response = @responses[post.parent_id.to_i]
+						- response ? responded = true : responded = false
+						.conversation.border-color
+							.post.parent{:class => ("answered" if responded), :post_id => post.id}
+								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
 									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 									%h5= @asker.name
 									%p= post.text
-								.answers.rounded{:style => "display: none;"}
-									- answers = post.question.answers.shuffle
-									- count = answers.size
-									- answers.each_with_index do |answer, i|
-										%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
-										.answer_container.input{:type => 'text'}
-											.tweet
-												%span#account= "@#{@asker.name}"
-												%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
-												%span#url= " #{post.url}"
-												/ %span#additional{:contenteditable => true}
-											.answer_controls
-												%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
-							.subsidiaries
+								- unless responded
+									.answers.rounded.border{:style => "display: none;"}
+										- answers = post.question.answers.shuffle
+										- count = answers.size
+										- answers.each_with_index do |answer, i|
+											%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+											.answer_container.input{:type => 'text'}
+												.tweet
+													%span#account= "@#{@asker.name}"
+													%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
+													%span#url= " #{post.url}"
+													/ %span#additional{:contenteditable => true}
+												.answer_controls
+													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+							.subsidiaries{:style => "display: none;"}
+								- if responded
+									- response = response[0]["text"]
+									.subsidiary.post.answered
+										.content
+											= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+											%h5= current_user.twi_screen_name
+											%p= response					
 							.loading{:style => "display: none;"}
 								Loading...
-					#posts_more
+					#posts_more.border-color
 						%a{:href => "#"} Load more
 
+			#left_column.span3.hidden-phone
+				#scoreboard.rounded.border-color
+					.header
+						%h4
+							Leaderboard
+					%ul.unstyled
+						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
+							/ {:href => "/feeds/#{related.id}"}
+							%li 
+								/ {:class => ("border_bottom" if i < 3)}
+								.content
+									.place= i + 1
+									= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
+									%h5= leader[:user].twi_screen_name
+									%p= "#{leader[:correct]} correct answers"
+									.clr
+								.clr
+					.clr
+				.clr
+				#related.rounded.border-color
+					.header
+						%h4
+							Other Feeds
+					%ul.unstyled
+						- @related.each_with_index do |related, i|
+							%a{:href => "/feeds/#{related.id}"}
+								%li{:class => ("border_bottom" if i < 2)}
+									.content
+										= image_tag(related.twi_profile_img_url, :class => "rounded")
+										%h5= related.twi_name
+										%p= related.description
 
 
 #post_template.conversation{:style => "display: none;"}
@@ -63,7 +97,7 @@
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 			%h5= @asker.name
 			%p Post content
-		.answers.rounded{:style => "display: none;"}
+		.answers.rounded.border{:style => "display: none;"}
 	.loading{:style => "display: none;"}
 		Loading...
 

@@ -1,6 +1,7 @@
 source :rubygems
 
 gem "rspec-rails", :group => [:test, :development]
+gem 'rack-mini-profiler' #won't show up in production
 
 group :test do
   gem 'sqlite3'

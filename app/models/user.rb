@@ -67,7 +67,6 @@ class User < ActiveRecord::Base
 																 :oauth_token => self.twi_oauth_token,
 																 :oauth_token_secret => self.twi_oauth_secret)
 		end
-		puts client.to_json
 		client
 	end
 
@@ -81,20 +80,16 @@ class User < ActiveRecord::Base
 		client
 	end
 
-
-	###
-	### NEEDS TO BE FIXED FOR NEW USER ROLE- ASKERS
-	###
-	# def self.get_top_scorers(id, data = {}, scores = [])
-	# 	account = Account.select([:name, :id]).find(id)
-	# 	posts = Post.where(:account_id => account.id).select(:id).collect(&:id)
-	# 	reps = Rep.where(:post_id => posts, :correct => true).select([:user_id, :id]).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..9]
-	# 	user_ids = reps.collect { |rep| rep[1][0][:user_id] }
-	# 	users = User.select([:twi_screen_name, :id]).find(user_ids).group_by(&:id)
-	# 	reps.each { |rep| scores << {:handle => users[rep[0]][0].twi_screen_name, :correct => rep[1].length} }
-	# 	data[:name] = account.name
-	# 	data[:scores] = scores
-	# 	return data
-	# end	
+	#here is an example of a function that cannot scale
+	def self.leaderboard(id, data = {}, scores = [])
+		asker = User.includes(:posts).asker(id)
+		reps = Rep.where(:post_id => asker.posts, :correct => true).select([:user_id, :id]).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..3]
+		user_ids = reps.collect { |rep| rep[1][0][:user_id] }
+		users = User.select([:twi_screen_name, :twi_profile_img_url, :id]).find(user_ids).group_by(&:id)
+		reps.each { |rep| scores << {:user => users[rep[0]][0], :correct => rep[1].length} }
+		data[:name] = asker.name
+		data[:scores] = scores
+		data
+	end	
 
 end

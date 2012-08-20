@@ -86,7 +86,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond("@#{window.feed.name} #{parent.text()}", parent.attr("answer_id"))
+				@respond("@#{window.feed.name} #{parent.text()}#{$('#url').text()}", parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -117,19 +117,21 @@ class Post
 			post.find(".answers").hide()
 			# @element.find("i").animate({color: "black"}, 0)
 		else 
-			post.find(".subsidiaries").show()
-			post.toggleClass("active", 200)
-			post.next(".conversation").addClass("active_next")
-			post.prev(".conversation").addClass("active_prev")
-			# post.find(".subsidiary").toggle(200)
-			post.find(".answers").toggle(200)	
+			post.find(".answers").toggle(200)
+			post.find(".subsidiaries").toggle(200, => 
+				post.toggleClass("active", 200)
+				post.next(".conversation").addClass("active_next")
+				post.prev(".conversation").addClass("active_prev")
+			)
 			# if @correct == true
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
 			# else
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
 	respond: (text, answer_id) =>
 		answers = @element.find(".answers")
-		# answers.toggle(200, => answers.remove())
+		loading = @element.find(".loading").text("Tweeting your answer...")
+		loading.fadeIn(500)
+		answers.toggle(200, => answers.remove())
 		params =
 			"asker_id" : window.feed.id
 			"post_id" : @id
@@ -138,23 +140,20 @@ class Post
 		$.ajax '/respond',
 			type: 'POST'
 			data: params
-		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		# subsidiary.find("p").text(text)
-		# subsidiary.find("h5").text(window.feed.user_name)
-		# loading = @element.find(".loading").text("Tweeting your answer...")
-		# loading.fadeIn(500, => 
-		# 	loading.delay(1000).fadeOut(500, => 
-		# 		@element.find(".post").addClass("answered")
-		# 		@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @submit_answer(true)))
-		# 	)
-		# )
-	submit_answer: (correct) =>
+			success: (e) => 
+				console.log e
+				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+				subsidiary.find("p").text(text)
+				subsidiary.find("h5").text(window.feed.user_name)
+				loading.fadeOut(500, => 
+					@element.find(".post").addClass("answered")
+					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
+				)
+			error: => 
+				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
+	populate_response: (message) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		if correct == "true" 
-			response.find("p").text("Correct! Booyah!") 
-			@correct = true
-		else 
-			response.find("p").text("Sorry, thats incorrect!")
+		response.find("p").text(message) 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
