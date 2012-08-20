@@ -4,7 +4,7 @@
 }
 
 #wrapper {
-	padding: 10px;
+	padding: 14px;
 	margin-top: -18px;
 	margin-bottom: -40px;
 	padding-top: 8px;
@@ -105,16 +105,8 @@
 
 		#left_column {
 			
-			#scoreboard {
-				background: white;
-				height: 200px;
-				border-style: solid;
-				border-width: 1px;
-				border-color: #ddd;		
-				margin-bottom: 10px;	
-			}
 
-			#related {
+			#related, #scoreboard {
 				background: white;
 				border-style: solid;
 				border-width: 1px;
@@ -165,6 +157,39 @@
 				}
 			}
 
+			#scoreboard {
+				background: white;
+				border-style: solid;
+				border-width: 1px;
+				border-color: #ddd;		
+				margin-bottom: 10px;
+
+				ul {
+					li {
+						background-color: #fafafa;
+						.content {
+							margin-left: 58px;
+							min-height: 34px;
+
+							.place{		
+								position: absolute;
+								top: 18px;
+								/*margin-top: 4px;*/
+								left: 12px;
+								font-size: 14pt;
+								width: 10px;
+							}
+
+							img {
+								top:14px;
+								height: 28px;
+								left: 31px;
+							}
+						}
+					}
+				}	
+			}
+
 			.header {
 				border-bottom-style: solid;
 				border-bottom-width: 1px;
@@ -174,6 +199,8 @@
 
 		#right_column {
 
+			/*margin-left: 14px;*/
+			
 			#posts {
 				.header {
 					border-style: solid;
