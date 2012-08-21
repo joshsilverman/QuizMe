@@ -2,12 +2,13 @@ class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :user
   belongs_to :publication
+  belongs_to :conversation
 	belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
 
-  URL = "http://studyegg-quizme-staging.herokuapp.com"
+  #URL = "http://studyegg-quizme-staging.herokuapp.com"
 
   ###
   ###Helper Methods
@@ -74,7 +75,7 @@ class Post < ActiveRecord::Base
 
   ### Internal
   def is_parent?
-    self.publication_id.exists?
+    self.publication_id? or self.in_reply_to_post_id.nil?
   end
 
   def sibling(provider)
@@ -97,6 +98,7 @@ class Post < ActiveRecord::Base
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
+    puts long_url
     case provider
     when "twitter"
       Post.tweet(asker, question.text, nil, long_url, 
@@ -245,14 +247,14 @@ class Post < ActiveRecord::Base
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where('provider = "twitter" and provider_post_id is not null and id not in (?)', asker_ids).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50, :since_id => last_post.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
 
     retweets.each do |r|
-      Engagement.save_retweet_data(r, current_acct)
+      Post.save_retweet_data(r, current_acct)
     end
     true
   end
@@ -263,47 +265,58 @@ class Post < ActiveRecord::Base
                         :twi_screen_name => m.user.screen_name,
                         :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
     post = Post.find_by_provider_post_id(m.id.to_s)
-    p = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
-    engagement.update_attributes(:date => "#{m.created_at.year}-#{m.created_at.month}-#{m.created_at.day}",
-                                 :engagement_type => nil,
-                                 :text => m.text,
-                                 :provider => 'twitter',
-                                 :twi_in_reply_to_status_id => m.in_reply_to_status_id.to_s,
-                                 :user_id => u.id,
-                                 :asker_id => current_acct.id,
-                                 :post_id => p ? p.id : nil,
-                                 :created_at => m.created_at)
+    return if post
+    reply_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
+    if reply_post and reply_post.is_parent?
+      conversation = Conversation.create(:publication_id => reply_post.publication_id,
+                                         :post_id => reply_post.id,
+                                         :user_id => u.id)
+    elsif reply_post.conversation_id
+      conversation = reply_post.conversation
+    else
+      puts "Something went wrong on line 277 of post.rb"
+    end      
+    Post.create( :provider_post_id => m.id.to_s,
+                 :engagement_type => nil,
+                 :text => m.text,
+                 :provider => 'twitter',
+                 :user_id => u.id,
+                 :in_reply_to_post_id => reply_post ? reply_post.id : nil,
+                 :in_reply_to_user_id => reply_post.user_id,
+                 :created_at => m.created_at,
+                 :conversation_id => conversation.nil? ? nil : conversation.id,
+                 :posted_via_app => false
+                 )
   end
 
   def self.save_retweet_data(r, current_acct)
+    retweet_post = Post.find_by_provider_post_id(r.id.to_s)
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
       u.update_attributes(:twi_name => m.user.name,
                           :twi_screen_name => m.user.screen_name,
                           :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
-      engagement = Engagement.find_or_create_by_provider_post_id(r.id.to_s)
-      p = Post.find_by_provider_post_id(r.id.to_s)
-      engagement.update_attributes(:date => Date.today.to_s,
-                                   :engagement_type => 'share',
-                                   :text => r.text,
-                                   :provider => 'twitter',
-                                   :twi_in_reply_to_status_id => nil,
-                                   :user_id => u.id,
-                                   :asker_id => current_acct.id,
-                                   :post_id => p ? p.id : nil)
+      post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
+      return if post
+      Post.create(:engagement_type => 'share',
+                 :provider => 'twitter',
+                 :user_id => u.id,
+                 :in_reply_to_post_id => retweet_post.id,
+                 :in_reply_to_user_id => retweet_post.user_id,
+                 :posted_via_app => false
+                 )
     end
   end
 
 
-  def self.generate_response(response_type)
+  def generate_response(response_type)
     case response_type
     when 'correct'
       tweet = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     when 'incorrect'
       tweet = "#{INCORRECT.sample} Check the question and try it again!"
     when 'fast'
-      ## UPDATE, SHOULD BE PASSED SCREEN NAME?
       tweet = "#{FAST.sample} @#{self.user.twi_screen_name} had the fastest right answer on that one!"
     else
       tweet = ""
