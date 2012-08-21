@@ -95,7 +95,7 @@
 										%p= related.description
 
 
-#post_template.conversation{:style => "display: none;"}
+#post_template.conversation.border-color{:style => "display: none;"}
 	.post.parent
 		.content
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
@@ -120,7 +120,7 @@
 		%p= "Post content"
 
 = hidden_field_tag :feed_id, @asker.id
-= hidden_field_tag :feed_name, @asker.name
+= hidden_field_tag :feed_name, @asker.twi_screen_name
 = hidden_field_tag :post_id, @post_id
 = hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user

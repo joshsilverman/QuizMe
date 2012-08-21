@@ -28,11 +28,12 @@ class Feed
 		channel = pusher.subscribe(@name)
 		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	displayNewPost: (data, insert_type) => 
+		console.log data
 		# $("#feed_content").first().animate({"top": "200px"})
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
 		post.attr("post_id", data.id)
-		post.find("p").text(data.text)
+		post.find("p").text(data.question.text)
 		conversation.css "visibility", "hidden"
 		answers_element = post.find(".answers")
 		answers = data.question.answers
@@ -54,8 +55,8 @@ class Feed
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
-			if posts.length > 0
-				@displayNewPost(post, "append") for post in posts
+			if posts.publications.length > 0
+				@displayNewPost(post, "append") for post in posts.publications
 			else
 				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
@@ -86,7 +87,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond("@#{window.feed.name} #{parent.text()}#{$('#url').text()}", parent.attr("answer_id"))
+				@respond(parent.text(), parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -143,7 +144,7 @@ class Post
 			success: (e) => 
 				console.log e
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text(text)
+				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
 				subsidiary.find("h5").text(window.feed.user_name)
 				loading.fadeOut(500, => 
 					@element.find(".post").addClass("answered")
@@ -151,9 +152,9 @@ class Post
 				)
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
-	populate_response: (message) =>
+	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text(message) 
+		response.find("p").text("@#{window.feed.user_name} #{message_hash.message} #{message_hash.url}") 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
