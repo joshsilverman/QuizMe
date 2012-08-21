@@ -267,8 +267,4 @@ class Post < ActiveRecord::Base
   def sibling(provider)
     self.parent.posts.where(:provider => provider).first
   end
-
-  def child(provider)
-    self.posts.where(:provider => provider).first
-  end
 end
