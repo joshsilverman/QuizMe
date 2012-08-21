@@ -1,5 +1,4 @@
 class Post < ActiveRecord::Base
-  include ActionView::Helpers::TextHelper
 	belongs_to :question
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
   belongs_to :publication
@@ -9,7 +8,7 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
-	def self.shorten_url(url, source, lt, campaign, question_id)
+	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
     shortener = UrlShortener::Client.new authorize
     short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
@@ -47,9 +46,29 @@ class Post < ActiveRecord::Base
     return post
   end
 
-  def self.tweet(account, tweet)
-    res = account.twitter.update(tweet)
-    # res = account.twitter.update(tweet, {'in_reply_to_status_id' => in_reply_to_status_id})
+  def self.tweet(account, tweet, engagement_type, 
+                 long_url, link_type, conversation_id,
+                 publication_id, in_reply_to_post_id=nil, 
+                 in_reply_to_user_id=nil, posted_via_app=false)
+    return unless account.twitter_enabled?
+
+    short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
+    parent_post = Post.find(in_reply_to_post_id)
+    response = account.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    Post.create(
+      :user_id => account.id,
+      :provider => 'twitter',
+      :text => tweet,
+      :link_type => link_type,
+      :engagement_type => engagement_type,
+      :provider_post_id => response.id.to_s,
+      :in_reply_to_post_id => in_reply_to_post_id,
+      :in_reply_to_user_id => in_reply_to_user_id,
+      :conversation_id => conversation_id,
+      :publication_id => publication_id,
+      :posted_via_app => provider_post_id
+    )
+    return response
   end
 
   def self.tumbl()
@@ -61,7 +80,7 @@ class Post < ActiveRecord::Base
     length = self.text.length
     overage = (140 - user.length - 2 - length - 1 - url.length)
     overage < 0 ? truncation = length - overage.abs : truncation = length
-    truncated_text = truncate(text, :length => truncation)
+    truncated_text = Post.truncate(text, truncation)
     tweet += "@#{user}" if user.present?
     tweet += " #{truncated_text}"
     tweet += " #{url}" if url.present?
