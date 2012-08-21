@@ -8,6 +8,8 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
+  URL = "http://studyegg-quizme-staging.herokuapp.com"
+
   ###
   ###Helper Methods
   ###
@@ -36,6 +38,8 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweetable(text, user = "", url = "")
+    user = "" if user.nil?
+    url = "" if url.nil?
     text_length = text.length
     handle_length = user.length
     url_length = url.length
@@ -96,8 +100,8 @@ class Post < ActiveRecord::Base
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
-      Post.tweet(asker, question.text, 'status question', 
-                 long_url, 'initial', nil,
+      Post.tweet(asker, question.text, nil, long_url, 
+                 'status question', 'initial', nil,
                  publication.id, nil, nil)
     when "tumblr"
       puts "No Tumblr Post Methods"
@@ -108,19 +112,22 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(account, tweet, engagement_type, 
-                 long_url, link_type, conversation_id,
+  def self.tweet(account, tweet, reply_to, long_url, 
+                 engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
                  in_reply_to_user_id)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
-    parent_post = Post.find(in_reply_to_post_id)
-    response = account.twitter.update("#{Post.tweetable(tweet, '', short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    if in_reply_to_post_id
+      parent_post = Post.find(in_reply_to_post_id) 
+      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    else
+      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}")
+    end
     post = Post.create(
       :user_id => account.id,
       :provider => 'twitter',
       :text => tweet,
-      :link_type => link_type,
       :engagement_type => engagement_type,
       :provider_post_id => response.id.to_s,
       :in_reply_to_post_id => in_reply_to_post_id,
@@ -134,14 +141,10 @@ class Post < ActiveRecord::Base
       publication = Publication.find(publication_id)
       publication.posts << post
     end
-    return response
+    return post
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
-    # Post the user's answer to Twitter
-    # Generate a response
-    # Post the response to Twitter
-    # Return the response text
     asker = User.asker(asker_id)
     publication = Publication.find(publication_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
@@ -151,8 +154,9 @@ class Post < ActiveRecord::Base
     user_post = Post.tweet(
       current_user, 
       answer.text, 
-      "reply answer #{status}", 
+      asker.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+      "reply answer #{status}", 
       status[0..2], 
       conversation.id, 
       nil, 
@@ -160,19 +164,22 @@ class Post < ActiveRecord::Base
       asker.id
     )
     conversation.posts << user_post
-    user_post.respond(answer.correct, publication.question_id)
-    response = Post.generate_response()
-    conversation.posts << Post.tweet(
+    user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
+    response = Post.generate_response(status)
+    app_post = Post.tweet(
       asker, 
       response, 
-      "reply answer_response #{status}", 
+      current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+      "reply answer_response #{status}", 
       status[0..2], 
       conversation.id, 
       nil, 
       user_post.id, 
       current_user.id
     )  
+    conversation.posts << app_post
+    return response
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
@@ -290,21 +297,22 @@ class Post < ActiveRecord::Base
   end
 
 
-  def generate_response(response_type)
+  def self.generate_response(response_type)
     case response_type
     when 'correct'
-      tweet = "@#{self.user.twi_screen_name} #{CORRECT.sample} #{COMPLEMENT.sample}"
+      tweet = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     when 'incorrect'
-      tweet = "@#{self.user.twi_screen_name} #{INCORRECT.sample} Check the question and try it again!"
+      tweet = "#{INCORRECT.sample} Check the question and try it again!"
     when 'fast'
+      ## UPDATE, SHOULD BE PASSED SCREEN NAME?
       tweet = "#{FAST.sample} @#{self.user.twi_screen_name} had the fastest right answer on that one!"
     else
-      tweet = "@#{self.user.twi_screen_name} "
+      tweet = ""
     end
     tweet
   end
 
-  def respond(correct, publication_id, question_id)
+  def respond(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     self.update_attributes(:responded_to => true)
@@ -315,7 +323,7 @@ class Post < ActiveRecord::Base
                  :question_id => question_id,
                  :correct => correct)
 
-        stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, self.post.asker_id)
+        stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
         stat.increment(:twitter_answers) if self.provider.include? 'twitter'
         stat.increment(:facebook_answers) if self.provider.include? 'facebook'
         stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'

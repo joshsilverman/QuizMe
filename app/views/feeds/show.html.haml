@@ -7,8 +7,8 @@
 						.account_image
 							= image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
 						.account_text
-							%h2= @asker.name
-							%h3= "@#{@asker.twi_name}"
+							%h2= @asker.twi_screen_name
+							%h3= "@#{@asker.twi_screen_name}"
 							%p= @asker.description
 							/ %a.scoreboard_link.visible-phone{:href => "#"}
 							/ 	Go to the scoreboard.
@@ -20,16 +20,14 @@
 						%h3
 							Posts
 					- @publications.each do |post|
-						/ - puts post.conversation
-						/ - response = @responses[post.parent_id.to_i]
-						/ - response ? responded = true : responded = false
-						- responded = false
+						- conversation = @responses[post.id]
+						- conversation ? responded = true : responded = false
 						.conversation.border-color
 							.post.parent{:class => ("answered" if responded), :post_id => post.id}
 								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
 									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-									%h5= @asker.name
+									%h5= @asker.twi_screen_name
 									%p= post.question.text
 								- unless responded
 									.answers.rounded.border{:style => "display: none;"}
@@ -39,20 +37,26 @@
 											%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 											.answer_container.input{:type => 'text'}
 												.tweet
-													%span#account= "@#{@asker.name}"
-													%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
+													%span#account= "@#{@asker.twi_screen_name}"
+													%span#answer= " #{answer.tweetable(@asker.twi_screen_name, post.url)}"
 													%span#url= " #{post.url}"
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
 													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 							.subsidiaries{:style => "display: none;"}
-								- if responded
-									- response = response[0]["text"]
-									.subsidiary.post.answered
-										.content
-											= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-											%h5= current_user.twi_screen_name
-											%p= response					
+								- if conversation
+									- conversation.first.posts.each do |response|
+										- puts response.to_json
+										.subsidiary.post.answered
+											.content
+												- if response["user_id"] == @asker.id
+													= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+													%h5= @asker.twi_screen_name
+													%p= "@#{current_user.twi_screen_name} #{response['text']} #{post.url}"
+												- else
+													= image_tag(current_user.twi_profile_img_url, :class => "rounded")
+													%h5= current_user.twi_screen_name
+													%p= "@#{@asker.twi_screen_name} #{response['text']} #{post.url}"
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more.border-color
@@ -95,7 +99,7 @@
 	.post.parent
 		.content
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-			%h5= @asker.name
+			%h5= @asker.twi_screen_name
 			%p Post content
 		.answers.rounded.border{:style => "display: none;"}
 	.loading{:style => "display: none;"}
@@ -103,7 +107,7 @@
 
 #answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
 	.tweet
-		%span#account= "@#{@asker.name}"
+		%span#account= "@#{@asker.twi_screen_name}"
 		%span#answer= " Answer text"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
