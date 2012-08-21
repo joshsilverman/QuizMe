@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(:version => 20120820213937) do
   create_table "conversations", :force => true do |t|
     t.integer  "publication_id"
     t.integer  "post_id"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -81,6 +82,7 @@ ActiveRecord::Schema.define(:version => 20120820213937) do
   create_table "publications", :force => true do |t|
     t.integer  "question_id"
     t.integer  "asker_id"
+    t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "publication_queue_id"
