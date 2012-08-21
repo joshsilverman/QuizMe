@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
 	def publish_question
 		queue = self.publication_queue
 		publication = queue.publications[queue.index]
+		publication.update_attribute(:published, true)
 		queue.increment_index(self.posts_per_day)
 		PROVIDERS.each do |provider|
 			Post.publish(provider, self, publication)

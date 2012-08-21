@@ -8,6 +8,8 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
+  URL = "http://studyegg-quizme-staging.herokuapp.com"
+
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
     shortener = UrlShortener::Client.new authorize
@@ -26,7 +28,7 @@ class Post < ActiveRecord::Base
       :posted_via_app => true
     )
     ## Update to production
-    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
+    short_url = Post.shorten_url("#{URL}/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
     case provider
     when "twitter"
       response = asker.twitter.update(Post.tweetable(post.text, "", short_url))   
@@ -50,8 +52,8 @@ class Post < ActiveRecord::Base
 
   def self.tweet(account, tweet, engagement_type, 
                  long_url, link_type, conversation_id,
-                 publication_id, in_reply_to_post_id=nil, 
-                 in_reply_to_user_id=nil, posted_via_app=false)
+                 publication_id, in_reply_to_post_id, 
+                 in_reply_to_user_id)
     return unless account.twitter_enabled?
 
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
@@ -70,23 +72,43 @@ class Post < ActiveRecord::Base
       :publication_id => publication_id,
       :posted_via_app => provider_post_id
     )
-    return response
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
-    puts "app response"
+    # Post the user's answer to Twitter
+    # Generate a response
+    # Post the response to Twitter
+    # Return the response text
     asker = User.asker(asker_id)
     publication = Publication.find(publication_id)
-    # post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
-    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
-    # tweet = 
+    status = (answer.correct ? "correct" : "incorrect")
+    post = publication.posts.where(:provider => "twitter").first
+    conversation = Conversation.find_or_create_by_user_id_and_post_id_and_publication_id(current_user.id, post.id, publication_id)
+
+    # conversation.posts << Post.tweet(current_user, answer.text, "reply answer #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
+    #              publication_id, in_reply_to_post_id, 
+    #              in_reply_to_user_id)
+    # response = Post.generate_response()
+    # conversation.posts << Post.tweet(asker, response, "reply answer_response #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
+    #              publication_id, in_reply_to_post_id, 
+    #              in_reply_to_user_id)
+    # return response
+
+
+    # puts "app response"
+    # asker = User.asker(asker_id)
+    # publication = Publication.find(publication_id)
+    # post = Post.find(post_id)
+    # answer = Answer.select([:text, :correct]).find(answer_id)
+    # short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
+    # Post.tweet()
     # Post.tweetable("test", "this", "http://studyegg-quizme-staging.herokuapp.com/feeds")
 
     # puts short_url
     # puts current_user.to_json
     # puts asker.to_json
-    # puts post.to_json
+    # puts publication.to_json
     # puts answer.to_json
     # conversation = Conversation.find_or_create_by_user_id_and_post_id(current_user.id, post.id)
     # conversation.update_attribute(:publication_id, post.publication_id)
@@ -116,30 +138,30 @@ class Post < ActiveRecord::Base
   end
 
 
-  # def self.tweetable(text, user = "", url = "", tweet = "", remaining = 140)
-  #   text_length = text.length
-  #   handle_length = user.length
-  #   url_length = url.length
-  #   remaining = (remaining - (handle_length + 2)) if handle_length > 0
-  #   remaining = (remaining - (url_length + 1)) if url_length > 0
-  #   truncated_text = text[0..(remaining - 4)]
-  #   truncated_text += "..." if text_length > remaining
-  #   tweet += "@#{user} " if handle_length > 0
-  #   tweet += "#{truncated_text}"
-  #   tweet += " #{url}" if url_length > 0
-  #   return tweet    
-  # end
-
-  def tweetable(user = "", url = "", tweet = "")
-    length = self.text.length
-    overage = (140 - user.length - 2 - length - 1 - url.length)
-    overage < 0 ? truncation = length - overage.abs : truncation = length
-    truncated_text = Post.truncate(text, truncation)
-    tweet += "@#{user}" if user.present?
-    tweet += " #{truncated_text}"
-    tweet += " #{url}" if url.present?
-    return tweet
+  def self.tweetable(text, user = "", url = "", tweet = "", remaining = 140)
+    text_length = text.length
+    handle_length = user.length
+    url_length = url.length
+    remaining = (remaining - (handle_length + 2)) if handle_length > 0
+    remaining = (remaining - (url_length + 1)) if url_length > 0
+    truncated_text = text[0..(remaining - 4)]
+    truncated_text += "..." if text_length > remaining
+    tweet += "@#{user} " if handle_length > 0
+    tweet += "#{truncated_text}"
+    tweet += " #{url}" if url_length > 0
+    return tweet    
   end
+
+  # def tweetable(user = "", url = "", tweet = "")
+  #   length = self.text.length
+  #   overage = (140 - user.length - 2 - length - 1 - url.length)
+  #   overage < 0 ? truncation = length - overage.abs : truncation = length
+  #   truncated_text = Post.truncate(text, truncation)
+  #   tweet += "@#{user}" if user.present?
+  #   tweet += " #{truncated_text}"
+  #   tweet += " #{url}" if url.present?
+  #   return tweet
+  # end
 
   # def self.tweet(account, tweet, params)
   #   if account[:role] == "asker"

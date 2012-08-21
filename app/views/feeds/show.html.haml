@@ -19,7 +19,8 @@
 					.header.border-color
 						%h3
 							Posts
-					- @posts.each do |post|
+					- @publications.each do |post|
+						/ - puts post.conversation
 						/ - response = @responses[post.parent_id.to_i]
 						/ - response ? responded = true : responded = false
 						- responded = false
