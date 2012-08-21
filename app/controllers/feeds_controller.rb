@@ -6,7 +6,7 @@ class FeedsController < ApplicationController
   def show
     @asker = User.asker(params[:id])
     @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID is not ?", @asker.id).sample(3)
-    @publications = @asker.publications
+    @posts = @asker.publications.order("created_at DESC").limit(15).includes(:question => :answers)
     # @posts = @asker.posts.where(:provider => "app").order("created_at DESC").limit(15).includes(:question => :answers)
     # puts current_user.to_json
     # puts current_user.posts.to_json

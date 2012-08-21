@@ -1,4 +1,5 @@
 class Post < ActiveRecord::Base
+  include ActionView::Helpers::TextHelper
 	belongs_to :question
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
   belongs_to :publication
@@ -16,29 +17,41 @@ class Post < ActiveRecord::Base
 	end
 
   def self.publish(provider, asker, publication)
+    # check if provider is enabled
+    # get the question to be published
+    # create the post
+    # create the shortened url
+    # compose the text based on provider
+    # publish to appropriate provider
+    # update post with provider_post_id
+
     question = Question.find(publication.question_id)
-    publication.posts << post = Post.create(
-      :asker_id => asker.id,
-      :question_id => question.id,
+    post = Post.create(
+      :user_id => asker.id,
       :provider => provider,
       :text => question.text,
-      :post_type => 'question', 
-      :is_parent => true
+      :engagement_type => 'question', 
+      :publication_id => publication.id, 
+      :posted_via_app => true
     )
     ## Update to production
     short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
-    post.update_attribute(:url, short_url)
     case provider
     when "twitter"
-      response = asker.twitter.update(tweet)
+      response = asker.twitter.update(post.tweetable(nil, short_url))
+      puts response.to_json
     when "tumblr"
-      response = asker.tumblr.text(
-        asker.tum_url,
-        :title => "Daily Quiz!",
-        :body => "#{text} #{short_url}"
-      )
+      puts "tum"
+      # response = asker.tumblr.text(
+        # asker.tum_url,
+        # :title => "Daily Quiz!",
+        # :body => "#{text} #{short_url}"
+      # )
     end
-    return post
+
+    # # post.update_attribute()
+    # publication.posts << post
+    # return post
   end
 
   def self.tweet(account, tweet)
@@ -50,6 +63,17 @@ class Post < ActiveRecord::Base
 
   end
 
+
+  def tweetable(user = "", url = "", tweet = "")
+    length = self.text.length
+    overage = (140 - user.length - 2 - length - 1 - url.length)
+    overage < 0 ? truncation = length - overage.abs : truncation = length
+    truncated_text = truncate(text, :length => truncation)
+    tweet += "@#{user}" if user.present?
+    tweet += " #{truncated_text}"
+    tweet += " #{url}" if url.present?
+    return tweet
+  end
 
   # def self.tweet(account, tweet, params)
   #   if account[:role] == "asker"
