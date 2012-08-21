@@ -23,21 +23,14 @@ class FeedsController < ApplicationController
 
   def more
     post = Publication.find(params[:last_post_id])
-    publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID IS NOT ?", post.created_at, post.id).order("created_at DESC").limit(5).includes(:question => :answers).as_json(:include => {:question => {:include => :answers}})
+    publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID IS NOT ?", post.created_at, post.id).order("created_at DESC").limit(5).includes(:question => :answers)
     publication_ids = publications.collect(&:id)
     if current_user
-      responses = 55#Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
-      Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => publication_ids).collect(&:id), :publication_id => publication_ids)
+      responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => publication_ids).collect(&:id), :publication_id => publication_ids).includes(:posts).group_by(&:publication_id)
     else
       responses = []
     end    
-    render :json => {:publications => publications, :responses => responses}
-    # render :json => User.asker(params[:id]).
-    #   posts.where("CREATED_AT < ? AND ID IS NOT ? AND provider = 'app'", post.created_at, post.id).
-    #   order(:created_at).
-    #   limit(5).
-    #   includes(:question => :answers).
-    #   as_json(:include => {:question => {:include => :answers}})
+    render :json => {:publications => publications.as_json(:include => {:question => {:include => :answers}}), :responses => responses.as_json(:include => :posts)}
   end
 
   def scores
