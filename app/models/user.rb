@@ -94,8 +94,8 @@ class User < ActiveRecord::Base
 
 	#here is an example of a function that cannot scale
 	def self.leaderboard(id, data = {}, scores = [])
-		asker = User.includes(:posts).asker(id)
-		reps = Rep.where(:post_id => asker.posts, :correct => true).select([:user_id, :id]).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..4]
+		asker = User.includes(:publications).asker(id)
+		reps = Rep.where(:publication_id => asker.publications, :correct => true).select([:user_id, :id]).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..4]
 		user_ids = reps.collect { |rep| rep[1][0][:user_id] }
 		users = User.select([:twi_screen_name, :twi_profile_img_url, :id]).find(user_ids).group_by(&:id)
 		reps.each { |rep| scores << {:user => users[rep[0]][0], :correct => rep[1].length} }
