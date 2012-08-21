@@ -14,19 +14,19 @@ end
 
 task :post_question => :environment do
 	# t = Time.now
-	User.askers.each do |a|
-		# shift = (t.hour/a.posts_per_day.to_f).floor + 1
-		# queue_index = t.hour%a.posts_per_day
-		# Question.post_question(a, queue_index, shift)
-		a.publish_question()
-		sleep(10)
-	end
+	User.find(165).publish_question()
+	# User.askers.each do |asker|
+	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1
+	# 	# queue_index = t.hour%a.posts_per_day
+	# 	# Question.post_question(a, queue_index, shift)
+	# 	asker.publish_question()
+	# 	sleep(10)
+	# end
 end
 
 task :fill_queue => :environment do
-	PublicationQueue.clear_queue
-	askers = User.askers
-	askers.each do |asker|
+	User.askers.each do |asker|
+		PublicationQueue.clear_queue(asker)
 		PublicationQueue.enqueue_questions(asker)
 	end
 end

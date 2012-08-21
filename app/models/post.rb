@@ -17,14 +17,6 @@ class Post < ActiveRecord::Base
 	end
 
   def self.publish(provider, asker, publication)
-    # check if provider is enabled
-    # get the question to be published
-    # create the post
-    # create the shortened url
-    # compose the text based on provider
-    # publish to appropriate provider
-    # update post with provider_post_id
-
     question = Question.find(publication.question_id)
     post = Post.create(
       :user_id => asker.id,
@@ -38,20 +30,21 @@ class Post < ActiveRecord::Base
     short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
     case provider
     when "twitter"
-      response = asker.twitter.update(post.tweetable(nil, short_url))
-      puts response.to_json
+      response = asker.twitter.update(post.tweetable("", short_url))   
+      post.update_attribute(:provider_post_id, response.id)
     when "tumblr"
-      puts "tum"
+      # CHECK WITH BILL
+      # puts "tum"
       # response = asker.tumblr.text(
-        # asker.tum_url,
-        # :title => "Daily Quiz!",
-        # :body => "#{text} #{short_url}"
+      #   asker.tum_url,
+      #   :title => "Daily Quiz!",
+      #   :body => "#{text} #{short_url}"
       # )
     end
-
-    # # post.update_attribute()
-    # publication.posts << post
-    # return post
+    publication.posts << post
+    # puts "publication posts:"
+    # puts publication.posts.to_json
+    return post
   end
 
   def self.tweet(account, tweet)

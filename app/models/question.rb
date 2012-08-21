@@ -10,12 +10,12 @@ class Question < ActiveRecord::Base
   end
 
 
-  def self.select_questions_to_post(current_acct, num_days_back_to_exclude)
-    recent_question_ids = current_acct.posts.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
+  def self.select_questions_to_post(asker, num_days_back_to_exclude)
+    recent_question_ids = asker.publications.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
-    questions = Question.where("topic_id in (?) and id not in (?) and status = 1", current_acct.topics.collect(&:id), recent_question_ids).includes(:answers)
-    puts "WARNING THE QUEUE FOR #{current_acct.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{queue.size} of #{current_acct.posts_per_day} POSTS SCHEDULED" if queue.size < current_acct.posts_per_day
-    return questions.sample(current_acct.posts_per_day)
+    questions = Question.where("topic_id in (?) and id not in (?) and status = 1", asker.topics.collect(&:id), recent_question_ids).includes(:answers)
+    puts "WARNING THE QUEUE FOR #{asker.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{questions.size} of #{asker.posts_per_day} POSTS SCHEDULED" if questions.size < asker.posts_per_day
+    return questions.sample(asker.posts_per_day)
     #@TODO email or some notification that I will actually read if not filled
   end
 

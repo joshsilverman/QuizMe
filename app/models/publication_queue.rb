@@ -2,7 +2,7 @@ class PublicationQueue < ActiveRecord::Base
   has_many :publications
   belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	
-	def self.enqueue_questions(asker, question_array)
+	def self.enqueue_questions(asker)
     queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
     Question.select_questions_to_post(asker, 7).each do |question|
       queue.publications << Publication.create(
@@ -14,7 +14,11 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def self.clear_queue(asker)
-    asker.publication_queue.publications.destroy_all
+    if asker and asker.publication_queue
+      queue = asker.publication_queue
+      queue.publications.destroy_all 
+      queue.update_attribute(:index, 0)
+    end
   end
 
   def increment_index(posts_per_day)
@@ -23,5 +27,6 @@ class PublicationQueue < ActiveRecord::Base
     else
       self.update_attribute(:index, 0)
     end
+    self.save
   end
 end
