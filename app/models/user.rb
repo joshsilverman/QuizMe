@@ -6,6 +6,18 @@ class User < ActiveRecord::Base
 	has_many :engagements, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts, :foreign_key => 'asker_id'
+	has_many :publications, :foreign_key => 'asker_id'
+	has_one :publication_queue, :foreign_key => 'asker_id'
+
+	def publish_question
+		queue = self.publication_queue
+		publication = queue.publications[queue.index]
+		publication.update_attribute(:published, true)
+		queue.increment_index(self.posts_per_day)
+		PROVIDERS.each do |provider|
+			Post.publish(provider, self, publication)
+		end
+	end
 
 	def self.create_with_omniauth(auth)
 	  create! do |user|
