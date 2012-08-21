@@ -8,7 +8,8 @@ class PublicationQueue < ActiveRecord::Base
       queue.publications << Publication.create(
         :question_id => question.id,
         :asker_id => asker.id, 
-        :publication_queue_id => queue.id
+        :publication_queue_id => queue.id, 
+        :url => Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{question.id}", "app", "cp", asker.twi_screen_name, question.id)
       )
     end
   end

@@ -29,7 +29,7 @@ class Post < ActiveRecord::Base
     short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
     case provider
     when "twitter"
-      response = asker.twitter.update(post.tweetable("", short_url))   
+      response = asker.twitter.update(Post.tweetable(post.text, "", short_url))   
       post.update_attribute(:provider_post_id, response.id)
     when "tumblr"
       # CHECK WITH BILL
@@ -39,6 +39,8 @@ class Post < ActiveRecord::Base
       #   :title => "Daily Quiz!",
       #   :body => "#{text} #{short_url}"
       # )
+    else  
+      puts "Boo"
     end
     publication.posts << post
     # puts "publication posts:"
@@ -71,10 +73,62 @@ class Post < ActiveRecord::Base
     return response
   end
 
+  def self.app_response(current_user, asker_id, publication_id, answer_id)
+    puts "app response"
+    asker = User.asker(asker_id)
+    publication = Publication.find(publication_id)
+    # post = Post.find(post_id)
+    answer = Answer.select([:text, :correct]).find(answer_id)
+    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
+    # tweet = 
+    # Post.tweetable("test", "this", "http://studyegg-quizme-staging.herokuapp.com/feeds")
+
+    # puts short_url
+    # puts current_user.to_json
+    # puts asker.to_json
+    # puts post.to_json
+    # puts answer.to_json
+    # conversation = Conversation.find_or_create_by_user_id_and_post_id(current_user.id, post.id)
+    # conversation.update_attribute(:publication_id, post.publication_id)
+    # puts conversation.to_json
+
+    
+    # tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
+    # eng = Post.tweet(current_user, tweet, {
+    #   :asker_id => asker_id, 
+    #   :post_id => post_id, 
+    #   :in_reply_to_status_id => post.sibling('twitter').provider_post_id
+    # })
+    # tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
+    # Post.tweet(asker, tweet_response, {
+    #   :url => "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}",
+    #   :link_type => answer.correct ? 'cor' : 'inc', 
+    #   :question_id => nil, 
+    #   :parent_id => nil, 
+    #   :in_reply_to_status_id => eng.provider_post_id
+    # })
+    # eng.respond(answer.correct)
+    # return tweet_response   
+  end
+
   def self.tumbl()
 
   end
 
+
+  # def self.tweetable(text, user = "", url = "", tweet = "", remaining = 140)
+  #   text_length = text.length
+  #   handle_length = user.length
+  #   url_length = url.length
+  #   remaining = (remaining - (handle_length + 2)) if handle_length > 0
+  #   remaining = (remaining - (url_length + 1)) if url_length > 0
+  #   truncated_text = text[0..(remaining - 4)]
+  #   truncated_text += "..." if text_length > remaining
+  #   tweet += "@#{user} " if handle_length > 0
+  #   tweet += "#{truncated_text}"
+  #   tweet += " #{url}" if url_length > 0
+  #   return tweet    
+  # end
 
   def tweetable(user = "", url = "", tweet = "")
     length = self.text.length

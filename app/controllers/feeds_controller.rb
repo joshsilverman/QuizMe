@@ -32,6 +32,6 @@ class FeedsController < ApplicationController
   end
 
   def respond
-    render :text => Post.respond_wisr(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    render :text => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 end

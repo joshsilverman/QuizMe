@@ -3,6 +3,7 @@ class AddPublicationAndConversationModels < ActiveRecord::Migration
     create_table :publications do |t|
       t.integer :question_id
       t.integer :asker_id
+      t.string :url
 
       t.timestamps
     end
