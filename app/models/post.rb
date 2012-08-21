@@ -17,47 +17,31 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
-    post = Post.create(
-      :user_id => asker.id,
-      :provider => provider,
-      :text => question.text,
-      :engagement_type => 'question', 
-      :publication_id => publication.id, 
-      :posted_via_app => true
-    )
-    ## Update to production
-    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{post.id}", "app", "ans", asker.twi_screen_name, question.id)
+    long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
+
     case provider
     when "twitter"
-      response = asker.twitter.update(Post.tweetable(post.text, "", short_url))   
-      post.update_attribute(:provider_post_id, response.id)
+      Post.tweet(asker, question.text, 'status question', 
+                 long_url, 'initial', nil,
+                 publication.id, nil, nil)
     when "tumblr"
-      # CHECK WITH BILL
-      # puts "tum"
-      # response = asker.tumblr.text(
-      #   asker.tum_url,
-      #   :title => "Daily Quiz!",
-      #   :body => "#{text} #{short_url}"
-      # )
+      puts "No Tumblr Post Methods"
+    when "facebook"
+      puts "No Tumblr Post Methods"
     else  
       puts "Boo"
     end
-    publication.posts << post
-    # puts "publication posts:"
-    # puts publication.posts.to_json
-    return post
   end
 
   def self.tweet(account, tweet, engagement_type, 
                  long_url, link_type, conversation_id,
-                 publication_id, in_reply_to_post_id=nil, 
-                 in_reply_to_user_id=nil, posted_via_app=false)
+                 publication_id, in_reply_to_post_id, 
+                 in_reply_to_user_id)
     return unless account.twitter_enabled?
-
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     parent_post = Post.find(in_reply_to_post_id)
-    response = account.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
-    Post.create(
+    response = account.twitter.update("#{Post.tweetable(tweet, '', short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    post = Post.create(
       :user_id => account.id,
       :provider => 'twitter',
       :text => tweet,
@@ -68,8 +52,13 @@ class Post < ActiveRecord::Base
       :in_reply_to_user_id => in_reply_to_user_id,
       :conversation_id => conversation_id,
       :publication_id => publication_id,
-      :posted_via_app => provider_post_id
+      :posted_via_app => true
     )
+
+    if publication_id
+      publication = Publication.find(publication_id)
+      publication.posts << post
+    end
     return response
   end
 
@@ -116,30 +105,32 @@ class Post < ActiveRecord::Base
   end
 
 
-  # def self.tweetable(text, user = "", url = "", tweet = "", remaining = 140)
-  #   text_length = text.length
-  #   handle_length = user.length
-  #   url_length = url.length
-  #   remaining = (remaining - (handle_length + 2)) if handle_length > 0
-  #   remaining = (remaining - (url_length + 1)) if url_length > 0
-  #   truncated_text = text[0..(remaining - 4)]
-  #   truncated_text += "..." if text_length > remaining
-  #   tweet += "@#{user} " if handle_length > 0
-  #   tweet += "#{truncated_text}"
-  #   tweet += " #{url}" if url_length > 0
-  #   return tweet    
-  # end
-
-  def tweetable(user = "", url = "", tweet = "")
-    length = self.text.length
-    overage = (140 - user.length - 2 - length - 1 - url.length)
-    overage < 0 ? truncation = length - overage.abs : truncation = length
-    truncated_text = Post.truncate(text, truncation)
-    tweet += "@#{user}" if user.present?
-    tweet += " #{truncated_text}"
-    tweet += " #{url}" if url.present?
-    return tweet
+  def self.tweetable(text, user = "", url = "")
+    text_length = text.length
+    handle_length = user.length
+    url_length = url.length
+    remaining = 140
+    remaining = (remaining - (handle_length + 2)) if handle_length > 0
+    remaining = (remaining - (url_length + 1)) if url_length > 0
+    truncated_text = text[0..(remaining - 4)]
+    truncated_text += "..." if text_length > remaining
+    tweet = ""
+    tweet += "@#{user} " if handle_length > 0
+    tweet += "#{truncated_text}"
+    tweet += " #{url}" if url_length > 0
+    return tweet    
   end
+
+  # def tweetable(user = "", url = "", tweet = "")
+  #   length = self.text.length
+  #   overage = (140 - user.length - 2 - length - 1 - url.length)
+  #   overage < 0 ? truncation = length - overage.abs : truncation = length
+  #   truncated_text = Post.truncate(text, truncation)
+  #   tweet += "@#{user}" if user.present?
+  #   tweet += " #{truncated_text}"
+  #   tweet += " #{url}" if url.present?
+  #   return tweet
+  # end
 
   # def self.tweet(account, tweet, params)
   #   if account[:role] == "asker"
@@ -189,6 +180,7 @@ class Post < ActiveRecord::Base
     post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
     tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
+    #POST.TWEETABLE ^^^
     eng = Post.tweet(current_user, tweet, {
       :asker_id => asker_id, 
       :post_id => post_id, 
