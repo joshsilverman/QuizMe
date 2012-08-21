@@ -166,7 +166,7 @@ class Post < ActiveRecord::Base
     )
     conversation.posts << user_post
     user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
-    response = Post.generate_response(status)
+    response = post.generate_response(status)
     app_post = Post.tweet(
       asker, 
       response, 

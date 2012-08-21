@@ -27,25 +27,33 @@ class Feed
 		pusher = new Pusher('bffe5352760b25f9b8bd')
 		channel = pusher.subscribe(@name)
 		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
-	displayNewPost: (data, insert_type) => 
-		console.log data
-		# $("#feed_content").first().animate({"top": "200px"})
+	displayNewPost: (data, insert_type, interaction = null) => 
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
 		post.attr("post_id", data.id)
 		post.find("p").text(data.question.text)
 		conversation.css "visibility", "hidden"
-		answers_element = post.find(".answers")
-		answers = data.question.answers
-		for answer, i in answers#@randomize(data.answers)
-			if i < (answers.length - 1) then border = "bottom_border" else border = ""
-			if answer.correct
-				answers_element.append("<h3 correct='true' class='#{border}'>#{answer.text}</h3>")
-			else
-				answers_element.append("<h3 correct='false' class='#{border}'>#{answer.text}</h3>")
-			clone = $("#answer_template").clone().removeAttr('id')
-			clone.find("#answer").text(answer.text)
-			answers_element.append(clone)
+		if interaction != null and interaction != undefined
+			post.find(".answers").remove()
+			for response in interaction[0].posts
+				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+				subsidiary.find("p").text("@#{window.feed.user_name} #{response.text} bit.ly/fixme!") 
+				subsidiary.find("h5").text(window.feed.name)
+				conversation.find(".parent").addClass("answered")
+				conversation.find(".subsidiaries").append(subsidiary.show())
+				conversation.find("i").show()
+		else
+			answers_element = post.find(".answers")
+			answers = data.question.answers
+			for answer, i in answers#@randomize(data.answers)
+				if i < (answers.length - 1) then border = "bottom_border" else border = ""
+				if answer.correct			
+					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
+				else
+					answers_element.append("<h3 correct='false' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
+				clone = $("#answer_template").clone().removeAttr('id')
+				clone.find("#answer").text(answer.text)
+				answers_element.append(clone)
 		if insert_type == "prepend"
 			$("#feed_content").prepend(conversation)
 		else
@@ -56,7 +64,8 @@ class Feed
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
 			if posts.publications.length > 0
-				@displayNewPost(post, "append") for post in posts.publications
+				for post in posts.publications
+					@displayNewPost(post, "append", posts.responses[post.id]) 
 			else
 				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
@@ -138,11 +147,11 @@ class Post
 			"post_id" : @id
 			"answer_id" : answer_id
 			# "text" : text #This will eventually be any custom text (?)
+		console.log params
 		$.ajax '/respond',
 			type: 'POST'
 			data: params
 			success: (e) => 
-				console.log e
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
 				subsidiary.find("h5").text(window.feed.user_name)
