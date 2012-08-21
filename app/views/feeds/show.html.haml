@@ -18,7 +18,7 @@
 				#posts.rounded
 					.header.border-color
 						%h3
-							Posts
+							Questions
 					- @publications.each do |post|
 						- conversation = @responses[post.id]
 						- conversation ? responded = true : responded = false
@@ -36,6 +36,7 @@
 										- answers.each_with_index do |answer, i|
 											%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 											.answer_container.input{:type => 'text'}
+												.shadow-top
 												.tweet
 													%span#account= "@#{@asker.twi_screen_name}"
 													%span#answer= " #{answer.tweetable(@asker.twi_screen_name, post.url)}"
@@ -43,6 +44,7 @@
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
 													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+												.shadow-bottom
 							.subsidiaries{:style => "display: none;"}
 								- if conversation
 									- conversation.first.posts.each do |response|
@@ -68,17 +70,17 @@
 						%h4
 							Leaderboard
 					%ul.unstyled
-						/ - User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
-						/ 	/ {:href => "/feeds/#{related.id}"}
-						/ 	%li 
-						/ 		/ {:class => ("border_bottom" if i < 3)}
-						/ 		.content
-						/ 			.place= i + 1
-						/ 			= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
-						/ 			%h5= leader[:user].twi_screen_name
-						/ 			%p= "#{leader[:correct]} correct answers"
-						/ 			.clr
-						/ 		.clr
+						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
+							/ {:href => "/feeds/#{related.id}"}
+							%li 
+								/ {:class => ("border_bottom" if i < 3)}
+								.content
+									.place= i + 1
+									= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
+									%h5= leader[:user].twi_screen_name
+									%p= "#{leader[:correct]} correct answers"
+									.clr
+								.clr
 					.clr
 				.clr
 				#related.rounded.border-color

@@ -1,34 +1,34 @@
-%script{:type => 'text/javascript'}= "var asker_id =#{@engagements.first.asker_id};" 
+%script{:type => 'text/javascript'}= "var asker_id =#{@asker.id};" 
 #posts.rounded.span8.offset2
-  -if @engagements.empty?
+  -if @posts.empty?
     %h2 No Recent Engagements
-  -@engagements.each do |e|
+  -@posts.each do |p|
     .post.active
       .content
         .row
           .span8
-            - if e.post
-              %h4= "Q. #{e.post.text if e.post}"
-              %h4= "A. #{e.post.question.answers.correct.text if e.post and e.post.question}"
+            - if p.parent
+              %h4= "Q. #{p.parent.text if p.parent}"
+              %h4= "A. #{p.parent.question.answers.correct.text if p.parent and p.parent.question}"
             - else
               %a{:href=>'#'} Manually Link To Post
       %hr{:style => 'margin: 3px;'}
       .content
         .row
           .span4
-            = image_tag(e.user.twi_profile_img_url, :class => "rounded")
-            %h5= "@#{e.user.twi_screen_name}" if e.user
-            %h5= "#{e.created_at}"
-            %h4= raw e.text
+            = image_tag(p.user.twi_profile_img_url, :class => "rounded")
+            %h5= "@#{p.user.twi_screen_name}" if p.user
+            %h5= "#{p.created_at}"
+            %h4= raw p.text
           .span3
             .btn-group
-              %button.btn.btn-warning.skip{'e_id' => e.id} This is a RT
-              %button.btn.btn-warning.skip{'e_id' => e.id} Skip
+              %button.btn.btn-warning.skip{'p_id' => p.id} This is a RT
+              %button.btn.btn-warning.skip{'p_id' => p.id} Skip
             %br
             .btn-group
-              //%button.btn.btn-success.first{'e_id' => e.id} First
-              %button.btn.btn-success.correct{'e_id' => e.id} Correct
-              %button.btn.btn-danger.incorrect{'e_id' => e.id} Incorrect
+              //%button.btn.btn-success.first{'p_id' => p.id} First
+              %button.btn.btn-success.correct{'p_id' => p.id} Correct
+              %button.btn.btn-danger.incorrect{'p_id' => p.id} Incorrect
               //%button.btn.btn-danger.close{'e_id' => e.id} Close
         .row{:style=> 'display:none;'}
           .text_container
