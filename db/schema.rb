@@ -103,13 +103,13 @@ ActiveRecord::Schema.define(:version => 20120821191028) do
   end
 
   create_table "reps", :force => true do |t|
-    t.integer   "user_id"
-    t.integer   "post_id"
-    t.boolean   "correct"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "question_id"
-    t.integer   "publication_id"
+    t.integer  "user_id"
+    t.integer  "post_id"
+    t.boolean  "correct"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "question_id"
+    t.integer  "publication_id"
   end
 
   create_table "stats", :force => true do |t|
