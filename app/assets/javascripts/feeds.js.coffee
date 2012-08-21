@@ -47,10 +47,10 @@ class Feed
 			answers = data.question.answers
 			for answer, i in answers#@randomize(data.answers)
 				if i < (answers.length - 1) then border = "bottom_border" else border = ""
-				if answer.correct
-					answers_element.append("<h3 correct='true' class='#{border}'>#{answer.text}</h3>")
+				if answer.correct			
+					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
 				else
-					answers_element.append("<h3 correct='false' class='#{border}'>#{answer.text}</h3>")
+					answers_element.append("<h3 correct='false' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
 				clone = $("#answer_template").clone().removeAttr('id')
 				clone.find("#answer").text(answer.text)
 				answers_element.append(clone)
@@ -147,6 +147,7 @@ class Post
 			"post_id" : @id
 			"answer_id" : answer_id
 			# "text" : text #This will eventually be any custom text (?)
+		console.log params
 		$.ajax '/respond',
 			type: 'POST'
 			data: params

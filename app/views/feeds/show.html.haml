@@ -20,6 +20,7 @@
 						%h3
 							Questions
 					- @publications.each do |post|
+						- puts post.to_json
 						- conversation = @responses[post.id]
 						- conversation ? responded = true : responded = false
 						.conversation.border-color
@@ -48,7 +49,7 @@
 							.subsidiaries{:style => "display: none;"}
 								- if conversation
 									- conversation.first.posts.each do |response|
-										- puts response.to_json
+										/ - puts response.to_json
 										.subsidiary.post.answered
 											.content
 												- if response["user_id"] == @asker.id
@@ -99,12 +100,13 @@
 
 #post_template.conversation.border-color{:style => "display: none;"}
 	.post.parent
+		%i.icon-share-alt{:style => "display: none;"}
 		.content
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 			%h5= @asker.twi_screen_name
 			%p Post content
 		.answers.rounded.border{:style => "display: none;"}
-	.subsidiaries
+	.subsidiaries{:style => "display: none;"}
 	.loading{:style => "display: none;"}
 		Loading...
 
