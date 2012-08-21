@@ -12,11 +12,13 @@ class PostsController < ApplicationController
 		unless correct.nil? or post.nil?
 			puts "We're IN!"
 			post. respond(correct)
-			tweet = post.generate_response(params[:response_type])
+			## Update, now a class method
+			# tweet = post.generate_response(params[:response_type])
 			puts tweet
 			asker = User.asker(params[:asker_id].to_i)
 			parent_post = Post.find(post.in_reply_to_post_id)
-			Post.tweet(asker, tweet, "reply answer_response #{correct ? 'correct' : 'incorrect'}", "http://studyegg-quizme-staging.herokuapp,com/feeds/#{asker.id}/#{parent_post.id if parent_post}", parent_post.conversation_id, nil, parent_post.id, parent_post.user_id)
+			## Update, include reply target
+			# Post.tweet(asker, tweet, "http://studyegg-quizme-staging.herokuapp,com/feeds/#{asker.id}/#{parent_post.id if parent_post}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", parent_post.conversation_id, nil, parent_post.id, parent_post.user_id)
 			render :nothing => true, :status => 200
 		end
 	end
