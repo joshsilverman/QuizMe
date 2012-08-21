@@ -19,8 +19,7 @@
 			#right_column.span6
 				#posts.rounded
 					.header.border-color
-						%h3
-							Posts
+						%h3 Questions
 					- @posts.each do |post|
 						- response = @responses[post.parent_id.to_i]
 						- response ? responded = true : responded = false
@@ -38,6 +37,7 @@
 										- answers.each_with_index do |answer, i|
 											%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
 											.answer_container.input{:type => 'text'}
+												.shadow-top
 												.tweet
 													%span#account= "@#{@asker.name}"
 													%span#answer= " #{answer.tweetable(@asker.name, post.url)}"
@@ -45,6 +45,7 @@
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
 													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+												.shadow-bottom
 							.subsidiaries{:style => "display: none;"}
 								- if responded
 									- response = response[0]["text"]
