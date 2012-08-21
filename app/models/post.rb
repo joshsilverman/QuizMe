@@ -179,7 +179,7 @@ class Post < ActiveRecord::Base
       current_user.id
     )  
     conversation.posts << app_post
-    return response
+    return {:message => response, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)

@@ -86,7 +86,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond("@#{window.feed.name} #{parent.text()}#{$('#url').text()}", parent.attr("answer_id"))
+				@respond(parent.text(), parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -143,7 +143,7 @@ class Post
 			success: (e) => 
 				console.log e
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text(text)
+				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
 				subsidiary.find("h5").text(window.feed.user_name)
 				loading.fadeOut(500, => 
 					@element.find(".post").addClass("answered")
@@ -151,9 +151,9 @@ class Post
 				)
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
-	populate_response: (message) =>
+	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text(message) 
+		response.find("p").text("@#{window.feed.user_name} #{message_hash.message} #{message_hash.url}") 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
