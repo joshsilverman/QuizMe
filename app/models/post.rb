@@ -8,7 +8,77 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
-  URL = "http://studyegg-quizme-staging.herokuapp.com"
+  ###
+  ###Helper Methods
+  ###
+
+  #@TODO update helper methods to account for multiple engagement types
+
+  def self.unanswered
+    where(:responded_to => false)
+  end
+
+  ### Twitter
+  def self.twitter_answers
+    where("provider = 'twitter' and engagement_type like ?",'%answer%')
+  end
+  
+  def self.twitter_nonanswer_mentions
+    where("provider = 'twitter' and engagement_type like ?",'%nonanswer%')
+  end
+
+  def self.twitter_mentions
+    where("provider = 'twitter' and engagement_type like ?",'%mention%')
+  end
+
+  def self.twitter_shares
+    where("provider = 'twitter' and engagement_type like ?",'%share%')
+  end
+
+  def self.tweetable(text, user = "", url = "")
+    text_length = text.length
+    handle_length = user.length
+    url_length = url.length
+    remaining = 140
+    remaining = (remaining - (handle_length + 2)) if handle_length > 0
+    remaining = (remaining - (url_length + 1)) if url_length > 0
+    truncated_text = text[0..(remaining - 4)]
+    truncated_text += "..." if text_length > remaining
+    tweet = ""
+    tweet += "@#{user} " if handle_length > 0
+    tweet += "#{truncated_text}"
+    tweet += " #{url}" if url_length > 0
+    return tweet    
+  end
+
+  ### Facebook
+  def self.facebook_answers
+    where(:provider => 'facebook', :engagement_type => 'answer')
+  end
+
+  def self.facebook_shares
+    where(:provider => 'facebook', :engagement_type => 'share')
+  end
+
+  ### Tumblr
+  def self.tumblr_answers
+    where(:provider => 'tumblr', :engagement_type => 'answer')
+  end
+
+  def self.tumblr_shares
+    where(:provider => 'tumblr', :engagement_type => 'share')
+  end
+
+  ### Internal
+  def is_parent?
+    self.publication_id.exists?
+  end
+
+  def sibling(provider)
+    if self.publication_id
+      #@TODO find publication and return child by provider
+    end
+  end
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
@@ -16,6 +86,10 @@ class Post < ActiveRecord::Base
     short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
     short_url
 	end
+
+  ###
+  ### Tweeting from the app
+  ###
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
@@ -86,6 +160,7 @@ class Post < ActiveRecord::Base
       asker.id
     )
     conversation.posts << user_post
+    user_post.respond(answer.correct, publication.question_id)
     response = Post.generate_response()
     conversation.posts << Post.tweet(
       asker, 
@@ -97,150 +172,12 @@ class Post < ActiveRecord::Base
       nil, 
       user_post.id, 
       current_user.id
-    )    
-    # response = Post.generate_response()
-    # conversation.posts << Post.tweet(asker, response, "reply answer_response #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
-    #              publication_id, in_reply_to_post_id, 
-    #              in_reply_to_user_id)
-    # return response
-
-
-    # puts "app response"
-    # asker = User.asker(asker_id)
-    # publication = Publication.find(publication_id)
-    # post = Post.find(post_id)
-    # answer = Answer.select([:text, :correct]).find(answer_id)
-    # short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
-    # Post.tweet()
-    # Post.tweetable("test", "this", "http://studyegg-quizme-staging.herokuapp.com/feeds")
-
-    # puts short_url
-    # puts current_user.to_json
-    # puts asker.to_json
-    # puts publication.to_json
-    # puts answer.to_json
-    # conversation = Conversation.find_or_create_by_user_id_and_post_id(current_user.id, post.id)
-    # conversation.update_attribute(:publication_id, post.publication_id)
-    # puts conversation.to_json
-
-    
-    # tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
-    # eng = Post.tweet(current_user, tweet, {
-    #   :asker_id => asker_id, 
-    #   :post_id => post_id, 
-    #   :in_reply_to_status_id => post.sibling('twitter').provider_post_id
-    # })
-    # tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
-    # Post.tweet(asker, tweet_response, {
-    #   :url => "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}",
-    #   :link_type => answer.correct ? 'cor' : 'inc', 
-    #   :question_id => nil, 
-    #   :parent_id => nil, 
-    #   :in_reply_to_status_id => eng.provider_post_id
-    # })
-    # eng.respond(answer.correct)
-    # return tweet_response   
-  end
-
-  def self.tumbl()
-
-  end
-
-  def self.tweetable(text, user = "", url = "")
-    text_length = text.length
-    handle_length = user.length
-    url_length = url.length
-    remaining = 140
-    remaining = (remaining - (handle_length + 2)) if handle_length > 0
-    remaining = (remaining - (url_length + 1)) if url_length > 0
-    truncated_text = text[0..(remaining - 4)]
-    truncated_text += "..." if text_length > remaining
-    tweet = ""
-    tweet += "@#{user} " if handle_length > 0
-    tweet += "#{truncated_text}"
-    tweet += " #{url}" if url_length > 0
-    return tweet    
-  end
-
-  # def tweetable(user = "", url = "", tweet = "")
-  #   length = self.text.length
-  #   overage = (140 - user.length - 2 - length - 1 - url.length)
-  #   overage < 0 ? truncation = length - overage.abs : truncation = length
-  #   truncated_text = Post.truncate(text, truncation)
-  #   tweet += "@#{user}" if user.present?
-  #   tweet += " #{truncated_text}"
-  #   tweet += " #{url}" if url.present?
-  #   return tweet
-  # end
-
-  # def self.tweet(account, tweet, params)
-  #   if account[:role] == "asker"
-  #     return Post.asker_tweet(account, tweet, params[:url], params[:link_type], params[:question_id], params[:parent_id], params[:in_reply_to_status_id], params[:short_url])
-  #   else
-  #     return Post.user_tweet(account, tweet, params[:asker_id], params[:post_id], params[:in_reply_to_status_id])
-  #   end
-  # end
-
-  def self.user_tweet(current_user, tweet, asker_id, post_id, in_reply_to_status_id)
-    res = current_user.twitter.update("#{tweet}", {'in_reply_to_status_id' => in_reply_to_status_id})
-    eng = Engagement.create(
-      :text => res.text, 
-      :date => "#{res.created_at.year}-#{res.created_at.month}-#{res.created_at.day}",
-      :engagement_type => "answer mention",
-      :provider => "app",
-      :provider_post_id => res.id,
-      :twi_in_reply_to_status_id => in_reply_to_status_id,
-      :user_id => current_user.id,
-      :post_id => post_id,
-      :created_at => res.created_at,
-      :asker_id => asker_id
-    ) 
-    return eng
-  end
-
-  def self.asker_tweet(current_acct, tweet, url, lt, question_id, parent_id, in_reply_to_status_id = nil, short_url = nil)
-    ## TODO new param for source (app for responses through wisr, twi for to twitter)
-    short_url = Post.shorten_url(url, 'app', lt, current_acct.twi_screen_name, question_id) if url
-    response = current_acct.twitter.update("#{tweet} #{short_url}", {'in_reply_to_status_id' => in_reply_to_status_id})
-    Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :provider => 'twitter',
-      :text => tweet,
-      :url => short_url,
-      :link_type => lt,
-      :post_type => 'status',
-      :provider_post_id => response.id.to_s,
-      :parent_id => parent_id
-    )
-    return response 
-  end
-
-  def self.respond_wisr(current_user, asker_id, post_id, answer_id)
-    asker = User.asker(asker_id)
-    post = Post.find(post_id)
-    answer = Answer.select([:text, :correct]).find(answer_id)
-    tweet = "@#{asker.twi_name} #{answer.tweetable(asker.twi_name, post.url)} #{post.url}"
-    #POST.TWEETABLE ^^^
-    eng = Post.tweet(current_user, tweet, {
-      :asker_id => asker_id, 
-      :post_id => post_id, 
-      :in_reply_to_status_id => post.sibling('twitter').provider_post_id
-    })
-    tweet_response = eng.generate_response(answer.correct ? 'correct' : 'incorrect')
-    Post.tweet(asker, tweet_response, {
-      :url => "http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker_id}/#{post.id}",
-      :link_type => answer.correct ? 'cor' : 'inc', 
-      :question_id => nil, 
-      :parent_id => nil, 
-      :in_reply_to_status_id => eng.provider_post_id
-    })
-    eng.respond(answer.correct)
-    return tweet_response
+    )  
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
-  	short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
+    #UPDATE POST METHOD
+    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
     res = current_acct.twitter.direct_message_create(user_id, "#{tweet} #{short_url if short_url}")
     Post.create(
       :asker_id => current_acct.id,
@@ -252,38 +189,6 @@ class Post < ActiveRecord::Base
       :link_type => lt,
       :post_type => 'dm',
       :provider_post_id => res.id.to_s
-    )
-  end
-  
-  def self.app_post(current_acct, question, question_id, parent_id)
-    post = Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :provider => 'app',
-      :text => question,
-      :post_type => 'question',
-      :parent_id => parent_id
-    )
-    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{current_acct.id}/#{post.id}", 'app', "ans", current_acct.twi_screen_name, question_id)
-    post.update_attribute(:url, short_url)
-    return post
-  end
-
-  def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
-    short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
-    res = current_acct.tumblr.text(current_acct.tum_url,
-                                    :title => "Daily Quiz!",
-                                    :body => "#{text} #{short_url}")
-    Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :provider => 'tumblr',
-      :text => text,
-      :url => short_url,
-      :link_type => lt,
-      :post_type => 'text',
-      :provider_post_id => res.id.to_s,
-      :parent_id => parent_id
     )
   end
 
@@ -305,7 +210,116 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def sibling(provider)
-    self.parent.posts.where(:provider => provider).first
+  def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
+    #@TODO UPDATE POST METHOD
+    short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
+    res = current_acct.tumblr.text(current_acct.tum_url,
+                                    :title => "Daily Quiz!",
+                                    :body => "#{text} #{short_url}")
+    Post.create(
+      :asker_id => current_acct.id,
+      :question_id => question_id,
+      :provider => 'tumblr',
+      :text => text,
+      :url => short_url,
+      :link_type => lt,
+      :post_type => 'text',
+      :provider_post_id => res.id.to_s,
+      :parent_id => parent_id
+    )
+  end
+
+
+  ###
+  ### Getting and Setting Posts retrieved from Twitter
+  ###
+
+  def self.check_for_engagements(current_acct)
+    #twitter engagements
+    last_engagement = Engagement.where('provider = "twitter" and provider_post_id is not null').last
+    client = current_acct.twitter
+    return if client.nil?
+    mentions = client.mentions({:count => 50, :since_id => last_engagement.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50, :since_id => last_engagement.provider_post_id.to_i})
+    mentions.each do |m|
+      Engagement.save_mention_data(m, current_acct)
+    end
+
+    retweets.each do |r|
+      Engagement.save_retweet_data(r, current_acct)
+    end
+    true
+  end
+
+  def self.save_mention_data(m, current_acct)
+    u = User.find_or_create_by_twi_user_id(m.user.id)
+    u.update_attributes(:twi_name => m.user.name,
+                        :twi_screen_name => m.user.screen_name,
+                        :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
+    engagement = Engagement.find_or_create_by_provider_post_id(m.id.to_s)
+    p = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
+    engagement.update_attributes(:date => "#{m.created_at.year}-#{m.created_at.month}-#{m.created_at.day}",
+                                 :engagement_type => nil,
+                                 :text => m.text,
+                                 :provider => 'twitter',
+                                 :twi_in_reply_to_status_id => m.in_reply_to_status_id.to_s,
+                                 :user_id => u.id,
+                                 :asker_id => current_acct.id,
+                                 :post_id => p ? p.id : nil,
+                                 :created_at => m.created_at)
+  end
+
+  def self.save_retweet_data(r, current_acct)
+    users = current_acct.twitter.retweeters_of(r.id)
+    users.each do |user|
+      u = User.find_or_create_by_twi_user_id(user.id)
+      u.update_attributes(:twi_name => m.user.name,
+                          :twi_screen_name => m.user.screen_name,
+                          :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
+      engagement = Engagement.find_or_create_by_provider_post_id(r.id.to_s)
+      p = Post.find_by_provider_post_id(r.id.to_s)
+      engagement.update_attributes(:date => Date.today.to_s,
+                                   :engagement_type => 'share',
+                                   :text => r.text,
+                                   :provider => 'twitter',
+                                   :twi_in_reply_to_status_id => nil,
+                                   :user_id => u.id,
+                                   :asker_id => current_acct.id,
+                                   :post_id => p ? p.id : nil)
+    end
+  end
+
+
+  def generate_response(response_type)
+    case response_type
+    when 'correct'
+      tweet = "@#{self.user.twi_screen_name} #{CORRECT.sample} #{COMPLEMENT.sample}"
+    when 'incorrect'
+      tweet = "@#{self.user.twi_screen_name} #{INCORRECT.sample} Check the question and try it again!"
+    when 'fast'
+      tweet = "#{FAST.sample} @#{self.user.twi_screen_name} had the fastest right answer on that one!"
+    else
+      tweet = "@#{self.user.twi_screen_name} "
+    end
+    tweet
+  end
+
+  def respond(correct, publication_id, question_id)
+    #@TODO update engagement_type
+    #@TODO create migration for new REP model
+    self.update_attributes(:responded_to => true)
+      unless correct.nil?
+        Rep.create(:user_id => self.user_id,
+                 :post_id => self.in_reply_to_post_id,
+                 :publication_id => publication_id,
+                 :question_id => question_id,
+                 :correct => correct)
+
+        stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, self.post.asker_id)
+        stat.increment(:twitter_answers) if self.provider.include? 'twitter'
+        stat.increment(:facebook_answers) if self.provider.include? 'facebook'
+        stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
+        stat.increment(:internal_answers) if self.provider.include? 'app'
+      end
   end
 end
