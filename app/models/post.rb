@@ -74,10 +74,30 @@ class Post < ActiveRecord::Base
     status = (answer.correct ? "correct" : "incorrect")
     post = publication.posts.where(:provider => "twitter").first
     conversation = Conversation.find_or_create_by_user_id_and_post_id_and_publication_id(current_user.id, post.id, publication_id)
-
-    # conversation.posts << Post.tweet(current_user, answer.text, "reply answer #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
-    #              publication_id, in_reply_to_post_id, 
-    #              in_reply_to_user_id)
+    user_post = Post.tweet(
+      current_user, 
+      answer.text, 
+      "reply answer #{status}", 
+      "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+      status[0..2], 
+      conversation.id, 
+      nil, 
+      post.id, 
+      asker.id
+    )
+    conversation.posts << user_post
+    response = Post.generate_response()
+    conversation.posts << Post.tweet(
+      asker, 
+      response, 
+      "reply answer_response #{status}", 
+      "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+      status[0..2], 
+      conversation.id, 
+      nil, 
+      user_post.id, 
+      current_user.id
+    )    
     # response = Post.generate_response()
     # conversation.posts << Post.tweet(asker, response, "reply answer_response #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
     #              publication_id, in_reply_to_post_id, 
