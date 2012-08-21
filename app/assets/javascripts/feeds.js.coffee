@@ -28,11 +28,12 @@ class Feed
 		channel = pusher.subscribe(@name)
 		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	displayNewPost: (data, insert_type) => 
+		console.log data
 		# $("#feed_content").first().animate({"top": "200px"})
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
 		post.attr("post_id", data.id)
-		post.find("p").text(data.text)
+		post.find("p").text(data.question.text)
 		conversation.css "visibility", "hidden"
 		answers_element = post.find(".answers")
 		answers = data.question.answers
@@ -54,8 +55,8 @@ class Feed
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
-			if posts.length > 0
-				@displayNewPost(post, "append") for post in posts
+			if posts.publications.length > 0
+				@displayNewPost(post, "append") for post in posts.publications
 			else
 				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
