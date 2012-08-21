@@ -8,6 +8,8 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
+  URL = "http://studyegg-quizme-staging.herokuapp.com"
+
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
     shortener = UrlShortener::Client.new authorize
@@ -18,7 +20,6 @@ class Post < ActiveRecord::Base
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
-
     case provider
     when "twitter"
       Post.tweet(asker, question.text, 'status question', 
@@ -63,19 +64,40 @@ class Post < ActiveRecord::Base
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
-    puts "app response"
+    # Post the user's answer to Twitter
+    # Generate a response
+    # Post the response to Twitter
+    # Return the response text
     asker = User.asker(asker_id)
     publication = Publication.find(publication_id)
-    # post = Post.find(post_id)
     answer = Answer.select([:text, :correct]).find(answer_id)
-    short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
-    # tweet = 
+    status = (answer.correct ? "correct" : "incorrect")
+    post = publication.posts.where(:provider => "twitter").first
+    conversation = Conversation.find_or_create_by_user_id_and_post_id_and_publication_id(current_user.id, post.id, publication_id)
+
+    # conversation.posts << Post.tweet(current_user, answer.text, "reply answer #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
+    #              publication_id, in_reply_to_post_id, 
+    #              in_reply_to_user_id)
+    # response = Post.generate_response()
+    # conversation.posts << Post.tweet(asker, response, "reply answer_response #{status}", "#{URL}/feeds/#{asker.id}/#{publication_id}", link_type, conversation_id,
+    #              publication_id, in_reply_to_post_id, 
+    #              in_reply_to_user_id)
+    # return response
+
+
+    # puts "app response"
+    # asker = User.asker(asker_id)
+    # publication = Publication.find(publication_id)
+    # post = Post.find(post_id)
+    # answer = Answer.select([:text, :correct]).find(answer_id)
+    # short_url = Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{publication.id}", "twitter", (answer.correct ? "cor" : "inc"), asker.twi_screen_name, publication.question_id)
+    # Post.tweet()
     # Post.tweetable("test", "this", "http://studyegg-quizme-staging.herokuapp.com/feeds")
 
     # puts short_url
     # puts current_user.to_json
     # puts asker.to_json
-    # puts post.to_json
+    # puts publication.to_json
     # puts answer.to_json
     # conversation = Conversation.find_or_create_by_user_id_and_post_id(current_user.id, post.id)
     # conversation.update_attribute(:publication_id, post.publication_id)
@@ -103,7 +125,6 @@ class Post < ActiveRecord::Base
   def self.tumbl()
 
   end
-
 
   def self.tweetable(text, user = "", url = "")
     text_length = text.length
