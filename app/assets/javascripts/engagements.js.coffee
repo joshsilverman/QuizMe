@@ -22,7 +22,7 @@ $ ->
 		response['asker_id'] = asker_id
 		response['post_id'] = post_id
 		response['correct'] = correct
-		$.ajax '/engagements/response',
+		$.ajax '/posts/response',
 			type: 'POST'
 			dataType: 'html'
 			data: response

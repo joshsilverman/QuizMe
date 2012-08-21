@@ -9,8 +9,6 @@ if defined?(Bundler)
   # Bundler.require(:default, :assets, Rails.env)
 end
 
-PROVIDERS = ["twitter"]
-
 module Quizmemanager
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.

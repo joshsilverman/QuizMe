@@ -1,12 +1,11 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
-	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
+	belongs_to :user
   belongs_to :publication
-	belongs_to :parent, :class_name => 'Post', :foreign_key => 'parent_id'
-  has_many :engagements
+	belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
+  has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
-  has_many :posts, :class_name => 'Post', :foreign_key => 'parent_id'
 
   ###
   ###Helper Methods
@@ -234,15 +233,15 @@ class Post < ActiveRecord::Base
   ### Getting and Setting Posts retrieved from Twitter
   ###
 
-  def self.check_for_engagements(current_acct)
-    #twitter engagements
-    last_engagement = Engagement.where('provider = "twitter" and provider_post_id is not null').last
+  def self.check_for_posts(current_acct)
+    return unless current_acct.twitter_enabled?
+    asker_ids = User.askers.collect(&:id)
+    last_post = Post.where('provider = "twitter" and provider_post_id is not null and id not in (?)', asker_ids).last
     client = current_acct.twitter
-    return if client.nil?
-    mentions = client.mentions({:count => 50, :since_id => last_engagement.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 50, :since_id => last_engagement.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50, :since_id => last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.provider_post_id.to_i})
     mentions.each do |m|
-      Engagement.save_mention_data(m, current_acct)
+      Post.save_mention_data(m, current_acct)
     end
 
     retweets.each do |r|
@@ -256,7 +255,7 @@ class Post < ActiveRecord::Base
     u.update_attributes(:twi_name => m.user.name,
                         :twi_screen_name => m.user.screen_name,
                         :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
-    engagement = Engagement.find_or_create_by_provider_post_id(m.id.to_s)
+    post = Post.find_by_provider_post_id(m.id.to_s)
     p = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
     engagement.update_attributes(:date => "#{m.created_at.year}-#{m.created_at.month}-#{m.created_at.day}",
                                  :engagement_type => nil,
