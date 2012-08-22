@@ -5,7 +5,7 @@ class Question < ActiveRecord::Base
   belongs_to :user
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude)
-    recent_question_ids = asker.publications.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
+    recent_question_ids = asker.publications.where("question_id is not null and published is TRUE").order('created_at DESC').limit(num_days_back_to_exclude * asker.posts_per_day).collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
     questions = Question.where("topic_id in (?) and id not in (?) and status = 1", asker.topics.collect(&:id), recent_question_ids).includes(:answers)
     puts "WARNING THE QUEUE FOR #{asker.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{questions.size} of #{asker.posts_per_day} POSTS SCHEDULED" if questions.size < asker.posts_per_day
