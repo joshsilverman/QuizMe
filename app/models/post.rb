@@ -249,7 +249,7 @@ class Post < ActiveRecord::Base
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50}, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     puts mentions.count
     retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     puts retweets.count
