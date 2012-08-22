@@ -6,7 +6,7 @@ else
   URL = "http://www.wisr.com"
 end
 
-###Respose Bank ###
+###Response Bank ###
 CORRECT =   ["That's right!",
           "Correct!",
           "Yes!",

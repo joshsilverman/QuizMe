@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
   def index
-
+    redirect_to "/feeds/#{User.askers.first.id}"
   end
 
   def show
