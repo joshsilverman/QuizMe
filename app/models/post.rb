@@ -249,17 +249,23 @@ class Post < ActiveRecord::Base
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where("provider like 'twitter' and provider_post_id is not null and id not in (?)", asker_ids).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    puts mentions.count
+    sleep(10)
+    retweets = client.retweets_of_me({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    puts retweets.count
+
     mentions.each do |m|
+      puts 'mention'
       Post.save_mention_data(m, current_acct)
     end
 
-    puts retweets.count
+    puts 'pre-retweet'
     retweets.each do |r|
       puts 'retweet'
       Post.save_retweet_data(r, current_acct)
     end
+    puts 'post retweet'
     true
   end
 
@@ -294,6 +300,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
+    puts "SAVE retweets"
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
     puts retweet_post.inspect
     users = current_acct.twitter.retweeters_of(r.id)
