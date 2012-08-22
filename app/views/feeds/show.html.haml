@@ -63,7 +63,6 @@
 								Loading...
 					#posts_more.border-color
 						%a{:href => "#"} Load more
-
 			#left_column.span3.hidden-phone
 				#scoreboard.rounded.border-color
 					.header
@@ -83,18 +82,19 @@
 								.clr
 					.clr
 				.clr
-				#related.rounded.border-color
-					.header
-						%h4
-							Other Feeds
-					%ul.unstyled
-						- @related.each_with_index do |related, i|
-							%a{:href => "/feeds/#{related.id}"}
-								%li{:class => ("border_bottom" if i < 2)}
-									.content
-										= image_tag(related.twi_profile_img_url, :class => "rounded")
-										%h5= related.twi_name
-										%p= related.description
+				- unless @related.blank?
+					#related.rounded.border-color
+						.header
+							%h4
+								Other Feeds
+						%ul.unstyled
+							- @related.each_with_index do |related, i|
+								%a{:href => "/feeds/#{related.id}"}
+									%li{:class => ("border_bottom" if i < 2)}
+										.content
+											= image_tag(related.twi_profile_img_url, :class => "rounded")
+											%h5= related.twi_name
+											%p= related.description
 
 
 #post_template.conversation.border-color{:style => "display: none;"}
