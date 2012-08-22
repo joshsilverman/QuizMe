@@ -75,14 +75,18 @@ class Feed
 		@questions.push(new Post conversation)
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
-		return if last_post_id == undefined
-		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
-			if posts.publications.length > 0
-				for post in posts.publications
-					@displayNewPost(post, "append", posts.responses[post.id]) 
-			else
-				$("#posts_more").text("Last Post Reached")
-				$(window).off "scroll"
+		if last_post_id == undefined
+			$("#posts_more").text("Last Post Reached")
+			$(window).off "scroll"		
+			return 
+		else
+			$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
+				if posts.publications.length > 0
+					for post in posts.publications
+						@displayNewPost(post, "append", posts.responses[post.id]) 
+				else
+					$("#posts_more").text("Last Post Reached")
+					$(window).off "scroll"
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
