@@ -22,19 +22,19 @@ class Post < ActiveRecord::Base
 
   ### Twitter
   def self.twitter_answers
-    where("provider = 'twitter' and engagement_type like ?",'%answer%')
+    where("provider is 'twitter' and engagement_type like ?",'%answer%')
   end
   
   def self.twitter_nonanswer_mentions
-    where("provider = 'twitter' and engagement_type like ?",'%nonanswer%')
+    where("provider is 'twitter' and engagement_type like ?",'%nonanswer%')
   end
 
   def self.twitter_mentions
-    where("provider = 'twitter' and engagement_type like ?",'%mention%')
+    where("provider is 'twitter' and engagement_type like ?",'%mention%')
   end
 
   def self.twitter_shares
-    where("provider = 'twitter' and engagement_type like ?",'%share%')
+    where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
   def self.tweetable(text, user = "", url = "")
@@ -245,7 +245,7 @@ class Post < ActiveRecord::Base
   def self.check_for_posts(current_acct)
     return unless current_acct.twitter_enabled?
     asker_ids = User.askers.collect(&:id)
-    last_post = Post.where('provider = "twitter" and provider_post_id is not null and id not in (?)', asker_ids).last
+    last_post = Post.where('provider like "twitter" and provider_post_id is not null and id not in (?)', asker_ids).last
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
