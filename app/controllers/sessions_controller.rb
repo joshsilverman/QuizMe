@@ -26,6 +26,9 @@ class SessionsController < ApplicationController
       redirect_to "/askers/#{omni_params['update_asker_id']}/edit"
     else #else login with twitter
   	  user = User.find_by_twi_user_id(auth["uid"]) || User.create_with_omniauth(auth)
+      user.update_attributes(:twi_screen_name => auth["info"]["nickname"], 
+                             :twi_name => auth["info"]["name"],
+                             :twi_profile_img_url => auth["extra"]["raw_info"]["profile_image_url"])
       session[:user_id] = user.id
       if omni_params["new_question_asker_id"]
         redirect_to "/questions/new?asker_id=#{omni_params['new_question_asker_id']}"
