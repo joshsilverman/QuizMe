@@ -20,7 +20,6 @@
 						%h3
 							Questions
 					- @publications.each do |post|
-						- puts post.to_json
 						- conversation = @responses[post.id]
 						- conversation ? responded = true : responded = false
 						.conversation.border-color
@@ -48,9 +47,9 @@
 												.shadow-bottom
 							.subsidiaries{:style => "display: none;"}
 								- if conversation
-									- conversation.first.posts.each do |response|
-										/ - puts response.to_json
-										.subsidiary.post.answered
+									- count = conversation.first.posts.size
+									- conversation.first.posts.each_with_index do |response, i|
+										.subsidiary.post{:class => ("answered" if i < (count - 1))}
 											.content
 												- if response["user_id"] == @asker.id
 													= image_tag(@asker.twi_profile_img_url, :class => "rounded")
@@ -111,14 +110,17 @@
 		Loading...
 
 #answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+	.shadow-top
 	.tweet
 		%span#account= "@#{@asker.twi_screen_name}"
 		%span#answer= " Answer text"
+		%span#url= " URL"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
 		.btn.btn-primary Tweet!
+	.shadow-bottom
 
-#subsidiary_template.post.answered{:style => "display: none;"}
+#subsidiary_template.post{:style => "display: none;"}
 	.content
 		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
 		%h5= "User Name"
