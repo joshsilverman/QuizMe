@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
 	has_many :topics, :through => :askertopics
 	has_many :askertopics, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
-	has_many :posts, :foreign_key => 'asker_id'
+	has_many :posts
 	has_many :publications, :foreign_key => 'asker_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
 
