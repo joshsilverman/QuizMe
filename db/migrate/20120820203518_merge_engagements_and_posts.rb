@@ -4,7 +4,7 @@ class MergeEngagementsAndPosts < ActiveRecord::Migration
   	remove_column :posts, :is_parent
   	remove_column :posts, :url
   	remove_column :posts, :link_type
-  	remove_column :posts, :to_twi_user_id, :integer
+  	remove_column :posts, :to_twi_user_id
 
 
   	rename_column :posts, :parent_id, :in_reply_to_post_id
