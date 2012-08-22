@@ -50,7 +50,6 @@ class Feed
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{target} #{response.text} #{data.url}") 
 				subsidiary.find("h5").text(handle)
-				console.log subsidiary
 				subsidiary.find("img").attr("src", image) unless image == null
 				subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
 				conversation.find(".subsidiaries").append(subsidiary.show())
@@ -58,7 +57,7 @@ class Feed
 		else
 			answers_element = post.find(".answers")
 			answers = data.question.answers
-			for answer, i in @shuffle(answers)#@randomize(data.answers)
+			for answer, i in @shuffle(answers)
 				if i < (answers.length - 1) then border = "bottom_border" else border = ""
 				if answer.correct			
 					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
@@ -170,6 +169,7 @@ class Post
 			success: (e) => 
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
+				subsidiary.find("img").attr("src", window.feed.user_image)
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
 				loading.fadeOut(500, => 
