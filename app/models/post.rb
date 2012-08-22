@@ -307,9 +307,9 @@ class Post < ActiveRecord::Base
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
       puts u.inspect
-      u.update_attributes(:twi_name => m.user.name,
-                          :twi_screen_name => m.user.screen_name,
-                          :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
+      u.update_attributes(:twi_name => user.name,
+                          :twi_screen_name => user.screen_name,
+                          :twi_profile_img_url => user.status.nil? ? nil : user.status.user.profile_image_url)
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
       puts post.nil?
       return if post
