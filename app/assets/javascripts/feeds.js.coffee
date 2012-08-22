@@ -4,8 +4,10 @@ class Feed
 	questions: []
 	answered: 0
 	user_name: null
+	user_image: null
 	constructor: ->
 		@user_name = $("#user_name").val()
+		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		@initializeQuestions()
@@ -37,9 +39,19 @@ class Feed
 			post.find(".answers").remove()
 			post.addClass("answered")
 			for response, i in interaction[0].posts
+				if String(response.user_id) == @id
+					handle = @name
+					image = null
+					target = @user_name
+				else
+					handle = @user_name
+					image = @user_image
+					target = @name
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("@#{window.feed.user_name} #{response.text} #{data.url}") 
-				subsidiary.find("h5").text(window.feed.name)
+				subsidiary.find("p").text("@#{target} #{response.text} #{data.url}") 
+				subsidiary.find("h5").text(handle)
+				console.log subsidiary
+				subsidiary.find("img").attr("src", image) unless image == null
 				subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
 				conversation.find(".subsidiaries").append(subsidiary.show())
 				conversation.find("i").show()
