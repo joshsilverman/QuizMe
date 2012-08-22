@@ -75,6 +75,7 @@ class Feed
 		@questions.push(new Post conversation)
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
+		return if last_post_id == undefined
 		$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
 			if posts.publications.length > 0
 				for post in posts.publications
