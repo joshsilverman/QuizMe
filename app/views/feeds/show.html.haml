@@ -71,15 +71,16 @@
 					%ul.unstyled
 						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
 							/ {:href => "/feeds/#{related.id}"}
-							%li 
-								/ {:class => ("border_bottom" if i < 3)}
-								.content
-									.place= i + 1
-									= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
-									%h5= leader[:user].twi_screen_name
-									%p= "#{leader[:correct]} correct answers"
+							%a{:href => "twitter.com/#{leader.twi_screen_name}", :target => "_blank"}
+								%li 
+									/ {:class => ("border_bottom" if i < 3)}
+									.content
+										.place= i + 1
+										= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
+										%h5= leader[:user].twi_screen_name
+										%p= "#{leader[:correct]} correct answers"
+										.clr
 									.clr
-								.clr
 					.clr
 				.clr
 				- unless @related.blank?
