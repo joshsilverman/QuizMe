@@ -7,14 +7,17 @@
 task :check_mentions => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |a|
-		Engagement.check_for_engagements(a)
+		Post.check_for_posts(a)
 		sleep(10)
 	end
 end
 
 task :post_question => :environment do
 	# t = Time.now
-	User.find(165).publish_question()
+	askers = User.askers.where('twi_oauth_token is not null')
+	askers.each do |a|
+		a.publish_question()
+	end
 	# User.askers.each do |asker|
 	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1
 	# 	# queue_index = t.hour%a.posts_per_day

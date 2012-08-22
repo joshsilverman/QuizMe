@@ -3,7 +3,6 @@ class User < ActiveRecord::Base
 	has_many :questions
 	has_many :topics, :through => :askertopics
 	has_many :askertopics, :foreign_key => 'asker_id'
-	has_many :engagements, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts, :foreign_key => 'asker_id'
 	has_many :publications, :foreign_key => 'asker_id'
