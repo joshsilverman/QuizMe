@@ -249,15 +249,23 @@ class Post < ActiveRecord::Base
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where("provider like 'twitter' and provider_post_id is not null and id not in (?)", asker_ids).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    puts mentions.count
+    sleep(10)
+    retweets = client.retweets_of_me({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    puts retweets.count
+
     mentions.each do |m|
+      puts 'mention'
       Post.save_mention_data(m, current_acct)
     end
 
+    puts 'pre-retweet'
     retweets.each do |r|
+      puts 'retweet'
       Post.save_retweet_data(r, current_acct)
     end
+    puts 'post retweet'
     true
   end
 
@@ -292,15 +300,20 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
+    puts "SAVE retweets"
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
+    puts retweet_post.inspect
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
-      u.update_attributes(:twi_name => m.user.name,
-                          :twi_screen_name => m.user.screen_name,
-                          :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
+      puts u.inspect
+      u.update_attributes(:twi_name => user.name,
+                          :twi_screen_name => user.screen_name,
+                          :twi_profile_img_url => user.status.nil? ? nil : user.status.user.profile_image_url)
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
+      puts post.nil?
       return if post
+      puts 'create post'
       Post.create(:engagement_type => 'share',
                  :provider => 'twitter',
                  :user_id => u.id,
