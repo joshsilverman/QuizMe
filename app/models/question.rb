@@ -4,12 +4,6 @@ class Question < ActiveRecord::Base
   belongs_to :topic
   belongs_to :user
 
-  def is_tweetable?
-      return false if self.text =~ /image/ or self.text =~ /picture/
-      return "#{self.text}".length + 14 < 141
-  end
-
-
   def self.select_questions_to_post(asker, num_days_back_to_exclude)
     recent_question_ids = asker.publications.where("question_id is not null and created_at > ?", Date.today - num_days_back_to_exclude).order('created_at DESC').collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids

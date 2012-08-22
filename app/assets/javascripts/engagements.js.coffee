@@ -15,6 +15,8 @@ $ ->
 		#getResponse('close')
 	$('.btn.btn-warning.skip').click -> 
 		getResponse('skip', asker_id, $(this).attr('p_id'), null)
+	$('.btn.btn-warning.retweet').click -> 
+		getResponse('retweet', asker_id, $(this).attr('p_id'), null)
 
 	getResponse = (response_type, asker_id, post_id, correct) ->
 		response = {}
@@ -22,6 +24,7 @@ $ ->
 		response['asker_id'] = asker_id
 		response['post_id'] = post_id
 		response['correct'] = correct
+		console.log response
 		$.ajax '/posts/response',
 			type: 'POST'
 			dataType: 'html'
