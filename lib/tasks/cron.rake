@@ -4,7 +4,7 @@
 # Pusher.key = 'bffe5352760b25f9b8bd'
 # Pusher.secret = '782e6b3a20d17f5896dc'
 
-task :check_mentions => :environment do
+task :check_for_posts => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |a|
 		Post.check_for_posts(a)

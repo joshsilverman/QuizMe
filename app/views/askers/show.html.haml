@@ -8,8 +8,8 @@
         .row
           .span8
             - if p.parent
-              %h4= "Q. #{p.parent.text if p.parent}"
-              %h4= "A. #{p.parent.question.answers.correct.text if p.parent and p.parent.question}"
+              %h4= "Q. #{p.parent.text}"
+              %h4= "A. #{p.parent.publication.question.answers.correct.text if p.parent.publication and p.parent.publication.question}"
             - else
               %a{:href=>'#'} Manually Link To Post
       %hr{:style => 'margin: 3px;'}

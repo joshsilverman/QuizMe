@@ -271,7 +271,7 @@ class Post < ActiveRecord::Base
       conversation = Conversation.create(:publication_id => reply_post.publication_id,
                                          :post_id => reply_post.id,
                                          :user_id => u.id)
-    elsif reply_post.conversation_id
+    elsif reply_post and reply_post.conversation_id
       conversation = reply_post.conversation
     else
       puts "Something went wrong on line 277 of post.rb"
@@ -282,7 +282,7 @@ class Post < ActiveRecord::Base
                  :provider => 'twitter',
                  :user_id => u.id,
                  :in_reply_to_post_id => reply_post ? reply_post.id : nil,
-                 :in_reply_to_user_id => reply_post.user_id,
+                 :in_reply_to_user_id => current_acct.id,
                  :created_at => m.created_at,
                  :conversation_id => conversation.nil? ? nil : conversation.id,
                  :posted_via_app => false

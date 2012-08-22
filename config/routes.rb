@@ -12,7 +12,7 @@ Quizmemanager::Application.routes.draw do
   match "/respond" => "feeds#respond"
 
   post "posts/update"
-  post "posts/response"
+  post "posts/respond_to_post"
   post "questions/save_question_and_answers"
   match "questions/new/:account_id" => "questions#new"
   match "/moderate" => "questions#moderate"

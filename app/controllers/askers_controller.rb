@@ -8,7 +8,7 @@ class AskersController < ApplicationController
   def show
     @asker = User.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
-    @posts = Post.where("provider = 'twitter' and created_at > ? and in_reply_to_user_id = ?", Time.now - 7.days, @asker.id).order('created_at DESC')
+    @posts = Post.where("provider = 'twitter' and created_at > ? and in_reply_to_user_id = ? and responded_to = ?", Time.now - 7.days, @asker.id, false).order('created_at DESC')
   end
 
   def new
