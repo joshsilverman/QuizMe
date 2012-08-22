@@ -255,7 +255,9 @@ class Post < ActiveRecord::Base
       Post.save_mention_data(m, current_acct)
     end
 
+    puts retweets.count
     retweets.each do |r|
+      puts 'retweet'
       Post.save_retweet_data(r, current_acct)
     end
     true
@@ -293,14 +295,18 @@ class Post < ActiveRecord::Base
 
   def self.save_retweet_data(r, current_acct)
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
+    puts retweet_post.inspect
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
+      puts u.inspect
       u.update_attributes(:twi_name => m.user.name,
                           :twi_screen_name => m.user.screen_name,
                           :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
+      puts post.nil?
       return if post
+      puts 'create post'
       Post.create(:engagement_type => 'share',
                  :provider => 'twitter',
                  :user_id => u.id,
