@@ -1,9 +1,9 @@
 PROVIDERS = ["twitter"]
 
-if Rails.env == "development"
-  URL = "http://studyegg-quizme-staging.herokuapp.com"
-else
+if Rails.env.production?
   URL = "http://www.wisr.com"
+else
+  URL = "http://studyegg-quizme-staging.herokuapp.com"
 end
 
 ###Response Bank ###
