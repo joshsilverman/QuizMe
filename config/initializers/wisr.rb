@@ -1,8 +1,12 @@
 PROVIDERS = ["twitter"]
 
-URL = "http://studyegg-quizme-staging.herokuapp.com"
+if Rails.env == "development"
+  URL = "http://studyegg-quizme-staging.herokuapp.com"
+else
+  URL = "http://www.wisr.com"
+end
 
-###Respose Bank ###
+###Response Bank ###
 CORRECT =   ["That's right!",
           "Correct!",
           "Yes!",
