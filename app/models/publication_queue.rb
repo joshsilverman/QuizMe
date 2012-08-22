@@ -10,7 +10,7 @@ class PublicationQueue < ActiveRecord::Base
         :asker_id => asker.id, 
         :publication_queue_id => queue.id
       )
-      queue.publications << publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
+      publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
     end
   end
 
