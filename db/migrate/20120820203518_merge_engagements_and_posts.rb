@@ -1,6 +1,5 @@
 class MergeEngagementsAndPosts < ActiveRecord::Migration
   def up
-  	remove_column :posts, :queue_id
   	remove_column :posts, :question_id
   	remove_column :posts, :is_parent
   	remove_column :posts, :url
@@ -18,7 +17,6 @@ class MergeEngagementsAndPosts < ActiveRecord::Migration
   end
 
   def down
-  	add_column :posts, :queue_id, :integer
   	add_column :posts, :question_id, :integer
   	add_column :posts, :is_parent, :boolean
   	add_column :posts, :url, :string
