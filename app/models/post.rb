@@ -247,12 +247,11 @@ class Post < ActiveRecord::Base
   def self.check_for_posts(current_acct)
     return unless current_acct.twitter_enabled?
     asker_ids = User.askers.collect(&:id)
-    last_post = Post.where("provider like 'twitter' and provider_post_id is not null and id not in (?)", asker_ids).last
+    last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50}, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     puts mentions.count
-    sleep(10)
-    retweets = client.retweets_of_me({:count => 50})#, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     puts retweets.count
 
     mentions.each do |m|
