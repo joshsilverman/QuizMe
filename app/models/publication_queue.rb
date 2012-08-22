@@ -5,12 +5,12 @@ class PublicationQueue < ActiveRecord::Base
 	def self.enqueue_questions(asker)
     queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
     Question.select_questions_to_post(asker, 7).each do |question|
-      queue.publications << Publication.create(
+      publication = Publication.create(
         :question_id => question.id,
         :asker_id => asker.id, 
-        :publication_queue_id => queue.id, 
-        :url => Post.shorten_url("http://studyegg-quizme-staging.herokuapp.com/feeds/#{asker.id}/#{question.id}", "app", "cp", asker.twi_screen_name, question.id)
+        :publication_queue_id => queue.id
       )
+      publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
     end
   end
 
