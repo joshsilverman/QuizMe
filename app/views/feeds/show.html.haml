@@ -71,7 +71,7 @@
 					%ul.unstyled
 						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
 							/ {:href => "/feeds/#{related.id}"}
-							%a{:href => "twitter.com/#{leader.twi_screen_name}", :target => "_blank"}
+							%a{:href => "twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
 								%li 
 									/ {:class => ("border_bottom" if i < 3)}
 									.content
