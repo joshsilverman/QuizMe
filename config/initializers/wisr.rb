@@ -1,8 +1,7 @@
 PROVIDERS = ["twitter"]
 
 if Rails.env.production?
-  URL = "http://wisr.herokuapp.com"
-  # URL = "http://www.wisr.com"
+  URL = "http://www.wisr.com"
 else
   URL = "http://studyegg-quizme-staging.herokuapp.com"
 end
