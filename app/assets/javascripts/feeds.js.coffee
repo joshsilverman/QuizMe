@@ -40,14 +40,13 @@ class Feed
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{window.feed.user_name} #{response.text} #{data.url}") 
 				subsidiary.find("h5").text(window.feed.name)
-				console.log interaction[0].posts.length - 1, i
 				subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
 				conversation.find(".subsidiaries").append(subsidiary.show())
 				conversation.find("i").show()
 		else
 			answers_element = post.find(".answers")
 			answers = data.question.answers
-			for answer, i in answers#@randomize(data.answers)
+			for answer, i in @shuffle(answers)#@randomize(data.answers)
 				if i < (answers.length - 1) then border = "bottom_border" else border = ""
 				if answer.correct			
 					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
@@ -72,15 +71,18 @@ class Feed
 			else
 				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
-	randomize: (myArray) =>
-		i = myArray.length
-		return false if i == 0
-		while --i
-			j = Math.floor( Math.random() * ( i + 1 ) )
-			tempi = myArray[i]
-			tempj = myArray[j]
-			myArray[i] = tempj
-			myArray[j] = tempi				
+	shuffle: (arr) ->
+		x = arr.length
+		if x is 0 then return false
+    
+		bottomAnswer = arr.length-1
+		$.each arr, (i) ->
+			j = Math.floor(Math.random() * (arr.length))
+			[arr[i], arr[j]] = [arr[j], arr[i]] # use pattern matching to swap
+    
+		$.each arr, (i) ->
+			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
+				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]						
 
 
 class Post
