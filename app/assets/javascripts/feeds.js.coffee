@@ -35,17 +35,18 @@ class Feed
 		conversation.css "visibility", "hidden"
 		if interaction != null and interaction != undefined
 			post.find(".answers").remove()
-			for response in interaction[0].posts
+			post.addClass("answered")
+			for response, i in interaction[0].posts
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("@#{window.feed.user_name} #{response.text} bit.ly/fixme!") 
+				subsidiary.find("p").text("@#{window.feed.user_name} #{response.text} #{data.url}") 
 				subsidiary.find("h5").text(window.feed.name)
-				conversation.find(".parent").addClass("answered")
+				subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
 				conversation.find(".subsidiaries").append(subsidiary.show())
 				conversation.find("i").show()
 		else
 			answers_element = post.find(".answers")
 			answers = data.question.answers
-			for answer, i in answers#@randomize(data.answers)
+			for answer, i in @shuffle(answers)#@randomize(data.answers)
 				if i < (answers.length - 1) then border = "bottom_border" else border = ""
 				if answer.correct			
 					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
@@ -53,6 +54,7 @@ class Feed
 					answers_element.append("<h3 correct='false' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
 				clone = $("#answer_template").clone().removeAttr('id')
 				clone.find("#answer").text(answer.text)
+				clone.find("#url").text(data.url)
 				answers_element.append(clone)
 		if insert_type == "prepend"
 			$("#feed_content").prepend(conversation)
@@ -69,15 +71,18 @@ class Feed
 			else
 				$("#posts_more").text("Last Post Reached")
 				$(window).off "scroll"
-	randomize: (myArray) =>
-		i = myArray.length
-		return false if i == 0
-		while --i
-			j = Math.floor( Math.random() * ( i + 1 ) )
-			tempi = myArray[i]
-			tempj = myArray[j]
-			myArray[i] = tempj
-			myArray[j] = tempi				
+	shuffle: (arr) ->
+		x = arr.length
+		if x is 0 then return false
+    
+		bottomAnswer = arr.length-1
+		$.each arr, (i) ->
+			j = Math.floor(Math.random() * (arr.length))
+			[arr[i], arr[j]] = [arr[j], arr[i]] # use pattern matching to swap
+    
+		$.each arr, (i) ->
+			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
+				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]						
 
 
 class Post
@@ -147,7 +152,6 @@ class Post
 			"post_id" : @id
 			"answer_id" : answer_id
 			# "text" : text #This will eventually be any custom text (?)
-		console.log params
 		$.ajax '/respond',
 			type: 'POST'
 			data: params
@@ -155,8 +159,9 @@ class Post
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
 				subsidiary.find("h5").text(window.feed.user_name)
+				@element.find(".parent").addClass("answered")
 				loading.fadeOut(500, => 
-					@element.find(".post").addClass("answered")
+					subsidiary.addClass("answered")
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
 			error: => 
@@ -168,12 +173,12 @@ class Post
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
+					@element.find(".subsidiary").after(response.fadeIn(500))
 					@element.find("i").show()
 				)
 			)
 		else
-			@element.find(".subsidiary").addClass("answered").after(response.fadeIn(500))
+			@element.find(".subsidiary").after(response.fadeIn(500))
 			@element.find("i").show()		
 	# answered: (correct) =>
 	# 	window.feed.answered += 1

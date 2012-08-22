@@ -315,7 +315,7 @@ class Post < ActiveRecord::Base
     when 'correct'
       tweet = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     when 'incorrect'
-      tweet = "#{INCORRECT.sample} Check the question and try it again!"
+      tweet = "#{INCORRECT.sample}" #" Check the question and try it again!"
     when 'fast'
       tweet = "#{FAST.sample} @#{self.user.twi_screen_name} had the fastest right answer on that one!"
     else
