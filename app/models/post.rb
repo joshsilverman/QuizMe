@@ -103,7 +103,7 @@ class Post < ActiveRecord::Base
     when "twitter"
       Post.tweet(asker, question.text, nil, long_url, 
                  'status question', 'initial', nil,
-                 publication.id, nil, nil)
+                 publication.id, nil, nil, false)
     when "tumblr"
       puts "No Tumblr Post Methods"
     when "facebook"
@@ -116,10 +116,10 @@ class Post < ActiveRecord::Base
   def self.tweet(account, tweet, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
-                 in_reply_to_user_id)
+                 in_reply_to_user_id, link_to_parent)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
-    if in_reply_to_post_id
+    if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
       response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
@@ -162,7 +162,8 @@ class Post < ActiveRecord::Base
       conversation.id, 
       nil, 
       post.id, 
-      asker.id
+      asker.id,
+      false
     )
     conversation.posts << user_post
     user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
@@ -177,7 +178,8 @@ class Post < ActiveRecord::Base
       conversation.id, 
       nil, 
       user_post.id, 
-      current_user.id
+      current_user.id,
+      true
     )  
     conversation.posts << app_post
     return {:message => response, :url => publication.url}
