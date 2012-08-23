@@ -281,7 +281,7 @@ class Post < ActiveRecord::Base
     elsif reply_post and reply_post.conversation_id
       conversation = reply_post.conversation
     else
-      puts "Something went wrong on line 277 of post.rb"
+      puts "No reply post"
     end      
     Post.create( :provider_post_id => m.id.to_s,
                  :engagement_type => nil,
@@ -299,18 +299,14 @@ class Post < ActiveRecord::Base
   def self.save_retweet_data(r, current_acct)
     puts "SAVE retweets"
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
-    puts retweet_post.inspect
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
-      puts u.inspect
       u.update_attributes(:twi_name => user.name,
                           :twi_screen_name => user.screen_name,
-                          :twi_profile_img_url => user.status.nil? ? nil : user.status.user.profile_image_url)
+                          :twi_profile_img_url => user.profile_image_url)
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
-      puts post.nil?
       return if post
-      puts 'create post'
       Post.create(:engagement_type => 'share',
                  :provider => 'twitter',
                  :user_id => u.id,
