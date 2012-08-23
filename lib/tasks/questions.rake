@@ -29,7 +29,7 @@ namespace :questions do
 		    puts "Correct: #{correct}"
 		    incorrect.each_with_index {|aa, i| puts "Incorrect #{i}: #{aa}"}
 
-		    q = Question.create(:text => question, :topic_id => 1, :user_id => 2, :status => 1, :created_for_asker_id => 2)
+		    q = Question.create(:text => question, :topic_id => 1, :user_id => 1, :status => 1, :created_for_asker_id => 2)
 		    q.answers << Answer.create(:correct => true, :text => correct)
 		    incorrect.each {|aa| q.answers << Answer.create(:correct => false, :text => aa)}
 
