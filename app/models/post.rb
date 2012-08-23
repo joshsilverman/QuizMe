@@ -251,7 +251,7 @@ class Post < ActiveRecord::Base
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     puts mentions.count
-    retweets = client.retweets_of_me({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50})
     puts retweets.count
 
     mentions.each do |m|
