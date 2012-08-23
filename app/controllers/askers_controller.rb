@@ -3,12 +3,17 @@ class AskersController < ApplicationController
   
   def index
     @askers = User.askers
+    @new_posts = {}
+    @askers.each do |a|
+      unresponded = a.engagements.where(:responded_to => false).count
+      @new_posts[a.id] = unresponded
+    end
   end
 
   def show
     @asker = User.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
-    @posts = Post.where("provider = 'twitter' and created_at > ? and in_reply_to_user_id = ? and responded_to = ?", Time.now - 7.days, @asker.id, false).order('created_at DESC')
+    @posts = @asker.engagements.where(:responded_to => false).order('created_at DESC')
   end
 
   def new

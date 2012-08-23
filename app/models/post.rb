@@ -8,8 +8,6 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  #URL = "http://studyegg-quizme-staging.herokuapp.com"
-
   ###
   ###Helper Methods
   ###
@@ -79,10 +77,10 @@ class Post < ActiveRecord::Base
   end
 
   def sibling(provider)
-    if self.publication_id
-      #@TODO find publication and return child by provider
-    end
+    self.publication.posts.where(:provider => provider).first if self.publication_id
   end
+
+
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'

@@ -1,35 +1,142 @@
 %script{:type => 'text/javascript'}= "var asker_id =#{@asker.id};" 
-#posts.rounded.span8.offset2
-  -if @posts.empty?
-    %h2 No Recent Engagements
-  -@posts.each do |p|
-    .post.active
-      .content
-        .row
-          .span8
-            - if p.parent
-              %h4= "Q. #{p.parent.text}"
-              %h4= "A. #{p.parent.publication.question.answers.correct.text if p.parent.publication and p.parent.publication.question}"
-            - else
-              %a{:href=>'#'} Manually Link To Post
-      %hr{:style => 'margin: 3px;'}
-      .content
-        .row
-          .span4
-            = image_tag(p.user.twi_profile_img_url, :class => "rounded")
-            %h5= "@#{p.user.twi_screen_name}" if p.user
-            %h5= "#{p.created_at}"
-            %h4= raw p.text
-          .span3
-            .btn-group
-              %button.btn.btn-warning.retweet{'p_id' => p.id} This is a RT
-              %button.btn.btn-warning.skip{'p_id' => p.id} Skip
-            %br
-            .btn-group
-              //%button.btn.btn-success.first{'p_id' => p.id} First
-              %button.btn.btn-success.correct{'p_id' => p.id} Correct
-              %button.btn.btn-danger.incorrect{'p_id' => p.id} Incorrect
-              //%button.btn.btn-danger.close{'e_id' => e.id} Close
-        .row{:style=> 'display:none;'}
-          .text_container
-            %textarea
+/ #posts.rounded.span8.offset2
+/   -if @posts.empty?
+/     %h2 No Recent Engagements
+/   -@posts.each do |p|
+/     .post.active
+/       .content
+/         .row
+/           .span8
+/             - if p.parent
+/               %h4= "Q. #{p.parent.text}"
+/               %h4= "A. #{p.parent.publication.question.answers.correct.text if p.parent.publication and p.parent.publication.question}"
+/             - else
+/               %a{:href=>'#'} Manually Link To Post
+/       %hr{:style => 'margin: 3px;'}
+/       .content
+/         .row
+/           .span4
+/             = image_tag(p.user.twi_profile_img_url, :class => "rounded")
+/             %h5= "@#{p.user.twi_screen_name}" if p.user
+/             %h5= "#{p.created_at}"
+/             %h4= raw p.text
+/           .span3
+/             .btn-group
+/               %button.btn.btn-warning.retweet{'p_id' => p.id} This is a RT
+/               %button.btn.btn-warning.skip{'p_id' => p.id} Skip
+/             %br
+/             .btn-group
+/               //%button.btn.btn-success.first{'p_id' => p.id} First
+/               %button.btn.btn-success.correct{'p_id' => p.id} Correct
+/               %button.btn.btn-danger.incorrect{'p_id' => p.id} Incorrect
+/               //%button.btn.btn-danger.close{'e_id' => e.id} Close
+/         .row{:style=> 'display:none;'}
+/           .text_container
+/             %textarea
+
+#feed_container.span10
+  #wrapper.span9
+    #header.row.rounded.border-color
+      #account_information.span6
+        .container
+          .inner_container
+            .account_image
+              = image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
+            .account_text
+              %h2= "#{@asker.twi_screen_name} Manager"
+              / %a.scoreboard_link.visible-phone{:href => "#"}
+              /   Go to the scoreboard.
+      #account_stats.span3.hidden-phone
+    #feed.row
+      #right_column.span6
+        #posts.rounded
+          .header.border-color
+            %h3
+              Questions
+          - @posts.each do |post|
+            .conversation.border-color
+              .post.parent{:post_id => post.id}
+                %i.icon-share-alt{:style => ("display: none;")}
+                .content
+                  = image_tag(@asker.twi_profile_img_url, :class => "rounded")
+                  %h5= @asker.twi_screen_name
+                  %p= "Submitted: #{post.text}"
+                  -if post.parent
+                    %p= "Correct: #{post.parent.publication.question.answers.correct.text if post.parent.publication and post.parent.publication.question}"
+                .answers.rounded.border{:style => "display: none;"}
+                  / - answers = post.question.answers.shuffle
+                  / - count = answers.size
+                  / - answers.each_with_index do |answer, i|
+                  /   %h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+                  /   .answer_container.input{:type => 'text'}
+                  /     .shadow-top
+                  /     .tweet
+                  /       %span#account= "@#{@asker.twi_screen_name}"
+                  /       %span#answer= " #{answer.tweetable(@asker.twi_screen_name, post.url)}"
+                  /       %span#url= " #{post.url}"
+                  /       / %span#additional{:contenteditable => true}
+                  /     .answer_controls
+                  /       %a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+                  /       .shadow-bottom
+              .subsidiaries{:style => "display: none;"}
+              .loading{:style => "display: none;"}
+                Loading...
+          #posts_more.border-color
+            %a{:href => "#"} Load more
+      #left_column.span3.hidden-phone
+        #scoreboard.rounded.border-color
+          .header
+            %h4
+              Stats
+          %ul.unstyled
+            %li 
+              .content
+                %h5= 12
+                %p Engagements
+                .clr
+              .clr
+            %li 
+              .content
+                %h5= 105
+                %p Followers
+                .clr
+              .clr
+          .clr
+        .clr
+
+
+#post_template.conversation.border-color{:style => "display: none;"}
+  .post.parent
+    %i.icon-share-alt{:style => "display: none;"}
+    .content
+      = image_tag(@asker.twi_profile_img_url, :class => "rounded")
+      %h5= @asker.twi_screen_name
+      %p Post content
+    .answers.rounded.border{:style => "display: none;"}
+  .subsidiaries{:style => "display: none;"}
+  .loading{:style => "display: none;"}
+    Loading...
+
+#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+  .shadow-top
+  .tweet
+    %span#account= "@#{@asker.twi_screen_name}"
+    %span#answer= " Answer text"
+    %span#url= " URL"
+    / %span#additional{:contenteditable => true}
+  .answer_controls
+    .btn.btn-primary Tweet!
+  .shadow-bottom
+
+#subsidiary_template.post{:style => "display: none;"}
+  .content
+    = image_tag(@asker.twi_profile_img_url, :class => "rounded")              
+    %h5= "User Name"
+    %p= "Post content"
+
+= hidden_field_tag :feed_id, @asker.id
+= hidden_field_tag :feed_name, @asker.twi_screen_name
+= hidden_field_tag :post_id, @post_id
+= hidden_field_tag :answer_id, @answer_id
+= hidden_field_tag :user_name, current_user.twi_screen_name if current_user
+= hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
