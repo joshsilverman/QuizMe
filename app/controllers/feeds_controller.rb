@@ -23,7 +23,7 @@ class FeedsController < ApplicationController
 
   def more
     post = Publication.find(params[:last_post_id])
-    publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID != ? AND PUBLISHED = TRUE", post.created_at, post.id).order("created_at DESC").limit(5).includes(:question => :answers)
+    publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID != ? AND PUBLISHED = ?", post.created_at, post.id, true).order("created_at DESC").limit(5).includes(:question => :answers)
     publication_ids = publications.collect(&:id)
     if current_user
       responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => publication_ids).collect(&:id), :publication_id => publication_ids).includes(:posts).group_by(&:publication_id)
