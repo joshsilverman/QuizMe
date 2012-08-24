@@ -317,6 +317,7 @@ class Post < ActiveRecord::Base
                  :posted_via_app => false
                  )
     end
+  end
 
 
   def generate_response(response_type)
