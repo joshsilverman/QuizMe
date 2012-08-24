@@ -7,6 +7,7 @@ class FeedsController < ApplicationController
     @asker = User.asker(params[:id])
     @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
     @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+    @leaders = User.leaderboard(params[:id])
     if current_user
       @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
