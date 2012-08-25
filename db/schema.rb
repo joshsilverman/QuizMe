@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120822003824) do
+ActiveRecord::Schema.define(:version => 20120824234750) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -29,11 +29,11 @@ ActiveRecord::Schema.define(:version => 20120822003824) do
   end
 
   create_table "conversations", :force => true do |t|
-    t.integer  "publication_id"
-    t.integer  "post_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "publication_id"
+    t.integer   "post_id"
+    t.integer   "user_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "posts", :force => true do |t|
@@ -53,30 +53,32 @@ ActiveRecord::Schema.define(:version => 20120822003824) do
   end
 
   create_table "publication_queues", :force => true do |t|
-    t.integer  "asker_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "index",      :default => 0
+    t.integer   "asker_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "index",      :default => 0
   end
 
   create_table "publications", :force => true do |t|
-    t.integer  "question_id"
-    t.integer  "asker_id"
-    t.string   "url"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "publication_queue_id"
-    t.boolean  "published",            :default => false
+    t.integer   "question_id"
+    t.integer   "asker_id"
+    t.string    "url"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "publication_queue_id"
+    t.boolean   "published",            :default => false
   end
 
   create_table "questions", :force => true do |t|
-    t.text     "text"
-    t.integer  "topic_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "user_id"
-    t.integer  "status",               :default => 0
-    t.integer  "created_for_asker_id"
+    t.text      "text"
+    t.integer   "topic_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "user_id"
+    t.integer   "status",               :default => 0
+    t.integer   "created_for_asker_id"
+    t.boolean   "priority",             :default => false
+    t.string    "hashtag"
   end
 
   create_table "reps", :force => true do |t|

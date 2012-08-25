@@ -1,6 +1,9 @@
 = hidden_field_tag 'topic_tag', @topic_tag
+= hidden_field_tag 'created_for_asker_id', @asker_id
 = hidden_field_tag 'asker_id', @asker_id
 = hidden_field_tag 'name', current_user.twi_screen_name if current_user
+= hidden_field_tag 'priority', (current_user and current_user.twi_screen_name == 'StudyEgg') ? 1 : 0
+= hidden_field_tag 'status', (current_user and current_user.twi_screen_name == 'StudyEgg') ? 1 : 0
 .row
   .span6.offset3#form_container
     - if @success
