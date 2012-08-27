@@ -37,21 +37,24 @@ class Post < ActiveRecord::Base
     where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
-  def self.tweetable(text, user = "", url = "")
+  def self.tweetable(text, user = "", url = "", hashtag = "")
     user = "" if user.nil?
     url = "" if url.nil?
     text_length = text.length
     handle_length = user.length
     url_length = url.length
+    hashtag_length = hashtag.nil? ? 0 : hashtag.length
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
+    remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
     tweet += "@#{user} " if handle_length > 0
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
+    tweet += " #{hashtag}" if hashtag_length > 0
     return tweet    
   end
 
@@ -101,7 +104,7 @@ class Post < ActiveRecord::Base
     puts long_url
     case provider
     when "twitter"
-      Post.tweet(asker, question.text, nil, long_url, 
+      Post.tweet(asker, question.text, question.hashtag, nil, long_url, 
                  'status question', 'initial', nil,
                  publication.id, nil, nil, false)
     when "tumblr"
@@ -113,7 +116,7 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(account, tweet, reply_to, long_url, 
+  def self.tweet(account, tweet, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
                  in_reply_to_user_id, link_to_parent)
@@ -121,9 +124,9 @@ class Post < ActiveRecord::Base
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}")
+      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}")
     end
     post = Post.create(
       :user_id => account.id,
@@ -155,6 +158,7 @@ class Post < ActiveRecord::Base
     user_post = Post.tweet(
       current_user, 
       answer.text, 
+      '',
       asker.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
       "reply answer #{status}", 
@@ -171,6 +175,7 @@ class Post < ActiveRecord::Base
     app_post = Post.tweet(
       asker, 
       response, 
+      '', 
       current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
       "reply answer_response #{status}", 

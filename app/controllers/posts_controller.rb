@@ -22,10 +22,10 @@ class PostsController < ApplicationController
 			puts tweet
 			if params[:response_type] == 'fast'
 				puts 'fast'
-				Post.tweet(asker, tweet, '',"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", conversation.id, nil, post.id, user.id, false)
+				Post.tweet(asker, tweet, '','',"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", conversation.id, nil, post.id, user.id, false)
 			else
 				puts 'others'
-				Post.tweet(asker, tweet, user.twi_screen_name,"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", "#{correct ? 'cor' : 'inc'}", conversation.id, nil, post.id, user.id, false)
+				Post.tweet(asker, tweet, '',user.twi_screen_name,"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", "#{correct ? 'cor' : 'inc'}", conversation.id, nil, post.id, user.id, false)
 			end
 			render :nothing => true, :status => 200
 		else
