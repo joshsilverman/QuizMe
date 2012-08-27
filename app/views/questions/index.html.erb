@@ -20,7 +20,7 @@
         <td><%= question.text %></td>
         <td><%= question.hashtag %></td>
         <td><%= question.topic_id %></td>
-        <td><%=l question.created_at %></td>
+        <td><%= question.created_at %></td>
         <td>
           <%= link_to t('.edit', :default => t("helpers.links.edit")),
                       edit_question_path(question), :class => 'btn btn-mini' %>
