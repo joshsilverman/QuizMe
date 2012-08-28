@@ -18,7 +18,7 @@ class Feed
 			e.preventDefault()
 			@show_more()
 		# @initializeNewPostListener()
-		# mixpanel.track("page_loaded", {"account" : @name, "source": source})
+		mixpanel.track("page_loaded", {"account" : @name, "source": source})
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
@@ -115,6 +115,7 @@ class Post
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
 		@element.on "click", (e) => @expand(e)
 		@element.find(".btn").on "click", (e) => 
+			mixpanel.track("unauthenticated_tweet_click", {"account" : window.feed.name, "source": source}) if window.feed.user_name == null or window.feed.user_name == undefined
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond(parent.text(), parent.attr("answer_id"))
@@ -181,6 +182,8 @@ class Post
 					subsidiary.addClass("answered")
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
+				window.feed.answered += 1
+				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
@@ -197,19 +200,6 @@ class Post
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
 			@element.find("i").show()		
-	# answered: (correct) =>
-	# 	window.feed.answered += 1
-	# 	mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source})
-	# 	if correct
-	# 		@element.css("background", "rgba(0, 59, 5, .2)")
-	# 	else
-	# 		@element.css("background", "rgba(128, 0, 0, .1)")
-	# 	for answer in @answers
-	# 		answer.element.css("background", "gray")
-	# 		if answer.correct
-	# 			answer.element.css("color", "#003B05")
-	# 		else
-	# 			answer.element.css("color", "#bbb")
 
 
 class Answer
