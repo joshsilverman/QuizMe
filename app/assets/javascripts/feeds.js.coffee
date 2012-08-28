@@ -169,7 +169,7 @@ class Post
 			"post_id" : @id
 			"answer_id" : answer_id
 			# "text" : text #This will eventually be any custom text (?)
-		$.ajax '/respond',
+		$.ajax '/respond_to_question',
 			type: 'POST'
 			data: params
 			success: (e) => 
