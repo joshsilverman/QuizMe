@@ -43,7 +43,7 @@
 													%span#url= " #{post.url}"
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
-													%a#tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+													%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 												.shadow-bottom
 							.subsidiaries{:style => "display: none;"}
 								- if conversation
@@ -121,7 +121,7 @@
 		%span#url= " URL"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
-		#tweet_button.btn.btn-primary Tweet!
+		.tweet_button.btn.btn-primary Tweet!
 	.shadow-bottom
 
 #subsidiary_template.post{:style => "display: none;"}
