@@ -77,6 +77,10 @@ class Post < ActiveRecord::Base
   end
 
   ### Internal
+  def self.internal_answers
+    where(:posted_via_app => true, :engagement_type => 'answer')
+  end
+
   def is_parent?
     self.publication_id? or self.in_reply_to_post_id.nil?
   end
