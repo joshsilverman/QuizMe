@@ -252,4 +252,9 @@ class Stat < ActiveRecord::Base
 							'rts' => rts,
 							'weekly_churn' => weekly_stats.last.internal_weekly_churn}
 	end
+
+	def self.increment_cached_value(asker, attribute, value, user_id = nil)
+		puts "increment cached values:"
+		puts asker, attribute, value, user_id
+	end
 end

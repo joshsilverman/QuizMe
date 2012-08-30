@@ -191,6 +191,8 @@ class Post < ActiveRecord::Base
       true
     )  
     conversation.posts << app_post
+    Stat.increment_cached_value(asker, "questions_answered", 1, current_user.id)
+    Stat.increment_cached_value(asker, "internal_answers", 1, current_user.id)    
     return {:message => response, :url => publication.url}
   end
 
@@ -217,14 +219,15 @@ class Post < ActiveRecord::Base
     messaged = current_acct.posts.where(:provider => 'twitter',
                             :post_type => 'dm').collect(&:to_twi_user_id).to_set
     to_message = new_followers - messaged
-
     to_message.each do |id|
-      Post.dm(current_acct,
-              "Here's your first question: How many base pairs make a codon? ", 
-              "http://www.studyegg.com/review/112/10187", 
-              "dm",
-              21,
-              id)
+      Post.dm(
+        current_acct,
+        "Here's your first question: How many base pairs make a codon? ", 
+        "http://www.studyegg.com/review/112/10187", 
+        "dm",
+        21,
+        id
+      )
       sleep(1)
     end
   end
@@ -259,21 +262,13 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    puts mentions.count
     retweets = client.retweets_of_me({:count => 50})
-    puts retweets.count
-
     mentions.each do |m|
-      puts 'mention'
       Post.save_mention_data(m, current_acct)
     end
-
-    puts 'pre-retweet'
     retweets.each do |r|
-      puts 'retweet'
       Post.save_retweet_data(r, current_acct)
-    end
-    puts 'post retweet'
+    end       
     true
   end
 
@@ -294,37 +289,42 @@ class Post < ActiveRecord::Base
     else
       puts "Something went wrong on line 277 of post.rb"
     end      
-    Post.create( :provider_post_id => m.id.to_s,
-                 :engagement_type => nil,
-                 :text => m.text,
-                 :provider => 'twitter',
-                 :user_id => u.id,
-                 :in_reply_to_post_id => reply_post ? reply_post.id : nil,
-                 :in_reply_to_user_id => current_acct.id,
-                 :created_at => m.created_at,
-                 :conversation_id => conversation.nil? ? nil : conversation.id,
-                 :posted_via_app => false
-                 )
+    Post.create( 
+      :provider_post_id => m.id.to_s,
+      :engagement_type => nil,
+      :text => m.text,
+      :provider => 'twitter',
+      :user_id => u.id,
+      :in_reply_to_post_id => reply_post ? reply_post.id : nil,
+      :in_reply_to_user_id => current_acct.id,
+      :created_at => m.created_at,
+      :conversation_id => conversation.nil? ? nil : conversation.id,
+      :posted_via_app => false
+    )
+    Stat.increment_cached_value(current_acct, "mentions", mentions.count, u.id)
   end
 
   def self.save_retweet_data(r, current_acct)
-    puts "SAVE retweets"
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
-      u.update_attributes(:twi_name => user.name,
-                          :twi_screen_name => user.screen_name,
-                          :twi_profile_img_url => user.profile_image_url)
+      u.update_attributes(
+        :twi_name => user.name,
+        :twi_screen_name => user.screen_name,
+        :twi_profile_img_url => user.profile_image_url
+      )
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
       return if post
-      Post.create(:engagement_type => 'share',
-                 :provider => 'twitter',
-                 :user_id => u.id,
-                 :in_reply_to_post_id => retweet_post.id,
-                 :in_reply_to_user_id => retweet_post.user_id,
-                 :posted_via_app => false
-                 )
+      Post.create(
+        :engagement_type => 'share',
+        :provider => 'twitter',
+        :user_id => u.id,
+        :in_reply_to_post_id => retweet_post.id,
+        :in_reply_to_user_id => retweet_post.user_id,
+        :posted_via_app => false
+      )
+      Stat.increment_cached_value(current_acct, "retweets", retweets.count, u.id) 
     end
   end
 
@@ -347,18 +347,22 @@ class Post < ActiveRecord::Base
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     self.update_attributes(:responded_to => true)
-      unless correct.nil?
-        Rep.create(:user_id => self.user_id,
-                 :post_id => self.in_reply_to_post_id,
-                 :publication_id => publication_id,
-                 :question_id => question_id,
-                 :correct => correct)
-
-        stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
-        stat.increment(:twitter_answers) if self.provider.include? 'twitter'
-        stat.increment(:facebook_answers) if self.provider.include? 'facebook'
-        stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
-        stat.increment(:internal_answers) if self.provider.include? 'app'
-      end
+    unless correct.nil?
+      Rep.create(
+        :user_id => self.user_id,
+        :post_id => self.in_reply_to_post_id,
+        :publication_id => publication_id,
+        :question_id => question_id,
+        :correct => correct
+      )
+      # Stat.increment_cached_value("questions_answered", 1)
+      # Stat.increment_cached_value("internal_answers", 1) if self.posted_via_app
+      # Stat.increment_cached_value("twitter_answers", 1) if self.provider.include? "twitter"
+      # stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
+      # stat.increment(:twitter_answers) if self.provider.include? 'twitter'
+      # stat.increment(:facebook_answers) if self.provider.include? 'facebook'
+      # stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
+      # stat.increment(:internal_answers) if self.provider.include? 'app'
+    end
   end
 end
