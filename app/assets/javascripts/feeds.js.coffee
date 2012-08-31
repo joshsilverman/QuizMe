@@ -18,10 +18,8 @@ class Feed
 			e.preventDefault()
 			@show_more()
 		# @initializeNewPostListener()
-		# mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
-		# if @user_name == null or @user_name == undefined	
-		# 	mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
-		# 	console.log "track links!"
+		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
+		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
@@ -184,9 +182,8 @@ class Post
 					subsidiary.addClass("answered")
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
-				# window.feed.answered += 1
-				## try removing this to fix mp bug
-				# mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
+				window.feed.answered += 1
+				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
