@@ -194,7 +194,7 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
     Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
     Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
-    return {:message => response_text, :url => publication.url}
+    # return {:message => response_text, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
