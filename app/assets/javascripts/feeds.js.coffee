@@ -19,7 +19,9 @@ class Feed
 			@show_more()
 		# @initializeNewPostListener()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
-		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
+		if @user_name == null or @user_name == undefined	
+			mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
+			console.log "track links!"
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
