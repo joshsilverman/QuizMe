@@ -27,13 +27,17 @@ class PostsController < ApplicationController
 				puts 'others'
 				Post.tweet(asker, tweet, '',user.twi_screen_name,"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", "#{correct ? 'cor' : 'inc'}", conversation.id, nil, post.id, user.id, false)
 			end
-			Stat.increment_cached_value("questions_answered", mentions.count, user.id)
-    		Stat.increment_cached_value("twitter_answers", retweets.count, user.id)
 			render :nothing => true, :status => 200
 		else
 			puts "SKIP IT!"
 			post.update_attributes :responded_to => true
 			render :nothing => true, :status => 200
 		end
+		### Add these in where appropriate when re-written: ###
+		# Stat.update_stat_cache("twitter_answers", 1, asker, user_post.created_at)
+		# Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
+		# Stat.update_stat_cache("mentions", 1, asker, user_post.created_at)
+		# Stat.update_stat_cache("retweets", 1, asker, post.created_at)
+		# Stat.update_stat_cache("active_users", user.id, asker, post.created_at)      		
 	end
 end

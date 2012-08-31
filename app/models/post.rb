@@ -191,8 +191,9 @@ class Post < ActiveRecord::Base
       true
     )  
     conversation.posts << app_post
-    Stat.increment_cached_value(asker, "questions_answered", 1, current_user.id)
-    Stat.increment_cached_value(asker, "internal_answers", 1, current_user.id)    
+    Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
+    Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
+    Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
     return {:message => response, :url => publication.url}
   end
 
@@ -301,7 +302,6 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
-    Stat.increment_cached_value(current_acct, "mentions", mentions.count, u.id)
   end
 
   def self.save_retweet_data(r, current_acct)
@@ -316,7 +316,7 @@ class Post < ActiveRecord::Base
       )
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
       return if post
-      Post.create(
+      post = Post.create(
         :engagement_type => 'share',
         :provider => 'twitter',
         :user_id => u.id,
@@ -324,7 +324,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweet_post.user_id,
         :posted_via_app => false
       )
-      Stat.increment_cached_value(current_acct, "retweets", retweets.count, u.id) 
+      Stat.update_stat_cache("retweets", 1, current_acct, post.created_at)
+      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at)      
     end
   end
 
@@ -355,9 +356,6 @@ class Post < ActiveRecord::Base
         :question_id => question_id,
         :correct => correct
       )
-      # Stat.increment_cached_value("questions_answered", 1)
-      # Stat.increment_cached_value("internal_answers", 1) if self.posted_via_app
-      # Stat.increment_cached_value("twitter_answers", 1) if self.provider.include? "twitter"
       # stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
       # stat.increment(:twitter_answers) if self.provider.include? 'twitter'
       # stat.increment(:facebook_answers) if self.provider.include? 'facebook'

@@ -112,20 +112,16 @@ ActiveRecord::Schema.define(:version => 20120830000216) do
   end
 
   create_table "stats", :force => true do |t|
-    t.integer  "followers",                :default => 0
-    t.integer  "total_followers",          :default => 0
-    t.integer  "retweets",                 :default => 0
-    t.integer  "total_retweets",           :default => 0
-    t.integer  "mentions",                 :default => 0
-    t.integer  "total_mentions",           :default => 0
-    t.integer  "questions_answered",       :default => 0
-    t.integer  "total_questions_answered", :default => 0
-    t.integer  "internal_answers",         :default => 0
-    t.integer  "total_internal_answers",   :default => 0
-    t.integer  "twitter_answers",          :default => 0
-    t.integer  "total_twitter_answers",    :default => 0
-    t.integer  "active_users",             :default => 0
-    t.text     "active_user_ids"
+    t.date     "date"
+    t.integer  "followers",          :default => 0
+    t.integer  "total_followers",    :default => 0
+    t.integer  "retweets",           :default => 0
+    t.integer  "mentions",           :default => 0
+    t.integer  "questions_answered", :default => 0
+    t.integer  "internal_answers",   :default => 0
+    t.integer  "twitter_answers",    :default => 0
+    t.integer  "active_users",       :default => 0
+    t.text     "active_user_ids",    :default => ""
     t.integer  "asker_id"
     t.datetime "created_at"
     t.datetime "updated_at"
