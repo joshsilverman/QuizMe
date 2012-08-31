@@ -174,7 +174,7 @@ class Post < ActiveRecord::Base
       false
     )
     conversation.posts << user_post
-    user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
+    user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
     response_text = post.generate_response(status)
     app_post = Post.tweet(
       asker, 
@@ -344,7 +344,7 @@ class Post < ActiveRecord::Base
     tweet
   end
 
-  def respond(correct, publication_id, question_id, asker_id)
+  def update_responded(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     self.update_attributes(:responded_to => true)

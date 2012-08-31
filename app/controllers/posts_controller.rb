@@ -3,7 +3,7 @@ class PostsController < ApplicationController
 		puts 'UPDATE'
 		eng = Post.find(params[:post_id])
 		correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
-		eng.respond(correct) if eng
+		eng.update_responded(correct) if eng
 		render :nothing => true
 	end
 
@@ -17,7 +17,7 @@ class PostsController < ApplicationController
 			asker = User.asker(params[:asker_id].to_i)
 			user = post.user
 			conversation = post.conversation
-			post.respond(correct, conversation.publication_id, conversation.publication.question_id , asker.id)
+			post.update_responded(correct, conversation.publication_id, conversation.publication.question_id , asker.id)
 			tweet = post.generate_response(params[:response_type])
 			puts tweet
 			if params[:response_type] == 'fast'
