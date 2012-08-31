@@ -39,6 +39,7 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    render :json => "test"
   end
 end
