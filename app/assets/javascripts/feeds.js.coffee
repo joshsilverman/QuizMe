@@ -19,9 +19,9 @@ class Feed
 			@show_more()
 		# @initializeNewPostListener()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
-		if @user_name == null or @user_name == undefined	
-			mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
-			console.log "track links!"
+		# if @user_name == null or @user_name == undefined	
+			# mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
+			# console.log "track links!"
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
@@ -162,6 +162,7 @@ class Post
 			# else
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
 	respond: (text, answer_id) =>
+		console.log "respond!"
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
 		loading.fadeIn(500)
@@ -175,6 +176,8 @@ class Post
 			type: 'POST'
 			data: params
 			success: (e) => 
+				console.log "success"
+				console.log e
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
 				subsidiary.find("img").attr("src", window.feed.user_image)
@@ -185,6 +188,7 @@ class Post
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
 				window.feed.answered += 1
+				## try removing this to fix mp bug
 				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
