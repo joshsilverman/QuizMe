@@ -34,6 +34,8 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.update_stat_cache(attribute, value, asker, date)
+		puts "in update_stat_cache"
+		puts attribute, value, asker.to_json, date
 		date = date.to_date
 		stats_hash = Rails.cache.read("stats:#{asker.id}") || {}
 		stats_hash = stats_hash.dup
@@ -49,7 +51,10 @@ class Stat < ActiveRecord::Base
 			stats_hash[date][attribute] = 0 unless stats_hash[date][attribute]
 			stats_hash[date][attribute] += value
 		end
+		puts "stats_hash:"
+		puts stats_hash.to_json
 		Rails.cache.write("stats:#{asker.id}", stats_hash)
+		puts Rails.cache.read("stats:#{asker.id}")
 	end
 
 	# def self.get_yesterday(id)

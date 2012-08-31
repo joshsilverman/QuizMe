@@ -191,9 +191,11 @@ class Post < ActiveRecord::Base
       true
     )  
     conversation.posts << app_post
+    puts "pre stat cache"
     Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
     Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
     Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
+    puts "post stat cache"
     return {:message => response_text, :url => publication.url}
   end
 
