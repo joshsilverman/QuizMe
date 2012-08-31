@@ -18,10 +18,10 @@ class Feed
 			e.preventDefault()
 			@show_more()
 		# @initializeNewPostListener()
-		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
-		if @user_name == null or @user_name == undefined	
-			mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
-			console.log "track links!"
+		# mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
+		# if @user_name == null or @user_name == undefined	
+		# 	mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) 
+		# 	console.log "track links!"
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	scroll_to_question: (target) =>
@@ -120,7 +120,7 @@ class Post
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond(parent.text(), parent.attr("answer_id"))
+				@respond_to_question(parent.text(), parent.attr("answer_id"))
 		# @element.on "mouseenter", => 
 		# 	if @correct == true
 		# 		@element.find("i").animate({color: "#0B7319"}, 0)
@@ -161,7 +161,7 @@ class Post
 			# 	@element.find("i").animate({color: "#0B7319"}, 0)
 			# else
 			# 	@element.find("i").animate({color: "#C43939"}, 0)			
-	respond: (text, answer_id) =>
+	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
 		loading.fadeIn(500)
