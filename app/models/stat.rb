@@ -3,6 +3,7 @@ class Stat < ActiveRecord::Base
 
 	def self.update_stats_from_cache(asker)
 		stats_hash = Rails.cache.read("stats:#{asker.id}")
+		return if stats_hash.blank?
 		Hash[stats_hash.sort].each do |date, attributes_hash|
 			stat = Stat.where(:date => date).order("date DESC").limit(1).first
 			stat = Stat.new if stat.blank?
@@ -55,7 +56,6 @@ class Stat < ActiveRecord::Base
 		puts "stats_hash:"
 		puts stats_hash.to_json
 		Rails.cache.write("stats:#{asker.id}", stats_hash)
-		puts "stats:#{asker.id}"
 		puts Rails.cache.read("stats:#{asker.id}")
 	end
 
