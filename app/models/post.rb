@@ -128,16 +128,16 @@ class Post < ActiveRecord::Base
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}")
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}")
     end
     post = Post.create(
       :user_id => account.id,
       :provider => 'twitter',
       :text => tweet,
       :engagement_type => engagement_type,
-      :provider_post_id => response.id.to_s,
+      :provider_post_id => twitter_response.id.to_s,
       :in_reply_to_post_id => in_reply_to_post_id,
       :in_reply_to_user_id => in_reply_to_user_id,
       :conversation_id => conversation_id,
@@ -175,10 +175,10 @@ class Post < ActiveRecord::Base
     )
     conversation.posts << user_post
     user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
-    response = post.generate_response(status)
+    response_text = post.generate_response(status)
     app_post = Post.tweet(
       asker, 
-      response, 
+      response_text, 
       '', 
       current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
@@ -194,7 +194,7 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
     Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
     Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
-    return {:message => response, :url => publication.url}
+    return {:message => response_text, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
