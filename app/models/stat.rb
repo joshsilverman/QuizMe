@@ -2,7 +2,8 @@ class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 
 	def self.update_stats_from_cache(asker)
-		Hash[Rails.cache.read("stats:#{asker.id}").sort].each do |date, attributes_hash|
+		stats_hash = Rails.cache.read("stats:#{asker.id}")
+		Hash[stats_hash.sort].each do |date, attributes_hash|
 			stat = Stat.where(:date => date).order("date DESC").limit(1).first
 			stat = Stat.new if stat.blank?
 			stat.date = date
@@ -54,6 +55,7 @@ class Stat < ActiveRecord::Base
 		puts "stats_hash:"
 		puts stats_hash.to_json
 		Rails.cache.write("stats:#{asker.id}", stats_hash)
+		puts "stats:#{asker.id}"
 		puts Rails.cache.read("stats:#{asker.id}")
 	end
 
