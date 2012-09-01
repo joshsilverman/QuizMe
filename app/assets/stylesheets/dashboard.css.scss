@@ -13,7 +13,7 @@
 
 			.stats {
 				height: 225px;
-				width: 34%;
+				width: 30%;
 				float: left;
 				border-right: 1px #F0F0F0 solid;
 				
@@ -34,10 +34,11 @@
 				.container {
 					width: inherit;
 					text-align: center;
-					padding-top: 25px;
+					padding-top: 24px;
 
 					.number {
 						font-size: 44px;
+    				margin-bottom: 14px;
 					}
 
 					.period {
@@ -46,6 +47,7 @@
 					}
 
 					.number, .period {
+						/*margin-top: 14px;*/
 						/*display: inline;*/
 					}					
 				}
