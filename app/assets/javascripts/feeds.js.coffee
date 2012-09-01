@@ -130,7 +130,8 @@ class Post
 			collapsible: true, 
 			autoHeight: false,
 			active: false, 
-			icons: false
+			icons: false, 
+			disabled: true if $("#manager").length > 0
 		})		
 		answers.on "accordionchange", (e, ui) => 
 			if ui.newHeader.length > 0
