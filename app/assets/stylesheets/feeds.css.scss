@@ -1,4 +1,8 @@
-
+.rounded {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
 
 #feed_container {
 	float: none;
@@ -20,12 +24,6 @@
 	-moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
 	-webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
 	-webkit-tap-highlight-color: rgba(0,0,0,0);*/
-
-	.rounded {
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
-	}
 
 	.border-color {
 		border-color: rgba(0,0,0,.21);

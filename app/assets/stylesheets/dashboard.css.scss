@@ -1,0 +1,82 @@
+#dashboard {
+	margin-left: 0px;
+
+	.row {
+		height: 225px;
+		margin: 10px 0px;
+		
+		.panel {
+			background: white;
+			margin-left: 0px;
+			height: 225px;
+			border: 1px rgba(0, 0, 0, 0.207031) solid;
+
+			.stats {
+				height: 225px;
+				width: 34%;
+				float: left;
+				border-right: 1px #F0F0F0 solid;
+				
+				.header {
+					height: 49px;
+					background-color: whiteSmoke;
+					-webkit-border-top-left-radius: 5px;
+					-moz-border-top-left-radius: 5px;
+					border-top-left-radius: 5px;	
+
+					h3 {
+						text-align: center;
+						position: relative;
+						top: 12px;						
+					}				
+				}
+
+				.container {
+					width: inherit;
+					text-align: center;
+					padding-top: 25px;
+
+					.number {
+						font-size: 44px;
+					}
+
+					.period {
+						font-size: 18px;
+						color: gray;
+					}
+
+					.number, .period {
+						/*display: inline;*/
+					}					
+				}
+
+				.new {
+					border-top: 1px #F0F0F0 solid;
+					height: 88px;
+				}
+
+				.total {
+					border-top: 1px #F0F0F0 dotted;
+					height: 88px;
+				}
+			}
+
+			.graph {
+				height: 225px;
+				width: 66%;
+				float: left;
+			}
+		}
+
+		.panel.right{
+			float: right;
+		}		
+		/*.left {*/
+
+		/*}*/
+		
+		/*.right {*/
+
+		/*}*/
+	}
+}
