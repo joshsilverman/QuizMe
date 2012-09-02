@@ -5,18 +5,21 @@ class Feed
 	answered: 0
 	user_name: null
 	user_image: null
+	manager: false
 	constructor: ->
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
+		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
 		target = $(".post[post_id=#{$('#post_id').val()}]")
 		@scroll_to_question(target) if target.length > 0
-		$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
-		$("#posts_more").on "click", (e) => 
-			e.preventDefault()
-			@show_more()
+		unless @manager
+			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
+			$("#posts_more").on "click", (e) => 
+				e.preventDefault()
+				@show_more()
 		# @initializeNewPostListener()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
@@ -131,7 +134,7 @@ class Post
 			autoHeight: false,
 			active: false, 
 			icons: false, 
-			disabled: true if $("#manager").length > 0
+			disabled: true if window.feed.manager
 		})		
 		answers.on "accordionchange", (e, ui) => 
 			if ui.newHeader.length > 0
@@ -140,6 +143,12 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
+		if $(e.target).hasClass "label"
+			@link_post(e)
+			return
+		if $(e.target).parents(".reply").length > 0 or $(e.target).hasClass("reply")
+			@open_reply_modal(e)
+			return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
@@ -200,7 +209,20 @@ class Post
 			)
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
-			@element.find("i").show()		
+			@element.find("i").show()	
+	open_reply_modal: (event) =>
+		post = $(event.target)
+		post = post.parents(".reply") unless post.hasClass "reply"
+		$("#respond_modal").dialog
+			title: "Reply to #{post.find('h5').text()}"
+			width: 521
+			modal: true
+	link_post: (event) =>
+		$("#link_post_modal").dialog
+			title: "Link Post"
+			width: 536
+			height: 600
+			modal: true		
 
 
 class Answer
