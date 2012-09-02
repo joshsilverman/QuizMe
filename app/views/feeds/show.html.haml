@@ -43,7 +43,7 @@
 													%span#url= " #{post.url}"
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
-													%a.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+													%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 												.shadow-bottom
 							.subsidiaries{:style => "display: none;"}
 								- if conversation
@@ -69,7 +69,7 @@
 						%h4
 							Leaderboard
 					%ul.unstyled
-						- User.leaderboard(@asker.id)[:scores].each_with_index do |leader, i|
+						- @leaders[:scores].each_with_index do |leader, i|
 							/ {:href => "/feeds/#{related.id}"}
 							%a{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
 								%li 
@@ -78,7 +78,10 @@
 										.place= i + 1
 										= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
 										%h5= leader[:user].twi_screen_name
-										%p= "#{leader[:correct]} correct answers"
+										- if leader[:correct] == 1
+											%p= "#{leader[:correct]} correct answer"
+										- else
+											%p= "#{leader[:correct]} correct answers"
 										.clr
 									.clr
 					.clr
@@ -118,7 +121,7 @@
 		%span#url= " URL"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
-		.btn.btn-primary Tweet!
+		.tweet_button.btn.btn-primary Tweet!
 	.shadow-bottom
 
 #subsidiary_template.post{:style => "display: none;"}

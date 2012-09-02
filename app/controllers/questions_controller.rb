@@ -99,6 +99,8 @@ class QuestionsController < ApplicationController
     @question.user_id = current_user.id
     @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
     @question.created_for_asker_id = params[:asker_id] unless params[:asker_id].nil?
+    @question.status = params[:status].to_i
+    @question.priority = params[:priority].to_i
     @question.save
 
     @question.answers << Answer.create(:text => params[:canswer], :correct => true)

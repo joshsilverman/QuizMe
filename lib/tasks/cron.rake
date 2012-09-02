@@ -36,8 +36,8 @@ end
 
 task :save_stats => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
-	askers.each do |a|
-		Stat.save_daily_stats_for_account(a)
+	askers.each do |asker|
+		Stat.update_stats_from_cache(asker)
 		sleep(10)
 	end
 end

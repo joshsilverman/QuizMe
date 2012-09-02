@@ -35,21 +35,24 @@ class Post < ActiveRecord::Base
     where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
-  def self.tweetable(text, user = "", url = "")
+  def self.tweetable(text, user = "", url = "", hashtag = "")
     user = "" if user.nil?
     url = "" if url.nil?
     text_length = text.length
     handle_length = user.length
     url_length = url.length
+    hashtag_length = hashtag.nil? ? 0 : hashtag.length
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
+    remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
     tweet += "@#{user} " if handle_length > 0
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
+    tweet += " #{hashtag}" if hashtag_length > 0
     return tweet    
   end
 
@@ -72,6 +75,10 @@ class Post < ActiveRecord::Base
   end
 
   ### Internal
+  def self.internal_answers
+    where(:posted_via_app => true, :engagement_type => 'answer')
+  end
+
   def is_parent?
     self.publication_id? or self.in_reply_to_post_id.nil?
   end
@@ -99,7 +106,7 @@ class Post < ActiveRecord::Base
     puts long_url
     case provider
     when "twitter"
-      Post.tweet(asker, question.text, nil, long_url, 
+      Post.tweet(asker, question.text, question.hashtag, nil, long_url, 
                  'status question', 'initial', nil,
                  publication.id, nil, nil, false)
     when "tumblr"
@@ -111,7 +118,7 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(account, tweet, reply_to, long_url, 
+  def self.tweet(account, tweet, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
                  in_reply_to_user_id, link_to_parent)
@@ -119,16 +126,16 @@ class Post < ActiveRecord::Base
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url)}")
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}")
     end
     post = Post.create(
       :user_id => account.id,
       :provider => 'twitter',
       :text => tweet,
       :engagement_type => engagement_type,
-      :provider_post_id => response.id.to_s,
+      :provider_post_id => twitter_response.id.to_s,
       :in_reply_to_post_id => in_reply_to_post_id,
       :in_reply_to_user_id => in_reply_to_user_id,
       :conversation_id => conversation_id,
@@ -153,6 +160,7 @@ class Post < ActiveRecord::Base
     user_post = Post.tweet(
       current_user, 
       answer.text, 
+      '',
       asker.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
       "reply answer #{status}", 
@@ -164,11 +172,12 @@ class Post < ActiveRecord::Base
       false
     )
     conversation.posts << user_post
-    user_post.respond(answer.correct, publication_id, publication.question_id, asker_id)
-    response = post.generate_response(status)
+    user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
+    response_text = post.generate_response(status)
     app_post = Post.tweet(
       asker, 
-      response, 
+      response_text, 
+      '', 
       current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
       "reply answer_response #{status}", 
@@ -180,7 +189,12 @@ class Post < ActiveRecord::Base
       true
     )  
     conversation.posts << app_post
-    return {:message => response, :url => publication.url}
+    puts "pre stat cache"
+    Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
+    Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
+    Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
+    puts "post stat cache"
+    return {:message => response_text, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
@@ -206,14 +220,15 @@ class Post < ActiveRecord::Base
     messaged = current_acct.posts.where(:provider => 'twitter',
                             :post_type => 'dm').collect(&:to_twi_user_id).to_set
     to_message = new_followers - messaged
-
     to_message.each do |id|
-      Post.dm(current_acct,
-              "Here's your first question: How many base pairs make a codon? ", 
-              "http://www.studyegg.com/review/112/10187", 
-              "dm",
-              21,
-              id)
+      Post.dm(
+        current_acct,
+        "Here's your first question: How many base pairs make a codon? ", 
+        "http://www.studyegg.com/review/112/10187", 
+        "dm",
+        21,
+        id
+      )
       sleep(1)
     end
   end
@@ -248,21 +263,17 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    puts mentions.count
     retweets = client.retweets_of_me({:count => 50})
-    puts retweets.count
-
+    dms = client.
     mentions.each do |m|
-      puts 'mention'
       Post.save_mention_data(m, current_acct)
     end
-
-    puts 'pre-retweet'
     retweets.each do |r|
-      puts 'retweet'
       Post.save_retweet_data(r, current_acct)
     end
-    puts 'post retweet'
+    dms.each do |d|
+      Post.save_dm_data(d, current_acct)
+    end
     true
   end
 
@@ -283,38 +294,47 @@ class Post < ActiveRecord::Base
     else
       puts "No reply post"
     end      
-    Post.create( :provider_post_id => m.id.to_s,
-                 :engagement_type => nil,
-                 :text => m.text,
-                 :provider => 'twitter',
-                 :user_id => u.id,
-                 :in_reply_to_post_id => reply_post ? reply_post.id : nil,
-                 :in_reply_to_user_id => current_acct.id,
-                 :created_at => m.created_at,
-                 :conversation_id => conversation.nil? ? nil : conversation.id,
-                 :posted_via_app => false
-                 )
+    Post.create( 
+      :provider_post_id => m.id.to_s,
+      :engagement_type => nil,
+      :text => m.text,
+      :provider => 'twitter',
+      :user_id => u.id,
+      :in_reply_to_post_id => reply_post ? reply_post.id : nil,
+      :in_reply_to_user_id => current_acct.id,
+      :created_at => m.created_at,
+      :conversation_id => conversation.nil? ? nil : conversation.id,
+      :posted_via_app => false
+    )
   end
 
   def self.save_retweet_data(r, current_acct)
-    puts "SAVE retweets"
     retweet_post = Post.find_by_provider_post_id(r.id.to_s)
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
-      u.update_attributes(:twi_name => user.name,
-                          :twi_screen_name => user.screen_name,
-                          :twi_profile_img_url => user.profile_image_url)
+      u.update_attributes(
+        :twi_name => user.name,
+        :twi_screen_name => user.screen_name,
+        :twi_profile_img_url => user.profile_image_url
+      )
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
       return if post
-      Post.create(:engagement_type => 'share',
-                 :provider => 'twitter',
-                 :user_id => u.id,
-                 :in_reply_to_post_id => retweet_post.id,
-                 :in_reply_to_user_id => retweet_post.user_id,
-                 :posted_via_app => false
-                 )
+      post = Post.create(
+        :engagement_type => 'share',
+        :provider => 'twitter',
+        :user_id => u.id,
+        :in_reply_to_post_id => retweet_post.id,
+        :in_reply_to_user_id => retweet_post.user_id,
+        :posted_via_app => false
+      )
+      Stat.update_stat_cache("retweets", 1, current_acct, post.created_at)
+      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at)
     end
+  end
+
+  def self.save_dm_data(d, current_acct)
+
   end
 
 
@@ -332,22 +352,23 @@ class Post < ActiveRecord::Base
     tweet
   end
 
-  def respond(correct, publication_id, question_id, asker_id)
+  def update_responded(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     self.update_attributes(:responded_to => true)
-      unless correct.nil?
-        Rep.create(:user_id => self.user_id,
-                 :post_id => self.in_reply_to_post_id,
-                 :publication_id => publication_id,
-                 :question_id => question_id,
-                 :correct => correct)
-
-        stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
-        stat.increment(:twitter_answers) if self.provider.include? 'twitter'
-        stat.increment(:facebook_answers) if self.provider.include? 'facebook'
-        stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
-        stat.increment(:internal_answers) if self.provider.include? 'app'
-      end
+    unless correct.nil?
+      Rep.create(
+        :user_id => self.user_id,
+        :post_id => self.in_reply_to_post_id,
+        :publication_id => publication_id,
+        :question_id => question_id,
+        :correct => correct
+      )
+      # stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
+      # stat.increment(:twitter_answers) if self.provider.include? 'twitter'
+      # stat.increment(:facebook_answers) if self.provider.include? 'facebook'
+      # stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
+      # stat.increment(:internal_answers) if self.provider.include? 'app'
+    end
   end
 end

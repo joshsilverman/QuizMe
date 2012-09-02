@@ -1,0 +1,82 @@
+#dashboard.span12
+	.row
+		#followers.panel.rounded.span6
+			.stats
+				.header
+					%h3 Followers
+				.new
+					.container
+						%p.number= @stat.followers
+						%p.period new
+				.total
+					.container
+						%p.number= @stat.total_followers
+						%p.period all-time				
+			.graph
+		#active_users.panel.right.rounded.span6
+			.stats
+				.header
+					%h3 Active Users
+				.new
+					.container
+						%p.number= @stat.active_users
+						%p.period today
+				.total
+					.container
+						%p.number= @total_active_users
+						%p.period last 30 days.				
+			.graph
+	.row
+		#questions_answered.panel.rounded.span6
+			.stats
+				.header
+					%h3 Answers
+				.new
+					.container
+						%p.number= @stat.questions_answered
+						%p.period new
+				.total
+					.container
+						%p.number= Stat.sum(:questions_answered)
+						%p.period all-time				
+			.graph
+		#click_throughs.panel.right.rounded.span6
+			.stats
+				.header
+					%h3 Click Throughs
+				.new
+					.container
+						%p.number 0
+						%p.period new
+				.total
+					.container
+						%p.number 0
+						%p.period all-time				
+			.graph
+	.row
+		#mentions.panel.rounded.span6
+			.stats
+				.header
+					%h3 Mentions
+				.new
+					.container
+						%p.number= @stat.mentions
+						%p.period new
+				.total
+					.container
+						%p.number= Stat.sum(:mentions)
+						%p.period all-time				
+			.graph
+		#retweets.panel.right.rounded.span6
+			.stats
+				.header
+					%h3 Retweets
+				.new
+					.container
+						%p.number= @stat.retweets
+						%p.period new
+				.total
+					.container
+						%p.number= Stat.sum(:retweets)
+						%p.period all-time
+			.graph

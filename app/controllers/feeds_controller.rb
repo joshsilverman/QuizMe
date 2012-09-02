@@ -7,6 +7,7 @@ class FeedsController < ApplicationController
     @asker = User.asker(params[:id])
     @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
     @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+    @leaders = User.leaderboard(params[:id])
     if current_user
       @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
@@ -37,7 +38,32 @@ class FeedsController < ApplicationController
     @scores = User.get_top_scorers(params[:id])
   end
 
-  def respond
+  def respond_to_question
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
+
+  def manage
+    # redirect_to "/feeds/#{params[:id]}" unless current_user.role == "asker"
+    @asker = User.asker(params[:id])
+    # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
+    posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id])
+    conversation_ids = posts.collect(&:conversation_id)
+    conversation_ids.delete(nil)
+    @publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+    # @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+    @leaders = User.leaderboard(params[:id])
+    if current_user
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
+    else
+      @responses = []
+    end
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render json: @posts }
+    end    
+  end
+
 end

@@ -8,13 +8,15 @@ Quizmemanager::Application.routes.draw do
   get "feeds/index"
   match "feeds/:id/scores" => "feeds#scores"
   match "feeds/:id/more/:last_post_id" => "feeds#more"
+  match "feeds/:id/manage" => "feeds#manage"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
-  match "/respond" => "feeds#respond"
+  match "/respond_to_question" => "feeds#respond_to_question"
+  match "/dashboard" => "askers#dashboard"
 
   post "posts/update"
   post "posts/respond_to_post"
   post "questions/save_question_and_answers"
-  match "questions/new/:account_id" => "questions#new"
+  match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
   match 'auth/:provider/callback' => 'sessions#create'

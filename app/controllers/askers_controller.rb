@@ -88,4 +88,11 @@ class AskersController < ApplicationController
       puts r.user.screen_name
     end
   end
+
+  def dashboard
+    #note: cache all-time stats! (currently summed in view)
+    stats = Stat.order("date DESC").limit(30)
+    @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
+    @stat = stats.first
+  end  
 end

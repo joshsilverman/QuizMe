@@ -52,6 +52,8 @@ $ ->
 				"question" : $("#question").text()
 				"topic_tag" : $("#topic_tag").val()
 				"asker_id" : $("#asker_id").val()
+				"priority" : $("#priority").val()
+				"status" : $("#status").val()
 				"canswer" : $("#canswer input").val()
 				"ianswer1" : $("#ianswer1 input").val()
 				"ianswer2" : $("#ianswer2 input").val()
