@@ -4,6 +4,7 @@
 		%title Wisr
 		= stylesheet_link_tag    "application"
 		= javascript_include_tag "application"
+		= javascript_include_tag "https://www.google.com/jsapi"
 		/ = javascript_include_tag "http://js.pusher.com/1.12/pusher.min.js"
 		= csrf_meta_tags
 		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
@@ -14,6 +15,7 @@
 		/ =render 'layouts/footer'
 		%script{:type=>"text/javascript"}
 			var rails_env = "#{Rails.env}";
+			google.load("visualization", "1.0", {"packages": ["corechart"]});
 		%script{:type=>"text/javascript"}
 			- if Rails.env.production?
 				var _gaq = _gaq || [];

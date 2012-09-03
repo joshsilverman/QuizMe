@@ -1,3 +1,5 @@
+= hidden_field_tag :graph_data, @graph_data.to_json
+
 #dashboard.span12
 	.row
 		#followers.panel.rounded.span6
@@ -12,7 +14,7 @@
 					.container
 						%p.number= @stat.total_followers
 						%p.period all-time				
-			.graph
+			#followers_graph.graph
 		#active_users.panel.right.rounded.span6
 			.stats
 				.header
@@ -25,7 +27,7 @@
 					.container
 						%p.number= @total_active_users
 						%p.period last 30 days.				
-			.graph
+			#active_users_graph.graph
 	.row
 		#questions_answered.panel.rounded.span6
 			.stats
@@ -39,7 +41,7 @@
 					.container
 						%p.number= Stat.sum(:questions_answered)
 						%p.period all-time				
-			.graph
+			#questions_answered_graph.graph
 		#click_throughs.panel.right.rounded.span6
 			.stats
 				.header
@@ -52,7 +54,7 @@
 					.container
 						%p.number 0
 						%p.period all-time				
-			.graph
+			#click_throughs_graph.graph
 	.row
 		#mentions.panel.rounded.span6
 			.stats
@@ -66,7 +68,7 @@
 					.container
 						%p.number= Stat.sum(:mentions)
 						%p.period all-time				
-			.graph
+			#mentions_graph.graph
 		#retweets.panel.right.rounded.span6
 			.stats
 				.header
@@ -79,4 +81,4 @@
 					.container
 						%p.number= Stat.sum(:retweets)
 						%p.period all-time
-			.graph
+			#retweets_graph.graph

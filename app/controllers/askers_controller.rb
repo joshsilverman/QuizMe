@@ -86,8 +86,16 @@ class AskersController < ApplicationController
 
   def dashboard
     #note: cache all-time stats! (currently summed in view)
-    stats = Stat.order("date DESC").limit(30)
+    stats = Stat.order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
     @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
     @stat = stats.first
+    @graph_data = {
+      :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.followers]},
+      :active_users => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.active_users]},
+      :questions_answered => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.questions_answered]},
+      :click_throughs => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
+      :retweets => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
+      :mentions => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.mentions]}
+    }
   end  
 end
