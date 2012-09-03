@@ -21,7 +21,7 @@ class Stat < ActiveRecord::Base
 					stat.increment attribute, value
 				end
 			end			
-			if stat.followers.blank?
+			if stat.followers.blank? or stat.followers == 0
 				followers = asker.twitter.user.followers_count
 				stat.total_followers = followers
 				if previous_stat = Stat.where("date < ? and id != ?", stat.date, stat.id).order("date DESC").limit(1).first
