@@ -93,7 +93,7 @@ class AskersController < ApplicationController
       :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.followers]},
       :active_users => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.active_users]},
       :questions_answered => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.questions_answered]},
-      :click_throughs => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
+      # :click_throughs => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
       :retweets => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
       :mentions => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.mentions]}
     }
