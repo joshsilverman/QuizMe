@@ -249,7 +249,7 @@
 	}
 }
 
-#posts, .modal_conversation_history, .parent_post {
+#posts, .modal_conversation_history, .recent_posts, .parent_post {
 	.header {
 		border-style: solid;
 		border-width: 1px;
@@ -622,21 +622,19 @@
 			}
 		}
 	}
-
-	.modal_conversation_history, .parent_post {
-		position: relative;
-		width: 521px;
-		margin-left: -14px;	
-
-		.conversation {
-			border: none;
-			border-top: solid 1px #ddd;
-		}		
-	}
 }
 
 #link_post_modal {
 	padding-top: 0px;
+
+	.recent_posts {
+		overflow: scroll;
+		height: 457px;
+	}
+
+	.content p {
+		margin: 0 0 0px;
+	}
 
 	label {
 		margin-bottom: 0px;
@@ -647,22 +645,17 @@
 		top: 24px;
 		position: relative;
 		left: 5px;
-		/*z-index: 1;*/
 	}
 
 	.conversation {
 		background: #FAFAFA;
-	}
 
-	.modal_conversation_history {
-		position: relative;
-		top: 117px;
+		&.first {
+			border-top: 0px;
+		}
 	}
 
 	.parent_post_container {
-		height: 70px;
-		position: fixed;
-		z-index: 2;
 
 		.controls {
 			background: #EEE;
@@ -670,9 +663,6 @@
 			border-bottom: 1px solid #DDD;
 			width: 521px;
 			margin-left: -14px;
-/*			box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
-			-moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);
-			-webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.40);*/
 
 			.btn {
 				float: right;
@@ -694,3 +684,14 @@
 		}
 	}	
 }
+
+.modal_conversation_history, .recent_posts, .parent_post {
+	position: relative;
+	width: 521px;
+	margin-left: -14px;	
+
+	.conversation {
+		border: none;
+		border-top: solid 1px #DDD;
+	}	
+}	

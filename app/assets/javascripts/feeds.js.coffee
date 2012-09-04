@@ -220,7 +220,7 @@ class Post
 	link_post: (event) =>
 		$("#link_post_modal").dialog
 			title: "Link Post"
-			width: 536
+			width: 521
 			height: 600
 			modal: true		
 
