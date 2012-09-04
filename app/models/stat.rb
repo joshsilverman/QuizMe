@@ -2,37 +2,47 @@ class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 
 	def self.update_stats_from_cache(asker)
-		stats_hash = Rails.cache.read("stats:#{asker.id}")
-		return if stats_hash.blank?
-		Hash[stats_hash.sort].each do |date, attributes_hash|
-			stat = Stat.where(:date => date).order("date DESC").limit(1).first
-			stat = Stat.new if stat.blank?
-			stat.date = date
+		today = Date.today.to_date
+		if Stat.where(:date => today, :asker_id => asker.id).blank?
+			stat = Stat.new
 			stat.asker_id = asker.id
-			attributes_hash.each do |attribute, value|
-				if attribute == "active_users"
-					if stat.active_user_ids.blank?
-						stat.active_user_ids += value
-					else
-						stat.active_user_ids += ",#{value}"
-					end
-					stat.active_users = stat.active_user_ids.split(",").uniq.size
-				else
-					stat.increment attribute, value
-				end
-			end			
-			if stat.followers.blank? or stat.followers == 0
-				followers = asker.twitter.user.followers_count
-				stat.total_followers = followers
-				if previous_stat = Stat.where("date < ? and id != ?", stat.date, stat.id).order("date DESC").limit(1).first
-					stat.followers = followers - previous_stat.total_followers
-				else
-					stat.followers = 0
-				end
+			stat.date = today
+			total_followers = asker.twitter.user.followers_count
+			stat.total_followers = total_followers
+			if previous_stat = Stat.where("date < ? and asker_id = ?", today, asker.id).order("date DESC").limit(1).first
+				stat.followers = total_followers - previous_stat.total_followers
+			else
+				stat.followers = 0
 			end
 			stat.save
+		end		
+		stats_hash = Rails.cache.read("stats:#{asker.id}")
+		unless stats_hash.blank?
+			Hash[stats_hash.sort].each do |date, attributes_hash|
+				stat = Stat.where(:date => date).order("date DESC").limit(1).first
+				stat = Stat.new if stat.blank?
+				stat.date = date
+				stat.asker_id = asker.id
+				attributes_hash.each do |attribute, value|
+					if attribute == "active_users"
+						if stat.active_user_ids.blank?
+							stat.active_user_ids += value
+						else
+							stat.active_user_ids += ",#{value}"
+						end
+						stat.active_users = stat.active_user_ids.split(",").uniq.size
+					else
+						stat.increment attribute, value
+					end
+				end			
+				stat.save
+			end		
 		end
 		Rails.cache.clear
+	end
+
+	def self.update_followers
+
 	end
 
 	def self.update_stat_cache(attribute, value, asker, date)
