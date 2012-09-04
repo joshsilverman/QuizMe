@@ -179,6 +179,9 @@ class Post < ActiveRecord::Base
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
+      Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at, current_user.id)
+      Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at, current_user.id)
+      Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at, current_user.id)      
     end
     response_text = post.generate_response(status)
     app_post = Post.tweet(
@@ -191,14 +194,11 @@ class Post < ActiveRecord::Base
       status[0..2], 
       conversation.id, 
       nil, 
-      user_post.id, 
+      (user_post ? user_post.id : nil), 
       current_user.id,
       true
     )  
     conversation.posts << app_post if app_post
-    Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at, current_user.id)
-    Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at, current_user.id)
-    Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at, current_user.id)
     return {:message => response_text, :url => publication.url}
   end
 
