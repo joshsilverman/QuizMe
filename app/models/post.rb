@@ -144,6 +144,7 @@ class Post < ActiveRecord::Base
       :in_reply_to_user_id => in_reply_to_user_id,
       :conversation_id => conversation_id,
       :publication_id => publication_id,
+      :url => long_url ? short_url : nil,
       :posted_via_app => true
     )
 

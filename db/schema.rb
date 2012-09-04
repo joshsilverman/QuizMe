@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120830000216) do
+ActiveRecord::Schema.define(:version => 20120904160640) do
 
   create_table "accounts", :force => true do |t|
     t.string    "name"
@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(:version => 20120830000216) do
     t.boolean   "responded_to",        :default => false
     t.integer   "in_reply_to_user_id"
     t.boolean   "posted_via_app"
+    t.string    "url"
   end
 
   create_table "publication_queues", :force => true do |t|
@@ -112,19 +113,19 @@ ActiveRecord::Schema.define(:version => 20120830000216) do
   end
 
   create_table "stats", :force => true do |t|
-    t.date     "date"
-    t.integer  "followers",          :default => 0
-    t.integer  "total_followers",    :default => 0
-    t.integer  "retweets",           :default => 0
-    t.integer  "mentions",           :default => 0
-    t.integer  "questions_answered", :default => 0
-    t.integer  "internal_answers",   :default => 0
-    t.integer  "twitter_answers",    :default => 0
-    t.integer  "active_users",       :default => 0
-    t.text     "active_user_ids",    :default => ""
-    t.integer  "asker_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.date      "date"
+    t.integer   "followers",          :default => 0
+    t.integer   "total_followers",    :default => 0
+    t.integer   "retweets",           :default => 0
+    t.integer   "mentions",           :default => 0
+    t.integer   "questions_answered", :default => 0
+    t.integer   "internal_answers",   :default => 0
+    t.integer   "twitter_answers",    :default => 0
+    t.integer   "active_users",       :default => 0
+    t.text      "active_user_ids",    :default => ""
+    t.integer   "asker_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "topics", :force => true do |t|
