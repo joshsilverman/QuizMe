@@ -88,7 +88,7 @@ class AskersController < ApplicationController
     #note: cache all-time stats! (currently summed in view)
     stats = Stat.order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
     @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
-    @stat = stats.first
+    @stat = stats.last
     @graph_data = {
       :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.followers]},
       :active_users => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.active_users]},

@@ -14,6 +14,7 @@ options =
 	width: 396
 	height: 225
 	legend: "none"
+	pointSize: 5
 	chartArea:  
 		width: 355
 		left: 30
