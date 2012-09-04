@@ -126,6 +126,8 @@ class Post < ActiveRecord::Base
                  in_reply_to_user_id, link_to_parent)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
+    puts "Tweeting:"
+    puts Post.tweetable(tweet, reply_to, short_url, hashtag)
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
       twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
