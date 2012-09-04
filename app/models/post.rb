@@ -192,9 +192,9 @@ class Post < ActiveRecord::Base
     )  
     conversation.posts << app_post
     puts "pre stat cache"
-    Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
-    Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at)
-    Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at)
+    Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at, current_user.id)
+    Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at, current_user.id)
+    Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at, current_user.id)
     puts "post stat cache"
     return {:message => response_text, :url => publication.url}
   end
@@ -326,8 +326,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweet_post.user_id,
         :posted_via_app => false
       )
-      Stat.update_stat_cache("retweets", 1, current_acct, post.created_at)
-      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at)      
+      Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)
+      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)      
     end
   end
 

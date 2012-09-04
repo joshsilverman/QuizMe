@@ -41,11 +41,8 @@ class Stat < ActiveRecord::Base
 		Rails.cache.clear
 	end
 
-	def self.update_followers
-
-	end
-
-	def self.update_stat_cache(attribute, value, asker, date)
+	def self.update_stat_cache(attribute, value, asker, date, user_id)
+		return if ADMINS.include? user_id
 		puts "in update_stat_cache"
 		puts attribute, value, asker.to_json, date
 		date = date.to_date

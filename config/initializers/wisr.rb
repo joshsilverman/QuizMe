@@ -1,4 +1,5 @@
 PROVIDERS = ["twitter"]
+ADMINS = [1, 3, 4, 11, 25]
 
 if Rails.env.production?
   URL = "http://www.wisr.com"
