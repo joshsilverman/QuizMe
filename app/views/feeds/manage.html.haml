@@ -130,9 +130,9 @@
 						%p= "Post to be linked"		
 		.controls
 			.btn.btn-info Link
-	.modal_conversation_history
-		- 10.times do 
-			.conversation
+	.recent_posts	
+		- 10.times do |i|
+			.conversation{:class => ("first" if i == 0)}
 				%label.radio
 					%input{:type => "radio", :name => "post_radio", :id => "optionsRadios1", :value => "value"}
 						.subsidiary.post
