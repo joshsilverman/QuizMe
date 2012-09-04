@@ -260,11 +260,12 @@ class Post < ActiveRecord::Base
   def self.check_for_posts(current_acct)
     return unless current_acct.twitter_enabled?
     asker_ids = User.askers.collect(&:id)
-    last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
+    last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
+    last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
-    dms = client.
+    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
@@ -334,7 +335,24 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
-
+    u = User.find_or_create_by_twi_user_id(d.user.id)
+    u.update_attributes(:twi_name => d.user.name,
+                        :twi_screen_name => d.user.screen_name,
+                        :twi_profile_img_url => d.user.status.nil? ? nil : d.user.status.user.profile_image_url)
+    dm = Post.find_by_provider_post_id(d.id.to_s)
+    return if dm
+    Post.create( 
+      :provider_post_id => d.id.to_s,
+      :engagement_type => 'direct_message',
+      :text => d.text,
+      :provider => 'twitter',
+      :user_id => u.id,
+      :in_reply_to_post_id => nil, #reply_post ? reply_post.id : nil,
+      :in_reply_to_user_id => current_acct.id,
+      :created_at => d.created_at,
+      :conversation_id => nil, #conversation.nil? ? nil : conversation.id,
+      :posted_via_app => false
+    )
   end
 
 
