@@ -25,18 +25,18 @@
 								.post.parent.answered{:post_id => id}
 									#classify
 										.btn-group
-											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
-												Mention
-												%span.caret
+											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.engagement_type)}= eng_name(post.engagement_type)
 											%ul.dropdown-menu
 												%li
-													%a{:href => "#"} Retweet
+													%a{:href => "#", :engagement_type => "share"} Retweet
 												%li
-													%a{:href => "#"} Spam
+													%a{:href => "#", :engagement_type => "spam"} Spam
 												%li
-													%a{:href => "#"} Reply
+													%a{:href => "#", :engagement_type => "mention reply"} Reply
 												%li
-													%a{:href => "#"} Mention
+													%a{:href => "#", :engagement_type => "mention"} Mention
+												%li
+													%a{:href => "#", :engagement_type => "pm"} Private Message
 									/ %span#activity_badge.badge.badge-warning= post[1].length
 									/ %i.icon-share-alt{:style => ("display: none;" unless responded)}
 									.content
