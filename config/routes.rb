@@ -11,6 +11,7 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/manage" => "feeds#manage"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
   match "/respond_to_question" => "feeds#respond_to_question"
+  match "/tweet" => "feeds#tweet"
   match "/dashboard" => "askers#dashboard"
 
   post "posts/update"
