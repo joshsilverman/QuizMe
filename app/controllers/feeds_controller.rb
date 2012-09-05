@@ -48,9 +48,9 @@ class FeedsController < ApplicationController
 
   def tweet
     @asker = User.asker(params[:asker_id])
-    render :json => Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 
-                 engagement_type, link_type, conversation_id,
-                 publication_id, in_reply_to_post_id, 
+    render :json => Post.tweet(@asker, params[:tweet], '', params[:username], nil, 
+                 engagement_type, nil, nil,
+                 nil, in_reply_to_post_id, 
                  in_reply_to_user_id, link_to_parent)
   end
 
@@ -60,14 +60,13 @@ class FeedsController < ApplicationController
     # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
     @posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id])
     @engagements = {}
+    conversation_ids = []
     @posts.each do |p|
-      if p.in_reply_to_post_id.nil?
-        @engagements[p.id] = [p, []] if @engagements[p.id].nil?
-      else
-        parent = p.parent
-        @engagements[parent.id]  = [parent, []] if @engagements[parent.id].nil?
-        @engagements[parent.id][1] << p
+      @engagements[p.id] = p
+      unless p.conversation_id.nil?
+        conversation_ids << p.conversation_id
       end
+    @conversations = Conversation.where(:id => conversation_ids)
     puts @engagements
     end
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
