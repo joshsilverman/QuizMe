@@ -6,6 +6,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 
   provider :developer unless Rails.env.production?
   provider :facebook, SERVICES['facebook']['key'], SERVICES['facebook']['secret'] # if SERVICES['github']
-  provider :twitter, SERVICES['twitter']['key'], SERVICES['twitter']['secret'] # if SERVICES['twitter']
+  provider :twitter, SERVICES['twitter']['key'], SERVICES['twitter']['secret'], client_options: {authorize_path: '/oauth/authorize'} # if SERVICES['twitter']
   provider :tumblr, SERVICES['tumblr']['key'], SERVICES['tumblr']['secret'] # if SERVICES['tumblr']
 end

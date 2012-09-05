@@ -12,10 +12,10 @@ class User < ActiveRecord::Base
 		queue = self.publication_queue
 		publication = queue.publications[queue.index]
 		publication.update_attribute(:published, true)
-		queue.increment_index(self.posts_per_day)
 		PROVIDERS.each do |provider|
 			Post.publish(provider, self, publication)
 		end
+		queue.increment_index(self.posts_per_day)
 	end
 
 	def self.create_with_omniauth(auth)
