@@ -25,7 +25,21 @@
 							- conversation ? responded = true : responded = false
 							.conversation.border-color
 								.post.parent.answered{:post_id => id}
-									%span#activity_badge.badge.badge-warning= post[1].length
+									#classify
+										.btn-group
+											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+												Mention
+												%span.caret
+											%ul.dropdown-menu
+												%li
+													%a{:href => "#"} Retweet
+												%li
+													%a{:href => "#"} Spam
+												%li
+													%a{:href => "#"} Reply
+												%li
+													%a{:href => "#"} Mention
+									/ %span#activity_badge.badge.badge-warning= post[1].length
 									/ %i.icon-share-alt{:style => ("display: none;" unless responded)}
 									.content
 										= image_tag(@asker.twi_profile_img_url, :class => "rounded")
