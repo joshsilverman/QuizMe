@@ -15,6 +15,7 @@ Quizmemanager::Application.routes.draw do
   match "/link_to_post" => "feeds#link_to_post"
   match "/dashboard" => "askers#dashboard"
 
+  post "posts/update_engagement_type"
   post "posts/update"
   post "posts/respond_to_post"
   post "questions/save_question_and_answers"

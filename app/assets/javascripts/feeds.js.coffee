@@ -29,10 +29,10 @@ class Feed
 		target.click()
 		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 		$.scrollTo(target, 500)
-	initializeNewPostListener: =>
-		pusher = new Pusher('bffe5352760b25f9b8bd')
-		channel = pusher.subscribe(@name)
-		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
+	# initializeNewPostListener: =>
+	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
+	# 	channel = pusher.subscribe(@name)
+	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	displayNewPost: (data, insert_type, interaction = null) => 
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
@@ -122,16 +122,11 @@ class Post
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
 		@element.on "click", (e) => @expand(e)
+		@element.find("li").on "click", (e) => @update_engagement_type(e)
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
-		# @element.on "mouseenter", => 
-		# 	if @correct == true
-		# 		@element.find("i").animate({color: "#0B7319"}, 0)
-		# 	else
-		# 		@element.find("i").animate({color: "#C43939"}, 0)
-		# @element.on "mouseleave", => @element.find("i").animate({color: "black"}, 0)
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 
@@ -214,6 +209,35 @@ class Post
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
 			@element.find("i").show()	
+	update_engagement_type: (event) =>
+		event.preventDefault()
+		target = $(event.target)
+		switch target.attr "engagement_type"
+			when "mention reply"
+				title = "Reply"
+				@link_post()
+			when "mention"
+				add_class = "btn-info"
+				title = "Mention"
+			when "share"
+				add_class = "btn-success"
+				title = "Retweet"
+			when "spam"
+				add_class = "btn-warning"
+				title = "Spam"
+			when "pm"
+				add_class = "btn-inverse"
+				title = "Private Message"				
+		group = target.parents(".btn-group")
+		group.find(".btn").removeClass("btn-warning btn-success btn-info").addClass(add_class)
+		group.find(".dropdown-toggle").text(title)
+		params = 
+			id: @id
+			type: target.attr "engagement_type"
+		$.ajax "/posts/update_engagement_type",
+			type: 'POST'
+			data: params
+			# success: (e) => 		
 	open_reply_modal: (event) =>
 		post = $(event.target)
 		post = post.parents(".reply") unless post.hasClass "reply"

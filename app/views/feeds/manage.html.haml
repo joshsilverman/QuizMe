@@ -23,9 +23,21 @@
 						- @engagements.each do |id, post|
 							.conversation.border-color
 								.post.parent.answered{:post_id => id}
-									-if post.in_reply_to_post_id.nil?
-										%span#link_post.label Link 
-									/%span#activity_badge.badge.badge-warning= post[1].length
+									#classify
+										.btn-group
+											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.engagement_type)}= eng_name(post.engagement_type)
+											%ul.dropdown-menu
+												%li
+													%a{:href => "#", :engagement_type => "share"} Retweet
+												%li
+													%a{:href => "#", :engagement_type => "spam"} Spam
+												%li
+													%a{:href => "#", :engagement_type => "mention reply"} Reply
+												%li
+													%a{:href => "#", :engagement_type => "mention"} Mention
+												%li
+													%a{:href => "#", :engagement_type => "pm"} Private Message
+									/ %span#activity_badge.badge.badge-warning= post[1].length
 									/ %i.icon-share-alt{:style => ("display: none;" unless responded)}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
