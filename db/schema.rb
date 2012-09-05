@@ -13,26 +13,6 @@
 
 ActiveRecord::Schema.define(:version => 20120830000216) do
 
-  create_table "accounts", :force => true do |t|
-    t.string    "name"
-    t.string    "twi_name"
-    t.string    "twi_screen_name"
-    t.integer   "twi_user_id"
-    t.text      "twi_profile_img_url"
-    t.string    "twi_oauth_token"
-    t.string    "twi_oauth_secret"
-    t.string    "fb_oauth_token"
-    t.string    "fb_oauth_secret"
-    t.string    "tum_oauth_token"
-    t.string    "tum_oauth_secret"
-    t.string    "tum_url"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "posts_per_day",       :default => 1
-    t.text      "description"
-    t.boolean   "link_to_quizme",      :default => false
-  end
-
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
     t.integer   "question_id"
@@ -57,19 +37,19 @@ ActiveRecord::Schema.define(:version => 20120830000216) do
   end
 
   create_table "posts", :force => true do |t|
-    t.integer   "user_id"
-    t.string    "provider"
-    t.text      "text"
-    t.string    "engagement_type"
-    t.string    "provider_post_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "in_reply_to_post_id"
-    t.integer   "publication_id"
-    t.integer   "conversation_id"
-    t.boolean   "responded_to",        :default => false
-    t.integer   "in_reply_to_user_id"
-    t.boolean   "posted_via_app"
+    t.integer  "user_id"
+    t.string   "provider"
+    t.text     "text"
+    t.string   "engagement_type"
+    t.string   "provider_post_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "in_reply_to_post_id"
+    t.integer  "publication_id"
+    t.integer  "conversation_id"
+    t.boolean  "responded_to",        :default => false
+    t.integer  "in_reply_to_user_id"
+    t.boolean  "posted_via_app"
   end
 
   create_table "publication_queues", :force => true do |t|

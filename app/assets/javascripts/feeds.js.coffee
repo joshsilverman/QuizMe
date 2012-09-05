@@ -111,6 +111,10 @@ class Post
 	question: null
 	correct: null
 	answers: []
+	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
+	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
+	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books (or videos)!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
+
 	constructor: (element) ->
 		@answers = []
 		@element = $(element)
@@ -213,10 +217,41 @@ class Post
 	open_reply_modal: (event) =>
 		post = $(event.target)
 		post = post.parents(".reply") unless post.hasClass "reply"
+		username = post.find('h5').text()
+		correct = null
+		tweet = ''
 		$("#respond_modal").dialog
-			title: "Reply to #{post.find('h5').text()}"
+			title: "Reply to #{username}"
 			width: 521
 			modal: true
+		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off
+		$("button.btn.correct").click ()=>
+			correct = true
+			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
+			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
+			tweet = "#{response} #{complement}"
+			$(".modal_body textarea").html("@#{username} #{tweet}")
+		$("button.btn.incorrect").click ()=>
+			correct = false
+			response = @incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]
+			tweet = response
+			$(".modal_body textarea").html("@#{username} #{tweet}")
+		$("#tweet.btn.btn-info").click ()=>
+			params =
+			"asker_id" : window.feed.id
+			"post_id" : @id
+			"correct" : correct
+			"tweet" : tweet
+			"username" : username
+			# "text" : text #This will eventually be any custom text (?)
+			$.ajax '/tweet',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log e
+					$("#respond_modal").dialog('close')
+
+
 	link_post: (event) =>
 		$("#link_post_modal").dialog
 			title: "Link Post"
