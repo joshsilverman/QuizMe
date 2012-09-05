@@ -253,11 +253,27 @@ class Post
 
 
 	link_post: (event) =>
+		post = $(event.target).parent().children('.content').html()
 		$("#link_post_modal").dialog
 			title: "Link Post"
 			width: 521
 			height: 600
-			modal: true		
+			position: "center bottom"
+			modal: true
+
+		$("#link_post_modal .parent_post .content ").html(post)
+		$("#link.btn.btn-info").click ()=>
+			params =
+			"link_to_post_id" : $("input:checked").val()
+			"post_id" : @id
+			# "text" : text #This will eventually be any custom text (?)
+			$.ajax '/link_to_post',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log e
+					$("#link_post_modal").dialog('close')
+					
 
 
 class Answer
