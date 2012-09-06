@@ -90,7 +90,7 @@ class AskersController < ApplicationController
     @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
     @stat = stats.last
     @graph_data = {
-      :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.followers]},
+      :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.total_followers]},
       :active_users => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.active_users]},
       :questions_answered => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.questions_answered]},
       # :click_throughs => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
