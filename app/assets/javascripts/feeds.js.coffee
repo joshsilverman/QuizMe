@@ -239,7 +239,7 @@ class Post
 		group.find(".dropdown-toggle").text(title)
 		params = 
 			id: @id
-			type: target.attr "engagement_type"
+			engagement_type: target.attr "engagement_type"
 		$.ajax "/posts/update_engagement_type",
 			type: 'POST'
 			data: params
