@@ -2,7 +2,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage]
 
   def index
-    redirect_to "/feeds/#{User.askers.first.id}" unless User.askers.blank?
+    redirect_to "/feeds/2" unless User.askers.blank?
   end
 
   def show
