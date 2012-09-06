@@ -298,7 +298,7 @@ class Post < ActiveRecord::Base
     else
       puts "No reply post"
     end      
-    Post.create( 
+    post = Post.create( 
       :provider_post_id => m.id.to_s,
       :engagement_type => reply_post ? 'mention reply' : 'mention',
       :text => m.text,
@@ -310,7 +310,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
-    
+    Stat.update_stat_cache("mentions", 1, current_acct, post.created_at, u.id)
+    Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)
   end
 
   def self.save_retweet_data(r, current_acct)
