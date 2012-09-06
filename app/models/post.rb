@@ -263,9 +263,12 @@ class Post < ActiveRecord::Base
   def self.check_for_posts(current_acct)
     return unless current_acct.twitter_enabled?
     asker_ids = User.askers.collect(&:id)
-    last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
-    last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
+    last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
+    last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
+    puts 'check for posts'
+    puts last_post.inspect if last_post
+    puts last_dm.inspect if last_dm
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
     dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
@@ -300,7 +303,7 @@ class Post < ActiveRecord::Base
     end      
     Post.create( 
       :provider_post_id => m.id.to_s,
-      :engagement_type => nil,
+      :engagement_type => reply_post ? 'mention reply' : 'mention',
       :text => m.text,
       :provider => 'twitter',
       :user_id => u.id,
@@ -339,15 +342,15 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
-    u = User.find_or_create_by_twi_user_id(d.user.id)
-    u.update_attributes(:twi_name => d.user.name,
-                        :twi_screen_name => d.user.screen_name,
-                        :twi_profile_img_url => d.user.status.nil? ? nil : d.user.status.user.profile_image_url)
+    u = User.find_or_create_by_twi_user_id(d.sender.id)
+    u.update_attributes(:twi_name => d.sender.name,
+                        :twi_screen_name => d.sender.screen_name,
+                        :twi_profile_img_url => d.sender.profile_image_url)
     dm = Post.find_by_provider_post_id(d.id.to_s)
     return if dm
     Post.create( 
       :provider_post_id => d.id.to_s,
-      :engagement_type => 'direct_message',
+      :engagement_type => 'pm',
       :text => d.text,
       :provider => 'twitter',
       :user_id => u.id,
@@ -377,7 +380,6 @@ class Post < ActiveRecord::Base
   def update_responded(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
-    self.update_attributes(:responded_to => true)
     unless correct.nil?
       Rep.create(
         :user_id => self.user_id,
@@ -386,11 +388,9 @@ class Post < ActiveRecord::Base
         :question_id => question_id,
         :correct => correct
       )
-      # stat = Stat.find_or_create_by_date_and_asker_id(Date.today.to_s, asker_id)
-      # stat.increment(:twitter_answers) if self.provider.include? 'twitter'
-      # stat.increment(:facebook_answers) if self.provider.include? 'facebook'
-      # stat.increment(:tumblr_answers) if self.provider.include? 'tumblr'
-      # stat.increment(:internal_answers) if self.provider.include? 'app'
+      self.update_attributes(:responded_to => true, :engagement_type => "#{self.engagement_type} answer")
+    else
+      self.update_attributes(:responded_to => true)
     end
   end
 end

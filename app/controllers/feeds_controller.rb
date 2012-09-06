@@ -52,10 +52,8 @@ class FeedsController < ApplicationController
     @asker = User.asker(params[:asker_id])
     @user_post = Post.find(params[:in_reply_to_post_id])
     correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
-    unless correct.nil?
-      pub = Publication.find(params[:publication_id].to_i)
-      @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
-    end
+    pub = Publication.find(params[:publication_id].to_i)
+    @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
     long_url = nil
     long_url = "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}" unless params[:publication_id].nil?
     render :json => Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 

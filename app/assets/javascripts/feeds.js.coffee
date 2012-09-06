@@ -274,7 +274,7 @@ class Post
 					console.log e
 					$("#respond_modal").dialog('close')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
-					$('.post[post_id=#{@id}]').children('.icon-share-alt').show()
+					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 
