@@ -177,9 +177,6 @@ class Post < ActiveRecord::Base
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
-      Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at, current_user.id)
-      Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at, current_user.id)
-      Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at, current_user.id)      
     end
     response_text = post.generate_response(status)
     app_post = Post.tweet(
@@ -380,6 +377,7 @@ class Post < ActiveRecord::Base
   def update_responded(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
+    asker = User.asker(asker_id)
     unless correct.nil?
       Rep.create(
         :user_id => self.user_id,
@@ -389,8 +387,15 @@ class Post < ActiveRecord::Base
         :correct => correct
       )
       self.update_attributes(:responded_to => true, :engagement_type => "#{self.engagement_type} answer")
+      Stat.update_stat_cache("questions_answered", 1, asker, self.created_at, self.user_id)
+      if self.posted_via_app
+        Stat.update_stat_cache("internal_answers", 1, asker, self.created_at, self.user_id)
+      else
+        Stat.update_stat_cache("internal_answers", 1, asker, self.created_at, self.user_id)
+      end
     else
       self.update_attributes(:responded_to => true)
     end
+    Stat.update_stat_cache("active_users", current_user.id, asker, self.created_at, self.user_id)
   end
 end
