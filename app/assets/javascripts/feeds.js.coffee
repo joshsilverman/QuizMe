@@ -146,13 +146,8 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		console.log e.target
-		window.post = $(e.target)
-		if $(e.target).hasClass "label"
-			@link_post(e)
-			return
-		if $(e.target).parents('.post').children('#classify').children('.btn-group').children('.dropdown-toggle').html() == "Reply"# or $(e.target).hasClass("reply")
-			@open_reply_modal(e)
+		if window.feed.manager
+			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
 			return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
@@ -235,7 +230,7 @@ class Post
 				add_class = "btn-inverse"
 				title = "Private Message"				
 		group = target.parents(".btn-group")
-		group.find(".btn").removeClass("btn-warning btn-success btn-info").addClass(add_class)
+		group.find(".btn").removeClass("btn-warning btn-success btn-info btn-inverse").addClass(add_class)
 		group.find(".dropdown-toggle").text(title)
 		params = 
 			id: @id
