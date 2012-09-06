@@ -11,7 +11,27 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120904160640) do
+ActiveRecord::Schema.define(:version => 20120906212216) do
+
+  create_table "accounts", :force => true do |t|
+    t.string    "name"
+    t.string    "twi_name"
+    t.string    "twi_screen_name"
+    t.integer   "twi_user_id"
+    t.text      "twi_profile_img_url"
+    t.string    "twi_oauth_token"
+    t.string    "twi_oauth_secret"
+    t.string    "fb_oauth_token"
+    t.string    "fb_oauth_secret"
+    t.string    "tum_oauth_token"
+    t.string    "tum_oauth_secret"
+    t.string    "tum_url"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "posts_per_day",       :default => 1
+    t.text      "description"
+    t.boolean   "link_to_quizme",      :default => false
+  end
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -134,6 +154,8 @@ ActiveRecord::Schema.define(:version => 20120904160640) do
     t.string    "tum_url"
     t.integer   "posts_per_day"
     t.text      "description"
+    t.integer   "new_user_q_id"
+    t.string    "bg_image"
   end
 
 end
