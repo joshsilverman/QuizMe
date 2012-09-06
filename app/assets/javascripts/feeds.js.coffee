@@ -282,17 +282,20 @@ class Post
 					console.log e
 					$("#respond_modal").dialog('close')
 		convo =  window.feed.conversations[post.attr('post_id')]
-		console.log convo
 		$('.modal_conversation_history > .conversation').html('')
 
-		html = "<div class='subsidiary post'>"
-		$.each convo['answers'], (i, a) ->
-			console.log a
-			html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
-		html += "</div>"
-		$('.modal_conversation_history').find(".conversation").append(html)
+		user_post = window.feed.engagements[@id]
+		console.log user_post['user_id']
+		console.log convo['users']
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary.find("p").text("#{user_post['text']}") 
+		subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
+		image = convo['users'][user_post['user_id']]['twi_profile_img_url']
+		subsidiary.find("img").attr("src", image) unless image == null
+		#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
+		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+
 		$.each convo['posts'], (i, p) ->
-			console.log p
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 			subsidiary.find("p").text("#{p['text']}") 
 			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
@@ -300,6 +303,12 @@ class Post
 			subsidiary.find("img").attr("src", image) unless image == null
 			#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
 			$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+			if i == 0
+				html = "<div class='subsidiary post'>"
+				$.each convo['answers'], (j, a) ->
+					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
+				html += "</div>"
+				$('.modal_conversation_history').find(".conversation").append(html)
 
 
 	link_post: (event) =>
