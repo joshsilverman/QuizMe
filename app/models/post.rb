@@ -8,8 +8,6 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  #URL = "http://studyegg-quizme-staging.herokuapp.com"
-
   ###
   ###Helper Methods
   ###
@@ -86,10 +84,10 @@ class Post < ActiveRecord::Base
   end
 
   def sibling(provider)
-    if self.publication_id
-      #@TODO find publication and return child by provider
-    end
+    self.publication.posts.where(:provider => provider).first if self.publication_id
   end
+
+
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
 		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
@@ -265,16 +263,21 @@ class Post < ActiveRecord::Base
   def self.check_for_posts(current_acct)
     return unless current_acct.twitter_enabled?
     asker_ids = User.askers.collect(&:id)
-    last_post = Post.where("provider like 'twitter' and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", asker_ids).order('created_at DESC').limit(1).last
+    last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
+    last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app is FALSE", 'twitter', asker_ids).order('created_at DESC').limit(1).last
     client = current_acct.twitter
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
+    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
     retweets.each do |r|
       Post.save_retweet_data(r, current_acct)
-    end       
+    end
+    dms.each do |d|
+      Post.save_dm_data(d, current_acct)
+    end
     true
   end
 
@@ -293,7 +296,7 @@ class Post < ActiveRecord::Base
     elsif reply_post and reply_post.conversation_id
       conversation = reply_post.conversation
     else
-      puts "Something went wrong on line 277 of post.rb"
+      puts "No reply post"
     end      
     Post.create( 
       :provider_post_id => m.id.to_s,
@@ -330,8 +333,29 @@ class Post < ActiveRecord::Base
         :posted_via_app => false
       )
       Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)
-      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)      
+      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)
     end
+  end
+
+  def self.save_dm_data(d, current_acct)
+    u = User.find_or_create_by_twi_user_id(d.user.id)
+    u.update_attributes(:twi_name => d.user.name,
+                        :twi_screen_name => d.user.screen_name,
+                        :twi_profile_img_url => d.user.status.nil? ? nil : d.user.status.user.profile_image_url)
+    dm = Post.find_by_provider_post_id(d.id.to_s)
+    return if dm
+    Post.create( 
+      :provider_post_id => d.id.to_s,
+      :engagement_type => 'direct_message',
+      :text => d.text,
+      :provider => 'twitter',
+      :user_id => u.id,
+      :in_reply_to_post_id => nil, #reply_post ? reply_post.id : nil,
+      :in_reply_to_user_id => current_acct.id,
+      :created_at => d.created_at,
+      :conversation_id => nil, #conversation.nil? ? nil : conversation.id,
+      :posted_via_app => false
+    )
   end
 
 

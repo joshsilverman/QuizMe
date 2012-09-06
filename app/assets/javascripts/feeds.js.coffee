@@ -5,18 +5,25 @@ class Feed
 	answered: 0
 	user_name: null
 	user_image: null
+	manager: false
+	conversations: null
+	engagements: null
 	constructor: ->
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
+		@conversations = $.parseJSON($("#conversations").val())
+		@engagements = $.parseJSON($("#engagements").val())
+		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
 		target = $(".post[post_id=#{$('#post_id').val()}]")
 		@scroll_to_question(target) if target.length > 0
-		$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
-		$("#posts_more").on "click", (e) => 
-			e.preventDefault()
-			@show_more()
+		unless @manager
+			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
+			$("#posts_more").on "click", (e) => 
+				e.preventDefault()
+				@show_more()
 		# @initializeNewPostListener()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
@@ -26,10 +33,10 @@ class Feed
 		target.click()
 		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 		$.scrollTo(target, 500)
-	initializeNewPostListener: =>
-		pusher = new Pusher('bffe5352760b25f9b8bd')
-		channel = pusher.subscribe(@name)
-		channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
+	# initializeNewPostListener: =>
+	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
+	# 	channel = pusher.subscribe(@name)
+	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	displayNewPost: (data, insert_type, interaction = null) => 
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
@@ -91,12 +98,10 @@ class Feed
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
-    
-		bottomAnswer = arr.length-1
+		bottomAnswer = arr.length - 1
 		$.each arr, (i) ->
 			j = Math.floor(Math.random() * (arr.length))
-			[arr[i], arr[j]] = [arr[j], arr[i]] # use pattern matching to swap
-    
+			[arr[i], arr[j]] = [arr[j], arr[i]]
 		$.each arr, (i) ->
 			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
 				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]						
@@ -108,29 +113,30 @@ class Post
 	question: null
 	correct: null
 	answers: []
+	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
+	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
+	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books (or videos)!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
+
 	constructor: (element) ->
 		@answers = []
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		@element.on "click", (e) => @expand(e)
+		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.find("li").on "click", (e) => @update_engagement_type(e)
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
-		# @element.on "mouseenter", => 
-		# 	if @correct == true
-		# 		@element.find("i").animate({color: "#0B7319"}, 0)
-		# 	else
-		# 		@element.find("i").animate({color: "#C43939"}, 0)
-		# @element.on "mouseleave", => @element.find("i").animate({color: "black"}, 0)
 		answers = @element.find(".answers")
+		window.feed.manager ? disabled = true : disabled = false
 		answers.accordion({
 			collapsible: true, 
 			autoHeight: false,
 			active: false, 
-			icons: false
+			icons: false, 
+			disabled: disabled
 		})		
 		answers.on "accordionchange", (e, ui) => 
 			if ui.newHeader.length > 0
@@ -139,6 +145,9 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
+		if window.feed.manager
+			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
+			return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
@@ -147,18 +156,13 @@ class Post
 			post.next(".conversation").removeClass("active_next")
 			post.prev(".conversation").removeClass("active_prev")	
 			post.find(".answers").hide()
-			# @element.find("i").animate({color: "black"}, 0)
 		else 
 			post.find(".answers").toggle(200)
 			post.find(".subsidiaries").toggle(200, => 
 				post.toggleClass("active", 200)
 				post.next(".conversation").addClass("active_next")
 				post.prev(".conversation").addClass("active_prev")
-			)
-			# if @correct == true
-			# 	@element.find("i").animate({color: "#0B7319"}, 0)
-			# else
-			# 	@element.find("i").animate({color: "#C43939"}, 0)			
+			)	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
@@ -199,7 +203,131 @@ class Post
 			)
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
-			@element.find("i").show()		
+			@element.find("i").show()	
+	update_engagement_type: (event) =>
+		event.preventDefault()
+		target = $(event.target)
+		switch target.attr "engagement_type"
+			when "mention reply"
+				title = "Reply"
+				@link_post(target)
+			when "mention"
+				add_class = "btn-info"
+				title = "Mention"
+			when "share"
+				add_class = "btn-success"
+				title = "Retweet"
+			when "spam"
+				add_class = "btn-warning"
+				title = "Spam"
+			when "pm"
+				add_class = "btn-inverse"
+				title = "Private Message"				
+		group = target.parents(".btn-group")
+		group.find(".btn").removeClass("btn-warning btn-success btn-info btn-inverse").addClass(add_class)
+		group.find(".dropdown-toggle").text(title)
+		params = 
+			id: @id
+			engagement_type: target.attr "engagement_type"
+		$.ajax "/posts/update_engagement_type",
+			type: 'POST'
+			data: params
+			# success: (e) => 		
+	open_reply_modal: (event) =>
+		post = $(event.target)
+		post = post.parents(".post") unless post.hasClass "post"
+		window.post = post
+		username = post.find('h5').html()
+		correct = null
+		tweet = ''
+		$("#respond_modal").dialog
+			title: "Reply to #{username}"
+			width: 521
+			modal: true
+		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off
+		$("button.btn.correct").click ()=>
+			correct = true
+			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
+			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
+			tweet = "#{response} #{complement}"
+			$(".modal_body textarea").html("@#{username} #{tweet}")
+		$("button.btn.incorrect").click ()=>
+			correct = false
+			response = @incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]
+			tweet = response
+			$(".modal_body textarea").html("@#{username} #{tweet}")
+		$("#tweet.btn.btn-info").click ()=>
+			parent_index = window.feed.conversations[@id]['posts'].length - 1
+			params =
+			"asker_id" : window.feed.id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+			"correct" : correct
+			"tweet" : tweet
+			"username" : username
+			"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
+			# "text" : text #This will eventually be any custom text (?)
+			$.ajax '/tweet',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log e
+					$("#respond_modal").dialog('close')
+					$(".post[post_id=#{@id}]").children('#classify').hide()
+					$('.post[post_id=#{@id}]').children('.icon-share-alt').show()
+		convo =  window.feed.conversations[post.attr('post_id')]
+		$('.modal_conversation_history > .conversation').html('')
+
+		user_post = window.feed.engagements[@id]
+		console.log user_post['user_id']
+		console.log convo['users']
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary.find("p").text("#{user_post['text']}") 
+		subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
+		image = convo['users'][user_post['user_id']]['twi_profile_img_url']
+		subsidiary.find("img").attr("src", image) unless image == null
+		#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
+		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+
+		$.each convo['posts'], (i, p) ->
+			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+			subsidiary.find("p").text("#{p['text']}") 
+			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
+			image = convo['users'][p['user_id']]['twi_profile_img_url']
+			subsidiary.find("img").attr("src", image) unless image == null
+			#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
+			$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+			if i == 0
+				html = "<div class='subsidiary post'>"
+				$.each convo['answers'], (j, a) ->
+					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
+				html += "</div>"
+				$('.modal_conversation_history').find(".conversation").append(html)
+
+
+	link_post: (event) =>
+		console.log 'LINK POST'
+		console.log event
+		window.post = event
+		post = event.parents('.post').find('.content').html()
+		$("#link_post_modal").dialog
+			title: "Link Post"
+			width: 530
+			height: 600
+			modal: true
+		$("#link_post_modal .parent_post .content ").html(post)
+		$("#link.btn.btn-info").click ()=>
+			params =
+			"link_to_post_id" : $("input:checked").val()
+			"post_id" : @id
+			# "text" : text #This will eventually be any custom text (?)
+			$.ajax '/link_to_post',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log e
+					$("#link_post_modal").dialog('close')
+					
 
 
 class Answer

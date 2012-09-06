@@ -1,4 +1,10 @@
 class PostsController < ApplicationController
+	
+	def update_engagement_type
+		Post.find(params[:id]).update_attribute(:engagement_type, params[:engagement_type])
+		render :nothing => true
+	end
+
 	def update
 		puts 'UPDATE'
 		eng = Post.find(params[:post_id])
