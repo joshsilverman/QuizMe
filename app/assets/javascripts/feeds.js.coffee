@@ -125,19 +125,20 @@ class Post
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		@element.on "click", (e) => @expand(e)
+		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
 		@element.find("li").on "click", (e) => @update_engagement_type(e)
 		@element.find(".btn").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
 		answers = @element.find(".answers")
+		window.feed.manager ? disabled = true : disabled = false
 		answers.accordion({
 			collapsible: true, 
 			autoHeight: false,
 			active: false, 
 			icons: false, 
-			disabled: true if window.feed.manager
+			disabled: disabled
 		})		
 		answers.on "accordionchange", (e, ui) => 
 			if ui.newHeader.length > 0
@@ -157,18 +158,13 @@ class Post
 			post.next(".conversation").removeClass("active_next")
 			post.prev(".conversation").removeClass("active_prev")	
 			post.find(".answers").hide()
-			# @element.find("i").animate({color: "black"}, 0)
 		else 
 			post.find(".answers").toggle(200)
 			post.find(".subsidiaries").toggle(200, => 
 				post.toggleClass("active", 200)
 				post.next(".conversation").addClass("active_next")
 				post.prev(".conversation").addClass("active_prev")
-			)
-			# if @correct == true
-			# 	@element.find("i").animate({color: "#0B7319"}, 0)
-			# else
-			# 	@element.find("i").animate({color: "#C43939"}, 0)			
+			)	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
@@ -316,9 +312,7 @@ class Post
 			title: "Link Post"
 			width: 521
 			height: 600
-			position: "center bottom"
 			modal: true
-
 		$("#link_post_modal .parent_post .content ").html(post)
 		$("#link.btn.btn-info").click ()=>
 			params =
