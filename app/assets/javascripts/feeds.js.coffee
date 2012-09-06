@@ -309,7 +309,7 @@ class Post
 		console.log 'LINK POST'
 		console.log event
 		window.post = event
-		post = event.parents().eq('.post').children('.content').html()
+		post = event.parents('.post').find('.content').html()
 		$("#link_post_modal").dialog
 			title: "Link Post"
 			width: 530
