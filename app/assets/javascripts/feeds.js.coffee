@@ -6,11 +6,15 @@ class Feed
 	user_name: null
 	user_image: null
 	manager: false
+	conversations: null
+	engagements: null
 	constructor: ->
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
+		@conversations = $.parseJSON($("#conversations").val())
+		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
 		target = $(".post[post_id=#{$('#post_id').val()}]")
@@ -242,8 +246,9 @@ class Post
 			# success: (e) => 		
 	open_reply_modal: (event) =>
 		post = $(event.target)
-		post = post.parents(".reply") unless post.hasClass "reply"
-		username = post.find('h5').text()
+		post = post.parents(".post") unless post.hasClass "post"
+		window.post = post
+		username = post.find('h5').html()
 		correct = null
 		tweet = ''
 		$("#respond_modal").dialog
@@ -276,6 +281,33 @@ class Post
 				success: (e) =>
 					console.log e
 					$("#respond_modal").dialog('close')
+		convo =  window.feed.conversations[post.attr('post_id')]
+		console.log convo
+		$('.modal_conversation_history > .conversation').html('')
+
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		subsidiary.find("p").text("#{p['text']}") 
+		subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
+		image = convo['users'][p['user_id']]['twi_profile_img_url']
+		subsidiary.find("img").attr("src", image) unless image == null
+		#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
+		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+
+		html = "<div class='subsidiary post'>"
+		$.each convo['answers'], (i, a) ->
+			console.log a
+			html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
+		html += "</div>"
+		$('.modal_conversation_history').find(".conversation").append(html)
+		$.each convo['posts'], (i, p) ->
+			console.log p
+			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+			subsidiary.find("p").text("#{p['text']}") 
+			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
+			image = convo['users'][p['user_id']]['twi_profile_img_url']
+			subsidiary.find("img").attr("src", image) unless image == null
+			#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
+			$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
 
 
 	link_post: (event) =>

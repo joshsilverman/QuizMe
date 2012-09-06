@@ -70,14 +70,19 @@ class FeedsController < ApplicationController
     @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).map{|post| [post.id, post.publication.question, post.publication.question.answers]}
     @questions.each {|q| puts q[1].inspect}
     @engagements = {}
-    conversation_ids = []
+    @conversations = {}
     @posts.each do |p|
       @engagements[p.id] = p
-      unless p.conversation_id.nil?
-        conversation_ids << p.conversation_id
+      parent = p.parent
+      @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
+      pub_id = nil
+      while parent
+        @conversations[p.id][:posts] << parent
+        @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
+        pub_id = parent.publication_id unless parent.publication_id.nil?
+        parent = parent.parent
       end
-    @conversations = Conversation.where(:id => conversation_ids)
-    puts @engagements
+      @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
