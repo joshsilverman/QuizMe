@@ -98,12 +98,10 @@ class Feed
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
-    
-		bottomAnswer = arr.length-1
+		bottomAnswer = arr.length - 1
 		$.each arr, (i) ->
 			j = Math.floor(Math.random() * (arr.length))
-			[arr[i], arr[j]] = [arr[j], arr[i]] # use pattern matching to swap
-    
+			[arr[i], arr[j]] = [arr[j], arr[i]]
 		$.each arr, (i) ->
 			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
 				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]						
@@ -314,7 +312,7 @@ class Post
 		post = event.parents('.post').find('.content').html()
 		$("#link_post_modal").dialog
 			title: "Link Post"
-			width: 521
+			width: 530
 			height: 600
 			modal: true
 		$("#link_post_modal .parent_post .content ").html(post)
