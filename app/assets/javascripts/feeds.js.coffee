@@ -139,7 +139,6 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		console.log window.feed
 		if window.feed.manager
 			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
 			return
@@ -266,7 +265,6 @@ class Post
 				type: 'POST'
 				data: params
 				success: (e) =>
-					console.log e
 					$("#respond_modal").dialog('close')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
 					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
@@ -274,8 +272,6 @@ class Post
 		$('.modal_conversation_history > .conversation').html('')
 
 		user_post = window.feed.engagements[@id]
-		console.log user_post['user_id']
-		console.log convo['users']
 		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		subsidiary.find("p").text("#{user_post['text']}") 
 		subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
@@ -318,9 +314,7 @@ class Post
 				type: 'POST'
 				data: params
 				success: (e) =>
-					console.log e
 					$("#link_post_modal").dialog('close')
-					
 
 
 class Answer
