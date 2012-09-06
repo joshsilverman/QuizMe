@@ -17,8 +17,6 @@ class Feed
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
-		target = $(".post[post_id=#{$('#post_id').val()}]")
-		@scroll_to_question(target) if target.length > 0
 		unless @manager
 			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
 			$("#posts_more").on "click", (e) => 
@@ -29,10 +27,6 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
-	scroll_to_question: (target) =>
-		target.click()
-		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-		$.scrollTo(target, 500)
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
@@ -145,6 +139,7 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
+		console.log window.feed
 		if window.feed.manager
 			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
 			return
@@ -306,8 +301,6 @@ class Post
 
 
 	link_post: (event) =>
-		console.log 'LINK POST'
-		console.log event
 		window.post = event
 		post = event.parents('.post').find('.content').html()
 		$("#link_post_modal").dialog
@@ -344,4 +337,10 @@ class Answer
 			answer.element.off "click" for answer in @post.answers
 
 
-$ -> window.feed = new Feed if $("#feed").length > 0
+$ -> 
+	if $("#feed").length > 0
+		window.feed = new Feed 
+		target = $(".post[post_id=#{$('#post_id').val()}]")
+		target.click()
+		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
+		$.scrollTo(target, 500)		
