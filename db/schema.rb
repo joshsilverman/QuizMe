@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120904160640) do
+ActiveRecord::Schema.define(:version => 20120906213015) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(:version => 20120904160640) do
     t.integer   "created_for_asker_id"
     t.boolean   "priority",             :default => false
     t.string    "hashtag"
+    t.integer   "seeder_id"
   end
 
   create_table "reps", :force => true do |t|

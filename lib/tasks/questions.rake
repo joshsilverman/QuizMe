@@ -46,11 +46,13 @@ namespace :questions do
       topic = Topic.find_or_create_by_name(topic_name)
 
       cards.each do |card|
-        q = Question.create(:text => card['text'],
+        q = Question.find_or_create_by_seeder_id(card['id'])
+        q.update_attributes(:text => card['text'],
                             :topic_id => topic.id,
                             :user_id => 1,
                             :status => 1,
                             :created_for_asker_id => asker.id)
+        q.answers.destroy_all unless q.answers.blank?
         q.answers << Answer.create(:text => card['answer'], :correct => true)
         card['false_answers'].each do |fa|
           q.answers << Answer.create(:text => fa, :correct => false)
