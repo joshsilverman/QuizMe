@@ -288,14 +288,6 @@ class Post
 		console.log convo
 		$('.modal_conversation_history > .conversation').html('')
 
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		subsidiary.find("p").text("#{p['text']}") 
-		subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
-		image = convo['users'][p['user_id']]['twi_profile_img_url']
-		subsidiary.find("img").attr("src", image) unless image == null
-		#subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
-		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
-
 		html = "<div class='subsidiary post'>"
 		$.each convo['answers'], (i, a) ->
 			console.log a
