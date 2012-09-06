@@ -147,16 +147,8 @@ class Post
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
 		if window.feed.manager
-			@open_reply_modal(e)
+			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
 			return
-		# console.log e.target
-		# window.post = $(e.target)
-		# if $(e.target).hasClass "label"
-		# 	@link_post(e)
-		# 	return
-		# if $(e.target).parents('.post').children('#classify').children('.btn-group').children('.dropdown-toggle').html() == "Reply"# or $(e.target).hasClass("reply")
-			# @open_reply_modal(e)
-			# return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")
