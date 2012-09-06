@@ -125,9 +125,8 @@
 		.controls
 			#link.btn.btn-info Link
 	.recent_posts	
-		- @questions.each do |q|
-			-i = 1
-			.conversation{:class => ("first" if i == 0)}
+		- @questions.each_with_index do |q, n|
+			.conversation{:class => ("first" if n == 0)}
 				%label.radio
 					%input{:type => "radio", :name => "post_radio", :id => q[0], :value => q[0]}
 						.subsidiary.post

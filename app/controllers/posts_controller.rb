@@ -1,7 +1,6 @@
 class PostsController < ApplicationController
 	
 	def update_engagement_type
-		puts params.to_json
 		Post.find(params[:id]).update_attribute(:engagement_type, params[:engagement_type])
 		render :nothing => true
 	end

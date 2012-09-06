@@ -309,7 +309,7 @@ class Post
 		post = event.parents().eq('.post').children('.content').html()
 		$("#link_post_modal").dialog
 			title: "Link Post"
-			width: 521
+			width: 530
 			height: 600
 			modal: true
 		$("#link_post_modal .parent_post .content ").html(post)
