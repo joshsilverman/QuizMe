@@ -174,5 +174,7 @@
 = hidden_field_tag :feed_name, @asker.twi_screen_name
 = hidden_field_tag :post_id, @post_id
 = hidden_field_tag :answer_id, @answer_id
+= hidden_field_tag :conversations, @conversations.to_json
+= hidden_field_tag :engagements, @engagements.to_json
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
