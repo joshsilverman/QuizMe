@@ -13,8 +13,6 @@ class Feed
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
-		# console.log $("#bg_image")
-		# $("body").css("background", "white") if $("#bg_image").length > 0
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
