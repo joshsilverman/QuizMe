@@ -335,6 +335,7 @@ $ ->
 	if $("#feed").length > 0
 		window.feed = new Feed 
 		target = $(".post[post_id=#{$('#post_id').val()}]")
-		target.click()
-		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-		$.scrollTo(target, 500)		
+		if target.length > 0
+			target.click()
+			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
+			$.scrollTo(target, 500)
