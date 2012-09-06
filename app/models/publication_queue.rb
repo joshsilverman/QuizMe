@@ -19,7 +19,6 @@ class PublicationQueue < ActiveRecord::Base
     if asker and asker.publication_queue
       queue = asker.publication_queue
       queue.publications = []
-      # queue.publications.destroy_all 
       queue.update_attribute(:index, 0)
     end
   end
