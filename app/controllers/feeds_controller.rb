@@ -75,6 +75,7 @@ class FeedsController < ApplicationController
       @engagements[p.id] = p
       parent = p.parent
       @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
+      @conversations[p.id][:users][p.user.id] = p.user if @conversations[p.id][:users][p.user.id].nil?
       pub_id = nil
       while parent
         @conversations[p.id][:posts] << parent
