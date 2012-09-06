@@ -49,9 +49,9 @@ class FeedsController < ApplicationController
   def tweet
     @asker = User.asker(params[:asker_id])
     render :json => Post.tweet(@asker, params[:tweet], '', params[:username], nil, 
-                 engagement_type, nil, nil,
-                 nil, in_reply_to_post_id, 
-                 in_reply_to_user_id, link_to_parent)
+                 'mention reply answer_response', nil, nil,
+                 nil, params[:in_reply_to_post_id], 
+                 params[:in_reply_to_user_id], false)
   end
 
   def link_to_post

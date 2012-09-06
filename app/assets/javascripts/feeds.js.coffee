@@ -265,7 +265,8 @@ class Post
 		$("#tweet.btn.btn-info").click ()=>
 			params =
 			"asker_id" : window.feed.id
-			"post_id" : @id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
 			"correct" : correct
 			"tweet" : tweet
 			"username" : username
