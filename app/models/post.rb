@@ -392,11 +392,11 @@ class Post < ActiveRecord::Base
       if self.posted_via_app
         Stat.update_stat_cache("internal_answers", 1, asker, self.created_at, self.user_id)
       else
-        Stat.update_stat_cache("internal_answers", 1, asker, self.created_at, self.user_id)
+        Stat.update_stat_cache("twitter_answers", 1, asker, self.created_at, self.user_id)
       end
     else
       self.update_attributes(:responded_to => true)
     end
-    Stat.update_stat_cache("active_users", current_user.id, asker, self.created_at, self.user_id)
+    Stat.update_stat_cache("active_users", self.user_id, asker, self.created_at, self.user_id)
   end
 end
