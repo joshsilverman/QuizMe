@@ -146,11 +146,14 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		console.log e.target
-		window.post = $(e.target)
-		if $(e.target).hasClass "label"
-			@link_post(e)
+		if window.feed.manager
+			@open_reply_modal(e)
 			return
+		# console.log e.target
+		# window.post = $(e.target)
+		# if $(e.target).hasClass "label"
+		# 	@link_post(e)
+		# 	return
 		# if $(e.target).parents('.post').children('#classify').children('.btn-group').children('.dropdown-toggle').html() == "Reply"# or $(e.target).hasClass("reply")
 			# @open_reply_modal(e)
 			# return
