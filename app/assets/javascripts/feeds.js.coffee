@@ -142,10 +142,12 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
+		console.log e.target
+		window.post = $(e.target)
 		if $(e.target).hasClass "label"
 			@link_post(e)
 			return
-		if $(e.target).parents(".reply").length > 0 or $(e.target).hasClass("reply")
+		if $(e.target).parents('.post').children('#classify').children('.btn-group').children('.dropdown-toggle').html() == "Reply"# or $(e.target).hasClass("reply")
 			@open_reply_modal(e)
 			return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
@@ -215,7 +217,7 @@ class Post
 		switch target.attr "engagement_type"
 			when "mention reply"
 				title = "Reply"
-				@link_post()
+				@link_post(target)
 			when "mention"
 				add_class = "btn-info"
 				title = "Mention"
@@ -277,11 +279,30 @@ class Post
 
 
 	link_post: (event) =>
+		console.log 'LINK POST'
+		console.log event
+		window.post = event
+		post = event.parents().eq('.post').children('.content').html()
 		$("#link_post_modal").dialog
 			title: "Link Post"
 			width: 521
 			height: 600
-			modal: true		
+			position: "center bottom"
+			modal: true
+
+		$("#link_post_modal .parent_post .content ").html(post)
+		$("#link.btn.btn-info").click ()=>
+			params =
+			"link_to_post_id" : $("input:checked").val()
+			"post_id" : @id
+			# "text" : text #This will eventually be any custom text (?)
+			$.ajax '/link_to_post',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log e
+					$("#link_post_modal").dialog('close')
+					
 
 
 class Answer

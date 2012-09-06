@@ -54,11 +54,21 @@ class FeedsController < ApplicationController
                  in_reply_to_user_id, link_to_parent)
   end
 
+  def link_to_post
+    answer = Post.find(params[:post_id])
+    post = Post.find(params[:link_to_post_id])
+    answer.update_attributes(:in_reply_to_post_id => post.id, :engagement_type => 'mention reply')
+    render :nothing => true
+  end
+
   def manage
     # redirect_to "/feeds/#{params[:id]}" unless current_user.role == "asker"
     @asker = User.asker(params[:id])
     # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
     @posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id])
+    #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
+    @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).map{|post| [post.id, post.publication.question, post.publication.question.answers]}
+    @questions.each {|q| puts q[1].inspect}
     @engagements = {}
     conversation_ids = []
     @posts.each do |p|
