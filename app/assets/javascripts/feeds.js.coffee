@@ -257,12 +257,15 @@ class Post
 			tweet = response
 			$(".modal_body textarea").html("@#{username} #{tweet}")
 		$("#tweet.btn.btn-info").click ()=>
+			parent_index = window.feed.conversations[@id]['posts'].length - 1
 			params =
 			"asker_id" : window.feed.id
-			"post_id" : @id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
 			"correct" : correct
 			"tweet" : tweet
 			"username" : username
+			"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
 			# "text" : text #This will eventually be any custom text (?)
 			$.ajax '/tweet',
 				type: 'POST'
@@ -270,6 +273,8 @@ class Post
 				success: (e) =>
 					console.log e
 					$("#respond_modal").dialog('close')
+					$(".post[post_id=#{@id}]").children('#classify').hide()
+					$('.post[post_id=#{@id}]').children('.icon-share-alt').show()
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 
