@@ -125,12 +125,12 @@ class Post
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
 		@element.find("li").on "click", (e) => @update_engagement_type(e)
-		@element.find(".btn").on "click", (e) => 
+		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
 		answers = @element.find(".answers")
-		window.feed.manager ? disabled = true : disabled = false
+		if $("#manager").length > 0 then disabled = true else disabled = false
 		answers.accordion({
 			collapsible: true, 
 			autoHeight: false,

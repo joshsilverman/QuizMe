@@ -310,6 +310,7 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
+    
   end
 
   def self.save_retweet_data(r, current_acct)
