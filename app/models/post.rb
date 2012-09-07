@@ -330,8 +330,8 @@ class Post < ActiveRecord::Base
         :engagement_type => 'share',
         :provider => 'twitter',
         :user_id => u.id,
-        :in_reply_to_post_id => retweet_post.id,
-        :in_reply_to_user_id => retweet_post.user_id,
+        :in_reply_to_post_id => retweeted_post.id,
+        :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false
       )
       Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)
