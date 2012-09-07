@@ -101,6 +101,7 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
+    puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     puts long_url
