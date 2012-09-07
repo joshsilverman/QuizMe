@@ -315,17 +315,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
-    retweeted_post = Post.find_by_provider_post_id(r.id.to_s)
-    #Check with Bill on this...
-    # unless retweeted_post
-    #   retweeted_post = Post.create({
-    #     :provider_post_id => r.id.to_s,
-    #     :user_id => current_acct.id,
-    #     :provider => "twitter",
-    #     :text => r.text,
-    #     :posted_via_app => true
-    #   })
-    # end
+    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
