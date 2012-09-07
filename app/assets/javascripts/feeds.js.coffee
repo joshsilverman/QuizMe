@@ -253,14 +253,13 @@ class Post
 		$("#tweet.btn.btn-info").click ()=>
 			parent_index = window.feed.conversations[@id]['posts'].length - 1
 			params =
-			"asker_id" : window.feed.id
-			"in_reply_to_post_id" : @id
-			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-			"correct" : correct
-			"tweet" : tweet
-			"username" : username
-			"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
-			# "text" : text #This will eventually be any custom text (?)
+				"asker_id" : window.feed.id
+				"in_reply_to_post_id" : @id
+				"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+				"correct" : correct
+				"tweet" : tweet
+				"username" : username
+				"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
 			$.ajax '/tweet',
 				type: 'POST'
 				data: params
