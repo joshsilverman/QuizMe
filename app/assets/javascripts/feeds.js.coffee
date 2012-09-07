@@ -255,15 +255,13 @@ class Post
 		$("#tweet.btn.btn-info").on 'click', ()=>
 			parent_index = window.feed.conversations[@id]['posts'].length - 1
 			params =
-			"asker_id" : window.feed.id
-			"in_reply_to_post_id" : @id
-			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-			"correct" : correct
-			"tweet" : tweet
-			"username" : username
-			"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
-			console.log params
-			# "text" : text #This will eventually be any custom text (?)
+				"asker_id" : window.feed.id
+				"in_reply_to_post_id" : @id
+				"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+				"correct" : correct
+				"tweet" : tweet
+				"username" : username
+				"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
 			$.ajax '/tweet',
 				type: 'POST'
 				data: params
@@ -338,6 +336,7 @@ $ ->
 	if $("#feed").length > 0
 		window.feed = new Feed 
 		target = $(".post[post_id=#{$('#post_id').val()}]")
-		target.click()
-		target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-		$.scrollTo(target, 500)		
+		if target.length > 0
+			target.click()
+			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
+			$.scrollTo(target, 500)

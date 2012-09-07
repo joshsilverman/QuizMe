@@ -5,7 +5,7 @@
 				.container
 					.inner_container
 						.account_image
-							= image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
+							= image_tag(@asker.twi_profile_img_url.sub("_normal.", "_reasonably_small."), :class => "rounded")
 						.account_text
 							%h2= @asker.twi_screen_name
 							%h3= "@#{@asker.twi_screen_name}"

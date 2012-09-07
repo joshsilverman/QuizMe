@@ -101,6 +101,7 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
+    puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     puts long_url
@@ -315,7 +316,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
-    retweet_post = Post.find_by_provider_post_id(r.id.to_s)
+    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
@@ -324,14 +325,14 @@ class Post < ActiveRecord::Base
         :twi_screen_name => user.screen_name,
         :twi_profile_img_url => user.profile_image_url
       )
-      post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'",u.id, retweet_post.id).first
+      post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'", u.id, retweeted_post.id).first
       return if post
       post = Post.create(
         :engagement_type => 'share',
         :provider => 'twitter',
         :user_id => u.id,
-        :in_reply_to_post_id => retweet_post.id,
-        :in_reply_to_user_id => retweet_post.user_id,
+        :in_reply_to_post_id => retweeted_post.id,
+        :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false
       )
       Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)

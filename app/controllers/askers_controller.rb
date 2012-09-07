@@ -89,8 +89,12 @@ class AskersController < ApplicationController
     end
   end
 
-  def dashboard
+  def dashboard(stats = {})
     #note: cache all-time stats! (currently summed in view)
+    # User.askers.each do |asker|
+    #   stats[asker.id] = Stat.where(:asker_id => asker.id).order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
+    # end
+    # puts stats.to_json
     stats = Stat.order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
     @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
     @stat = stats.last

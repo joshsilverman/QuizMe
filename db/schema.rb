@@ -135,6 +135,8 @@ ActiveRecord::Schema.define(:version => 20120906213015) do
     t.string    "tum_url"
     t.integer   "posts_per_day"
     t.text      "description"
+    t.integer   "new_user_q_id"
+    t.string    "bg_image"
   end
 
 end
