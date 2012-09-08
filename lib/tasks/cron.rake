@@ -40,6 +40,7 @@ task :save_stats => :environment do
 		Stat.update_stats_from_cache(asker)
 		sleep(10)
 	end
+	Rails.cache.clear
 end
 
 task :dm_new_followers => :environment do

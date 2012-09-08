@@ -38,7 +38,6 @@ class Stat < ActiveRecord::Base
 				stat.save
 			end		
 		end
-		Rails.cache.clear
 	end
 
 	def self.update_stat_cache(attribute, value, asker, date, user_id)
