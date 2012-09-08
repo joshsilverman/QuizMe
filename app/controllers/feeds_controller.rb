@@ -73,7 +73,7 @@ class FeedsController < ApplicationController
     @asker = User.asker(params[:id])
     @posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id])
     #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
-    @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).map{|post| [post.id, post.publication.question, post.publication.question.answers]}
+    @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
     @questions.each {|q| puts q[1].inspect}
     @engagements = {}
     @conversations = {}

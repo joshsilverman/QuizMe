@@ -238,19 +238,21 @@ class Post
 			title: "Reply to #{username}"
 			width: 521
 			modal: true
-		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off
-		$("button.btn.correct").click ()=>
+		$("button.btn.correct").off()
+		$("button.btn.correct").on 'click', ()=>
 			correct = true
 			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
 			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
 			tweet = "#{response} #{complement}"
 			$(".modal_body textarea").html("@#{username} #{tweet}")
-		$("button.btn.incorrect").click ()=>
+		$("button.btn.incorrect").off()
+		$("button.btn.incorrect").on 'click', ()=>
 			correct = false
 			response = @incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]
 			tweet = response
 			$(".modal_body textarea").html("@#{username} #{tweet}")
-		$("#tweet.btn.btn-info").click ()=>
+		$("#tweet.btn.btn-info").off()
+		$("#tweet.btn.btn-info").on 'click', ()=>
 			parent_index = window.feed.conversations[@id]['posts'].length - 1
 			params =
 				"asker_id" : window.feed.id
