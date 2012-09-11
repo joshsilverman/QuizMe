@@ -316,6 +316,11 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
+    puts "in save retweet data:"
+    puts "current_acct:"
+    puts current_acct.to_json
+    puts "r:"
+    puts r.to_json    
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
