@@ -89,22 +89,9 @@ class AskersController < ApplicationController
     end
   end
 
-  def dashboard(stats = {})
-    #note: cache all-time stats! (currently summed in view)
-    # User.askers.each do |asker|
-    #   stats[asker.id] = Stat.where(:asker_id => asker.id).order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
-    # end
-    # puts stats.to_json
-    stats = Stat.order("date DESC").limit(30).sort! { |a, b| a.date <=> b.date }
-    @total_active_users = stats.collect(&:active_user_ids).join(",").split(",").uniq.size
-    @stat = stats.last
-    @graph_data = {
-      :followers => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.total_followers]},
-      :active_users => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.active_users]},
-      :questions_answered => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.questions_answered]},
-      # :click_throughs => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
-      :retweets => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.retweets]},
-      :mentions => stats.collect {|stat| [stat.date.strftime("%m-%d"), stat.mentions]}
-    }
+  def dashboard
+    @askers = User.askers
+    @graph_data = Stat.get_month_graph_data(@askers)
+    @display_data = Stat.get_display_data(@askers)
   end  
 end
