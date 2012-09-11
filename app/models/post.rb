@@ -107,9 +107,17 @@ class Post < ActiveRecord::Base
     puts long_url
     case provider
     when "twitter"
-      Post.tweet(asker, question.text, question.hashtag, nil, long_url, 
-                 'status question', 'initial', nil,
-                 publication.id, nil, nil, false)
+      begin
+        Post.tweet(
+          asker, question.text, question.hashtag, 
+          nil, long_url, 'status question', 
+          'initial', nil, publication.id, 
+          nil, nil, false
+        )
+      rescue Exception => exception
+        puts "exception while publishing tweet"
+        puts exception.message
+      end
     when "tumblr"
       puts "No Tumblr Post Methods"
     when "facebook"
