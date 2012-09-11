@@ -22,7 +22,22 @@ class Dashboard
 		@draw_graphs()
 		@update_metrics()
 	update_metrics: =>
-		# console.log @display_data
+		askers = []
+		display_hash = 
+			followers: today: 0, total: 0
+			active_users: today: 0, total: 0
+			questions_answered: today: 0, total: 0
+			click_throughs: today: 0, total: 0
+			mentions: today: 0, total: 0
+			retweets: today: 0, total: 0
+		if "0" in @active then askers.push(0) else askers.push(asker_id) for asker_id in @active
+		for asker_id in askers
+			for key of display_hash
+				display_hash[key]["today"] += @display_data[asker_id][key]["today"]
+				display_hash[key]["total"] += @display_data[asker_id][key]["total"]
+		for key, value of display_hash
+			$("##{key}_stats .new .number").text(value.today)
+			$("##{key}_stats .total .number").text(value.total)
 	draw_graphs: =>
 		colors = []
 		colors.push(line_colors[asker_id]) for asker_id in @active

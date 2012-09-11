@@ -19,7 +19,7 @@
 					%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
 	#data_row.row
 		#total_followers.panel.rounded.span6
-			.stats
+			#followers_stats.stats
 				.header
 					%h3 Followers
 				.new
@@ -32,7 +32,7 @@
 						%p.period all-time				
 			#total_followers_graph.graph
 		#active_users.panel.right.rounded.span6
-			.stats
+			#active_users_stats.stats
 				.header
 					%h3 Active Users
 				.new
@@ -46,7 +46,7 @@
 			#active_users_graph.graph
 	#data_row.row
 		#questions_answered.panel.rounded.span6
-			.stats
+			#questions_answered_stats.stats
 				.header
 					%h3 Answers
 				.new
@@ -59,7 +59,7 @@
 						%p.period all-time				
 			#questions_answered_graph.graph
 		#click_throughs.panel.right.rounded.span6
-			.stats
+			#click_throughs_stats.stats
 				.header
 					%h3 CTs
 				.new
@@ -73,7 +73,7 @@
 			#click_throughs_graph.graph
 	#data_row.row
 		#mentions.panel.rounded.span6
-			.stats
+			#mentions_stats.stats
 				.header
 					%h3 Mentions
 				.new
@@ -86,7 +86,7 @@
 						%p.period all-time				
 			#mentions_graph.graph
 		#retweets.panel.right.rounded.span6
-			.stats
+			#retweets_stats.stats
 				.header
 					%h3 Retweets
 				.new
