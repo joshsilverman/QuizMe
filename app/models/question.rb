@@ -12,7 +12,7 @@ class Question < ActiveRecord::Base
     id_queue = priority_questions.sample(asker.posts_per_day) 
     id_queue += questions.sample(asker.posts_per_day - id_queue.size)
     puts "WARNING THE QUEUE FOR #{asker.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{id_queue.size} of #{asker.posts_per_day} POSTS SCHEDULED" if id_queue.size < asker.posts_per_day
-    return Question.where("id in (?)",id_queue)
+    return Question.where("id in (?)", id_queue)
     #@TODO email or some notification that I will actually read if not filled
   end
 

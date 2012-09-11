@@ -2,6 +2,23 @@
 	margin-left: 0px;
 
 	.row {
+		margin: 10px 0px;
+	}
+
+	.select_option {
+		display: inline;
+		padding-right: 10px;
+
+		label {
+			display: inline;
+			position: relative;
+			top: 1px;
+			font-weight: bold;
+    	padding: 10px 0px;
+		}
+	}
+
+	#data_row {
 		height: 225px;
 		margin: 10px 0px;
 		
@@ -13,9 +30,9 @@
 
 			.stats {
 				height: 225px;
-				width: 30%;
+				width: 125px;
 				float: left;
-				border-right: 1px #F0F0F0 solid;
+				border-right: 1px rgba(0, 0, 0, 0.207) solid;
 				
 				.header {
 					height: 49px;

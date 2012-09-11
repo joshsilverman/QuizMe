@@ -107,9 +107,17 @@ class Post < ActiveRecord::Base
     puts long_url
     case provider
     when "twitter"
-      Post.tweet(asker, question.text, question.hashtag, nil, long_url, 
-                 'status question', 'initial', nil,
-                 publication.id, nil, nil, false)
+      begin
+        Post.tweet(
+          asker, question.text, question.hashtag, 
+          nil, long_url, 'status question', 
+          'initial', nil, publication.id, 
+          nil, nil, false
+        )
+      rescue Exception => exception
+        puts "exception while publishing tweet"
+        puts exception.message
+      end
     when "tumblr"
       puts "No Tumblr Post Methods"
     when "facebook"
@@ -316,7 +324,9 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
+    puts "in save retweet data:"
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
+    puts retweeted_post.to_json
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)

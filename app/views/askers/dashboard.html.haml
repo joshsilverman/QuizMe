@@ -1,84 +1,100 @@
+= hidden_field_tag :display_data, @display_data.to_json
 = hidden_field_tag :graph_data, @graph_data.to_json
+= hidden_field_tag :askers, @askers.group_by(&:id).to_json
+
+:css
+	.navbar-fixed-top .container {
+		width: 1152px !important;
+	}
 
 #dashboard.span12
 	.row
-		#followers.panel.rounded.span6
-			.stats
+		.well.well-small
+			.select_option
+				%input{:type => "checkbox", :id => "select_all_time", :value => 0, :checked => "checked"}
+				%label{:for => "select_all_time"} All time
+			- @askers.each do |asker|
+				.select_option
+					%input{:type => "checkbox", :id => "select_#{asker.twi_screen_name}", :value => asker.id}
+					%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
+	#data_row.row
+		#total_followers.panel.rounded.span6
+			#followers_stats.stats
 				.header
 					%h3 Followers
 				.new
 					.container
-						%p.number= @stat.followers
+						%p.number
 						%p.period new
 				.total
 					.container
-						%p.number= @stat.total_followers
+						%p.number
 						%p.period all-time				
-			#followers_graph.graph
+			#total_followers_graph.graph
 		#active_users.panel.right.rounded.span6
-			.stats
+			#active_users_stats.stats
 				.header
 					%h3 Active Users
 				.new
 					.container
-						%p.number= @stat.active_users
+						%p.number
 						%p.period today
 				.total
 					.container
-						%p.number= @total_active_users
+						%p.number
 						%p.period last 30 days			
 			#active_users_graph.graph
-	.row
+	#data_row.row
 		#questions_answered.panel.rounded.span6
-			.stats
+			#questions_answered_stats.stats
 				.header
 					%h3 Answers
 				.new
 					.container
-						%p.number= @stat.questions_answered
+						%p.number
 						%p.period new
 				.total
 					.container
-						%p.number= Stat.sum(:questions_answered)
+						%p.number
 						%p.period all-time				
 			#questions_answered_graph.graph
 		#click_throughs.panel.right.rounded.span6
-			.stats
+			#click_throughs_stats.stats
 				.header
-					%h3 Click Throughs
+					%h3 CTs
 				.new
 					.container
-						%p.number 0
+						%p.number 
 						%p.period new
 				.total
 					.container
-						%p.number 0
+						%p.number 
 						%p.period all-time				
 			#click_throughs_graph.graph
-	.row
+	#data_row.row
 		#mentions.panel.rounded.span6
-			.stats
+			#mentions_stats.stats
 				.header
 					%h3 Mentions
 				.new
 					.container
-						%p.number= @stat.mentions
+						%p.number
 						%p.period new
 				.total
 					.container
-						%p.number= Stat.sum(:mentions)
+						%p.number
 						%p.period all-time				
 			#mentions_graph.graph
 		#retweets.panel.right.rounded.span6
-			.stats
+			#retweets_stats.stats
 				.header
 					%h3 Retweets
 				.new
 					.container
-						%p.number= @stat.retweets
+						%p.number
 						%p.period new
 				.total
 					.container
-						%p.number= Stat.sum(:retweets)
+						%p.number
 						%p.period all-time
 			#retweets_graph.graph
