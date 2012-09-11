@@ -42,3 +42,11 @@ FAST = ["Fast fingers! Faster brain!",
         "Fastest Finger Award Winner!",
         "Hey, gunslinger! Fastest hands on the interwebs!"
           ]
+
+
+RETWEET_ACCTS = {
+                  2 => [66], #govt101
+                  19 => [31], #quizmechem
+                  31 => [19], #quizmeorgo
+                  66 => [2] #USPresidents101
+                }
