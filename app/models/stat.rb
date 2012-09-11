@@ -2,8 +2,11 @@ class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 
 	def self.update_stats_from_cache(asker)
+		puts asker.id
+		# puts Rails.cache.read("stats:#{asker.id}")
 		today = Date.today.to_date
 		if Stat.where(:date => today, :asker_id => asker.id).blank?
+			puts "no stat for today yet"
 			stat = Stat.new
 			stat.asker_id = asker.id
 			stat.date = today
@@ -15,11 +18,18 @@ class Stat < ActiveRecord::Base
 				stat.followers = 0
 			end
 			stat.save
+			puts "todays stat: #{stat.to_json}"
 		end		
 		stats_hash = Rails.cache.read("stats:#{asker.id}")
+		puts "stats_hash:"
+		puts stats_hash
 		unless stats_hash.blank?
+			puts "stats_hash not blank"
 			Hash[stats_hash.sort].each do |date, attributes_hash|
-				stat = Stat.where(:date => date).order("date DESC").limit(1).first
+				puts "cache entry for #{date}"
+				stat = Stat.where(:date => date, :asker_id => asker.id).order("date DESC").limit(1).first
+				puts "existing stat found:"
+				puts stat.to_json
 				stat = Stat.new if stat.blank?
 				stat.date = date
 				stat.asker_id = asker.id
@@ -36,6 +46,9 @@ class Stat < ActiveRecord::Base
 					end
 				end			
 				stat.save
+				puts "saving stat:"
+				puts stat.to_json
+				puts "\n"
 			end		
 		end
 	end
