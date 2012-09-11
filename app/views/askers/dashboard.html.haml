@@ -2,6 +2,11 @@
 = hidden_field_tag :graph_data, @graph_data.to_json
 = hidden_field_tag :askers, @askers.group_by(&:id).to_json
 
+:css
+	.navbar-fixed-top .container {
+		width: 1152px !important;
+	}
+
 #dashboard.span12
 	.row
 		.well.well-small
