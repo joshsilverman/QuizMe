@@ -8,7 +8,7 @@
 		/ = javascript_include_tag "http://js.pusher.com/1.12/pusher.min.js"
 		= csrf_meta_tags
 		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
-	%body{:style => ("background: url(/assets/bg_images/#{@asker.bg_image});" if @asker)}
+	%body{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image});" if @asker)}
 		= render 'layouts/header'
 		.container.row{:style => "margin: auto;"}
 			= yield
