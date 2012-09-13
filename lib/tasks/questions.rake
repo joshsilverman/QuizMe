@@ -16,20 +16,18 @@ namespace :questions do
         end
       end
       if question and correct and incorrect.count > 0
-        # puts "Question #{k}: #{question}"
+        puts "Question #{k}: #{question}"
         # puts "Correct: #{correct}"
-        incorrect.each_with_index {|aa, i| puts "Incorrect #{i}: #{aa}"}
-        q = Question.find_or_create_by_text_and_created_for_asker_id(question, 2)
-        q.update_attributes({
-          :topic_id => 1, 
-          :user_id => 1,
-          :status => 1,
-          :resource_url => url
-        })
-        puts q.to_json
-        puts "\n\n"
-        q.answers << Answer.find_or_create_by_text_and_correct(correct, true)
-        incorrect.each {|aa| q.answers << Answer.find_or_create_by_text_and_correct(aa, false)}
+        q = Question.where("text like ?", "%#{question}%").first
+        if q.blank?
+          puts "missed"
+          q = Question.create({:text => question, :created_for_asker_id => 2, :user_id => 1, :status => 1, :resource_url => url}) 
+          q.answers << Answer.create(:text => correct, :correct => true)
+          incorrect.each {|aa| q.answers << Answer.create(:text => aa, :correct => false)}
+        else
+          puts "updating: #{question}"
+          q.update_attributes({:resource_url => url})
+        end
       else
         puts "Error!"
         break
