@@ -83,7 +83,7 @@ class Stat < ActiveRecord::Base
     month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
     date_grouped_stats = month_stats.group_by(&:date)
     graph_data = {:total_followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
-    ((Date.yesterday - 30)..Date.yesterday).each do |date|
+    ((Date.today - 30)..Date.today).each do |date|
       graph_data.each do |key, value|
         graph_data[key][date] = {}
         next unless date_grouped_stats[date]
