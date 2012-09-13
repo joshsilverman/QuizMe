@@ -1,3 +1,5 @@
+require 'net/http'
+require 'uri'
 
 namespace :questions do
     task :load => :environment do
@@ -58,6 +60,65 @@ namespace :questions do
           q.answers << Answer.create(:text => fa, :correct => false)
         end
       end
+    end
+
+    task :seeder_import, [:seeder_id, :asker_id, :topic_name] => :environment do |t, args|
+      #get asker account
+      asker = User.asker(args[:asker_id])
+      if asker.nil?
+        puts 'No Asker Found!'
+        return
+      end
+
+      #get topic
+      topic = Topic.find_or_create_by_name(args[:topic_name].downcase)
+
+      #get cards from seeder
+      url = URI.parse("http://seeder.herokuapp.com/handles/#{args[:seeder_id]}/export.json")
+      req = Net::HTTP::Get.new(url.path)
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.request(req)
+      }
+      begin
+        cards = JSON.parse(res.body)
+      rescue
+        cards=[]
+      end
+
+      total = cards.count      
+      cards.each_with_index do |card, i|
+        #puts "#{card['text']} => #{card['answer']}"
+        q = Question.find_or_create_by_seeder_id(card['card_id'])
+        unless q.text == card['text'] &&
+                q.topic_id == topic.id &&
+                q.created_for_asker_id == asker.id
+          q.update_attributes(:text => card['text'],
+                              :topic_id => topic.id,
+                              :user_id => 1,
+                              :status => 1,
+                              :created_for_asker_id => asker.id)
+          q.answers.destroy_all unless q.answers.blank?
+          q.answers << Answer.create(:text => card['answer'], :correct => true)
+          card['false_answers'].each do |fa|
+            q.answers << Answer.create(:text => fa, :correct => false)
+          end
+        end
+
+        #compute and show progress
+        complete = ((i / total.to_f)*100).to_i
+        pbar = ''
+        space = ''
+        for num in 0..(complete/2) do
+          pbar += '=' if num > 0
+        end
+
+        for num in 0..(50-pbar.length) do
+          space+=' '
+        end
+        puts "[#{pbar}#{space}] #{complete}%"
+      end
+
+      puts "[==================================================] 100%"
     end
 end
 
