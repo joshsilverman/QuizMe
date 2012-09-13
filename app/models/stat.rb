@@ -2,24 +2,22 @@ class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 
 	def self.update_stats_from_cache(asker)
-		puts asker.id
-		# puts Rails.cache.read("stats:#{asker.id}")
 		today = Date.today.to_date
-		if Stat.where(:date => today, :asker_id => asker.id).blank?
+		stat = Stat.where(:date => today, :asker_id => asker.id).first
+		if stat.blank?
 			puts "no stat for today yet"
 			stat = Stat.new
 			stat.asker_id = asker.id
 			stat.date = today
-			total_followers = asker.twitter.user.followers_count
-			stat.total_followers = total_followers
-			if previous_stat = Stat.where("date < ? and asker_id = ?", today, asker.id).order("date DESC").limit(1).first
-				stat.followers = total_followers - previous_stat.total_followers
-			else
-				stat.followers = 0
-			end
-			stat.save
-			puts "todays stat: #{stat.to_json}"
 		end		
+		total_followers = asker.twitter.user.followers_count
+		stat.total_followers = total_followers
+		if previous_stat = Stat.where("date < ? and asker_id = ?", today, asker.id).order("date DESC").limit(1).first
+			stat.followers = total_followers - previous_stat.total_followers
+		else
+			stat.followers = 0
+		end		
+		stat.save
 		stats_hash = Rails.cache.read("stats:#{asker.id}")
 		puts "stats_hash:"
 		puts stats_hash
