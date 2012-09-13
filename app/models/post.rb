@@ -319,8 +319,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
-    Stat.update_stat_cache("mentions", 1, current_acct, post.created_at, u.id)
-    Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)
+    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id)
+    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
   end
 
   def self.save_retweet_data(r, current_acct)
@@ -345,8 +345,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false
       )
-      Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)
-      Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)
+      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id)
+      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
     end
   end
 
@@ -373,6 +373,8 @@ class Post < ActiveRecord::Base
 
 
   def generate_response(response_type)
+    puts "POST BRO:"
+    puts self.to_json
     case response_type
     when 'correct'
       tweet = "#{CORRECT.sample} #{COMPLEMENT.sample}"
@@ -389,7 +391,6 @@ class Post < ActiveRecord::Base
   def update_responded(correct, publication_id, question_id, asker_id)
     #@TODO update engagement_type
     #@TODO create migration for new REP model
-    asker = User.asker(asker_id)
     unless correct.nil?
       Rep.create(
         :user_id => self.user_id,
@@ -399,15 +400,15 @@ class Post < ActiveRecord::Base
         :correct => correct
       )
       self.update_attributes(:responded_to => true, :engagement_type => "#{self.engagement_type} answer")
-      Stat.update_stat_cache("questions_answered", 1, asker, self.created_at, self.user_id)
+      Stat.update_stat_cache("questions_answered", 1, asker_id, self.created_at, self.user_id)
       if self.posted_via_app
-        Stat.update_stat_cache("internal_answers", 1, asker, self.created_at, self.user_id)
+        Stat.update_stat_cache("internal_answers", 1, asker_id, self.created_at, self.user_id)
       else
-        Stat.update_stat_cache("twitter_answers", 1, asker, self.created_at, self.user_id)
+        Stat.update_stat_cache("twitter_answers", 1, asker_id, self.created_at, self.user_id)
       end
     else
       self.update_attributes(:responded_to => true)
     end
-    Stat.update_stat_cache("active_users", self.user_id, asker, self.created_at, self.user_id)
+    Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120911181344) do
+ActiveRecord::Schema.define(:version => 20120913214550) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(:version => 20120911181344) do
     t.integer   "asker_id"
     t.timestamp "created_at"
     t.timestamp "updated_at"
+    t.integer   "click_throughs"
   end
 
   create_table "topics", :force => true do |t|

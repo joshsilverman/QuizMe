@@ -1,9 +1,4 @@
 Quizmemanager::Application.routes.draw do
-  resources :users
-  resources :questions
-  resources :posts
-  resources :mentions
-  resources :askers
   
   get "feeds/index"
   match "feeds/:id/scores" => "feeds#scores"
@@ -14,6 +9,7 @@ Quizmemanager::Application.routes.draw do
   match "/tweet" => "feeds#tweet"
   match "/link_to_post" => "feeds#link_to_post"
   match "/dashboard" => "askers#dashboard"
+  match "/posts/:id/refer" => "posts#refer"
 
   post "posts/update_engagement_type"
   post "posts/update"
@@ -27,6 +23,12 @@ Quizmemanager::Application.routes.draw do
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
+
+  resources :users
+  resources :questions
+  resources :posts
+  resources :mentions
+  resources :askers
 
   root :to => 'feeds#index'
 end

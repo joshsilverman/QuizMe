@@ -51,12 +51,11 @@ class Stat < ActiveRecord::Base
 		end
 	end
 
-	def self.update_stat_cache(attribute, value, asker, date, user_id)
+	def self.update_stat_cache(attribute, value, asker_id, date, user_id)
 		return if ADMINS.include? user_id
 		puts "in update_stat_cache"
-		puts attribute, value, asker.to_json, date
 		date = date.to_date
-		stats_hash = Rails.cache.read("stats:#{asker.id}") || {}
+		stats_hash = Rails.cache.read("stats:#{asker_id}") || {}
 		stats_hash = stats_hash.dup
 		stats_hash[date] = {} unless stats_hash.has_key? date
 		if attribute == "active_users"
@@ -72,8 +71,8 @@ class Stat < ActiveRecord::Base
 		end
 		puts "stats_hash:"
 		puts stats_hash.to_json
-		Rails.cache.write("stats:#{asker.id}", stats_hash)
-		puts Rails.cache.read("stats:#{asker.id}")
+		Rails.cache.write("stats:#{asker_id}", stats_hash)
+		puts Rails.cache.read("stats:#{asker_id}")
 	end
 
 	def self.get_month_graph_data(askers)
