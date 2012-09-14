@@ -97,13 +97,18 @@ class Stat < ActiveRecord::Base
     month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).order(:date)
 		display_data = {0 => {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => 0, :today => 0}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}}
     asker_grouped_stats = month_stats.group_by(&:asker_id)
+    puts asker_grouped_stats.to_json
     asker_ids.each do |asker_id|
     	active_user_ids = Stat.select("active_user_ids").where("asker_id = ? and date > ?", asker_id, Date.yesterday - 30).collect(&:active_user_ids).join(",").split(",").uniq
     	active_user_ids.delete("")
       attributes = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
       attributes[:followers][:total] = asker_grouped_stats[asker_id][-1].total_followers
-      attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers - asker_grouped_stats[asker_id][-2].total_followers
       display_data[0][:followers][:total] += attributes[:followers][:total]
+      if asker_grouped_stats[asker_id][-2]
+				attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers - asker_grouped_stats[asker_id][-2].total_followers
+      else
+      	attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers
+      end
       display_data[0][:followers][:today] += attributes[:followers][:today]
       attributes[:active_users][:total] = active_user_ids.count
       attributes[:active_users][:today] = asker_grouped_stats[asker_id][-1].active_users
@@ -126,6 +131,9 @@ class Stat < ActiveRecord::Base
       display_data[0][:retweets][:total] += attributes[:retweets][:total]
       display_data[0][:retweets][:today] += attributes[:retweets][:today]
       display_data[asker_id] = attributes
+      puts asker_id
+      puts display_data
+      puts "\n\n"
     end
     return display_data
 	end

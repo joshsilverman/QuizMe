@@ -373,8 +373,9 @@ class Post < ActiveRecord::Base
 
 
   def generate_response(response_type)
-    puts "POST BRO:"
-    puts self.to_json
+    # puts "POST BRO:"
+    # puts self.to_json
+    #Include backlink if exists
     case response_type
     when 'correct'
       tweet = "#{CORRECT.sample} #{COMPLEMENT.sample}"
