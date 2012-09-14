@@ -13,8 +13,6 @@ class PublicationQueue < ActiveRecord::Base
       publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
       question.update_attribute(:priority, false) if question.priority
     end
-    puts "queue:"
-    puts queue.to_json
   end
 
   def self.clear_queue(asker)

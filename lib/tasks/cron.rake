@@ -17,6 +17,7 @@ task :post_question => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |a|
 		a.publish_question()
+		sleep(5)
 	end
 	# User.askers.each do |asker|
 	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1

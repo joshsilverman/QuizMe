@@ -61,8 +61,7 @@ class PostsController < ApplicationController
   def refer
   	post = Post.includes(:publication => :question).find(params[:id])
     if post.publication.question.resource_url
-    	# pass current_user if exists
-      Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, nil)
+      Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, (current_user ? current_user.id : nil))
       redirect_to post.publication.question.resource_url
     else
       redirect_to "/"

@@ -35,9 +35,10 @@ class Post < ActiveRecord::Base
     where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
-  def self.tweetable(text, user = "", url = "", hashtag = "")
+  def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "")
     user = "" if user.nil?
     url = "" if url.nil?
+    resource_url = "" if resource_url.nil?
     text_length = text.length
     handle_length = user.length
     url_length = url.length
@@ -130,16 +131,16 @@ class Post < ActiveRecord::Base
   def self.tweet(account, tweet, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
-                 in_reply_to_user_id, link_to_parent)
+                 in_reply_to_user_id, link_to_parent, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     puts "Tweeting:"
     puts Post.tweetable(tweet, reply_to, short_url, hashtag)
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag)}")
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}")
     end
     post = Post.create(
       :user_id => account.id,
@@ -200,7 +201,8 @@ class Post < ActiveRecord::Base
       nil, 
       (user_post ? user_post.id : nil), 
       current_user.id,
-      true
+      true, 
+      publication.question.resource_url
     )  
     conversation.posts << app_post if app_post
     return {:message => response_text, :url => publication.url}
@@ -324,9 +326,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct)
-    puts "in save retweet data:"
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
-    puts retweeted_post.to_json
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)

@@ -5,7 +5,6 @@ class Stat < ActiveRecord::Base
 		today = Date.today.to_date
 		stat = Stat.where(:date => today, :asker_id => asker.id).first
 		if stat.blank?
-			puts "no stat for today yet"
 			stat = Stat.new
 			stat.asker_id = asker.id
 			stat.date = today
@@ -19,15 +18,9 @@ class Stat < ActiveRecord::Base
 		end		
 		stat.save
 		stats_hash = Rails.cache.read("stats:#{asker.id}")
-		puts "stats_hash:"
-		puts stats_hash
 		unless stats_hash.blank?
-			puts "stats_hash not blank"
 			Hash[stats_hash.sort].each do |date, attributes_hash|
-				puts "cache entry for #{date}"
 				stat = Stat.where(:date => date, :asker_id => asker.id).order("date DESC").limit(1).first
-				puts "existing stat found:"
-				puts stat.to_json
 				stat = Stat.new if stat.blank?
 				stat.date = date
 				stat.asker_id = asker.id
@@ -52,8 +45,9 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.update_stat_cache(attribute, value, asker_id, date, user_id)
+		puts "in update stat cache:"
+		puts attribute, value, asker_id, date, user_id
 		return if ADMINS.include? user_id
-		puts "in update_stat_cache"
 		date = date.to_date
 		stats_hash = Rails.cache.read("stats:#{asker_id}") || {}
 		stats_hash = stats_hash.dup
@@ -72,7 +66,6 @@ class Stat < ActiveRecord::Base
 		puts "stats_hash:"
 		puts stats_hash.to_json
 		Rails.cache.write("stats:#{asker_id}", stats_hash)
-		puts Rails.cache.read("stats:#{asker_id}")
 	end
 
 	def self.get_month_graph_data(askers)
@@ -97,7 +90,6 @@ class Stat < ActiveRecord::Base
     month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).order(:date)
 		display_data = {0 => {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => 0, :today => 0}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}}
     asker_grouped_stats = month_stats.group_by(&:asker_id)
-    puts asker_grouped_stats.to_json
     asker_ids.each do |asker_id|
     	active_user_ids = Stat.select("active_user_ids").where("asker_id = ? and date > ?", asker_id, Date.yesterday - 30).collect(&:active_user_ids).join(",").split(",").uniq
     	active_user_ids.delete("")
@@ -131,9 +123,6 @@ class Stat < ActiveRecord::Base
       display_data[0][:retweets][:total] += attributes[:retweets][:total]
       display_data[0][:retweets][:today] += attributes[:retweets][:today]
       display_data[asker_id] = attributes
-      puts asker_id
-      puts display_data
-      puts "\n\n"
     end
     return display_data
 	end
