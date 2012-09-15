@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120906213015) do
+ActiveRecord::Schema.define(:version => 20120913214550) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(:version => 20120906213015) do
     t.boolean   "priority",             :default => false
     t.string    "hashtag"
     t.integer   "seeder_id"
+    t.text      "resource_url"
   end
 
   create_table "reps", :force => true do |t|
@@ -107,6 +108,7 @@ ActiveRecord::Schema.define(:version => 20120906213015) do
     t.integer   "asker_id"
     t.timestamp "created_at"
     t.timestamp "updated_at"
+    t.integer   "click_throughs"
   end
 
   create_table "topics", :force => true do |t|

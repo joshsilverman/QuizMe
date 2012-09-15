@@ -33,7 +33,8 @@ class PostsController < ApplicationController
 			asker = User.asker(params[:asker_id].to_i)
 			user = post.user
 			conversation = post.conversation
-			post.update_responded(correct, conversation.publication_id, conversation.publication.question_id , asker.id)
+			question_id = conversation.publication.question_id
+			post.update_responded(correct, conversation.publication_id, question_id, asker.id)
 			tweet = post.generate_response(params[:response_type])
 			puts tweet
 			if params[:response_type] == 'fast'
@@ -56,4 +57,14 @@ class PostsController < ApplicationController
 		# Stat.update_stat_cache("retweets", 1, asker, post.created_at)
 		# Stat.update_stat_cache("active_users", user.id, asker, post.created_at)      		
 	end
+
+  def refer
+  	post = Post.includes(:publication => :question).find(params[:id])
+    if post.publication.question.resource_url
+      Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, (current_user ? current_user.id : nil))
+      redirect_to post.publication.question.resource_url
+    else
+      redirect_to "/"
+    end
+  end	
 end

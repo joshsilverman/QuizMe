@@ -49,4 +49,5 @@ RETWEET_ACCTS = {
                   19 => [31], #quizmechem
                   31 => [19], #quizmeorgo
                   66 => [2] #USPresidents101
+                  #108 => [] #psychology 
                 }
