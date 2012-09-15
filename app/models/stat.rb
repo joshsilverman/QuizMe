@@ -69,62 +69,62 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.get_month_graph_data(askers)
-    asker_ids = askers.collect(&:id)
-    month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
-    date_grouped_stats = month_stats.group_by(&:date)
-    graph_data = {:total_followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
-    ((Date.today - 30)..Date.today).each do |date|
-      graph_data.each do |key, value|
-        graph_data[key][date] = {}
-        next unless date_grouped_stats[date]
-        date_grouped_stats[date].each do |stat|
-          graph_data[key][date][stat.asker_id] = stat[key]
-        end
-      end  
-    end
-    return graph_data
+		asker_ids = askers.collect(&:id)
+		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
+		date_grouped_stats = month_stats.group_by(&:date)
+		graph_data = {:total_followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+		((Date.today - 30)..Date.today).each do |date|
+			graph_data.each do |key, value|
+				graph_data[key][date] = {}
+				next unless date_grouped_stats[date]
+				date_grouped_stats[date].each do |stat|
+					graph_data[key][date][stat.asker_id] = stat[key]
+				end
+			end  
+		end
+		return graph_data
 	end
 
 	def self.get_display_data(askers)
-    asker_ids = askers.collect(&:id)
-    month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).order(:date)
+		asker_ids = askers.collect(&:id)
+		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).order(:date)
 		display_data = {0 => {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => 0, :today => 0}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}}
-    asker_grouped_stats = month_stats.group_by(&:asker_id)
-    asker_ids.each do |asker_id|
-    	active_user_ids = Stat.select("active_user_ids").where("asker_id = ? and date > ?", asker_id, Date.yesterday - 30).collect(&:active_user_ids).join(",").split(",").uniq
-    	active_user_ids.delete("")
-      attributes = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
-      attributes[:followers][:total] = asker_grouped_stats[asker_id][-1].total_followers
-      display_data[0][:followers][:total] += attributes[:followers][:total]
-      if asker_grouped_stats[asker_id][-2]
+		asker_grouped_stats = month_stats.group_by(&:asker_id)
+		asker_ids.each do |asker_id|
+			active_user_ids = Stat.select("active_user_ids").where("asker_id = ? and date > ?", asker_id, Date.yesterday - 30).collect(&:active_user_ids).join(",").split(",").uniq
+			active_user_ids.delete("")
+			attributes = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+			attributes[:followers][:total] = asker_grouped_stats[asker_id][-1].total_followers
+			display_data[0][:followers][:total] += attributes[:followers][:total]
+			if asker_grouped_stats[asker_id][-2]
 				attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers - asker_grouped_stats[asker_id][-2].total_followers
-      else
-      	attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers
-      end
-      display_data[0][:followers][:today] += attributes[:followers][:today]
-      attributes[:active_users][:total] = active_user_ids.count
-      attributes[:active_users][:today] = asker_grouped_stats[asker_id][-1].active_users
-      display_data[0][:active_users][:total] += attributes[:active_users][:total]
-      display_data[0][:active_users][:today] += attributes[:active_users][:today]
-      attributes[:questions_answered][:total] = Stat.where(:asker_id => asker_id).sum(:questions_answered)
-      attributes[:questions_answered][:today] = asker_grouped_stats[asker_id][-1].questions_answered
-      display_data[0][:questions_answered][:total] += attributes[:questions_answered][:total]
-      display_data[0][:questions_answered][:today] += attributes[:questions_answered][:today]
-      attributes[:click_throughs][:total] = 0
-      attributes[:click_throughs][:today] = 0
-      display_data[0][:click_throughs][:total] += attributes[:click_throughs][:total]
-      display_data[0][:click_throughs][:today] += attributes[:click_throughs][:today]
-      attributes[:mentions][:total] = Stat.where(:asker_id => asker_id).sum(:mentions)
-      attributes[:mentions][:today] = asker_grouped_stats[asker_id][-1].mentions
-      display_data[0][:mentions][:total] += attributes[:mentions][:total]
-      display_data[0][:mentions][:today] += attributes[:mentions][:today]
-      attributes[:retweets][:total] = Stat.where(:asker_id => asker_id).sum(:retweets)
-      attributes[:retweets][:today] = asker_grouped_stats[asker_id][-1].retweets                              
-      display_data[0][:retweets][:total] += attributes[:retweets][:total]
-      display_data[0][:retweets][:today] += attributes[:retweets][:today]
-      display_data[asker_id] = attributes
-    end
-    return display_data
+			else
+				attributes[:followers][:today] = asker_grouped_stats[asker_id][-1].total_followers
+			end
+			display_data[0][:followers][:today] += attributes[:followers][:today]
+			attributes[:active_users][:total] = active_user_ids.count
+			attributes[:active_users][:today] = asker_grouped_stats[asker_id][-1].active_users
+			display_data[0][:active_users][:total] += attributes[:active_users][:total]
+			display_data[0][:active_users][:today] += attributes[:active_users][:today]
+			attributes[:questions_answered][:total] = Stat.where(:asker_id => asker_id).sum(:questions_answered)
+			attributes[:questions_answered][:today] = asker_grouped_stats[asker_id][-1].questions_answered
+			display_data[0][:questions_answered][:total] += attributes[:questions_answered][:total]
+			display_data[0][:questions_answered][:today] += attributes[:questions_answered][:today]
+			attributes[:click_throughs][:total] = 0
+			attributes[:click_throughs][:today] = 0
+			display_data[0][:click_throughs][:total] += attributes[:click_throughs][:total]
+			display_data[0][:click_throughs][:today] += attributes[:click_throughs][:today]
+			attributes[:mentions][:total] = Stat.where(:asker_id => asker_id).sum(:mentions)
+			attributes[:mentions][:today] = asker_grouped_stats[asker_id][-1].mentions
+			display_data[0][:mentions][:total] += attributes[:mentions][:total]
+			display_data[0][:mentions][:today] += attributes[:mentions][:today]
+			attributes[:retweets][:total] = Stat.where(:asker_id => asker_id).sum(:retweets)
+			attributes[:retweets][:today] = asker_grouped_stats[asker_id][-1].retweets                              
+			display_data[0][:retweets][:total] += attributes[:retweets][:total]
+			display_data[0][:retweets][:today] += attributes[:retweets][:today]
+			display_data[asker_id] = attributes
+		end
+		return display_data
 	end
 
 	# def self.get_yesterday(id)

@@ -321,8 +321,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
-    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id)
-    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
+    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
   def self.save_retweet_data(r, current_acct)
@@ -330,6 +330,7 @@ class Post < ActiveRecord::Base
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
+      puts u.to_json
       u.update_attributes(
         :twi_name => user.name,
         :twi_screen_name => user.screen_name,
@@ -345,8 +346,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false
       )
-      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id)
-      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
+      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
   end
 
