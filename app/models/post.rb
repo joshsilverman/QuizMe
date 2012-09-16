@@ -284,7 +284,12 @@ class Post < ActiveRecord::Base
       Post.save_mention_data(m, current_acct)
     end
     retweets.each do |r|
-      Post.save_retweet_data(r, current_acct)
+      begin
+        Post.save_retweet_data(r, current_acct)
+      rescue Exception => exception
+        puts "exception while checking retweets"
+        puts exception.message
+      end
     end
     dms.each do |d|
       Post.save_dm_data(d, current_acct)
@@ -321,15 +326,16 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false
     )
-    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id)
-    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
+    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
   def self.save_retweet_data(r, current_acct)
-    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})
+    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})    
     users = current_acct.twitter.retweeters_of(r.id)
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
+      puts u.to_json
       u.update_attributes(
         :twi_name => user.name,
         :twi_screen_name => user.screen_name,
@@ -345,8 +351,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false
       )
-      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id)
-      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id)
+      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
   end
 
