@@ -22,6 +22,15 @@ class AskersController < ApplicationController
 
   def edit
     @asker = User.find(params[:id])
+    @linked = true
+
+    if @asker.twi_user_id.nil?
+      @linked = false
+      @asker.twi_profile_img_url = 'unknown_user.jpeg'
+      @asker.twi_screen_name = 'unlinked'
+      @asker.twi_user_id = "unknown id"
+    end
+
     redirect_to root_url unless @asker.is_role? 'asker'
   end
 

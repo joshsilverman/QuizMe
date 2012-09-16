@@ -11,9 +11,9 @@
 							%h3= "@#{@asker.twi_screen_name}"
 							%p= @asker.description
 							- if current_user and (@asker.id == current_user.id or current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
-								%a{:href => "/feeds/#{@asker.id}/manage"} Manage Account
-							/ %a.scoreboard_link.visible-phone{:href => "#"}
-							/ 	Go to the scoreboard.
+								%a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
+								&nbsp;|&nbsp;
+								%a{:href => "/askers/#{@asker.id}/edit"} Edit Account 
 			#account_stats.span3.hidden-phone
 		#feed.row
 			#right_column.span6
