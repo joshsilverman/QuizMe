@@ -284,12 +284,8 @@ class Post < ActiveRecord::Base
       Post.save_mention_data(m, current_acct)
     end
     retweets.each do |r|
-      begin
-        Post.save_retweet_data(r, current_acct)
-      rescue Exception => exception
-        puts "exception while checking retweets"
-        puts exception.message
-      end
+      Post.save_retweet_data(r, current_acct)
+      sleep(1)
     end
     dms.each do |d|
       Post.save_dm_data(d, current_acct)
