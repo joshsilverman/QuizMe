@@ -24,11 +24,14 @@ Quizmemanager::Application.routes.draw do
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
 
+  match "users/:id" => "askers#update"
+  resources :askers
+
   resources :users
   resources :questions
   resources :posts
   resources :mentions
-  resources :askers
+  
 
   root :to => 'feeds#index'
 end

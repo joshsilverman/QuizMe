@@ -7,6 +7,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
+//= require best_in_place
 //= require_tree .
 
 if (!window.console) console = {log: function() {}}

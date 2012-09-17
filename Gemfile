@@ -45,3 +45,5 @@ gem 'url_shortener'
 gem 'pusher'
 gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
+
+gem 'best_in_place'
