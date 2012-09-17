@@ -17,6 +17,8 @@
                     - User.askers.all.each do |a|
                       %li
                         %a{:href => "/feeds/#{a.id}", :tabindex => "-1"}= a.twi_screen_name 
+              %li
+                %a.nav-link{:href => "/dashboard"}= "Dashboard"
 
             - else
               %li

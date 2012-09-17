@@ -91,6 +91,10 @@ class Stat < ActiveRecord::Base
 		display_data = {0 => {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => 0, :today => 0}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}}
 		asker_grouped_stats = month_stats.group_by(&:asker_id)
 		asker_ids.each do |asker_id|
+
+			# this bounds check skips injection of display data where no grouped stats
+			next if asker_grouped_stats[asker_id].nil?
+
 			active_user_ids = Stat.select("active_user_ids").where("asker_id = ? and date > ?", asker_id, Date.yesterday - 30).collect(&:active_user_ids).join(",").split(",").uniq
 			active_user_ids.delete("")
 			attributes = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
