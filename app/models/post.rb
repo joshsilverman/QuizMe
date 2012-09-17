@@ -199,7 +199,6 @@ class Post < ActiveRecord::Base
     end
     response_text = post.generate_response(status)
     publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
-    end
     app_post = Post.tweet(
       asker, 
       response_text, 
