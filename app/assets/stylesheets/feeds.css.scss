@@ -233,6 +233,23 @@ body {
 
 		#right_column {
 
+			@media (max-width: 767px) {
+				/*margin: -16px 5px;*/
+				border-radius: 5px;
+
+				.header {border-radius: 5px 5px 0 0;}
+			}
+
+			@media (min-width: 768px) and (max-width: 980px) {
+				width: 454px !important;
+				margin: -16px 0 0 26px;
+			}
+
+			@media (min-width: 980px) {
+				width: 425px;
+				margin: -16px 0 0 19px;
+			}
+
 			@media (min-width: 1200px) {
 				width: 560px;
 				margin-left: 35px;

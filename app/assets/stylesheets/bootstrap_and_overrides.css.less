@@ -98,9 +98,9 @@ body {
 			#account_information {
 				min-height: 116px !important;
 
-				h2, h3, p {
-					margin-left: 105px !important;
-				}
+      .account_text {
+        margin: 0px 0px 0px 105px !important;
+      } 
 
 				img {
 					height: 96px !important;
@@ -151,8 +151,14 @@ body {
 // @gridGutterWidth: 150px;
 
 @media (min-width: 980px) {
+  .navbar-fixed-top .container {
+    width:645px;
+  }
+}
+
+@media (min-width: 1200px) {
 	.navbar-fixed-top .container {
-		width:855px !important;
+		width:855px;
 	}
 }
 
