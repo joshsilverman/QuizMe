@@ -59,7 +59,8 @@ class FeedsController < ApplicationController
     render :json => Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 
                  'mention reply', nil, nil,
                  nil, params[:in_reply_to_post_id], 
-                 params[:in_reply_to_user_id], false)
+                 params[:in_reply_to_user_id], false, 
+                 (correct.nil? ? pub.question.resource_url : nil))
   end
 
   def link_to_post

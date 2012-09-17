@@ -38,15 +38,21 @@ class Post < ActiveRecord::Base
   def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "")
     user = "" if user.nil?
     url = "" if url.nil?
-    resource_url = "" if resource_url.nil?
+    if resource_url.nil?
+      resource_url = "" 
+    else
+      resource_url = "Learn why at #{resource_url}" 
+    end
     text_length = text.length
     handle_length = user.length
     url_length = url.length
+    resource_url_length = resource_url.length
     hashtag_length = hashtag.nil? ? 0 : hashtag.length
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
     remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
+    remaining = (remaining - (resource_url_length + 1)) if resource_url_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
@@ -54,6 +60,7 @@ class Post < ActiveRecord::Base
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
     tweet += " #{hashtag}" if hashtag_length > 0
+    tweet += " #{resource_url}" if resource_url_length > 0
     return tweet    
   end
 
@@ -134,13 +141,14 @@ class Post < ActiveRecord::Base
                  in_reply_to_user_id, link_to_parent, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
+    short_resource_url = Post.shorten_url(resource_url, 'twi', "fwk", account.twi_screen_name) if resource_url
     puts "Tweeting:"
-    puts Post.tweetable(tweet, reply_to, short_url, hashtag)
+    puts Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}")
+      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)}")
     end
     post = Post.create(
       :user_id => account.id,
