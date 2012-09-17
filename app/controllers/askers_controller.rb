@@ -16,10 +16,6 @@ class AskersController < ApplicationController
     @posts = @asker.engagements.where(:responded_to => false).order('created_at DESC')
   end
 
-  def new
-    @asker = User.new
-  end
-
   def edit
     @asker = User.find(params[:id])
     @linked = true
@@ -34,33 +30,15 @@ class AskersController < ApplicationController
     redirect_to root_url unless @asker.is_role? 'asker'
   end
 
-  def create
-    @asker = User.new()
-    @asker.role = 'asker'
-    @asker.posts_per_day = params[:posts_per_day]
-    @asker.name = params[:name]
-    @asker.description = params[:description]
-
-    respond_to do |format|
-      if @asker.save
-        format.html { redirect_to "/askers/#{@asker.id}/edit", notice: 'Account was successfully created.' }
-        format.json { render json: @asker, status: :created, location: @asker }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @asker.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-
   def update
   	@asker = User.find(params[:id])
-    redirect_to root_url unless @asker.is_role? 'asker'
 
-    if @asker.update_attributes(params[:asker])
-      redirect_to @asker, notice: 'Asker account was successfully updated.'
+    redirect_to root_url unless @asker.is_role? 'asker' 
+
+    if @asker.update_attributes(params[:user])
+      render :status => 200, :text => ''
     else
-      render action: "edit"
+      render :status => 400, :text => ''
     end
   end
 

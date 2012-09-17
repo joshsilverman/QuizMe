@@ -1,6 +1,10 @@
 :css
-  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+  @media (min-width: 1200px) {
+    .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}
+    #right_column {width: 860px !important;}
+  }
   #wrapper {margin-left: -15px;}
+  .best_in_place input {height: 18px;}
 
 #feed_container.span10
   #wrapper.span9
@@ -13,16 +17,28 @@
             .account_text
               %h2= @asker.twi_screen_name
               %h3= "@#{@asker.twi_screen_name} (#{@asker.twi_user_id})"
-              %p= @asker.description
+              %p
+                %i.icon-edit
+                = best_in_place @asker, :description, :type => :input, :nil => "No description", :path => ""
               - if current_user and (@asker.id == current_user.id or current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
+
                 %br
-                = link_to 'Add/Update Twitter', "/auth/twitter?update_asker_id=#{@asker.id}"
+                %p{:class => "text-decoration:italics;"}
+                  This account will post
+                  %i.icon-edit
+                  = best_in_place @asker, :posts_per_day, :type => :input, :nil => "0", :path => ""
+                  times per day.
+                  
+                /%br
+                = link_to 'Update Twitter', "/auth/twitter?update_asker_id=#{@asker.id}"
                 &nbsp;|&nbsp;
                 %a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
+                &nbsp;|&nbsp;
+                = link_to 'Destroy', asker_path(@asker), confirm: 'Are you sure?', method: :delete
 
     - if @linked
       #feed.row
-        #right_column.span6
+        #right_column.span9
           #posts.rounded
             .header.border-color
               %h3
@@ -30,17 +46,6 @@
 
               %dl
               - if @asker.twi_user_id
-                /%dt Twitter Name
-                /%dd= @asker.twi_name
-
-                /%dt Twitter handle
-                /%dd= @asker.twi_screen_name
-
-                /%dt Profile image
-                /%dd= @asker.twi_profile_img_url
-
-                /%dt Twitter User Id
-                /%dd= @asker.twi_user_id
 
                 %dt Twitter oauth token
                 %dd= @asker.twi_oauth_token

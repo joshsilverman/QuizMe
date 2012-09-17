@@ -3,8 +3,17 @@ class SessionsController < ApplicationController
   	auth = request.env["omniauth.auth"]
     omni_params = request.env["omniauth.params"]
     provider = auth['provider']
-    if omni_params['update_asker_id'] #if asker update account
+
+    if current_user and current_user.is_role?('admin') and omni_params['update_asker_id'] #if asker update account
+
       user = User.asker(omni_params['update_asker_id'])
+      puts user
+      user ||= User.find_by_twi_user_id auth["uid"]
+      puts user.to_yaml
+      user ||= User.new
+      user.role = 'asker'
+      puts user
+
       case provider
       when 'twitter'
         user.twi_user_id = auth["uid"]
@@ -23,8 +32,10 @@ class SessionsController < ApplicationController
         puts "provider unknown: #{provider}"
       end
       user.save
-      redirect_to "/askers/#{omni_params['update_asker_id']}/edit"
+      redirect_to "/askers/#{user.id}/edit"
+
     else #else login with twitter
+
   	  user = User.find_by_twi_user_id(auth["uid"]) || User.create_with_omniauth(auth)
       user.update_attributes(
         :twi_screen_name => auth["info"]["nickname"], 

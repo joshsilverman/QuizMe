@@ -9,7 +9,7 @@
 
 .form-actions
   .btn-group
-    = link_to t('.new', :default => t("helpers.links.new")), new_asker_path, :class => 'btn btn-primary'
+    = link_to t('.new', :default => t("helpers.links.new")), "/auth/twitter?update_asker_id=", :class => 'btn btn-primary'
 
 %table.table
   %tr
@@ -31,5 +31,5 @@
         %a{:href => "/feeds/#{asker.id}/manage"} Moderate Account
         &nbsp;|&nbsp;
         %a{:href => "/askers/#{asker.id}/edit"} Edit Account
-        / &nbsp;|&nbsp;
-        / Import
+        &nbsp;|&nbsp;
+        = link_to 'Destroy', asker_path(asker), confirm: 'Are you sure?', method: :delete
