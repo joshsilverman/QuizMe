@@ -341,12 +341,12 @@ class Post < ActiveRecord::Base
     users = current_acct.twitter.retweeters_of(r.id)
     
     ## DEBUG
-    puts "retweeters of:"
-    puts r.to_json
-    puts "on account:"
-    puts current_acct.twi_screen_name
-    puts users.to_json
-    puts "\n\n"
+    # puts "retweeters of:"
+    # puts r.to_json
+    # puts "on account:"
+    # puts current_acct.twi_screen_name
+    # puts users.to_json
+    # puts "\n\n"
 
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
