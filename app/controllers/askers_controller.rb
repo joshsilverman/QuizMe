@@ -78,7 +78,6 @@ class AskersController < ApplicationController
 
   def dashboard
     @askers = User.askers
-    puts @askers
     @graph_data = Stat.get_month_graph_data(@askers)
     @display_data = Stat.get_display_data(@askers)
   end  
