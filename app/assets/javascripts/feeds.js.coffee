@@ -186,7 +186,7 @@ class Post
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text("@#{window.feed.user_name} #{message_hash.message} #{message_hash.url}") 
+		response.find("p").text("#{message_hash.message}") 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0

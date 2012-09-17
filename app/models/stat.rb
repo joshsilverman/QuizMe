@@ -37,16 +37,11 @@ class Stat < ActiveRecord::Base
 					end
 				end			
 				stat.save
-				puts "saving stat:"
-				puts stat.to_json
-				puts "\n"
 			end		
 		end
 	end
 
 	def self.update_stat_cache(attribute, value, asker_id, date, user_id)
-		puts "in update stat cache:"
-		puts attribute, value, asker_id, date, user_id
 		return if ADMINS.include? user_id
 		date = date.to_date
 		stats_hash = Rails.cache.read("stats:#{asker_id}") || {}
@@ -63,8 +58,6 @@ class Stat < ActiveRecord::Base
 			stats_hash[date][attribute] = 0 unless stats_hash[date][attribute]
 			stats_hash[date][attribute] += value
 		end
-		puts "stats_hash:"
-		puts stats_hash.to_json
 		Rails.cache.write("stats:#{asker_id}", stats_hash)
 	end
 

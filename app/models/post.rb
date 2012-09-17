@@ -109,10 +109,10 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
-    puts provider, asker.to_json, publication.to_json
+    # puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
-    puts long_url
+    # puts long_url
     case provider
     when "twitter"
       begin
@@ -135,20 +135,21 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(account, tweet, hashtag, reply_to, long_url, 
+  def self.tweet(account, text, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
                  in_reply_to_user_id, link_to_parent, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     short_resource_url = Post.shorten_url(resource_url, 'twi', "fwk", account.twi_screen_name) if resource_url
+    tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url)
     puts "Tweeting:"
-    puts Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)
+    puts tweet
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, short_resource_url)}")
+      twitter_response = account.twitter.update(tweet)
     end
     post = Post.create(
       :user_id => account.id,
@@ -210,10 +211,10 @@ class Post < ActiveRecord::Base
       (user_post ? user_post.id : nil), 
       current_user.id,
       true, 
-      publication.question.resource_url
+      "#{URL}/posts/#{post.id}/refer"
     )  
     conversation.posts << app_post if app_post
-    return {:message => response_text, :url => publication.url}
+    return {:message => app_post.text, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
