@@ -198,6 +198,8 @@ class Post < ActiveRecord::Base
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
     end
     response_text = post.generate_response(status)
+    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
+    end
     app_post = Post.tweet(
       asker, 
       response_text, 
@@ -211,7 +213,7 @@ class Post < ActiveRecord::Base
       (user_post ? user_post.id : nil), 
       current_user.id,
       true, 
-      "#{URL}/posts/#{post.id}/refer"
+      resource_url
     )  
     conversation.posts << app_post if app_post
     return {:message => app_post.text, :url => publication.url}
