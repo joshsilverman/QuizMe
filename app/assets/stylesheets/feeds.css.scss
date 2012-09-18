@@ -302,6 +302,17 @@ body {
 				top: 10px;
 				right: 10px;
 			}
+
+			#time {
+				position: absolute;
+				top: 5px;
+				right: 10px;
+
+				.time_ago {
+					color: #999;
+				}				
+			}
+
 			#classify {
 				position: absolute;
 				top: 5px;
@@ -581,6 +592,38 @@ body {
   display: block;
   text-align: center;
 }	
+
+.respond {
+	padding: 10px;
+	background: #FAFAFA;
+
+	textarea {
+		height: 80px;
+		width: 526px;
+		resize: none;
+		/*margin-top: 10px*/
+	}
+
+	.actions {
+		height: 43px;
+		position: relative;
+
+		#tweet {
+			position: absolute;
+			right: 14px;
+		}
+
+		.btn-group {
+			position: absolute;
+		}
+
+		.character_count {
+			position: absolute;
+			right: 92px;
+			/*top: 121px;*/
+		}
+	}
+}
 
 #respond_modal, #link_post_modal {
 	padding-bottom: 0px;

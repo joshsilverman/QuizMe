@@ -73,13 +73,14 @@ class FeedsController < ApplicationController
 
   def manage
     @asker = User.asker(params[:id])
-    @posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id])
+    @posts = Post.where(:in_reply_to_user_id => params[:id]).order("created_at DESC").limit(10)
     #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
     @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
-    @questions.each {|q| puts q[1].inspect}
     @engagements = {}
     @conversations = {}
+    conversation_ids = []
     @posts.each do |p|
+      next if p.conversation_id and conversation_ids.include? p.conversation_id
       @engagements[p.id] = p
       parent = p.parent
       @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
@@ -91,12 +92,18 @@ class FeedsController < ApplicationController
         pub_id = parent.publication_id unless parent.publication_id.nil?
         parent = parent.parent
       end
-      @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
+      if pub_id and p.engagement_type == "share"
+        p.text = Publication.find(pub_id).question.text
+      end
+      @conversations[p.id][:answers] = Publication.find(pub_id).question.answers if pub_id
     end
+
+    @leaders = User.leaderboard(params[:id])
+
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     
-    @leaders = User.leaderboard(params[:id])
+    
     # if current_user
     #   @responses = Conversation.where(:user_id => current_user.id,
     #                                   :post_id => Post.select(:id).where(
@@ -107,6 +114,7 @@ class FeedsController < ApplicationController
     # else
     #   @responses = []
     # end
+
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 

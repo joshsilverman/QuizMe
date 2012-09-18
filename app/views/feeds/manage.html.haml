@@ -12,8 +12,6 @@
 								%h2= @asker.twi_screen_name
 								%h3= "@#{@asker.twi_screen_name}"
 								%p= @asker.description
-								/ %a.scoreboard_link.visible-phone{:href => "#"}
-								/ 	Go to the scoreboard.
 				#account_stats.span3.hidden-phone
 			#feed.row
 				#right_column.span6
@@ -23,35 +21,55 @@
 								Activity
 						- @engagements.each do |id, post|
 							.conversation.border-color
+								.subsidiaries{:style => "display: none;"}
+									- if @conversations[post.id]
+										- @conversations[post.id][:posts].each do |r|
+											.subsidiary.post.reply.bottom_border
+												#time
+													%p.time_ago= time_formatter(r[:created_at].to_date)		
+												%i.icon-share-alt{:style => "display: none;"}
+												.content
+													= image_tag(@conversations[post.id][:users][r[:user_id]].twi_profile_img_url, :class => "rounded")
+													%h5= @conversations[post.id][:users][r[:user_id]].twi_screen_name
+													%p= r[:text]	
+												- if post.responded_to == false and post.engagement_type.include? "reply" and r[:engagement_type].include? "question"
+													.answers.rounded.border{:style => "display: none;"}
+														- count = @conversations[post.id][:answers].size
+														- @conversations[post.id][:answers].each_with_index do |answer, i|
+															%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id, :style => ("color: green;" if answer[:correct])}= answer.text
+															.answer_container.input{:type => 'text'}
 								.post.parent.answered{:post_id => id}
-									#classify
-										.btn-group
-											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.engagement_type)}= eng_name(post.engagement_type)
-											%ul.dropdown-menu
-												%li
-													%a{:href => "#", :engagement_type => "share"} Retweet
-												%li
-													%a{:href => "#", :engagement_type => "spam"} Spam
-												%li
-													%a{:href => "#", :engagement_type => "mention reply"} Reply
-												%li
-													%a{:href => "#", :engagement_type => "mention"} Mention
-												%li
-													%a{:href => "#", :engagement_type => "pm"} Private Message
+									#time
+										%p.time_ago= time_formatter(post.created_at.to_date)
+										/ .btn-group
+										/ 	%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.engagement_type)}= eng_name(post.engagement_type)
+										/ 	%ul.dropdown-menu
+										/ 		%li
+										/ 			%a{:href => "#", :engagement_type => "share"} Retweet
+										/ 		%li
+										/ 			%a{:href => "#", :engagement_type => "spam"} Spam
+										/ 		%li
+										/ 			%a{:href => "#", :engagement_type => "mention reply"} Reply
+										/ 		%li
+										/ 			%a{:href => "#", :engagement_type => "mention"} Mention
+										/ 		%li
+										/ 			%a{:href => "#", :engagement_type => "pm"} Private Message
 									/ %span#activity_badge.badge.badge-warning= post[1].length
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%h5= post.user.twi_screen_name
-										%p= post.text
-								/ .subsidiaries{:style => "display: none;"}
-								/ 	- post[1].each do |r|
-								/ 		.subsidiary.post.reply.bottom_border
-								/ 			%i.icon-share-alt{:style => "display: none;"}
-								/ 			.content
-								/ 				= image_tag(r.user.twi_profile_img_url, :class => "rounded")
-								/ 				%h5= r.user.twi_screen_name
-								/ 				%p= r.text			
+										%p= post.text		
+								.respond{:style => "display: none;"}
+									.composition
+										%textarea
+										.actions	
+											.btn-group
+												%button.btn.correct Correct
+												%button.btn.incorrect Incorrect	
+											#tweet.btn.btn-info Tweet
+											.character_count
+												%p 140
 								.loading{:style => "display: none;"}
 									Loading...					
 						#posts_more.border-color
@@ -64,10 +82,8 @@
 								Leaderboard
 						%ul.unstyled
 							- @leaders[:scores].each_with_index do |leader, i|
-								/ {:href => "/feeds/#{related.id}"}
 								%a{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
 									%li 
-										/ {:class => ("border_bottom" if i < 3)}
 										.content
 											.place= i + 1
 											= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
@@ -93,6 +109,29 @@
 												= image_tag(related.twi_profile_img_url, :class => "rounded")
 												%h5= related.twi_name
 												%p= related.description
+
+#response_modal.modal.hide
+	.modal-header
+		Reply to jasonurton
+	.modal-body
+		.composition
+			%textarea
+			.actions	
+				.btn-group
+					%button.btn.correct Correct
+					%button.btn.incorrect Incorrect
+		.history
+			.conversation
+				.subsidiary.post
+					%i.icon-share-alt{:style => "display: none;"}
+					.content											
+						= image_tag(User.first.twi_profile_img_url, :class => "rounded")
+						%h5= "User name"
+						%p= "Conversation history"			
+	.modal-footer
+		#tweet.btn.btn-info Tweet
+		.character_count
+			%p 140
 
 #respond_modal{:style => "display: none;"}
 	.modal_body
