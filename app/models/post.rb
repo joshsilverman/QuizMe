@@ -342,6 +342,10 @@ class Post < ActiveRecord::Base
       retry unless attempts > 2
       puts "Failed after three attempts"
       users = []
+    rescue Exception => exception
+      puts "exception while getting retweeters_of"
+      puts exception.message
+      users = []
     end
 
     users.each do |user|
