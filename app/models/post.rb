@@ -284,13 +284,9 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    puts "in check_for_posts, acct = #{current_acct.twi_screen_name}"
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    puts "got mentions"
     retweets = client.retweets_of_me({:count => 50})
-    puts "got retweets"
     dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
-    puts "got dms"
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
@@ -337,17 +333,16 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
-  def self.save_retweet_data(r, current_acct)
+  def self.save_retweet_data(r, current_acct, attempts = 0)
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})    
-    users = current_acct.twitter.retweeters_of(r.id)
-    
-    ## DEBUG
-    # puts "retweeters of:"
-    # puts r.to_json
-    # puts "on account:"
-    # puts current_acct.twi_screen_name
-    # puts users.to_json
-    # puts "\n\n"
+    begin
+      users = current_acct.twitter.retweeters_of(r.id)  
+    rescue Twitter::Error::ClientError 
+      attempts += 1 
+      retry unless attempts > 2
+      puts "Failed after three attempts"
+      users = []
+    end
 
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
