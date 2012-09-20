@@ -218,40 +218,67 @@ class Post < ActiveRecord::Base
     return {:message => app_post.text, :url => publication.url}
   end
 
-  def self.dm(current_acct, tweet, url, lt, question_id, user_id)
+  def self.dm(current_acct, tweet, long_url, lt, reply_post, user)
     #UPDATE POST METHOD
-    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.direct_message_create(user_id, "#{tweet} #{short_url if short_url}")
+    short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name, question_id) if long_url
+    res = current_acct.twitter.direct_message_create(user.twi_user_id, "#{tweet} #{short_url if short_url}")
+    if reply_post.nil?
+      conversation_id = Conversation.create(:user_id => current_acct.id).id
+    else
+      conversation_id = reply_post.conversation_id
+    end
+
     Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :to_twi_user_id => user_id,
+      :user_id => current_acct.id,
       :provider => 'twitter',
       :text => tweet,
-      :url => url.nil? ? nil : short_url,
-      :link_type => lt,
-      :post_type => 'dm',
-      :provider_post_id => res.id.to_s
+      :engagement_type => 'pm',
+      :provider_post_id => res.id.to_s,
+      :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
+      :in_reply_to_user_id => user.id,
+      :conversation_id => reply_post.nil? ? nil : reply_post.conversation_id,
+      :url => long_url ? short_url : nil,
+      :posted_via_app => true,
+      :responded_to => true
     )
   end
 
   def self.dm_new_followers(current_acct)
-    #@TODO update url and make dynamic for each asker account
-    new_followers = current_acct.twitter.follower_ids.ids.first(10).to_set
-    messaged = current_acct.posts.where(:provider => 'twitter',
-                            :post_type => 'dm').collect(&:to_twi_user_id).to_set
-    to_message = new_followers - messaged
-    to_message.each do |id|
-      Post.dm(
-        current_acct,
-        "Here's your first question: How many base pairs make a codon? ", 
-        "http://www.studyegg.com/review/112/10187", 
-        "dm",
-        21,
-        id
-      )
-      sleep(1)
+    to_message = []
+    new_followers = current_acct.twitter.follower_ids.ids.first(10)
+    new_followers.each do |tid|
+      u= User.find_by_twi_user_id(tid)
+      if u.nil?
+        new_u = User.create(:twi_user_id => tid)
+        to_message.push new_u
+      else
+        unless current_acct.posts.where(:provider => 'twitter', :engagement_type => 'pm', :in_reply_to_user_id => u.id).count > 0
+          to_message.push u
+        end
+      end
     end
+
+    to_message.each do |user|
+      dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
+      q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
+      Post.dm(current_acct, q.text, nil, nil, dm.nil? ? nil : dm, user)
+    end
+    # #@TODO update url and make dynamic for each asker account
+    # new_followers = current_acct.twitter.follower_ids.ids.first(10).to_set
+    # messaged = current_acct.posts.where(:provider => 'twitter',
+    #                         :engagement_type => 'pm').collect(&:to_twi_user_id).to_set
+    # to_message = new_followers - messaged
+    # to_message.each do |id|
+    #   Post.dm(
+    #     current_acct,
+    #     "Here's your first question: How many base pairs make a codon? ", 
+    #     "http://www.studyegg.com/review/112/10187", 
+    #     "dm",
+    #     21,
+    #     id
+    #   )
+    #   sleep(1)
+    # end
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
@@ -377,6 +404,11 @@ class Post < ActiveRecord::Base
                         :twi_profile_img_url => d.sender.profile_image_url)
     dm = Post.find_by_provider_post_id(d.id.to_s)
     return if dm
+    reply_post = Post.where(:provider => 'twitter',
+                            :engagement_type => 'pm',
+                            :in_reply_to_user_id => u.id).last
+    conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
+
     Post.create( 
       :provider_post_id => d.id.to_s,
       :engagement_type => 'pm',
@@ -386,7 +418,7 @@ class Post < ActiveRecord::Base
       :in_reply_to_post_id => nil, #reply_post ? reply_post.id : nil,
       :in_reply_to_user_id => current_acct.id,
       :created_at => d.created_at,
-      :conversation_id => nil, #conversation.nil? ? nil : conversation.id,
+      :conversation_id => conversation_id,
       :posted_via_app => false
     )
   end
