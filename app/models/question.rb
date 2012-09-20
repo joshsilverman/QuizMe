@@ -56,8 +56,11 @@ class Question < ActiveRecord::Base
         new_q.created_for_asker_id = created_for_asker_id
         new_q.status = 1
         new_q.user_id = 1
-        # new_q.qb_lesson_id = @lesson_id
-        # new_q.qb_q_id = q['id']
+        resources = q['resources'] || []
+        resources.each do |r|
+          next unless new_q.resource_url.blank? and r['media_type'] == "video"
+          new_q.resource_url = "http://www.youtube.com/watch?v=#{r['url']}&t=#{r['begin']}"
+        end
         new_q.save
         q['answers'].each do |a|
           ans = Answer.find_or_create_by_text(:text => Question.clean_text(a['answer']))
