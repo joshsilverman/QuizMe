@@ -25,6 +25,7 @@ Quizmemanager::Application.routes.draw do
   match '/stats' => 'accounts#stats'
 
   match "users/:id" => "askers#update"
+  # match "askers/:id/update_image" => "askers#update_image"
   resources :askers
 
   resources :users

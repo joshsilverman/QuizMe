@@ -31,9 +31,14 @@ class AskersController < ApplicationController
   end
 
   def update
-  	@asker = User.find(params[:id])
+  	@asker = User.askers.find(params[:id])
+    redirect_to root_url if @asker.nil?
 
-    redirect_to root_url unless @asker.is_role? 'asker' 
+    #update twitter - designed for use with best_in_place - hence he individual field updates
+    if (params[:user][:description])
+      profile = {:description => params[:user][:description]}
+      @asker.twitter.update_profile profile
+    end
 
     if @asker.update_attributes(params[:user])
       render :status => 200, :text => ''
@@ -42,6 +47,16 @@ class AskersController < ApplicationController
     end
   end
 
+  # def update_image
+  #   @asker = User.askers.find(params[:id])
+  #   redirect_to root_url if @asker.nil?
+
+  #   puts params[:asker][:profile]
+  #   puts File.new(params[:asker][:profile].read)
+  #   @asker.twitter.update_profile_image File.new(params[:asker][:profile].read)
+  #   #send_data(params[:asker][:profile].read , :filename => "asdfa", :type=>'image/png')
+  #   #render :status => 200, :text => ''
+  # end
 
   def destroy
     @asker = User.find(params[:id])
