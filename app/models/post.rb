@@ -38,15 +38,21 @@ class Post < ActiveRecord::Base
   def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "")
     user = "" if user.nil?
     url = "" if url.nil?
-    resource_url = "" if resource_url.nil?
+    if resource_url.nil?
+      resource_url = "" 
+    else
+      resource_url = "Learn why at #{resource_url}" 
+    end
     text_length = text.length
     handle_length = user.length
     url_length = url.length
+    resource_url_length = resource_url.length
     hashtag_length = hashtag.nil? ? 0 : hashtag.length
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
     remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
+    remaining = (remaining - (resource_url_length + 1)) if resource_url_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
@@ -54,6 +60,7 @@ class Post < ActiveRecord::Base
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
     tweet += " #{hashtag}" if hashtag_length > 0
+    tweet += " #{resource_url}" if resource_url_length > 0
     return tweet    
   end
 
@@ -102,10 +109,10 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
-    puts provider, asker.to_json, publication.to_json
+    # puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
-    puts long_url
+    # puts long_url
     case provider
     when "twitter"
       begin
@@ -128,19 +135,21 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(account, tweet, hashtag, reply_to, long_url, 
+  def self.tweet(account, text, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
                  in_reply_to_user_id, link_to_parent, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
+    short_resource_url = Post.shorten_url(resource_url, 'twi', "fwk", account.twi_screen_name) if resource_url
+    tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url)
     puts "Tweeting:"
-    puts Post.tweetable(tweet, reply_to, short_url, hashtag)
+    puts tweet
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}", {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = account.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
-      twitter_response = account.twitter.update("#{Post.tweetable(tweet, reply_to, short_url, hashtag, resource_url)}")
+      twitter_response = account.twitter.update(tweet)
     end
     post = Post.create(
       :user_id => account.id,
@@ -153,7 +162,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation_id,
       :publication_id => publication_id,
       :url => long_url ? short_url : nil,
-      :posted_via_app => true
+      :posted_via_app => true, 
+      :responded_to => true
     )
 
     if publication_id
@@ -189,6 +199,7 @@ class Post < ActiveRecord::Base
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
     end
     response_text = post.generate_response(status)
+    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
     app_post = Post.tweet(
       asker, 
       response_text, 
@@ -202,10 +213,10 @@ class Post < ActiveRecord::Base
       (user_post ? user_post.id : nil), 
       current_user.id,
       true, 
-      publication.question.resource_url
+      resource_url
     )  
     conversation.posts << app_post if app_post
-    return {:message => response_text, :url => publication.url}
+    return {:message => app_post.text, :url => publication.url}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
@@ -274,9 +285,6 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    puts 'check for posts'
-    puts last_post.inspect if last_post
-    puts last_dm.inspect if last_dm
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
     dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
@@ -326,12 +334,23 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
-  def self.save_retweet_data(r, current_acct)
+  def self.save_retweet_data(r, current_acct, attempts = 0)
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})    
-    users = current_acct.twitter.retweeters_of(r.id)
+    begin
+      users = current_acct.twitter.retweeters_of(r.id)  
+    rescue Twitter::Error::ClientError 
+      attempts += 1 
+      retry unless attempts > 2
+      puts "Failed after three attempts"
+      users = []
+    rescue Exception => exception
+      puts "exception while getting retweeters_of"
+      puts exception.message
+      users = []
+    end
+
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
-      puts u.to_json
       u.update_attributes(
         :twi_name => user.name,
         :twi_screen_name => user.screen_name,

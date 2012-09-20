@@ -25,7 +25,7 @@ class Dashboard
 		askers = []
 		display_hash = 
 			followers: today: 0, total: 0
-			active_users: today: 0, total: 0
+			active_users: today: [], total: []
 			questions_answered: today: 0, total: 0
 			click_throughs: today: 0, total: 0
 			mentions: today: 0, total: 0
@@ -33,11 +33,19 @@ class Dashboard
 		if "0" in @active then askers.push(0) else askers.push(asker_id) for asker_id in @active
 		for asker_id in askers
 			for key of display_hash
-				display_hash[key]["today"] += @display_data[asker_id][key]["today"]
-				display_hash[key]["total"] += @display_data[asker_id][key]["total"]
+				if key == "active_users"
+					display_hash[key]["today"] = display_hash[key]["today"].concat(@display_data[asker_id][key]["today"])
+					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])
+				else
+					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
+					display_hash[key]["total"] += @display_data[asker_id][key]["total"]
 		for key, value of display_hash
-			$("##{key}_stats .new .number").text(value.today)
-			$("##{key}_stats .total .number").text(value.total)
+			if key == "active_users"
+				$("##{key}_stats .new .number").text(value.today.unique().length)
+				$("##{key}_stats .total .number").text(value.total.unique().length)
+			else
+				$("##{key}_stats .new .number").text(value.today)
+				$("##{key}_stats .total .number").text(value.total)
 	draw_graphs: =>
 		colors = []
 		colors.push(line_colors[asker_id]) for asker_id in @active
@@ -54,21 +62,31 @@ class Dashboard
 				row = ["#{date_array[1]}/#{date_array[2]}"]
 				row.push(0) for i in @active
 				if "0" in @active
-					total = 0
+					if attribute_name == "active_user_ids" then total = [] else total = 0
 					for asker_id, data of @askers
 						if asker_data[asker_id] == undefined or asker_data[asker_id] == null
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0 if asker_id in @active
 						else
-							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
-							total += asker_data[asker_id]
-					row[title_row.indexOf("Total")] = total
+							if attribute_name == "active_user_ids" 
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length if asker_id in @active
+								total = total.concat(asker_data[asker_id])
+							else
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
+								total += asker_data[asker_id]
+					if attribute_name == "active_user_ids"
+						row[title_row.indexOf("Total")] = total.unique().length
+					else 
+						row[title_row.indexOf("Total")] = total
 					data_array.push(row)
 				else
 					for asker_id in @active
 						if asker_data[asker_id] == undefined or asker_data[asker_id] == null
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0
 						else
-							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]
+							if attribute_name == "active_user_ids" 
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length
+							else
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]			
 					data_array.push(row)
 			graph_data = google.visualization.arrayToDataTable(data_array)
 			chart = new google.visualization.LineChart(document.getElementById("#{attribute_name}_graph"))
@@ -106,3 +124,7 @@ titles =
 	mentions: "Mentions"
 
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
+Array::unique = ->
+  output = {}
+  output[@[key]] = @[key] for key in [0...@length]
+  value for key, value of output

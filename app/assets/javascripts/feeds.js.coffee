@@ -186,7 +186,7 @@ class Post
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text("@#{window.feed.user_name} #{message_hash.message} #{message_hash.url}") 
+		response.find("p").text("#{message_hash.message}") 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
@@ -233,6 +233,7 @@ class Post
 		window.post = post
 		username = post.find('h5').html()
 		correct = null
+		publication_id = null
 		tweet = ''
 		$("#respond_modal").dialog
 			title: "Reply to #{username}"
@@ -243,25 +244,26 @@ class Post
 			correct = true
 			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
 			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
-			tweet = "#{response} #{complement}"
-			$(".modal_body textarea").html("@#{username} #{tweet}")
+			$(".modal_body textarea").html("@#{username} #{response} #{complement}")
 		$("button.btn.incorrect").off()
 		$("button.btn.incorrect").on 'click', ()=>
 			correct = false
-			response = @incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]
-			tweet = response
-			$(".modal_body textarea").html("@#{username} #{tweet}")
+			$(".modal_body textarea").html("@#{username} #{@incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]}")
 		$("#tweet.btn.btn-info").off()
-		$("#tweet.btn.btn-info").on 'click', ()=>
+		$("#tweet.btn.btn-info").on 'click', () =>
+			tweet = $("#respond_modal").find("textarea").val()
+			return if tweet == ""
 			parent_index = window.feed.conversations[@id]['posts'].length - 1
+			parent_post = window.feed.conversations[@id]['posts'][parent_index]
+			publication_id = parent_post['publication_id'] unless parent_post == undefined
 			params =
 				"asker_id" : window.feed.id
 				"in_reply_to_post_id" : @id
 				"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-				"correct" : correct
 				"tweet" : tweet
 				"username" : username
-				"publication_id" : window.feed.conversations[@id]['posts'][parent_index]['publication_id']
+			params["correct"] = correct if correct != null
+			params["publication_id"] = publication_id if publication_id
 			$.ajax '/tweet',
 				type: 'POST'
 				data: params
