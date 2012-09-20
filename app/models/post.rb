@@ -162,7 +162,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation_id,
       :publication_id => publication_id,
       :url => long_url ? short_url : nil,
-      :posted_via_app => true
+      :posted_via_app => true, 
+      :responded_to => true
     )
 
     if publication_id

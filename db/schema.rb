@@ -95,20 +95,20 @@ ActiveRecord::Schema.define(:version => 20120913214550) do
   end
 
   create_table "stats", :force => true do |t|
-    t.date      "date"
-    t.integer   "followers",          :default => 0
-    t.integer   "total_followers",    :default => 0
-    t.integer   "retweets",           :default => 0
-    t.integer   "mentions",           :default => 0
-    t.integer   "questions_answered", :default => 0
-    t.integer   "internal_answers",   :default => 0
-    t.integer   "twitter_answers",    :default => 0
-    t.integer   "active_users",       :default => 0
-    t.text      "active_user_ids",    :default => ""
-    t.integer   "asker_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "click_throughs"
+    t.date     "date"
+    t.integer  "followers",          :default => 0
+    t.integer  "total_followers",    :default => 0
+    t.integer  "retweets",           :default => 0
+    t.integer  "mentions",           :default => 0
+    t.integer  "questions_answered", :default => 0
+    t.integer  "internal_answers",   :default => 0
+    t.integer  "twitter_answers",    :default => 0
+    t.integer  "active_users",       :default => 0
+    t.text     "active_user_ids",    :default => ""
+    t.integer  "asker_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "click_throughs",     :default => 0
   end
 
   create_table "topics", :force => true do |t|
