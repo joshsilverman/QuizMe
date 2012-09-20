@@ -84,9 +84,7 @@ class Stat < ActiveRecord::Base
 		display_data = {0 => {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => 0, :today => 0}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}}
 		asker_grouped_stats = month_stats.group_by(&:asker_id)
 		asker_ids.each do |asker_id|
-			puts asker_grouped_stats[asker_id].to_json
-			# shouldn't show last stat, rather, todays
-
+			# display shouldn't simply show last stat... rather, TODAY's
 			# this bounds check skips injection of display data where no grouped stats
 			next if asker_grouped_stats[asker_id].nil?
 
