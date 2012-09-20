@@ -263,22 +263,6 @@ class Post < ActiveRecord::Base
       q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
       Post.dm(current_acct, q.text, nil, nil, dm.nil? ? nil : dm, user)
     end
-    # #@TODO update url and make dynamic for each asker account
-    # new_followers = current_acct.twitter.follower_ids.ids.first(10).to_set
-    # messaged = current_acct.posts.where(:provider => 'twitter',
-    #                         :engagement_type => 'pm').collect(&:to_twi_user_id).to_set
-    # to_message = new_followers - messaged
-    # to_message.each do |id|
-    #   Post.dm(
-    #     current_acct,
-    #     "Here's your first question: How many base pairs make a codon? ", 
-    #     "http://www.studyegg.com/review/112/10187", 
-    #     "dm",
-    #     21,
-    #     id
-    #   )
-    #   sleep(1)
-    # end
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
