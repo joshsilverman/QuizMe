@@ -65,13 +65,13 @@ class Stat < ActiveRecord::Base
 		asker_ids = askers.collect(&:id)
 		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
 		date_grouped_stats = month_stats.group_by(&:date)
-		graph_data = {:total_followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+		graph_data = {:total_followers => {}, :click_throughs => {}, :active_user_ids => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
 		((Date.today - 30)..Date.today).each do |date|
 			graph_data.each do |key, value|
 				graph_data[key][date] = {}
 				next unless date_grouped_stats[date]
 				date_grouped_stats[date].each do |stat|
-					graph_data[key][date][stat.asker_id] = stat[key]
+					graph_data[key][date][stat.asker_id] = (key == :active_user_ids ? stat[key].split(",").uniq : stat[key])
 				end
 			end  
 		end

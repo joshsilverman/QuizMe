@@ -62,21 +62,31 @@ class Dashboard
 				row = ["#{date_array[1]}/#{date_array[2]}"]
 				row.push(0) for i in @active
 				if "0" in @active
-					total = 0
+					if attribute_name == "active_user_ids" then total = [] else total = 0
 					for asker_id, data of @askers
 						if asker_data[asker_id] == undefined or asker_data[asker_id] == null
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0 if asker_id in @active
 						else
-							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
-							total += asker_data[asker_id]
-					row[title_row.indexOf("Total")] = total
+							if attribute_name == "active_user_ids" 
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length if asker_id in @active
+								total = total.concat(asker_data[asker_id])
+							else
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
+								total += asker_data[asker_id]
+					if attribute_name == "active_user_ids"
+						row[title_row.indexOf("Total")] = total.unique().length
+					else 
+						row[title_row.indexOf("Total")] = total
 					data_array.push(row)
 				else
 					for asker_id in @active
 						if asker_data[asker_id] == undefined or asker_data[asker_id] == null
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0
 						else
-							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]
+							if attribute_name == "active_user_ids" 
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length
+							else
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]			
 					data_array.push(row)
 			graph_data = google.visualization.arrayToDataTable(data_array)
 			chart = new google.visualization.LineChart(document.getElementById("#{attribute_name}_graph"))
