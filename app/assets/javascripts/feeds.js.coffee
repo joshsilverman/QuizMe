@@ -263,7 +263,7 @@ class Post
 				"tweet" : tweet
 				"username" : username
 			params["correct"] = correct if correct != null
-			params["publication_id"] = correct if publication_id
+			params["publication_id"] = publication_id if publication_id
 			$.ajax '/tweet',
 				type: 'POST'
 				data: params

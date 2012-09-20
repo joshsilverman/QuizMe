@@ -49,6 +49,7 @@ class FeedsController < ApplicationController
   end
 
   def tweet
+    puts params.to_json
     @asker = User.asker(params[:asker_id])
     @user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
