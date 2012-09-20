@@ -25,7 +25,7 @@ class Dashboard
 		askers = []
 		display_hash = 
 			followers: today: 0, total: 0
-			active_users: today: 0, total: 0
+			active_users: today: [], total: []
 			questions_answered: today: 0, total: 0
 			click_throughs: today: 0, total: 0
 			mentions: today: 0, total: 0
@@ -33,11 +33,19 @@ class Dashboard
 		if "0" in @active then askers.push(0) else askers.push(asker_id) for asker_id in @active
 		for asker_id in askers
 			for key of display_hash
-				display_hash[key]["today"] += @display_data[asker_id][key]["today"]
-				display_hash[key]["total"] += @display_data[asker_id][key]["total"]
+				if key == "active_users"
+					display_hash[key]["today"] = display_hash[key]["today"].concat(@display_data[asker_id][key]["today"])
+					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])
+				else
+					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
+					display_hash[key]["total"] += @display_data[asker_id][key]["total"]
 		for key, value of display_hash
-			$("##{key}_stats .new .number").text(value.today)
-			$("##{key}_stats .total .number").text(value.total)
+			if key == "active_users"
+				$("##{key}_stats .new .number").text(value.today.unique().length)
+				$("##{key}_stats .total .number").text(value.total.unique().length)
+			else
+				$("##{key}_stats .new .number").text(value.today)
+				$("##{key}_stats .total .number").text(value.total)
 	draw_graphs: =>
 		colors = []
 		colors.push(line_colors[asker_id]) for asker_id in @active
@@ -106,3 +114,7 @@ titles =
 	mentions: "Mentions"
 
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
+Array::unique = ->
+  output = {}
+  output[@[key]] = @[key] for key in [0...@length]
+  value for key, value of output

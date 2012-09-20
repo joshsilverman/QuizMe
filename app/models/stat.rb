@@ -103,8 +103,8 @@ class Stat < ActiveRecord::Base
 
 			today_active_user_ids += asker_grouped_stats[asker_id][-1].active_user_ids.split(",").uniq
 			total_active_user_ids += account_active_user_ids	
-			attributes[:active_users][:total] = account_active_user_ids.count
-			attributes[:active_users][:today] = asker_grouped_stats[asker_id][-1].active_users
+			attributes[:active_users][:total] = account_active_user_ids
+			attributes[:active_users][:today] = asker_grouped_stats[asker_id][-1].active_user_ids.split(",").uniq
 
 			attributes[:questions_answered][:total] = Stat.where(:asker_id => asker_id).sum(:questions_answered)
 			attributes[:questions_answered][:today] = asker_grouped_stats[asker_id][-1].questions_answered
@@ -128,8 +128,8 @@ class Stat < ActiveRecord::Base
 			
 			display_data[asker_id] = attributes
 		end
-		display_data[0][:active_users][:total] = total_active_user_ids.uniq.count
-		display_data[0][:active_users][:today] = today_active_user_ids.uniq.count
+		display_data[0][:active_users][:total] = total_active_user_ids.uniq
+		display_data[0][:active_users][:today] = today_active_user_ids.uniq
 		return display_data
 	end
 
