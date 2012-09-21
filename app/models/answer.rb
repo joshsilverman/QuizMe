@@ -6,7 +6,7 @@ class Answer < ActiveRecord::Base
 		where(:correct => true).first
 	end
 
-	def tweetable(asker_name, url)
+	def tweetable(asker_name, url = "")
 		answer_length = self.text.length
 		asker_length = asker_name.length
 		url ? url_length = url.length : url_length = 0

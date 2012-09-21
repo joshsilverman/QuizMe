@@ -41,8 +41,8 @@
 												.shadow-top
 												.tweet
 													%span#account= "@#{@asker.twi_screen_name}"
-													%span#answer= " #{answer.tweetable(@asker.twi_screen_name, post.url)}"
-													%span#url= " #{post.url}"
+													%span#answer= " #{answer.tweetable(@asker.twi_screen_name)}"
+													/ %span#url= " #{post.url}"
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
 													%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
