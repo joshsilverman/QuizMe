@@ -24,15 +24,15 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def increment_index(posts_per_day)
-    puts "increment index from:"
-    puts self.index
+    # puts "increment index from:"
+    # puts self.index
     if self.index < (posts_per_day - 1)
       self.increment :index
     else
       self.update_attribute(:index, 0)
     end
     self.save
-    puts "to:"
-    puts self.index
+    # puts "to:"
+    # puts self.index
   end
 end

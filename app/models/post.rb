@@ -110,6 +110,9 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
+    puts "provider: #{provider}"
+    puts "asker: #{asker.twi_screen_name}"
+    puts "question: #{question.text}"
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
