@@ -217,7 +217,7 @@ class Post < ActiveRecord::Base
       resource_url
     )  
     conversation.posts << app_post if app_post
-    return {:message => app_post.text, :url => publication.url}
+    return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
   def self.dm(current_acct, tweet, url, lt, question_id, user_id)
