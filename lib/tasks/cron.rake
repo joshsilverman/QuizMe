@@ -48,9 +48,12 @@ task :save_stats => :environment do
 end
 
 task :dm_new_followers => :environment do
-	# asker = User.asker(4)
-	# Post.dm_new_followers(asker)
-	puts "TODO: add default dm post for all askers"
+	askers = User.askers.where('twi_oauth_token is not null')
+	askers.each do |asker|
+		next if asker.new_user_q_id.nil?
+		Post.dm_new_followers(asker)		
+	end
+
 end
 
 task :post_leaderboard => :environment do
