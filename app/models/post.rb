@@ -109,10 +109,8 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
-    # puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
-    # puts long_url
     case provider
     when "twitter"
       begin
@@ -317,7 +315,7 @@ class Post < ActiveRecord::Base
       conversation = reply_post.conversation
     else
       puts "No reply post"
-    end      
+    end     
     post = Post.create( 
       :provider_post_id => m.id.to_s,
       :engagement_type => reply_post ? 'mention reply' : 'mention',
@@ -364,7 +362,8 @@ class Post < ActiveRecord::Base
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,
         :in_reply_to_user_id => retweeted_post.user_id,
-        :posted_via_app => false
+        :posted_via_app => false,
+        :created_at => r.created_at
       )
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
