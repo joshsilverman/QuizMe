@@ -56,11 +56,11 @@
 												- if response["user_id"] == @asker.id
 													= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 													%h5= @asker.twi_screen_name
-													%p= "@#{current_user.twi_screen_name} #{response['text']} #{post.url}"
+													%p= response['text']
 												- else
 													= image_tag(current_user.twi_profile_img_url, :class => "rounded")
 													%h5= current_user.twi_screen_name
-													%p= "@#{@asker.twi_screen_name} #{response['text']} #{post.url}"
+													%p= response['text']
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more.border-color
