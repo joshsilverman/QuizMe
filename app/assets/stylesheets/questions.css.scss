@@ -2,97 +2,94 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#form_container {
-	margin-top: 40px;
+#post_question_modal {
 
-	.well {
-		margin: auto !important;
-		padding: 20px 40px;
+	#question_input {
+		resize: none;
+		margin-left: 20px;
+		width: 480px;		
+		height: 65px;
+	}
 
-		form {
-			margin: auto;
+	#answers {
+		margin-left: 20px;
+
+		span {
+			outline: none;
 		}
 
-		#sign_in_container {
-			img {
-				// float:right;
-				margin:15px 20px;
-			}
+		#question {
+			display: none;
 		}
 
+		#account {
+			color: #bbb;
+			display:none;	
+		}
+
+		#link {
+			color: #bbb;
+			display:none;
+		}
+
+		> div {
+			margin-top:5px;
+			margin-bottom:15px;
+		}
+
+		.answer {
+			clear:both;
+		}
+	}
+	
+	#add_answer {
+		margin-left: 20px;
+		cursor: pointer;
+	}		
+
+	#character_count {
+		float:right;
+		margin-top: 5px;
+		margin-right: 5px;
+	}
+
+	hr {
+		/*margin-top: 35px;*/
+	}
+
+
+/*	#answers, #question_container {
+		margin-top: 15px;
+	}*/
+
+/*	.submit_container {
+		float:right;
+	}*/
+}
+
+/*	#question_container {
+		margin-left: 20px;
+		height:65px;
+		background-color:white;
+		border:#ccc solid 1px;
+		border-radius:3px;
+		color:#555;
+		padding:4px;
+		padding-right: 24px;
+		box-shadow: rgba(0, 0, 0, 0.0742188) 0px 1px 1px 0px inset;
+
+		* {
+			border:none;
+			box-shadow:none;
+			padding:none;
+			outline:none;
+		}
+
+		#link, #account {		
+			color:#999;
+		}
+		
 		#placeholder {
 			display: inline;
 		}
-
-		#answers {
-			margin-left: 20px;
-
-			span {
-				outline: none;
-			}
-
-			#question {
-				display: none;
-			}
-
-			#account {
-				color: #bbb;
-				display:none;	
-			}
-
-			#link {
-				color: #bbb;
-				display:none;
-			}
-
-			> div {
-				margin-top:5px;
-				margin-bottom:15px;
-			}
-
-			.answer {
-				clear:both;
-			}
-		}
-
-		#add_answer {
-			cursor:pointer;
-			margin-left: 20px;
-		}
-
-		#question_container {
-			margin-left: 20px;
-			height:65px;
-			background-color:white;
-			border:#ccc solid 1px;
-			border-radius:3px;
-			color:#555;
-			padding:4px;
-			padding-right: 24px;
-			box-shadow: rgba(0, 0, 0, 0.0742188) 0px 1px 1px 0px inset;
-
-			* {
-				border:none;
-				box-shadow:none;
-				padding:none;
-				outline:none;
-			}
-
-			#link, #account {		
-				color:#999;
-			}
-		}
-		#character_count {
-			float:right;
-			margin-top: 5px;
-		}
-
-		#answers, #question_container {
-			margin-top:15px;
-		}
-
-		.submit_container {
-			float:right;
-		}
-	}
-}
+	}*/

@@ -89,5 +89,4 @@ $ ->
 			error: (jqXHR, textStatus, errorThrown) ->
 				console.log "AJAX Error: #{errorThrown}"
 			success: (data, textStatus, jqXHR) ->
-				console.log "Success"
-				console.log data
+				$("#question_#{q['question_id']}").fadeOut()

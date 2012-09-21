@@ -2,7 +2,7 @@
 #moderate_questions
   .page-header
     %h1= t '.title', :default => model_class.model_name.human.pluralize
-  %table.table.table-striped
+  %table.table{:style => "background: white;"}
     %thead
       %tr
         %th.span10= model_class.human_attribute_name(:text)
@@ -11,8 +11,11 @@
         %th= t '.actions', :default => t("helpers.actions")
     %tbody
       - @questions.each do |question|
-        %tr
-          %td.span10= question.text
+        %tr{:id => "question_#{question.id}"}
+          %td.span10
+            %p{:style => "font-weight: bold;"}= question.text
+            - question.answers.each_with_index do |answer, i|
+              %p= "#{i+1}. #{answer.text}"
           %td= question.topic_id
           %td= question.created_at
           %td
