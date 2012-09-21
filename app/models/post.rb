@@ -238,7 +238,7 @@ class Post < ActiveRecord::Base
       :provider_post_id => res.id.to_s,
       :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
       :in_reply_to_user_id => user.id,
-      :conversation_id => reply_post.nil? ? nil : reply_post.conversation_id,
+      :conversation_id => conversation_id,
       :url => long_url ? short_url : nil,
       :posted_via_app => true,
       :responded_to => true
