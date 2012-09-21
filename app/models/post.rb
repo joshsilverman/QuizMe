@@ -139,7 +139,7 @@ class Post < ActiveRecord::Base
                  in_reply_to_user_id, link_to_parent, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
-    short_resource_url = Post.shorten_url(resource_url, 'twi', "fwk", account.twi_screen_name) if resource_url
+    short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
     tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url)
     puts "Tweeting:"
     puts tweet
