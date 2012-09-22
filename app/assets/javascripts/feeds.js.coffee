@@ -75,7 +75,7 @@ class Feed
 
 		alert_status = (status) ->
 			$('#submit_question').button('reset')
-			text = if status then "Thanks, we'll DM you when your question is posted!" else "Something went wrong..."
+			text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
 			$('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
 			alert text
 
