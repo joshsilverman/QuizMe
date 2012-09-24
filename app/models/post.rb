@@ -118,7 +118,7 @@ class Post < ActiveRecord::Base
     when "twitter"
       begin
         Post.tweet(
-          asker, question.text, question.hashtag, 
+          asker, question.text, ACCOUNT_DATA[asker.id][:hashtags].sample, 
           nil, long_url, 'status question', 
           'initial', nil, publication.id, 
           nil, nil, false

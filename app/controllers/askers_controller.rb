@@ -4,9 +4,12 @@ class AskersController < ApplicationController
   def index
     @askers = User.askers
     @new_posts = {}
+    @submitted_questions = {}
     @askers.each do |a|
       unresponded = a.engagements.where(:responded_to => false).count
       @new_posts[a.id] = unresponded
+      submitted = Question.where(:created_for_asker_id => a.id, :status => 0).count
+      @submitted_questions[a.id] = submitted
     end
   end
 

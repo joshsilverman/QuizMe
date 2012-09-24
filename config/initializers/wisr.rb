@@ -43,6 +43,114 @@ FAST = ["Fast fingers! Faster brain!",
         "Hey, gunslinger! Fastest hands on the interwebs!"
           ]
 
+ACCOUNT_DATA = {
+  ## Govt101
+  2 => {
+    :retweet => [66, 231, 191], 
+    :hashtags => []
+  }, 
+  ## QuizMeBio
+  18 => {
+    :retweet => [19, 31, 108], 
+    :hashtags => []
+  }, 
+  ## QuizMeChem
+  19 => {
+    :retweet => [18, 31, 108], 
+    :hashtags => []
+  },  
+  ## QuizMeOrgo
+  31 => {
+    :retweet => [18, 19, 108], 
+    :hashtags => []
+  }, 
+  ## USPresidents101
+  66 => {
+    :retweet => [2, 231, 191], 
+    :hashtags => []
+  }, 
+  ## QuizMePsych
+  108 => {
+    :retweet => [18, 19, 31], 
+    :hashtags => []
+  },  
+  ## PhilosophyQuiz
+  191 => {
+    :retweet => [2, 66, 231], 
+    :hashtags => []
+  }, 
+  ## Marketing_Quiz
+  223 => {
+    :retweet => [], 
+    :hashtags => []
+  }, 
+  ## SATvocabQuiz
+  227 => {
+    :retweet => [], 
+    :hashtags => []
+  },  
+  ## HistoryHabit
+  231 => {
+    :retweet => [66, 191, 2], 
+    :hashtags => []
+  }, 
+
+  ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # },  
+  # ## Govt101
+  # 2 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # },  
+  # ## Govt101
+  # 2 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # },  
+  # ## Govt101
+  # 2 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }, 
+  # ## QuizMeBio
+  # 18 => {
+  #   :retweet => [], 
+  #   :hashtags => []
+  # }          
+}
 
 RETWEET_ACCTS = {
                   2 => [66], #govt101
