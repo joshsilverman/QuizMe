@@ -13,6 +13,12 @@ class FeedsController < ApplicationController
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
       @leaders = User.leaderboard(params[:id])
       if current_user
+        @correct = 0
+        @leaders[:scores].each do |user|
+          next if user[:user].id != current_user.id or @correct != 0
+          @correct = user[:correct]
+        end        
+        puts @correct
         @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
       else
         @responses = []
@@ -63,13 +69,13 @@ class FeedsController < ApplicationController
       response_post = Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 
                    'mention reply answer_response', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], false, 
-                   (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
+                   params[:in_reply_to_user_id], false,
+                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
     else
       response_post = Post.tweet(@asker, params[:tweet], '', params[:username], nil, 
                    'mention reply', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], true, nil)      
+                   params[:in_reply_to_user_id], true, nil, '')      
     end
     @user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
     render :json => response_post

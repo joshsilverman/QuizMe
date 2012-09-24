@@ -89,9 +89,12 @@ body {
 				color: #777;
 			}
 
-			#account_stats {
-
-			}
+			.post_disabled_explanation {
+				display: inline;
+				position: relative;
+				top: 2px;				
+				font-size: 10px;
+			}					
 		}
 
 		#account_stats {
@@ -102,6 +105,10 @@ body {
 			ul {
 				list-style: none;
 			}
+		}
+
+		.post_question {
+			margin-top: 4px;
 		}
 	}
 
@@ -302,6 +309,7 @@ body {
 				top: 10px;
 				right: 10px;
 			}
+
 			#classify {
 				position: absolute;
 				top: 5px;
@@ -311,6 +319,17 @@ body {
 			.content {
 				margin-left: 58px;
 				min-height: 49px;
+
+				i {
+					display: inline;
+					position: relative;
+					top: 0px;
+					right: 0px;
+				}
+
+				h5 {
+					display: inline;
+				}
 				
 				img {
 					position: absolute;

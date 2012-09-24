@@ -1,0 +1,97 @@
+#post_question_modal.modal.hide
+	.modal-header
+		%button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+		%h3= "Post a Question on #{@asker.twi_screen_name}"
+	.modal-body
+		%h3
+			%i.icon-question-sign
+			Question
+		%textarea#question_input
+		%hr
+		%h3
+			%i.icon-info-sign 
+			Answers
+		#answers
+			#canswer
+				.input-prepend.answer
+					%span.add-on
+						%i.icon-ok
+					%input{:type=>"text", :name => 'canswer', :placeholder => 'Correct answer'}>   
+			#ianswer1
+				.input-prepend.answer
+					%span.add-on
+						%i.icon-remove
+					%input{:type=>"text", :name => 'ianswer1', :placeholder => 'Incorrect answer'}>
+		%a#add_answer
+			Add answer		
+	.modal-footer
+		%a.btn{:href => "#", "data-dismiss" => "modal"} Cancel
+		%a#submit_question.btn.btn-primary{:href => "#", "data-loading-text" => "Loading..."} Submit Question
+
+
+/ .row        
+/ .page-header
+	
+
+/ = hidden_field_tag 'topic_tag', @topic_tag
+/ = hidden_field_tag 'created_for_asker_id', @asker_id
+/ = hidden_field_tag 'asker_id', @asker_id
+/ = hidden_field_tag 'name', current_user.twi_screen_name if current_user
+/ = hidden_field_tag 'priority', (current_user and current_user.twi_screen_name == 'StudyEgg') ? 1 : 0
+/ = hidden_field_tag 'status', (current_user and current_user.twi_screen_name == 'StudyEgg') ? 1 : 0
+
+/ #post_question_modal.row{:style => "display: none;"}
+/   .span6.offset3#form_container
+/     - if @success
+/       .alert.alert-success#success
+/         Thanks, your question was submitted!
+/     .alert.alert-error#error{:style => "display: none;"}
+/       Sorry, something went wrong!  
+/     .well.form-horizontal
+/       = form_tag('/questions/save_question_and_answers', :method => 'POST', :class => 'row', :id => "question_form") do    
+/         .header.page-header
+/           %h2
+/             %i.icon-pencil
+/             Post a New Question  
+/         - if current_user
+/           - name = current_user.twi_screen_name
+/         - else
+/           .header.page-header        
+/             .auth_container
+/               %h3 
+/                 %i.icon-user
+/                 Sign in
+/                 %span#sign_in_container
+/                   %a{:href => "/auth/twitter?topic_tag=#{@topic_tag}&new_question_asker_id=#{@asker_id}"}
+/                     = image_tag "twitter-sign-in.png", :id => "sign_in"
+/         .page-header
+/           %h3
+/             %i.icon-question-sign
+/             Question
+/           #question_container.input{:type => 'text'}
+/             %span#question{:contenteditable => true}= "Your question"
+/             %p#placeholder
+/             %span#link= "http://bit.ly/LVJ5VQ"
+/             %span#account= " via @#{name}"
+/           #character_count_container
+/             #character_count 140 
+/           .row        
+/         .page-header
+/           %h3
+/             %i.icon-info-sign 
+/             Answers
+/           #answers
+/             #canswer
+/               .input-prepend.answer
+/                 %span.add-on
+/                   %i.icon-ok
+/                 %input{:type=>"text", :name => 'canswer', :placeholder => 'Correct answer'}>   
+/             #ianswer1
+/               .input-prepend.answer
+/                 %span.add-on
+/                   %i.icon-remove
+/                 %input{:type=>"text", :name => 'ianswer1', :placeholder => 'Incorrect answer'}>
+/           %a#add_answer
+/             Add answer
+/         .submit_container
+/           = submit_tag 'Submit', :class => 'btn btn-primary'
