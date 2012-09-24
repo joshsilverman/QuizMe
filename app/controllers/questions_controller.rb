@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new, :refer]
-  before_filter :admin?, :only => [:moderate, :moderate_update]
+  # before_filter :admin?, :only => [:moderate, :moderate_update]
   # GET /questions
   # GET /questions.json
   def index
