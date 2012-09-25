@@ -64,7 +64,7 @@ class PostsController < ApplicationController
       Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, (current_user ? current_user.id : nil))
       redirect_to post.publication.question.resource_url
     else
-      redirect_to "/"
+      redirect_to "/feeds/#{post.user_id}"
     end
   end	
 end

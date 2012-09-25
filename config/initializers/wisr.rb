@@ -47,7 +47,7 @@ FAST = [
 ACCOUNT_DATA = {
   ## Govt101
   2 => {
-    :retweet => [66, 191, 231, 322, 325, 324], 
+    :retweet => [66, 191, 231, 322, 325], 
     :hashtags => ["election2012", "govt", "politics"]
   }, 
   ## USPresidents101
