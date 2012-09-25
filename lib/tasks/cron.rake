@@ -83,7 +83,7 @@ end
 task :retweet_related => :environment do
 	t = Time.now
 	puts "TIME: #{t.hour}"
-	if t.hour % 4 == 0
+	if t.hour % 2 == 0
 		ACCOUNT_DATA.each do |k, v|
 			a = User.asker(k)
 			pub = Publication.where(:asker_id => v[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample

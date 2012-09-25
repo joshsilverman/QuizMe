@@ -62,7 +62,7 @@ class Post < ActiveRecord::Base
     tweet += "@#{user} " if handle_length > 0
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
-    tweet += " #{hashtag}" if hashtag_length > 0
+    tweet += " ##{hashtag}" if hashtag_length > 0
     tweet += " #{resource_url}" if resource_url_length > 0
     tweet += " via @#{via}" if via_length > 0
     return tweet    

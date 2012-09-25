@@ -48,106 +48,106 @@ ACCOUNT_DATA = {
   ## Govt101
   2 => {
     :retweet => [66, 191, 231, 322, 325, 324], 
-    :hashtags => []
+    :hashtags => ["election2012", "govt", "politics"]
   }, 
   ## USPresidents101
   66 => {
     :retweet => [2, 191, 231, 322, 325, 324], 
-    :hashtags => []
+    :hashtags => ["presidents", "history", "trivia"]
   }, 
   ## PhilosophyQuiz
   191 => {
     :retweet => [2, 66, 231, 322, 325, 108], 
-    :hashtags => []
+    :hashtags => ["philosophy"]
   }, 
   ## HistoryHabit
   231 => {
     :retweet => [2, 66, 191, 322, 325], 
-    :hashtags => []
+    :hashtags => ["history", "trivia", "historybuff"]
   }, 
   ## QuizMeEcon  
   322 => {
     :retweet => [2, 66, 191, 223, 231, 325, 309, 310], 
-    :hashtags => []
+    :hashtags => ["econ", "economics"]
   },
   ## AP US History 
   325 => {
     :retweet => [2, 66, 191, 231, 322, 374], 
-    :hashtags => []
+    :hashtags => ["history", "trivia", "historybuff"]
   },    
 
   ## QuizMeBio
   18 => {
     :retweet => [19, 31, 108, 326], 
-    :hashtags => []
+    :hashtags => ["science", "biology", "premed", "medschool"]
   }, 
   ## QuizMeChem
   19 => {
     :retweet => [18, 31, 108, 326], 
-    :hashtags => []
+    :hashtags => ["science", "chemistry"]
   },  
   ## QuizMeOrgo
   31 => {
     :retweet => [18, 19, 108, 326], 
-    :hashtags => []
+    :hashtags => ["science", "premed", "orgo"]
   }, 
   ## QuizMePsych
   108 => {
     :retweet => [18, 19, 31, 326, 191, 309, 310], 
-    :hashtags => []
+    :hashtags => ["science", "psych"]
   },  
   ## QuizMeAnat  
   326 => {
     :retweet => [18, 19, 31, 108], 
-    :hashtags => []
+    :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"]
   },    
 
   ## Marketing_Quiz
   223 => {
     :retweet => [309, 310, 322], 
-    :hashtags => []
+    :hashtags => ["marketing"]
   }, 
   ## Retail Management 
   309 => {
     :retweet => [223, 310, 108, 322], 
-    :hashtags => []
+    :hashtags => ["retail"]
   },  
   ## Consumer Behavior 
   310 => {
     :retweet => [223, 309, 108, 322], 
-    :hashtags => []
+    :hashtags => ["consumerbehavior"]
   },  
 
   ## SATvocabQuiz
   227 => {
     :retweet => [324, 308, 284], 
-    :hashtags => []
+    :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"]
   },  
   ## 501 Spanish 
   308 => {
     :retweet => [227, 324], 
-    :hashtags => []
+    :hashtags => ["spanish", "espanol"]
   },
   ## US Capitals 
   324 => {
     :retweet => [227, 308, 66, 2], 
-    :hashtags => []
+    :hashtags => ["trivia"]
   },
 
   ## QuizMeCycling 
   22 => {
     :retweet => [284, 374], 
-    :hashtags => []
+    :hashtags => ["trivia", "cycling", "bicycle"]
   },
   ## QuizMeFootball  
   284 => {
     :retweet => [22, 374, 227], 
-    :hashtags => []
+    :hashtags => ["trivia", "football", "nfl"]
   },
   ## QuizMeBeer  
   374 => {
     :retweet => [22, 284, 325], 
-    :hashtags => []
+    :hashtags => ["trivia", "beer", "craftbeer", "brewing"]
   }
 }
 
