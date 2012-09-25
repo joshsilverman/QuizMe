@@ -47,3 +47,5 @@ gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
 
 gem 'best_in_place'
+gem 'stuff-classifier', :git => 'git://github.com/alexandru/stuff-classifier.git'
+#gem 'madeleine'
