@@ -275,7 +275,7 @@ class Post < ActiveRecord::Base
     to_message.each do |user|
       dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
       q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
-      Post.dm(current_acct, q.text, nil, nil, dm.nil? ? nil : dm, user)
+      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user)
     end
   end
 

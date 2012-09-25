@@ -61,18 +61,19 @@ class FeedsController < ApplicationController
     @user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     conversation = @user_post.conversation || Conversation.create(:post_id => @user_post.id, :user_id => @asker.id ,:publication_id => params[:publication_id])
+    tweet = params[:tweet].gsub("@#{params[:username]}", "")
     if params[:publication_id]
       pub = Publication.find(params[:publication_id].to_i)
       post = pub.posts.where(:provider => "twitter").first
       @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-      response_post = Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 
+      response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
                    'mention reply answer_response', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], false,
                    '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
     else
-      response_post = Post.tweet(@asker, params[:tweet], '', params[:username], nil, 
+      response_post = Post.tweet(@asker, tweet, '', params[:username], nil, 
                    'mention reply', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], true, nil, '')      
