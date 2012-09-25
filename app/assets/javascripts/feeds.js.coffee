@@ -326,6 +326,7 @@ class Post
 				type: 'POST'
 				data: params
 				success: (e) =>
+					$("#respond_modal").find("textarea").val("")
 					$("#respond_modal").dialog('close')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
 					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
