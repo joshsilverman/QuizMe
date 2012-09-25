@@ -121,5 +121,105 @@ namespace :questions do
 
     puts "[==================================================] 100%"
   end
-end
 
+
+  task :qb_import, [:qb_book_id, :asker_id, :topic_name] => :environment do |t, args|
+    puts "start with args:"
+    puts "qb_book_id => #{args[:qb_book_id]}"
+    puts "asker_id => #{args[:asker_id]}"
+    puts "topic_name => #{args[:topic_name]}"
+    #get asker account
+    asker = User.asker(args[:asker_id])
+    if asker.nil?
+      puts 'No Asker Found!'
+      return
+    end
+
+    #get topic
+    topic = Topic.find_or_create_by_name(args[:topic_name].downcase)
+
+    #get cards from seeder
+    url = URI.parse("http://questionbase.studyegg.com/api-V1/JKD673890RTSDFG45FGHJSUY/get_book_details/#{args[:qb_book_id]}.json")
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    begin
+      ch = JSON.parse(res.body)
+    rescue
+      ch=[]
+    end
+
+    questions = []
+    ch['chapters'].each do |chapter|
+      next unless questions.empty?
+      puts chapter['id']
+      url = URI.parse("http://questionbase.studyegg.com/api-V1/JKD673890RTSDFG45FGHJSUY/get_all_lesson_questions/#{chapter['id']}.json")
+      req = Net::HTTP::Get.new(url.path)
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.request(req)
+      }
+      begin
+        qs = JSON.parse(res.body)
+      rescue
+        qs=[]
+      end
+
+      questions += qs['questions']
+    end
+
+    total = questions.count
+    questions.each_with_index do |q, i|
+      wisr_question = Question.find_or_create_by_text(q['question'])
+      resources = q['resources'] || []
+      resource_url = nil
+      resources.each do |r|
+        next unless wisr_question.resource_url.blank? and r['media_type'] == "video"
+        resource_url = "http://www.youtube.com/watch?v=#{r['url']}&t=#{r['begin']}"
+        puts resource_url
+      end
+      wisr_question.update_attributes(:topic_id => topic.id,
+                            :user_id => 1,
+                            :status => 1,
+                            :created_for_asker_id => asker.id,
+                            :resource_url => resource_url)
+      wisr_question.answers.destroy_all
+      q['answers'].each do |a|
+        wisr_question.answers << Answer.create(:text => a['answer'], :correct => a['correct'])
+      end
+
+      #compute and show progress
+      complete = ((i / total.to_f)*100).to_i
+      pbar = ''
+      space = ''
+      for num in 0..(complete/2) do
+        pbar += '=' if num > 0
+      end
+
+      for num in 0..(50-pbar.length) do
+        space+=' '
+      end
+      puts "[#{pbar}#{space}] #{complete}%"
+    end
+
+    puts "[==================================================] 100%"
+
+      #puts "#{card['text']} => #{card['answer']}"
+      # q = Question.find_or_create_by_seeder_id(card['card_id'])
+      # unless q.text == card['text'] &&
+      #         q.topic_id == topic.id &&
+      #         q.created_for_asker_id == asker.id
+      #   q.update_attributes(:text => card['text'],
+      #                       :topic_id => topic.id,
+      #                       :user_id => 1,
+      #                       :status => 1,
+      #                       :created_for_asker_id => asker.id)
+      #   q.answers.destroy_all unless q.answers.blank?
+      #   q.answers << Answer.create(:text => card['answer'], :correct => true)
+      #   card['false_answers'].each do |fa|
+      #     q.answers << Answer.create(:text => fa, :correct => false)
+      #   end
+      # end
+
+  end
+end
