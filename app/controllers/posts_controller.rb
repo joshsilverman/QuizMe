@@ -50,12 +50,6 @@ class PostsController < ApplicationController
 			post.update_attributes :responded_to => true
 			render :nothing => true, :status => 200
 		end
-		### Add these in where appropriate when re-written: ###
-		# Stat.update_stat_cache("twitter_answers", 1, asker, user_post.created_at)
-		# Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at)
-		# Stat.update_stat_cache("mentions", 1, asker, user_post.created_at)
-		# Stat.update_stat_cache("retweets", 1, asker, post.created_at)
-		# Stat.update_stat_cache("active_users", user.id, asker, post.created_at)      		
 	end
 
   def refer
