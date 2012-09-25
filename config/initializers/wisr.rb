@@ -143,7 +143,7 @@ ACCOUNT_DATA = {
   284 => {
     :retweet => [22, 374, 227], 
     :hashtags => []
-  }
+  },
   ## QuizMeBeer  
   374 => {
     :retweet => [22, 284, 325], 
