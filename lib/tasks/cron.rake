@@ -15,7 +15,10 @@ end
 task :post_question => :environment do
 	# t = Time.now
 	askers = User.askers.where('twi_oauth_token is not null')
+	puts "askers to post for:"
+	puts askers.to_json
 	askers.each do |a|
+		puts "Posting question for #{a.twi_screen_name}"
 		a.publish_question()
 		sleep(5)
 	end
@@ -45,9 +48,12 @@ task :save_stats => :environment do
 end
 
 task :dm_new_followers => :environment do
-	# asker = User.asker(4)
-	# Post.dm_new_followers(asker)
-	puts "TODO: add default dm post for all askers"
+	askers = User.askers.where('twi_oauth_token is not null')
+	askers.each do |asker|
+		next if asker.new_user_q_id.nil?
+		Post.dm_new_followers(asker)		
+	end
+
 end
 
 task :post_leaderboard => :environment do
@@ -77,10 +83,10 @@ end
 task :retweet_related => :environment do
 	t = Time.now
 	puts "TIME: #{t.hour}"
-	if t.hour % 4 == 0
-		RETWEET_ACCTS.each do |k, v|
+	if t.hour % 2 == 0
+		ACCOUNT_DATA.each do |k, v|
 			a = User.asker(k)
-			pub = Publication.where(:asker_id => v.sample, :published => true).order('updated_at DESC').limit(5).sample
+			pub = Publication.where(:asker_id => v[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample
 			p = Post.find_by_publication_id_and_provider(pub.id, 'twitter')
 			a.twitter.retweet(p.provider_post_id)
 		end

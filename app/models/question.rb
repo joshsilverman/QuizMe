@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
   def self.select_questions_to_post(asker, num_days_back_to_exclude)
     recent_question_ids = asker.publications.where("question_id is not null and published = ?", true).order('created_at DESC').limit(num_days_back_to_exclude * asker.posts_per_day).collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
-    priority_questions = Question.where("created_for_asker_id = ? and priority = ?", asker.id, true).collect(&:id)
+    priority_questions = Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).collect(&:id)
     questions = Question.where("created_for_asker_id = ? and id not in (?) and status = 1", asker.id, recent_question_ids+priority_questions).includes(:answers)
     id_queue = priority_questions.sample(asker.posts_per_day) 
     id_queue += questions.sample(asker.posts_per_day - id_queue.size)
@@ -56,8 +56,11 @@ class Question < ActiveRecord::Base
         new_q.created_for_asker_id = created_for_asker_id
         new_q.status = 1
         new_q.user_id = 1
-        # new_q.qb_lesson_id = @lesson_id
-        # new_q.qb_q_id = q['id']
+        resources = q['resources'] || []
+        resources.each do |r|
+          next unless new_q.resource_url.blank? and r['media_type'] == "video"
+          new_q.resource_url = "http://www.youtube.com/watch?v=#{r['url']}&t=#{r['begin']}"
+        end
         new_q.save
         q['answers'].each do |a|
           ans = Answer.find_or_create_by_text(:text => Question.clean_text(a['answer']))

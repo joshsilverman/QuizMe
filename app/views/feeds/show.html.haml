@@ -14,6 +14,11 @@
 								%a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
 								&nbsp;|&nbsp;
 								%a{:href => "/askers/#{@asker.id}/edit"} Edit Account 
+							- elsif (current_user and @correct and @correct > 9)
+								%a.post_question.btn.btn-mini{:href => "/"} Post a Question
+							- else
+								%a.post_question.btn.btn-mini.disabled{:href => "/"} Post a Question
+								%p.post_disabled_explanation (10+ correct required!)
 			#account_stats.span3.hidden-phone
 		#feed.row
 			#right_column.span6
@@ -28,8 +33,14 @@
 							.post.parent{:class => ("answered" if responded), :post_id => post.id}
 								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
-									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-									%h5= @asker.twi_screen_name
+									- if post.question.user_id != 1
+										- user = post.question.user
+										= image_tag(user.twi_profile_img_url, :class => "rounded")
+										%i.icon-user
+										%h5=user.twi_screen_name
+									- else
+										= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+										%h5= @asker.twi_screen_name
 									%p= post.question.text
 								- unless responded
 									.answers.rounded.border{:style => "display: none;"}
@@ -41,8 +52,8 @@
 												.shadow-top
 												.tweet
 													%span#account= "@#{@asker.twi_screen_name}"
-													%span#answer= " #{answer.tweetable(@asker.twi_screen_name, post.url)}"
-													%span#url= " #{post.url}"
+													%span#answer= " #{answer.tweetable(@asker.twi_screen_name)}"
+													/ %span#url= " #{post.url}"
 													/ %span#additional{:contenteditable => true}
 												.answer_controls
 													%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
@@ -56,11 +67,11 @@
 												- if response["user_id"] == @asker.id
 													= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 													%h5= @asker.twi_screen_name
-													%p= "@#{current_user.twi_screen_name} #{response['text']} #{post.url}"
+													%p= response['text']
 												- else
 													= image_tag(current_user.twi_profile_img_url, :class => "rounded")
 													%h5= current_user.twi_screen_name
-													%p= "@#{@asker.twi_screen_name} #{response['text']} #{post.url}"
+													%p= response['text']
 							.loading{:style => "display: none;"}
 								Loading...
 					#posts_more.border-color
@@ -72,7 +83,6 @@
 							Leaderboard
 					%ul.unstyled
 						- @leaders[:scores].each_with_index do |leader, i|
-							/ {:href => "/feeds/#{related.id}"}
 							%a{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
 								%li 
 									/ {:class => ("border_bottom" if i < 3)}
@@ -102,6 +112,7 @@
 											%h5= related.twi_name
 											%p= related.description
 
+= render :partial => "question_modal"
 
 #post_template.conversation.border-color{:style => "display: none;"}
 	.post.parent
@@ -120,7 +131,7 @@
 	.tweet
 		%span#account= "@#{@asker.twi_screen_name}"
 		%span#answer= " Answer text"
-		%span#url= " URL"
+		/ %span#url= " URL"
 		/ %span#additional{:contenteditable => true}
 	.answer_controls
 		.tweet_button.btn.btn-primary Tweet!
@@ -138,3 +149,4 @@
 = hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
+= hidden_field_tag :correct, @correct

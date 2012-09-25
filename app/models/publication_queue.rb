@@ -10,8 +10,8 @@ class PublicationQueue < ActiveRecord::Base
         :asker_id => asker.id, 
         :publication_queue_id => queue.id
       )
-      publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
-      question.update_attribute(:priority, false) if question.priority
+      # publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
+      # question.update_attribute(:priority, false) if question.priority
     end
   end
 
@@ -24,15 +24,15 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def increment_index(posts_per_day)
-    puts "increment index from:"
-    puts self.index
+    # puts "increment index from:"
+    # puts self.index
     if self.index < (posts_per_day - 1)
       self.increment :index
     else
       self.update_attribute(:index, 0)
     end
     self.save
-    puts "to:"
-    puts self.index
+    # puts "to:"
+    # puts self.index
   end
 end
