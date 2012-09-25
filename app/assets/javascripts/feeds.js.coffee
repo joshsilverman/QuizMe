@@ -167,7 +167,7 @@ class Post
 	answers: []
 	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
 	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
-	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books (or videos)!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
+	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
 
 	constructor: (element) ->
 		@answers = []

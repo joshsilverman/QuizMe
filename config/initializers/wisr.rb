@@ -28,7 +28,7 @@ INCORRECT = [
   "Hmmm, not quite.",
   "Uh oh, that's not it...",
   "Sorry, that's not what we were looking for.",
-  "Nope. Time to hit the books (or videos)!",
+  "Nope. Time to hit the books!",
   "Sorry. Close, but no cigar.",
   "Not quite.",
   "That's not it."
