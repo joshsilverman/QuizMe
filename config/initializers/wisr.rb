@@ -58,7 +58,7 @@ ACCOUNT_DATA = {
   ## PhilosophyQuiz
   191 => {
     :retweet => [2, 66, 231, 322, 325, 108], 
-    :hashtags => ["philosophy"]
+    :hashtags => ["philosophy", "philosopher"]
   }, 
   ## HistoryHabit
   231 => {

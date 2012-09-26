@@ -101,9 +101,34 @@ body {
 			margin-left: 0px;
 			min-height: inherit;
 			float: right;
+			position: relative;
+
+			.twitter-follow-button {
+				position: absolute;
+				right: 10px;
+				top: 10px;
+			}
 
 			ul {
 				list-style: none;
+				width: 115px;
+				position: absolute;
+				right: 10px;
+				top: 48px;
+				margin: 0px;
+				cursor: default;
+
+				li {
+					border-top: 1px solid #E8E8E8;
+					padding: 5px;
+					color: #999;
+					float: right;
+
+					b {
+						font-size: 14px;
+						color: #333;
+					}
+				}
 			}
 		}
 
