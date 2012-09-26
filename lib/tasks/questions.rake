@@ -169,7 +169,17 @@ namespace :questions do
 
     total = questions.count
     questions.each_with_index do |q, i|
-      wisr_question = Question.find_or_create_by_text(q['question'])
+      question_text = q['question']
+      wisr_question = nil
+      if question_text.downcase=~ /true\sor\sfalse|true\/false|t\/f/
+        question_chunk = question_text[(question_text.downcase=~ /:/)..-1]
+        wisr_question = Question.where("text like ?", "%#{question_chunk}%").first
+        if wisr_question.nil?
+          wisr_question = Question.find_or_create_by_text("T\\F#{question_chunk}")
+        end
+      else
+        wisr_question = Question.find_or_create_by_text(q['question'])
+      end
       resources = q['resources'] || []
       resource_url = nil
       resources.each do |r|
@@ -184,7 +194,9 @@ namespace :questions do
                             :resource_url => resource_url)
       wisr_question.answers.destroy_all
       q['answers'].each do |a|
-        wisr_question.answers << Answer.create(:text => a['answer'], :correct => a['correct'])
+        ans = a['answer']
+        ans = a['answer'].capitalize if a['answer'].downcase=~/true|false/
+        wisr_question.answers << Answer.create(:text => ans, :correct => a['correct'])
       end
 
       #compute and show progress
