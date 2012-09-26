@@ -152,7 +152,6 @@ namespace :questions do
 
     questions = []
     ch['chapters'].each do |chapter|
-      next unless questions.empty?
       puts chapter['id']
       url = URI.parse("http://questionbase.studyegg.com/api-V1/JKD673890RTSDFG45FGHJSUY/get_all_lesson_questions/#{chapter['id']}.json")
       req = Net::HTTP::Get.new(url.path)
