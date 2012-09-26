@@ -183,6 +183,8 @@ namespace :questions do
           puts "chunk: #{question_chunk}"
           puts "q: #{question_text}"
           puts wisr_question.inspect
+          wisr_question = Question.find_or_create_by_text(q['question'])
+          puts "WISR Q_ID: #{wisr_question.id}"
         end
       else
         wisr_question = Question.find_or_create_by_text(q['question'])
