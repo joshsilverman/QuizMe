@@ -181,6 +181,7 @@ namespace :questions do
         rescue
           puts "ERROR!"
           puts "chunk: #{question_chunk}"
+          puts "q: #{question_text}"
           puts wisr_question.inspect
         end
       else
