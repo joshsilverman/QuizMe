@@ -172,10 +172,16 @@ namespace :questions do
       question_text = q['question']
       wisr_question = nil
       if question_text.downcase=~ /true\sor\sfalse|true\/false|t\/f/
-        question_chunk = question_text[(question_text.downcase=~ /:/)..-1]
-        wisr_question = Question.where("text like ?", "%#{question_chunk}%").first
-        if wisr_question.nil?
-          wisr_question = Question.find_or_create_by_text("T\\F#{question_chunk}")
+        begin
+          question_chunk = question_text[(question_text.downcase=~ /:/)..-1]
+          wisr_question = Question.where("text like ?", "%#{question_chunk}%").first
+          if wisr_question.nil?
+            wisr_question = Question.find_or_create_by_text("T\\F#{question_chunk}")
+          end
+        rescue
+          puts "ERROR!"
+          puts "chunk: #{question_chunk}"
+          puts wisr_question.inspect
         end
       else
         wisr_question = Question.find_or_create_by_text(q['question'])
