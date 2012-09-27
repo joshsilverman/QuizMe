@@ -16,6 +16,7 @@ class Classifier
     EOS
     input = STDIN.gets.chomp.to_i
 
+    #posts_by_users_pm
     unmarked_posts_by_users[0..input].each_with_index do |post, i|
       puts <<-EOS
 
@@ -40,7 +41,7 @@ class Classifier
 
       Running classifier on all posts by users
     EOS
-    precision, recall, ci = classify_set posts_by_users
+    precision, recall, ci, spam_precision, spam_recall = classify_set posts_by_users
     puts <<-EOS
 
       Results for whole corpus including truthset:
@@ -51,6 +52,9 @@ class Classifier
         Precision on detecting real:#{precision}
         Recall on detecting real:#{recall}
         Confidence interval (95% confidence level):#{ci}
+
+        Precision on detecting spam:#{spam_precision}
+        Recall on detecting spam:#{spam_recall}
     EOS
   end
 
@@ -59,7 +63,7 @@ class Classifier
 
       Running classifier on testing set
     EOS
-    precision, recall, ci = classify_set posts_for_testing
+    precision, recall, ci, spam_precision, spam_recall = classify_set posts_for_testing
     puts <<-EOS
 
       Results for testing:
@@ -68,6 +72,9 @@ class Classifier
         Precision on detecting real:#{precision}
         Recall on detecting real:#{recall}
         Confidence interval (95% confidence level):#{ci}
+
+        Precision on detecting spam:#{spam_precision}
+        Recall on detecting spam:#{spam_recall}
     EOS
   end
 
@@ -76,7 +83,7 @@ class Classifier
 
       Running classifier on training set (results should be excellent)
     EOS
-    precision, recall, ci = classify_set posts_for_training
+    precision, recall, ci, spam_precision, spam_recall = classify_set posts_for_training
     puts <<-EOS
 
       Results for training:
@@ -85,6 +92,9 @@ class Classifier
         Precision on detecting real:#{precision}
         Recall on detecting real:#{recall}
         Confidence interval (95% confidence level):#{ci}
+
+        Precision on detecting spam:#{spam_precision}
+        Recall on detecting spam:#{spam_recall}
     EOS
   end
 
@@ -95,15 +105,24 @@ class Classifier
       results[klass][correct] += 1 if correct != nil
     end
 
-    real_in_truthset = results[:real][:correct] + results[:spam][:incorrect]
-    correctly_detected_real_in_truthset = results[:real][:correct]
-    detected_real_in_truthset = results[:real][:correct] + results[:real][:incorrect]
+    real = results[:real][:correct] + results[:spam][:incorrect]
+    correctly_detected_real = results[:real][:correct]
+    detected_real = results[:real][:correct] + results[:real][:incorrect]
 
-    precision = correctly_detected_real_in_truthset.to_f/detected_real_in_truthset if detected_real_in_truthset
-    recall = correctly_detected_real_in_truthset.to_f/real_in_truthset if real_in_truthset
+    spam = results[:spam][:correct] + results[:real][:incorrect]
+    correctly_detected_spam = results[:spam][:correct]
+    detected_spam = results[:spam][:correct] + results[:spam][:incorrect]
+
+    precision = correctly_detected_real.to_f/detected_real if detected_real
+    recall = correctly_detected_real.to_f/real if real
     ci = confidence_interval marked_posts_by_users.count, posts_by_users.count, recall
 
-    return precision, recall, ci
+    spam_precision = correctly_detected_spam.to_f/detected_spam if detected_spam
+    spam_recall = correctly_detected_spam.to_f/spam if spam
+
+    puts results
+
+    return precision, recall, ci, spam_precision, spam_recall
   end
 
   def train
