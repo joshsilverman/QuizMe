@@ -19,19 +19,31 @@ namespace :questions do
       end
       if question and correct and incorrect.count > 0
         puts "Question #{k}: #{question}"
-        # puts "Correct: #{correct}"
         q = Question.where("text like ?", "%#{question}%").first
         if q.blank?
-          puts "missed"
-          q = Question.create({:text => question, :created_for_asker_id => 2, :user_id => 1, :status => 1, :resource_url => url}) 
+          q = Question.create({:text => question, :created_for_asker_id => 2, :user_id => 1, :status => 1, :resource_url => url})
+          correct = correct.capitalize if correct=~/false|true/
           q.answers << Answer.create(:text => correct, :correct => true)
-          incorrect.each {|aa| q.answers << Answer.create(:text => aa, :correct => false)}
+          incorrect.each do |aa|
+            aa = aa.capitalize if aa=~/false|true/
+            q.answers << Answer.create(:text => aa, :correct => false)}
+          end
         else
           puts "updating: #{question}"
           q.update_attributes({:resource_url => url})
+          q.answers.destroy_all
+          correct = correct.capitalize if correct=~/false|true/
+          q.answers << Answer.create(:text => correct, :correct => true)
+          incorrect.each do |aa|
+            aa = aa.capitalize if aa=~/false|true/
+            q.answers << Answer.create(:text => aa, :correct => false)}
+          end
         end
       else
         puts "Error!"
+        puts question
+        puts correct
+        puts incorrect
         break
       end
       k += 1
