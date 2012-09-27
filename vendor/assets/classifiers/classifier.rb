@@ -168,17 +168,17 @@ class Classifier
   end
 
   def posts_by_users
-    @_posts_by_users ||= Post.includes(:user).where('users.role = "user" AND posts.text != ""').order("random()")
+    @_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")
     @_posts_by_users
   end
 
   def unmarked_posts_by_users
-    @_unmarked_posts_by_users ||= Post.includes(:user).where('users.role = ? AND spam IS NULL AND posts.text != ""', 'user').order("random()")
+    @_unmarked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NULL").order("random()")
     @_unmarked_posts_by_users
   end
 
   def marked_posts_by_users
-    @_marked_posts_by_users ||= Post.includes(:user).where('users.role = ? AND spam IS NOT NULL AND posts.text != ""', 'user').order("random()")
+    @_marked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NOT NULL").order("random()")
     @_marked_posts_by_users
   end
 
