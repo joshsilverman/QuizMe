@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120913214550) do
+ActiveRecord::Schema.define(:version => 20120924002526) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -37,20 +37,22 @@ ActiveRecord::Schema.define(:version => 20120913214550) do
   end
 
   create_table "posts", :force => true do |t|
-    t.integer   "user_id"
-    t.string    "provider"
-    t.text      "text"
-    t.string    "engagement_type"
-    t.string    "provider_post_id"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
-    t.integer   "in_reply_to_post_id"
-    t.integer   "publication_id"
-    t.integer   "conversation_id"
-    t.boolean   "responded_to",        :default => false
-    t.integer   "in_reply_to_user_id"
-    t.boolean   "posted_via_app"
-    t.string    "url"
+    t.integer  "user_id"
+    t.string   "provider"
+    t.text     "text"
+    t.string   "engagement_type"
+    t.string   "provider_post_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "in_reply_to_post_id"
+    t.integer  "publication_id"
+    t.integer  "conversation_id"
+    t.boolean  "responded_to",        :default => false
+    t.integer  "in_reply_to_user_id"
+    t.boolean  "posted_via_app"
+    t.string   "url"
+    t.boolean  "spam"
+    t.boolean  "autospam"
   end
 
   create_table "publication_queues", :force => true do |t|
@@ -95,20 +97,20 @@ ActiveRecord::Schema.define(:version => 20120913214550) do
   end
 
   create_table "stats", :force => true do |t|
-    t.date     "date"
-    t.integer  "followers",          :default => 0
-    t.integer  "total_followers",    :default => 0
-    t.integer  "retweets",           :default => 0
-    t.integer  "mentions",           :default => 0
-    t.integer  "questions_answered", :default => 0
-    t.integer  "internal_answers",   :default => 0
-    t.integer  "twitter_answers",    :default => 0
-    t.integer  "active_users",       :default => 0
-    t.text     "active_user_ids",    :default => ""
-    t.integer  "asker_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "click_throughs",     :default => 0
+    t.date      "date"
+    t.integer   "followers",          :default => 0
+    t.integer   "total_followers",    :default => 0
+    t.integer   "retweets",           :default => 0
+    t.integer   "mentions",           :default => 0
+    t.integer   "questions_answered", :default => 0
+    t.integer   "internal_answers",   :default => 0
+    t.integer   "twitter_answers",    :default => 0
+    t.integer   "active_users",       :default => 0
+    t.text      "active_user_ids",    :default => ""
+    t.integer   "asker_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "click_throughs",     :default => 0
   end
 
   create_table "topics", :force => true do |t|

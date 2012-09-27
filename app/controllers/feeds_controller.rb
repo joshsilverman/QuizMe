@@ -11,6 +11,12 @@ class FeedsController < ApplicationController
       # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+      
+      publication_ids = @asker.publications.select(:id).where(:published => true)
+      @question_count = publication_ids.size
+      @questions_answered = Rep.where(:publication_id => publication_ids).count
+      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.total_followers
+      
       @leaders = User.leaderboard(params[:id])
       if current_user
         @correct = 0
