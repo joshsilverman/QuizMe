@@ -73,17 +73,16 @@ class FeedsController < ApplicationController
       post = pub.posts.where(:provider => "twitter").first
       @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-      status = correct || ""
       response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
                    2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], false,
-                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
+                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), correct)
     else
       response_post = Post.tweet(@asker, tweet, '', params[:username], nil, 
-                   'mention reply', nil, conversation.id,
+                   2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], true, nil, '')      
+                   params[:in_reply_to_user_id], true, nil, '', correct)      
     end
     @user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
     render :json => response_post

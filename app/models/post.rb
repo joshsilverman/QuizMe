@@ -128,9 +128,9 @@ class Post < ActiveRecord::Base
           asker, question.text, ACCOUNT_DATA[asker.id][:hashtags].sample, 
           nil, long_url, 1, 
           'initial', nil, publication.id, 
-          nil, nil, false, via
+          nil, nil, false, via, nil, nil
         )
-        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, 2, "ugc", nil, nil, nil, nil, false, nil) if via.present? and question.priority
+        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, 2, "ugc", nil, nil, nil, nil, false, nil, nil) if via.present? and question.priority
         # Post.dm(asker, , long_url, "ugc", nil, user) if via.present? and question.priority
         question.update_attribute(:priority, false) if question.priority
       rescue Exception => exception
@@ -149,7 +149,7 @@ class Post < ActiveRecord::Base
   def self.tweet(account, text, hashtag, reply_to, long_url, 
                  interaction_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
-                 in_reply_to_user_id, link_to_parent, via, resource_url = nil)
+                 in_reply_to_user_id, link_to_parent, via, resource_url, correct)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
@@ -203,7 +203,9 @@ class Post < ActiveRecord::Base
       post.id, 
       asker.id,
       false, 
-      ''
+      '',
+      nil,
+      answer.correct
     )
     if user_post
       conversation.posts << user_post
@@ -225,7 +227,8 @@ class Post < ActiveRecord::Base
       current_user.id,
       true, 
       '',
-      resource_url
+      resource_url,
+      answer.correct
     )  
     conversation.posts << app_post if app_post
     return {:app_message => app_post.text, :user_message => user_post.text}
