@@ -89,19 +89,51 @@ body {
 				color: #777;
 			}
 
-			#account_stats {
-
-			}
+			.post_disabled_explanation {
+				display: inline;
+				position: relative;
+				top: 2px;				
+				font-size: 10px;
+			}					
 		}
 
 		#account_stats {
 			margin-left: 0px;
 			min-height: inherit;
 			float: right;
+			position: relative;
+
+			.twitter-follow-button {
+				position: absolute;
+				right: 10px;
+				top: 10px;
+			}
 
 			ul {
 				list-style: none;
+				width: 115px;
+				position: absolute;
+				right: 10px;
+				top: 48px;
+				margin: 0px;
+				cursor: default;
+
+				li {
+					border-top: 1px solid #E8E8E8;
+					padding: 5px;
+					color: #999;
+					float: right;
+
+					b {
+						font-size: 14px;
+						color: #333;
+					}
+				}
 			}
+		}
+
+		.post_question {
+			margin-top: 4px;
 		}
 	}
 
@@ -302,6 +334,7 @@ body {
 				top: 10px;
 				right: 10px;
 			}
+
 			#classify {
 				position: absolute;
 				top: 5px;
@@ -311,6 +344,17 @@ body {
 			.content {
 				margin-left: 58px;
 				min-height: 49px;
+
+				i {
+					display: inline;
+					position: relative;
+					top: 0px;
+					right: 0px;
+				}
+
+				h5 {
+					display: inline;
+				}
 				
 				img {
 					position: absolute;

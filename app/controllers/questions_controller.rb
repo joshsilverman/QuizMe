@@ -93,14 +93,14 @@ class QuestionsController < ApplicationController
   end
 
   def save_question_and_answers
-    return if params[:question].nil? or params[:canswer].nil? or params[:question].blank? or params[:canswer].blank?
+    return if params[:question].blank? or params[:canswer].blank?
     @question = Question.new
     @question.text = params[:question]
     @question.user_id = current_user.id
-    @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
-    @question.created_for_asker_id = params[:asker_id] unless params[:asker_id].nil?
-    @question.status = params[:status].to_i
-    @question.priority = params[:priority].to_i
+    @question.priority = true
+    # @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
+    @question.created_for_asker_id = params[:asker_id]
+    @question.status = 0
     @question.save
 
     @question.answers << Answer.create(:text => params[:canswer], :correct => true)
@@ -108,7 +108,6 @@ class QuestionsController < ApplicationController
     @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
     @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
     render :json => @question
-    # redirect_to "/questions/new?account_id=#{params[:account_id]}&success=1"
   end
 
   def moderate
@@ -121,11 +120,12 @@ class QuestionsController < ApplicationController
     if accepted
       question.update_attributes(:status => 1)
       a = User.asker(question.created_for_asker_id)
-      Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
+      # Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
     else
       question.update_attributes(:status => -1)
       a = User.asker(question.created_for_asker_id)
-      Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
+      ## DM user to let them know!
+      # Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
     end
     render :nothing => true, :status => 200
   end

@@ -35,9 +35,10 @@ class Post < ActiveRecord::Base
     where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
-  def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "")
+  def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "", via = "")
     user = "" if user.nil?
     url = "" if url.nil?
+    via = "" if via.nil?
     if resource_url.nil?
       resource_url = "" 
     else
@@ -48,19 +49,22 @@ class Post < ActiveRecord::Base
     url_length = url.length
     resource_url_length = resource_url.length
     hashtag_length = hashtag.nil? ? 0 : hashtag.length
+    via_length = via.length
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
     remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
     remaining = (remaining - (resource_url_length + 1)) if resource_url_length > 0
+    remaining = (remaining - (via_length + 1)) if via_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
     tweet += "@#{user} " if handle_length > 0
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
-    tweet += " #{hashtag}" if hashtag_length > 0
+    tweet += " ##{hashtag}" if hashtag_length > 0
     tweet += " #{resource_url}" if resource_url_length > 0
+    tweet += " via @#{via}" if via_length > 0
     return tweet    
   end
 
@@ -109,19 +113,26 @@ class Post < ActiveRecord::Base
   ###
 
   def self.publish(provider, asker, publication)
-    # puts provider, asker.to_json, publication.to_json
     question = Question.find(publication.question_id)
+    if question.user_id == 1
+      via = nil
+    else
+      user = question.user
+      via = user.twi_screen_name
+    end
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
-    # puts long_url
     case provider
     when "twitter"
       begin
         Post.tweet(
-          asker, question.text, question.hashtag, 
+          asker, question.text, ACCOUNT_DATA[asker.id][:hashtags].sample, 
           nil, long_url, 'status question', 
           'initial', nil, publication.id, 
-          nil, nil, false
+          nil, nil, false, via
         )
+        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, "mention", "ugc", nil, nil, nil, nil, false, nil) if via.present? and question.priority
+        # Post.dm(asker, , long_url, "ugc", nil, user) if via.present? and question.priority
+        question.update_attribute(:priority, false) if question.priority
       rescue Exception => exception
         puts "exception while publishing tweet"
         puts exception.message
@@ -138,13 +149,11 @@ class Post < ActiveRecord::Base
   def self.tweet(account, text, hashtag, reply_to, long_url, 
                  engagement_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
-                 in_reply_to_user_id, link_to_parent, resource_url = nil)
+                 in_reply_to_user_id, link_to_parent, via, resource_url = nil)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
-    short_resource_url = Post.shorten_url(resource_url, 'twi', "fwk", account.twi_screen_name) if resource_url
-    tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url)
-    puts "Tweeting:"
-    puts tweet
+    short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
+    tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url, via)
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
       twitter_response = account.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
@@ -186,13 +195,14 @@ class Post < ActiveRecord::Base
       '',
       asker.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
-      "reply answer #{status}", 
+      "mention reply answer #{status}", 
       status[0..2], 
       conversation.id, 
       nil, 
       post.id, 
       asker.id,
-      false
+      false, 
+      ''
     )
     if user_post
       conversation.posts << user_post
@@ -206,52 +216,66 @@ class Post < ActiveRecord::Base
       '', 
       current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
-      "reply answer_response #{status}", 
+      "mention reply answer_response #{status}", 
       status[0..2], 
       conversation.id, 
       nil, 
       (user_post ? user_post.id : nil), 
       current_user.id,
       true, 
+      '',
       resource_url
     )  
     conversation.posts << app_post if app_post
-    return {:message => app_post.text, :url => publication.url}
+    return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(current_acct, tweet, url, lt, question_id, user_id)
+  def self.dm(current_acct, tweet, long_url, lt, reply_post, user)
     #UPDATE POST METHOD
-    short_url = Post.shorten_url(url, 'twi', lt, current_acct.twi_screen_name, question_id) if url
-    res = current_acct.twitter.direct_message_create(user_id, "#{tweet} #{short_url if short_url}")
+    puts "in DM"
+    # puts current_acct.to_json, tweet, long_url, lt, reply_post, user.to_json
+    short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
+    res = current_acct.twitter.direct_message_create(user.twi_user_id, "#{tweet} #{short_url if short_url}")
+    if reply_post.nil?
+      conversation_id = Conversation.create(:user_id => current_acct.id).id
+    else
+      conversation_id = reply_post.conversation_id
+    end
+
     Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :to_twi_user_id => user_id,
+      :user_id => current_acct.id,
       :provider => 'twitter',
       :text => tweet,
-      :url => url.nil? ? nil : short_url,
-      :link_type => lt,
-      :post_type => 'dm',
-      :provider_post_id => res.id.to_s
+      :engagement_type => 'pm',
+      :provider_post_id => res.id.to_s,
+      :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
+      :in_reply_to_user_id => user.id,
+      :conversation_id => conversation_id,
+      :url => long_url ? short_url : nil,
+      :posted_via_app => true,
+      :responded_to => true
     )
   end
 
   def self.dm_new_followers(current_acct)
-    #@TODO update url and make dynamic for each asker account
-    new_followers = current_acct.twitter.follower_ids.ids.first(10).to_set
-    messaged = current_acct.posts.where(:provider => 'twitter',
-                            :post_type => 'dm').collect(&:to_twi_user_id).to_set
-    to_message = new_followers - messaged
-    to_message.each do |id|
-      Post.dm(
-        current_acct,
-        "Here's your first question: How many base pairs make a codon? ", 
-        "http://www.studyegg.com/review/112/10187", 
-        "dm",
-        21,
-        id
-      )
-      sleep(1)
+    to_message = []
+    new_followers = current_acct.twitter.follower_ids.ids.first(10)
+    new_followers.each do |tid|
+      u= User.find_by_twi_user_id(tid)
+      if u.nil?
+        new_u = User.create(:twi_user_id => tid)
+        to_message.push new_u
+      else
+        unless current_acct.posts.where(:provider => 'twitter', :engagement_type => 'pm', :in_reply_to_user_id => u.id).count > 0
+          to_message.push u
+        end
+      end
+    end
+
+    to_message.each do |user|
+      dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
+      q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
+      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user)
     end
   end
 
@@ -317,7 +341,7 @@ class Post < ActiveRecord::Base
       conversation = reply_post.conversation
     else
       puts "No reply post"
-    end      
+    end     
     post = Post.create( 
       :provider_post_id => m.id.to_s,
       :engagement_type => reply_post ? 'mention reply' : 'mention',
@@ -364,7 +388,8 @@ class Post < ActiveRecord::Base
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,
         :in_reply_to_user_id => retweeted_post.user_id,
-        :posted_via_app => false
+        :posted_via_app => false,
+        :created_at => r.created_at
       )
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -378,6 +403,11 @@ class Post < ActiveRecord::Base
                         :twi_profile_img_url => d.sender.profile_image_url)
     dm = Post.find_by_provider_post_id(d.id.to_s)
     return if dm
+    reply_post = Post.where(:provider => 'twitter',
+                            :engagement_type => 'pm',
+                            :in_reply_to_user_id => u.id).last
+    conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
+
     Post.create( 
       :provider_post_id => d.id.to_s,
       :engagement_type => 'pm',
@@ -387,7 +417,7 @@ class Post < ActiveRecord::Base
       :in_reply_to_post_id => nil, #reply_post ? reply_post.id : nil,
       :in_reply_to_user_id => current_acct.id,
       :created_at => d.created_at,
-      :conversation_id => nil, #conversation.nil? ? nil : conversation.id,
+      :conversation_id => conversation_id,
       :posted_via_app => false
     )
   end

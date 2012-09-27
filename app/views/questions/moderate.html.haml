@@ -1,20 +1,25 @@
 - model_class = Question.new.class
 #moderate_questions
   .page-header
-    %h1= t '.title', :default => model_class.model_name.human.pluralize
-  %table.table.table-striped
+    %h1 Submitted Questions
+    / # %h1= t '.title', :default => model_class.model_name.human.pluralize
+  %table.table{:style => "background: white;"}
     %thead
       %tr
         %th.span10= model_class.human_attribute_name(:text)
-        %th= model_class.human_attribute_name(:topic_id)
+        %th= "Handle"
         %th= model_class.human_attribute_name(:created_at)
         %th= t '.actions', :default => t("helpers.actions")
     %tbody
       - @questions.each do |question|
-        %tr
-          %td.span10= question.text
-          %td= question.topic_id
-          %td= question.created_at
+        %tr{:id => "question_#{question.id}"}
+          %td.span10
+            %p{:style => "font-weight: bold;"}= question.text
+            - question.answers.each_with_index do |answer, i|
+              %p= "#{i+1}. #{answer.text}"
+          - handle = User.askers.where(:id => question.created_for_asker_id).first.try(:twi_screen_name)
+          %td= handle
+          %td= question.created_at.strftime("%m/%d %H:%M")
           %td
             .btn-group
               %button.btn.btn-success{:qid => question.id} Accept

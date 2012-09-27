@@ -8,10 +8,22 @@ class FeedsController < ApplicationController
   def show
     @asker = User.asker(params[:id])
     if @asker
+      # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+      
+      publication_ids = @asker.publications.select(:id).where(:published => true)
+      @question_count = publication_ids.size
+      @questions_answered = Rep.where(:publication_id => publication_ids).count
+      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.total_followers
+      
       @leaders = User.leaderboard(params[:id])
       if current_user
+        @correct = 0
+        @leaders[:scores].each do |user|
+          next if user[:user].id != current_user.id or @correct != 0
+          @correct = user[:correct]
+        end        
         @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
       else
         @responses = []
@@ -49,26 +61,29 @@ class FeedsController < ApplicationController
   end
 
   def tweet
+    puts "in manager tweet, params:"
     puts params.to_json
     @asker = User.asker(params[:asker_id])
     @user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     conversation = @user_post.conversation || Conversation.create(:post_id => @user_post.id, :user_id => @asker.id ,:publication_id => params[:publication_id])
+    tweet = params[:tweet].gsub("@#{params[:username]}", "")
     if params[:publication_id]
       pub = Publication.find(params[:publication_id].to_i)
       post = pub.posts.where(:provider => "twitter").first
       @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-      response_post = Post.tweet(@asker, params[:tweet], '', params[:username], long_url, 
-                   'mention reply answer_response', nil, conversation.id,
+      status = correct || ""
+      response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
+                   'mention reply answer_response #{status}', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], false, 
-                   (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
+                   params[:in_reply_to_user_id], false,
+                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
     else
-      response_post = Post.tweet(@asker, params[:tweet], '', params[:username], nil, 
+      response_post = Post.tweet(@asker, tweet, '', params[:username], nil, 
                    'mention reply', nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], true, nil)      
+                   params[:in_reply_to_user_id], true, nil, '')      
     end
     @user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
     render :json => response_post
@@ -124,7 +139,7 @@ class FeedsController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @posts }
-    end    
+    end
   end
 
 end

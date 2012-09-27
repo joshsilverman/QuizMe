@@ -13,12 +13,15 @@ class User < ActiveRecord::Base
 
 	def publish_question
 		queue = self.publication_queue
+		puts "current queue index = #{queue.index}"
+		puts "current queue order: #{queue.publications.select(:id).to_json}"
 		publication = queue.publications[queue.index]
 		publication.update_attribute(:published, true)
 		PROVIDERS.each do |provider|
 			Post.publish(provider, self, publication)
 		end
 		queue.increment_index(self.posts_per_day)
+		puts "incremented queue index = #{queue.index}"
 	end
 
 	def self.create_with_omniauth(auth)

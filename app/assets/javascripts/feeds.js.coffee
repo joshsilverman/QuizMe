@@ -8,11 +8,13 @@ class Feed
 	manager: false
 	conversations: null
 	engagements: null
+	correct: null
 	constructor: ->
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
+		@correct = $("#correct").val()
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
@@ -23,6 +25,9 @@ class Feed
 				e.preventDefault()
 				@show_more()
 		# @initializeNewPostListener()
+		$(".post_question").on "click", (e) =>
+			e.preventDefault()
+			@post_question()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
@@ -31,6 +36,59 @@ class Feed
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
 	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
+	post_question: =>
+		return unless window.feed.correct > 9
+		$("#post_question_modal").modal()
+		$("#add_answer").off "click"
+		$("#add_answer").on "click", => add_answer()
+		$("#submit_question").off "click"
+		$("#submit_question").on "click", (e) => 
+			e.preventDefault()
+			submit()
+
+		add_answer = ->
+			count = $(".answer").length
+			return if count > 3
+			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
+			$("#add_answer").hide() if count == 3
+
+		submit = ->
+			if validate_form()
+				$("#submit_question").button("loading")
+				data =
+					"question" : $("#question_input").val()
+					"asker_id" : window.feed.id
+					"status" : $("#status").val()
+					"canswer" : $("#canswer input").val()
+					"ianswer1" : $("#ianswer1 input").val()
+					"ianswer2" : $("#ianswer2 input").val()
+					"ianswer3" : $("#ianswer3 input").val()
+				$.ajax
+					url: "/questions/save_question_and_answers",
+					type: "POST",
+					data: data,
+					error: => alert_status(false),
+					success: (e) => 
+						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
+						alert_status(true)
+
+		alert_status = (status) ->
+			$('#submit_question').button('reset')
+			text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
+			$('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
+			alert text
+
+		validate_form = ->
+			if $("#question_input").val() == ""
+				alert "Please enter a question!"
+				return false
+			else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
+				alert "Please enter at least one correct and incorrect answer!"
+				return false
+			else
+				return true		
+
 	displayNewPost: (data, insert_type, interaction = null) => 
 		conversation = $("#post_template").clone().removeAttr("id").show()
 		post = conversation.find(".post")
@@ -109,7 +167,7 @@ class Post
 	answers: []
 	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
 	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
-	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books (or videos)!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
+	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
 
 	constructor: (element) ->
 		@answers = []
@@ -172,7 +230,7 @@ class Post
 			data: params
 			success: (e) => 
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("@#{window.feed.name} #{text} #{e.url}")
+				subsidiary.find("p").text(e.user_message)
 				subsidiary.find("img").attr("src", window.feed.user_image)
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
@@ -186,7 +244,7 @@ class Post
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text("#{message_hash.message}") 
+		response.find("p").text(message_hash.app_message) 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
@@ -268,6 +326,7 @@ class Post
 				type: 'POST'
 				data: params
 				success: (e) =>
+					$("#respond_modal").find("textarea").val("")
 					$("#respond_modal").dialog('close')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
 					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
