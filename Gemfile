@@ -47,5 +47,4 @@ gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
 
 gem 'best_in_place'
-gem 'stuff-classifier', :git => 'git://github.com/alexandru/stuff-classifier.git'
-#gem 'madeleine'
+gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
