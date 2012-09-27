@@ -31,11 +31,9 @@ task :update_post_attributes => :environment do
 			type = 2			
 		end
 
-		if engagement_type.include? "correct" and !engagement_type.include? "answer_response"
-			eng_correct = true
-		elsif engagement_type.include? "incorrect" and !engagement_type.include? "answer_response"
-			eng_correct = false
-		end
+		eng_correct = true if engagement_type.include? "correct" and !engagement_type.include? "answer_response"
+		eng_correct = false if engagement_type.include? "incorrect" and !engagement_type.include? "answer_response"
+			
 		correct = post.reps.first.try(:correct)
 		correct = eng_correct if correct.nil?
 		correct = nil if engagement_type.include? "status"

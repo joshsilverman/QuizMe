@@ -14,8 +14,9 @@ class FeedsController < ApplicationController
       
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
+      # Slated for demolition
       @questions_answered = Rep.where(:publication_id => publication_ids).count
-      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.total_followers
+      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
       
       @leaders = User.leaderboard(params[:id])
       if current_user
@@ -77,12 +78,12 @@ class FeedsController < ApplicationController
                    2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], false,
-                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), correct)
+                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), nil)
     else
       response_post = Post.tweet(@asker, tweet, '', params[:username], nil, 
                    2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], true, nil, '', correct)      
+                   params[:in_reply_to_user_id], true, nil, '', nil)      
     end
     @user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
     render :json => response_post
@@ -91,7 +92,7 @@ class FeedsController < ApplicationController
   def link_to_post
     answer = Post.find(params[:post_id])
     post = Post.find(params[:link_to_post_id])
-    answer.update_attributes(:in_reply_to_post_id => post.id, :engagement_type => 'mention reply')
+    answer.update_attributes(:in_reply_to_post_id => post.id, :interaction_type => 2)
     render :nothing => true
   end
 

@@ -63,19 +63,38 @@ class Stat < ActiveRecord::Base
 
 	def self.get_month_graph_data(askers)
 		asker_ids = askers.collect(&:id)
-		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
-		date_grouped_stats = month_stats.group_by(&:date)
 		graph_data = {:total_followers => {}, :click_throughs => {}, :active_user_ids => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+		posts = Post.where('created_at > ? and user_id not in (?) and (spam = ? or spam is null) and in_reply_to_post_id not null', (Date.today - 30), asker_ids, false)
+		date_grouped_posts = posts.group_by { |post| post.created_at.to_date }
 		((Date.today - 30)..Date.today).each do |date|
-			graph_data.each do |key, value|
-				graph_data[key][date] = {}
-				next unless date_grouped_stats[date]
-				date_grouped_stats[date].each do |stat|
-					graph_data[key][date][stat.asker_id] = (key == :active_user_ids ? stat[key].split(",").uniq : stat[key])
-				end
-			end  
+			graph_data[:total_followers][date], graph_data[:total_followers][date], graph_data[:click_throughs][date], graph_data[:active_user_ids][date], graph_data[:questions_answered][date], graph_data[:retweets][date], graph_data[:mentions][date] = {}, {}, {}, {}, {}, {}, {}
+			next unless date_grouped_posts[date]
+			date_grouped_posts[date].group_by { |post| post.in_reply_to_user_id }.each do |asker_id, asker_posts|
+				puts puts asker_posts.select{ |p| p.interaction_type == 3 }.size
+				puts asker_posts.select{ |p| p.interaction_type == 3 }.to_json
+				graph_data[:retweets][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 3 }.size
+				graph_data[:mentions][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 2 }.size
+				graph_data[:questions_answered][date][asker_id] = asker_posts.select{ |p| p.correct.present? }.size
+				graph_data[:click_throughs][date][asker_id] = 0
+				graph_data[:total_followers][date][asker_id] = 0
+				graph_data[:active_user_ids][date][asker_id] = asker_posts.collect(&:user_id).join(",") #{ |p| p.correct.present? }.size
+				# graph_data[:dms][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 4 }.size
+			end
 		end
 		return graph_data
+		# asker_ids = askers.collect(&:id)
+		# month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
+		# date_grouped_stats = month_stats.group_by(&:date)
+		# graph_data = {:total_followers => {}, :click_throughs => {}, :active_user_ids => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+		# ((Date.today - 30)..Date.today).each do |date|
+		# 	graph_data.each do |key, value|
+		# 		graph_data[key][date] = {}
+		# 		next unless date_grouped_stats[date]
+		# 		date_grouped_stats[date].each do |stat|
+		# 			graph_data[key][date][stat.asker_id] = (key == :active_user_ids ? stat[key].split(",").uniq : stat[key])
+		# 		end
+		# 	end  
+		# end
 	end
 
 	def self.get_display_data(askers, today_active_user_ids = [], total_active_user_ids = [])
