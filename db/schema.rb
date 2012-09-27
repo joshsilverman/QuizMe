@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120924002526) do
+ActiveRecord::Schema.define(:version => 20120927131956) do
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -53,6 +53,8 @@ ActiveRecord::Schema.define(:version => 20120924002526) do
     t.string   "url"
     t.boolean  "spam"
     t.boolean  "autospam"
+    t.integer  "interaction_type"
+    t.boolean  "correct"
   end
 
   create_table "publication_queues", :force => true do |t|

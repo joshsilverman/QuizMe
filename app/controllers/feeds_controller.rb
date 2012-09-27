@@ -75,7 +75,7 @@ class FeedsController < ApplicationController
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
       status = correct || ""
       response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
-                   'mention reply answer_response #{status}', nil, conversation.id,
+                   2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], false,
                    '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
