@@ -11,6 +11,8 @@ class FeedsController < ApplicationController
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
 
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
+      # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
+      # @post_times = posts.group_by(&:publication_id)
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
@@ -22,7 +24,7 @@ class FeedsController < ApplicationController
           next if user[:user].id != current_user.id or @correct != 0
           @correct = user[:correct]
         end        
-        @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
+        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
       else
         @responses = []
       end

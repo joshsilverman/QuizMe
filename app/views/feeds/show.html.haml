@@ -18,6 +18,7 @@
 						.conversation.border-color
 							.post.parent{:class => ("answered" if responded), :post_id => post.id}
 								#time
+									/ - puts post.to_json
 									%p.time_ago= time_formatter(post[:created_at].to_date)			
 								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
