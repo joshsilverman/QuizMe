@@ -42,7 +42,7 @@ task :update_post_attributes => :environment do
 		post.interaction_type = type
 		post.save
 
-		puts post.to_json
-		puts "\n\n"
+		# puts post.to_json
+		# puts "\n\n"
 	end
 end

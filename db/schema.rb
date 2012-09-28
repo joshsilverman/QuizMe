@@ -37,24 +37,24 @@ ActiveRecord::Schema.define(:version => 20120927131956) do
   end
 
   create_table "posts", :force => true do |t|
-    t.integer  "user_id"
-    t.string   "provider"
-    t.text     "text"
-    t.string   "engagement_type"
-    t.string   "provider_post_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "in_reply_to_post_id"
-    t.integer  "publication_id"
-    t.integer  "conversation_id"
-    t.boolean  "responded_to",        :default => false
-    t.integer  "in_reply_to_user_id"
-    t.boolean  "posted_via_app"
-    t.string   "url"
-    t.boolean  "spam"
-    t.boolean  "autospam"
-    t.integer  "interaction_type"
-    t.boolean  "correct"
+    t.integer   "user_id"
+    t.string    "provider"
+    t.text      "text"
+    t.string    "engagement_type"
+    t.string    "provider_post_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "in_reply_to_post_id"
+    t.integer   "publication_id"
+    t.integer   "conversation_id"
+    t.boolean   "responded_to",        :default => false
+    t.integer   "in_reply_to_user_id"
+    t.boolean   "posted_via_app"
+    t.string    "url"
+    t.boolean   "spam"
+    t.boolean   "autospam"
+    t.integer   "interaction_type"
+    t.boolean   "correct"
   end
 
   create_table "publication_queues", :force => true do |t|
