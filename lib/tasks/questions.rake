@@ -26,7 +26,7 @@ namespace :questions do
           q.answers << Answer.create(:text => correct, :correct => true)
           incorrect.each do |aa|
             aa = aa.capitalize if aa=~/false|true/
-            q.answers << Answer.create(:text => aa, :correct => false)}
+            q.answers << Answer.create(:text => aa, :correct => false)
           end
         else
           puts "updating: #{question}"
@@ -36,7 +36,7 @@ namespace :questions do
           q.answers << Answer.create(:text => correct, :correct => true)
           incorrect.each do |aa|
             aa = aa.capitalize if aa=~/false|true/
-            q.answers << Answer.create(:text => aa, :correct => false)}
+            q.answers << Answer.create(:text => aa, :correct => false)
           end
         end
       else
