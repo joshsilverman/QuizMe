@@ -9,7 +9,7 @@
             - if current_user.is_role?('admin')
               %li
                 .dropdown.nav-link
-                  %a{:href => "/askers", 'data-target' => "#"}= "Askers"
+                  %a{:href => "/askers", 'data-target' => "#"} Askers
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/askers", :tabindex => "-1"} All Askers
@@ -18,7 +18,13 @@
                       %li
                         %a{:href => "/feeds/#{a.id}", :tabindex => "-1"}= a.twi_screen_name 
               %li
-                %a.nav-link{:href => "/dashboard"}= "Dashboard"
+                .dropdown.nav-link
+                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Stats
+                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+                    %li
+                      %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
+                    %li
+                      %a{:href => "/abingo", :tabindex => "-1"} A/B Tests
 
             - else
               %li

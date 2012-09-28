@@ -32,6 +32,8 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   
+  #abingo
+  match 'abingo(/:action(/:id))', :to => 'abingo_dashboard', :as => :bingo
 
   root :to => 'feeds#index'
 end
