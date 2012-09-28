@@ -18,7 +18,7 @@
 						.conversation.border-color
 							.post.parent{:class => ("answered" if responded), :post_id => post.id}
 								#time
-									%p.time_ago= time_formatter(r[:created_at].to_date)			
+									%p.time_ago= time_formatter(post[:created_at].to_date)			
 								%i.icon-share-alt{:style => ("display: none;" unless responded)}
 								.content
 									- if post.question.user_id != 1
