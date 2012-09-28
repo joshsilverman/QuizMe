@@ -27,13 +27,12 @@ class PostsController < ApplicationController
 		post = Post.find(params[:post_id].to_i)
 		correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
 		unless correct.nil? or post.nil?
-			asker = User.asker(params[:asker_id].to_i)
-			user = post.user
-			conversation = post.conversation
-			question_id = conversation.publication.question_id
-			post.update_responded(correct, conversation.publication_id, question_id, asker.id)
-			tweet = post.generate_response(params[:response_type])
-      bingo! "answer"
+      asker = User.asker(params[:asker_id].to_i)
+      user = post.user
+      conversation = post.conversation
+      question_id = conversation.publication.question_id
+      post.update_responded(correct, conversation.publication_id, question_id, asker.id)
+      tweet = post.generate_response(params[:response_type])
 			if params[:response_type] == 'fast'
 				Post.tweet(asker, tweet, '','',"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", "reply answer_response #{correct ? 'correct' : 'incorrect'}", conversation.id, nil, post.id, user.id, false)
 			else
