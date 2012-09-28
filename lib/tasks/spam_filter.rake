@@ -1,11 +1,15 @@
 require 'stuff-classifier'
-#require 'Classifier'
 
 namespace :spam_filter do
 
   task :classify_all => :environment do
     @classifier = Classifier.new
     @classifier.classify_all
+  end
+
+  task :classify_testing_set => :environment do
+    @classifier = Classifier.new
+    @classifier.classify_testing_set
   end
 
   task :build_truthset => :environment do
@@ -18,4 +22,7 @@ namespace :spam_filter do
     @classifier.train
     @classifier.classify_all
   end
+
+  # @classifier = Classifier.new
+  # @classifier.classify post
 end
