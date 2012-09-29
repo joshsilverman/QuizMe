@@ -1,5 +1,6 @@
 PROVIDERS = ["twitter"]
-ADMINS = [1, 3, 4, 11, 25]
+## ADD studyeggtest back in (25)
+ADMINS = [1, 3, 4, 11]
 
 URL = (Rails.env.production? ? "http://www.wisr.com" : "http://studyegg-quizme-staging.herokuapp.com")
 

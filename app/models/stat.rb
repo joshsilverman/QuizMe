@@ -139,12 +139,17 @@ class Stat < ActiveRecord::Base
 			totals[:active_users][:today] += display_data[asker_id][:active_users][:today]
 			totals[:active_users][:total] += display_data[asker_id][:active_users][:total]
 
-			display_data[asker_id][:click_throughs][:total] = Stat.where(:asker_id => asker_id).sum(:click_throughs)
-			display_data[asker_id][:click_throughs][:today] = months_asker_grouped_stats[asker_id][-1].click_throughs
-			# display_data[0][:click_throughs][:total] += display_data[asker_id][:click_throughs][:total]
-			# display_data[0][:click_throughs][:today] += display_data[asker_id][:click_throughs][:today]			
+			puts asker_id
+			puts months_asker_grouped_stats[asker_id].to_json
+			
+			months_asker_grouped_stats[asker_id] ? last_stat = months_asker_grouped_stats[asker_id][-1] : last_stat = nil
 
-			display_data[asker_id][:followers][:total] = months_asker_grouped_stats[asker_id][-1].total_followers
+			display_data[asker_id][:click_throughs][:total] = Stat.where(:asker_id => asker_id).sum(:click_throughs)
+			display_data[asker_id][:click_throughs][:today] = last_stat ? last_stat.click_throughs : 0
+			display_data[0][:click_throughs][:total] += display_data[asker_id][:click_throughs][:total]
+			display_data[0][:click_throughs][:today] += display_data[asker_id][:click_throughs][:today]			
+
+			display_data[asker_id][:followers][:total] = last_stat ? last_stat.total_followers : 0
 			totals[:followers][:total] += display_data[asker_id][:followers][:total]
 			if months_asker_grouped_stats[asker_id][-2]
 				display_data[asker_id][:followers][:today] = months_asker_grouped_stats[asker_id][-1].total_followers - months_asker_grouped_stats[asker_id][-2].total_followers
