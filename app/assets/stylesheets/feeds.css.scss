@@ -375,7 +375,7 @@ body {
 			}
 
 			i {
-				margin-right: 3px;
+				margin-right: 4px;
 				margin-top: -3px;
 			}
 
@@ -417,11 +417,20 @@ body {
 					display: inline;
 				}
 				
-				img {
+				.asker {
 					position: absolute;
 					top: 10px;
 					left: 10px;
 					height: 48px;
+				}
+
+				.interactions {
+					margin-top: 3px;
+				
+					img {
+						height: 24px;
+
+					}
 				}
 			}
 
@@ -447,6 +456,7 @@ body {
 					-moz-border-radius: 5px;
 					border-radius: 5px;
 					z-index: 1;
+					word-wrap: break-word;
 				}
 
 				.ui-accordion-header.ui-state-active {
@@ -524,6 +534,7 @@ body {
 
 						#answer {
 							color: #777;
+							word-wrap: break-word;
 						}
 
 						#account, #url {		

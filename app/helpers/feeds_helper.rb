@@ -43,16 +43,16 @@ module FeedsHelper
 	end
 
 	def time_formatter(date)
-		if (Date.today - date).to_i > 0
-			time = date.strftime("%m/%d")
-			time.gsub! "/0", "/"
-			time.slice!(0) if time[0] == "0"
-		else 
+		if date.to_date == Date.today
 			time = time_ago_in_words(date)
 			time.gsub!("about ", "")
 			time.gsub!(" hours", "h")
 			time.gsub!(" minutes", "m")
 			time.gsub!(" seconds", "s")
+		else 
+			time = date.strftime("%m/%d")
+			time.gsub! "/0", "/"
+			time.slice!(0) if time[0] == "0"
 		end
 		return time
 	end	

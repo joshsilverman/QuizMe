@@ -9,6 +9,7 @@ class Feed
 	engagements: null
 	correct: null
 	constructor: ->
+		# $("img").tooltip()
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
@@ -171,7 +172,7 @@ class Post
 			data: params
 			success: (e) => 
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text(e.user_message)
+				subsidiary.find(".content p").text(e.user_message)
 				subsidiary.find("img").attr("src", window.feed.user_image)
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
@@ -185,7 +186,7 @@ class Post
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text(message_hash.app_message) 
+		response.find(".content p").text(message_hash.app_message) 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
