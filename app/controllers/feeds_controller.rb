@@ -58,7 +58,7 @@ class FeedsController < ApplicationController
 
   def respond_to_question
     puts 'bingo'
-    bingo! 'answer'
+    bingo! 'answer_options_visible'
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
