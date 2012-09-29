@@ -1,16 +1,16 @@
 source :rubygems
 
 gem "rspec-rails", :group => [:test, :development]
+gem 'pg'#, :require => false
 # gem 'rack-mini-profiler' #won't show up in production
 
 group :test do
-  gem 'sqlite3'
+  #gem 'sqlite3'
   gem 'turn', :require => false
   gem "database_cleaner"
 end
 
 group :production do
-  gem 'pg', :require => false
   gem 'bcrypt-ruby'
 end
 

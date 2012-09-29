@@ -17,20 +17,23 @@
 				.select_option
 					%input{:type => "checkbox", :id => "select_#{asker.twi_screen_name}", :value => asker.id}
 					%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
+
+
 	#data_row.row
-		#total_followers.panel.rounded.span6
-			#followers_stats.stats
+		#paulgraham_users.panel.left.rounded.span6
+			#paulgraham_stats.stats
 				.header
-					%h3 Followers
+					%h3 New/Existing 
 				.new
 					.container
 						%p.number
-						%p.period new
+						%p.period today
 				.total
 					.container
-						%p.number{:style => "font-size: 32px;"}
-						%p.period all-time				
-			#total_followers_graph.graph
+						%p.number
+						%p.period 30 day avg.
+			#paul_graham_graph.graph
+
 		#active_users.panel.right.rounded.span6
 			#active_users_stats.stats
 				.header
@@ -44,6 +47,8 @@
 						%p.number
 						%p.period last 30 days			
 			#active_user_ids_graph.graph
+
+
 	#data_row.row
 		#questions_answered.panel.rounded.span6
 			#questions_answered_stats.stats
@@ -58,6 +63,7 @@
 						%p.number
 						%p.period all-time				
 			#questions_answered_graph.graph
+
 		#click_throughs.panel.right.rounded.span6
 			#click_throughs_stats.stats
 				.header
@@ -71,6 +77,8 @@
 						%p.number 
 						%p.period all-time				
 			#click_throughs_graph.graph
+
+
 	#data_row.row
 		#mentions.panel.rounded.span6
 			#mentions_stats.stats
@@ -98,3 +106,19 @@
 						%p.number
 						%p.period all-time
 			#retweets_graph.graph
+
+
+	#data_row.row
+		#total_followers.panel.rounded.span6
+			#followers_stats.stats
+				.header
+					%h3 Followers
+				.new
+					.container
+						%p.number
+						%p.period new
+				.total
+					.container
+						%p.number{:style => "font-size: 32px;"}
+						%p.period all-time				
+			#total_followers_graph.graph

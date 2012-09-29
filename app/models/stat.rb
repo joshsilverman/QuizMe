@@ -133,6 +133,24 @@ class Stat < ActiveRecord::Base
 		return display_data
 	end
 
+	# jason i decided to modularize this set of queries since we will be eliminating stats
+	def self.paulgraham
+		new_on = User.order("DATE(created_at)").group("DATE(created_at)").count
+		existing_as_of = {}
+		new_to_existing_on = {}
+		
+		existing_as_of[Date.today - 29] = new_on\
+			.reject{|d,c| Date.parse(d) > Date.today - 29.days}\
+			.collect{|k,v| v}
+			.sum
+		(0..28).to_a.reverse.each do |n| 
+			existing_as_of[Date.today - n]\
+			  = existing_as_of[Date.today - (n+1).days]\
+			  + new_on[(Date.today - n.days).strftime("%F")].to_i
+		end
+		existing_as_of
+	end
+
 	# def self.get_yesterday(id)
 	# 	###get yesterdays stats or create dummy yesterday for math
 	# 	d = Date.today
