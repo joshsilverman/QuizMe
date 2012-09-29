@@ -16,8 +16,9 @@ class FeedsController < ApplicationController
       @question_count = publication_ids.size
       # Slated for demolition
       @questions_answered = Rep.where(:publication_id => publication_ids).count
+      # @questions_answered = Post.where("")
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
-      
+      # Fix leaderboard
       @leaders = User.leaderboard(params[:id])
       if current_user
         @correct = 0

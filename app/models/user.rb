@@ -103,7 +103,7 @@ class User < ActiveRecord::Base
 		user_ids = posts.collect {|post| post[0]}
 		users = User.select([:twi_screen_name, :twi_profile_img_url, :id]).find(user_ids).group_by(&:id)
 		posts.each { |post| scores << {:user => users[post[0]].first, :correct => post[1].length} }
-		data[:scores] = {}
+		data[:scores] = scores
 		return data
 	end	
 
