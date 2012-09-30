@@ -49,6 +49,8 @@
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")
 			%h5= @asker.twi_screen_name
 			%p Post content
+			.interactions
+				/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")			
 		.answers.rounded.border{:style => "display: none;"}
 	.subsidiaries{:style => "display: none;"}
 	.loading{:style => "display: none;"}
