@@ -606,11 +606,11 @@ body {
 			margin-left: 58px;
 			min-height: 40px;
 			
-			img {
+			.asker {
 				position: absolute;
 				top: 10px;
-				left: 18px;
-				height: 40px;
+				left: 10px;
+				height: 48px;
 			}
 		}					
 	}
@@ -670,7 +670,6 @@ body {
 }	
 
 .interactions {
-	margin-top: 3px;
 	background: whitesmoke;
 	border-top: dotted #ddd 1px;
 	padding: 5px;

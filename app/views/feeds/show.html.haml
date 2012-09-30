@@ -49,10 +49,10 @@
 			= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")
 			%h5= @asker.twi_screen_name
 			%p Post content
-			.interactions
-				/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")			
 		.answers.rounded.border{:style => "display: none;"}
 	.subsidiaries{:style => "display: none;"}
+	.interactions
+		/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")				
 	.loading{:style => "display: none;"}
 		Loading...
 
@@ -69,7 +69,7 @@
 
 #subsidiary_template.post{:style => "display: none;"}
 	.content
-		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
+		= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")							
 		%h5= "User Name"
 		%p= "Post content"
 
