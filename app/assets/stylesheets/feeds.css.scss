@@ -346,7 +346,7 @@ body {
 		border-right-width: 1px;
 		border-left-style: solid;
 		border-left-width: 1px;
-		border-bottom-style: dotted;
+		border-bottom-style: solid;
 		border-bottom-width: 1px;
 
 		.loading {
@@ -423,20 +423,7 @@ body {
 					left: 10px;
 					height: 48px;
 				}
-
-				.interactions {
-					margin-top: 3px;
-					/*border-top: dotted black 1px;*/
-					/*border-bottom: dotted black 1px;*/
-					/*padding-top: 2px;*/
-					/*padding-bottom: 2px;*/
-				
-					img {
-						height: 24px;
-
-					}
-				}
-			}
+			}	
 
 			.answers {
 				border-color: #ddd;
@@ -681,6 +668,18 @@ body {
 		border-top-width: 1px;
 	}				
 }	
+
+.interactions {
+	margin-top: 3px;
+	background: whitesmoke;
+	border-top: dotted #ddd 1px;
+	padding: 5px;
+	padding-left: 68px;
+
+	img {
+		height: 24px;
+	}
+}		
 
 .ui-dialog {
 	padding: 0px !important;
