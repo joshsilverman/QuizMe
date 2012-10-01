@@ -1,0 +1,41 @@
+%h3
+  = experiment.test_name.titleize
+  = "<i>(Test completed)</i>".html_safe if experiment.status != "Live"
+- short_circuit = Abingo.cache.read("Abingo::Experiment::short_circuit(#{experiment.test_name})".gsub(" ", ""))
+%table.experiment.table{:style => "border: 1px black;"}
+  %tr.header_row
+    %th Name
+    %th Participants
+    %th Conversions
+    %th Notes
+  %tr.experiment_row
+    %td Experiment Total:
+    %td
+      = experiment.participants
+    %td
+      = experiment.conversions
+      (
+      = experiment.pretty_conversion_rate
+      )
+    %td
+  - experiment.alternatives.each do |alternative|
+    %tr.alternative_row
+      %td
+        = h alternative.content
+      %td= alternative.participants
+      %td
+        = alternative.conversions
+        (
+        = alternative.pretty_conversion_rate
+        )
+      %td
+        - unless experiment.status != "Live"
+          = link_to("End experiment, picking this.", url_for(:id => alternative.id, :action => "end_experiment"), :method => :post, :confirm => "Are you sure you want to terminate this experiment?  This is not reversible.")
+
+        - else
+          - if alternative.content == short_circuit
+            %b (All users seeing this.)
+  %tr
+    %td{:colspan => "4"}
+      %b Significance test results:
+      = experiment.describe_result_in_words

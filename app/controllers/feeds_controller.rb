@@ -14,9 +14,11 @@ class FeedsController < ApplicationController
       
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
-      @questions_answered = Rep.where(:publication_id => publication_ids).count
-      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.total_followers
-      
+      # Slated for demolition
+      # @questions_answered = Rep.where(:publication_id => publication_ids).count
+      @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
+      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
+      # Fix leaderboard
       @leaders = User.leaderboard(params[:id])
       if current_user
         @correct = 0
@@ -57,6 +59,8 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
+    puts 'bingo'
+    bingo! 'answer_options_visible'
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
@@ -72,18 +76,18 @@ class FeedsController < ApplicationController
       pub = Publication.find(params[:publication_id].to_i)
       post = pub.posts.where(:provider => "twitter").first
       @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
+      @user_post.update_attribute(:correct, correct)
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-      status = correct || ""
       response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
-                   'mention reply answer_response #{status}', nil, conversation.id,
+                   2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
                    params[:in_reply_to_user_id], false,
-                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil))
+                   '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), nil)
     else
       response_post = Post.tweet(@asker, tweet, '', params[:username], nil, 
-                   'mention reply', nil, conversation.id,
+                   2, nil, conversation.id,
                    nil, params[:in_reply_to_post_id], 
-                   params[:in_reply_to_user_id], true, nil, '')      
+                   params[:in_reply_to_user_id], true, nil, '', nil)      
     end
     @user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
     render :json => response_post
@@ -92,7 +96,7 @@ class FeedsController < ApplicationController
   def link_to_post
     answer = Post.find(params[:post_id])
     post = Post.find(params[:link_to_post_id])
-    answer.update_attributes(:in_reply_to_post_id => post.id, :engagement_type => 'mention reply')
+    answer.update_attributes(:in_reply_to_post_id => post.id, :interaction_type => 2)
     render :nothing => true
   end
 

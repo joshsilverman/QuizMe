@@ -1,0 +1,19 @@
+.container.row{:style => 'margin: auto;'}
+  #feed_container.span10
+    #wrapper.span9
+      #abingo_dashboard
+        %p
+          %h1 Welcome to your A/Bingo dashboard!
+          See
+          %a{:href => "http://www.bingocardcreator.com/abingo"} the official site
+          for documentation.
+          I encourage you to customize this page to fit your needs.  See /vendor/plugins/abingo/views for
+          the view templates.  Hack them to pieces -- please!
+        %p
+          - if flash[:notice]
+            %span{:style => "color: green;"}
+              = flash[:notice]
+          %h2 All Experiments
+          - @experiments.each do |experiment|
+            = render :partial => "dashboard/experiment", :locals => {:experiment => experiment}
+            %br

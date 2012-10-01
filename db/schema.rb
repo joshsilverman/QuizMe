@@ -11,7 +11,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120924002526) do
+ActiveRecord::Schema.define(:version => 20120928184119) do
+
+  create_table "alternatives", :force => true do |t|
+    t.integer "experiment_id"
+    t.string  "content"
+    t.string  "lookup",        :limit => 32
+    t.integer "weight",                      :default => 1
+    t.integer "participants",                :default => 0
+    t.integer "conversions",                 :default => 0
+  end
+
+  add_index "alternatives", ["experiment_id"], :name => "index_alternatives_on_experiment_id"
+  add_index "alternatives", ["lookup"], :name => "index_alternatives_on_lookup"
 
   create_table "answers", :force => true do |t|
     t.boolean   "correct"
@@ -36,23 +48,34 @@ ActiveRecord::Schema.define(:version => 20120924002526) do
     t.timestamp "updated_at"
   end
 
-  create_table "posts", :force => true do |t|
-    t.integer  "user_id"
-    t.string   "provider"
-    t.text     "text"
-    t.string   "engagement_type"
-    t.string   "provider_post_id"
+  create_table "experiments", :force => true do |t|
+    t.string   "test_name"
+    t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "in_reply_to_post_id"
-    t.integer  "publication_id"
-    t.integer  "conversation_id"
-    t.boolean  "responded_to",        :default => false
-    t.integer  "in_reply_to_user_id"
-    t.boolean  "posted_via_app"
-    t.string   "url"
-    t.boolean  "spam"
-    t.boolean  "autospam"
+  end
+
+  add_index "experiments", ["test_name"], :name => "index_experiments_on_test_name"
+
+  create_table "posts", :force => true do |t|
+    t.integer   "user_id"
+    t.string    "provider"
+    t.text      "text"
+    t.string    "engagement_type"
+    t.string    "provider_post_id"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.integer   "in_reply_to_post_id"
+    t.integer   "publication_id"
+    t.integer   "conversation_id"
+    t.boolean   "responded_to",        :default => false
+    t.integer   "in_reply_to_user_id"
+    t.boolean   "posted_via_app"
+    t.string    "url"
+    t.boolean   "spam"
+    t.boolean   "autospam"
+    t.integer   "interaction_type"
+    t.boolean   "correct"
   end
 
   create_table "publication_queues", :force => true do |t|
