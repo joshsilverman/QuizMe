@@ -34,9 +34,14 @@ class AskersController < ApplicationController
   end
 
   def update
-  	@asker = User.find(params[:id])
+  	@asker = User.askers.find(params[:id])
+    redirect_to root_url if @asker.nil?
 
-    redirect_to root_url unless @asker.is_role? 'asker' 
+    #update twitter - designed for use with best_in_place - hence the individual field updates
+    if (params[:user][:description])
+      profile = {:description => params[:user][:description]}
+      @asker.twitter.update_profile profile
+    end
 
     if @asker.update_attributes(params[:user])
       render :status => 200, :text => ''
@@ -44,7 +49,6 @@ class AskersController < ApplicationController
       render :status => 400, :text => ''
     end
   end
-
 
   def destroy
     @asker = User.find(params[:id])
