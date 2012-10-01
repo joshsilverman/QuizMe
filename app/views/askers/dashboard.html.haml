@@ -2,6 +2,8 @@
 = hidden_field_tag :graph_data, @graph_data.to_json
 = hidden_field_tag :askers, @askers.group_by(&:id).to_json
 
+= hidden_field_tag :paulgraham, @paulgraham.to_json
+
 :css
 	.navbar-fixed-top .container {
 		width: 1152px !important;
@@ -26,13 +28,13 @@
 					%h3 New/Existing 
 				.new
 					.container
-						%p.number
-						%p.period today
+						%p.number= sprintf "%.2f", @display_data[0][:paulgraham][:today]
+						%p.period current week
 				.total
 					.container
-						%p.number
-						%p.period 30 day avg.
-			#paul_graham_graph.graph
+						%p.number= sprintf "%.2f", @display_data[0][:paulgraham][:total]
+						%p.period all-time avg
+			#paulgraham_graph.graph
 
 		#active_users.panel.right.rounded.span6
 			#active_users_stats.stats
