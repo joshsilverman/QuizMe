@@ -26,7 +26,7 @@
 								.post.parent.answered{:post_id => id}
 									#classify
 										.btn-group
-											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.engagement_type)}= eng_name(post.engagement_type)
+											%a.btn.btn-mini.dropdown-toggle{"data-toggle" => "dropdown", :href => "#", :class => eng_style(post.interaction_type)}= eng_name(post.interaction_type)
 											%ul.dropdown-menu
 												%li
 													%a{:href => "#", :engagement_type => "share"} Retweet

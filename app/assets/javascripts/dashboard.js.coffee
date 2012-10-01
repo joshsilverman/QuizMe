@@ -58,6 +58,7 @@ class Dashboard
 		for attribute_name, attribute_data of @graph_data
 			data_array = [title_row]
 			for date, asker_data of attribute_data
+				console.log date#, asker_data if attribute_name == "active_user_ids"
 				date_array = date.split("-")
 				row = ["#{date_array[1]}/#{date_array[2]}"]
 				row.push(0) for i in @active
@@ -68,7 +69,7 @@ class Dashboard
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0 if asker_id in @active
 						else
 							if attribute_name == "active_user_ids" 
-								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length if asker_id in @active
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].unique().length if asker_id in @active
 								total = total.concat(asker_data[asker_id])
 							else
 								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
@@ -84,7 +85,8 @@ class Dashboard
 							row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0
 						else
 							if attribute_name == "active_user_ids" 
-								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].length
+								console.log asker_data[asker_id]
+								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].unique().length
 							else
 								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]			
 					data_array.push(row)

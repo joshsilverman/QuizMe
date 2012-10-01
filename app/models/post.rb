@@ -125,12 +125,12 @@ class Post < ActiveRecord::Base
     when "twitter"
       begin
         Post.tweet(
-          asker, question.text, ACCOUNT_DATA[asker.id][:hashtags].sample, 
-          nil, long_url, 'status question', 
+          asker, question.text, (ACCOUNT_DATA[asker.id] ? ACCOUNT_DATA[asker.id][:hashtags].sample : nil), 
+          nil, long_url, 1, 
           'initial', nil, publication.id, 
-          nil, nil, false, via
+          nil, nil, false, via, nil, nil
         )
-        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, "mention", "ugc", nil, nil, nil, nil, false, nil) if via.present? and question.priority
+        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, 2, "ugc", nil, nil, nil, nil, false, nil, nil) if via.present? and question.priority
         # Post.dm(asker, , long_url, "ugc", nil, user) if via.present? and question.priority
         question.update_attribute(:priority, false) if question.priority
       rescue Exception => exception
@@ -147,9 +147,9 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet(account, text, hashtag, reply_to, long_url, 
-                 engagement_type, link_type, conversation_id,
+                 interaction_type, link_type, conversation_id,
                  publication_id, in_reply_to_post_id, 
-                 in_reply_to_user_id, link_to_parent, via, resource_url = nil)
+                 in_reply_to_user_id, link_to_parent, via, resource_url, correct)
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
@@ -164,7 +164,7 @@ class Post < ActiveRecord::Base
       :user_id => account.id,
       :provider => 'twitter',
       :text => tweet,
-      :engagement_type => engagement_type,
+      # :engagement_type => engagement_type,
       :provider_post_id => twitter_response.id.to_s,
       :in_reply_to_post_id => in_reply_to_post_id,
       :in_reply_to_user_id => in_reply_to_user_id,
@@ -172,7 +172,9 @@ class Post < ActiveRecord::Base
       :publication_id => publication_id,
       :url => long_url ? short_url : nil,
       :posted_via_app => true, 
-      :responded_to => true
+      :responded_to => true,
+      :interaction_type => interaction_type,
+      :correct => correct
     )
 
     if publication_id
@@ -195,14 +197,16 @@ class Post < ActiveRecord::Base
       '',
       asker.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
-      "mention reply answer #{status}", 
+      2, 
       status[0..2], 
       conversation.id, 
       nil, 
       post.id, 
       asker.id,
       false, 
-      ''
+      '',
+      nil,
+      answer.correct
     )
     if user_post
       conversation.posts << user_post
@@ -216,7 +220,7 @@ class Post < ActiveRecord::Base
       '', 
       current_user.twi_screen_name,
       "#{URL}/feeds/#{asker.id}/#{publication_id}", 
-      "mention reply answer_response #{status}", 
+      2, 
       status[0..2], 
       conversation.id, 
       nil, 
@@ -224,7 +228,8 @@ class Post < ActiveRecord::Base
       current_user.id,
       true, 
       '',
-      resource_url
+      resource_url,
+      nil
     )  
     conversation.posts << app_post if app_post
     return {:app_message => app_post.text, :user_message => user_post.text}
@@ -253,7 +258,8 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation_id,
       :url => long_url ? short_url : nil,
       :posted_via_app => true,
-      :responded_to => true
+      :responded_to => true,
+      :interaction_type => 4
     )
   end
 
@@ -266,7 +272,7 @@ class Post < ActiveRecord::Base
         new_u = User.create(:twi_user_id => tid)
         to_message.push new_u
       else
-        unless current_acct.posts.where(:provider => 'twitter', :engagement_type => 'pm', :in_reply_to_user_id => u.id).count > 0
+        unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => u.id).count > 0
           to_message.push u
         end
       end
@@ -294,7 +300,8 @@ class Post < ActiveRecord::Base
       :link_type => lt,
       :post_type => 'text',
       :provider_post_id => res.id.to_s,
-      :parent_id => parent_id
+      :parent_id => parent_id,
+      :interaction_type => 1
     )
   end
 
@@ -352,14 +359,15 @@ class Post < ActiveRecord::Base
       :in_reply_to_user_id => current_acct.id,
       :created_at => m.created_at,
       :conversation_id => conversation.nil? ? nil : conversation.id,
-      :posted_via_app => false
+      :posted_via_app => false,
+      :interaction_type => 2
     )
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
-    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text, :engagement_type => "external"})    
+    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     begin
       users = current_acct.twitter.retweeters_of(r.id)  
     rescue Twitter::Error::ClientError 
@@ -380,7 +388,7 @@ class Post < ActiveRecord::Base
         :twi_screen_name => user.screen_name,
         :twi_profile_img_url => user.profile_image_url
       )
-      post = Post.where("user_id = ? and in_reply_to_post_id = ? and engagement_type like '%share%'", u.id, retweeted_post.id).first
+      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
       return if post
       post = Post.create(
         :engagement_type => 'share',
@@ -389,7 +397,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_post_id => retweeted_post.id,
         :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false,
-        :created_at => r.created_at
+        :created_at => r.created_at,
+        :interaction_type => 3
       )
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -404,7 +413,7 @@ class Post < ActiveRecord::Base
     dm = Post.find_by_provider_post_id(d.id.to_s)
     return if dm
     reply_post = Post.where(:provider => 'twitter',
-                            :engagement_type => 'pm',
+                            :interaction_type => 4,
                             :in_reply_to_user_id => u.id).last
     conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
 
@@ -418,7 +427,8 @@ class Post < ActiveRecord::Base
       :in_reply_to_user_id => current_acct.id,
       :created_at => d.created_at,
       :conversation_id => conversation_id,
-      :posted_via_app => false
+      :posted_via_app => false,
+      :interaction_type => 4
     )
   end
 
@@ -444,14 +454,14 @@ class Post < ActiveRecord::Base
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     unless correct.nil?
-      Rep.create(
-        :user_id => self.user_id,
-        :post_id => self.in_reply_to_post_id,
-        :publication_id => publication_id,
-        :question_id => question_id,
-        :correct => correct
-      )
-      self.update_attributes(:responded_to => true, :engagement_type => "#{self.engagement_type} answer")
+      # Rep.create(
+      #   :user_id => self.user_id,
+      #   :post_id => self.in_reply_to_post_id,
+      #   :publication_id => publication_id,
+      #   :question_id => question_id,
+      #   :correct => correct
+      # )
+      self.update_attributes(:responded_to => true, :correct => correct)
       Stat.update_stat_cache("questions_answered", 1, asker_id, self.created_at, self.user_id)
       if self.posted_via_app
         Stat.update_stat_cache("internal_answers", 1, asker_id, self.created_at, self.user_id)
