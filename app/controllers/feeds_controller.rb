@@ -15,8 +15,8 @@ class FeedsController < ApplicationController
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
       # Slated for demolition
-      @questions_answered = Rep.where(:publication_id => publication_ids).count
-      # @questions_answered = Post.where("")
+      # @questions_answered = Rep.where(:publication_id => publication_ids).count
+      @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
       # Fix leaderboard
       @leaders = User.leaderboard(params[:id])
@@ -74,6 +74,7 @@ class FeedsController < ApplicationController
       pub = Publication.find(params[:publication_id].to_i)
       post = pub.posts.where(:provider => "twitter").first
       @user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
+      @user_post.update_attribute(:correct, correct)
       long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
       response_post = Post.tweet(@asker, tweet, '', params[:username], long_url, 
                    2, nil, conversation.id,

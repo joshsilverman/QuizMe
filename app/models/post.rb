@@ -251,7 +251,7 @@ class Post < ActiveRecord::Base
       :user_id => current_acct.id,
       :provider => 'twitter',
       :text => tweet,
-      # :engagement_type => 'pm',
+      :engagement_type => 'pm',
       :provider_post_id => res.id.to_s,
       :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
       :in_reply_to_user_id => user.id,
@@ -316,10 +316,9 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    # FIX THIS @@@@ ~~!!!!
-    mentions = client.mentions({:count => 5, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 5})
-    dms = client.direct_messages({:count => 5, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
+    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50})
+    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
@@ -352,7 +351,7 @@ class Post < ActiveRecord::Base
     end     
     post = Post.create( 
       :provider_post_id => m.id.to_s,
-      # :engagement_type => reply_post ? 'mention reply' : 'mention',
+      :engagement_type => reply_post ? 'mention reply' : 'mention',
       :text => m.text,
       :provider => 'twitter',
       :user_id => u.id,
@@ -392,7 +391,7 @@ class Post < ActiveRecord::Base
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
       return if post
       post = Post.create(
-        # :engagement_type => 'share',
+        :engagement_type => 'share',
         :provider => 'twitter',
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,
@@ -420,7 +419,7 @@ class Post < ActiveRecord::Base
 
     Post.create( 
       :provider_post_id => d.id.to_s,
-      # :engagement_type => 'pm',
+      :engagement_type => 'pm',
       :text => d.text,
       :provider => 'twitter',
       :user_id => u.id,
