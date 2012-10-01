@@ -1,16 +1,18 @@
 module FeedsHelper
 	def eng_name(engagement_type)
 		case engagement_type
-		when "share" 
+		when 1 
+			return "Status"
+		when 3 
 			return "Retweet"
-		when "mention"
+		when 2
 			return "Mention"
-		when "spam"
-			return "Spam"
-		when "pm"
+		# when "spam"
+			# return "Spam"
+		when 4
 			return "Private Message"
-		when "mention reply"
-			return "Reply"
+		# when "mention reply"
+			# return "Reply"
 		else
 			return "Mention"
 		end
@@ -18,13 +20,13 @@ module FeedsHelper
 
 	def eng_style(engagement_type)
 		case engagement_type
-		when "share" 
+		when 3 
 			return "btn-success"
-		when "mention"
+		when 2
 			return "btn-info"
-		when "spam"
-			return "btn-warning"
-		when "pm"
+		# when "spam"
+			# return "btn-warning"
+		when 4
 			return "btn-inverse"
 		end
 	end
