@@ -49,10 +49,10 @@ ActiveRecord::Schema.define(:version => 20120928184119) do
   end
 
   create_table "experiments", :force => true do |t|
-    t.string    "test_name"
-    t.string    "status"
-    t.timestamp "created_at"
-    t.timestamp "updated_at"
+    t.string   "test_name"
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "experiments", ["test_name"], :name => "index_experiments_on_test_name"

@@ -102,9 +102,19 @@ namespace :questions do
     cards.each_with_index do |card, i|
       #puts "#{card['text']} => #{card['answer']}"
       q = Question.find_or_create_by_seeder_id(card['card_id'])
+      answers = q.answers
+      f_answers = []
+      t_answer = nil
+      answers.each do |a|
+        t_answer = a.text if a.correct
+        f_answers << a.text unless a.correct        
+      end 
+      card_f_answers = card['false_answers']
       unless q.text == card['text'] &&
               q.topic_id == topic.id &&
-              q.created_for_asker_id == asker.id
+              q.created_for_asker_id == asker.id &&
+              t_answer == card['answer']
+        puts "updating seeder card #{card['card_id']}..."
         q.update_attributes(:text => card['text'],
                             :topic_id => topic.id,
                             :user_id => 1,
