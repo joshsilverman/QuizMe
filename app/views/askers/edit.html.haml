@@ -36,11 +36,6 @@
                 &nbsp;|&nbsp;
                 = link_to 'Destroy', asker_path(@asker), confirm: 'Are you sure?', method: :delete
 
-            /= form_tag("/askers/#{@asker.id}/update_image", :method => "post", :multipart => true, :remote => true) do
-            /  = label_tag(:q, "Profile image:")
-            /  = file_field :asker, :profile
-            /  = submit_tag("Upload")
-
     - if @linked
       #feed.row
         #right_column.span9

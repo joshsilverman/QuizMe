@@ -47,4 +47,3 @@ gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
 
 gem 'best_in_place'
-gem "remotipart", "~> 1.0"
