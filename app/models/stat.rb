@@ -138,9 +138,6 @@ class Stat < ActiveRecord::Base
 			display_data[asker_id][:active_users][:total] = months_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
 			totals[:active_users][:today] += display_data[asker_id][:active_users][:today]
 			totals[:active_users][:total] += display_data[asker_id][:active_users][:total]
-
-			puts asker_id
-			puts months_asker_grouped_stats[asker_id].to_json
 			
 			months_asker_grouped_stats[asker_id] ? last_stat = months_asker_grouped_stats[asker_id][-1] : last_stat = nil
 
