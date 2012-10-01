@@ -19,6 +19,9 @@ class Feed
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
+		$('.best_in_place').on "ajax:success", -> 
+			conversation = $(this).parents(".conversation")
+			if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
 		unless @manager
 			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
 			$("#posts_more").on "click", (e) => 

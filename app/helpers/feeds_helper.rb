@@ -30,4 +30,15 @@ module FeedsHelper
 			return "btn-inverse"
 		end
 	end
+
+	def interaction_icon(interaction_type)
+		case interaction_type
+		when 2
+			return "icon-comment"
+		when 3
+			return "icon-retweet"
+		when 4
+			return "icon-envelope"
+		end
+	end
 end

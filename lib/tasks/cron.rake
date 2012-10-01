@@ -6,7 +6,6 @@
 
 task :check_for_posts => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
-	askers = User.where(:id => 106)
 	askers.each do |a|
 		Post.check_for_posts(a)
 		sleep(10)
