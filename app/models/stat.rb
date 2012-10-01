@@ -78,7 +78,7 @@ class Stat < ActiveRecord::Base
 					graph_data[:retweets][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 3 }.size
 					graph_data[:mentions][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 2 and p.correct.nil? }.size
 					graph_data[:questions_answered][date][asker_id] = asker_posts.select{ |p| !p.correct.nil? }.size
-					graph_data[:active_user_ids][date][asker_id] = asker_posts.select{ |p| !p.correct.nil? or [2,3].include? p.interaction_type }.collect(&:user_id)#.join(",")
+					graph_data[:active_user_ids][date][asker_id] = asker_posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id)#.join(",")
 					# graph_data[:dms][date][asker_id] = asker_posts.select{ |p| p.interaction_type == 4 }.size
 				end
 			end
@@ -134,8 +134,8 @@ class Stat < ActiveRecord::Base
 			totals[:questions_answered][:total] += display_data[asker_id][:questions_answered][:total]			
 
 			# DMs need to be marked as correct as well!
-			display_data[asker_id][:active_users][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2,3].include? p.interaction_type }.collect(&:user_id).uniq
-			display_data[asker_id][:active_users][:total] = months_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2,3].include? p.interaction_type }.collect(&:user_id).uniq
+			display_data[asker_id][:active_users][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
+			display_data[asker_id][:active_users][:total] = months_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
 			totals[:active_users][:today] += display_data[asker_id][:active_users][:today]
 			totals[:active_users][:total] += display_data[asker_id][:active_users][:total]
 
@@ -144,10 +144,10 @@ class Stat < ActiveRecord::Base
 			
 			months_asker_grouped_stats[asker_id] ? last_stat = months_asker_grouped_stats[asker_id][-1] : last_stat = nil
 
-			display_data[asker_id][:click_throughs][:total] = Stat.where(:asker_id => asker_id).sum(:click_throughs)
-			display_data[asker_id][:click_throughs][:today] = last_stat ? last_stat.click_throughs : 0
-			display_data[0][:click_throughs][:total] += display_data[asker_id][:click_throughs][:total]
-			display_data[0][:click_throughs][:today] += display_data[asker_id][:click_throughs][:today]			
+			display_data[asker_id][:click_throughs][:total] = 0#Stat.where(:asker_id => asker_id).sum(:click_throughs)
+			display_data[asker_id][:click_throughs][:today] = 0#last_stat ? last_stat.click_throughs : 0
+			totals[:click_throughs][:total] += display_data[asker_id][:click_throughs][:total]
+			totals[:click_throughs][:today] += display_data[asker_id][:click_throughs][:today]			
 
 			display_data[asker_id][:followers][:total] = last_stat ? last_stat.total_followers : 0
 			totals[:followers][:total] += display_data[asker_id][:followers][:total]
