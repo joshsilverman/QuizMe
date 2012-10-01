@@ -58,7 +58,7 @@ class Dashboard
 		for attribute_name, attribute_data of @graph_data
 			data_array = [title_row]
 			for date, asker_data of attribute_data
-				console.log date#, asker_data if attribute_name == "active_user_ids"
+				# console.log date#, asker_data if attribute_name == "active_user_ids"
 				date_array = date.split("-")
 				row = ["#{date_array[1]}/#{date_array[2]}"]
 				row.push(0) for i in @active
