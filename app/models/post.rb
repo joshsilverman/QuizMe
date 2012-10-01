@@ -316,9 +316,9 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50})
+    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
-    dms = client.direct_messages({:count => 50})
+    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
     mentions.each do |m|
       Post.save_mention_data(m, current_acct)
     end
