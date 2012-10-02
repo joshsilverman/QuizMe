@@ -94,22 +94,20 @@ class FeedsController < ApplicationController
   end
 
   def link_to_post
-    answer = Post.find(params[:post_id])
-    post = Post.find(params[:link_to_post_id])
-    answer.update_attributes(:in_reply_to_post_id => post.id, :interaction_type => 2)
+    Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, params[:link_to_post_id])
     render :nothing => true
   end
 
   def manage
     @asker = User.asker(params[:id])
-    @posts = Post.where(:responded_to => false, :in_reply_to_user_id => params[:id]).order("created_at DESC")
+    @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", false, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
     #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
     @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
     # @questions.each {|q| puts q[1].inspect}
     @engagements = {}
     @conversations = {}
     @posts.each do |p|
-      puts p.to_json
+
       @engagements[p.id] = p
       parent = p.parent
       @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
@@ -121,6 +119,9 @@ class FeedsController < ApplicationController
         pub_id = parent.publication_id unless parent.publication_id.nil?
         parent = parent.parent
       end
+      if pub_id and p.engagement_type == "share"
+        p.text = Publication.find(pub_id).question.text
+      end      
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)

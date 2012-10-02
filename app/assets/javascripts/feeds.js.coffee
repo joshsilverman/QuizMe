@@ -19,6 +19,9 @@ class Feed
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
 		@initializeQuestions()
+		$('.best_in_place').on "ajax:success", -> 
+			conversation = $(this).parents(".conversation")
+			if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
 		unless @manager
 			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
 			$("#posts_more").on "click", (e) => 
@@ -176,7 +179,7 @@ class Post
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.find("li").on "click", (e) => @update_engagement_type(e)
+		# @element.find("li").on "click", (e) => @update_engagement_type(e)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -198,8 +201,14 @@ class Post
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
 		if window.feed.manager
-			@open_reply_modal(e) unless $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
-			return
+			if $(e.target).hasClass("link_post")
+				@link_post($(e.target))
+				return
+			else if $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
+				return
+			else
+				@open_reply_modal(e) 
+				return
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
 		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
 		if post.hasClass("active")

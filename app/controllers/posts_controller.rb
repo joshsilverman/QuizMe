@@ -16,12 +16,26 @@ class PostsController < ApplicationController
 	end
 
 	def update
-		puts 'UPDATE'
-		eng = Post.find(params[:post_id])
-		correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
-		eng.update_responded(correct) if eng
-		render :nothing => true
+    @post = Post.find(params[:id])
+
+    respond_to do |format|
+      if @post.update_attributes(params[:post])
+        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
+        format.json { head :ok }
+      else
+        format.html { render action: "edit" }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end		
 	end
+
+	# def update
+	# 	puts 'UPDATE'
+	# 	eng = Post.find(params[:post_id])
+	# 	correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
+	# 	eng.update_responded(correct) if eng
+	# 	render :nothing => true
+	# end
 
 	def respond_to_post
 		post = Post.find(params[:post_id].to_i)

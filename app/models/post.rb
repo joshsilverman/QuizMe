@@ -311,7 +311,12 @@ class Post < ActiveRecord::Base
   ###
 
   def self.check_for_posts(current_acct)
+    puts "check it bro"
+    puts current_acct.to_json
+    puts current_acct.twi_oauth_token
+    puts current_acct.twi_oauth_secret
     return unless current_acct.twitter_enabled?
+    puts "check it NOW bro"
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
