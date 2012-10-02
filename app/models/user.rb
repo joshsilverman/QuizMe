@@ -16,7 +16,6 @@ class User < ActiveRecord::Base
 		puts "current queue index = #{queue.index}"
 		puts "current queue order: #{queue.publications.select(:id).to_json}"
 		publication = queue.publications[queue.index]
-		publication.update_attribute(:published, true)
 		PROVIDERS.each do |provider|
 			Post.publish(provider, self, publication)
 		end

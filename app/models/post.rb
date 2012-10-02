@@ -44,7 +44,7 @@ class Post < ActiveRecord::Base
     user = "" if user.nil?
     url = "" if url.nil?
     via = "" if via.nil?
-    if resource_url.nil?
+    if resource_url.blank?
       resource_url = "" 
     else
       resource_url = "Learn why at #{resource_url}" 
@@ -58,18 +58,18 @@ class Post < ActiveRecord::Base
     remaining = 140
     remaining = (remaining - (handle_length + 2)) if handle_length > 0
     remaining = (remaining - (url_length + 1)) if url_length > 0
-    remaining = (remaining - (hashtag_length + 1)) if hashtag_length > 0
+    remaining = (remaining - (hashtag_length + 2)) if hashtag_length > 0
     remaining = (remaining - (resource_url_length + 1)) if resource_url_length > 0
-    remaining = (remaining - (via_length + 1)) if via_length > 0
+    remaining = (remaining - (via_length + 6)) if via_length > 0
     truncated_text = text[0..(remaining - 4)]
     truncated_text += "..." if text_length > remaining
     tweet = ""
     tweet += "@#{user} " if handle_length > 0
     tweet += "#{truncated_text}"
     tweet += " #{url}" if url_length > 0
-    tweet += " ##{hashtag}" if hashtag_length > 0
     tweet += " #{resource_url}" if resource_url_length > 0
     tweet += " via @#{via}" if via_length > 0
+    tweet += " ##{hashtag}" if hashtag_length > 0
     return tweet    
   end
 
@@ -122,8 +122,7 @@ class Post < ActiveRecord::Base
     if question.user_id == 1
       via = nil
     else
-      user = question.user
-      via = user.twi_screen_name
+      via = question.user.twi_screen_name
     end
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
@@ -135,9 +134,11 @@ class Post < ActiveRecord::Base
           'initial', nil, publication.id, 
           nil, nil, false, via, nil, nil
         )
-        Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, 2, "ugc", nil, nil, nil, nil, false, nil, nil) if via.present? and question.priority
-        # Post.dm(asker, , long_url, "ugc", nil, user) if via.present? and question.priority
+        publication.update_attribute(:published, true)
         question.update_attribute(:priority, false) if question.priority
+        if via.present? and question.priority
+          Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", "", via, long_url, 2, "ugc", nil, nil, nil, nil, false, nil, nil)
+        end
       rescue Exception => exception
         puts "exception while publishing tweet"
         puts exception.message
