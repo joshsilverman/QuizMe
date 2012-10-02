@@ -164,6 +164,35 @@ class Stat < ActiveRecord::Base
 		return display_data
 	end
 
+	# jason i decided to modularize this set of queries since we will be eliminating stats
+	def self.paulgraham
+		new_on = User.joins(:posts).where("posts.autospam = false").group("date_part('week', users.created_at)").count
+		existing_before = {}
+		new_to_existing_before_on = {}
+		domain = 12
+		max_new_to_existing_before = 0.2
+
+		start_week = Date.today.cweek - (domain - 1)
+
+		existing_before[start_week -1] = new_on\
+			.reject{|w,c| w.to_i > (start_week - 1)}
+			.collect{|k,v| v}
+			.sum
+		((start_week)..Date.today.cweek).to_a.each do |n|
+			existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
+			new_on[n.to_s] ||= 0
+			new_to_existing_before_on[n] = new_on[n.to_s].to_f / existing_before[n]
+			new_to_existing_before_on[n] = 0 if new_to_existing_before_on[n].nan? or new_to_existing_before_on[n].infinite?
+		end
+
+		display_data = {
+			:today => new_to_existing_before_on[Date.today.cweek],
+			:total => new_to_existing_before_on.map{|k,v| v}.sum / new_to_existing_before_on.count
+		}
+
+		return new_to_existing_before_on, display_data
+	end
+
 	# def self.get_yesterday(id)
 	# 	###get yesterdays stats or create dummy yesterday for math
 	# 	d = Date.today

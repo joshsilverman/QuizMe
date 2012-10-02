@@ -87,5 +87,8 @@ class AskersController < ApplicationController
     @askers = User.askers
     @graph_data = Stat.get_month_graph_data(@askers)
     @display_data = Stat.get_display_data(@askers)
+
+    @paulgraham, pg_display_data = Stat.paulgraham
+    @display_data[0][:paulgraham] = pg_display_data
   end  
 end
