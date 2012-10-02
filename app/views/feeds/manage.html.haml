@@ -27,13 +27,15 @@
 									#classify
 										- if post.autospam
 											%i.icon-warning-sign
-										= best_in_place post, :spam, :type => :checkbox, :collection => ["mark", "unmark"]
+										%a
+											= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name
 										%p= post.text
+										%a.link_post Link Post
 								/ .subsidiaries{:style => "display: none;"}
 								/ 	- post[1].each do |r|
 								/ 		.subsidiary.post.reply.bottom_border
@@ -42,8 +44,8 @@
 								/ 				= image_tag(r.user.twi_profile_img_url, :class => "rounded")
 								/ 				%h5= r.user.twi_screen_name
 								/ 				%p= r.text			
-								.loading{:style => "display: none;"}
-									Loading...					
+								/ .loading{:style => "display: none;"}
+								/ 	Loading...					
 						#posts_more.border-color
 							/ %a{:href => "#"} Load more
 							Last Post Reached

@@ -697,6 +697,10 @@ body {
 		&.first {
 			border-top: 0px;
 		}
+
+		.link_post {
+			visibility: hidden;
+		}
 	}
 
 	.parent_post_container {
@@ -740,3 +744,16 @@ body {
 		border-top: solid 1px #DDD;
 	}	
 }	
+
+#manager {
+	.conversation {
+		.link_post {
+			visibility: hidden;
+		}
+		&:hover {
+			.link_post {
+				visibility: visible;
+			}
+		}
+	}
+}

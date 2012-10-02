@@ -94,15 +94,13 @@ class FeedsController < ApplicationController
   end
 
   def link_to_post
-    answer = Post.find(params[:post_id])
-    post = Post.find(params[:link_to_post_id])
-    answer.update_attributes(:in_reply_to_post_id => post.id, :interaction_type => 2)
+    Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, params[:link_to_post_id])
     render :nothing => true
   end
 
   def manage
     @asker = User.asker(params[:id])
-    @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?)", false, params[:id], false).order("created_at DESC")
+    @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", false, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
     #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
     @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
     # @questions.each {|q| puts q[1].inspect}
