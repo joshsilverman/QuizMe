@@ -4,7 +4,7 @@
       Leaderboard
   %ul.unstyled
     - @leaders[:scores].each_with_index do |leader, i|
-      %a{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
+      %a.leader{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
         %li 
           / {:class => ("border_bottom" if i < 3)}
           .content

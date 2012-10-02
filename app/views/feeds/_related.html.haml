@@ -5,7 +5,7 @@
         Other Feeds
     %ul.unstyled
       - @related.each_with_index do |related, i|
-        %a{:href => "/feeds/#{related.id}"}
+        %a.related_feed{:href => "/feeds/#{related.id}"}
           %li{:class => ("border_bottom" if i < 2)}
             .content
               = image_tag(related.twi_profile_img_url, :class => "rounded")

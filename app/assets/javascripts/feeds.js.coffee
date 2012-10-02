@@ -32,7 +32,9 @@ class Feed
 			e.preventDefault()
 			@post_question()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
-		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined	
+		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
+		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
+		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
 		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
 	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
 	# initializeNewPostListener: =>
