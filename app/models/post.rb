@@ -7,12 +7,17 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
+  @@classifier = Classifier.new
 
   ###
   ###Helper Methods
   ###
 
   #@TODO update helper methods to account for multiple engagement types
+
+  def self.classifier
+    @@classifier
+  end
 
   def self.unanswered
     where(:responded_to => false)
@@ -311,12 +316,7 @@ class Post < ActiveRecord::Base
   ###
 
   def self.check_for_posts(current_acct)
-    puts "check it bro"
-    puts current_acct.to_json
-    puts current_acct.twi_oauth_token
-    puts current_acct.twi_oauth_secret
     return unless current_acct.twitter_enabled?
-    puts "check it NOW bro"
     asker_ids = User.askers.collect(&:id)
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
@@ -324,16 +324,9 @@ class Post < ActiveRecord::Base
     mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
     retweets = client.retweets_of_me({:count => 50})
     dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
-    mentions.each do |m|
-      Post.save_mention_data(m, current_acct)
-    end
-    retweets.each do |r|
-      Post.save_retweet_data(r, current_acct)
-      # sleep(1)
-    end
-    dms.each do |d|
-      Post.save_dm_data(d, current_acct)
-    end
+    mentions.each { |m| Post.save_mention_data(m, current_acct) }
+    retweets.each { |r| Post.save_retweet_data(r, current_acct) }
+    dms.each { |d| Post.save_dm_data(d, current_acct) }
     true
   end
 
@@ -367,6 +360,10 @@ class Post < ActiveRecord::Base
       :posted_via_app => false,
       :interaction_type => 2
     )
+    puts post.to_json
+    Post.classifier.classify post
+    puts post.to_json
+    puts "\n\n"
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
@@ -422,7 +419,7 @@ class Post < ActiveRecord::Base
                             :in_reply_to_user_id => u.id).last
     conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
 
-    Post.create( 
+    post = Post.create( 
       :provider_post_id => d.id.to_s,
       :engagement_type => 'pm',
       :text => d.text,
@@ -435,6 +432,10 @@ class Post < ActiveRecord::Base
       :posted_via_app => false,
       :interaction_type => 4
     )
+    puts post.to_json
+    Post.classifier.classify post
+    puts post.to_json
+    puts "\n\n"
   end
 
 

@@ -119,9 +119,7 @@ class FeedsController < ApplicationController
         pub_id = parent.publication_id unless parent.publication_id.nil?
         parent = parent.parent
       end
-      if pub_id and p.engagement_type == "share"
-        p.text = Publication.find(pub_id).question.text
-      end      
+      p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
