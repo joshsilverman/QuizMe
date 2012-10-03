@@ -104,14 +104,6 @@ class Dashboard
 
 	draw_paulgraham: =>
 		title_row = ["Date", "Total"]
-		colors = ['orange', 'green', 'orange', 'orange', "#6C69D1"]
-		options.colors = colors
-		options.vAxis = {maxValue: 0.2}
-		options.pointSize = 0
-		options.isStacked = true
-		options.series = [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
-		#options.curveType = "function"
-
 		data_array = [['Date', 'Min', 'Max', "Over", "Wayover", 'Total']]
 		$.each @paulgraham, (k,v) -> 
 			v = .2 if v > .2
