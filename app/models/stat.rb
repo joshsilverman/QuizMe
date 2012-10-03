@@ -1,5 +1,7 @@
 class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
+	## should be a proper scope!
+	@@not_spam = "((interaction_type = 3 or posted_via_app = ?) or ((autospam = ? and spam is null) or spam = ?))"
 
 	def self.update_stats_from_cache(asker)
 		today = Date.today.to_date
@@ -68,8 +70,7 @@ class Stat < ActiveRecord::Base
 		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
 		date_grouped_stats = month_stats.group_by(&:date)
 
-		month_posts = Post.where("created_at > ? and user_id not in (?) and (spam = ? or spam is null)", 1.month.ago, (asker_ids += ADMINS), false)
-
+		month_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 1.month.ago, (asker_ids += ADMINS), true, false, false)
 		date_grouped_posts = month_posts.group_by { |post| post.created_at.to_date }
 		((Date.today - 30)..Date.today).each do |date|
 			graph_data[:total_followers][date], graph_data[:total_followers][date], graph_data[:click_throughs][date], graph_data[:active_user_ids][date], graph_data[:questions_answered][date], graph_data[:retweets][date], graph_data[:mentions][date] = {}, {}, {}, {}, {}, {}, {}
@@ -90,35 +91,22 @@ class Stat < ActiveRecord::Base
 			end
 		end
 		return graph_data
-		# asker_ids = askers.collect(&:id)
-		# month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
-		# date_grouped_stats = month_stats.group_by(&:date)
-		# graph_data = {:total_followers => {}, :click_throughs => {}, :active_user_ids => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
-		# ((Date.today - 30)..Date.today).each do |date|
-		# 	graph_data.each do |key, value|
-		# 		graph_data[key][date] = {}
-		# 		next unless date_grouped_stats[date]
-		# 		date_grouped_stats[date].each do |stat|
-		# 			graph_data[key][date][stat.asker_id] = (key == :active_user_ids ? stat[key].split(",").uniq : stat[key])
-		# 		end
-		# 	end  
-		# end
 	end
 
 	def self.get_display_data(askers, today_active_user_ids = [], total_active_user_ids = [], display_data = {})
 		asker_ids = askers.collect(&:id)
 
-		todays_asker_grouped_posts = Post.where("created_at > ? and user_id not in (?) and (spam = ? or spam is null)", Time.zone.now.beginning_of_day, (asker_ids += ADMINS), false).group_by(&:in_reply_to_user_id)
+		todays_asker_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", Time.zone.now.beginning_of_day, (asker_ids += ADMINS), true, false, false).group_by(&:in_reply_to_user_id)
 		
 		months_asker_grouped_stats = Stat.select([:active_user_ids, :asker_id, :click_throughs, :total_followers]).where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).group_by(&:asker_id)
-		months_asker_grouped_posts = Post.select([:correct, :interaction_type, :user_id, :in_reply_to_user_id]).where("created_at > ? and user_id not in (?) and (spam = ? or spam is null)", 1.month.ago, (asker_ids += ADMINS), false).group_by(&:in_reply_to_user_id)
+		months_asker_grouped_posts = Post.select([:correct, :interaction_type, :user_id, :in_reply_to_user_id]).where("created_at > ? and user_id not in (?) and #{@@not_spam}", 1.month.ago, (asker_ids += ADMINS), true, false, false).group_by(&:in_reply_to_user_id)
 
 		totals = {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => [], :today => []}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}
 		asker_ids.each do |asker_id|
 			display_data[asker_id] = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
 			if todays_asker_grouped_posts[asker_id]
 				display_data[asker_id][:mentions][:today] = todays_asker_grouped_posts[asker_id].select{ |p| p.interaction_type == 2 and p.correct.nil? }.size
-				display_data[asker_id][:mentions][:total] = Post.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null and (spam = ? or spam is null)", asker_id, false).size
+				display_data[asker_id][:mentions][:total] = Post.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null and #{@@not_spam}", asker_id, true, false, false).size
 				totals[:mentions][:today] += display_data[asker_id][:mentions][:today]
 				totals[:mentions][:total] += display_data[asker_id][:mentions][:total]
 
@@ -134,6 +122,7 @@ class Stat < ActiveRecord::Base
 
 				# DMs need to be marked as correct as well!
 				display_data[asker_id][:active_users][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
+				puts display_data[asker_id][:active_users][:today].to_json
 				display_data[asker_id][:active_users][:total] = months_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
 				totals[:active_users][:today] += display_data[asker_id][:active_users][:today]
 				totals[:active_users][:total] += display_data[asker_id][:active_users][:total]
@@ -165,8 +154,10 @@ class Stat < ActiveRecord::Base
 	end
 
 	# jason i decided to modularize this set of queries since we will be eliminating stats
-	def self.paulgraham
-		new_on = User.joins(:posts).where("posts.autospam = false").group("date_part('week', users.created_at)").count
+	def self.paulgraham				
+		asker_ids = User.askers.collect(&:id)	
+		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("date_part('week', users.created_at)").count
+		# puts new_on
 		existing_before = {}
 		new_to_existing_before_on = {}
 		domain = 12
@@ -191,6 +182,40 @@ class Stat < ActiveRecord::Base
 		}
 
 		return new_to_existing_before_on, display_data
+	end
+
+	def self.dau_mau(graph_data = {}, display_data = {})
+		asker_ids = User.askers.collect(&:id)
+		date_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 2.months.ago, (asker_ids += ADMINS), true, false, false).group_by { |post| post.created_at.to_date }
+		date_grouped_posts.each do |date, posts|
+			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.size
+		end
+		date_grouped_posts.each do |date, posts|
+			next if date < 1.month.ago.to_date
+			total = 0
+			((date - 30)..date).each do |day|
+				total += date_grouped_posts[day] unless date_grouped_posts[day].blank?
+			end
+			graph_data[date] = (date_grouped_posts[date].to_f / total.to_f).to_f
+		end
+		display_data[:today] = graph_data.values[-7..-1].sum / 7
+		display_data[:total] = graph_data.values.sum / graph_data.values.size
+		# puts graph_data.to_json
+		# new_on = User.joins(:posts).where("(posts.autospam = ? and posts.spam is null) or posts.spam = ?", false, false).group("date_part('week', users.created_at)").count
+		# .select(["users.id"])
+		# puts User.joins(:posts).where("((posts.autospam = ? and posts.spam is null) or posts.spam = ?) and posts.created_at > ?", false, false, (Date.today - 60)).group("date_part('day', posts.created_at)").count
+		# puts Post.group('user_id, date(created_at)').sum
+		# .count(:user, :conditions => ["posts.created_at >= ?", 2.months.ago], :group => ["date(posts.created_at)"]).to_json
+		# counts = {}
+		# date_grouped_posts = User.select("users.id, posts.created_at").joins(:posts).where("((posts.autospam = ? and posts.spam is null) or posts.spam = ?) and posts.created_at > ?", false, false, 2.months.ago).group_by {|p| p.created_at.to_date}
+		# date_grouped_posts.each do |date, data|
+		# 	counts[date] = data.collect(&:id).uniq.size
+		# end
+		# puts counts.to_json
+		# puts Post.group('date(created_at), user_id').count.size
+		# puts Post.select([:user_id, :created_at]).where("created_at > ? and (posts.autospam = ? and posts.spam is null) or posts.spam = ?", 2.months.ago, false, false).group("date(created_at)")
+		puts graph_data, display_data
+		return graph_data, display_data
 	end
 
 	# def self.get_yesterday(id)

@@ -3,6 +3,7 @@
 = hidden_field_tag :askers, @askers.group_by(&:id).to_json
 
 = hidden_field_tag :paulgraham, @paulgraham.to_json
+= hidden_field_tag :dau_mau, @dau_mau.to_json
 
 :css
 	.navbar-fixed-top .container {
@@ -20,7 +21,6 @@
 					%input{:type => "checkbox", :id => "select_#{asker.twi_screen_name}", :value => asker.id}
 					%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
 
-
 	#data_row.row
 		#paulgraham_users.panel.left.rounded.span6
 			#paulgraham_stats.stats
@@ -36,6 +36,22 @@
 						%p.period all-time avg
 			#paulgraham_graph.graph
 
+		#dau_mau.panel.right.rounded.span6
+			#dau_mau_stats.stats
+				.header
+					%h3 DAU/MAU 
+				.new
+					.container
+						%p.number= sprintf "%.2f", @display_data[0][:dau_mau][:today]
+						/ number_to_percentage(number_with_precision((@display_data[0][:dau_mau][:today] * 100), :precision => 2), :precision => 0)
+						%p.period current week
+				.total
+					.container
+						%p.number= sprintf "%.2f", @display_data[0][:dau_mau][:total]
+						%p.period all-time avg
+			#dau_mau_graph.graph
+
+	#data_row.row
 		#active_users.panel.right.rounded.span6
 			#active_users_stats.stats
 				.header
@@ -50,8 +66,6 @@
 						%p.period last 30 days			
 			#active_user_ids_graph.graph
 
-
-	#data_row.row
 		#questions_answered.panel.rounded.span6
 			#questions_answered_stats.stats
 				.header
@@ -66,35 +80,7 @@
 						%p.period all-time				
 			#questions_answered_graph.graph
 
-		#click_throughs.panel.right.rounded.span6
-			#click_throughs_stats.stats
-				.header
-					%h3 CTs
-				.new
-					.container
-						%p.number 
-						%p.period today
-				.total
-					.container
-						%p.number 
-						%p.period all-time				
-			#click_throughs_graph.graph
-
-
 	#data_row.row
-		#mentions.panel.rounded.span6
-			#mentions_stats.stats
-				.header
-					%h3 Mentions
-				.new
-					.container
-						%p.number
-						%p.period today
-				.total
-					.container
-						%p.number
-						%p.period all-time				
-			#mentions_graph.graph
 		#retweets.panel.right.rounded.span6
 			#retweets_stats.stats
 				.header
@@ -109,8 +95,35 @@
 						%p.period all-time
 			#retweets_graph.graph
 
+		#mentions.panel.rounded.span6
+			#mentions_stats.stats
+				.header
+					%h3 Mentions
+				.new
+					.container
+						%p.number
+						%p.period today
+				.total
+					.container
+						%p.number
+						%p.period all-time				
+			#mentions_graph.graph
+	
+	#data_row.row	
+		#click_throughs.panel.right.rounded.span6
+			#click_throughs_stats.stats
+				.header
+					%h3 CTs
+				.new
+					.container
+						%p.number 
+						%p.period today
+				.total
+					.container
+						%p.number 
+						%p.period all-time				
+			#click_throughs_graph.graph		
 
-	#data_row.row
 		#total_followers.panel.rounded.span6
 			#followers_stats.stats
 				.header

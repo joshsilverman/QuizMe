@@ -3,7 +3,7 @@ class Dashboard
 	graph_data: null
 	askers: null
 	active: []
-
+	dau_mau: null
 	paulgraham: null
 
 	constructor: -> 
@@ -11,6 +11,7 @@ class Dashboard
 		@display_data = $.parseJSON($("#display_data").val())
 		@graph_data = $.parseJSON($("#graph_data").val())
 		@paulgraham = $.parseJSON($("#paulgraham").val())
+		@dau_mau = $.parseJSON($("#dau_mau").val())
 		@active.push("0")
 		$(".select_option").on "change", (e) => 
 			if $(e.target).attr("value") == "0" and $(e.target).is(":checked") 
@@ -23,7 +24,9 @@ class Dashboard
 			@update_dashboard()
 		@update_dashboard()
 	update_dashboard: =>
+		# console.log @active
 		@draw_graphs()
+		@draw_dau_mau()
 		@draw_paulgraham()
 		@update_metrics()
 	update_metrics: =>
@@ -100,29 +103,42 @@ class Dashboard
 			chart.draw graph_data, options
 
 	draw_paulgraham: =>
-		console.log @paulgraham
-
-		colors = ['orange', 'green', 'orange', 'orange', "#6C69D1"]
-		options.colors = colors
-		options.vAxis = {maxValue: 0.2}
-		options.pointSize = 0
-		options.isStacked = true
-		options.series = [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
-		#options.curveType = "function"
-
-		title_row = ["Date"]
-		title_row.push("Total")
-
+		title_row = ["Date", "Total"]
 		data_array = [['Date', 'Min', 'Max', "Over", "Wayover", 'Total']]
 		$.each @paulgraham, (k,v) -> 
 			v = .2 if v > .2
 			data_array.push [k, .05, .05, .05, .05, v - .2]
-
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
-		chart.draw graph_data, options
+		chart.draw graph_data, pg_options
+	draw_dau_mau: =>
+		data_array = [["Date", "Ratio"]]
+		$.each @dau_mau, (k,v) -> 
+			date_array = k.split("-")
+			data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
+		graph_data = google.visualization.arrayToDataTable(data_array)
+		chart = new google.visualization.LineChart(document.getElementById("dau_mau_graph"))
+		chart.draw graph_data, options		
 
 $ -> window.dashboard = new Dashboard if $("#dashboard").length > 0
+
+pg_options = 
+	width: 430
+	height: 225
+	legend: "none"
+	pointSize: 0
+	lineWidth: 3
+	chartArea:  
+		width: 430
+		left: 30
+		height: 175
+	hAxis:
+		textStyle: 
+			fontSize: 9
+	series: [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
+	isStacked: true
+	vAxis: {maxValue: 0.2}
+	colors: ['orange', 'green', 'orange', 'orange', "#6C69D1"]
 
 options = 
 	width: 430
