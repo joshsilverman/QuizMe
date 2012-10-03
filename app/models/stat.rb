@@ -189,13 +189,12 @@ class Stat < ActiveRecord::Base
 		date_grouped_posts.each do |date, posts|
 			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.size
 		end
-		date_grouped_posts.each do |date, posts|
-			next if date < 1.month.ago.to_date
+		((Date.today - 30)..Date.today).each do |date|
 			total = 0
 			((date - 30)..date).each do |day|
 				total += date_grouped_posts[day] unless date_grouped_posts[day].blank?
 			end
-			graph_data[date] = (date_grouped_posts[date].to_f / total.to_f).to_f
+			graph_data[date] = (date_grouped_posts[date].to_f / total.to_f).to_f			
 		end
 		display_data[:today] = graph_data.values[-7..-1].sum / 7
 		display_data[:total] = graph_data.values.sum / graph_data.values.size
@@ -213,7 +212,7 @@ class Stat < ActiveRecord::Base
 		# puts counts.to_json
 		# puts Post.group('date(created_at), user_id').count.size
 		# puts Post.select([:user_id, :created_at]).where("created_at > ? and (posts.autospam = ? and posts.spam is null) or posts.spam = ?", 2.months.ago, false, false).group("date(created_at)")
-		puts graph_data, display_data
+		# puts graph_data, display_data
 		return graph_data, display_data
 	end
 
