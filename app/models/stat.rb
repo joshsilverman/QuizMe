@@ -157,7 +157,6 @@ class Stat < ActiveRecord::Base
 	def self.paulgraham				
 		asker_ids = User.askers.collect(&:id)	
 		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("date_part('week', users.created_at)").count
-		# puts new_on
 		existing_before = {}
 		new_to_existing_before_on = {}
 		domain = 12

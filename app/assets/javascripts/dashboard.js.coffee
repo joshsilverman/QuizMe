@@ -104,10 +104,19 @@ class Dashboard
 
 	draw_paulgraham: =>
 		title_row = ["Date", "Total"]
+		colors = ['orange', 'green', 'orange', 'orange', "#6C69D1"]
+		options.colors = colors
+		options.vAxis = {maxValue: 0.2}
+		options.pointSize = 0
+		options.isStacked = true
+		options.series = [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
+		#options.curveType = "function"
+
 		data_array = [['Date', 'Min', 'Max', "Over", "Wayover", 'Total']]
 		$.each @paulgraham, (k,v) -> 
 			v = .2 if v > .2
 			data_array.push [k, .05, .05, .05, .05, v - .2]
+
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
 		chart.draw graph_data, pg_options
@@ -119,6 +128,7 @@ class Dashboard
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.LineChart(document.getElementById("dau_mau_graph"))
 		chart.draw graph_data, options		
+
 
 $ -> window.dashboard = new Dashboard if $("#dashboard").length > 0
 
