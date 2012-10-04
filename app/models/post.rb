@@ -242,17 +242,9 @@ class Post < ActiveRecord::Base
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(current_acct, tweet, long_url, lt, reply_post, user)
-    #UPDATE POST METHOD
-    puts "in DM"
-    # puts current_acct.to_json, tweet, long_url, lt, reply_post, user.to_json
+  def self.dm(current_acct, tweet, long_url, lt, reply_post, user, correct, conversation_id)
     short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
-    res = current_acct.twitter.direct_message_create(user.twi_user_id, "#{tweet} #{short_url if short_url}")
-    if reply_post.nil?
-      conversation_id = Conversation.create(:user_id => current_acct.id).id
-    else
-      conversation_id = reply_post.conversation_id
-    end
+    res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
 
     Post.create(
       :user_id => current_acct.id,

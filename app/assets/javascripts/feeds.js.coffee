@@ -326,14 +326,15 @@ class Post
 			parent_post = window.feed.conversations[@id]['posts'][parent_index]
 			publication_id = parent_post['publication_id'] unless parent_post == undefined
 			params =
+				"interaction_type" : post.attr "interaction_type"
 				"asker_id" : window.feed.id
 				"in_reply_to_post_id" : @id
 				"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-				"tweet" : tweet
+				"message" : tweet
 				"username" : username
 			params["correct"] = correct if correct != null
 			params["publication_id"] = publication_id if publication_id
-			$.ajax '/tweet',
+			$.ajax '/manager_response',
 				type: 'POST'
 				data: params
 				success: (e) =>

@@ -23,7 +23,7 @@
 								Activity
 						- @engagements.each do |id, post|
 							.conversation.border-color
-								.post.parent.answered{:post_id => id}
+								.post.parent.answered{:post_id => id, :interaction_type => post.interaction_type}
 									#classify
 										- if post.autospam
 											%i.icon-warning-sign
@@ -83,7 +83,7 @@
 			.btn-group
 				%button.btn.correct Correct
 				%button.btn.incorrect Incorrect
-			#tweet.btn.btn-info Tweet
+			#tweet.btn.btn-info Respond
 			.character_count
 				%p 140
 	.modal_conversation_history
