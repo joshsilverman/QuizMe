@@ -100,21 +100,28 @@ class Dashboard
 	draw_paulgraham: =>
 		console.log @paulgraham
 
-		colors = ['orange', 'green', 'orange', 'orange', "#6C69D1"]
+		colors = ['orange', 'green', 'orange', "#6C69D1"]
 		options.colors = colors
-		options.vAxis = {maxValue: 0.2}
+		#options.vAxis = {maxValue: 0.15}
 		options.pointSize = 0
 		options.isStacked = true
-		options.series = [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
+		options.tooltip = {trigger: 'none'}
+		options.vAxis =
+			viewWindowMode: 'explicit'
+			#maxValue: 0.15
+			viewWindow:
+				max: 0.12
+
+		options.series = [{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
 		#options.curveType = "function"
 
 		title_row = ["Date"]
 		title_row.push("Total")
 
-		data_array = [['Date', 'Min', 'Max', "Over", "Wayover", 'Total']]
+		data_array = [['Date', 'Min', 'Max', "Over", 'Total']]
 		$.each @paulgraham, (k,v) -> 
-			v = .2 if v > .2
-			data_array.push [k, .05, .05, .05, .05, v - .2]
+			#v = .15 if v > .15
+			data_array.push [k, .06, .03, .06, v - .15]
 
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
@@ -153,6 +160,6 @@ titles =
 
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 Array::unique = ->
-  output = {}
-  output[@[key]] = @[key] for key in [0...@length]
-  value for key, value of output
+	output = {}
+	output[@[key]] = @[key] for key in [0...@length]
+	value for key, value of output
