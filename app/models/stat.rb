@@ -1,7 +1,5 @@
 class Stat < ActiveRecord::Base
 	belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
-	## should be a proper scope!
-	@@not_spam = "((interaction_type = 3 or posted_via_app = ?) or ((autospam = ? and spam is null) or spam = ?))"
 
 	def self.update_stats_from_cache(asker)
 		today = Date.today.to_date
@@ -70,7 +68,7 @@ class Stat < ActiveRecord::Base
 		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
 		date_grouped_stats = month_stats.group_by(&:date)
 
-		month_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 1.month.ago, (asker_ids += ADMINS), true, false, false)
+		month_posts = Post.not_spam.where("created_at > ? and user_id not in (?)", 1.month.ago, (asker_ids += ADMINS))
 		date_grouped_posts = month_posts.group_by { |post| post.created_at.to_date }
 		((Date.today - 30)..Date.today).each do |date|
 			graph_data[:total_followers][date], graph_data[:total_followers][date], graph_data[:click_throughs][date], graph_data[:active_user_ids][date], graph_data[:questions_answered][date], graph_data[:retweets][date], graph_data[:mentions][date] = {}, {}, {}, {}, {}, {}, {}
@@ -95,18 +93,18 @@ class Stat < ActiveRecord::Base
 
 	def self.get_display_data(askers, today_active_user_ids = [], total_active_user_ids = [], display_data = {})
 		asker_ids = askers.collect(&:id)
+	
+		todays_asker_grouped_posts = Post.not_spam.where("created_at > ? and user_id not in (?)", Time.zone.now.beginning_of_day, (asker_ids += ADMINS)).group_by(&:in_reply_to_user_id)
+		months_asker_grouped_posts = Post.not_spam.select([:correct, :interaction_type, :user_id, :in_reply_to_user_id]).where("created_at > ? and user_id not in (?)", 1.month.ago, (asker_ids += ADMINS)).group_by(&:in_reply_to_user_id)
 
-		todays_asker_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", Time.zone.now.beginning_of_day, (asker_ids += ADMINS), true, false, false).group_by(&:in_reply_to_user_id)
-		
-		months_asker_grouped_stats = Stat.select([:active_user_ids, :asker_id, :click_throughs, :total_followers]).where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).group_by(&:asker_id)
-		months_asker_grouped_posts = Post.select([:correct, :interaction_type, :user_id, :in_reply_to_user_id]).where("created_at > ? and user_id not in (?) and #{@@not_spam}", 1.month.ago, (asker_ids += ADMINS), true, false, false).group_by(&:in_reply_to_user_id)
+		months_asker_grouped_stats = Stat.select([:active_user_ids, :asker_id, :click_throughs, :total_followers]).where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).group_by(&:asker_id)	
 
 		totals = {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => [], :today => []}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}
 		asker_ids.each do |asker_id|
 			display_data[asker_id] = {:followers => {:today => 0, :total => 0}, :click_throughs => {:today => 0, :total => 0}, :active_users => {:today => [], :total => []}, :questions_answered => {:today => 0, :total => 0}, :retweets => {:today => 0, :total => 0}, :mentions => {:today => 0, :total => 0}}
 			if todays_asker_grouped_posts[asker_id]
 				display_data[asker_id][:mentions][:today] = todays_asker_grouped_posts[asker_id].select{ |p| p.interaction_type == 2 and p.correct.nil? }.size
-				display_data[asker_id][:mentions][:total] = Post.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null and #{@@not_spam}", asker_id, true, false, false).size
+				display_data[asker_id][:mentions][:total] = Post.not_spam.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null", asker_id).size
 				totals[:mentions][:today] += display_data[asker_id][:mentions][:today]
 				totals[:mentions][:total] += display_data[asker_id][:mentions][:total]
 
@@ -184,7 +182,7 @@ class Stat < ActiveRecord::Base
 
 	def self.dau_mau(graph_data = {}, display_data = {})
 		asker_ids = User.askers.collect(&:id)
-		date_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 2.months.ago, (asker_ids += ADMINS), true, false, false).order("created_at ASC").group_by { |post| post.created_at.to_date }
+		date_grouped_posts = Post.not_spam.where("created_at > ? and user_id not in (?)", 2.months.ago, (asker_ids += ADMINS)).order("created_at ASC").group_by { |post| post.created_at.to_date }
 		date_grouped_posts.each do |date, posts|
 			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.size
 		end

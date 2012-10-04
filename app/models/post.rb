@@ -8,6 +8,7 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
   @@classifier = Classifier.new
+  scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
 
   ###
   ###Helper Methods
