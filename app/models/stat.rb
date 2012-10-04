@@ -103,7 +103,7 @@ class Stat < ActiveRecord::Base
 
 		totals = {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => [], :today => []}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}
 		asker_ids.each do |asker_id|
-			display_data[asker_id] = {:followers => {}, :click_throughs => {}, :active_users => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
+			display_data[asker_id] = {:followers => {:today => 0, :total => 0}, :click_throughs => {:today => 0, :total => 0}, :active_users => {:today => [], :total => []}, :questions_answered => {:today => 0, :total => 0}, :retweets => {:today => 0, :total => 0}, :mentions => {:today => 0, :total => 0}}
 			if todays_asker_grouped_posts[asker_id]
 				display_data[asker_id][:mentions][:today] = todays_asker_grouped_posts[asker_id].select{ |p| p.interaction_type == 2 and p.correct.nil? }.size
 				display_data[asker_id][:mentions][:total] = Post.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null and #{@@not_spam}", asker_id, true, false, false).size
@@ -122,7 +122,6 @@ class Stat < ActiveRecord::Base
 
 				# DMs need to be marked as correct as well!
 				display_data[asker_id][:active_users][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
-				puts display_data[asker_id][:active_users][:today].to_json
 				display_data[asker_id][:active_users][:total] = months_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
 				totals[:active_users][:today] += display_data[asker_id][:active_users][:today]
 				totals[:active_users][:total] += display_data[asker_id][:active_users][:total]
@@ -185,7 +184,7 @@ class Stat < ActiveRecord::Base
 
 	def self.dau_mau(graph_data = {}, display_data = {})
 		asker_ids = User.askers.collect(&:id)
-		date_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 2.months.ago, (asker_ids += ADMINS), true, false, false).group_by { |post| post.created_at.to_date }
+		date_grouped_posts = Post.where("created_at > ? and user_id not in (?) and #{@@not_spam}", 2.months.ago, (asker_ids += ADMINS), true, false, false).order("created_at ASC").group_by { |post| post.created_at.to_date }
 		date_grouped_posts.each do |date, posts|
 			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.size
 		end
