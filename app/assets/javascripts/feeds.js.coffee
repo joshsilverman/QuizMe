@@ -18,16 +18,11 @@ class Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
-		@initializeQuestions()
+		@initialize_questions()
+		@initialize_infinite_scroll() unless @manager
 		$('.best_in_place').on "ajax:success", -> 
 			conversation = $(this).parents(".conversation")
 			if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
-		unless @manager
-			$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
-			$("#posts_more").on "click", (e) => 
-				e.preventDefault()
-				@show_more()
-		# @initializeNewPostListener()
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
@@ -35,8 +30,12 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
-		# $("#gotham").on "click", => mixpanel.track("ad_click", {"client": "Gotham", "account" : @name, "source": source})
-	initializeQuestions: => @questions.push(new Post post) for post in $(".conversation")
+	initialize_infinite_scroll: =>
+		$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		$("#posts_more").on "click", (e) => 
+			e.preventDefault()
+			@show_more()	
+	initialize_questions: => @questions.push(new Post post) for post in $(".conversation")
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
@@ -44,9 +43,8 @@ class Feed
 	post_question: =>
 		return unless window.feed.correct > 9
 		$("#post_question_modal").modal()
-		$("#add_answer").off "click"
+		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
-		$("#submit_question").off "click"
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
 			submit()
@@ -181,7 +179,6 @@ class Post
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		# @element.find("li").on "click", (e) => @update_engagement_type(e)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -266,36 +263,7 @@ class Post
 			)
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
-			@element.find("i").show()	
-	update_engagement_type: (event) =>
-		event.preventDefault()
-		target = $(event.target)
-		switch target.attr "engagement_type"
-			when "mention reply"
-				title = "Reply"
-				@link_post(target)
-			when "mention"
-				add_class = "btn-info"
-				title = "Mention"
-			when "share"
-				add_class = "btn-success"
-				title = "Retweet"
-			when "spam"
-				add_class = "btn-warning"
-				title = "Spam"
-			when "pm"
-				add_class = "btn-inverse"
-				title = "Private Message"				
-		group = target.parents(".btn-group")
-		group.find(".btn").removeClass("btn-warning btn-success btn-info btn-inverse").addClass(add_class)
-		group.find(".dropdown-toggle").text(title)
-		params = 
-			id: @id
-			engagement_type: target.attr "engagement_type"
-		$.ajax "/posts/update_engagement_type",
-			type: 'POST'
-			data: params
-			# success: (e) => 		
+			@element.find("i").show()			
 	open_reply_modal: (event) =>
 		post = $(event.target)
 		post = post.parents(".post") unless post.hasClass "post"
@@ -308,17 +276,16 @@ class Post
 			title: "Reply to #{username}"
 			width: 521
 			modal: true
-		$("button.btn.correct").off()
-		$("button.btn.correct").on 'click', ()=>
+			close: => $("#respond_modal").find("textarea").val("")
+		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off()
+		$("button.btn.correct").on 'click', () =>
 			correct = true
 			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
 			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
-			$(".modal_body textarea").html("@#{username} #{response} #{complement}")
-		$("button.btn.incorrect").off()
+			$(".modal_body textarea").val("@#{username} #{response} #{complement}")
 		$("button.btn.incorrect").on 'click', ()=>
 			correct = false
-			$(".modal_body textarea").html("@#{username} #{@incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]}")
-		$("#tweet.btn.btn-info").off()
+			$(".modal_body textarea").val("@#{username} #{@incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]}")
 		$("#tweet.btn.btn-info").on 'click', () =>
 			tweet = $("#respond_modal").find("textarea").val()
 			return if tweet == ""
@@ -334,6 +301,8 @@ class Post
 				"username" : username
 			params["correct"] = correct if correct != null
 			params["publication_id"] = publication_id if publication_id
+
+			console.log params
 			$.ajax '/manager_response',
 				type: 'POST'
 				data: params
@@ -368,8 +337,6 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
-
-
 	link_post: (event) =>
 		window.post = event
 		post = event.parents('.post').find('.content').html()
@@ -383,7 +350,6 @@ class Post
 			params =
 			"link_to_post_id" : $("input:checked").val()
 			"post_id" : @id
-			# "text" : text #This will eventually be any custom text (?)
 			$.ajax '/link_to_post',
 				type: 'POST'
 				data: params
