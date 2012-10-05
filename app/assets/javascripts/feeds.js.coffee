@@ -35,9 +35,7 @@ class Feed
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
-	initialize_posts: (posts) => 
-		# console.log posts
-		@posts.push(new Post post) for post in posts
+	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
@@ -50,14 +48,12 @@ class Feed
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
 			submit()
-
 		add_answer = ->
 			count = $(".answer").length
 			return if count > 3
 			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
 			$("#add_answer").hide() if count == 3
-
 		submit = ->
 			if validate_form()
 				$("#submit_question").button("loading")
@@ -77,13 +73,11 @@ class Feed
 					success: (e) => 
 						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
 						alert_status(true)
-
 		alert_status = (status) ->
 			$('#submit_question').button('reset')
 			text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
 			$('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
 			alert text
-
 		validate_form = ->
 			if $("#question_input").val() == ""
 				alert "Please enter a question!"
@@ -94,50 +88,6 @@ class Feed
 			else
 				return true		
 
-	displayNewPost: (data, insert_type, interaction = null) => 
-		conversation = $("#post_template").clone().removeAttr("id").show()
-		post = conversation.find(".post")
-		post.attr("post_id", data.id)
-		post.find("p").text(data.question.text)
-		conversation.css "visibility", "hidden"
-		if interaction != null and interaction != undefined
-			post.find(".answers").remove()
-			post.addClass("answered")
-			for response, i in interaction[0].posts
-				if String(response.user_id) == @id
-					handle = @name
-					image = null
-					target = @user_name
-				else
-					handle = @user_name
-					image = @user_image
-					target = @name
-				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("@#{target} #{response.text} #{data.url}") 
-				subsidiary.find("h5").text(handle)
-				subsidiary.find("img").attr("src", image) unless image == null
-				subsidiary.addClass("answered") if i < (interaction[0].posts.length - 1)
-				conversation.find(".subsidiaries").append(subsidiary.show())
-				conversation.find("i").show()
-		else
-			answers_element = post.find(".answers")
-			answers = data.question.answers
-			for answer, i in @shuffle(answers)
-				if i < (answers.length - 1) then border = "bottom_border" else border = ""
-				if answer.correct			
-					answers_element.append("<h3 correct='true' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
-				else
-					answers_element.append("<h3 correct='false' class='#{border}' answer_id='#{answer.id}'>#{answer.text}</h3>")
-				clone = $("#answer_template").clone().removeAttr('id')
-				clone.find("#answer").text(answer.text)
-				clone.find("#url").text(data.url)
-				answers_element.append(clone)
-		if insert_type == "prepend"
-			$("#feed_content").prepend(conversation)
-		else
-			conversation.insertBefore("#posts_more")
-		conversation.css('visibility','visible').hide().fadeIn('slow')
-		@posts.push(new Post conversation)
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		if last_post_id == undefined
@@ -150,21 +100,13 @@ class Feed
 				type: "GET",
 				# error: => alert_status(false),
 				success: (e) => 
-					# $("#feed_content").append($(e).hide().fadeIn())
-					$("#feed_content").append(e)
-					# console.log $(e)
-					console.log $(e).find(".conversation")
-					@initialize_posts($(e).find(".conversation"))
-					# $("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-					# alert_status(true)				
-			# $.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
-				# console.log posts
-				# if posts.publications.length > 0
-				# 	for post in posts.publications
-				# 		@displayNewPost(post, "append", posts.responses[post.id]) 
-				# else
-				# 	$("#posts_more").text("Last Post Reached")
-				# 	$(window).off "scroll"
+					if e is false
+						$("#posts_more").text("Last Post Reached")
+						$(window).off "scroll"					
+					else
+						$("#feed_content").append($(e).hide().fadeIn())
+						@initialize_posts($("#feed_content .feed_section").last().find(".conversation"))
+
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
@@ -186,42 +128,32 @@ class Post
 	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
 	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
-
 	constructor: (element) ->
-		# console.log "new post"
-		# console.log element
 		@answers = []
 		@element = $(element)
-		# console.log @element
-		# @id = @element.find(".post").attr "post_id"
-		# # console.log @id
-		# @question = @element.find(".question").text()
-		# # console.log @question
-		# # console.log @element
-		# @answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		# console.log @element
-		@element.on "click", (e) => console.log "click"
-			# @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.click()
-		# @element.find(".tweet_button").on "click", (e) => 
-		# 	if $("#user_name").val() != undefined
-		# 		parent = $(e.target).parents(".answer_container").prev("h3")
-		# 		@respond_to_question(parent.text(), parent.attr("answer_id"))
-		# answers = @element.find(".answers")
-		# if $("#manager").length > 0 then disabled = true else disabled = false
-		# answers.accordion({
-		# 	collapsible: true, 
-		# 	autoHeight: false,
-		# 	active: false, 
-		# 	icons: false, 
-		# 	disabled: disabled
-		# })		
-		# answers.on "accordionchange", (e, ui) => 
-		# 	if ui.newHeader.length > 0
-		# 		$(e.target).find("h3").removeClass("active_next")
-		# 		$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
-		# 	else
-		# 		$(e.target).find("h3").removeClass("active_next")
+		@id = @element.find(".post").attr "post_id"
+		@question = @element.find(".question").text()
+		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
+		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.find(".tweet_button").on "click", (e) => 
+			if $("#user_name").val() != undefined
+				parent = $(e.target).parents(".answer_container").prev("h3")
+				@respond_to_question(parent.text(), parent.attr("answer_id"))
+		answers = @element.find(".answers")
+		if $("#manager").length > 0 then disabled = true else disabled = false
+		answers.accordion({
+			collapsible: true, 
+			autoHeight: false,
+			active: false, 
+			icons: false, 
+			disabled: disabled
+		})		
+		answers.on "accordionchange", (e, ui) => 
+			if ui.newHeader.length > 0
+				$(e.target).find("h3").removeClass("active_next")
+				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
+			else
+				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
 		if window.feed.manager
 			if $(e.target).hasClass("link_post")
@@ -256,7 +188,6 @@ class Post
 			"asker_id" : window.feed.id
 			"post_id" : @id
 			"answer_id" : answer_id
-			# "text" : text #This will eventually be any custom text (?)
 		$.ajax '/respond_to_question',
 			type: 'POST'
 			data: params
