@@ -242,7 +242,7 @@ class Post < ActiveRecord::Base
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(current_acct, tweet, long_url, lt, reply_post, user, correct, conversation_id)
+  def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
     short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
     res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
 
@@ -280,7 +280,7 @@ class Post < ActiveRecord::Base
     to_message.each do |user|
       dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
       q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
-      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user)
+      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
     end
   end
 

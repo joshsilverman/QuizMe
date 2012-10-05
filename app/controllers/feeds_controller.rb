@@ -74,7 +74,7 @@ class FeedsController < ApplicationController
     if params[:interaction_type] == "4"
       dm = params[:message].gsub("@#{params[:username]}", "")
       user_post.update_attribute(:correct, correct)
-      Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, correct, conversation.id)
+      Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
       tweet = params[:message].gsub("@#{params[:username]}", "")
       if params[:publication_id]
