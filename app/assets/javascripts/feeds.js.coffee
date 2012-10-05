@@ -1,7 +1,7 @@
 class Feed
 	id: null
 	name: null 
-	questions: []
+	posts: []
 	answered: 0
 	user_name: null
 	user_image: null
@@ -18,7 +18,7 @@ class Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@manager = true if $("#manager").length > 0
-		@initialize_questions()
+		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll() unless @manager
 		$('.best_in_place').on "ajax:success", -> 
 			conversation = $(this).parents(".conversation")
@@ -35,7 +35,9 @@ class Feed
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
-	initialize_questions: => @questions.push(new Post post) for post in $(".conversation")
+	initialize_posts: (posts) => 
+		# console.log posts
+		@posts.push(new Post post) for post in posts
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
@@ -135,7 +137,7 @@ class Feed
 		else
 			conversation.insertBefore("#posts_more")
 		conversation.css('visibility','visible').hide().fadeIn('slow')
-		@questions.push(new Post conversation)
+		@posts.push(new Post conversation)
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		if last_post_id == undefined
@@ -143,13 +145,26 @@ class Feed
 			$(window).off "scroll"		
 			return 
 		else
-			$.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
-				if posts.publications.length > 0
-					for post in posts.publications
-						@displayNewPost(post, "append", posts.responses[post.id]) 
-				else
-					$("#posts_more").text("Last Post Reached")
-					$(window).off "scroll"
+			$.ajax
+				url: "/feeds/#{@id}/more/#{last_post_id}",
+				type: "GET",
+				# error: => alert_status(false),
+				success: (e) => 
+					# $("#feed_content").append($(e).hide().fadeIn())
+					$("#feed_content").append(e)
+					# console.log $(e)
+					console.log $(e).find(".conversation")
+					@initialize_posts($(e).find(".conversation"))
+					# $("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
+					# alert_status(true)				
+			# $.getJSON "/feeds/#{@id}/more/#{last_post_id}", (posts) => 
+				# console.log posts
+				# if posts.publications.length > 0
+				# 	for post in posts.publications
+				# 		@displayNewPost(post, "append", posts.responses[post.id]) 
+				# else
+				# 	$("#posts_more").text("Last Post Reached")
+				# 	$(window).off "scroll"
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
@@ -173,31 +188,40 @@ class Post
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
 
 	constructor: (element) ->
+		# console.log "new post"
+		# console.log element
 		@answers = []
 		@element = $(element)
-		@id = @element.find(".post").attr "post_id"
-		@question = @element.find(".question").text()
-		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.find(".tweet_button").on "click", (e) => 
-			if $("#user_name").val() != undefined
-				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond_to_question(parent.text(), parent.attr("answer_id"))
-		answers = @element.find(".answers")
-		if $("#manager").length > 0 then disabled = true else disabled = false
-		answers.accordion({
-			collapsible: true, 
-			autoHeight: false,
-			active: false, 
-			icons: false, 
-			disabled: disabled
-		})		
-		answers.on "accordionchange", (e, ui) => 
-			if ui.newHeader.length > 0
-				$(e.target).find("h3").removeClass("active_next")
-				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
-			else
-				$(e.target).find("h3").removeClass("active_next")
+		# console.log @element
+		# @id = @element.find(".post").attr "post_id"
+		# # console.log @id
+		# @question = @element.find(".question").text()
+		# # console.log @question
+		# # console.log @element
+		# @answers.push(new Answer answer, @) for answer in @element.find(".answer")
+		# console.log @element
+		@element.on "click", (e) => console.log "click"
+			# @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.click()
+		# @element.find(".tweet_button").on "click", (e) => 
+		# 	if $("#user_name").val() != undefined
+		# 		parent = $(e.target).parents(".answer_container").prev("h3")
+		# 		@respond_to_question(parent.text(), parent.attr("answer_id"))
+		# answers = @element.find(".answers")
+		# if $("#manager").length > 0 then disabled = true else disabled = false
+		# answers.accordion({
+		# 	collapsible: true, 
+		# 	autoHeight: false,
+		# 	active: false, 
+		# 	icons: false, 
+		# 	disabled: disabled
+		# })		
+		# answers.on "accordionchange", (e, ui) => 
+		# 	if ui.newHeader.length > 0
+		# 		$(e.target).find("h3").removeClass("active_next")
+		# 		$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
+		# 	else
+		# 		$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
 		if window.feed.manager
 			if $(e.target).hasClass("link_post")
