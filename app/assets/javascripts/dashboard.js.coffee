@@ -104,13 +104,16 @@ class Dashboard
 
 	draw_paulgraham: =>
 		title_row = ["Date", "Total"]
-		data_array = [['Date', 'Min', 'Max', "Over", "Wayover", 'Total']]
+		colors = ['orange', 'green', 'orange', "#6C69D1"]
+
+		data_array = [['Date', 'Min', 'Max', "Over", 'Total']]
 		$.each @paulgraham, (k,v) -> 
-			v = .2 if v > .2
-			data_array.push [k, .05, .05, .05, .05, v - .2]
+			data_array.push [k, .05, .05, .05, v - .15]
+
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
 		chart.draw graph_data, pg_options
+
 	draw_dau_mau: =>
 		data_array = [["Date", "Ratio"]]
 		$.each @dau_mau, (k,v) -> 
@@ -120,7 +123,12 @@ class Dashboard
 		chart = new google.visualization.LineChart(document.getElementById("dau_mau_graph"))
 		chart.draw graph_data, dau_mau_options		
 
-$ -> window.dashboard = new Dashboard if $("#dashboard").length > 0
+$ -> 
+	window.dashboard = new Dashboard if $(".dashboard").length > 0
+
+	$('#tabs a').click (e) ->
+	  e.preventDefault()
+	  $(this).tab('show')
 
 pg_options = 
 	width: 430
@@ -135,10 +143,15 @@ pg_options =
 	hAxis:
 		textStyle: 
 			fontSize: 9
-	series: [{lineWidth:0},{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
+	tooltip:
+		trigger: "none"
+	vAxis:
+		viewWindowMode: 'explicit'
+		viewWindow:
+			max: 0.1501
+	series: [{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
 	isStacked: true
-	vAxis: {maxValue: 0.2}
-	colors: ['orange', 'green', 'orange', 'orange', "#6C69D1"]
+	colors: ['orange', 'green', 'orange', "#6C69D1"]
 
 dau_mau_options = 
 	width: 430
@@ -177,6 +190,6 @@ line_colors =
 
 Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 Array::unique = ->
-  output = {}
-  output[@[key]] = @[key] for key in [0...@length]
-  value for key, value of output
+	output = {}
+	output[@[key]] = @[key] for key in [0...@length]
+	value for key, value of output

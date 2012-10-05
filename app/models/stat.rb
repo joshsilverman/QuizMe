@@ -193,23 +193,8 @@ class Stat < ActiveRecord::Base
 			end
 			graph_data[date] = (date_grouped_posts[date].to_f / total.to_f).to_f			
 		end
-		display_data[:today] = graph_data.values[-7..-1].sum / 7
+		display_data[:today] = graph_data[Date.today]
 		display_data[:total] = graph_data.values.sum / graph_data.values.size
-		# puts graph_data.to_json
-		# new_on = User.joins(:posts).where("(posts.autospam = ? and posts.spam is null) or posts.spam = ?", false, false).group("date_part('week', users.created_at)").count
-		# .select(["users.id"])
-		# puts User.joins(:posts).where("((posts.autospam = ? and posts.spam is null) or posts.spam = ?) and posts.created_at > ?", false, false, (Date.today - 60)).group("date_part('day', posts.created_at)").count
-		# puts Post.group('user_id, date(created_at)').sum
-		# .count(:user, :conditions => ["posts.created_at >= ?", 2.months.ago], :group => ["date(posts.created_at)"]).to_json
-		# counts = {}
-		# date_grouped_posts = User.select("users.id, posts.created_at").joins(:posts).where("((posts.autospam = ? and posts.spam is null) or posts.spam = ?) and posts.created_at > ?", false, false, 2.months.ago).group_by {|p| p.created_at.to_date}
-		# date_grouped_posts.each do |date, data|
-		# 	counts[date] = data.collect(&:id).uniq.size
-		# end
-		# puts counts.to_json
-		# puts Post.group('date(created_at), user_id').count.size
-		# puts Post.select([:user_id, :created_at]).where("created_at > ? and (posts.autospam = ? and posts.spam is null) or posts.spam = ?", 2.months.ago, false, false).group("date(created_at)")
-		# puts graph_data, display_data
 		return graph_data, display_data
 	end
 

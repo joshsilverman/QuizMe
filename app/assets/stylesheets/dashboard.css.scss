@@ -1,4 +1,4 @@
-#dashboard {
+.dashboard {
 	margin-left: 0px;
 
 	.row {
@@ -24,7 +24,7 @@
 		
 		.panel {
 			background: white;
-			margin-left: 0px;
+			margin: 0 0 25px 0;
 			height: 225px;
 			border: 1px rgba(0, 0, 0, 0.207031) solid;
 
@@ -89,13 +89,10 @@
 
 		.panel.right{
 			float: right;
-		}		
-		/*.left {*/
-
-		/*}*/
-		
-		/*.right {*/
-
-		/*}*/
+		}
 	}
+}
+
+#core {
+	//margin-top:10px;
 }
