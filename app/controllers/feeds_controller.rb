@@ -65,8 +65,8 @@ class FeedsController < ApplicationController
   end
 
   def manager_response
-    # puts "in manager tweet, params:"
-    # puts params.to_json
+    puts "in manager tweet, params:"
+    puts params.to_json
     asker = User.asker(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
@@ -76,8 +76,9 @@ class FeedsController < ApplicationController
       user_post.update_attribute(:correct, correct)
       Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
+      puts "answer"
       tweet = params[:message].gsub("@#{params[:username]}", "")
-      if params[:publication_id]
+      if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
         post = pub.posts.where(:provider => "twitter").first
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
@@ -89,10 +90,11 @@ class FeedsController < ApplicationController
                      params[:in_reply_to_user_id], false,
                      '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), nil)
       else
+        puts "reply"
         response_post = Post.tweet(asker, tweet, '', params[:username], nil, 
                      2, nil, conversation.id,
                      nil, params[:in_reply_to_post_id], 
-                     params[:in_reply_to_user_id], true, nil, '', nil)      
+                     params[:in_reply_to_user_id], true, nil, nil, nil)      
       end
     end
     user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})

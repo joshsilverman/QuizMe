@@ -225,13 +225,30 @@ class Post
 		window.post = post
 		username = post.find('h5').html()
 		correct = null
-		publication_id = null
 		tweet = ''
+		parent_index = window.feed.conversations[@id]['posts'].length - 1
+		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+		if parent_post == undefined		
+			publication_id = null
+			$("#respond_modal").find(".correct").hide()
+			$("#respond_modal").find(".incorrect").hide()
+		else
+			publication_id = parent_post['publication_id'] 
+			$("#respond_modal").find(".correct").show()		
+			$("#respond_modal").find(".incorrect").show()			
+		if post.attr("interaction_type") != "4"
+			textarea = $("#respond_modal").find("textarea")
+			text = "@#{username} "
+			textarea.val(text) 
+			textarea.focus()
 		$("#respond_modal").dialog
 			title: "Reply to #{username}"
 			width: 521
 			modal: true
-			close: => $("#respond_modal").find("textarea").val("")
+			close: => 
+				$("#respond_modal").find("textarea").val("")
+				$("#respond_modal").find(".correct").removeClass("active")
+				$("#respond_modal").find(".incorrect").removeClass("active")
 		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off()
 		$("button.btn.correct").on 'click', () =>
 			correct = true
@@ -244,9 +261,7 @@ class Post
 		$("#tweet.btn.btn-info").on 'click', () =>
 			tweet = $("#respond_modal").find("textarea").val()
 			return if tweet == ""
-			parent_index = window.feed.conversations[@id]['posts'].length - 1
-			parent_post = window.feed.conversations[@id]['posts'][parent_index]
-			publication_id = parent_post['publication_id'] unless parent_post == undefined
+			$("#tweet.btn.btn-info").button("loading")
 			params =
 				"interaction_type" : post.attr "interaction_type"
 				"asker_id" : window.feed.id
@@ -256,16 +271,21 @@ class Post
 				"username" : username
 			params["correct"] = correct if correct != null
 			params["publication_id"] = publication_id if publication_id
-
-			console.log params
 			$.ajax '/manager_response',
 				type: 'POST'
 				data: params
+				error: => 
+					$("#tweet.btn.btn-info").button('reset')
+					$("#respond_modal").find(".correct").removeClass("active")
+					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
 					$("#respond_modal").find("textarea").val("")
+					$("#tweet.btn.btn-info").button('reset')
 					$("#respond_modal").dialog('close')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
 					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
+					$("#respond_modal").find(".correct").removeClass("active")
+					$("#respond_modal").find(".incorrect").removeClass("active")					
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 

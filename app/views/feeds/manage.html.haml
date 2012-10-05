@@ -80,12 +80,12 @@
 	.modal_body
 		%textarea
 		.actions	
-			.btn-group
+			.btn-group{"data-toggle" => "buttons-radio"}
 				%button.btn.correct Correct
 				%button.btn.incorrect Incorrect
 			#tweet.btn.btn-info Respond
 			.character_count
-				%p 140
+				/ %p 140
 	.modal_conversation_history
 		.conversation
 			.subsidiary.post
