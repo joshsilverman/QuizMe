@@ -11,14 +11,10 @@ class FeedsController < ApplicationController
       # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
-      
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
-      # Slated for demolition
-      # @questions_answered = Rep.where(:publication_id => publication_ids).count
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
-      # Fix leaderboard
       @leaders = User.leaderboard(params[:id])
       if current_user
         @correct = 0
@@ -43,15 +39,19 @@ class FeedsController < ApplicationController
   end
 
   def more
+    @asker = User.asker(params[:id])
     post = Publication.find(params[:last_post_id])
-    publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID != ? AND PUBLISHED = ?", post.created_at, post.id, true).order("created_at DESC").limit(5).includes(:question => :answers)
-    publication_ids = publications.collect(&:id)
-    if current_user
-      responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => publication_ids).collect(&:id), :publication_id => publication_ids).includes(:posts).group_by(&:publication_id)
+    @publications = User.asker(params[:id]).publications.where("CREATED_AT < ? AND ID != ? AND PUBLISHED = ?", post.created_at, post.id, true).order("created_at DESC").limit(5).includes(:question => :answers)
+    if current_user     
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
-      responses = []
+      @responses = []
     end    
-    render :json => {:publications => publications.as_json(:include => {:question => {:include => :answers}}), :responses => responses.as_json(:include => :posts)}
+    if @publications.blank?
+      render :json => false
+    else
+      render :partial => "feed"
+    end
   end
 
   def scores
