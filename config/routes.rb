@@ -8,6 +8,7 @@ Quizmemanager::Application.routes.draw do
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
   match "/link_to_post" => "feeds#link_to_post"
+  match "/get_abingo_dm_response" => "feeds#get_abingo_dm_response"
   match "/dashboard" => "askers#dashboard"
   match "/posts/:id/refer" => "posts#refer"
 
