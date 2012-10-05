@@ -326,16 +326,21 @@ class Post < ActiveRecord::Base
 
   def self.save_mention_data(m, current_acct)
     u = User.find_or_create_by_twi_user_id(m.user.id)
-    u.update_attributes(:twi_name => m.user.name,
-                        :twi_screen_name => m.user.screen_name,
-                        :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url)
-    post = Post.find_by_provider_post_id(m.id.to_s)
-    return if post
+    u.update_attributes(
+      :twi_name => m.user.name,
+      :twi_screen_name => m.user.screen_name,
+      :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
+    )
+    return if post = Post.find_by_provider_post_id(m.id.to_s)
+    puts m.in_reply_to_status_id.to_s
     reply_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
+    puts reply_post.to_json
     if reply_post and reply_post.is_parent?
-      conversation = Conversation.create(:publication_id => reply_post.publication_id,
-                                         :post_id => reply_post.id,
-                                         :user_id => u.id)
+      conversation = Conversation.create(
+        :publication_id => reply_post.publication_id,
+        :post_id => reply_post.id,
+        :user_id => u.id
+      )
     elsif reply_post and reply_post.conversation_id
       conversation = reply_post.conversation
     else
@@ -354,10 +359,7 @@ class Post < ActiveRecord::Base
       :posted_via_app => false,
       :interaction_type => 2
     )
-    puts post.to_json
     Post.classifier.classify post
-    puts post.to_json
-    puts "\n\n"
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
