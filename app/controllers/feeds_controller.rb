@@ -102,20 +102,19 @@ class FeedsController < ApplicationController
   end
 
   def link_to_post
-    Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, params[:link_to_post_id])
-    render :nothing => true
+    post_to_link = Post.find(params[:post_id])
+    post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
+    post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
+    render :json => [post_to_link, post_to_link_to]
   end
 
   def manage
     @asker = User.asker(params[:id])
     @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", false, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
-    #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
-    @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
-    # @questions.each {|q| puts q[1].inspect}
+    @questions = @asker.publications.order("created_at DESC").includes(:question => :answers).limit(32)
     @engagements = {}
     @conversations = {}
     @posts.each do |p|
-
       @engagements[p.id] = p
       parent = p.parent
       @conversations[p.id] = {:posts => [], :answers => [], :users => {}}

@@ -159,7 +159,7 @@ class Post
 			if $(e.target).hasClass("link_post")
 				@link_post($(e.target))
 				return
-			else if $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify")	
+			else if $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify") or $(e.target).parents("#link_post_modal").length > 0
 				return
 			else
 				@open_reply_modal(e) 
@@ -226,8 +226,10 @@ class Post
 		username = post.find('h5').html()
 		correct = null
 		tweet = ''
+		console.log window.feed.conversations
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+		console.log parent_post
 		if parent_post == undefined		
 			publication_id = null
 			$("#respond_modal").find(".correct").hide()
@@ -330,21 +332,25 @@ class Post
 	link_post: (event) =>
 		window.post = event
 		post = event.parents('.post').find('.content').html()
-		$("#link_post_modal").dialog
-			title: "Link Post"
-			width: 530
-			height: 600
-			modal: true
+		$('#link_post_modal').modal(
+			"keyboard" : true
+		)
 		$("#link_post_modal .parent_post .content ").html(post)
-		$("#link.btn.btn-info").click ()=>
+		$("#link").off "click"
+		$("#link").on "click", =>
 			params =
-			"link_to_post_id" : $("input:checked").val()
-			"post_id" : @id
+				"link_to_pub_id" : $("input:checked").val()
+				"post_id" : @id
 			$.ajax '/link_to_post',
 				type: 'POST'
 				data: params
 				success: (e) =>
-					$("#link_post_modal").dialog('close')
+					window.feed.conversations[@id] = {"posts":[]}
+					window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
+					console.log window.feed.conversations[@id]['posts']
+					$("#link_post_modal").modal('hide')
+					window.post.hide()
+
 
 
 class Answer
