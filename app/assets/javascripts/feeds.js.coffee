@@ -104,6 +104,7 @@ class Feed
 					else
 						$("#feed_content").append($(e).hide().fadeIn())
 						@initialize_posts($("#feed_content .feed_section").last().find(".conversation"))
+						$('.interaction').tooltip()
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
