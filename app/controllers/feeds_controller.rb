@@ -156,11 +156,11 @@ class FeedsController < ApplicationController
   def get_abingo_dm_response
     puts params[:user_id]
     Abingo.identity = params[:user_id]
+    Abingo.expires_in = 1.month
     response = nil
-    ab_test("dm_reengage", ["No Prod", "Prod"], :conversion => "reengage") do |res|
+    ab_test("reengagement", ["No Prod", "Prod"], {:conversion => "reengagement", :expires_in => 1.month}) do |res|
       response = res
     end
-
     render :text => response, :status => 200
   end
 

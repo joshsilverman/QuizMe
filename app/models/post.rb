@@ -482,6 +482,6 @@ class Post < ActiveRecord::Base
 
   def self.abingo_reengage(user_id)
     Abingo.identity = user_id
-    Abingo.bingo! 'reengage'
+    res = Abingo.bingo! 'reengagement'
   end
 end
