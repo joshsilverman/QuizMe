@@ -361,7 +361,7 @@ class Post < ActiveRecord::Base
       :interaction_type => 2
     )
     Post.classifier.classify post
-    Post.abingo_reengage(u.id)
+    Post.trigger_abingo_for_user(u.id, 'reengage')
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
@@ -400,7 +400,7 @@ class Post < ActiveRecord::Base
         :created_at => r.created_at,
         :interaction_type => 3
       )
-      Post.abingo_reengage(u.id)
+      Post.trigger_abingo_for_user(u.id, 'reengage')
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
@@ -433,7 +433,7 @@ class Post < ActiveRecord::Base
     )
     puts post.to_json
     Post.classifier.classify post
-    Post.abingo_reengage(u.id)
+    Post.trigger_abingo_for_user(u.id, 'reengage')
     puts post.to_json
     puts "\n\n"
   end
@@ -480,8 +480,13 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 
-  def self.abingo_reengage(user_id)
+  def self.trigger_abingo_for_user(user_id, test_name)
+    puts "abingo_reengage"
     Abingo.identity = user_id
-    res = Abingo.bingo! 'reengagement'
+    puts "id = #{Abingo.identity}"
+    puts "test = #{test_name}"
+    res = Abingo.bingo! test_name
+    puts "Response: #{res}"
+    puts "end"
   end
 end

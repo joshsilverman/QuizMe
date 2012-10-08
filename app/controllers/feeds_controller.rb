@@ -153,12 +153,16 @@ class FeedsController < ApplicationController
   end
 
   def get_abingo_dm_response
+    puts "start response"
     puts params[:user_id]
     Abingo.identity = params[:user_id]
     response = nil
-    ab_test("reengagement", ["No Prod", "Prod"], {:conversion => "reengagement", :expires_in => 1.month}) do |res|
+    ab_test("reengage", ["No Prod", "Prod"], :expires_in => 30.days) do |res|
       response = res
     end
+    puts "READING CACHE..."
+    puts Rails.cache.read("Abingo::participating_tests::#{Abingo.identity}")
+    puts "Done..."
     render :text => response, :status => 200
   end
 
