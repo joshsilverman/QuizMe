@@ -2,19 +2,7 @@
 #manager
 	#feed_container.span10
 		#wrapper.span9
-			#header.row.rounded.border-color
-				#account_information.span6
-					.container
-						.inner_container
-							.account_image
-								= image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
-							.account_text
-								%h2= @asker.twi_screen_name
-								%h3= "@#{@asker.twi_screen_name}"
-								%p= @asker.description
-								/ %a.scoreboard_link.visible-phone{:href => "#"}
-								/ 	Go to the scoreboard.
-				#account_stats.span3.hidden-phone
+			= render :partial => "account_info"
 			#feed.row
 				#right_column.span6
 					#posts.rounded

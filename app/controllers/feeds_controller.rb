@@ -103,6 +103,7 @@ class FeedsController < ApplicationController
 
   def link_to_post
     post_to_link = Post.find(params[:post_id])
+    puts Publication.find(params[:link_to_pub_id]).to_json
     post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
     post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
     render :json => [post_to_link, post_to_link_to]
@@ -111,7 +112,7 @@ class FeedsController < ApplicationController
   def manage
     @asker = User.asker(params[:id])
     @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
-    @questions = @asker.publications.order("created_at DESC").includes(:question => :answers).limit(32)
+    @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(32)
     @engagements = {}
     @conversations = {}
     @posts.each do |p|
