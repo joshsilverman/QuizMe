@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120928184119) do
+ActiveRecord::Schema.define(:version => 20121008220513) do
 
   create_table "alternatives", :force => true do |t|
     t.integer "experiment_id"
@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(:version => 20120928184119) do
     t.integer  "in_reply_to_post_id"
     t.integer  "publication_id"
     t.integer  "conversation_id"
-    t.boolean  "responded_to",        :default => false
+    t.boolean  "requires_action",     :default => false
     t.integer  "in_reply_to_user_id"
     t.boolean  "posted_via_app"
     t.string   "url"

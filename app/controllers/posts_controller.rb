@@ -56,7 +56,7 @@ class PostsController < ApplicationController
 			end
 			render :nothing => true, :status => 200
 		else
-			post.update_attributes :responded_to => true
+			post.update_attribute(:requires_action, false)
 			render :nothing => true, :status => 200
 		end
 	end

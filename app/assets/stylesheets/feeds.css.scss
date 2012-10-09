@@ -636,11 +636,18 @@ body {
 	padding-bottom: 0px;
 	padding-top: 5px;
 
-	.modal_body {
+	.modal-body {
 
+		.modal_conversation_history {
+			.conversation {
+				border: none;
+				border-top: solid 1px #DDD;
+			}	
+		}	
+		
 		textarea {
 			height: 80px;
-			width: 481px;
+			width: 505px;
 			resize: none;
 			margin-top: 10px
 		}
@@ -654,7 +661,7 @@ body {
 			}
 
 			.btn-group {
-				position: absolute;
+				display: inline;
 			}
 
 			.character_count {
@@ -667,12 +674,34 @@ body {
 }
 
 #link_post_modal {
+
 	padding-top: 0px;
 
 	.recent_posts {
-		overflow: scroll;
-		height: 457px;
-		width: 530px;
+		overflow-y: scroll;
+		margin-top: 86px;	
+			
+		.conversation {
+			background: #FAFAFA;
+			border-right: 1px solid #ddd;
+			border-left: 1px solid #ddd;
+			border-top: 1px dotted #ddd;
+			border-bottom: 0px dotted #ddd;
+
+			.radio {
+				padding-right: 8px;
+				padding-left: 25px;
+				margin-bottom: 0px;
+			}
+
+			&.first {
+				border-top: 0px;
+			}
+
+			.link_post {
+				visibility: hidden;
+			}
+		}
 	}
 
 	.content p {
@@ -685,47 +714,19 @@ body {
 		left: 5px;
 	}
 
-	.conversation {
-		background: #FAFAFA;
-
-		.radio {
-			padding-right: 8px;
-			padding-left: 25px;
-			margin-bottom: 0px;
-		}
-
-		&.first {
-			border-top: 0px;
-		}
-
-		.link_post {
-			visibility: hidden;
-		}
-	}
-
-	.parent_post_container {
-
-		.controls {
-			background: #EEE;
-			height: 38px;
-			border-bottom: 1px solid #DDD;
-			width: 530px;
-			margin-left: -14px;
-
-			.btn {
-				float: right;
-				margin-right: 5px;
-				margin-top: 5px;				
-			}
-		}
-	}
-
 	.parent_post {
+		position: absolute;
+		height: 100px;
+		width: 515px;
 		border-bottom: 1px solid #ddd;
-		width: 530px !important;
+		z-index: 10;
+		background: white;	
+		margin-top: -15px;	
+		/*width: 530px !important;*/
 
 		.conversation {
-			border-top: 0px;
+			border: none;
+			/*border-bottom: 1px solid #ddd;*/
 		}
 
 		.post {
@@ -733,17 +734,6 @@ body {
 		}
 	}	
 }
-
-.modal_conversation_history, .recent_posts, .parent_post {
-	position: relative;
-	width: 521px;
-	margin-left: -14px;	
-
-	.conversation {
-		border: none;
-		border-top: solid 1px #DDD;
-	}	
-}	
 
 #manager {
 /*	.conversation {
