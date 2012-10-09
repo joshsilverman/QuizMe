@@ -21,7 +21,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.unanswered
-    where(:responded_to => false)
+    where(:requires_action => true)
   end
 
   ### Twitter
@@ -179,7 +179,7 @@ class Post < ActiveRecord::Base
       :publication_id => publication_id,
       :url => long_url ? short_url : nil,
       :posted_via_app => true, 
-      :responded_to => true,
+      :requires_action => false,
       :interaction_type => interaction_type,
       :correct => correct
     )
@@ -257,7 +257,7 @@ class Post < ActiveRecord::Base
       :conversation_id => conversation_id,
       :url => long_url ? short_url : nil,
       :posted_via_app => true,
-      :responded_to => true,
+      :requires_action => false,
       :interaction_type => 4
     )
   end
@@ -358,7 +358,8 @@ class Post < ActiveRecord::Base
       :created_at => m.created_at,
       :conversation_id => conversation.nil? ? nil : conversation.id,
       :posted_via_app => false,
-      :interaction_type => 2
+      :interaction_type => 2,
+      :requires_action => true
     )
     Post.classifier.classify post
     Post.trigger_abingo_for_user(u.id, 'reengage')
@@ -398,7 +399,8 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => retweeted_post.user_id,
         :posted_via_app => false,
         :created_at => r.created_at,
-        :interaction_type => 3
+        :interaction_type => 3,
+        :requires_action => true
       )
       Post.trigger_abingo_for_user(u.id, 'reengage')
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -429,7 +431,8 @@ class Post < ActiveRecord::Base
       :created_at => d.created_at,
       :conversation_id => conversation_id,
       :posted_via_app => false,
-      :interaction_type => 4
+      :interaction_type => 4,
+      :requires_action => true
     )
     puts post.to_json
     Post.classifier.classify post
@@ -467,7 +470,7 @@ class Post < ActiveRecord::Base
       #   :question_id => question_id,
       #   :correct => correct
       # )
-      self.update_attributes(:responded_to => true, :correct => correct)
+      self.update_attributes(:requires_action => false, :correct => correct)
       Stat.update_stat_cache("questions_answered", 1, asker_id, self.created_at, self.user_id)
       if self.posted_via_app
         Stat.update_stat_cache("internal_answers", 1, asker_id, self.created_at, self.user_id)
@@ -475,7 +478,7 @@ class Post < ActiveRecord::Base
         Stat.update_stat_cache("twitter_answers", 1, asker_id, self.created_at, self.user_id)
       end
     else
-      self.update_attributes(:responded_to => true)
+      self.update_attributes(:requires_action => false)
     end
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end

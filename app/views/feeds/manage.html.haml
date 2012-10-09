@@ -35,6 +35,7 @@
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name
 										%p= post.text
+										= best_in_place post, :requires_action, :type => :checkbox, :collection => ["flag", "unflag"]
 										- unless post.in_reply_to_post_id
 											%a.link_post Link Post				
 						#posts_more.border-color

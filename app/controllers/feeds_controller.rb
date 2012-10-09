@@ -97,7 +97,7 @@ class FeedsController < ApplicationController
                      params[:in_reply_to_user_id], true, nil, nil, nil)      
       end
     end
-    user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
+    user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id})
     render :json => response_post
   end
 
@@ -110,7 +110,7 @@ class FeedsController < ApplicationController
 
   def manage
     @asker = User.asker(params[:id])
-    @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", false, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
+    @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
     @questions = @asker.publications.order("created_at DESC").includes(:question => :answers).limit(32)
     @engagements = {}
     @conversations = {}

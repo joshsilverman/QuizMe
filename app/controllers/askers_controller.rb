@@ -6,8 +6,8 @@ class AskersController < ApplicationController
     @new_posts = {}
     @submitted_questions = {}
     asker_ids = User.askers.collect(&:id)
-    askers_engagements = Post.where("responded_to = ? and in_reply_to_user_id in (?) and (spam = ? or spam is null) and user_id not in (?)", false, asker_ids, false, asker_ids).group_by(&:in_reply_to_user_id)
-    puts askers_engagements.to_json
+    askers_engagements = Post.where("requires_action = ? and in_reply_to_user_id in (?) and (spam = ? or spam is null) and user_id not in (?)", false, asker_ids, false, asker_ids).group_by(&:in_reply_to_user_id)
+    # puts askers_engagements.to_json
     @askers.each do |a|
       unresponded = askers_engagements[a.id].try(:size) || 0
       # unresponded = a.engagements.where(:responded_to => false).count
@@ -20,7 +20,7 @@ class AskersController < ApplicationController
   def show
     @asker = User.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
-    @posts = @asker.engagements.where(:responded_to => false).order('created_at DESC')
+    @posts = @asker.engagements.where(:requires_action => true).order('created_at DESC')
   end
 
   def edit
