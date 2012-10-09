@@ -113,6 +113,10 @@ class FeedsController < ApplicationController
     @asker = User.asker(params[:id])
     @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(32)
+    publication_ids = @asker.publications.select(:id).where(:published => true)
+    @question_count = publication_ids.size
+    @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
+    @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0    
     @engagements = {}
     @conversations = {}
     @posts.each do |p|
