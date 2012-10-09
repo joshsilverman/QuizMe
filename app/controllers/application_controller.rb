@@ -43,5 +43,6 @@ class ApplicationController < ActionController::Base
     else
       session[:abingo_identity] = Abingo.identity = rand(10 ** 10).to_i
     end
+    Abingo.options[:expires_in] = 1.hour
   end
 end

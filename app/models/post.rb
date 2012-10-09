@@ -481,12 +481,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.trigger_abingo_for_user(user_id, test_name)
-    puts "abingo_reengage"
     Abingo.identity = user_id
-    puts "id = #{Abingo.identity}"
-    puts "test = #{test_name}"
-    res = Abingo.bingo! test_name
-    puts "Response: #{res}"
-    puts "end"
+    Abingo.bingo! test_name
   end
 end
