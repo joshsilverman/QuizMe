@@ -8,6 +8,9 @@ class Feed
 	conversations: null
 	engagements: null
 	correct: null
+	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
+	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
+	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	constructor: ->
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
@@ -20,6 +23,10 @@ class Feed
 		$('.best_in_place').on "ajax:success", -> 
 			conversation = $(this).parents(".conversation")
 			if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
+		$("#respond_modal").on "hidden", => 
+			$("#respond_modal").find("textarea").val("")
+			$("#respond_modal").find(".correct").removeClass("active")
+			$("#respond_modal").find(".incorrect").removeClass("active")
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 
 class Post
@@ -28,16 +35,13 @@ class Post
 	question: null
 	correct: null
 	answers: []
-	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
-	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
-	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]
 	constructor: (element) ->
 		@answers = []
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.on "click", (e) => @expand(e) unless $(e.target).parents("#respond_modal").length > 0
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -49,7 +53,7 @@ class Post
 			active: false, 
 			icons: false, 
 			disabled: true
-		})		
+		})	
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
@@ -81,27 +85,20 @@ class Post
 			text = "@#{username} "
 			textarea.val(text) 
 			textarea.focus()
-		$("#respond_modal").dialog
-			title: "Reply to #{username}"
-			width: 521
-			modal: true
-			close: => 
-				$("#respond_modal").find("textarea").val("")
-				$("#respond_modal").find(".correct").removeClass("active")
-				$("#respond_modal").find(".incorrect").removeClass("active")
-		$("button.btn.correct, button.btn.incorrect, #tweet.btn.btn-info").off()
+		$("#respond_modal").modal()
+		$("button.btn.correct, button.btn.incorrect, #tweet").off()
 		$("button.btn.correct").on 'click', () =>
 			correct = true
-			response = @correct_responses[Math.floor (Math.random() * @correct_responses.length )]
-			complement = @correct_complements[Math.floor (Math.random() * @correct_complements.length )]
-			$(".modal_body textarea").val("@#{username} #{response} #{complement}")
+			response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length )]
+			complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length )]
+			$("#respond_modal textarea").val("@#{username} #{response} #{complement}")
 		$("button.btn.incorrect").on 'click', ()=>
 			correct = false
-			$(".modal_body textarea").val("@#{username} #{@incorrect_responses[Math.floor (Math.random() * @incorrect_responses.length )]}")
-		$("#tweet.btn.btn-info").on 'click', () =>
+			$("#respond_modal textarea").val("@#{username} #{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}")
+		$("#tweet").on 'click', () =>
 			tweet = $("#respond_modal").find("textarea").val()
 			return if tweet == ""
-			$("#tweet.btn.btn-info").button("loading")
+			$("#tweet").button("loading")
 			params =
 				"interaction_type" : post.attr "interaction_type"
 				"asker_id" : window.feed.id
@@ -115,13 +112,13 @@ class Post
 				type: 'POST'
 				data: params
 				error: => 
-					$("#tweet.btn.btn-info").button('reset')
+					$("#tweet").button('reset')
 					$("#respond_modal").find(".correct").removeClass("active")
 					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
 					$("#respond_modal").find("textarea").val("")
-					$("#tweet.btn.btn-info").button('reset')
-					$("#respond_modal").dialog('close')
+					$("#tweet").button('reset')
+					$("#respond_modal").modal('hide')
 					$(".post[post_id=#{@id}]").children('#classify').hide()
 					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
 					$("#respond_modal").find(".correct").removeClass("active")

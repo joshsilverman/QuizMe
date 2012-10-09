@@ -636,11 +636,18 @@ body {
 	padding-bottom: 0px;
 	padding-top: 5px;
 
-	.modal_body {
+	.modal-body {
 
+		.modal_conversation_history {
+			.conversation {
+				border: none;
+				border-top: solid 1px #DDD;
+			}	
+		}	
+		
 		textarea {
 			height: 80px;
-			width: 481px;
+			width: 505px;
 			resize: none;
 			margin-top: 10px
 		}
@@ -654,7 +661,7 @@ body {
 			}
 
 			.btn-group {
-				position: absolute;
+				display: inline;
 			}
 
 			.character_count {
@@ -727,17 +734,6 @@ body {
 		}
 	}	
 }
-
-.modal_conversation_history {
-	position: relative;
-	width: 521px;
-	margin-left: -14px;	
-
-	.conversation {
-		border: none;
-		border-top: solid 1px #DDD;
-	}	
-}	
 
 #manager {
 /*	.conversation {
