@@ -159,7 +159,7 @@ class Post
 			if $(e.target).hasClass("link_post")
 				@link_post($(e.target))
 				return
-			else if $(e.target).parents("#classify").length > 0 or $(e.target).is("#classify") or $(e.target).parents("#link_post_modal").length > 0
+			else if $(e.target).parents("#link_post_modal").length > 0 or $(e.target).is("a span")
 				return
 			else
 				@open_reply_modal(e) 
@@ -331,11 +331,14 @@ class Post
 					console.log e
 	link_post: (event) =>
 		window.post = event
-		post = event.parents('.post').find('.content').html()
+		post = event.parents('.post').find('.content')
 		$('#link_post_modal').modal(
 			"keyboard" : true
 		)
-		$("#link_post_modal .parent_post .content ").html(post)
+		content = $("#link_post_modal .parent_post .content ")
+		content.find("p").text(post.find("p").text())
+		content.find("h5").text(post.find("h5").text())
+		content.find("img").attr("src", post.find("img").attr("src"))
 		$("#link").off "click"
 		$("#link").on "click", =>
 			params =
