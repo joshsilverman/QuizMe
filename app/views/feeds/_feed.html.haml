@@ -47,14 +47,11 @@
 									%p= response['text']
 			.loading{:style => "display: none;"}
 				Loading...			
-			.interactions
-				-if @actions[post.id]	
-					- winner = @actions[post.id].shift
-					.fastest
-						%p #1
-						= image_tag(winner[:user][:twi_profile_img_url], :class => "rounded interaction", :rel => "tooltip", :title => "#{winner[:user][:twi_screen_name]} #{(winner[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
-					.answerers
-						- @actions[post.id].each_with_index do |interaction, i|
-							= image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")		
-					- if current_user
-						= image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")
+			-if @actions[post.id]
+				.activity_container
+					%p.activity ACTIVITY
+					.interactions
+						- @actions[post.id].each do |interaction|
+							= image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
+						- if current_user
+							= image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")									

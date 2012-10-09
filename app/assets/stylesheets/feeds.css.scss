@@ -348,7 +348,7 @@ body {
 		border-left-width: 1px;
 		border-bottom-style: solid;
 		border-bottom-width: 1px;
-		padding-bottom: 10px;
+		/*padding-bottom: 10px;*/
 
 		.loading {
 			border-top: 1px dotted #ddd;	
@@ -680,59 +680,72 @@ body {
 	}				
 }	
 
-.interactions {
-	/*background: #FAFAFA;*/
-	/*margin-left: 10px;*/
-	/*margin-left: 66px;*/
-	margin-right: 0px;
-	margin: 0px 10px;
-
-	/*background: whiteSmoke;*/
-	/*border: dotted #ddd 1px;*/
-	border-top: dotted #E5E5E5 1px;
-	/*border-bottom: solid #ddd 1px;*/
-
-	/*border-radius: 5px;*/
-/*	border-bottom-right-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 5px;
-	border-top-left-radius: 5px;*/
-	/*border-bottom: solid #ddd 1px;*/
-	/*padding: 5px;*/
-	/*padding-left: 57px;*/
-	overflow: hidden;
-	white-space: nowrap;
-	height: 34px;
-
-	img {
-		height: 24px;
+.activity_container {
+	margin-top: -10px;
+	.activity {
+		padding-left: 10px;
+		font-size: 8px;
+		color: #999;
+		position: relative;
+		top: 3px;	
 	}
 
-	.fastest {
-		width: 42px;
-		display: inline-block;
-		padding-right: 6px;
-		padding-left: 2px;
-		border-right: 1px dotted #ddd;
-		padding-top: 5px;
-		height: inherit;
+	.interactions {
+		/*background: #FAFAFA;*/
+		/*margin-left: 10px;*/
+		/*margin-left: 66px;*/
+		margin-right: 0px;
+		margin: 0px 10px;
+		padding-top: 6px;
 
-		p {
-			display: inline;
-			color: #999;
-			top: 2px;
-			position: relative;
+
+		/*background: whiteSmoke;*/
+		/*border: dotted #ddd 1px;*/
+		border-top: dotted #E5E5E5 1px;
+		/*border-bottom: solid #ddd 1px;*/
+
+		/*border-radius: 5px;*/
+	/*	border-bottom-right-radius: 0px;
+		border-top-right-radius: 0px;
+		border-bottom-left-radius: 5px;
+		border-top-left-radius: 5px;*/
+		/*border-bottom: solid #ddd 1px;*/
+		/*padding: 5px;*/
+		/*padding-left: 57px;*/
+		overflow: hidden;
+		white-space: nowrap;
+		height: 34px;
+
+		img {
+			height: 24px;
 		}
-	}
 
-	.answerers {
-		display: inline;
-		padding-left: 5px;
-		/*border-right: 1px dotted #ddd;*/
-		padding-top: 5px;
-		height: inherit;		
-	}
-}		
+		.fastest {
+			width: 42px;
+			display: inline-block;
+			padding-right: 6px;
+			padding-left: 2px;
+			border-right: 1px dotted #ddd;
+			padding-top: 5px;
+			height: inherit;
+
+			p {
+				display: inline;
+				color: #999;
+				top: 2px;
+				position: relative;
+			}
+		}
+
+		.answerers {
+			display: inline;
+			padding-left: 5px;
+			/*border-right: 1px dotted #ddd;*/
+			padding-top: 5px;
+			height: inherit;		
+		}
+	}		
+}
 
 .ui-dialog {
 	padding: 0px !important;
