@@ -411,14 +411,18 @@ class Post < ActiveRecord::Base
 
   def self.save_dm_data(d, current_acct)
     u = User.find_or_create_by_twi_user_id(d.sender.id)
-    u.update_attributes(:twi_name => d.sender.name,
-                        :twi_screen_name => d.sender.screen_name,
-                        :twi_profile_img_url => d.sender.profile_image_url)
+    u.update_attributes(
+      :twi_name => d.sender.name,
+      :twi_screen_name => d.sender.screen_name,
+      :twi_profile_img_url => d.sender.profile_image_url
+    )
     dm = Post.find_by_provider_post_id(d.id.to_s)
     return if dm
-    reply_post = Post.where(:provider => 'twitter',
-                            :interaction_type => 4,
-                            :in_reply_to_user_id => u.id).last
+    reply_post = Post.where(
+      :provider => 'twitter',
+      :interaction_type => 4,
+      :user_id => u.id
+    ).order("created_at DESC").limit(1).first
     conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
 
     post = Post.create( 
@@ -435,11 +439,8 @@ class Post < ActiveRecord::Base
       :interaction_type => 4,
       :requires_action => true
     )
-    puts post.to_json
     Post.classifier.classify post
     Post.trigger_abingo_for_user(u.id, 'reengage')
-    puts post.to_json
-    puts "\n\n"
   end
 
 
