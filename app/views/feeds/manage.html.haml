@@ -2,19 +2,7 @@
 #manager
 	#feed_container.span10
 		#wrapper.span9
-			#header.row.rounded.border-color
-				#account_information.span6
-					.container
-						.inner_container
-							.account_image
-								= image_tag(@asker.twi_profile_img_url.sub(/_normal.png$/, "_reasonably_small.png"), :class => "rounded")
-							.account_text
-								%h2= @asker.twi_screen_name
-								%h3= "@#{@asker.twi_screen_name}"
-								%p= @asker.description
-								/ %a.scoreboard_link.visible-phone{:href => "#"}
-								/ 	Go to the scoreboard.
-				#account_stats.span3.hidden-phone
+			= render :partial => "account_info"
 			#feed.row
 				#right_column.span6
 					#posts.rounded
@@ -35,8 +23,11 @@
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name
 										%p= post.text
+										%a
+											= best_in_place post, :requires_action, :type => :checkbox, :collection => ["mark unresponded", "mark responded"]
 										- unless post.in_reply_to_post_id
-											%a.link_post Link Post				
+											|
+											%a.link_post link post				
 						#posts_more.border-color
 							Last Post Reached
 				#left_column.span3.hidden-phone
@@ -74,55 +65,10 @@
 											.content
 												= image_tag(related.twi_profile_img_url, :class => "rounded")
 												%h5= related.twi_name
-												%p= related.description
+												%p= related.description	
 
-#respond_modal{:style => "display: none;"}
-	.modal_body
-		%textarea
-		.actions	
-			.btn-group{"data-toggle" => "buttons-radio"}
-				%button.btn.correct Correct
-				%button.btn.incorrect Incorrect
-			#tweet.btn.btn-info Respond
-			.character_count
-		#abingo_dm.btn.btn-danger Get Abingo DM
-	.modal_conversation_history
-		.conversation
-			.subsidiary.post
-				%i.icon-share-alt{:style => "display: none;"}
-				.content											
-					= image_tag(User.first.twi_profile_img_url, :class => "rounded")
-					%h5= "User name"
-					%p= "Conversation history"		
-
-#link_post_modal{:style => "display: none;"}
-	.parent_post_container
-		.parent_post
-			.conversation
-				.subsidiary.post
-					%i.icon-share-alt{:style => "display: none;"}
-					.content											
-						= image_tag(User.first.twi_profile_img_url, :class => "rounded")
-						%h5= "User name"
-						%p= "Post to be linked"		
-		.controls
-			#link.btn.btn-info Link
-	.recent_posts	
-		- @questions.each_with_index do |q, n|
-			.conversation{:class => ("first" if n == 0)}
-				%label.radio
-					%input{:type => "radio", :name => "post_radio", :id => q[0], :value => q[0]}
-						.subsidiary.post
-							%i.icon-share-alt{:style => "display: none;"}
-							.content											
-								= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-								%h5= @asker.twi_screen_name
-								%p= q[1].text
-							.answers.rounded.border
-								- count = q[2].size
-								- q[2].each_with_index do |answer, i|
-									%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
-									.answer_container
+= render :partial => "respond_modal"
+= render :partial => "link_post_modal"
 
 #post_template.conversation.border-color{:style => "display: none;"}
 	.post.parent

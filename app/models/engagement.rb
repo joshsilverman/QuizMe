@@ -40,7 +40,7 @@ class Engagement < ActiveRecord::Base
 	###################
 
 	def self.unanswered
-		where(:responded_to => false)
+		where(:requires_action => true)
 	end
 
 	### Twitter
@@ -155,7 +155,7 @@ class Engagement < ActiveRecord::Base
 
 	def respond(correct)
 		#@TODO update engagement_type
-		self.update_attributes(:responded_to => true)
+		self.update_attributes(:requires_action => false)
   	unless correct.nil?
   		Rep.create(:user_id => self.user_id,
   						 :post_id => self.post_id,

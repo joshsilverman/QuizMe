@@ -97,25 +97,29 @@ class FeedsController < ApplicationController
                      params[:in_reply_to_user_id], true, nil, nil, nil)      
       end
     end
-    user_post.update_attributes({:responded_to => true, :conversation_id => conversation.id})
+    user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id})
     render :json => response_post
   end
 
   def link_to_post
-    Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, params[:link_to_post_id])
-    render :nothing => true
+    post_to_link = Post.find(params[:post_id])
+    puts Publication.find(params[:link_to_pub_id]).to_json
+    post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
+    post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
+    render :json => [post_to_link, post_to_link_to]
   end
 
   def manage
     @asker = User.asker(params[:id])
-    @posts = Post.where("responded_to = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", false, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
-    #@questions = @asker.publications.where(:published => true).order("created_at DESC").limit(15).map{|pub| pub.question}
-    @questions = @asker.posts.where("publication_id is not null").order("created_at DESC").limit(15).delete_if{|p| p.publication.nil?}.map{|post| [post.id, post.publication.question, post.publication.question.answers]}
-    # @questions.each {|q| puts q[1].inspect}
+    @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
+    @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(32)
+    publication_ids = @asker.publications.select(:id).where(:published => true)
+    @question_count = publication_ids.size
+    @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
+    @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0    
     @engagements = {}
     @conversations = {}
     @posts.each do |p|
-
       @engagements[p.id] = p
       parent = p.parent
       @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
@@ -154,14 +158,11 @@ class FeedsController < ApplicationController
   end
 
   def get_abingo_dm_response
-    puts params[:user_id]
+    puts "get abingo dm response for user #{params[:user_id]}"
     Abingo.identity = params[:user_id]
-    response = nil
-    ab_test("dm_reengage", ["No Prod", "Prod"], :conversion => "reengage") do |res|
-      response = res
-    end
-
-    render :text => response, :status => 200
+    Abingo.options[:expires_in] = 30.days
+    res = ab_test("reengage", ["No Prod", "Prod"])
+    render :text => res, :status => 200
   end
 
 end

@@ -109,8 +109,10 @@ class Abingo
         participating_tests = participating_tests + [test_name]
         expires_in = Abingo.expires_in
         if expires_in
+          puts "expires in #{expires_in}"
           Abingo.cache.write("Abingo::participating_tests::#{Abingo.identity}", participating_tests, {:expires_in => expires_in})
         else
+          puts "expires in DEFAULT CACHE TIME"
           Abingo.cache.write("Abingo::participating_tests::#{Abingo.identity}", participating_tests)
         end
       end
