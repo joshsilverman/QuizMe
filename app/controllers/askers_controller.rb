@@ -92,5 +92,9 @@ class AskersController < ApplicationController
     @display_data[0][:paulgraham] = pg_display_data
     @dau_mau, dau_mau_display_data = Stat.dau_mau
     @display_data[0][:dau_mau] = dau_mau_display_data
+  end
+
+  def report
+    
   end  
 end
