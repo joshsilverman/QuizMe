@@ -215,6 +215,7 @@ class Post < ActiveRecord::Base
       nil,
       answer.correct
     )
+    Post.trigger_abingo_for_user(current_user.id, 'reengage')
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
