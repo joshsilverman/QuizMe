@@ -3,6 +3,14 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
+	if $("#question").length > 0
+		answers = $("#question").find(".answers")
+		answers.accordion({
+			collapsible: true, 
+			autoHeight: false,
+			active: false, 
+			icons: false, 
+		})		
 	if $('#moderate_questions').length > 0
 		$('.btn.btn-success').click -> respond(true, $(this).attr('qid'))
 		$('.btn.btn-danger').click -> respond(false, $(this).attr('qid'))

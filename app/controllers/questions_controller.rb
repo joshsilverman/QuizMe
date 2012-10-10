@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user, :except => [:new, :refer]
+  before_filter :authenticate_user, :except => [:new, :refer, :show]
   before_filter :admin?, :only => [:moderate, :moderate_update]
   # GET /questions
   # GET /questions.json
@@ -15,7 +15,10 @@ class QuestionsController < ApplicationController
   # GET /questions/1
   # GET /questions/1.json
   def show
-    @question = current_user.questions.find(params[:id])
+    @question = Question.find(params[:id])
+    @asker = User.find(@question.created_for_asker_id)
+    @publication = Publication.where(:question_id => params[:id]).order("created_at DESC").limit(1).first#.posts.order("created_at DESC").limit(1)
+    puts @post.to_json
     redirect_to "/" unless @question
 
     respond_to do |format|

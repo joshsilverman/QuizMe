@@ -1,0 +1,30 @@
+#feed_container.span10
+  #wrapper.span9
+    #question.span8
+      .conversation.border-color
+        .post.parent
+          .content
+            - if @question.user_id != 1
+              - user = @question.user
+              = image_tag(user.twi_profile_img_url, :class => "rounded")
+              %i.icon-user
+              %h5=user.twi_screen_name
+            - else
+              = image_tag(@asker.twi_profile_img_url, :class => "rounded")
+              %h5= @asker.twi_screen_name
+            %p= @question.text
+          .answers.rounded.border
+            - answers = @question.answers.shuffle
+            - count = answers.size
+            - answers.each_with_index do |answer, i|
+              %h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+              .answer_container.input{:type => 'text'}
+                .shadow-top
+                .tweet
+                  %span#account= "@#{@asker.twi_screen_name}"
+                  %span#answer= " #{answer.tweetable(@asker.twi_screen_name)}"
+                  / %span#url= " #{post.url}"
+                  / %span#additional{:contenteditable => true}
+                .answer_controls
+                  %a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@asker.id}&post_id=#{@publication.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+                .shadow-bottom
