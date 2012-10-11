@@ -682,6 +682,8 @@ body {
 
 .activity_container {
 	margin-top: -10px;
+	margin-left: 58px;
+
 	.activity {
 		padding-left: 10px;
 		font-size: 8px;
@@ -714,10 +716,10 @@ body {
 		/*padding-left: 57px;*/
 		overflow: hidden;
 		white-space: nowrap;
-		height: 34px;
+		height: 30px;
 
 		img {
-			height: 24px;
+			height: 22px;
 		}
 
 		.fastest {
