@@ -45,6 +45,7 @@ gem 'url_shortener'
 gem 'pusher'
 gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
+gem 'split', :git => 'https://github.com/kerinin/split/', :require => 'split/dashboard'
 
 gem 'best_in_place'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'

@@ -36,5 +36,7 @@ Quizmemanager::Application.routes.draw do
   #abingo
   match 'abingo(/:action(/:id))', :to => 'abingo_dashboard', :as => :bingo
 
+  mount Split::Dashboard, :at => 'split'
+
   root :to => 'feeds#index'
 end

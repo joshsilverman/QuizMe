@@ -491,8 +491,18 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 
-  def self.trigger_abingo_for_user(user_id, test_name)
-    Abingo.identity = user_id
-    Abingo.bingo! test_name
+  extend Split::Helper
+  def self.trigger_split_test(user_id, test_name)
+    # Abingo.identity = user_id
+    # Abingo.bingo! test_name
+    ab_user.set_id(user_id)
+    finished(test_name)
+
+  end
+  def self.create_split_test(user_id, test_name, a, b)
+    # Abingo.identity = user_id
+    # Abingo.bingo! test_name
+    ab_user.set_id(user_id)
+    ab_test(test_name, a, b)
   end
 end

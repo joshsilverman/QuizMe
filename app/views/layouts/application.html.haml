@@ -1,7 +1,8 @@
 !!!
 %html
 	%head
-		%title Wisr
+		-ab_user.set_id(200)
+		%title= ab_test('title tag', 'Wisr', 'We are WISR')
 		= stylesheet_link_tag    "application"
 		= javascript_include_tag "application"
 		= javascript_include_tag "https://www.google.com/jsapi"
