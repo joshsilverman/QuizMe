@@ -59,8 +59,6 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    puts 'bingo'
-    bingo! 'answer_options_visible'
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
@@ -157,11 +155,10 @@ class FeedsController < ApplicationController
     end
   end
 
-  def get_abingo_dm_response
-    puts "get abingo dm response for user #{params[:user_id]}"
-    Abingo.identity = params[:user_id]
-    Abingo.options[:expires_in] = 30.days
-    res = ab_test("reengage", ["No Prod", "Prod"])
+  def get_split_dm_response
+    puts "get split dm response for user #{params[:user_id]}"
+    ab_user.set_id(params[:user_id])
+    res = ab_test("dm reengagement", "Nudge", "No Nudge")
     render :text => res, :status => 200
   end
 

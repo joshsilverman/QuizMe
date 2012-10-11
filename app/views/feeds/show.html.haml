@@ -48,13 +48,8 @@
 		%h5= "User Name"
 		%p= "Post content"
 
-- if @post_id
-	= hidden_field_tag :post_id, @post_id
-- elsif ab_test "answer_options_visible", nil, :conversion => "answer"
-	= hidden_field_tag :post_id, @publications.first.id
-- else 
-	= hidden_field_tag :post_id, @post_id
 
+= hidden_field_tag :post_id, @post_id
 = hidden_field_tag :feed_id, @asker.id
 = hidden_field_tag :feed_name, @asker.twi_screen_name
 = hidden_field_tag :answer_id, @answer_id

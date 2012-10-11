@@ -215,11 +215,11 @@ class Post < ActiveRecord::Base
       nil,
       answer.correct
     )
-    Post.trigger_abingo_for_user(current_user.id, 'reengage')
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
     end
+    Post.trigger_split_test(current_user.id, 'dm reengagement')
     response_text = post.generate_response(status)
     publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
     app_post = Post.tweet(
@@ -360,7 +360,7 @@ class Post < ActiveRecord::Base
     )
 
     Post.classifier.classify post
-    Post.trigger_abingo_for_user(u.id, 'reengage')
+    Post.trigger_split_test(u.id, 'dm reengagement')
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
@@ -401,7 +401,7 @@ class Post < ActiveRecord::Base
         :interaction_type => 3,
         :requires_action => true
       )
-      Post.trigger_abingo_for_user(u.id, 'reengage')
+      Post.trigger_split_test(u.id, 'dm reengagement')
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
@@ -447,8 +447,8 @@ class Post < ActiveRecord::Base
       :interaction_type => 4,
       :requires_action => true
     )
+    Post.trigger_split_test(u.id, 'dm reengagement')
     Post.classifier.classify post
-    Post.trigger_abingo_for_user(u.id, 'reengage')
   end
 
 
@@ -493,15 +493,11 @@ class Post < ActiveRecord::Base
 
   extend Split::Helper
   def self.trigger_split_test(user_id, test_name)
-    # Abingo.identity = user_id
-    # Abingo.bingo! test_name
     ab_user.set_id(user_id)
     finished(test_name)
 
   end
   def self.create_split_test(user_id, test_name, a, b)
-    # Abingo.identity = user_id
-    # Abingo.bingo! test_name
     ab_user.set_id(user_id)
     ab_test(test_name, a, b)
   end

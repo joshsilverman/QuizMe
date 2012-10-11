@@ -8,7 +8,7 @@ Quizmemanager::Application.routes.draw do
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
   match "/link_to_post" => "feeds#link_to_post"
-  match "/get_abingo_dm_response" => "feeds#get_abingo_dm_response"
+  match "/get_split_dm_response" => "feeds#get_split_dm_response"
   match "/dashboard" => "askers#dashboard"
   match "/posts/:id/refer" => "posts#refer"
 
@@ -33,9 +33,7 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   
-  #abingo
-  match 'abingo(/:action(/:id))', :to => 'abingo_dashboard', :as => :bingo
-
+  #Split Dashboard
   mount Split::Dashboard, :at => 'split'
 
   root :to => 'feeds#index'

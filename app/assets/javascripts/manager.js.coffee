@@ -145,12 +145,12 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
-		$("#abingo_dm.btn.btn-danger").off()
-		$("#abingo_dm.btn.btn-danger").on 'click', () =>
+		$("#split_dm.btn.btn-danger").off()
+		$("#split_dm.btn.btn-danger").on 'click', () =>
 			params =
 				'user_id': window.feed.engagements[@id]['user_id']
 			console.log params
-			$.ajax '/get_abingo_dm_response',
+			$.ajax '/get_split_dm_response',
 				type: 'POST'
 				data: params
 				success: (e) =>
