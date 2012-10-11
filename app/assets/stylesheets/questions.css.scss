@@ -55,9 +55,12 @@
 }
 
 #question {
-	margin-left: 0px !important;
+	/*margin-left: 0px !important;*/
 	margin: auto !important;
 	float: none !important;	
+	/*padding: 14px;*/
+	margin-top: 20px !important;
+	/*background: url(https://twimg0-a.akamaihd.net/a/1345161153/t1/img/wash-white-30.png);*/
 	/*padding: 100px 0px;*/
 
 	.conversation {
@@ -86,7 +89,37 @@
 
 		}
 
-		.post {
+		.post.subsidiary {
+			padding: 10px 40px;
+			position: relative;
+			border-top: 1px dotted #DDD;
+			background: #FAFAFA;
+
+			.content {
+				margin-left: 58px;
+				min-height: 49px;
+
+				i {
+					display: inline;
+					position: relative;
+					top: 0px;
+					right: 0px;
+				}
+
+				h5 {
+					display: inline;
+				}
+				
+				img {
+					position: absolute;
+					top: 10px;
+					left: 40px;
+					height: 48px;
+				}
+			}
+		}
+
+		.post.parent {
 			/*padding: 10px;*/
 			padding: 20px 40px;
 			position: relative;

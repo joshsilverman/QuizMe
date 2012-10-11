@@ -46,6 +46,7 @@ class Question
 			type: 'POST'
 			data: params
 			success: (e) => 
+				@element.find(".subsidiaries").show()
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 				subsidiary.find("p").text(e.user_message)
 				subsidiary.find("img").attr("src", @user_image)
@@ -66,7 +67,10 @@ class Question
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").after(response.fadeIn(500))
+					@element.find(".subsidiary").after(response.fadeIn(500, =>
+						loading.html("<a href='/feeds/#{@asker_id}'>Answer more questions!</a>")
+						loading.fadeIn(500)
+					))
 					@element.find("i").show()
 				)
 			)
