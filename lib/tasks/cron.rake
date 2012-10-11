@@ -8,7 +8,7 @@ task :check_for_posts => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |a|
 		Post.check_for_posts(a)
-		sleep(5)
+		sleep(3)
 	end
 end
 

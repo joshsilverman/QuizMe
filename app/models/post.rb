@@ -326,42 +326,39 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data(m, current_acct)
+    puts "save mention"
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
       :twi_screen_name => m.user.screen_name,
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
-    return if post = Post.find_by_provider_post_id(m.id.to_s)
-    puts m.in_reply_to_status_id.to_s
-    reply_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
-    puts reply_post.to_json
-    if reply_post and reply_post.is_parent?
-      conversation = Conversation.create(
-        :publication_id => reply_post.publication_id,
-        :post_id => reply_post.id,
-        :user_id => u.id
-      )
-    elsif reply_post and reply_post.conversation_id
-      conversation = reply_post.conversation
+
+    return if Post.find_by_provider_post_id(m.id.to_s)
+
+    in_reply_to_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
+    if in_reply_to_post
+      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id,:post_id => in_reply_to_post.id,:user_id => u.id).id
     else
-      puts "No reply post"
+      conversation_id = nil
+      puts "No in reply to post"
     end
+    puts m.text
 
     post = Post.create( 
       :provider_post_id => m.id.to_s,
-      :engagement_type => reply_post ? 'mention reply' : 'mention',
       :text => m.text,
       :provider => 'twitter',
       :user_id => u.id,
-      :in_reply_to_post_id => reply_post ? reply_post.id : nil,
+      :in_reply_to_post_id => in_reply_to_post.try(:id),
       :in_reply_to_user_id => current_acct.id,
       :created_at => m.created_at,
-      :conversation_id => conversation.nil? ? nil : conversation.id,
+      :conversation_id => conversation_id,
       :posted_via_app => false,
       :interaction_type => 2,
       :requires_action => true
     )
+
     Post.classifier.classify post
     Post.trigger_abingo_for_user(u.id, 'reengage')
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -369,6 +366,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
+    puts "save RT"
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     begin
       users = current_acct.twitter.retweeters_of(r.id)  
@@ -410,28 +408,38 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
+    puts "save dm"
     u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
       :twi_name => d.sender.name,
       :twi_screen_name => d.sender.screen_name,
       :twi_profile_img_url => d.sender.profile_image_url
     )
-    dm = Post.find_by_provider_post_id(d.id.to_s)
-    return if dm
-    reply_post = Post.where(
+    
+    return if Post.find_by_provider_post_id(d.id.to_s)
+
+    in_reply_to_post = Post.where(
       :provider => 'twitter',
       :interaction_type => 4,
       :user_id => u.id
     ).order("created_at DESC").limit(1).first
-    conversation_id = reply_post.nil? ? Conversation.create(:user_id => current_acct.id).id : reply_post.conversation_id
 
+    if in_reply_to_post
+      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
+    else
+      conversation_id = nil
+      puts "No in reply to dm"
+    end
+
+    puts d.text
+    # any issue w/ origin dm and its response being collected 
+    # in same rake, then being created in the wrong order?
     post = Post.create( 
       :provider_post_id => d.id.to_s,
-      :engagement_type => 'pm',
       :text => d.text,
       :provider => 'twitter',
       :user_id => u.id,
-      :in_reply_to_post_id => nil, #reply_post ? reply_post.id : nil,
+      :in_reply_to_post_id => in_reply_to_post.try(:id),
       :in_reply_to_user_id => current_acct.id,
       :created_at => d.created_at,
       :conversation_id => conversation_id,
@@ -445,8 +453,6 @@ class Post < ActiveRecord::Base
 
 
   def generate_response(response_type)
-    # puts "POST BRO:"
-    # puts self.to_json
     #Include backlink if exists
     case response_type
     when 'correct'
