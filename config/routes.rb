@@ -16,7 +16,7 @@ Quizmemanager::Application.routes.draw do
   post "posts/update"
   post "posts/respond_to_post"
   post "questions/save_question_and_answers"
-  match "questions/:id" => "questions#show"
+  match "questions/:id(/:answer_id)" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
