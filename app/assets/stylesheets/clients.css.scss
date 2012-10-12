@@ -1,0 +1,43 @@
+.report {
+  .page-header {
+    //border:none;
+    img {
+      float:left;
+      height:32px;
+      margin-right:10px;
+    }
+  }
+
+  h3 {
+    padding: 8px;
+    //background: #fcfcfc;
+  }
+
+  .bill {
+    .table {
+      //background-color:#fdfdfd;
+    }
+
+    &.incomplete {
+      //opacity:.8;
+      //font-style:italic;
+      .table {
+        //background-color:#fafafa;
+      }
+    }
+  }
+
+  .table {
+    tr {
+      &.incomplete {
+        color:#aaa;
+        font-style:italic;
+      }
+      &.info {
+        td {
+          background-color: #D9EDF7;
+        }
+      }
+    }
+  }
+}

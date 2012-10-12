@@ -11,7 +11,15 @@ class ApplicationController < ActionController::Base
 
   def admin?
     if current_user
-      redirect_to '/' unless current_user and current_user.is_role? "admin"
+      redirect_to '/' unless current_user.is_role? "admin"
+    else
+      redirect_to '/'
+    end
+  end
+
+  def client?
+    if current_user
+      redirect_to '/' unless current_user.is_role? "client" or current_user.is_role? "admin"
     else
       redirect_to '/'
     end
