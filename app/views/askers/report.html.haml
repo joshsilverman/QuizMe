@@ -96,4 +96,47 @@
                 %td= interaction_type[post.interaction_type]
                 %td= post.text
 
-    #invoice.tab-pane
+    / #invoice.tab-pane
+    /   - @posts_by_month_by_week.each do |m,posts_by_week|
+    /     %table.table
+    /       %tr
+    /         %th Dates
+    /         %th Active Members
+    /         %th Retweets
+    /         %th Mentions (incl. Answers)
+    /         %th Answers
+    /         %th Direct Messages
+    /         %th Click Throughs
+    /         %th Total
+
+    /       - @posts_by_week_by_it.each do |w, posts_by_it|
+    /         -total = retweets = mentions = answers = dms = cts = 0
+
+    /         - waus = @posts_by_week_by_user[w].count
+    /         - retweets = posts_by_it[3].count if posts_by_it[3]
+    /         - mentions = posts_by_it[2].count if posts_by_it[2]
+    /         - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
+    /         - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
+    /         - dms = posts_by_it[4].count if posts_by_it[4]
+    /         - cts = 0
+    /         - total = retweets + mentions_excl_answers + answers + dms + cts
+
+    /         - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+    /           - end_of_week = 'present'
+    /           - inc = true
+    /         - else
+    /           - end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+    /           - inc = false
+
+    /         %tr.asker-row{:class => "#{'incomplete' if inc}"}
+    /           %td
+    /             = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+    /             \-
+    /             = end_of_week
+    /           %td= waus
+    /           %td= retweets
+    /           %td= mentions
+    /           %td= answers
+    /           %td= dms
+    /           %td= cts
+    /           %td= total

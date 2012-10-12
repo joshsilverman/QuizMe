@@ -107,8 +107,8 @@ class AskersController < ApplicationController
     @posts_by_week.each{|w,posts| @posts_by_week_by_it[w] = posts.group_by{|p| p.interaction_type}}
     @posts_by_week.each{|w,posts| @posts_by_week_by_user[w] = posts.group_by{|p| p.user_id}}
     
-    @posts_by_month = @posts.group_by{|p| p.created_at.strftime('%M')}
-    @posts_by_month_by_week = {}
-    @posts_by_month.each{|m,posts| @posts_by_month_by_week[m] = posts.group_by{|p| p.created_at.strftime('%W')}}
+    # @posts_by_month = @posts.group_by{|p| p.created_at.strftime('%M')}
+    # @posts_by_month_by_week_by_it = {}
+    # @posts_by_month.each{|m,posts| @posts_by_month_by_week_by_it[m] = posts.group_by{|p| p.created_at.strftime('%W')}}
   end  
 end
