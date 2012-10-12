@@ -108,10 +108,7 @@ class Post < ActiveRecord::Base
 
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
-		authorize = UrlShortener::Authorize.new 'o_29ddlvmooi', 'R_4ec3c67bda1c95912185bc701667d197'
-    shortener = UrlShortener::Client.new authorize
-    short_url = shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").urls
-    short_url
+    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").short_url
 	end
 
   ###
@@ -444,8 +441,6 @@ class Post < ActiveRecord::Base
 
 
   def generate_response(response_type)
-    # puts "POST BRO:"
-    # puts self.to_json
     #Include backlink if exists
     case response_type
     when 'correct'
@@ -464,13 +459,6 @@ class Post < ActiveRecord::Base
     #@TODO update engagement_type
     #@TODO create migration for new REP model
     unless correct.nil?
-      # Rep.create(
-      #   :user_id => self.user_id,
-      #   :post_id => self.in_reply_to_post_id,
-      #   :publication_id => publication_id,
-      #   :question_id => question_id,
-      #   :correct => correct
-      # )
       self.update_attributes(:requires_action => false, :correct => correct)
       Stat.update_stat_cache("questions_answered", 1, asker_id, self.created_at, self.user_id)
       if self.posted_via_app

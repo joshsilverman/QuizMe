@@ -67,3 +67,24 @@
 		color:#858585;
 	}
 }
+
+.report {
+	.page-header {
+		//border:none;
+		img {
+			float:left;
+			height:32px;
+			margin-right:10px;
+		}
+	}
+
+	.incomplete {
+		color:#ccc;
+		font-style:italic;
+	}
+
+	h3 {
+		padding: 8px;
+		//background: #fcfcfc;
+	}
+}
