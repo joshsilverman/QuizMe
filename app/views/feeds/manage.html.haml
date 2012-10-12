@@ -25,9 +25,9 @@
 										%p= post.text
 										%a
 											= best_in_place post, :requires_action, :type => :checkbox, :collection => ["mark unresponded", "mark responded"]
-										- unless post.in_reply_to_post_id
+										- unless post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id
 											|
-											%a.link_post link post				
+											%a.link_post link post			
 						#posts_more.border-color
 							Last Post Reached
 				#left_column.span3.hidden-phone
