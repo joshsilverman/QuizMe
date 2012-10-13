@@ -12,11 +12,6 @@
 						%a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
 						&nbsp;|&nbsp;
 						%a{:href => "/askers/#{@asker.id}/edit"} Edit Account 
-					- elsif (current_user and @correct and @correct > 9)
-						%a.post_question.btn.btn-mini{:href => "/"} Post a Question
-					- else
-						%a.post_question.btn.btn-mini.disabled{:href => "/"} Post a Question
-						%p.post_disabled_explanation (10+ correct required!)
 	#account_stats.span3.hidden-phone
 		%a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
 		%script
