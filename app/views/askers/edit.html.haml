@@ -34,6 +34,8 @@
                 &nbsp;|&nbsp;
                 %a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
                 &nbsp;|&nbsp;
+                %a{:style => 'cursor:pointer;'}= best_in_place @asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
+                &nbsp;|&nbsp;
                 = link_to 'Destroy', asker_path(@asker), confirm: 'Are you sure?', method: :delete
 
     - if @linked

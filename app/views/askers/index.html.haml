@@ -19,6 +19,7 @@
     %th Question count
     %th New engagements
     %th Submitted
+    %th Published
     %th Actions
 
   - @askers.each_with_index do |asker, i|
@@ -30,6 +31,7 @@
       %td= @new_posts[asker.id]
       %td
         %a{:href => "/moderate"}= @submitted_questions[asker.id]
+      %td= best_in_place asker, :published, :type => :checkbox, :collection => ["No", "Yes"]
       %td
         %a{:href => "/feeds/#{asker.id}/manage"} Moderate Account
         &nbsp;|&nbsp;

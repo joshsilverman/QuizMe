@@ -36,7 +36,7 @@ class Feed
 	# 	channel = pusher.subscribe(@name)
 	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	post_question: =>
-		return unless window.feed.correct > 9
+		return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#post_question_modal").modal()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()

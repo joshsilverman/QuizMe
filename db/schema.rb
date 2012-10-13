@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121008220513) do
+ActiveRecord::Schema.define(:version => 20121013031554) do
 
   create_table "alternatives", :force => true do |t|
     t.integer "experiment_id"
@@ -164,6 +164,8 @@ ActiveRecord::Schema.define(:version => 20121008220513) do
     t.text     "description"
     t.integer  "new_user_q_id"
     t.string   "bg_image"
+    t.boolean  "published"
+    t.boolean  "author_id"
   end
 
 end
