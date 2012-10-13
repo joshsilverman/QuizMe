@@ -12,23 +12,6 @@
 									- if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
 										%a.post_question{:href => "/"} Post a Question
 										.div.is_author{:style => 'display:none;'}
-					- @publications.each do |post|
-						- conversation = @responses[post.id]
-						- conversation ? responded = true : responded = false
-						.conversation.border-color
-							.post.parent{:class => ("answered" if responded), :post_id => post.id}
-								/ #time
-								/ 	%p.time_ago= time_formatter(@pub_grouped_posts[post.id][0][:created_at])			
-								%i.icon-share-alt{:style => ("display: none;" unless responded)}
-								.content
-									- if post.question.user_id != 1
-										- user = post.question.user
-										= image_tag(user.twi_profile_img_url, :class => "rounded asker")
-										%i.icon-user
-										%h5=user.twi_screen_name
-									- else
-										/ %p.post_disabled_explanation (10+ correct required!)
-										%a.post_question.disabled{:href => "/", :rel => "tooltip", :title => "10+ correct answers required!", 'data-placement' => 'bottom'} Post a Question
 						#feed_content
 							= render :partial => "feed"
 						#posts_more.border-color
