@@ -45,8 +45,8 @@ class SessionsController < ApplicationController
         :twi_oauth_secret => auth["credentials"]["secret"]
       )
       session[:user_id] = user.id
-      if omni_params["new_question_asker_id"]
-        redirect_to "/questions/new?asker_id=#{omni_params['new_question_asker_id']}"
+      if omni_params["question_id"]
+        redirect_to "/questions/#{omni_params['question_id']}/#{omni_params['answer_id']}"
       elsif omni_params["feed_id"]
         redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
       else
