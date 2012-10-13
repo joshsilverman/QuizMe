@@ -29,7 +29,9 @@ class FeedsController < ApplicationController
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
 
-      @asker.twi_screen_name = 'Civics101'
+      if @asker.author_id
+        @author = User.find @asker.author_id
+      end
 
       respond_to do |format|
         format.html # show.html.erb

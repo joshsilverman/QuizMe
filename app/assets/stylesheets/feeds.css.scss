@@ -297,7 +297,9 @@ body {
 				/*margin: -16px 5px;*/
 				border-radius: 5px;
 
-				.header {border-radius: 5px 5px 0 0;}
+				.header {
+					border-radius: 5px 5px 0 0;
+				}
 			}
 
 			@media (min-width: 768px) and (max-width: 980px) {
@@ -340,7 +342,7 @@ body {
 			}
 
 			a {
-				margin: 4px 10px 4px 4px;
+				margin: -1px 1px 4px 4px;
 			}
 		}
 	}
