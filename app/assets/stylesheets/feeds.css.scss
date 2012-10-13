@@ -330,19 +330,11 @@ body {
 		.ugc {
 			float:right;
 
-			a, p {
-				float:right;
-			}
-
-			p {
-				font-size: 12px;
-				color:#777;
-				font-weight:normal;
-				line-height:28px;
-			}
-
 			a {
-				margin: -1px 1px 4px 4px;
+				float:right;
+				font-size: 12px;
+				margin: 2px 1px 4px 4px;
+				font-weight:normal;
 			}
 		}
 	}
