@@ -29,6 +29,8 @@ class FeedsController < ApplicationController
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
 
+      @asker.twi_screen_name = 'Civics101'
+
       respond_to do |format|
         format.html # show.html.erb
         format.json { render json: @posts }

@@ -76,6 +76,34 @@ body {
 
 			.account_text {
 				margin: 0px 0px 0px 138px;
+
+				.credit {
+					margin-top:8px;
+					font-style: italic;
+					color: #777;
+					line-height:22px;
+					background-color:#eee;
+					width:168px;
+					padding-left:7px;
+					border-radius: 5px;
+					text-shadow: -1px -1px white;//, 1px 1px #999;
+					border: 1px solid #ddd;
+
+					a {
+						text-shadow: none;
+						cursor:pointer;
+					}
+
+					img {
+						float:right;
+						width:24px;
+						position:relative;
+						top:-1px;
+						right:-1px;
+						border-radius: 0 5px 5px 0;
+						cursor:pointer;
+					}
+				}
 			}	
 
 			h3 {
