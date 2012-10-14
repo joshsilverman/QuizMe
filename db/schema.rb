@@ -165,11 +165,7 @@ ActiveRecord::Schema.define(:version => 20121013031554) do
     t.integer  "new_user_q_id"
     t.string   "bg_image"
     t.boolean  "published"
-<<<<<<< HEAD
-    t.boolean  "author_id"
-=======
     t.integer  "author_id"
->>>>>>> master
   end
 
 end

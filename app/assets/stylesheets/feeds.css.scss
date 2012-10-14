@@ -77,6 +77,38 @@ body {
 			.account_text {
 				margin: 0px 0px 0px 138px;
 
+				.name-wrapper {
+					clear:both;
+
+					.name {
+						float:left;
+					}
+
+					ul {
+						float:left;
+						margin: 9px 1px;
+
+						li {
+							list-style:none;
+
+							a{
+								text-decoration:none;
+							}
+
+							ul {
+								li {
+									a{
+										line-height:18px;
+										font-size:13px;
+									}
+								}
+							}
+						}
+					}
+
+					.clr {clear:both;}
+				}
+
 				.credit {
 					margin-top:8px;
 					font-style: italic;
