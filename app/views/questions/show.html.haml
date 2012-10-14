@@ -1,4 +1,4 @@
-- content_for :title, @question.text
+- content_for :title, "#{@asker.twi_screen_name} - #{@question.text}"
 #feed_container.span10{:style => "float: none !important;"}
   #wrapper{:style => "background: none !important;"}
     #question.span6

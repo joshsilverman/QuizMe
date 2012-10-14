@@ -1,3 +1,4 @@
+- content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
 #post_feed
 	#feed_container.span10
 		#wrapper.span9
@@ -8,7 +9,6 @@
 						.header.border-color
 							%h3
 								Questions
-
 								.ugc
 									- if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
 										%a.post_question{:href => "/"} Post a Question
