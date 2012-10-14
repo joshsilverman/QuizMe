@@ -38,6 +38,12 @@
           background-color: #D9EDF7;
         }
       }
+
+      td {
+        &.indent {
+          padding-left:30px;
+        }
+      }
     }
   }
 }

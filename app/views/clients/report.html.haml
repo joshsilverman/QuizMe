@@ -14,18 +14,20 @@
       = "(#{@user.twi_screen_name})"
 
   %br
-  %br
 
   %ul.nav.nav-tabs
     %li.active
       %a{"data-toggle" => "tab", :href => "#overview"} Overview
     %li
       %a{"data-toggle" => "tab", :href => "#activity"} Activity
-    %li
-      %a{"data-toggle" => "tab", :href => "#invoice"} Billing
+    / %li
+    /   %a{"data-toggle" => "tab", :href => "#invoice"} Billing
 
   .tab-content
     #overview.tab-pane.active
+
+      
+
       %table.table
         %tr
           %th Dates
@@ -97,67 +99,73 @@
                 %td= interaction_type[post.interaction_type]
                 %td= post.text
 
-    #invoice.tab-pane
-      - @posts_by_month_by_it.each do |w, posts_by_it|
-        - if posts_by_it.values.flatten.first.created_at.end_of_month > Date.today
-          - end_of_it = 'present'
-          - inc = true
-        - else
-          - end_of_it = posts_by_it.values.flatten.first.created_at.end_of_month.strftime("%m/%d")
-          - inc = false
+    / #invoice.tab-pane
+    /   - @posts_by_month_by_it.each do |w, posts_by_it|
+    /     - if posts_by_it.values.flatten.first.created_at.end_of_month > Date.today
+    /       - end_of_it = 'present'
+    /       - inc = true
+    /     - else
+    /       - end_of_it = posts_by_it.values.flatten.first.created_at.end_of_month.strftime("%m/%d")
+    /       - inc = false
 
-        .bill{:class => "#{'incomplete' if inc}"}
+    /     .bill{:class => "#{'incomplete' if inc}"}
 
-          %h3{:class => "#{'incomplete' if inc}"}
-            Activity (incomplete) from
-            = posts_by_it.values.flatten.first.created_at.beginning_of_month.strftime("%m/%d")
-            to
-            = end_of_it
+    /       %h3{:class => "#{'incomplete' if inc}"}
+    /         Activity (incomplete) from
+    /         = posts_by_it.values.flatten.first.created_at.beginning_of_month.strftime("%m/%d")
+    /         to
+    /         = end_of_it
 
-          - dms = cts = 0
-          - retweets = posts_by_it[3].count if posts_by_it[3]
-          - mentions = posts_by_it[2].count if posts_by_it[2]
-          - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
-          - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
-          - dms = posts_by_it[4].count if posts_by_it[4]
-          - cts = 0
-          - total = retweets + mentions_excl_answers + answers + dms + cts
+    /       - dms = cts = 0
+    /       - retweets = posts_by_it[3].count if posts_by_it[3]
+    /       - mentions = posts_by_it[2].count if posts_by_it[2]
+    /       - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
+    /       - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
+    /       - dms = posts_by_it[4].count if posts_by_it[4]
+    /       - cts = 0
+    /       - total = retweets + mentions_excl_answers + answers + dms + cts
 
-          %table.table.table-bordered
-            %tr
-              %th{:style => "width:62%;"}
-              %th{:style => "width:13%;"} Quantity
-              %th{:style => "width:13%;"} Rate
-              %th Total
+    /       %table.table.table-bordered
+    /         %tr
+    /           %th{:style => "width:62%;"}
+    /           %th{:style => "width:13%;"} Quantity
+    /           %th{:style => "width:13%;"} Rate
+    /           %th Total
 
-            %tr
-              %td Retweets
-              %td= retweets
-              %td $0.75
-              %td= "$#{retweets * 0.75}"
-            %tr
-              %td Mentions (excl. Answers)
-              %td= mentions_excl_answers
-              %td $0.75
-              %td= "$#{mentions_excl_answers * 0.75}"
-            %tr
-              %td Answers
-              %td= answers
-              %td $0.75
-              %td= "$#{answers * 0.75}"
-            %tr
-              %td Direct Messages
-              %td= dms
-              %td $0.75
-              %td= "$#{dms * 0.75}"
-            %tr
-              %td 
-                %i Click Throughs (incomplete)
-              %td= cts
-              %td $0.75
-              %td= cts * 0.75
-            %tr.info
-              %td Total
-              %td= total
-              %td $0.75
-              %td= "$#{total * 0.75}"
+
+    /         %tr
+    /           %td{:colspan => 4} Mentions
+    /         %tr
+    /           %td.indent Answers
+    /           %td= mentions_excl_answers
+    /           %td $0.75
+    /           %td= "$#{mentions_excl_answers * 0.75}"
+    /         %tr
+    /           %td.indent Non-answers
+    /           %td= answers
+    /           %td $0.75
+    /           %td= "$#{answers * 0.75}"
+
+    /         %tr
+    /           %td Direct Messages
+    /           %td= dms
+    /           %td $0.75
+    /           %td= "$#{dms * 0.75}"
+            
+    /         %tr
+    /           %td Retweets
+    /           %td= retweets
+    /           %td $0.75
+    /           %td= "$#{retweets * 0.75}"
+
+    /         %tr
+    /           %td 
+    /             %i Click Throughs (incomplete)
+    /           %td= cts
+    /           %td $0.75
+    /           %td= cts * 0.75
+    /         %tr.info
+    /           %td Total
+    /           %td= total
+    /           %td $0.75
+    /           %td= "$#{total * 0.75}"
