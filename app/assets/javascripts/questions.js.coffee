@@ -31,7 +31,7 @@ class Question
 		})
 		$(".tweet_button").on "click", (e) => 
 			if @user_name != undefined
-				parent = $(e.target).parents(".answer_container").prev("h3")
+				parent = $(e.target).parents(".answer_container").prev("h2")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))		
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
