@@ -6,7 +6,8 @@
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				.content
-					- if post.question.user_id != 1
+
+					- if post.question.user_id != 1 and @asker.author_id != post.question.user_id
 						- user = post.question.user
 						= image_tag(user.twi_profile_img_url, :class => "rounded")
 						%i.icon-user
@@ -14,6 +15,7 @@
 					- else
 						= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 						%h5= @asker.twi_screen_name
+
 					%p= post.question.text
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
