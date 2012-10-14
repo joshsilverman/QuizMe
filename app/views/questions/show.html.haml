@@ -1,3 +1,4 @@
+- content_for :title, @question.text
 #feed_container.span10{:style => "float: none !important;"}
   #wrapper{:style => "background: none !important;"}
     #question.span6
@@ -8,12 +9,12 @@
             %a{:href => "/feeds/#{@asker.id}"}
               %h5= @asker.twi_screen_name
             %a.twi_link{:href => "http://www.twitter.com/#{@asker.twi_screen_name}", :target => "_blank"}= "@#{@asker.twi_screen_name}"
-          %p= @question.text
+          %h1= @question.text
           .answers.rounded.border
             - answers = @question.answers.shuffle
             - count = answers.size
             - answers.each_with_index do |answer, i|
-              %h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+              %h2{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
               .answer_container.input{:type => 'text'}
                 .shadow-top
                 .tweet
