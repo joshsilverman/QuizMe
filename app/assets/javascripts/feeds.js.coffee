@@ -21,6 +21,9 @@ class Feed
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
+
+		$("#post_question_tooltip").tooltip
+
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})

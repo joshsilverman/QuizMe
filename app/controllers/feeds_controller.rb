@@ -29,6 +29,10 @@ class FeedsController < ApplicationController
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
 
+      if @asker.author_id
+        @author = User.find @asker.author_id
+      end
+
       respond_to do |format|
         format.html # show.html.erb
         format.json { render json: @posts }
@@ -59,8 +63,6 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    puts 'bingo'
-    bingo! 'answer_options_visible'
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
@@ -126,14 +128,17 @@ class FeedsController < ApplicationController
       @conversations[p.id][:users][p.user.id] = p.user if @conversations[p.id][:users][p.user.id].nil?
       pub_id = nil
       while parent
-        @conversations[p.id][:posts] << parent
-        @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
-        pub_id = parent.publication_id unless parent.publication_id.nil?
+        if parent.in_reply_to_user_id == @asker.id or parent.user_id == @asker.id
+          @conversations[p.id][:posts] << parent
+          @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
+          pub_id = parent.publication_id unless parent.publication_id.nil?
+        end
         parent = parent.parent
       end
       p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
+    # puts @conversations.to_json
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     
@@ -157,11 +162,10 @@ class FeedsController < ApplicationController
     end
   end
 
-  def get_abingo_dm_response
-    puts "get abingo dm response for user #{params[:user_id]}"
-    Abingo.identity = params[:user_id]
-    Abingo.options[:expires_in] = 30.days
-    res = ab_test("reengage", ["No Prod", "Prod"])
+  def get_split_dm_response
+    puts "get split dm response for user #{params[:user_id]}"
+    ab_user.set_id(params[:user_id])
+    res = ab_test("dm reengagement", "Nudge", "No Nudge")
     render :text => res, :status => 200
   end
 
