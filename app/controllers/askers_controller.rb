@@ -2,7 +2,7 @@ class AskersController < ApplicationController
   before_filter :admin?
   
   def index
-    @askers = User.askers
+    @askers = User.askers.order "created_at ASC"
     @new_posts = {}
     @submitted_questions = {}
     asker_ids = User.askers.collect(&:id)
