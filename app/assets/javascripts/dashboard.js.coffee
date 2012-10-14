@@ -34,7 +34,7 @@ class Dashboard
 		display_hash = 
 			followers: today: 0, total: 0
 			active_users: today: [], total: []
-			questions_answered: today: 0, total: 0
+			questions_answered: today: 0, total: []
 			click_throughs: today: 0, total: 0
 			mentions: today: 0, total: 0
 			retweets: today: 0, total: 0
@@ -46,12 +46,18 @@ class Dashboard
 				if key == "active_users"
 					display_hash[key]["today"] = display_hash[key]["today"].concat(@display_data[asker_id][key]["today"])
 					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])
+				else if key == "questions_answered"
+					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
+					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])				
 				else
 					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
 					display_hash[key]["total"] += @display_data[asker_id][key]["total"]
 		for key, value of display_hash
 			if key == "active_users"
 				$("##{key}_stats .new .number").text(value.today.unique().length)
+				$("##{key}_stats .total .number").text(value.total.unique().length)
+			else if key == "questions_answered"
+				$("##{key}_stats .new .number").text(value.today)
 				$("##{key}_stats .total .number").text(value.total.unique().length)
 			else
 				$("##{key}_stats .new .number").text(value.today)

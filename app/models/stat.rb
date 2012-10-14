@@ -99,9 +99,9 @@ class Stat < ActiveRecord::Base
 
 		months_asker_grouped_stats = Stat.select([:active_user_ids, :asker_id, :click_throughs, :total_followers]).where("asker_id in (?) and date > ?", asker_ids, 1.month.ago).group_by(&:asker_id)	
 
-		totals = {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => [], :today => []}, :questions_answered => {:total => 0, :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}
+		totals = {:followers => {:total => 0, :today => 0}, :click_throughs => {:total => 0, :today => 0}, :active_users => {:total => [], :today => []}, :questions_answered => {:total => [], :today => 0}, :retweets => {:total => 0, :today => 0}, :mentions => {:total => 0, :today => 0}}
 		asker_ids.each do |asker_id|
-			display_data[asker_id] = {:followers => {:today => 0, :total => 0}, :click_throughs => {:today => 0, :total => 0}, :active_users => {:today => [], :total => []}, :questions_answered => {:today => 0, :total => 0}, :retweets => {:today => 0, :total => 0}, :mentions => {:today => 0, :total => 0}}
+			display_data[asker_id] = {:followers => {:today => 0, :total => 0}, :click_throughs => {:today => 0, :total => 0}, :active_users => {:today => [], :total => []}, :questions_answered => {:today => 0, :total => []}, :retweets => {:today => 0, :total => 0}, :mentions => {:today => 0, :total => 0}}
 			if todays_asker_grouped_posts[asker_id]
 				display_data[asker_id][:mentions][:today] = todays_asker_grouped_posts[asker_id].select{ |p| p.interaction_type == 2 and p.correct.nil? }.size
 				display_data[asker_id][:mentions][:total] = Post.not_spam.where("in_reply_to_user_id = ? and interaction_type = 2 and correct is null", asker_id).size
@@ -114,9 +114,10 @@ class Stat < ActiveRecord::Base
 				totals[:retweets][:total] += display_data[asker_id][:retweets][:total]
 
 				display_data[asker_id][:questions_answered][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? }.size
-				display_data[asker_id][:questions_answered][:total] = Post.where("in_reply_to_user_id = ? and correct is not null", asker_id).size
+				display_data[asker_id][:questions_answered][:total] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? }.collect(&:user_id).uniq
+				# display_data[asker_id][:questions_answered][:total] = Post.where("in_reply_to_user_id = ? and correct is not null", asker_id).size
 				totals[:questions_answered][:today] += display_data[asker_id][:questions_answered][:today]
-				totals[:questions_answered][:total] += display_data[asker_id][:questions_answered][:total]			
+				totals[:questions_answered][:total] += display_data[asker_id][:questions_answered][:total]		
 
 				# DMs need to be marked as correct as well!
 				display_data[asker_id][:active_users][:today] = todays_asker_grouped_posts[asker_id].select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
@@ -146,6 +147,7 @@ class Stat < ActiveRecord::Base
 		end
 		totals[:active_users][:today].uniq!
 		totals[:active_users][:total].uniq!
+		totals[:questions_answered][:total].uniq!
 		display_data[0] = totals
 		return display_data
 	end
