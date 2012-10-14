@@ -1,6 +1,6 @@
 :css
   body {background:white;}
-  navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
   .asker-row img {height:18px;}
   @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
 
@@ -18,8 +18,7 @@
     %th Handle
     %th Question count
     %th New engagements
-    %th Submitted
-    %th Published
+    %th New questions
     %th Actions
 
   - @askers.each_with_index do |asker, i|
@@ -31,10 +30,9 @@
       %td= @new_posts[asker.id]
       %td
         %a{:href => "/moderate"}= @submitted_questions[asker.id]
-      %td= best_in_place asker, :published, :type => :checkbox, :collection => ["No", "Yes"]
       %td
-        %a{:href => "/feeds/#{asker.id}/manage"} Moderate Account
+        %a{:href => "/feeds/#{asker.id}/manage"} Moderate
         &nbsp;|&nbsp;
-        %a{:href => "/askers/#{asker.id}/edit"} Edit Account
+        %a{:href => "/askers/#{asker.id}/edit"} Edit
         &nbsp;|&nbsp;
-        = link_to 'Destroy', asker_path(asker), confirm: 'Are you sure?', method: :delete
+        %a{:style => 'cursor:pointer;'}= best_in_place asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
