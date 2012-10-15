@@ -27,6 +27,7 @@ class Feed
 			$("#respond_modal").find("textarea").val("")
 			$("#respond_modal").find(".correct").removeClass("active")
 			$("#respond_modal").find(".incorrect").removeClass("active")
+			$(".response_message").hide()
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 
 class Post
@@ -111,18 +112,20 @@ class Post
 			$.ajax '/manager_response',
 				type: 'POST'
 				data: params
-				error: => 
+				error: (e) => 
 					$("#tweet").button('reset')
 					$("#respond_modal").find(".correct").removeClass("active")
 					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
-					$("#respond_modal").find("textarea").val("")
+					if e == false
+						message = $(".response_message")
+						message.text("Failed to send message!")
+						message.show()
+					else
+						$(".post[post_id=#{@id}]").children('#classify').hide()
+						$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
+						$("#respond_modal").modal('hide')
 					$("#tweet").button('reset')
-					$("#respond_modal").modal('hide')
-					$(".post[post_id=#{@id}]").children('#classify').hide()
-					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
-					$("#respond_modal").find(".correct").removeClass("active")
-					$("#respond_modal").find(".incorrect").removeClass("active")					
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 		user_post = window.feed.engagements[@id]
@@ -181,7 +184,6 @@ class Post
 				success: (e) =>
 					window.feed.conversations[@id] = {"posts":[]}
 					window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
-					console.log window.feed.conversations[@id]['posts']
 					$("#link_post_modal").modal('hide')
 					window.post.hide()
 

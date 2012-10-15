@@ -67,8 +67,6 @@ class FeedsController < ApplicationController
   end
 
   def manager_response
-    puts "in manager tweet, params:"
-    puts params.to_json
     asker = User.asker(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
@@ -76,7 +74,7 @@ class FeedsController < ApplicationController
     if params[:interaction_type] == "4"
       dm = params[:message].gsub("@#{params[:username]}", "")
       user_post.update_attribute(:correct, correct)
-      Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
+      response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
       puts "answer"
       tweet = params[:message].gsub("@#{params[:username]}", "")
@@ -99,8 +97,8 @@ class FeedsController < ApplicationController
                      params[:in_reply_to_user_id], true, nil, nil, nil)      
       end
     end
-    user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id})
-    render :json => response_post
+    user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
+    render :json => response_post.present?
   end
 
   def link_to_post

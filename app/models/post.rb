@@ -242,22 +242,27 @@ class Post < ActiveRecord::Base
 
   def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
     short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
-    res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
-
-    Post.create(
-      :user_id => current_acct.id,
-      :provider => 'twitter',
-      :text => tweet,
-      :engagement_type => 'pm',
-      :provider_post_id => res.id.to_s,
-      :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
-      :in_reply_to_user_id => user.id,
-      :conversation_id => conversation_id,
-      :url => long_url ? short_url : nil,
-      :posted_via_app => true,
-      :requires_action => false,
-      :interaction_type => 4
-    )
+    begin
+      res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
+      dm = Post.create(
+        :user_id => current_acct.id,
+        :provider => 'twitter',
+        :text => tweet,
+        :engagement_type => 'pm',
+        :provider_post_id => res.id.to_s,
+        :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
+        :in_reply_to_user_id => user.id,
+        :conversation_id => conversation_id,
+        :url => long_url ? short_url : nil,
+        :posted_via_app => true,
+        :requires_action => false,
+        :interaction_type => 4
+      )
+    rescue Exception => exception
+      puts "exception in DM user"
+      puts exception.message
+    end    
+    return dm
   end
 
   def self.dm_new_followers(current_acct)
