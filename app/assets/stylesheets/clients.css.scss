@@ -1,4 +1,12 @@
 .report {
+  .graph {
+    padding-left:2px;
+  }
+
+  .wau_stats {
+    margin-top:15px;
+  }
+
   .page-header {
     //border:none;
     img {
@@ -11,6 +19,16 @@
   h3 {
     padding: 8px;
     //background: #fcfcfc;
+  }
+
+  #activity {
+    .wau-period {
+      display:none;
+
+      &.active {
+        display:block;
+      }
+    }
   }
 
   .bill {

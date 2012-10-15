@@ -1,7 +1,7 @@
 :css
   body {background:white;}
   .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
-                            //0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  .navbar-inner .container {width:874px;}
   .asker-row img {height:18px;}
   @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
 
@@ -18,17 +18,34 @@
   %ul.nav.nav-tabs
     %li.active
       %a{"data-toggle" => "tab", :href => "#overview"} Overview
-    %li
-      %a{"data-toggle" => "tab", :href => "#activity"} Activity
+    %li.dropdown
+      %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+        Activity
+        %b.caret
+      %ul.dropdown-menu.wau-periods
+        - i = 0
+        - @posts_by_week.each do |w, posts|
+          %li
+            %a{"data-toggle" => "tab", :href => "#activity", 'data-target' => "#activity-#{w}"}
+              = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+              \-
+              - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+                = end_of_week = 'present'
+              - else
+                = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+          - i += 1
+
     / %li
     /   %a{"data-toggle" => "tab", :href => "#invoice"} Billing
 
   .tab-content
     #overview.tab-pane.active
 
-      
+      #waus{:style => 'display:none;'}= @waus.to_json
+      %h3 Weekly Active Users    
+      #waus_graph.graph
 
-      %table.table
+      %table.table.wau_stats
         %tr
           %th Dates
           %th Active Members
@@ -36,7 +53,7 @@
           %th Mentions (incl. Answers)
           %th Answers
           %th Direct Messages
-          %th Click Throughs
+          / %th Click Throughs
           %th Total
 
         - @posts_by_week_by_it.each do |w, posts_by_it|
@@ -68,36 +85,39 @@
             %td= mentions
             %td= answers
             %td= dms
-            %td= cts
+            / %td= cts
             %td= total
 
     #activity.tab-pane
       - interaction_type = [nil, 'Answer', 'Mention', 'Retweet', 'DM']
+
+
       - @posts_by_week.each do |w, posts|
+        .wau-period{:id => "activity-#{w}"}
 
-        %h3
-          Activity  from
-          = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
-          to
-          - if @posts_by_week[w].first.created_at.end_of_week > Date.today
-            = end_of_week = 'present'
-          - else
-            = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+          %h3
+            Activity  from
+            = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+            to
+            - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+              = end_of_week = 'present'
+            - else
+              = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
 
-        %table.table
-          %tr
-            %th Date
-            %th User
-            %th Action
-            %th Text
+          %table.table
+            %tr
+              %th Date
+              %th User
+              %th Action
+              %th Text
 
-            - posts.each_with_index do |post, i|
+              - posts.each_with_index do |post, i|
 
-              %tr.asker-row
-                %td= post.created_at.strftime("%m/%d") #post.interaction_type
-                %td= "@#{post.twi_screen_name}"
-                %td= interaction_type[post.interaction_type]
-                %td= post.text
+                %tr.asker-row
+                  %td= post.created_at.strftime("%m/%d") #post.interaction_type
+                  %td= "@#{post.twi_screen_name}"
+                  %td= interaction_type[post.interaction_type]
+                  %td= post.text
 
     / #invoice.tab-pane
     /   - @posts_by_month_by_it.each do |w, posts_by_it|

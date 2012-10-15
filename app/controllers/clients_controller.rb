@@ -22,5 +22,13 @@ class ClientsController < ApplicationController
 
     @posts_by_week.each{|w,posts| @posts_by_week_by_user[w] = posts.group_by{|p| p.user_id}}
     @posts_by_month.each{|m,posts| @posts_by_month_by_user[m] = posts.group_by{|p| p.user_id}}
-  end  
+
+    #graph data
+    @waus = []
+    @posts_by_week.each do |w,posts| 
+      @waus << [@posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d"), posts.group_by{|p| p.user_id}.count]
+    end
+    @waus.sort!{|a,b| a[0] <=> b[0]}
+    @waus = [["Date", "WAUs"]] + @waus
+  end
 end
