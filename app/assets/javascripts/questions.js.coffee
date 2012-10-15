@@ -5,15 +5,17 @@
 $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
-	target = $("h3[answer_id=#{$('#answer_id').val()}]")
-	target.click() if target.length > 0
+	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
+	# target.click() if target.length > 0
 	
 class Question
 	id: null
 	asker_id: null
 	element: null
 	user_image: null
-	last_post_id: null
+	user_name: null
+	name: null
+	publication_id: null
 	constructor: ->
 		@element = $("#question")
 		@id = $("#question_id").val()
@@ -33,6 +35,8 @@ class Question
 			if @user_name != undefined
 				parent = $(e.target).parents(".answer_container").prev("h2")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))		
+		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
+		mixpanel.track_links("#answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
@@ -56,8 +60,7 @@ class Question
 					subsidiary.addClass("answered")
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
-				# window.feed.answered += 1
-				# mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
+				mixpanel.track("answered", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
@@ -68,7 +71,7 @@ class Question
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
 					@element.find(".subsidiary").after(response.fadeIn(500, =>
-						loading.html("<a href='/feeds/#{@asker_id}'>Answer more questions!</a>")
+						loading.html("<a id='answer_more' href='/feeds/#{@asker_id}'>Answer more questions!</a>")
 						loading.fadeIn(500)
 					))
 					@element.find("i").show()
