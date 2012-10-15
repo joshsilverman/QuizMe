@@ -26,6 +26,8 @@
         .subsidiaries{:style => "display: none;"}
         .loading{:style => "display: none;"}
           Loading...
+        .more{:style => "display: none;"}
+          %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
 
 #subsidiary_template.post{:style => "display: none;"}
   .content
