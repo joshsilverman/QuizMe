@@ -1,17 +1,18 @@
 # Set the host name for URL creation
 SitemapGenerator::Sitemap.default_host = "http://www.wisr.com"
 
-SitemapGenerator::Sitemap.create do
+SitemapGenerator::Sitemap.create(:create_index => false) do
 
-  # Generate feed links
+  # # Generate feed links
   User.askers.each do |asker|
     add "/feeds/#{asker.id}"
   end
 
-  # Generate question page links
-  Question.all.each do |question|
-    add "/questions/#{question.id}/#{question.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z-]/, '')}"
-  end
+  # # Generate question page links
+  publication_ids = Publication.all.collect(&:question_id).uniq
+  Question.where(:id => publication_ids).each do |question|
+    add "/questions/#{question.id}/#{question.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")}"
+  end  
 
   # Put links creation logic here.
   #
