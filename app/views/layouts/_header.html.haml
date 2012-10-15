@@ -6,10 +6,10 @@
         %ul.nav{:style => 'float:right;'}     
           - if current_user
 
-            - if current_user.is_role?('admin')
+            - if current_user.is_role? 'admin'
               %li
                 .dropdown.nav-link
-                  %a{:href => "/askers", 'data-target' => "#"} Askers
+                  %a.nav-link{:href => "/askers", 'data-target' => "#"} Askers
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/askers", :tabindex => "-1"} All Askers
@@ -26,6 +26,9 @@
                     %li
                       %a{:href => "/split", :tabindex => "-1"} A/B Tests
 
+            - elsif current_user.is_role? 'client'
+              %li
+                %a.nav-link{:href => "/clients/2/report"} Reporting
             - else
               %li
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"
@@ -33,4 +36,4 @@
             %li= link_to "Sign Out", signout_path, :class => "nav-link"
             =# image_tag(current_user.twi_profile_img_url, :style => 'float:right;') 
           - else
-            %li= link_to "Sign in with Twitter", "/auth/twitter"
+            %li= link_to "Sign in with Twitter", "/auth/twitter", :class => "nav-link"

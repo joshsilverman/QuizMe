@@ -1,0 +1,191 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
+  .navbar-inner .container {width:874px;}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.report
+
+  .page-header
+    =image_tag 'logo/fwk-logo.jpg'
+    %h1
+      Flatworld Knowledge
+      = "(#{@user.twi_screen_name})"
+
+  %br
+
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#overview"} Overview
+    %li.dropdown
+      %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+        Activity
+        %b.caret
+      %ul.dropdown-menu.wau-periods
+        - i = 0
+        - @posts_by_week.each do |w, posts|
+          %li
+            %a{"data-toggle" => "tab", :href => "#activity", 'data-target' => "#activity-#{w}"}
+              = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+              \-
+              - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+                = end_of_week = 'present'
+              - else
+                = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+          - i += 1
+
+    / %li
+    /   %a{"data-toggle" => "tab", :href => "#invoice"} Billing
+
+  .tab-content
+    #overview.tab-pane.active
+
+      #waus{:style => 'display:none;'}= @waus.to_json
+      %h3 Weekly Active Users    
+      #waus_graph.graph
+
+      %table.table.wau_stats
+        %tr
+          %th Dates
+          %th Active Members
+          %th Retweets
+          %th Mentions (incl. Answers)
+          %th Answers
+          %th Direct Messages
+          / %th Click Throughs
+          %th Total
+
+        - @posts_by_week_by_it.each do |w, posts_by_it|
+          -total = retweets = mentions = answers = dms = cts = 0
+
+          - waus = @posts_by_week_by_user[w].count
+          - retweets = posts_by_it[3].count if posts_by_it[3]
+          - mentions = posts_by_it[2].count if posts_by_it[2]
+          - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
+          - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
+          - dms = posts_by_it[4].count if posts_by_it[4]
+          - cts = 0
+          - total = retweets + mentions_excl_answers + answers + dms + cts
+
+          - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+            - end_of_week = 'present'
+            - inc = true
+          - else
+            - end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+            - inc = false
+
+          %tr.asker-row{:class => "#{'incomplete' if inc}"}
+            %td
+              = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+              \-
+              = end_of_week
+            %td= waus
+            %td= retweets
+            %td= mentions
+            %td= answers
+            %td= dms
+            / %td= cts
+            %td= total
+
+    #activity.tab-pane
+      - interaction_type = [nil, 'Answer', 'Mention', 'Retweet', 'DM']
+
+
+      - @posts_by_week.each do |w, posts|
+        .wau-period{:id => "activity-#{w}"}
+
+          %h3
+            Activity  from
+            = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+            to
+            - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+              = end_of_week = 'present'
+            - else
+              = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+
+          %table.table
+            %tr
+              %th Date
+              %th User
+              %th Action
+              %th Text
+
+              - posts.each_with_index do |post, i|
+
+                %tr.asker-row
+                  %td= post.created_at.strftime("%m/%d") #post.interaction_type
+                  %td= "@#{post.twi_screen_name}"
+                  %td= interaction_type[post.interaction_type]
+                  %td= post.text
+
+    / #invoice.tab-pane
+    /   - @posts_by_month_by_it.each do |w, posts_by_it|
+    /     - if posts_by_it.values.flatten.first.created_at.end_of_month > Date.today
+    /       - end_of_it = 'present'
+    /       - inc = true
+    /     - else
+    /       - end_of_it = posts_by_it.values.flatten.first.created_at.end_of_month.strftime("%m/%d")
+    /       - inc = false
+
+    /     .bill{:class => "#{'incomplete' if inc}"}
+
+    /       %h3{:class => "#{'incomplete' if inc}"}
+    /         Activity (incomplete) from
+    /         = posts_by_it.values.flatten.first.created_at.beginning_of_month.strftime("%m/%d")
+    /         to
+    /         = end_of_it
+
+    /       - dms = cts = 0
+    /       - retweets = posts_by_it[3].count if posts_by_it[3]
+    /       - mentions = posts_by_it[2].count if posts_by_it[2]
+    /       - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
+    /       - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
+    /       - dms = posts_by_it[4].count if posts_by_it[4]
+    /       - cts = 0
+    /       - total = retweets + mentions_excl_answers + answers + dms + cts
+
+    /       %table.table.table-bordered
+    /         %tr
+    /           %th{:style => "width:62%;"}
+    /           %th{:style => "width:13%;"} Quantity
+    /           %th{:style => "width:13%;"} Rate
+    /           %th Total
+
+
+    /         %tr
+    /           %td{:colspan => 4} Mentions
+    /         %tr
+    /           %td.indent Answers
+    /           %td= mentions_excl_answers
+    /           %td $0.75
+    /           %td= "$#{mentions_excl_answers * 0.75}"
+    /         %tr
+    /           %td.indent Non-answers
+    /           %td= answers
+    /           %td $0.75
+    /           %td= "$#{answers * 0.75}"
+
+    /         %tr
+    /           %td Direct Messages
+    /           %td= dms
+    /           %td $0.75
+    /           %td= "$#{dms * 0.75}"
+            
+    /         %tr
+    /           %td Retweets
+    /           %td= retweets
+    /           %td $0.75
+    /           %td= "$#{retweets * 0.75}"
+
+    /         %tr
+    /           %td 
+    /             %i Click Throughs (incomplete)
+    /           %td= cts
+    /           %td $0.75
+    /           %td= cts * 0.75
+    /         %tr.info
+    /           %td Total
+    /           %td= total
+    /           %td $0.75
+    /           %td= "$#{total * 0.75}"
