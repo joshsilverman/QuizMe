@@ -11,7 +11,7 @@ SitemapGenerator::Sitemap.create(:create_index => false) do
   # # Generate question page links
   publication_ids = Publication.all.collect(&:question_id).uniq
   Question.where(:id => publication_ids).each do |question|
-    add "/questions/#{question.id}/#{question.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")}"
+    add "/questions/#{question.id}/#{question.slug}"
   end  
 
   # Put links creation logic here.
