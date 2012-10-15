@@ -30,5 +30,6 @@ class ClientsController < ApplicationController
     end
     @waus.sort!{|a,b| a[0] <=> b[0]}
     @waus = [["Date", "WAUs"]] + @waus
+    @waus.pop
   end
 end
