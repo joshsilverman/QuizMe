@@ -487,10 +487,9 @@ class Post < ActiveRecord::Base
   end
 
   extend Split::Helper
-  def self.trigger_split_test(user_id, test_name)
+  def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id)
-    finished(test_name)
-
+    finished(test_name, {:reset => reset})
   end
   def self.create_split_test(user_id, test_name, a, b)
     ab_user.set_id(user_id)
