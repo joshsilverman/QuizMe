@@ -328,7 +328,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data(m, current_acct)
-    puts "save mention"
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
@@ -368,7 +367,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
-    puts "save RT"
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     begin
       users = current_acct.twitter.retweeters_of(r.id)  
@@ -410,7 +408,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
-    puts "save dm"
     u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
       :twi_name => d.sender.name,
