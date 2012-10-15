@@ -57,7 +57,7 @@
           %th Total
 
         - @posts_by_week_by_it.each do |w, posts_by_it|
-          -total = retweets = mentions = answers = dms = cts = 0
+          - total = retweets = mentions = answers = dms = cts = mentions_excl_answers = 0
 
           - waus = @posts_by_week_by_user[w].count
           - retweets = posts_by_it[3].count if posts_by_it[3]
