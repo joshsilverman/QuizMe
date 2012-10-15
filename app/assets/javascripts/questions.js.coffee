@@ -26,6 +26,7 @@ class Question
 				parent = $(e.target).parents(".answer_container").prev("h2")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))		
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
+		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
@@ -49,7 +50,7 @@ class Question
 					subsidiary.addClass("answered")
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
-				mixpanel.track("answered", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})				
+				# mixpanel.track("answered", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
@@ -59,11 +60,7 @@ class Question
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").after(response.fadeIn(500, =>
-						loading.html("<a id='answer_more' href='/feeds/#{@asker_id}'>Answer more questions!</a>")
-						loading.fadeIn(500)
-						mixpanel.track_links("#answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
-					))
+					@element.find(".subsidiary").after(response.fadeIn(500, => $(".more").fadeIn(500)))
 					@element.find("i").show()
 				)
 			)
