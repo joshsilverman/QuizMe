@@ -18,8 +18,7 @@ class QuestionsController < ApplicationController
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
     @publication = Publication.where(:question_id => params[:id], :published => true).order("created_at DESC").limit(1).first
-    @answer_id = params[:answer_id]
-    redirect_to "/feeds/#{@asker.id}" unless (@question and @publication)
+    redirect_to "/feeds/#{@asker.id}" unless (@question and @publication and @question.slug == params[:slug])
   end
 
   # GET /questions/new
