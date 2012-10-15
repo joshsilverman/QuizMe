@@ -5,6 +5,15 @@ GIT
     mixpanel_client (2.2.3)
 
 GIT
+  remote: https://github.com/KentonWhite/bitly.git
+  revision: bcc1e089499195d9ed119158ef70265f02235348
+  specs:
+    bitly (0.8.0)
+      crack (>= 0.1.4)
+      httparty (>= 0.7.6)
+      oauth2 (>= 0.5.0, < 0.9)
+
+GIT
   remote: https://github.com/henghonglee/stuff-classifier
   revision: 4bdcc91606397d7baab2730a667fa0e1088e8f01
   specs:
@@ -67,6 +76,7 @@ GEM
       execjs
     coffee-script-source (1.3.3)
     commonjs (0.2.6)
+    crack (0.3.1)
     dalli (2.1.0)
     database_cleaner (0.8.0)
     devise (2.1.2)
@@ -86,7 +96,7 @@ GEM
     hashie (1.2.0)
     hike (1.2.1)
     hirb (0.6.2)
-    httparty (0.8.3)
+    httparty (0.9.0)
       multi_json (~> 1.0)
       multi_xml
     httpauth (0.1)
@@ -231,8 +241,6 @@ GEM
     uglifier (1.2.6)
       execjs (>= 0.3.0)
       multi_json (~> 1.3)
-    url_shortener (0.0.4)
-      httparty (>= 0.4.5)
     warden (1.2.1)
       rack (>= 1.0)
 
@@ -242,6 +250,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt-ruby
   best_in_place
+  bitly!
   coffee-rails
   dalli
   database_cleaner
@@ -270,4 +279,3 @@ DEPENDENCIES
   twitter
   twitter-bootstrap-rails
   uglifier
-  url_shortener

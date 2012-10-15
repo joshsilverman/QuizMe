@@ -29,6 +29,8 @@ Quizmemanager::Application.routes.draw do
   match "users/:id" => "askers#update"
   resources :askers
 
+  match "clients/:id/report" => "clients#report"
+
   resources :users
   resources :questions
   resources :posts
