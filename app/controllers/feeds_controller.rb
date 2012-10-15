@@ -8,8 +8,8 @@ class FeedsController < ApplicationController
   def show
     @asker = User.asker(params[:id])
     if @asker
-      # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
-      @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ?", @asker.id).sample(3)
+      @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
+
       @publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
@@ -28,6 +28,10 @@ class FeedsController < ApplicationController
       end
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
+
+      if @asker.author_id
+        @author = User.find @asker.author_id
+      end
 
       respond_to do |format|
         format.html # show.html.erb
@@ -124,14 +128,17 @@ class FeedsController < ApplicationController
       @conversations[p.id][:users][p.user.id] = p.user if @conversations[p.id][:users][p.user.id].nil?
       pub_id = nil
       while parent
-        @conversations[p.id][:posts] << parent
-        @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
-        pub_id = parent.publication_id unless parent.publication_id.nil?
+        if parent.in_reply_to_user_id == @asker.id or parent.user_id == @asker.id
+          @conversations[p.id][:posts] << parent
+          @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
+          pub_id = parent.publication_id unless parent.publication_id.nil?
+        end
         parent = parent.parent
       end
       p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
+    # puts @conversations.to_json
     #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
     

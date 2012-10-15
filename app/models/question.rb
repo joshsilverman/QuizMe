@@ -16,6 +16,10 @@ class Question < ActiveRecord::Base
     #@TODO email or some notification that I will actually read if not filled
   end
 
+  def slug_text
+    return self.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")[0..69]
+  end
+
 
   ###THIS IS FOR IMPORTING FROM QB###
 	require 'net/http'

@@ -21,7 +21,8 @@ class Feed
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
-		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name})
+		$("#post_question_tooltip").tooltip
+		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
@@ -36,7 +37,7 @@ class Feed
 	# 	channel = pusher.subscribe(@name)
 	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	post_question: =>
-		return unless window.feed.correct > 9
+		return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#post_question_modal").modal()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
@@ -177,7 +178,7 @@ class Post
 					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
 				)
 				window.feed.answered += 1
-				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name})				
+				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>

@@ -1,0 +1,67 @@
+.report {
+  .graph {
+    padding-left:2px;
+  }
+
+  .wau_stats {
+    margin-top:15px;
+  }
+
+  .page-header {
+    //border:none;
+    img {
+      float:left;
+      height:32px;
+      margin-right:10px;
+    }
+  }
+
+  h3 {
+    padding: 8px;
+    //background: #fcfcfc;
+  }
+
+  #activity {
+    .wau-period {
+      display:none;
+
+      &.active {
+        display:block;
+      }
+    }
+  }
+
+  .bill {
+    .table {
+      //background-color:#fdfdfd;
+    }
+
+    &.incomplete {
+      //opacity:.8;
+      //font-style:italic;
+      .table {
+        //background-color:#fafafa;
+      }
+    }
+  }
+
+  .table {
+    tr {
+      &.incomplete {
+        color:#aaa;
+        font-style:italic;
+      }
+      &.info {
+        td {
+          background-color: #D9EDF7;
+        }
+      }
+
+      td {
+        &.indent {
+          padding-left:30px;
+        }
+      }
+    }
+  }
+}

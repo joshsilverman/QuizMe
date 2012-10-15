@@ -10,7 +10,15 @@ class ApplicationController < ActionController::Base
 
   def admin?
     if current_user
-      redirect_to '/' unless current_user and current_user.is_role? "admin"
+      redirect_to '/' unless current_user.is_role? "admin"
+    else
+      redirect_to '/'
+    end
+  end
+
+  def client?
+    if current_user
+      redirect_to '/' unless current_user.is_role? "client" or current_user.is_role? "admin"
     else
       redirect_to '/'
     end
@@ -23,10 +31,6 @@ class ApplicationController < ActionController::Base
   end
 
   def split_user
-    puts "PREUSER:"
-    puts ab_user.identifier
-    puts current_user
-    puts session[:split]
     if (request.user_agent =~ /\b(Baidu|Gigabot|Googlebot|libwww-perl|lwp-trivial|msnbot|SiteUptime|Slurp|WordPress|ZIBB|ZyBorg)\b/i)
       ab_user.set_id(0)
     elsif current_user
@@ -37,10 +41,6 @@ class ApplicationController < ActionController::Base
       session[:split] = rand(10 ** 10).to_i
       ab_user.set_id(session[:split])
     end
-    puts "POSTUSER:"
-    puts ab_user.identifier
-    puts current_user
-    puts session[:split]
   end
 
   def referrer_data

@@ -34,24 +34,28 @@ class Dashboard
 		display_hash = 
 			followers: today: 0, total: 0
 			active_users: today: [], total: []
-			questions_answered: today: 0, total: 0
+			questions_answered: today: 0, total: []
 			click_throughs: today: 0, total: 0
 			mentions: today: 0, total: 0
 			retweets: today: 0, total: 0
 		if "0" in @active then askers.push(0) else askers.push(asker_id) for asker_id in @active
 		for asker_id in askers
 			for key of display_hash
-				# console.log @display_data[asker_id][key]["today"]
-				# console.log @display_data[asker_id][key]["total"]
 				if key == "active_users"
 					display_hash[key]["today"] = display_hash[key]["today"].concat(@display_data[asker_id][key]["today"])
 					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])
+				else if key == "questions_answered"
+					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
+					display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])				
 				else
 					display_hash[key]["today"] += @display_data[asker_id][key]["today"]
 					display_hash[key]["total"] += @display_data[asker_id][key]["total"]
 		for key, value of display_hash
 			if key == "active_users"
 				$("##{key}_stats .new .number").text(value.today.unique().length)
+				$("##{key}_stats .total .number").text(value.total.unique().length)
+			else if key == "questions_answered"
+				$("##{key}_stats .new .number").text(value.today)
 				$("##{key}_stats .total .number").text(value.total.unique().length)
 			else
 				$("##{key}_stats .new .number").text(value.today)
@@ -87,7 +91,6 @@ class Dashboard
 						row[title_row.indexOf("Total")] = total.unique().length
 					else 
 						row[title_row.indexOf("Total")] = total
-					data_array.push(row)
 				else
 					for asker_id in @active
 						if asker_data[asker_id] == undefined or asker_data[asker_id] == null
@@ -97,7 +100,7 @@ class Dashboard
 								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].unique().length
 							else
 								row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]			
-					data_array.push(row)
+				data_array.push(row)
 			graph_data = google.visualization.arrayToDataTable(data_array)
 			chart = new google.visualization.LineChart(document.getElementById("#{attribute_name}_graph"))
 			chart.draw graph_data, options
@@ -105,11 +108,9 @@ class Dashboard
 	draw_paulgraham: =>
 		title_row = ["Date", "Total"]
 		colors = ['orange', 'green', 'orange', "#6C69D1"]
-
 		data_array = [['Date', 'Min', 'Max', "Over", 'Total']]
 		$.each @paulgraham, (k,v) -> 
 			data_array.push [k, .05, .05, .05, v - .15]
-
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
 		chart.draw graph_data, pg_options
@@ -166,6 +167,7 @@ dau_mau_options =
 	hAxis:
 		textStyle: 
 			fontSize: 9
+	colors: ["#6C69D1"]
 
 options = 
 	width: 430

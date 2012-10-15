@@ -1,5 +1,10 @@
+# @ugly, none of this should not be in an initializer
+
 PROVIDERS = ["twitter"]
 ## ADD studyeggtest back in (25)
+
+
+# @ugly, this should make use of Devise roles (wtf)
 ADMINS = [1, 3, 4, 11]
 
 URL = (Rails.env.production? ? "http://www.wisr.com" : "http://studyegg-quizme-staging.herokuapp.com")

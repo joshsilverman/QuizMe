@@ -16,6 +16,7 @@ Quizmemanager::Application.routes.draw do
   post "posts/update"
   post "posts/respond_to_post"
   post "questions/save_question_and_answers"
+  match "questions/:id/:slug" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
@@ -27,6 +28,8 @@ Quizmemanager::Application.routes.draw do
 
   match "users/:id" => "askers#update"
   resources :askers
+
+  match "clients/:id/report" => "clients#report"
 
   resources :users
   resources :questions
