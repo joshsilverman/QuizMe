@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121013031554) do
+ActiveRecord::Schema.define(:version => 20121015181806) do
 
   create_table "alternatives", :force => true do |t|
     t.integer "experiment_id"
@@ -107,6 +107,7 @@ ActiveRecord::Schema.define(:version => 20121013031554) do
     t.string   "hashtag"
     t.integer  "seeder_id"
     t.text     "resource_url"
+    t.string   "slug"
   end
 
   create_table "reps", :force => true do |t|

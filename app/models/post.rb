@@ -242,22 +242,27 @@ class Post < ActiveRecord::Base
 
   def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
     short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
-    res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
-
-    Post.create(
-      :user_id => current_acct.id,
-      :provider => 'twitter',
-      :text => tweet,
-      :engagement_type => 'pm',
-      :provider_post_id => res.id.to_s,
-      :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
-      :in_reply_to_user_id => user.id,
-      :conversation_id => conversation_id,
-      :url => long_url ? short_url : nil,
-      :posted_via_app => true,
-      :requires_action => false,
-      :interaction_type => 4
-    )
+    begin
+      res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
+      dm = Post.create(
+        :user_id => current_acct.id,
+        :provider => 'twitter',
+        :text => tweet,
+        :engagement_type => 'pm',
+        :provider_post_id => res.id.to_s,
+        :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
+        :in_reply_to_user_id => user.id,
+        :conversation_id => conversation_id,
+        :url => long_url ? short_url : nil,
+        :posted_via_app => true,
+        :requires_action => false,
+        :interaction_type => 4
+      )
+    rescue Exception => exception
+      puts "exception in DM user"
+      puts exception.message
+    end    
+    return dm
   end
 
   def self.dm_new_followers(current_acct)
@@ -323,7 +328,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data(m, current_acct)
-    puts "save mention"
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
@@ -363,7 +367,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
-    puts "save RT"
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     begin
       users = current_acct.twitter.retweeters_of(r.id)  
@@ -405,7 +408,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
-    puts "save dm"
     u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
       :twi_name => d.sender.name,
@@ -482,10 +484,9 @@ class Post < ActiveRecord::Base
   end
 
   extend Split::Helper
-  def self.trigger_split_test(user_id, test_name)
+  def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id)
-    finished(test_name)
-
+    finished(test_name, {:reset => reset})
   end
   def self.create_split_test(user_id, test_name, a, b)
     ab_user.set_id(user_id)
