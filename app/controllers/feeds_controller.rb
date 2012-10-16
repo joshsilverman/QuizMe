@@ -104,6 +104,7 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
+    finished("question activity", {:reset => false})
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
