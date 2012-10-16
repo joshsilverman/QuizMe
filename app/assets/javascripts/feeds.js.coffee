@@ -9,6 +9,7 @@ class Feed
 	engagements: null
 	correct: null
 	constructor: ->
+		# $("img").tooltip()
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
@@ -22,6 +23,7 @@ class Feed
 			e.preventDefault()
 			@post_question()
 		$("#post_question_tooltip").tooltip
+		$(".interaction").tooltip()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
@@ -101,6 +103,7 @@ class Feed
 					else
 						$("#feed_content").append($(e).hide().fadeIn())
 						@initialize_posts($("#feed_content .feed_section").last().find(".conversation"))
+						$('.interaction').tooltip()
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
@@ -169,32 +172,42 @@ class Post
 			data: params
 			success: (e) => 
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text(e.user_message)
+				subsidiary.find(".content p").text(e.user_message)
 				subsidiary.find("img").attr("src", window.feed.user_image)
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
 				loading.fadeOut(500, => 
-					subsidiary.addClass("answered")
-					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
-				)
+					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => 
+						subsidiary.addClass("answered")
+						@populate_response(e)
+					))
+				)		
 				window.feed.answered += 1
 				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text(message_hash.app_message) 
+		response.find(".content p").text(message_hash.app_message) 
 		response.find("h5").text(window.feed.name)
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").after(response.fadeIn(500))
+					@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
 					@element.find("i").show()
 				)
 			)
 		else
-			@element.find(".subsidiary").after(response.fadeIn(500))
+			@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
 			@element.find("i").show()
+	show_activity: =>
+		if @element.find(".activity_container:visible").length > 0
+			@element.find(".user_answered").fadeIn(500)
+		else
+			@element.find(".user_answered").show()
+			@element.find(".activity_container").fadeIn(500)
+		$(".interaction").tooltip()
+
 
 $ -> 
 	if $("#post_feed").length > 0
