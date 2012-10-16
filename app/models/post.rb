@@ -488,6 +488,7 @@ class Post < ActiveRecord::Base
     ab_user.set_id(user_id)
     finished(test_name, {:reset => reset})
   end
+  
   def self.create_split_test(user_id, test_name, a, b)
     ab_user.set_id(user_id)
     ab_test(test_name, a, b)

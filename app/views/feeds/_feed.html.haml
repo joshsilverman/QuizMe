@@ -1,4 +1,5 @@
 .feed_section
+	- show_activity = ab_test("question activity", true, false)
 	- @publications.each do |post|
 		- conversation = @responses[post.id]
 		- conversation ? responded = true : responded = false
@@ -6,7 +7,6 @@
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				.content
-
 					- if post.question.user_id != 1 and @asker.author_id != post.question.user_id
 						- user = post.question.user
 						= image_tag(user.twi_profile_img_url, :class => "rounded")
@@ -15,7 +15,6 @@
 					- else
 						= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 						%h5= @asker.twi_screen_name
-
 					%p= post.question.text
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
@@ -48,12 +47,6 @@
 									%h5= current_user.twi_screen_name
 									%p= response['text']
 			.loading{:style => "display: none;"}
-				Loading...			
-			.activity_container{:style => ("display: none;" unless @actions[post.id])}
-				%p.activity ACTIVITY
-				.interactions
-					-if @actions[post.id]
-						- @actions[post.id].each do |interaction|
-							= image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
-					- if current_user
-						= image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")
+				Loading...	
+			- if show_activity
+				= render :partial => "activity", :locals => {:post => post}
