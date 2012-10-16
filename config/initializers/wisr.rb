@@ -84,12 +84,12 @@ ACCOUNT_DATA = {
 
   ## QuizMeBio
   18 => {
-    :retweet => [19, 31, 108, 326], 
+    :retweet => [19, 31, 108, 326, 7362], 
     :hashtags => ["science", "biology", "premed", "medschool"]
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 108, 326], 
+    :retweet => [18, 31, 108, 326, 7362], 
     :hashtags => ["science", "chemistry"]
   },  
   ## QuizMeOrgo
@@ -144,6 +144,12 @@ ACCOUNT_DATA = {
   374 => {
     :retweet => [22, 284, 325], 
     :hashtags => ["trivia", "beer", "craftbeer", "brewing"]
+  },
+
+  ## QuizMeWeather
+  7362 => {
+    :retweet => [18, 19], 
+    :hashtags => ["trivia", "weather", "meteorology", "meteo"]
   }
 }
 
