@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
       ab_user.set_id(0)
     elsif current_user
       puts "current_user"
-      if session[:split]
+      if session[:split] and session[:split] != current_user.id
         puts "in current_user session split"
         keys = Split.redis.hkeys("user_store:#{session[:split]}")
         keys.each do |key|
@@ -44,6 +44,8 @@ class ApplicationController < ActionController::Base
           end
         end
         Split.redis.del("user_store:#{session[:split]}")
+      else
+        session[:split] = current_user.id
       end
       ab_user.set_id(current_user.id)
     elsif (session[:split])

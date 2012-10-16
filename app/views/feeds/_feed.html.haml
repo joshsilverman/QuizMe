@@ -1,5 +1,5 @@
 .feed_section
-	- show_activity = ab_test("question activity", true, false)
+	- show_activity = ab_test("question activity", "true", "false")
 	- @publications.each do |post|
 		- conversation = @responses[post.id]
 		- conversation ? responded = true : responded = false
@@ -48,5 +48,5 @@
 									%p= response['text']
 			.loading{:style => "display: none;"}
 				Loading...	
-			- if show_activity
+			- if show_activity == "true"
 				= render :partial => "activity", :locals => {:post => post}
