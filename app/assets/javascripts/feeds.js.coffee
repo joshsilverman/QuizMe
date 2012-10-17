@@ -36,7 +36,6 @@ class Feed
 			if ($(window).scrollTop() >= $(document).height() - $(window).height() - 1)
 				window.appending = true
 				@show_more() 
-			# 
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
