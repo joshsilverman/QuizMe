@@ -16,6 +16,8 @@
 						= image_tag(@asker.twi_profile_img_url, :class => "rounded")
 						%h5= @asker.twi_screen_name
 					%p= post.question.text
+					/ include in reply to?
+					%a{:href => "https://twitter.com/intent/tweet?&text=#{u('Pop quiz! ' + post.question.text)}&text=supbrah&url=http://bit.ly/au4tg5&via=QuizMePsych", :target => "_blank"} Quiz a Friend
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = post.question.answers.shuffle
@@ -48,5 +50,6 @@
 									%p= response['text']
 			.loading{:style => "display: none;"}
 				Loading...	
+			- show_activity = "true"
 			- if show_activity == "true"
 				= render :partial => "activity", :locals => {:post => post}
