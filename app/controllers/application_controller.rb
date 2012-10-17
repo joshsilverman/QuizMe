@@ -31,17 +31,28 @@ class ApplicationController < ActionController::Base
   end
 
   def split_user
+    #puts "session: #{session[:split]}"
+    #puts "current_user: #{current_user.id if current_user}"
+    #puts "ab_user: #{ab_user.identifier}"
     if (request.user_agent =~ /\b(Baidu|Gigabot|Googlebot|libwww-perl|lwp-trivial|msnbot|SiteUptime|Slurp|WordPress|ZIBB|ZyBorg)\b/i)
       ab_user.set_id(0)
     elsif current_user
+      #puts "current_user"
       if session[:split] and session[:split] != current_user.id
+        #puts "#{session[:split]} != #{current_user.id}"
+        #puts "not equal? #{session[:split] != current_user.id}"
         keys = Split.redis.hkeys("user_store:#{session[:split]}")
         keys.each do |key|
           if value = Split.redis.hget("user_store:#{session[:split]}", key)
             Split.redis.hset("user_store:#{current_user.id}", key, value)
           end
         end
+        #puts "delete session data"
         Split.redis.del("user_store:#{session[:split]}")
+        #puts "current_user keys"
+        #puts Split.redis.hkeys("user_store:#{current_user.id}")
+        #puts "session_user keys"
+        #puts Split.redis.hkeys("user_store:#{session[:split]}")
       end
       session[:split] = current_user.id
       ab_user.set_id(current_user.id)
@@ -51,6 +62,9 @@ class ApplicationController < ActionController::Base
       session[:split] = rand(10 ** 10).to_i
       ab_user.set_id(session[:split])
     end
+    #puts "session: #{session[:split]}"
+    #puts "current_user: #{current_user.id if current_user}"
+    #puts "ab_user: #{ab_user.identifier}"
   end
 
   def referrer_data
