@@ -471,6 +471,22 @@ body {
 					top: 10px;
 					left: 10px;
 				}
+
+				.post_actions {
+					font-size: 12px;
+					position: relative;
+					top: 2px;
+										
+					.expand {
+						display: inline;
+						color: #999;
+					}
+
+					.quiz {
+						visibility: hidden;
+						margin-left: 10px;
+					}
+				}
 			}	
 
 			.answers {
@@ -603,6 +619,11 @@ body {
 					}			
 				}
 			}
+		}
+	}
+	.conversation:hover {
+		.quiz:hover {
+			visibility: visible;
 		}
 	}
 

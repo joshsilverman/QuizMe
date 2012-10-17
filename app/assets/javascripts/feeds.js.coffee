@@ -128,11 +128,18 @@ class Post
 	element: null
 	question: null
 	correct: null
+	expanded: false
 	constructor: (element) ->
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.hover(
+			=> @element.find(".quiz").css("visibility", "visible"), 
+			=> @element.find(".quiz").css("visibility", "hidden") unless @expanded
+		)
+		@element.find(".quiz").on "click", (e) => 
+			window.open("https://twitter.com/intent/retweet?tweet_id=36287294927413248&related=twitterapi,twittermedia,twitter,support&original_referer=https://dev.twitter.com/docs/intents#tweet-intent", "", "height=400,width=600")
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -151,19 +158,23 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
-		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
-		if post.hasClass("active")
-			post.find(".subsidiaries, .loading, .answers").hide()
-			post.toggleClass("active", 200)
-			post.next(".conversation").removeClass("active_next")
-			post.prev(".conversation").removeClass("active_prev")	
+		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("quiz")
+		if @element.hasClass("active")
+			@expanded = false
+			@element.find(".expand").text("Expand")
+			@element.find(".subsidiaries, .loading, .answers").hide()
+			@element.toggleClass("active", 200)
+			@element.next(".conversation").removeClass("active_next")
+			@element.prev(".conversation").removeClass("active_prev")	
 		else 
-			post.find(".answers").toggle(200)
-			post.find(".subsidiaries").toggle(200, => 
-				post.toggleClass("active", 200)
-				post.next(".conversation").addClass("active_next")
-				post.prev(".conversation").addClass("active_prev")
+			@expanded = true
+			@element.find(".quiz").css("visibility", "visible")
+			@element.find(".expand").text("Collapse")
+			@element.find(".answers").toggle(200)
+			@element.find(".subsidiaries").toggle(200, => 
+				@element.toggleClass("active", 200)
+				@element.next(".conversation").addClass("active_next")
+				@element.prev(".conversation").addClass("active_prev")
 			)	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
@@ -214,6 +225,8 @@ class Post
 			@element.find(".user_answered").show()
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
+	generate_quiz_link: => 
+
 
 
 $ -> 
