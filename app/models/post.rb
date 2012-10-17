@@ -21,7 +21,7 @@ class Post < ActiveRecord::Base
       (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
       (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
       (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
-      (options[:via_user].present? ? "via #{options[:via_user]}" : "")
+      (options[:via_user].present? ? "via @#{options[:via_user]}" : "")
     }
     return generate_tweet.call(140 - generate_tweet.call(0).length)
   end
