@@ -16,12 +16,12 @@ class Post < ActiveRecord::Base
 
   def self.format_tweet(text, options = {})
     generate_tweet = lambda { |x|
-      (options[:in_reply_to_user] ? "@#{options[:in_reply_to_user]} " : "") +
+      (options[:in_reply_to_user].present? ? "@#{options[:in_reply_to_user]} " : "") +
       (x > 0 ? "#{text} " : "#{text[0..(-1 + x)]}... ") + 
-      (options[:question_backlink] ? "#{options[:question_backlink]} " : "") +
-      (options[:hashtag] ? "##{options[:hashtag]} " : "") +
-      (options[:resource_backlink] ? "Learn why at #{options[:resource_backlink]} " : "") +
-      (options[:via_user] ? "via #{options[:via_user]}" : "")
+      (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
+      (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
+      (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
+      (options[:via_user].present? ? "via #{options[:via_user]}" : "")
     }
     return generate_tweet.call(140 - generate_tweet.call(0).length)
   end
