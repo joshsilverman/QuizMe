@@ -4,6 +4,7 @@ Split.configure do |config|
   config.allow_multiple_experiments = true
   config.enabled = true
   config.user_store = :redis_store
+  config.robot_regex = /\b(Baidu|Gigabot|Googlebot|libwww-perl|lwp-trivial|msnbot|SiteUptime|Slurp|WordPress|ZIBB|ZyBorg)\b/i
 end
 
 Split.redis = REDIS
