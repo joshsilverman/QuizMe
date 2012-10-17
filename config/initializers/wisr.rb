@@ -73,7 +73,7 @@ ACCOUNT_DATA = {
   }, 
   ## QuizMeEcon  
   322 => {
-    :retweet => [2, 66, 191, 223, 231, 325, 309, 310], 
+    :retweet => [2, 66, 191, 223, 231, 325], 
     :hashtags => ["econ", "economics"]
   },
   ## AP US History 
@@ -84,12 +84,12 @@ ACCOUNT_DATA = {
 
   ## QuizMeBio
   18 => {
-    :retweet => [19, 31, 108, 326], 
+    :retweet => [19, 31, 108, 326, 7362], 
     :hashtags => ["science", "biology", "premed", "medschool"]
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 108, 326], 
+    :retweet => [18, 31, 108, 326, 7362], 
     :hashtags => ["science", "chemistry"]
   },  
   ## QuizMeOrgo
@@ -99,7 +99,7 @@ ACCOUNT_DATA = {
   }, 
   ## QuizMePsych
   108 => {
-    :retweet => [18, 19, 31, 326, 191, 309, 310], 
+    :retweet => [18, 19, 31, 326, 191], 
     :hashtags => ["science", "psych"]
   },  
   ## QuizMeAnat  
@@ -110,18 +110,8 @@ ACCOUNT_DATA = {
 
   ## Marketing_Quiz
   223 => {
-    :retweet => [309, 310, 322], 
+    :retweet => [322], 
     :hashtags => ["marketing"]
-  }, 
-  ## Retail Management 
-  309 => {
-    :retweet => [223, 310, 108, 322], 
-    :hashtags => ["retail"]
-  },  
-  ## Consumer Behavior 
-  310 => {
-    :retweet => [223, 309, 108, 322], 
-    :hashtags => ["consumerbehavior"]
   },  
 
   ## SATvocabQuiz
@@ -154,6 +144,12 @@ ACCOUNT_DATA = {
   374 => {
     :retweet => [22, 284, 325], 
     :hashtags => ["trivia", "beer", "craftbeer", "brewing"]
+  },
+
+  ## QuizMeWeather
+  7362 => {
+    :retweet => [18, 19], 
+    :hashtags => ["trivia", "weather", "meteorology", "meteo"]
   }
 }
 

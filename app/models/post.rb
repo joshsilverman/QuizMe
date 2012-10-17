@@ -7,113 +7,28 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
-  @@classifier = Classifier.new
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
-
-  ###
-  ###Helper Methods
-  ###
-
-  #@TODO update helper methods to account for multiple engagement types
-
+  @@classifier = Classifier.new
+  
   def self.classifier
     @@classifier
   end
 
-  def self.unanswered
-    where(:requires_action => true)
+  def self.format_tweet(text, options = {})
+    generate_tweet = lambda { |x|
+      (options[:in_reply_to_user].present? ? "@#{options[:in_reply_to_user]} " : "") +
+      (x > 0 ? "#{text} " : "#{text[0..(-1 + x)]}... ") + 
+      (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
+      (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
+      (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
+      (options[:via_user].present? ? "via #{options[:via_user]}" : "")
+    }
+    return generate_tweet.call(140 - generate_tweet.call(0).length)
   end
-
-  ### Twitter
-  def self.twitter_answers
-    where("provider is 'twitter' and engagement_type like ?",'%answer%')
-  end
-  
-  def self.twitter_nonanswer_mentions
-    where("provider is 'twitter' and engagement_type like ?",'%nonanswer%')
-  end
-
-  def self.twitter_mentions
-    where("provider is 'twitter' and engagement_type like ?",'%mention%')
-  end
-
-  def self.twitter_shares
-    where("provider is 'twitter' and engagement_type like ?",'%share%')
-  end
-
-  def self.tweetable(text, user = "", url = "", hashtag = "", resource_url = "", via = "")
-    user = "" if user.nil?
-    url = "" if url.nil?
-    via = "" if via.nil?
-    if resource_url.blank?
-      resource_url = "" 
-    else
-      resource_url = "Learn why at #{resource_url}" 
-    end
-    text_length = text.length
-    handle_length = user.length
-    url_length = url.length
-    resource_url_length = resource_url.length
-    hashtag_length = hashtag.nil? ? 0 : hashtag.length
-    via_length = via.length
-    remaining = 140
-    remaining = (remaining - (handle_length + 2)) if handle_length > 0
-    remaining = (remaining - (url_length + 1)) if url_length > 0
-    remaining = (remaining - (hashtag_length + 2)) if hashtag_length > 0
-    remaining = (remaining - (resource_url_length + 1)) if resource_url_length > 0
-    remaining = (remaining - (via_length + 6)) if via_length > 0
-    truncated_text = text[0..(remaining - 4)]
-    truncated_text += "..." if text_length > remaining
-    tweet = ""
-    tweet += "@#{user} " if handle_length > 0
-    tweet += "#{truncated_text}"
-    tweet += " #{url}" if url_length > 0
-    tweet += " #{resource_url}" if resource_url_length > 0
-    tweet += " via @#{via}" if via_length > 0
-    tweet += " ##{hashtag}" if hashtag_length > 0
-    return tweet    
-  end
-
-  ### Facebook
-  def self.facebook_answers
-    where(:provider => 'facebook', :engagement_type => 'answer')
-  end
-
-  def self.facebook_shares
-    where(:provider => 'facebook', :engagement_type => 'share')
-  end
-
-  ### Tumblr
-  def self.tumblr_answers
-    where(:provider => 'tumblr', :engagement_type => 'answer')
-  end
-
-  def self.tumblr_shares
-    where(:provider => 'tumblr', :engagement_type => 'share')
-  end
-
-  ### Internal
-  def self.internal_answers
-    where(:posted_via_app => true, :engagement_type => 'answer')
-  end
-
-  def is_parent?
-    self.publication_id? or self.in_reply_to_post_id.nil?
-  end
-
-  def sibling(provider)
-    self.publication.posts.where(:provider => provider).first if self.publication_id
-  end
-
-
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
     Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").short_url
 	end
-
-  ###
-  ### Tweeting from the app
-  ###
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
@@ -157,7 +72,13 @@ class Post < ActiveRecord::Base
     return unless account.twitter_enabled?
     short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
     short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
-    tweet = Post.tweetable(text, reply_to, short_url, hashtag, short_resource_url, via)
+    tweet = Post.format_tweet(text, {
+      :in_reply_to_user => reply_to,
+      :question_backlink => short_url,
+      :hashtag => hashtag,
+      :resource_backlink => short_resource_url,
+      :via_user => via
+    })
     if in_reply_to_post_id and link_to_parent
       parent_post = Post.find(in_reply_to_post_id) 
       twitter_response = account.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})

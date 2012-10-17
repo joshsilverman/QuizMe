@@ -81,14 +81,17 @@ task :post_leaderboard => :environment do
 end
 
 task :retweet_related => :environment do
-	t = Time.now
-	puts "TIME: #{t.hour}"
-	if t.hour % 2 == 0
+	if Time.now.hour % 2 == 0
 		ACCOUNT_DATA.each do |k, v|
 			a = User.asker(k)
 			pub = Publication.where(:asker_id => v[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample
 			p = Post.find_by_publication_id_and_provider(pub.id, 'twitter')
-			a.twitter.retweet(p.provider_post_id)
+			begin
+				a.twitter.retweet(p.provider_post_id)
+			rescue Exception => exception
+				puts exception.message
+				puts "exception while retweeting #{p.text} (id: #{p.id}):"
+			end
 		end
 	end
 end
