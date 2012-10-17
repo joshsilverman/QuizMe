@@ -7,38 +7,11 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
-  @@classifier = Classifier.new
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
-
-  ###
-  ###Helper Methods
-  ###
-
-  #@TODO update helper methods to account for multiple engagement types
-
+  @@classifier = Classifier.new
+  
   def self.classifier
     @@classifier
-  end
-
-  def self.unanswered
-    where(:requires_action => true)
-  end
-
-  ### Twitter
-  def self.twitter_answers
-    where("provider is 'twitter' and engagement_type like ?",'%answer%')
-  end
-  
-  def self.twitter_nonanswer_mentions
-    where("provider is 'twitter' and engagement_type like ?",'%nonanswer%')
-  end
-
-  def self.twitter_mentions
-    where("provider is 'twitter' and engagement_type like ?",'%mention%')
-  end
-
-  def self.twitter_shares
-    where("provider is 'twitter' and engagement_type like ?",'%share%')
   end
 
   def self.format_tweet(text, options = {})
@@ -53,46 +26,9 @@ class Post < ActiveRecord::Base
     return generate_tweet.call(140 - generate_tweet.call(0).length)
   end
 
-  ### Facebook
-  def self.facebook_answers
-    where(:provider => 'facebook', :engagement_type => 'answer')
-  end
-
-  def self.facebook_shares
-    where(:provider => 'facebook', :engagement_type => 'share')
-  end
-
-  ### Tumblr
-  def self.tumblr_answers
-    where(:provider => 'tumblr', :engagement_type => 'answer')
-  end
-
-  def self.tumblr_shares
-    where(:provider => 'tumblr', :engagement_type => 'share')
-  end
-
-  ### Internal
-  def self.internal_answers
-    where(:posted_via_app => true, :engagement_type => 'answer')
-  end
-
-  def is_parent?
-    self.publication_id? or self.in_reply_to_post_id.nil?
-  end
-
-  def sibling(provider)
-    self.publication.posts.where(:provider => provider).first if self.publication_id
-  end
-
-
-
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
     Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").short_url
 	end
-
-  ###
-  ### Tweeting from the app
-  ###
 
   def self.publish(provider, asker, publication)
     question = Question.find(publication.question_id)
