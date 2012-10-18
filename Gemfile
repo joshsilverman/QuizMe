@@ -12,6 +12,7 @@ end
 
 group :production do
   gem 'bcrypt-ruby'
+  #gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard'
 end
 
 group :development do
@@ -46,7 +47,7 @@ gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'pusher'
 gem 'newrelic_rpm'
 gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
-gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard'
 gem 'sitemap_generator'
 gem 'best_in_place'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
+gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard' #  || :path => '~/Documents/RoR/gems/split'

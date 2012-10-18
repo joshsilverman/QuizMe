@@ -14,21 +14,20 @@ GIT
       oauth2 (>= 0.5.0, < 0.9)
 
 GIT
-  remote: https://github.com/bderusha/split
-  revision: cb3cd032e0d76f16d6c7c86a6169fc144daf3dff
-  specs:
-    split (0.4.3)
-      redis (>= 2.1)
-      redis-namespace (>= 1.1.0)
-      sinatra (>= 1.2.6)
-
-GIT
   remote: https://github.com/henghonglee/stuff-classifier
   revision: 4bdcc91606397d7baab2730a667fa0e1088e8f01
   specs:
     stuff-classifier (0.5)
       ruby-stemmer
       sequel
+
+PATH
+  remote: ~/Documents/RoR/gems/split
+  specs:
+    split (0.4.3)
+      redis (>= 2.1)
+      redis-namespace (>= 1.1.0)
+      sinatra (>= 1.2.6)
 
 GEM
   remote: http://rubygems.org/
