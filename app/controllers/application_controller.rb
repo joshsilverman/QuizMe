@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
     #puts "session: #{session[:split]}"
     #puts "current_user: #{current_user.id if current_user}"
     #puts "ab_user: #{ab_user.identifier}"
-    ab_user.set_user_agent(request.user_agent)
+    #ab_user.set_user_agent(request.user_agent)
   end
 
   def referrer_data
