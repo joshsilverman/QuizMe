@@ -22,8 +22,15 @@ class Post < ActiveRecord::Base
       (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
       (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
       (options[:via_user].present? ? "via @#{options[:via_user]}" : "")
+      (options[:via_user].present? ? "via @#{options[:via_user]}" : "") +
+      (options[:buffer].present? ? (" " * options[:buffer]) : "")
     }
-    return generate_tweet.call(140 - generate_tweet.call(0).length)
+    if options[:return_text_only]
+      x = (140 - generate_tweet.call(0).length)
+      return (x > 0 ? "#{text}" : "#{text[0..(-1 + x)]}...")
+    else
+      return generate_tweet.call(140 - generate_tweet.call(0).length)
+    end
   end
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)

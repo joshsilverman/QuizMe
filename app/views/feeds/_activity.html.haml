@@ -1,5 +1,5 @@
 .activity_container{:style => ("display: none;" unless @actions[post.id])}
-	%p.activity ACTIVITY
+	/ %p.activity ACTIVITY
 	.interactions
 		-if @actions[post.id]
 			- @actions[post.id].each do |interaction|
