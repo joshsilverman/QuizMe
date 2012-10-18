@@ -77,7 +77,11 @@ class AskersController < ApplicationController
 
     @paulgraham, pg_display_data = Stat.paulgraham
     @display_data[0][:paulgraham] = pg_display_data
+
     @dau_mau, dau_mau_display_data = Stat.dau_mau
     @display_data[0][:dau_mau] = dau_mau_display_data
+
+    @econ_engine, econ_engine_display_data = Stat.econ_engine
+    @display_data[0][:econ_engine] = econ_engine_display_data
   end 
 end

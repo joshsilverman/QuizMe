@@ -11,8 +11,13 @@ class Dashboard
 		@display_data = $.parseJSON($("#display_data").val())
 		console.log @display_data
 		@graph_data = $.parseJSON($("#graph_data").val())
+
 		@paulgraham = $.parseJSON($("#paulgraham").val())
 		@dau_mau = $.parseJSON($("#dau_mau").val())
+
+		@econ_engine = $.parseJSON($("#econ_engine").val())
+		@asker_ids = $.parseJSON($("#asker_ids").val())
+
 		@active.push("0")
 		$(".select_option").on "change", (e) => 
 			if $(e.target).attr("value") == "0" and $(e.target).is(":checked") 
@@ -26,8 +31,11 @@ class Dashboard
 		@update_dashboard()
 	update_dashboard: =>
 		@draw_graphs()
-		@draw_dau_mau()
+
 		@draw_paulgraham()
+		@draw_dau_mau()
+		@draw_econ_engine()
+
 		@update_metrics()
 	update_metrics: =>
 		askers = []
@@ -106,13 +114,12 @@ class Dashboard
 			chart.draw graph_data, options
 
 	draw_paulgraham: =>
-		title_row = ["Date", "Total"]
-		colors = ['orange', 'green', 'orange', "#6C69D1"]
-		data_array = [['Date', 'Min', 'Max', "Over", 'Total']]
+		data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
 		$.each @paulgraham, (k,v) -> 
-			data_array.push [k, .05, .05, .05, v - .15]
+			v['avg'] = .2 if v['avg'] > .2
+			data_array.push [k, .05, .05, .05, v['raw'], v['avg']]
 		graph_data = google.visualization.arrayToDataTable(data_array)
-		chart = new google.visualization.AreaChart(document.getElementById("paulgraham_graph"))
+		chart = new google.visualization.ComboChart(document.getElementById("paulgraham_graph"))
 		chart.draw graph_data, pg_options
 
 	draw_dau_mau: =>
@@ -124,6 +131,11 @@ class Dashboard
 		chart = new google.visualization.LineChart(document.getElementById("dau_mau_graph"))
 		chart.draw graph_data, dau_mau_options		
 
+	draw_econ_engine: =>
+		graph_data = google.visualization.arrayToDataTable(@econ_engine)
+		chart = new google.visualization.AreaChart(document.getElementById("econ_engine_graph"))
+		chart.draw graph_data, econ_engine_options
+
 $ -> 
 	window.dashboard = new Dashboard if $(".dashboard").length > 0
 
@@ -133,52 +145,69 @@ $ ->
 
 pg_options = 
 	width: 430
-	height: 225
+	height: 275
 	legend: "none"
-	pointSize: 0
-	lineWidth: 3
 	chartArea:  
 		width: 430
 		left: 30
-		height: 175
+		height: 225
 	hAxis:
 		textStyle: 
 			fontSize: 9
-	tooltip:
-		trigger: "none"
 	vAxis:
 		viewWindowMode: 'explicit'
 		viewWindow:
 			max: 0.1501
-	series: [{lineWidth:0},{lineWidth:0},{lineWidth:0},{areaOpacity: 0, pointSize: 6}]
+	series: [
+		{type:'area', lineWidth:0},
+		{type:'area', lineWidth:0},
+		{type:'area', lineWidth:0},
+		{areaOpacity: 0, lineWidth: 0, color:'#6C69D1', pointSize:3},
+		{areaOpacity: 0, pointSize: 0, color:'#6C69D1', curveType: "function"}]
 	isStacked: true
 	colors: ['orange', 'green', 'orange', "#6C69D1"]
 
 dau_mau_options = 
 	width: 430
-	height: 225
+	height: 275
 	legend: "none"
 	pointSize: 6
 	lineWidth: 3
 	chartArea:  
 		width: 430
 		left: 30
-		height: 175
+		height: 225
+	vAxis:
+		viewWindowMode: 'explicit'
+		viewWindow:
+			max: 0.25
+			min: 0
 	hAxis:
 		textStyle: 
 			fontSize: 9
 	colors: ["#6C69D1"]
 
+econ_engine_options =
+	isStacked: true
+	width: 430
+	height: 275
+	pointSize: 0
+	lineWidth: 1
+	chartArea:  
+		width: 430
+		left: 30
+		height: 225
+
 options = 
 	width: 430
-	height: 225
+	height: 275
 	legend: "none"
 	pointSize: 6
 	lineWidth: 3
 	chartArea:  
 		width: 430
 		left: 30
-		height: 175
+		height: 225
 	hAxis:
 		textStyle: 
 			fontSize: 9

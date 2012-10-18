@@ -63,6 +63,7 @@ GEM
       multi_json (~> 1.0)
     ansi (1.4.3)
     arel (2.2.3)
+    awesome_print (1.1.0)
     bcrypt-ruby (3.0.1)
     best_in_place (1.1.2)
       jquery-rails
@@ -250,6 +251,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   bcrypt-ruby
   best_in_place
   bitly!

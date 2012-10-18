@@ -155,34 +155,42 @@ class Stat < ActiveRecord::Base
 		return display_data
 	end
 
-	# jason i decided to modularize this set of queries since we will be eliminating stats
-	def self.paulgraham				
+	def self.paulgraham		
 		asker_ids = User.askers.collect(&:id)	
-		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("date_part('week', users.created_at)").count
+		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("to_char(users.created_at, 'YYYY-MM-DD')").count #.group("date_part('week', users.created_at)").count
 		existing_before = {}
 		new_to_existing_before_on = {}
-		domain = 12
-		max_new_to_existing_before = 0.2
+		domain = 30
+		start_day = Date.today - (domain - 1).days
 
-		start_week = Date.today.cweek - (domain - 1)
-
-		existing_before[start_week -1] = new_on\
-			.reject{|w,c| w.to_i > (start_week - 1)}
+		existing_before[start_day - 1] = new_on\
+			.reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}
 			.collect{|k,v| v}
 			.sum
-		((start_week)..Date.today.cweek).to_a.each do |n|
+
+		((start_day)..Date.today).to_a.each do |n|
 			existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
 			new_on[n.to_s] ||= 0
-			new_to_existing_before_on[n] = new_on[n.to_s].to_f / existing_before[n]
-			new_to_existing_before_on[n] = 0 if new_to_existing_before_on[n].nan? or new_to_existing_before_on[n].infinite?
+			new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
+			new_to_existing_before_on[n][:raw] = ((new_on[n.to_s].to_f / existing_before[n]) + 1) ** 7 - 1
+			new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
+		end
+
+		new_to_existing_before_on.map do |date, v|
+			group = [v[:raw]]
+			new_to_existing_before_on.map{|ddate,vv| group.push vv[:raw] if ddate < date and ddate > date - 7.days}
+			new_to_existing_before_on[date][:avg] = group.sum/group.length
 		end
 
 		display_data = {
-			:today => new_to_existing_before_on[Date.today.cweek],
-			:total => new_to_existing_before_on.map{|k,v| v}.sum / new_to_existing_before_on.count
+			:today => new_to_existing_before_on[Date.today][:raw],
+			:total => new_to_existing_before_on[Date.today][:avg]
 		}
 
-		return new_to_existing_before_on, display_data
+		_new_to_existing_before_on = {}
+		new_to_existing_before_on.map{|day,dat| _new_to_existing_before_on[day.strftime('%m/%d')] = dat}
+
+		return _new_to_existing_before_on, display_data
 	end
 
 	def self.dau_mau
@@ -207,4 +215,35 @@ class Stat < ActiveRecord::Base
 		display_data[:total] = graph_data.values.sum / graph_data.values.size
 		return graph_data, display_data
 	end
+
+	def self.econ_engine
+    @posts_by_date = Post.joins(:user)\
+        .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")}) AND users.role != 'asker' AND (spam = false OR (spam IS NULL and autospam = false) OR interaction_type IN (2,3)) AND user_id NOT IN (1,3,4,5,11,12,13,17,25,65,106)")\
+        .where("posts.created_at > ?", Date.today - 30)\
+        .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
+        .order("posts.created_at DESC")\
+        .group_by{|p| p.created_at.strftime('%m/%d')}
+        #.group_by{|p| p.in_reply_to_user_id}
+    #exclude dms
+
+    @posts_by_date_by_asker = {}
+    @posts_by_date.each{|date, posts| @posts_by_date_by_asker[date] = posts.group_by{|p| p.in_reply_to_user_id}}
+    @econ_engine = @posts_by_date_by_asker
+    @econ_engine.each{|date, posts_by_asker| posts_by_asker.each{|asker_id, posts| @econ_engine[date][asker_id] = posts.count}}
+
+    @asker_ids = User.askers.collect(&:id)
+    @asker_ids = Hash[@asker_ids.zip([0]*@asker_ids.count)]
+    @econ_engine.each{|date, posts_by_asker| @econ_engine[date] = @asker_ids.merge(posts_by_asker).map{|k, v| [k, v]}.sort{|x,y| x[0] <=> y[0]}.map{|r| r[1]}}
+		@econ_engine = @econ_engine.map{|k, v| [k, v].flatten}
+		@econ_engine = @econ_engine.sort{|x,y| x[0] <=> y[0]}
+		@econ_engine = [['Date'] + User.askers.sort{|x,y| x[0] <=> y[0]}.collect(&:twi_screen_name)] + @econ_engine
+
+		display_data = {}
+		display_data[:today] = @econ_engine.last[1..100].sum
+		display_data[:answerers] = @posts_by_date.map{|k, v| [k, v]}.sort{|x,y| x[0] <=> y[0]}.last[1].group_by{|p| p.user_id}.count
+		# display_data[:total] = graph_data.values.sum / graph_data.values.size
+
+		return @econ_engine, display_data
+	end
+
 end

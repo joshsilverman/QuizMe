@@ -4,13 +4,15 @@
 
 = hidden_field_tag :paulgraham, @paulgraham.to_json
 = hidden_field_tag :dau_mau, @dau_mau.to_json
+= hidden_field_tag :econ_engine, @econ_engine.to_json
 
 :css
 	.navbar-fixed-top .container {
 		width: 1152px !important;
 	}
-	body {background:#fafafa;}
-	.nav-tabs li.active a {background-color:#fafafa !important;}
+	body {background:#fff;}
+	.navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
+	/.nav-tabs li.active a {background-color:#fafafa !important;}
 	.nav-tabs {margin-top:30px;}
 	.tab-content {min-height: 550px; margin-left: 30px !important;}
 
@@ -30,12 +32,12 @@
 							%h3 New/Existing 
 						.new
 							.container
-								%p.number= sprintf "%.2f", @display_data[0][:paulgraham][:today]
-								%p.period current week
+								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:today] * 100
+								%p.period today
 						.total
 							.container
-								%p.number= sprintf "%.2f", @display_data[0][:paulgraham][:total]
-								%p.period 12 week avg
+								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:total] * 100
+								%p.period 7 day avg
 					#paulgraham_graph.graph
 
 				#dau_mau.panel.right.rounded.span6
@@ -44,15 +46,30 @@
 							%h3 DAU/MAU 
 						.new
 							.container
-								%p.number= sprintf "%.2f", @display_data[0][:dau_mau][:today]
+								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:today] * 100
 								%p.period today
 						.total
 							.container
-								%p.number= sprintf "%.2f", @display_data[0][:dau_mau][:total]
+								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:total] * 100
 								%p.period 30 day avg
 					#dau_mau_graph.graph
 
 			#data_row.row
+				#econ_engine.panel.rounded.span6
+					#econ_engine_stats.stats
+						.header
+							%h3 Soc. Actions
+						.new
+							.container
+								%p.number= @display_data[0][:econ_engine][:today]
+								%p.period today
+						.total
+							.container
+								%p.number= @display_data[0][:econ_engine][:answerers]
+								%p.period users involved
+					#econ_engine_graph.graph
+
+
 				#active_users.panel.right.rounded.span6
 					#active_users_stats.stats
 						.header
@@ -67,6 +84,32 @@
 								%p.period last 30 days			
 					#active_user_ids_graph.graph
 
+		#detailed.dashboard.tab-pane
+			.row
+				.well.well-small
+					.select_option
+						%input{:type => "checkbox", :id => "select_all_time", :value => 0, :checked => "checked"}
+						%label{:for => "select_all_time"} All time
+					- @askers.each do |asker|
+						.select_option
+							%input{:type => "checkbox", :id => "select_#{asker.twi_screen_name}", :value => asker.id}
+							%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
+
+			#data_row.row
+				#active_users_tranched.panel.right.rounded.span6
+					#active_users_tranched_stats.stats
+						.header
+							%h3 Active Users
+						.new
+							.container
+								%p.number
+								%p.period today
+						.total
+							.container
+								%p.number
+								%p.period last 30 days			
+					#active_users_tranched_graph.graph
+
 				#questions_answered.panel.rounded.span6
 					#questions_answered_stats.stats
 						.header
@@ -80,17 +123,6 @@
 								%p.number
 								%p.period answerers				
 					#questions_answered_graph.graph
-
-		#detailed.dashboard.tab-pane
-			.row
-				.well.well-small
-					.select_option
-						%input{:type => "checkbox", :id => "select_all_time", :value => 0, :checked => "checked"}
-						%label{:for => "select_all_time"} All time
-					- @askers.each do |asker|
-						.select_option
-							%input{:type => "checkbox", :id => "select_#{asker.twi_screen_name}", :value => asker.id}
-							%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
 
 			#data_row.row
 				#retweets.panel.right.rounded.span6
