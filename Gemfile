@@ -12,7 +12,6 @@ end
 
 group :production do
   gem 'bcrypt-ruby'
-  #gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard'
 end
 
 group :development do
