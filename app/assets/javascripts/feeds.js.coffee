@@ -29,7 +29,13 @@ class Feed
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
 	initialize_infinite_scroll: =>
-		$(window).on "scroll", => @show_more() if ($(document).height() == $(window).scrollTop() + $(window).height())
+		window.appending = false
+		$(window).on "scroll", => 
+			return if window.appending
+			# ($(document).height() == ($(window).scrollTop() + $(window).height()))#
+			if ($(window).scrollTop() >= $(document).height() - $(window).height() - 1)
+				window.appending = true
+				@show_more() 
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
@@ -95,7 +101,7 @@ class Feed
 			$.ajax
 				url: "/feeds/#{@id}/more/#{last_post_id}",
 				type: "GET",
-				# error: => alert_status(false),
+				error: => window.appending = false, 
 				success: (e) => 
 					if e is false
 						$("#posts_more").text("Last Post Reached")
@@ -104,6 +110,7 @@ class Feed
 						$("#feed_content").append($(e).hide().fadeIn())
 						@initialize_posts($("#feed_content .feed_section").last().find(".conversation"))
 						$('.interaction').tooltip()
+					window.appending = false
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
