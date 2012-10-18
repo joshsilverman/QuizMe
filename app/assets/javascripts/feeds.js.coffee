@@ -244,6 +244,7 @@ class Post
 					updated_url = url + "&url=#{e}"
 					quiz.attr("href", updated_url)
 					window.open(updated_url, "", "height=400,width=600")
+		mixpanel.track("ask_a_friend", {"account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed", "question_id" : $(e.target).attr "question_id"})
 
 
 $ -> 
