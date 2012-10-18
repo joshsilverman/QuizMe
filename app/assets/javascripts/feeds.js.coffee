@@ -135,11 +135,14 @@ class Post
 		@question = @element.find(".question").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
 		@element.hover(
-			=> @element.find(".quiz").css("visibility", "visible"), 
-			=> @element.find(".quiz").css("visibility", "hidden") unless @expanded
+			=> 
+				@element.find(".quiz").css("visibility", "visible")
+				@element.find(".expand").css("color", "#08C")
+			=> 
+				@element.find(".quiz").css("visibility", "hidden") unless @expanded
+				@element.find(".expand").css("color", "#999") unless @expanded
 		)
-		@element.find(".quiz").on "click", (e) => 
-			window.open("https://twitter.com/intent/retweet?tweet_id=36287294927413248&related=twitterapi,twittermedia,twitter,support&original_referer=https://dev.twitter.com/docs/intents#tweet-intent", "", "height=400,width=600")
+		@element.find(".quiz").on "click", (e) => @open_quiz_modal(e)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -161,7 +164,7 @@ class Post
 		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("quiz")
 		if @element.hasClass("active")
 			@expanded = false
-			@element.find(".expand").text("Expand")
+			@element.find(".expand").text("Answer")
 			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
@@ -225,8 +228,22 @@ class Post
 			@element.find(".user_answered").show()
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
-	generate_quiz_link: => 
-
+	open_quiz_modal: (e) => 
+		quiz = $(e.target)
+		unless quiz.attr "href"
+			url = quiz.attr "url"
+			params =
+				"asker_name" : window.feed.name
+				"question_id" : $(e.target).attr "question_id"
+				"provider" : "twi"
+				"intent" : "quiz"
+			$.ajax '/get_shortened_link',
+				type: 'POST'
+				data: params
+				success: (e) => 	
+					updated_url = url + "&url=#{e}"
+					quiz.attr("href", updated_url)
+					window.open(updated_url, "", "height=400,width=600")
 
 
 $ -> 

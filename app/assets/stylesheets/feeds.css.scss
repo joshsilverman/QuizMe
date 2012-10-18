@@ -437,6 +437,10 @@ body {
 				margin-left: 58px;
 				min-height: 49px;
 
+				.question_text {
+					font-size: 14px;
+				}
+
 				i {
 					display: inline;
 					position: relative;
@@ -484,7 +488,7 @@ body {
 
 					.quiz {
 						visibility: hidden;
-						margin-left: 10px;
+						margin-left: 8px;
 					}
 				}
 			}	
@@ -494,9 +498,10 @@ body {
 				border-width: 1px;
 				border-style: solid;	
 				margin-top: 10px;
-				margin-left: 0px;
+				/*margin-left: 0px;*/
 				width: inherit;
-				/*margin-left: 56px;*/
+				margin-left: 56px;
+				margin-bottom: 5px;
 
 				.ui-widget-content{
 					border-width: 0px !important;
@@ -625,6 +630,10 @@ body {
 		.quiz:hover {
 			visibility: visible;
 		}
+
+		.expand:hover {
+			visibility: visible;
+		}		
 	}
 
 	.conversation {
@@ -743,7 +752,7 @@ body {
 }	
 
 .activity_container {
-	margin-top: -10px;
+	margin-top: -4px;
 	margin-left: 58px;
 
 	.activity {
@@ -952,3 +961,61 @@ body {
 		}
 	}*/
 }
+
+			/*.content {
+				
+				min-height: 49px;
+
+				i {
+					display: inline;
+					position: relative;
+					top: 0px;
+					right: 0px;
+					float: none !important;
+					margin-right: 0px !important;
+				}
+
+				h5 {
+					display: inline;
+				}
+				
+				.asker {
+					position: absolute;
+					top: 10px;
+					left: 10px;
+					height: 48px;
+				}
+
+				h1 {
+					margin-top: 8px;
+					font-size: 22px;
+					line-height: 18px;
+					font-weight: normal;	
+					font-size: 13px;	
+					margin-top: 0px;			
+				}
+
+				img {
+					position: absolute;
+					top: 10px;
+					left: 10px;
+				}*/
+
+/*.post_actions {
+	margin-left: 68px;
+	margin-top: -3px;
+	margin-bottom: 7px;	
+	font-size: 12px;
+	position: relative;
+	top: 2px;
+						
+	.expand {
+		display: inline;
+		color: #999;
+	}
+
+	.quiz {
+		visibility: hidden;
+		margin-left: 10px;
+	}
+}*/
