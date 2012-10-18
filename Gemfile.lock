@@ -14,8 +14,8 @@ GIT
       oauth2 (>= 0.5.0, < 0.9)
 
 GIT
-  remote: https://github.com/bderusha/split.git
-  revision: 0e2f6130e793edc168be92d92f3bd36d40fd499a
+  remote: https://github.com/bderusha/split/
+  revision: cb3cd032e0d76f16d6c7c86a6169fc144daf3dff
   specs:
     split (0.4.3)
       redis (>= 2.1)
