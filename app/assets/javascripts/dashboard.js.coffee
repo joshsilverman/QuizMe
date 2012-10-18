@@ -144,11 +144,11 @@ $ ->
 	  $(this).tab('show')
 
 pg_options = 
-	width: 430
+	width: 425
 	height: 275
 	legend: "none"
 	chartArea:  
-		width: 430
+		width: 420
 		left: 30
 		height: 225
 	hAxis:
@@ -168,13 +168,13 @@ pg_options =
 	colors: ['orange', 'green', 'orange', "#6C69D1"]
 
 dau_mau_options = 
-	width: 430
+	width: 425
 	height: 275
 	legend: "none"
 	pointSize: 6
 	lineWidth: 3
 	chartArea:  
-		width: 430
+		width: 420
 		left: 30
 		height: 225
 	vAxis:
@@ -189,23 +189,26 @@ dau_mau_options =
 
 econ_engine_options =
 	isStacked: true
-	width: 430
+	width: 425
 	height: 275
 	pointSize: 0
 	lineWidth: 1
 	chartArea:  
-		width: 430
+		width: 420
 		left: 30
 		height: 225
+	hAxis:
+		textStyle: 
+			fontSize: 9
 
 options = 
-	width: 430
+	width: 425
 	height: 275
 	legend: "none"
 	pointSize: 6
 	lineWidth: 3
 	chartArea:  
-		width: 430
+		width: 420
 		left: 30
 		height: 225
 	hAxis:
