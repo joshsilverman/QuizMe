@@ -1,5 +1,6 @@
 class AskersController < ApplicationController
   before_filter :admin?
+  caches_action :dashboard, :expires_in => 5.minutes
   
   def index
     @askers = User.askers.order "created_at ASC"

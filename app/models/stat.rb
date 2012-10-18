@@ -223,7 +223,6 @@ class Stat < ActiveRecord::Base
         .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
         .order("posts.created_at DESC")\
         .group_by{|p| p.created_at.strftime('%m/%d')}
-        #.group_by{|p| p.in_reply_to_user_id}
     #exclude dms
 
     @posts_by_date_by_asker = {}
