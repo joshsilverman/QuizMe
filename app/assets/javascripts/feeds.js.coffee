@@ -28,6 +28,7 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
+		mixpanel.track_links(".quiz", "ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
@@ -142,7 +143,6 @@ class Post
 				@element.find(".quiz").css("visibility", "hidden") unless @expanded
 				@element.find(".expand").css("color", "#999") unless @expanded
 		)
-		@element.find(".quiz").on "click", (e) => @open_quiz_modal(e)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
