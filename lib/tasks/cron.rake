@@ -56,28 +56,20 @@ task :dm_new_followers => :environment do
 
 end
 
-task :post_leaderboard => :environment do
-	puts "TODO: turn on post leaderboard for all askers"
-	# account = Account.find(2)
-	# data = Account.get_top_scorers(account.id)
-	# #data = {:name=>"QuizMeBio", :scores=>[{:handle=>"Anwar_shabab", :correct=>119}, {:handle=>"SHRUSHTIKHERADK", :correct=>84}, {:handle=>"princessFeeBee", :correct=>77}, {:handle=>"BrianMendel", :correct=>58}, {:handle=>"Josephunleashed", :correct=>54}, {:handle=>"melissariks", :correct=>52}, {:handle=>"tdownham_mi", :correct=>45}, {:handle=>"karinehage", :correct=>39}, {:handle=>"MyriamLt2", :correct=>32}, {:handle=>"thecancergeek", :correct=>31}]}
-	# top5 = ''
-	# bottom5 = ''
-	# data[:scores].each_with_index do |s, i|
-	# 	if i < 5
-	# 		top5 += "@#{s[:handle]} "
-	# 	else
-	# 		bottom5 += "@#{s[:handle]} "
-	# 	end
-	# end
-	# tweet1 = "The leaderboard is out! Look who's on top! http://bit.ly/QckFN6 #{top5}"
-	# tweet2 = "Check out the leaderboard and keep up with the top scorers! http://bit.ly/QckFN6 #{bottom5}"
+task :reengage_users => :environment do
+	hours_ago = 86.hours.ago
+	# Get incorrect posts from the previous day (22/23 hrs ago), but not older than 2-3 days
+	# Skip user if there is a post with intention reengage more recent than 2-3 days
 
-	# puts "#{tweet1} #{tweet1.length}"
-	# puts "#{tweet2} #{tweet2.length}"
-	# Post.tweet(account, tweet1, nil, nil, nil)
-	# sleep(10)
-	# Post.tweet(account, tweet2, nil, nil, nil)
+	asker_ids = User.askers.collect(&:id)
+	recent_posts = Post.where("(correct = ? and created_at > ? and created_at < ?) or (intention = ? and created_at > ?)", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago)
+	user_grouped_posts = recent_posts.group_by(&:user_id)
+	user_grouped_posts.each do |user_id, posts|
+		next if asker_ids.include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id)
+		Post.create()
+		puts user_id
+		puts posts.to_json
+	end
 end
 
 task :retweet_related => :environment do
