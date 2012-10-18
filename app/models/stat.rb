@@ -235,7 +235,7 @@ class Stat < ActiveRecord::Base
     @econ_engine.each{|date, posts_by_asker| @econ_engine[date] = @asker_ids.merge(posts_by_asker).map{|k, v| [k, v]}.sort{|x,y| x[0] <=> y[0]}.map{|r| r[1]}}
 		@econ_engine = @econ_engine.map{|k, v| [k, v].flatten}
 		@econ_engine = @econ_engine.sort{|x,y| x[0] <=> y[0]}
-		@econ_engine = [['Date'] + User.askers.sort{|x,y| x[0] <=> y[0]}.collect(&:twi_screen_name)] + @econ_engine
+		@econ_engine = [['Date'] + User.askers.sort{|x,y| x.id <=> y.id}.collect(&:twi_screen_name)] + @econ_engine
 
 		display_data = {}
 		display_data[:today] = @econ_engine.last[1..100].sum
