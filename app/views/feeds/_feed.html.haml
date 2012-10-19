@@ -17,11 +17,11 @@
 						%h5= @asker.twi_screen_name
 					%p.question_text= post.question.text
 					/ include in reply to?
-					.post_actions
-						%a.expand Answer
-						%a.quiz{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}
-							%i.icon-share
-							Ask a Friend
+					/ .post_actions
+					/ 	%a.expand Answer
+					/ 	%a.quiz{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}
+					/ 		%i.icon-share
+					/ 		Ask a Friend
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = post.question.answers.shuffle
