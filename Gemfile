@@ -1,7 +1,7 @@
 source :rubygems
 
-gem "rspec-rails", :group => [:test, :development]
-gem 'pg'#, :require => false
+gem "rspec-rails",'2.8.1', :group => [:test, :development]
+gem 'pg', '0.14.0'#, :require => false
 # gem 'rack-mini-profiler' #won't show up in production
 
 group :test do
@@ -11,7 +11,7 @@ group :test do
 end
 
 group :production do
-  gem 'bcrypt-ruby'
+  gem 'bcrypt-ruby', '3.0.1'
 end
 
 group :development do
@@ -21,27 +21,27 @@ group :development do
 end
 
 group :assets do
-  gem 'sass-rails'
-  gem 'coffee-rails'
-  gem 'uglifier'
-  gem 'therubyracer'
+  gem 'sass-rails', '3.1.6'
+  gem 'coffee-rails', '3.1.1'
+  gem 'uglifier', '1.2.6'
+  gem 'therubyracer', '0.10.1'
 end
 
-gem 'haml'
-gem 'devise'
+gem 'haml', '3.1.6'
+gem 'devise', '2.1.2'
 gem 'rails', '3.1.3'
-gem 'twitter-bootstrap-rails'
-gem 'jquery-rails'
-gem 'omniauth'
-gem 'omniauth-oauth2'
-gem 'omniauth-twitter'
-gem 'omniauth-facebook'
-gem 'omniauth-tumblr'
-gem 'rabl'
-gem 'dalli'
+gem 'twitter-bootstrap-rails', '2.1.1'
+gem 'jquery-rails', '1.0.19'
+gem 'omniauth', '1.1.0'
+gem 'omniauth-oauth2', '1.0.2'
+gem 'omniauth-twitter', '0.0.12'
+gem 'omniauth-facebook', '1.4.0'
+gem 'omniauth-tumblr', '1.0'
+gem 'rabl', '0.6.14'
+gem 'dalli', '2.1.0'
 gem 'hirb'
-gem 'twitter'
-gem 'tumblife'
+gem 'twitter', '3.0.2'
+gem 'tumblife', '1.2.0'
 gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'pusher'
 gem 'newrelic_rpm'
