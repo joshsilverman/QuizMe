@@ -32,6 +32,7 @@ class FeedsController < ApplicationController
 
       @pub_grouped_posts = posts.group_by(&:publication_id)
 
+      #inject requested publication from params
       if params[:post_id]
         requested_publication = @asker.publications.find(params[:post_id])
         @publications.reverse!.push(requested_publication).reverse! unless @publications.include? requested_publication
