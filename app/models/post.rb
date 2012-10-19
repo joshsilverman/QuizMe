@@ -24,15 +24,12 @@ class Post < ActiveRecord::Base
       (options[:via_user].present? ? "via @#{options[:via_user]}" : "") + 
       (options[:buffer].present? ? (" " * options[:buffer]) : "")
     }
-    return generate_tweet.call(140 - generate_tweet.call(0).length)
-    # puts text, options
-    # if options[:return_text_only]
-    #   x = (140 - generate_tweet.call(0).length)
-    #   return (x > 0 ? "#{text}" : "#{text[0..(-1 + x)]}...")
-    # else
-    #   puts "bro"
-    #   return generate_tweet.call(140 - generate_tweet.call(0).length)
-    # end
+    if options[:return_text_only]
+      x = (140 - generate_tweet.call(0).length)
+      return (x > 0 ? "#{text}" : "#{text[0..(-1 + x)]}...")
+    else
+      return generate_tweet.call(140 - generate_tweet.call(0).length).strip!
+    end
   end
 
 	def self.shorten_url(url, source, lt, campaign, question_id=nil)
