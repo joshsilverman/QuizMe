@@ -58,17 +58,12 @@ end
 
 task :reengage_users => :environment do
 	hours_ago = 86.hours.ago
-	# Get incorrect posts from the previous day (22/23 hrs ago), but not older than 2-3 days
-	# Skip user if there is a post with intention reengage more recent than 2-3 days
-
 	asker_ids = User.askers.collect(&:id)
-	recent_posts = Post.where("(correct = ? and created_at > ? and created_at < ?) or (intention = ? and created_at > ?)", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago)
+	recent_posts = Post.where("(correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?)", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago)
 	user_grouped_posts = recent_posts.group_by(&:user_id)
 	user_grouped_posts.each do |user_id, posts|
 		next if asker_ids.include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id)
 		Post.create()
-		puts user_id
-		puts posts.to_json
 	end
 end
 

@@ -123,7 +123,6 @@ class FeedsController < ApplicationController
       user_post.update_attribute(:correct, correct)
       response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
-      puts "answer"
       tweet = params[:message].gsub("@#{params[:username]}", "")
       if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
@@ -131,17 +130,25 @@ class FeedsController < ApplicationController
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
         long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-        response_post = Post.tweet(asker, tweet, '', params[:username], long_url, 
-                     2, nil, conversation.id,
-                     nil, params[:in_reply_to_post_id], 
-                     params[:in_reply_to_user_id], false,
-                     '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), nil)
-      else
-        puts "reply"
-        response_post = Post.tweet(asker, tweet, '', params[:username], nil, 
-                     2, nil, conversation.id,
-                     nil, params[:in_reply_to_post_id], 
-                     params[:in_reply_to_user_id], true, nil, nil, nil)      
+        response_post = Post.tweet(asker, tweet, {
+          :reply_to => params[:username], 
+          :long_url => long_url, 
+          :interaction_type => 2, 
+          :conversation_id => conversation.id,
+          :in_reply_to_post_id => params[:in_reply_to_post_id], 
+          :in_reply_to_user_id => params[:in_reply_to_user_id], 
+          :link_to_parent => false,
+          :resource_url => (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil)
+        })
+      else         
+        response_post = Post.tweet(asker, tweet, {
+          :reply_to => params[:username], 
+          :interaction_type => 2, 
+          :conversation_id => conversation.id,
+          :in_reply_to_post_id => params[:in_reply_to_post_id], 
+          :in_reply_to_user_id => params[:in_reply_to_user_id], 
+          :link_to_parent => true
+        })    
       end
     end
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
