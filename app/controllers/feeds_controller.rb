@@ -34,7 +34,7 @@ class FeedsController < ApplicationController
 
       if params[:post_id]
         requested_publication = @asker.publications.find(params[:post_id])
-        @publications.reverse!.push(requested_publication).reverse!
+        @publications.reverse!.push(requested_publication).reverse! unless @publications.include? requested_publication
       end
       # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
       # @post_times = posts.group_by(&:publication_id)
