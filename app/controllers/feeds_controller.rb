@@ -25,7 +25,7 @@ class FeedsController < ApplicationController
               :twi_profile_img_url => action.user.twi_profile_img_url
             },
             :interaction_type => action.interaction_type, 
-          }
+          } unless @actions[post_pub_map[post_id]].nil?
         end
       end
 
