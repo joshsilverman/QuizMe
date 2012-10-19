@@ -18,6 +18,7 @@ group :development do
   # gem "guard"
   # gem "guard-livereload"
   gem 'awesome_print'
+  gem 'rack-mini-profiler'
 end
 
 group :assets do

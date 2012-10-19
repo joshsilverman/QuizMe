@@ -14,7 +14,7 @@
 	.navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
 	/.nav-tabs li.active a {background-color:#fafafa !important;}
 	.nav-tabs {margin-top:30px;}
-	.tab-content {min-height: 550px; margin-left: 30px !important;}
+	.tab-content {min-height: 615px; margin-left: 30px !important;}
 
 
 %ul#tabs.nav.nav-tabs
@@ -32,11 +32,11 @@
 							%h3 New/Existing 
 						.new
 							.container
-								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:today] * 100
+								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:today] * 100 if @display_data[0][:paulgraham]
 								%p.period today
 						.total
 							.container
-								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:total] * 100
+								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:total] * 100 if @display_data[0][:paulgraham]
 								%p.period 7 day avg
 					#paulgraham_graph.graph
 
@@ -46,11 +46,11 @@
 							%h3 DAU/MAU 
 						.new
 							.container
-								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:today] * 100
+								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:today] * 100 if @display_data[0][:dau_mau]
 								%p.period today
 						.total
 							.container
-								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:total] * 100
+								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:total] * 100 if @display_data[0][:dau_mau]
 								%p.period 30 day avg
 					#dau_mau_graph.graph
 
@@ -61,11 +61,11 @@
 							%h3 Soc. Actions
 						.new
 							.container
-								%p.number= @display_data[0][:econ_engine][:today]
+								%p.number= @display_data[0][:econ_engine][:today] if @display_data[0][:econ_engine]
 								%p.period today
 						.total
 							.container
-								%p.number= @display_data[0][:econ_engine][:answerers]
+								%p.number= @display_data[0][:econ_engine][:answerers] if @display_data[0][:econ_engine]
 								%p.period users involved
 					#econ_engine_graph.graph
 

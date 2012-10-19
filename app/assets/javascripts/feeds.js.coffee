@@ -28,6 +28,7 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		mixpanel.track_links(".leader", "clicked_leader", {"account" : @name, "source": source})
+		mixpanel.track_links(".quiz", "ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
@@ -128,11 +129,20 @@ class Post
 	element: null
 	question: null
 	correct: null
+	expanded: false
 	constructor: (element) ->
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.hover(
+			=> 
+				@element.find(".quiz").css("visibility", "visible")
+				@element.find(".expand").css("color", "#08C")
+			=> 
+				@element.find(".quiz").css("visibility", "hidden") unless @expanded
+				@element.find(".expand").css("color", "#999") unless @expanded
+		)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -151,19 +161,23 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn")
-		if $(e.target).hasClass("conversation") then post = $(e.target) else post = $(e.target).closest(".conversation")
-		if post.hasClass("active")
-			post.find(".subsidiaries, .loading, .answers").hide()
-			post.toggleClass("active", 200)
-			post.next(".conversation").removeClass("active_next")
-			post.prev(".conversation").removeClass("active_prev")	
+		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("quiz")
+		if @element.hasClass("active")
+			@expanded = false
+			@element.find(".expand").text("Answer")
+			@element.find(".subsidiaries, .loading, .answers").hide()
+			@element.toggleClass("active", 200)
+			@element.next(".conversation").removeClass("active_next")
+			@element.prev(".conversation").removeClass("active_prev")	
 		else 
-			post.find(".answers").toggle(200)
-			post.find(".subsidiaries").toggle(200, => 
-				post.toggleClass("active", 200)
-				post.next(".conversation").addClass("active_next")
-				post.prev(".conversation").addClass("active_prev")
+			@expanded = true
+			@element.find(".quiz").css("visibility", "visible")
+			@element.find(".expand").text("Collapse")
+			@element.find(".answers").toggle(200)
+			@element.find(".subsidiaries").toggle(200, => 
+				@element.toggleClass("active", 200)
+				@element.next(".conversation").addClass("active_next")
+				@element.prev(".conversation").addClass("active_prev")
 			)	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
@@ -214,6 +228,23 @@ class Post
 			@element.find(".user_answered").show()
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
+	open_quiz_modal: (e) => 
+		quiz = $(e.target)
+		unless quiz.attr "href"
+			url = quiz.attr "url"
+			params =
+				"asker_name" : window.feed.name
+				"question_id" : $(e.target).attr "question_id"
+				"provider" : "twi"
+				"intent" : "quiz"
+			$.ajax '/get_shortened_link',
+				type: 'POST'
+				data: params
+				success: (e) => 	
+					updated_url = url + "&url=#{e}"
+					quiz.attr("href", updated_url)
+					window.open(updated_url, "", "height=400,width=600")
+		mixpanel.track("ask_a_friend", {"account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed", "question_id" : $(e.target).attr "question_id"})
 
 
 $ -> 
