@@ -28,7 +28,7 @@ class Post < ActiveRecord::Base
       x = (140 - generate_tweet.call(0).length)
       return (x > 0 ? "#{text}" : "#{text[0..(-1 + x)]}...")
     else
-      return generate_tweet.call(140 - generate_tweet.call(0).length).strip!
+      return generate_tweet.call(140 - generate_tweet.call(0).length).strip
     end
   end
 
