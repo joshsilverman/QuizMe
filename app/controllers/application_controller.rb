@@ -51,6 +51,7 @@ class ApplicationController < ActionController::Base
       session[:split] = rand(10 ** 10).to_i
       ab_user.set_id(session[:split])
     end
+    check_session
   end
 
   def referrer_data
