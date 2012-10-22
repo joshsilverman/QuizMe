@@ -90,7 +90,7 @@ class Post < ActiveRecord::Base
       :resource_backlink => short_resource_url,
       :via_user => options[:via]
     })   
-    if options[:in_reply_to_post_id and options[:link_to_parent]
+    if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
     else
@@ -187,7 +187,7 @@ class Post < ActiveRecord::Base
     Post.trigger_split_test(current_user.id, 'dm reengagement')
     response_text = post.generate_response(status)
     publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
-    app_post = Post.tweet{asker, response_text, {
+    app_post = Post.tweet(asker, response_text, {
       :reply_to => current_user.twi_screen_name,
       :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
       :interaction_type => 2, 
