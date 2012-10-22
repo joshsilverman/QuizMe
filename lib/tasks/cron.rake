@@ -57,13 +57,29 @@ task :dm_new_followers => :environment do
 end
 
 task :reengage_users => :environment do
-	hours_ago = 86.hours.ago
 	asker_ids = User.askers.collect(&:id)
-	recent_posts = Post.where("(correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?)", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago)
-	user_grouped_posts = recent_posts.group_by(&:user_id)
-	user_grouped_posts.each do |user_id, posts|
-		next if asker_ids.include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id)
-		Post.create()
+	current_time = Time.now
+	64.times do |i|
+		current_time += 1.hour
+		puts current_time
+
+		# hours_ago = 22.hours.ago
+		hours_ago = current_time - 23.hours
+		if (current_time.hour % 3 == 0)
+			Post.create(:correct => false, :created_at => current_time, :user_id => 3, :in_reply_to_user_id => 2, :interaction_type => 2) 
+			puts "created new post"
+		end
+		puts "range = - #{(hours_ago - 1.day)} - #{hours_ago}"
+		recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago)
+		user_grouped_posts = recent_posts.group_by(&:user_id)
+		user_grouped_posts.each do |user_id, posts|
+			# puts user_id, posts.to_json
+			next if asker_ids.include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+			incorrect_post = posts.sample
+			post = Post.create(:intention => "reengage", :created_at => current_time, :user_id => incorrect_post.in_reply_to_user_id, :in_reply_to_user_id => user_id)
+			puts "sending reengage message to: #{user_id}"
+		end
+		puts "\n\n"
 	end
 end
 
