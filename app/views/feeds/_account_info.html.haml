@@ -29,7 +29,7 @@
 					- if @author
 						.credit
 							%i created by
-							= link_to "@Jim_Minch", "http://twitter.com/Jim_Minch", :target => "_blank"
+							= link_to "@#{@author.twi_screen_name}", "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"
 							= image_tag @author.twi_profile_img_url
 
 	#account_stats.span3.hidden-phone
