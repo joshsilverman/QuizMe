@@ -140,7 +140,8 @@ class FeedsController < ApplicationController
           :link_to_parent => false,
           :resource_url => (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil)
         })
-        if Post.joins(:conversation).where("intention = ? and in_reply_to_user_id = ? and conversation.publication_id = ?", 'reengage', params[:in_reply_to_user_id], params[:publication_id].to_i)
+        if Post.joins(:conversation).where("intention = ? and in_reply_to_user_id = ? and conversation.publication_id = ?", 'reengage', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          puts "test completion triggered!"
           Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement')
         end
       else         
