@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
           end
         end
         confirmjs = Split.redis.get("user_store:#{session[:split]}:confirmed")
-        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs)
+        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs) unless confirmjs.nil?
         Split.redis.del("user_store:#{session[:split]}")
         Split.redis.del("user_store:#{session[:split]}:confirmed")
       end
