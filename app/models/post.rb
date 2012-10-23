@@ -396,8 +396,11 @@ class Post < ActiveRecord::Base
         text = "Quick follow up... you missed this one yesterday, do you know it now?"
         link = true
       end
+      puts incorrect_post.to_json
+      puts incorrect_post.user.to_json
+      puts incorrect_post.user.twi_screen_name
       # always link? another A/B test?
-      Post.tweet(asker.id, text, {
+      Post.tweet(asker, text, {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
         :in_reply_to_post_id => incorrect_post.id,
