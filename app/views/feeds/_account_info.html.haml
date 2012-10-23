@@ -30,7 +30,7 @@
 						.credit
 							%i created by
 							= link_to "@#{@author.twi_screen_name}", "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"
-							= image_tag @author.twi_profile_img_url
+							%a{:href => "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"}= image_tag @author.twi_profile_img_url
 
 	#account_stats.span3.hidden-phone
 		%a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
