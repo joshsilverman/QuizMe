@@ -31,6 +31,11 @@ class ApplicationController < ActionController::Base
   end
 
   def split_user
+    session[:user_agent] = request.user_agent
+    session[:ip] = request.remote_ip
+    puts "ApplicationController session save"
+    puts session[:user_agent]
+    puts session[:ip]
     if current_user
       if session[:split] and session[:split] != current_user.id
         keys = Split.redis.hkeys("user_store:#{session[:split]}")
@@ -40,7 +45,7 @@ class ApplicationController < ActionController::Base
           end
         end
         confirmjs = Split.redis.get("user_store:#{session[:split]}:confirmed")
-        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs)
+        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs) unless confirmjs.nil?
         Split.redis.del("user_store:#{session[:split]}")
         Split.redis.del("user_store:#{session[:split]}:confirmed")
       end
