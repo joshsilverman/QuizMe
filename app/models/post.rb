@@ -458,12 +458,7 @@ class Post < ActiveRecord::Base
   end
   
   def self.create_split_test(user_id, test_name, a, b)
-    puts user_id, test_name, a, b
     ab_user.set_id(user_id)
-    puts ab_user.to_json
-    puts ab_user.identifier
-    test = ab_test(test_name, a, b)
-    puts test
-    return test
+    ab_test(test_name, a, b)
   end
 end
