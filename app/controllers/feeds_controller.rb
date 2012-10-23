@@ -140,6 +140,9 @@ class FeedsController < ApplicationController
           :link_to_parent => false,
           :resource_url => (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil)
         })
+        if Post.joins(:conversation).where("intention = ? and in_reply_to_user_id = ? and conversation.publication_id = ?", 'reengage', params[:in_reply_to_user_id], params[:publication_id].to_i)
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement')
+        end
       else         
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
@@ -190,21 +193,7 @@ class FeedsController < ApplicationController
       p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
-    # puts @conversations.to_json
-    #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
-    #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
-    
     @leaders = User.leaderboard(params[:id])
-    # if current_user
-    #   @responses = Conversation.where(:user_id => current_user.id,
-    #                                   :post_id => Post.select(:id).where(
-    #                                                   :provider => "twitter",
-    #                                                   :publication_id => @publications.collect(&:id)
-    #                                                   ).collect(&:id)
-    #                                   ).includes(:posts).group_by(&:publication_id) 
-    # else
-    #   @responses = []
-    # end
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 

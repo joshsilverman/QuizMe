@@ -109,7 +109,8 @@ class Post < ActiveRecord::Base
       :posted_via_app => true, 
       :requires_action => false,
       :interaction_type => options[:interaction_type],
-      :correct => options[:correct]
+      :correct => options[:correct],
+      :intention => options[:intention]
     )   
     if options[:publication_id]
       publication = Publication.find(options[:publication_id])
@@ -117,50 +118,6 @@ class Post < ActiveRecord::Base
     end
     return post        
   end
-
-  # def self.tweet(account, text, hashtag, reply_to, long_url, 
-  #                interaction_type, link_type, conversation_id,
-  #                publication_id, in_reply_to_post_id, 
-  #                in_reply_to_user_id, link_to_parent, via, resource_url, correct)
-  #   return unless account.twitter_enabled?
-  #   short_url = Post.shorten_url(long_url, 'twi', link_type, account.twi_screen_name) if long_url
-  #   short_resource_url = Post.shorten_url(resource_url, 'twi', "res", account.twi_screen_name) if resource_url
-  #   tweet = Post.format_tweet(text, {
-  #     :in_reply_to_user => reply_to,
-  #     :question_backlink => short_url,
-  #     :hashtag => hashtag,
-  #     :resource_backlink => short_resource_url,
-  #     :via_user => via
-  #   })
-  #   if in_reply_to_post_id and link_to_parent
-  #     parent_post = Post.find(in_reply_to_post_id) 
-  #     twitter_response = account.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
-  #   else
-  #     twitter_response = account.twitter.update(tweet)
-  #   end
-  #   post = Post.create(
-  #     :user_id => account.id,
-  #     :provider => 'twitter',
-  #     :text => tweet,
-  #     # :engagement_type => engagement_type,
-  #     :provider_post_id => twitter_response.id.to_s,
-  #     :in_reply_to_post_id => in_reply_to_post_id,
-  #     :in_reply_to_user_id => in_reply_to_user_id,
-  #     :conversation_id => conversation_id,
-  #     :publication_id => publication_id,
-  #     :url => long_url ? short_url : nil,
-  #     :posted_via_app => true, 
-  #     :requires_action => false,
-  #     :interaction_type => interaction_type,
-  #     :correct => correct
-  #   )
-
-  #   if publication_id
-  #     publication = Publication.find(publication_id)
-  #     publication.posts << post
-  #   end
-  #   return post
-  # end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
     asker = User.asker(asker_id)
@@ -199,6 +156,10 @@ class Post < ActiveRecord::Base
       :resource_url => resource_url
     })  
     conversation.posts << app_post if app_post
+    if Post.joins(:conversation).where("intention = ? and in_reply_to_user_id = ? and conversation.publication_id = ?", 'reengage', current_user.id, publication_id)
+      puts "test completion triggered!"
+      Post.trigger_split_test(current_user.id, 'mention reengagement')
+    end
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
@@ -412,6 +373,48 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
+  def self.reengage_users
+    askers = User.askers
+    current_time = Time.now
+    hours_ago = current_time - 23.hours
+    
+    puts "Current time: #{current_time}"
+    puts "range = - #{(hours_ago - 1.day)} - #{hours_ago}"
+    
+    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago).includes(:user)
+    user_grouped_posts = recent_posts.group_by(&:user_id)
+    user_grouped_posts.each do |user_id, posts|
+      next if askers.collect(&:id).include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+      incorrect_post = posts.sample
+      # eww, think we need a cleaner way to access the question associated w/ a post
+      question = incorrect_post.conversation.publication.question
+      asker = User.askers.find(incorrect_post.in_reply_to_user_id)
+      if ab_test("mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
+        text = "Try this one again: #{question.text}"       
+        link = false
+      else 
+        text = "Quick follow up... you missed this one yesterday, do you know it now?"
+        link = true
+      end
+      # always link? another A/B test?
+      Post.tweet(asker.id, text, {
+        :reply_to => incorrect_post.user.twi_screen_name,
+        :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
+        :in_reply_to_post_id => incorrect_post.id,
+        :in_reply_to_user_id => user_id,
+        :conversation_id => incorrect_post.conversation_id,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => 2,
+        :link_to_parent => link,
+        :link_type => "reengage",
+        :intention => "reengage"
+      })      
+      puts "sending reengage message to: #{user_id}"
+      sleep(1)
+    end
+    puts "\n"       
+  end
 
   def generate_response(response_type)
     #Include backlink if exists
