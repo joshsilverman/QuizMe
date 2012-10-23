@@ -60,4 +60,9 @@ class SessionsController < ApplicationController
   	redirect_to root_url, :notice => "Signed out!"
   end
 
+  def confirm_js
+    ab_user.confirm_js()
+    render :nothing => true
+  end
+
 end

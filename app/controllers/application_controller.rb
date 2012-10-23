@@ -31,9 +31,7 @@ class ApplicationController < ActionController::Base
   end
 
   def split_user
-    if (request.user_agent =~ /\b(Baidu|Gigabot|Googlebot|libwww-perl|lwp-trivial|msnbot|SiteUptime|Slurp|WordPress|ZIBB|ZyBorg)\b/i)
-      ab_user.set_id(0)
-    elsif current_user
+    if current_user
       if session[:split] and session[:split] != current_user.id
         keys = Split.redis.hkeys("user_store:#{session[:split]}")
         keys.each do |key|
@@ -41,7 +39,10 @@ class ApplicationController < ActionController::Base
             Split.redis.hset("user_store:#{current_user.id}", key, value)
           end
         end
+        confirmjs = Split.redis.get("user_store:#{session[:split]}:confirmed")
+        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs)
         Split.redis.del("user_store:#{session[:split]}")
+        Split.redis.del("user_store:#{session[:split]}:confirmed")
       end
       session[:split] = current_user.id
       ab_user.set_id(current_user.id)
@@ -51,7 +52,6 @@ class ApplicationController < ActionController::Base
       session[:split] = rand(10 ** 10).to_i
       ab_user.set_id(session[:split])
     end
-    check_session
   end
 
   def referrer_data

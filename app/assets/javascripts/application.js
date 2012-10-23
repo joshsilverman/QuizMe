@@ -24,3 +24,51 @@ function DummyMixpanel() {
 	this.name_tag = function() {};
 	this.set_config = function() {};
 }
+
+function readCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    return null
+  }
+}
+
+
+function js_check(){
+	console.log('CHECK')
+	var jsconfirm = readCookie('jsconfirm');
+	console.log(jsconfirm);
+	if(jsconfirm == null){
+		console.log('null... Sending AJAX request')
+		confirm_js();
+	}
+}
+
+function confirm_js(){
+	$.ajax({
+	  url: '/confirm_js',
+	  type: 'GET', 
+	  beforeSend: function(xhr) {
+    	xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+  	},
+	  success: function(data) {
+	    console.log('JS Success');
+	    document.cookie = "jsconfirm=confirmed"
+	  }
+	});
+}
+console.log("Confirm JS");
+js_check();
+	//$.ajax '/confirm_js',
+	//		type: 'POST'
+	//		data: responseHash
+	//		beforeSend: ()->
+	//			console.log "beforeSend"
+	//		error: (jqXHR, textStatus, errorThrown) ->
+	//			console.log "AJAX Error: #{errorThrown}"
+	//		success: (data, textStatus, jqXHR) =>
+	//			console.log "Success"
+	//			console.log data
