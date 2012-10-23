@@ -14,9 +14,9 @@ class FeedsController < ApplicationController
 
       posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
       
-      @actions = post_pub_map = {}
+      @actions = {}
+      post_pub_map = {}
       posts.each { |post| post_pub_map[post.id] = post.publication_id }
-      
       Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts.collect(&:id)).order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id).each do |post_id, post_activity|
         @actions[post_pub_map[post_id]] = []
         post_activity.each do |action|
@@ -123,7 +123,6 @@ class FeedsController < ApplicationController
       user_post.update_attribute(:correct, correct)
       response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
-      puts "answer"
       tweet = params[:message].gsub("@#{params[:username]}", "")
       if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
@@ -131,17 +130,30 @@ class FeedsController < ApplicationController
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
         long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-        response_post = Post.tweet(asker, tweet, '', params[:username], long_url, 
-                     2, nil, conversation.id,
-                     nil, params[:in_reply_to_post_id], 
-                     params[:in_reply_to_user_id], false,
-                     '', (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil), nil)
-      else
-        puts "reply"
-        response_post = Post.tweet(asker, tweet, '', params[:username], nil, 
-                     2, nil, conversation.id,
-                     nil, params[:in_reply_to_post_id], 
-                     params[:in_reply_to_user_id], true, nil, nil, nil)      
+        response_post = Post.tweet(asker, tweet, {
+          :reply_to => params[:username], 
+          :long_url => long_url, 
+          :interaction_type => 2, 
+          :conversation_id => conversation.id,
+          :in_reply_to_post_id => params[:in_reply_to_post_id], 
+          :in_reply_to_user_id => params[:in_reply_to_user_id], 
+          :link_to_parent => false,
+          :resource_url => (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil)
+        })
+        # can be moved into collect mention rake?
+        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'reengage', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          puts "test completion triggered!"
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement')
+        end
+      else         
+        response_post = Post.tweet(asker, tweet, {
+          :reply_to => params[:username], 
+          :interaction_type => 2, 
+          :conversation_id => conversation.id,
+          :in_reply_to_post_id => params[:in_reply_to_post_id], 
+          :in_reply_to_user_id => params[:in_reply_to_user_id], 
+          :link_to_parent => true
+        })    
       end
     end
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
@@ -183,21 +195,7 @@ class FeedsController < ApplicationController
       p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
-    # puts @conversations.to_json
-    #@publications = @asker.publications.where(:id => Conversation.where(:id => conversation_ids).collect(&:publication_id), :published => true).order("created_at DESC").limit(15).includes(:question => :answers)
-    #@publications = @asker.publications.where(:published => true).order("created_at DESC").limit(15).includes(:question => :answers)
-    
     @leaders = User.leaderboard(params[:id])
-    # if current_user
-    #   @responses = Conversation.where(:user_id => current_user.id,
-    #                                   :post_id => Post.select(:id).where(
-    #                                                   :provider => "twitter",
-    #                                                   :publication_id => @publications.collect(&:id)
-    #                                                   ).collect(&:id)
-    #                                   ).includes(:posts).group_by(&:publication_id) 
-    # else
-    #   @responses = []
-    # end
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
