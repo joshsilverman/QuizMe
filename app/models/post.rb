@@ -156,7 +156,7 @@ class Post < ActiveRecord::Base
       :resource_url => resource_url
     })  
     conversation.posts << app_post if app_post
-    if Post.joins(:conversation).where("intention = ? and in_reply_to_user_id = ? and conversation.publication_id = ?", 'reengage', current_user.id, publication_id).present?
+    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'reengage', current_user.id, publication_id).present?
       puts "test completion triggered!"
       Post.trigger_split_test(current_user.id, 'mention reengagement')
     end
