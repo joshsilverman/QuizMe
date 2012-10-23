@@ -157,8 +157,10 @@ class Post < ActiveRecord::Base
     })  
     conversation.posts << app_post if app_post
     if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'reengage', current_user.id, publication_id).present?
-      puts "test completion triggered!"
+      puts Split.redis.hget("user_store:#{current_user.id}", "mention reengagement")
+      puts "test completion triggered! user_id = #{current_user.id}"
       Post.trigger_split_test(current_user.id, 'mention reengagement')
+      puts Split.redis.hget("user_store:#{current_user.id}", "mention reengagement")
     end
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
@@ -373,6 +375,7 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
+  # set RESET to true?
   def self.reengage_users
     askers = User.askers
     current_time = Time.now
@@ -389,7 +392,7 @@ class Post < ActiveRecord::Base
       # eww, think we need a cleaner way to access the question associated w/ a post
       question = incorrect_post.conversation.publication.question
       asker = User.askers.find(incorrect_post.in_reply_to_user_id)
-      if ab_test("mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
+      if Post.create_split_test(user_id, "mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
         text = "Try this one again: #{question.text}"       
         link = false
       else 
