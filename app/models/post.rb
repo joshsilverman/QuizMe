@@ -379,12 +379,13 @@ class Post < ActiveRecord::Base
   def self.reengage_users
     askers = User.askers
     current_time = Time.now
-    hours_ago = current_time - 23.hours
+    range_begin = 24.hours.ago
+    range_end = 23.hours.ago
     
     puts "Current time: #{current_time}"
-    puts "range = - #{(hours_ago - 1.day)} - #{hours_ago}"
+    puts "range = #{range_begin} - #{range_end}"
     
-    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, (hours_ago - 1.day), hours_ago, 'reengage', hours_ago).includes(:user)
+    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, range_begin, range_end, 'reengage', range_end).includes(:user)
     user_grouped_posts = recent_posts.group_by(&:user_id)
     user_grouped_posts.each do |user_id, posts|
       next if askers.collect(&:id).include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?

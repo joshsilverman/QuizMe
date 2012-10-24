@@ -45,6 +45,8 @@ class SessionsController < ApplicationController
         :twi_oauth_secret => auth["credentials"]["secret"]
       )
       session[:user_id] = user.id
+      #temporary fix until devise
+      cookies.permanent.signed[:permanent_user_id] = user.id
       if omni_params["question_id"]
         redirect_to "/questions/#{omni_params['question_id']}/#{omni_params['answer_id']}"
       elsif omni_params["feed_id"]
@@ -57,6 +59,8 @@ class SessionsController < ApplicationController
 
   def destroy
   	session[:user_id] = nil
+    #temporary fix until devise
+    cookies.delete :permanent_user_id
   	redirect_to root_url, :notice => "Signed out!"
   end
 
