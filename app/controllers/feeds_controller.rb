@@ -208,6 +208,7 @@ class FeedsController < ApplicationController
   def get_split_dm_response
     puts "get split dm response for user #{params[:user_id]}"
     ab_user.set_id(params[:user_id])
+    ab_user.confirm_js("WISR app", '')
     res = ab_test("dm reengagement", "Nudge", "No Nudge")
     render :text => res, :status => 200
   end
