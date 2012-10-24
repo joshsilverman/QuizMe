@@ -460,6 +460,7 @@ class Post < ActiveRecord::Base
   
   def self.create_split_test(user_id, test_name, a, b)
     ab_user.set_id(user_id)
+    ab_user.confirm_js("WISR app", '')
     ab_test(test_name, a, b)
   end
 end
