@@ -137,10 +137,10 @@ class Post
 		@element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 		@element.hover(
 			=> 
-				@element.find(".quiz").css("visibility", "visible")
+				@element.find(".quiz.rollover").css("visibility", "visible")
 				@element.find(".expand").css("color", "#08C")
 			=> 
-				@element.find(".quiz").css("visibility", "hidden") unless @expanded
+				@element.find(".quiz.rollover").css("visibility", "hidden") unless @expanded
 				@element.find(".expand").css("color", "#999") unless @expanded
 		)
 		@element.find(".tweet_button").on "click", (e) => 
@@ -165,7 +165,7 @@ class Post
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
-			@element.find(".subsidiaries, .loading, .answers").hide()
+			@element.find(".subsidiaries, .loading, .answers .quiz_container").hide()
 			@element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
@@ -174,6 +174,7 @@ class Post
 			@element.find(".quiz").css("visibility", "visible")
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
+			@element.find(".quiz_container").show()
 			@element.find(".subsidiaries").toggle(200, => 
 				@element.toggleClass("active", 200)
 				@element.next(".conversation").addClass("active_next")
@@ -198,7 +199,7 @@ class Post
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
 				loading.fadeOut(500, => 
-					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => 
+					@element.find(".subsidiaries").prepend(subsidiary.fadeIn(500, => 
 						subsidiary.addClass("answered")
 						@populate_response(e)
 					))
@@ -228,6 +229,7 @@ class Post
 			@element.find(".user_answered").show()
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
+		@element.find(".quiz_container").fadeIn(500)
 	open_quiz_modal: (e) => 
 		quiz = $(e.target)
 		unless quiz.attr "href"
