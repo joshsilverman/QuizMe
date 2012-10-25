@@ -376,8 +376,7 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
-  # set RESET to true?
-  def self.reengage_users
+  def self.reengage_incorrect_answerers
     askers = User.askers
     current_time = Time.now
     range_begin = 24.hours.ago
@@ -422,6 +421,10 @@ class Post < ActiveRecord::Base
     puts "\n"       
   end
 
+  def self.reengage_inactive_users
+    
+  end
+
   def generate_response(response_type)
     #Include backlink if exists
     case response_type
@@ -456,12 +459,12 @@ class Post < ActiveRecord::Base
 
   extend Split::Helper
   def self.trigger_split_test(user_id, test_name, reset=false)
-    ab_user.set_id(user_id)
+    ab_user.set_id(user_id, true)
     finished(test_name, {:reset => reset})
   end
   
   def self.create_split_test(user_id, test_name, a, b)
-    ab_user.set_id(user_id)
+    ab_user.set_id(user_id, true)
     ab_user.confirm_js("WISR app", '')
     ab_test(test_name, a, b)
   end
