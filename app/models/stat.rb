@@ -218,8 +218,10 @@ class Stat < ActiveRecord::Base
 
 	def self.econ_engine
     @posts_by_date = Post.joins(:user)\
-        .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")}) AND users.role != 'asker' AND (spam = false OR (spam IS NULL and autospam = false) OR interaction_type IN (2,3)) AND user_id NOT IN (1,3,4,5,11,12,13,17,25,65,106)")\
+        .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")}) AND users.role != 'asker' AND user_id NOT IN (1,3,4,5,11,12,13,17,25,65,106)")\
         .where("posts.created_at > ?", Date.today - 30)\
+        .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
+        .where("interaction_type <> 4")\
         .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
         .order("posts.created_at DESC")\
         .group_by{|p| p.created_at.strftime('%m/%d')}
@@ -240,7 +242,6 @@ class Stat < ActiveRecord::Base
 		display_data = {}
 		display_data[:today] = @econ_engine.last[1..100].sum
 		display_data[:answerers] = @posts_by_date.map{|k, v| [k, v]}.sort{|x,y| x[0] <=> y[0]}.last[1].group_by{|p| p.user_id}.count
-		# display_data[:total] = graph_data.values.sum / graph_data.values.size
 
 		return @econ_engine, display_data
 	end
