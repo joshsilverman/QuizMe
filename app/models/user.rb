@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
     ## COLLECT DISENGAGING USERS
     all_asker_ids = User.askers.collect(&:id)
     user_ids = []
-    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", threshold.beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage')
+    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage')
     all_posts.group_by(&:user_id).each do |user_id, posts|
       user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
     end
