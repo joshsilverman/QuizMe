@@ -200,6 +200,10 @@ econ_engine_options =
 	hAxis:
 		textStyle: 
 			fontSize: 9
+	vAxis:
+		minorGridlines:
+			count: 3
+			color: "#eee"
 
 options = 
 	width: 425

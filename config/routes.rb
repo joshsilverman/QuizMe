@@ -8,7 +8,8 @@ Quizmemanager::Application.routes.draw do
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
   match "/link_to_post" => "feeds#link_to_post"
-  match "/get_split_dm_response" => "feeds#get_split_dm_response"
+  match "/create_split_test" => "feeds#create_split_test"
+  match "/trigger_split_test" => "feeds#trigger_split_test"
   match "/dashboard" => "askers#dashboard"
   match "/posts/:id/refer" => "posts#refer"
 
