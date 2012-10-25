@@ -1,6 +1,7 @@
 class Question < ActiveRecord::Base
 	has_many :posts
   has_many :answers
+  has_many :publications
   belongs_to :topic
   belongs_to :user
 

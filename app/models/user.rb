@@ -107,4 +107,102 @@ class User < ActiveRecord::Base
 		return data
 	end	
 
+  def self.reengage_inactive(threshold = 1.week.ago)
+    ## COLLECT DISENGAGING USERS
+    all_asker_ids = User.askers.collect(&:id)
+    user_ids = []
+    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", threshold.beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage')
+    all_posts.group_by(&:user_id).each do |user_id, posts|
+      user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+    end
+    disengaging_user_ids = user_ids - Post.not_spam.where("created_at > ? and user_id in (?)", threshold.end_of_day, user_ids).collect(&:user_id).uniq!
+
+    ## GET POPULAR PUBLICATIONS
+    askers_users = {}
+    askers_publications = {}
+    active_asker_ids = []
+    user_grouped_posts = all_posts.group_by(&:user_id)
+    disengaging_user_ids.each do |user_id|
+      asker_id = user_grouped_posts[user_id].sample.in_reply_to_user_id
+      active_asker_ids << asker_id
+      askers_users[asker_id] = [] if askers_users[asker_id].nil?
+      askers_users[asker_id] << user_id
+    end
+    Post.includes(:conversations).where("user_id in (?) and created_at > ? and interaction_type = 1", active_asker_ids, 1.week.ago).group_by(&:user_id).each do |user_id, posts|
+      askers_publications[user_id] = posts.sort_by{|p| p.conversations.size}.last.publication_id
+    end
+
+    ## TWEET POPULAR PUBS TO DISENGAGING USERS
+    users = User.find(active_asker_ids + disengaging_user_ids).group_by(&:id)
+    publications = Publication.includes(:question).find(askers_publications.values).group_by(&:id)
+    askers_publications.each do |asker_id, publication_id|
+      asker = users[asker_id][0]
+      puts "#{asker.twi_screen_name} sending question: "
+      puts "#{publications[publication_id][0].question.text} "
+      puts "to user(s):"
+      next unless asker.is_role? "asker"
+      askers_users[asker_id].each do |user_id|
+        puts users[user_id][0].twi_screen_name
+        Post.tweet(asker, "#{REENGAGE.sample} #{publications[publication_id][0].question.text}", {
+          :reply_to => users[user_id][0].twi_screen_name,
+          :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication_id}",
+          :in_reply_to_user_id => user_id,
+          :posted_via_app => true,
+          :publication_id => publication_id,  
+          :requires_action => false,
+          :interaction_type => 2,
+          :link_to_parent => false,
+          :link_type => "reengage",
+          :intention => "reengage"
+        })           
+        sleep(1)
+      end
+      puts "\n"
+    end
+  end
+
+ 	def self.reengage_incorrect_answerers
+    askers = User.askers
+    current_time = Time.now
+    range_begin = 24.hours.ago
+    range_end = 23.hours.ago
+    
+    puts "Current time: #{current_time}"
+    puts "range = #{range_begin} - #{range_end}"
+    
+    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, range_begin, range_end, 'reengage', range_end).includes(:user)
+    user_grouped_posts = recent_posts.group_by(&:user_id)
+    user_grouped_posts.each do |user_id, posts|
+      # should ensure only one tweet per user as well here?
+      next if askers.collect(&:id).include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+      incorrect_post = posts.sample
+      # eww, think we need a cleaner way to access the question associated w/ a post
+      question = incorrect_post.conversation.publication.question
+      asker = User.askers.find(incorrect_post.in_reply_to_user_id)
+      if Post.create_split_test(user_id, "mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
+        text = "Try this one again: #{question.text}"       
+        link = false
+      else 
+        text = "Quick follow up... you missed this one yesterday, do you know it now?"
+        link = true
+      end
+      # always link? another A/B test?
+      Post.tweet(asker, text, {
+        :reply_to => incorrect_post.user.twi_screen_name,
+        :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
+        :in_reply_to_post_id => incorrect_post.id,
+        :in_reply_to_user_id => user_id,
+        :conversation_id => incorrect_post.conversation_id,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => 2,
+        :link_to_parent => link,
+        :link_type => "reengage",
+        :intention => "reengage"
+      })      
+      puts "sending reengage message to: #{user_id}"
+      sleep(1)
+    end
+    puts "\n"       
+  end
 end

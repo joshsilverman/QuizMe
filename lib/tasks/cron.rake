@@ -57,11 +57,11 @@ task :dm_new_followers => :environment do
 end
 
 task :reengage_users => :environment do
-	Post.reengage_incorrect_answerers()
+	User.reengage_incorrect_answerers()
 end
 
 task :reengage_inactive_users => :environment do
-	Post.reengage_inactive_users()
+	User.reengage_inactive()
 end
 
 task :retweet_related => :environment do

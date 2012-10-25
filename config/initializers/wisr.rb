@@ -50,6 +50,14 @@ FAST = [
   "Hey, gunslinger! Fastest hands on the interwebs!"        
 ]
 
+REENGAGE = [
+  "Pop quiz:",
+  "A question for you:",
+  "Do you know the answer?",
+  "Quick quiz:",
+  "We've missed you!"
+]
+
 ACCOUNT_DATA = {
   ## Govt101
   2 => {

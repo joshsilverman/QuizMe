@@ -82,42 +82,43 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet(user, text, options = {})
-    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
-    tweet = Post.format_tweet(text, {
-      :in_reply_to_user => options[:reply_to],
-      :question_backlink => short_url,
-      :hashtag => options[:hashtag],
-      :resource_backlink => short_resource_url,
-      :via_user => options[:via]
-    })   
-    if options[:in_reply_to_post_id] and options[:link_to_parent]
-      parent_post = Post.find(options[:in_reply_to_post_id]) 
-      twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
-    else
-      twitter_response = user.twitter.update(tweet)
-    end  
-    post = Post.create(
-      :user_id => user.id,
-      :provider => 'twitter',
-      :text => tweet,
-      :provider_post_id => twitter_response.id.to_s,
-      :in_reply_to_post_id => options[:in_reply_to_post_id],
-      :in_reply_to_user_id => options[:in_reply_to_user_id],
-      :conversation_id => options[:conversation_id],
-      :publication_id => options[:publication_id],
-      :url => options[:long_url] ? short_url : nil,
-      :posted_via_app => true, 
-      :requires_action => false,
-      :interaction_type => options[:interaction_type],
-      :correct => options[:correct],
-      :intention => options[:intention]
-    )   
-    if options[:publication_id]
-      publication = Publication.find(options[:publication_id])
-      publication.posts << post
-    end
-    return post        
+    puts user.twi_screen_name, text, options
+    # short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
+    # short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
+    # tweet = Post.format_tweet(text, {
+    #   :in_reply_to_user => options[:reply_to],
+    #   :question_backlink => short_url,
+    #   :hashtag => options[:hashtag],
+    #   :resource_backlink => short_resource_url,
+    #   :via_user => options[:via]
+    # })   
+    # if options[:in_reply_to_post_id] and options[:link_to_parent]
+    #   parent_post = Post.find(options[:in_reply_to_post_id]) 
+    #   twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    # else
+    #   twitter_response = user.twitter.update(tweet)
+    # end  
+    # post = Post.create(
+    #   :user_id => user.id,
+    #   :provider => 'twitter',
+    #   :text => tweet,
+    #   :provider_post_id => twitter_response.id.to_s,
+    #   :in_reply_to_post_id => options[:in_reply_to_post_id],
+    #   :in_reply_to_user_id => options[:in_reply_to_user_id],
+    #   :conversation_id => options[:conversation_id],
+    #   :publication_id => options[:publication_id],
+    #   :url => options[:long_url] ? short_url : nil,
+    #   :posted_via_app => true, 
+    #   :requires_action => false,
+    #   :interaction_type => options[:interaction_type],
+    #   :correct => options[:correct],
+    #   :intention => options[:intention]
+    # )   
+    # if options[:publication_id]
+    #   publication = Publication.find(options[:publication_id])
+    #   publication.posts << post
+    # end
+    # return post        
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
@@ -374,55 +375,6 @@ class Post < ActiveRecord::Base
     )
     Post.trigger_split_test(u.id, 'dm reengagement')
     Post.classifier.classify post
-  end
-
-  def self.reengage_incorrect_answerers
-    askers = User.askers
-    current_time = Time.now
-    range_begin = 24.hours.ago
-    range_end = 23.hours.ago
-    
-    puts "Current time: #{current_time}"
-    puts "range = #{range_begin} - #{range_end}"
-    
-    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, range_begin, range_end, 'reengage', range_end).includes(:user)
-    user_grouped_posts = recent_posts.group_by(&:user_id)
-    user_grouped_posts.each do |user_id, posts|
-      # should ensure only one tweet per user as well here?
-      next if askers.collect(&:id).include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
-      incorrect_post = posts.sample
-      # eww, think we need a cleaner way to access the question associated w/ a post
-      question = incorrect_post.conversation.publication.question
-      asker = User.askers.find(incorrect_post.in_reply_to_user_id)
-      if Post.create_split_test(user_id, "mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
-        text = "Try this one again: #{question.text}"       
-        link = false
-      else 
-        text = "Quick follow up... you missed this one yesterday, do you know it now?"
-        link = true
-      end
-      # always link? another A/B test?
-      Post.tweet(asker, text, {
-        :reply_to => incorrect_post.user.twi_screen_name,
-        :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
-        :in_reply_to_post_id => incorrect_post.id,
-        :in_reply_to_user_id => user_id,
-        :conversation_id => incorrect_post.conversation_id,
-        :posted_via_app => true, 
-        :requires_action => false,
-        :interaction_type => 2,
-        :link_to_parent => link,
-        :link_type => "reengage",
-        :intention => "reengage"
-      })      
-      puts "sending reengage message to: #{user_id}"
-      sleep(1)
-    end
-    puts "\n"       
-  end
-
-  def self.reengage_inactive_users
-    
   end
 
   def generate_response(response_type)
