@@ -49,7 +49,6 @@ task :segment => :environment do
         end
       end
     end
-
   end
 
   def segment_user user
