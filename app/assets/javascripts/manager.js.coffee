@@ -162,7 +162,11 @@ class Post
 				success: (e) =>
 					console.log "SUCCESS"
 					console.log e
-					$("#respond_modal").find("textarea").val(e)
+					if e == "Nudge"
+						res = "Right! Nice job! Check out our timeline for more questions"
+					else
+						res = "Right! Nice job"
+					$("#respond_modal").find("textarea").val(res)
 				error: (e) =>
 					console.log "ERROR"
 					console.log e

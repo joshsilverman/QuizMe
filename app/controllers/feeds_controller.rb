@@ -214,12 +214,13 @@ class FeedsController < ApplicationController
 
   def create_split_test
     res = Post.create_split_test(params[:user_id], params[:test_name], params[:alt_a], params[:alt_b])
-    render :text => res, :status => 200
+    render :text => res.nil? ? 'error' : res, :status => 200
   end
 
   def trigger_split_test
     res = Post.trigger_split_test(params[:user_id], params[:test_name], params[:reset])
-    render :text => res, :status => 200
+    human_res = res.nil? ? 'Error- could not complete action' : res ? "New Finish" : "Already Completed"
+    render :text => human_res, :status => 200
   end
 
 end
