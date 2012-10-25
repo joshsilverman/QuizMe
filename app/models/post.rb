@@ -376,8 +376,7 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
-  # set RESET to true?
-  def self.reengage_users
+  def self.reengage_incorrect_answerers
     askers = User.askers
     current_time = Time.now
     range_begin = 24.hours.ago
@@ -420,6 +419,10 @@ class Post < ActiveRecord::Base
       sleep(1)
     end
     puts "\n"       
+  end
+
+  def self.reengage_inactive_users
+    
   end
 
   def generate_response(response_type)
