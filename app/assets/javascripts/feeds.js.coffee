@@ -134,7 +134,7 @@ class Post
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
+		@element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed", "test-option": (if $(e.target).hasClass "rollover" then "rollover" else "cta")})
 		@element.hover(
 			=> 
 				@element.find(".quiz.rollover").css("visibility", "visible")
