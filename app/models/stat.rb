@@ -155,9 +155,9 @@ class Stat < ActiveRecord::Base
 		return display_data
 	end
 
-	def self.paulgraham		
-		asker_ids = User.askers.collect(&:id)	
-		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("to_char(users.created_at, 'YYYY-MM-DD')").count #.group("date_part('week', users.created_at)").count
+	def self.paulgraham
+		asker_ids = User.askers.collect(&:id)
+		new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("to_char(users.created_at, 'YYYY-MM-DD')").count('users.id', :distinct => true) #.group("date_part('week', users.created_at)").count
 		existing_before = {}
 		new_to_existing_before_on = {}
 		domain = 30
