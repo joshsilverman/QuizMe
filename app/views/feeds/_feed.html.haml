@@ -54,11 +54,11 @@
 									= image_tag(current_user.twi_profile_img_url, :class => "rounded")
 									%h5= current_user.twi_screen_name
 									%p= response['text']
-				- if quiz_type == "cta"
-					.quiz_container{:style => "display: none;"}
-						%a.quiz.cta{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}			
-							%i.icon-share
-							Tweet this question to a friend.
+					- if true
+						.quiz_container{:style => "display: none;"}
+							%a.quiz.cta{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}			
+								%i.icon-share
+								Tweet this question to a friend.
 			.loading{:style => "display: none;"}
 				Loading...	
 			- if show_activity == "true"
