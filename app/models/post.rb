@@ -456,12 +456,12 @@ class Post < ActiveRecord::Base
 
   extend Split::Helper
   def self.trigger_split_test(user_id, test_name, reset=false)
-    ab_user.set_id(user_id)
+    ab_user.set_id(user_id, true)
     finished(test_name, {:reset => reset})
   end
   
   def self.create_split_test(user_id, test_name, a, b)
-    ab_user.set_id(user_id)
+    ab_user.set_id(user_id, true)
     ab_user.confirm_js("WISR app", '')
     ab_test(test_name, a, b)
   end
