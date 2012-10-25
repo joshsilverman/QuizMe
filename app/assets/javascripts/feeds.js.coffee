@@ -165,7 +165,8 @@ class Post
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
-			@element.find(".subsidiaries, .loading, .answers .quiz_container").hide()
+			@element.find(".subsidiaries, .loading, .answers, .quiz_container").hide()
+			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
