@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/bderusha/split
-  revision: e720a13a57b09f2b0b4d33101628d848ad7d398a
+  revision: 847bee1d58548e8d2d2f20d9c6f3b12e9ff0d41b
   specs:
     split (0.4.3)
       redis (>= 2.1)
