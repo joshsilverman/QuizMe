@@ -397,6 +397,17 @@ body {
 			margin-bottom: 10px;							
 		}
 
+		.quiz_container {
+			border-bottom: 1px dotted #ddd;	
+			height: 37px;
+			text-align: center;	
+			padding-top: 20px;					
+			background-color: whitesmoke;
+			position: relative;	
+			bottom: 10px;
+			margin-bottom: 10px;	
+		}
+
 		.post {
 			padding: 10px;
 			position: relative;
@@ -486,9 +497,18 @@ body {
 					}
 
 					.quiz {
-						visibility: hidden;
+						
 						margin-left: 8px;
+						
+						&.rollover {
+							visibility: hidden;
+						}
+
+						&.cta {
+							visibility: visible;
+						}						
 					}
+
 				}
 			}	
 
