@@ -37,6 +37,7 @@ class Post < ActiveRecord::Base
 	end
 
   def self.publish(provider, asker, publication)
+    return unless publication
     question = Question.find(publication.question_id)
     if question.user_id == 1
       via = nil
@@ -388,6 +389,7 @@ class Post < ActiveRecord::Base
     recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, range_begin, range_end, 'reengage', range_end).includes(:user)
     user_grouped_posts = recent_posts.group_by(&:user_id)
     user_grouped_posts.each do |user_id, posts|
+      # should ensure only one tweet per user as well here?
       next if askers.collect(&:id).include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
       incorrect_post = posts.sample
       # eww, think we need a cleaner way to access the question associated w/ a post
