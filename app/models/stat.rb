@@ -194,25 +194,32 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.dau_mau
+		require 'awesome_print'
 
 		asker_ids = User.askers.collect(&:id)
-		date_grouped_posts = Post.not_spam.where("created_at > ? and user_id not in (?)", 2.months.ago, (asker_ids += ADMINS)).order("created_at ASC").group_by { |post| post.created_at.to_date }
+		date_grouped_posts = Post.not_spam\
+				.where("created_at > ? and user_id not in (?)", 1.month.ago, (asker_ids += ADMINS))\
+				.order("created_at ASC")\
+				.group_by { |post| post.created_at.to_date }
 		date_grouped_posts.each do |date, posts|
-			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.size
+			date_grouped_posts[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq
 		end
 
 		graph_data = {}
 		((Date.today - 30)..Date.today).each do |date|
-			total = 0
+			total = []
 			((date - 30)..date).each do |day|
 				total += date_grouped_posts[day] unless date_grouped_posts[day].blank?
 			end
-			graph_data[date] = (date_grouped_posts[date].to_f / total.to_f).to_f			
+
+			graph_data[date] = date_grouped_posts[date].count.to_f / total.uniq.count unless total.empty?
 		end
 
 		display_data = {}
 		display_data[:today] = graph_data[Date.today]
-		display_data[:total] = graph_data.values.sum / graph_data.values.size
+
+		last_7_days = graph_data.reject{|k,v| 1.week.ago > k}.values
+		display_data[:total] = last_7_days.sum / last_7_days.size
 		return graph_data, display_data
 	end
 
