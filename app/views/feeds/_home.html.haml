@@ -1,14 +1,15 @@
+- user = User.find(1)
 #header.row.rounded.border-color
 	#account_information.span6
 		.container
 			.inner_container
 				.account_image
-					= image_tag(@asker.twi_profile_img_url.sub("_normal.", "_reasonably_small."), :class => "rounded")
+					= image_tag(user.twi_profile_img_url.sub("_normal.", "_reasonably_small."), :class => "rounded")
 				.account_text
 					.name-wrapper
 						%h2
-							%span.name= @asker.twi_screen_name
-							- if current_user and (@asker.id == current_user.id or current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
+							%span.name Wisr
+							- if current_user and (current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
 								%ul.nav
 									%li
 										.dropdown.nav-link
@@ -23,16 +24,11 @@
 						.clr
 						
 					.clr
-					%h3= "@#{@asker.twi_screen_name}"
-					%p= @asker.description
-					- if @author
-						.credit
-							%i created by
-							= link_to "@#{@author.twi_screen_name}", "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"
-							%a{:href => "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"}= image_tag @author.twi_profile_img_url
+					%h3= "@#{user.twi_screen_name}"
+					%p= "Wisr is a fun way to learn collaboratively."
 
 	#account_stats.span3.hidden-phone
-		%a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
+		%a.twitter-follow-button{:href => "https://twitter.com/#{user.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
 		%script
 			!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 		%ul

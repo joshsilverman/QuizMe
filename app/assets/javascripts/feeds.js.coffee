@@ -24,6 +24,7 @@ class Feed
 			@post_question()
 		$("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
+		$("#directory img").tooltip()
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
@@ -129,10 +130,16 @@ class Post
 	question: null
 	correct: null
 	expanded: false
+	asker_id: null
+	image_url: null
+	asker_name: null
 	constructor: (element) ->
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
 		@question = @element.find(".question").text()
+		@asker_id = @element.attr "asker_id"
+		@image_url = @element.find(".rounded").attr "src"
+		@asker_name = @element.find(".content h5").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
 		@element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed", "test-option": (if $(e.target).hasClass "rollover" then "rollover" else "cta")})
 		@element.hover(
@@ -186,7 +193,7 @@ class Post
 		loading.fadeIn(500)
 		answers.toggle(200, => answers.remove())
 		params =
-			"asker_id" : window.feed.id
+			"asker_id" : @asker_id
 			"post_id" : @id
 			"answer_id" : answer_id
 		$.ajax '/respond_to_question',
@@ -211,7 +218,8 @@ class Post
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		response.find(".content p").text(message_hash.app_message) 
-		response.find("h5").text(window.feed.name)
+		response.find("h5").text(@asker_name)
+		response.find(".rounded").attr("src", @image_url) 
 		loading = @element.find(".loading").text("Thinking...")
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 

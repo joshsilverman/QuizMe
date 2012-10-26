@@ -1,0 +1,32 @@
+#post_feed
+	#feed_container.span10
+		#wrapper.span9
+			= render :partial => "home"
+			#feed.row
+				#right_column.span6
+					#posts.rounded
+						.header.border-color
+							%h3
+								All Activity						
+						#feed_content
+							= render :partial => "feed"
+						#posts_more.border-color
+							%a{:href => "#"} Load more
+				#left_column.span3.hidden-phone
+					/ = render :partial => "leaderboard"
+					/ .clr
+					= render :partial => "directory"
+
+#subsidiary_template.post{:style => "display: none;"}
+	.content
+		= image_tag(current_user.twi_profile_img_url, :class => "rounded asker")
+		%h5= "User Name"
+		%p= "Post content"
+
+/ = hidden_field_tag :post_id, @post_id
+= hidden_field_tag :feed_id, 0
+/ = hidden_field_tag :feed_name, @asker.twi_screen_name
+/ = hidden_field_tag :answer_id, @answer_id
+= hidden_field_tag :user_name, current_user.twi_screen_name if current_user
+= hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
+/ = hidden_field_tag :correct, @correct
