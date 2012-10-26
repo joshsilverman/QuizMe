@@ -1,6 +1,6 @@
 .feed_section
 	- show_activity = ab_test("question activity", "true", "false")
-	/ - quiz_type = ab_test("ask a friend", "rollover", "cta")
+	- quiz_type = ab_test("ask a friend", "rollover", "cta")
 	- @publications.each do |post|
 		- conversation = @responses[post.id]
 		- conversation ? responded = true : responded = false
@@ -19,10 +19,10 @@
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
-						/ - if quiz_type == "rollover"
-						/ 	%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}
-						/ 		%i.icon-share
-						/ 		Ask a Friend
+						- if quiz_type == "rollover"
+							%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}
+								%i.icon-share
+								Ask a Friend
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = post.question.answers.shuffle
@@ -53,11 +53,11 @@
 									= image_tag(current_user.twi_profile_img_url, :class => "rounded")
 									%h5= current_user.twi_screen_name
 									%p= response['text']
-				/ - if quiz_type == "cta"
-				/ 	.quiz_container{:style => ("display: none;" unless conversation.present?)}
-				/ 		%a.quiz.cta{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}			
-				/ 			%i.icon-share
-				/ 			Tweet this question to a friend.
+				- if quiz_type == "cta"
+					.quiz_container{:style => ("display: none;" unless conversation.present?)}
+						%a.quiz.cta{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}			
+							%i.icon-share
+							Tweet this question to a friend.
 			.loading{:style => "display: none;"}
 				Loading...	
 			- if show_activity == "true"
