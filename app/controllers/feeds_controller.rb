@@ -3,7 +3,9 @@ class FeedsController < ApplicationController
 
   def index
     @asker = User.find(1)
-    @publications = Publication.joins(:posts).where(:published => true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]    
+    @publications = Publication.where(:published => true).order("updated_at DESC").limit(15).includes(:question => :answers)
     posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
     @actions = {}
     post_pub_map = {}
@@ -20,7 +22,10 @@ class FeedsController < ApplicationController
         } unless @actions[post_pub_map[post_id]].nil?
       end
     end
-
+    # if params[:post_id]
+    #   requested_publication = Publication.find(params[:post_id])
+    #   @publications.reverse!.push(requested_publication).reverse! unless @publications.include? requested_publication
+    # end
     @pub_grouped_posts = posts.group_by(&:publication_id)
 
     # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
@@ -59,7 +64,7 @@ class FeedsController < ApplicationController
     if @asker
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
       # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
-      @publications = @asker.publications.joins(:posts).where("publications.published = ?", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
+      @publications = @asker.publications.where("published = ?", true).order("updated_at DESC").limit(15).includes(:question => :answers)
 
       posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
       
@@ -121,11 +126,12 @@ class FeedsController < ApplicationController
 
   def more
     post = Publication.find(params[:last_post_id])
+    puts post.to_json
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @publications = @asker.publications.joins(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ?", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = @asker.publications.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
     else
-      @publications = Publication.joins(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ?", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = Publication.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     

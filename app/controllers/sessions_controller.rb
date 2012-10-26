@@ -50,7 +50,11 @@ class SessionsController < ApplicationController
       if omni_params["question_id"]
         redirect_to "/questions/#{omni_params['question_id']}/#{omni_params['answer_id']}"
       elsif omni_params["feed_id"]
-        redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
+        if omni_params['feed_id'] == "1"
+          redirect_to "/feeds/index/#{omni_params['post_id']}/#{omni_params['answer_id']}"
+        else
+          redirect_to "/feeds/#{omni_params['feed_id']}/#{omni_params['post_id']}/#{omni_params['answer_id']}"
+        end
       else
         redirect_to root_url, :notice => "Signed in!"    
       end
