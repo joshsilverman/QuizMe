@@ -180,7 +180,6 @@ dau_mau_options =
 	vAxis:
 		viewWindowMode: 'explicit'
 		viewWindow:
-			max: 0.25
 			min: 0
 	hAxis:
 		textStyle: 
@@ -218,6 +217,10 @@ options =
 	hAxis:
 		textStyle: 
 			fontSize: 9
+	vAxis:
+		viewWindowMode: 'explicit'
+		viewWindow:
+			min: 0
 
 line_colors = 
 	0: "#6C69D1"
