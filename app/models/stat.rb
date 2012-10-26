@@ -194,7 +194,6 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.dau_mau
-		require 'awesome_print'
 
 		asker_ids = User.askers.collect(&:id)
 		date_grouped_posts = Post.not_spam\
