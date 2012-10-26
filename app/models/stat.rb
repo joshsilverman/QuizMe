@@ -198,7 +198,7 @@ class Stat < ActiveRecord::Base
 
 		asker_ids = User.askers.collect(&:id)
 		date_grouped_posts = Post.not_spam\
-				.where("created_at > ? and user_id not in (?)", 1.month.ago, (asker_ids += ADMINS))\
+				.where("created_at > ? and user_id not in (?)", 2.month.ago, (asker_ids += ADMINS))\
 				.order("created_at ASC")\
 				.group_by { |post| post.created_at.to_date }
 		date_grouped_posts.each do |date, posts|
