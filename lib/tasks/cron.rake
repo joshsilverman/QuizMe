@@ -61,7 +61,7 @@ task :reengage_users => :environment do
 end
 
 task :reengage_inactive_users => :environment do
-	User.reengage_inactive()
+	User.reengage_inactive_users()
 end
 
 task :retweet_related => :environment do

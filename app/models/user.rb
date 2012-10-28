@@ -107,7 +107,7 @@ class User < ActiveRecord::Base
 		return data
 	end	
 
-  def self.reengage_inactive(threshold = 1.week.ago)
+  def self.reengage_inactive_users(threshold = 1.week.ago)
     ## COLLECT DISENGAGING USERS
     all_asker_ids = User.askers.collect(&:id)
     user_ids = []
