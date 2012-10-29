@@ -187,6 +187,7 @@ class User < ActiveRecord::Base
         link = true
       end
       # always link? another A/B test?
+      # existing re-engages should be changed to follow-up!!!
       Post.tweet(asker, text, {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
@@ -197,10 +198,10 @@ class User < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 2,
         :link_to_parent => link,
-        :link_type => "reengage",
-        :intention => "reengage"
+        :link_type => "follow-up",
+        :intention => "follow-up"
       })      
-      puts "sending reengage message to: #{user_id}"
+      puts "sending follow-up message to: #{user_id}"
       sleep(1)
     end
     puts "\n"       
