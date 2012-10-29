@@ -143,7 +143,8 @@ class User < ActiveRecord::Base
       next unless asker.is_role? "asker"
       askers_users[asker_id].each do |user_id|
         puts users[user_id][0].twi_screen_name
-        Post.tweet(asker, "#{REENGAGE.sample} #{publications[publication_id][0].question.text}", {
+        option_text = Post.create_split_test(user_id, "reengage last week inactive", "Pop quiz:", "We've missed you!")
+        Post.tweet(asker, "#{option_text} #{publications[publication_id][0].question.text}", {
           :reply_to => users[user_id][0].twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication_id}",
           :in_reply_to_user_id => user_id,
@@ -153,9 +154,9 @@ class User < ActiveRecord::Base
           :interaction_type => 2,
           :link_to_parent => false,
           :link_type => "reengage",
-          :intention => "reengage"
-        })      
-				Mixpanel.track_event "reengage_last_week_inactive", {:distinct_id => users[user_id][0].id}
+          :intention => "reengage last week inactive"
+        })  
+				Mixpanel.track_event "reengage last week inactive", {:distinct_id => users[user_id][0].id}
         sleep(1)
       end
       puts "\n"
@@ -200,10 +201,10 @@ class User < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 2,
         :link_to_parent => link,
-        :link_type => "follow-up",
-        :intention => "follow-up"
+        :link_type => "follow_up",
+        :intention => "incorrect answer follow up"
       })  
-			Mixpanel.track_event "follow_up", {:distinct_id => user_id}
+			Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
       puts "sending follow-up message to: #{user_id}"
       sleep(1)
     end

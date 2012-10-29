@@ -158,13 +158,14 @@ class Post < ActiveRecord::Base
       :resource_url => resource_url
     })  
     conversation.posts << app_post if app_post
-    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'reengage', current_user.id, publication_id).present?
-      puts Split.redis.hget("user_store:#{current_user.id}", "mention reengagement")
-      puts "test completion triggered! user_id = #{current_user.id}"
-      Post.trigger_split_test(current_user.id, 'mention reengagement')
-      puts Split.redis.hget("user_store:#{current_user.id}", "mention reengagement")
-    end
+
+    #check for follow-up test completion
+    Post.trigger_split_test(current_user.id, 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+    #check for re-engage inactive test completion
+    Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
+
     Mixpanel.track_event "answered", {
+      :distinct_id => current_user.id,
       :account => asker.twi_screen_name,
       :source => params[:s]
     }
