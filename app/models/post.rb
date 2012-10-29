@@ -32,8 +32,8 @@ class Post < ActiveRecord::Base
     end
   end
 
-	def self.shorten_url(url, source, lt, campaign, question_id=nil)
-    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").short_url
+	def self.shorten_url(url, source, lt, campaign, show_answer=nil)
+    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
 	end
 
   def self.publish(provider, asker, publication)
@@ -84,7 +84,7 @@ class Post < ActiveRecord::Base
   def self.tweet(user, text, options = {})
     # puts user.twi_screen_name, text, options
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name, options[:show_answer]) if options[:resource_url]
     tweet = Post.format_tweet(text, {
       :in_reply_to_user => options[:reply_to],
       :question_backlink => short_url,
@@ -155,7 +155,8 @@ class Post < ActiveRecord::Base
       :in_reply_to_post_id => (user_post ? user_post.id : nil), 
       :in_reply_to_user_id => current_user.id,
       :link_to_parent => true, 
-      :resource_url => resource_url
+      :resource_url => resource_url,
+      :show_answer => true
     })  
     conversation.posts << app_post if app_post
 
