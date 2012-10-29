@@ -144,7 +144,7 @@ class Post < ActiveRecord::Base
     end
     Post.trigger_split_test(current_user.id, 'dm reengagement')
     response_text = post.generate_response(status)
-    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = nil
+    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/{publication.question_id}/#{publication.question.slug}"
     app_post = Post.tweet(asker, response_text, {
       :reply_to => current_user.twi_screen_name,
       :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
