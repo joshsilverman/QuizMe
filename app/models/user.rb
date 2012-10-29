@@ -174,12 +174,12 @@ class User < ActiveRecord::Base
     puts "Current time: #{current_time}"
     puts "range = #{range_begin} - #{range_end}"
     
-    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or (intention = ? and created_at > ?))", false, range_begin, range_end, 'reengage', range_end).includes(:user)
+    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or ((intention = ? or intention = ?) and created_at > ?))", false, range_begin, range_end, 'reengage', 'incorrect answer follow up', range_end).includes(:user)
     user_grouped_posts = recent_posts.group_by(&:user_id)
     asker_ids = askers.collect(&:id)
     user_grouped_posts.each do |user_id, posts|
       # should ensure only one tweet per user as well here?
-      next if asker_ids.include? user_id or recent_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+      next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
       incorrect_post = posts.sample
       # eww, think we need a cleaner way to access the question associated w/ a post
       question = incorrect_post.conversation.publication.question
