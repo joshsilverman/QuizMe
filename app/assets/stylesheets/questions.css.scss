@@ -189,8 +189,13 @@
 				border-style: solid;	
 				margin-top: 10px;
 
-				#correct_answer{
-					color: green;
+				.incorrect_answer {
+					opacity: .6;
+				}
+
+				#correct_answer {
+					color: #666;
+					font-weight: bold;
 				}
 
 				.ui-widget-content{
