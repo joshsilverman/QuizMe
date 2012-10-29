@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
       (x > 0 ? "#{text} " : "#{text[0..(-1 + x)]}... ") + 
       (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
       (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
-      (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
+      (options[:resource_backlink].present? ? "Find the answer at #{options[:resource_backlink]} " : "") +
       (options[:via_user].present? ? "via @#{options[:via_user]}" : "") + 
       (options[:buffer].present? ? (" " * options[:buffer]) : "")
     }

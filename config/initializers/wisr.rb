@@ -7,7 +7,7 @@ PROVIDERS = ["twitter"]
 # @ugly, this should make use of Devise roles (wtf)
 ADMINS = [1, 3, 4, 11]
 
-URL = (Rails.env.production? ? "http://wisr.com" : "http://localhost:3000")
+URL = (Rails.env.production? ? "http://wisr-stag.herokuapp.com" : "http://localhost:3000")
 
 ###Response Bank ###
 CORRECT = [
