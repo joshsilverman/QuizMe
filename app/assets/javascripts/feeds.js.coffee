@@ -165,7 +165,8 @@ class Post
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
-			@element.find(".subsidiaries, .loading, .answers .quiz_container").hide()
+			@element.find(".subsidiaries, .loading, .answers").hide()
+			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
@@ -174,7 +175,6 @@ class Post
 			@element.find(".quiz").css("visibility", "visible")
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
-			@element.find(".quiz_container").show()
 			@element.find(".subsidiaries").toggle(200, => 
 				@element.toggleClass("active", 200)
 				@element.next(".conversation").addClass("active_next")

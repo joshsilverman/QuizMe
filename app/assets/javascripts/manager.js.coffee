@@ -152,8 +152,32 @@ class Post
 		$("#split_dm.btn.btn-danger").on 'click', () =>
 			params =
 				'user_id': window.feed.engagements[@id]['user_id']
+				'test_name': 'dm reengagement'
+				'alt_a': 'Nudge'
+				'alt_b': 'No Nudge'
 			console.log params
-			$.ajax '/get_split_dm_response',
+			$.ajax '/create_split_test',
+				type: 'POST'
+				data: params
+				success: (e) =>
+					console.log "SUCCESS"
+					console.log e
+					if e == "Nudge"
+						res = "Right! Nice job! Check out our timeline for more questions"
+					else
+						res = "Right! Nice job"
+					$("#respond_modal").find("textarea").val(res)
+				error: (e) =>
+					console.log "ERROR"
+					console.log e
+
+		$("#split_trigger_aaf.btn.btn-danger").off()
+		$("#split_trigger_aaf.btn.btn-danger").on 'click', () =>
+			params =
+				'user_id': window.feed.engagements[@id]['user_id']
+				'test_name': 'ask a friend'
+			console.log params
+			$.ajax '/trigger_split_test',
 				type: 'POST'
 				data: params
 				success: (e) =>
