@@ -205,7 +205,7 @@ class Post
 					))
 				)		
 				window.feed.answered += 1
-				mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
+				# mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>

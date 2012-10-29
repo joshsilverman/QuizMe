@@ -130,6 +130,7 @@ class FeedsController < ApplicationController
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
         long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
+
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
           :long_url => long_url, 
@@ -140,11 +141,18 @@ class FeedsController < ApplicationController
           :link_to_parent => false,
           :resource_url => (correct.nil? ? "#{URL}/posts/#{post.id}/refer" : nil)
         })
-        # can be moved into collect mention rake?
-        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'reengage', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
-          puts "test completion triggered!"
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement')
-        end
+
+        # Check for followup test completion
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+        # Check for reengage last week inactive test completion
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
+
+        Mixpanel.track_event "answered", {
+          :distinct_id => params[:in_reply_to_user_id],
+          :time => user_post.created_at.to_i,
+          :account => asker.twi_screen_name,
+          :source => params[:s]
+        }
       else         
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
