@@ -1,0 +1,43 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .question-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+#question
+
+  .page-header
+    %h1= t '.title', :default => 'My Questions'
+
+  .form-actions
+    .btn-group
+      = link_to t('.new', :default => t("helpers.links.new")), "#", :class => 'btn btn-primary'
+
+  - model_class = Question.new.class
+  %table.table
+    %thead
+      %tr
+        %th
+        %th Status
+        %th{:style => 'width:55%;'}= model_class.human_attribute_name(:text)
+        %th= model_class.human_attribute_name(:hashtag)
+        /%th= model_class.human_attribute_name(:topic_id)
+        %th Created
+        %th= t '.actions', :default => t("helpers.actions")
+    %tbody
+      - @questions.each_with_index do |question, i|
+        %tr.question-row
+          %td= i + 1
+          %td= render :partial => "status", :locals => {:status => question.status }
+          %td= link_to question.text, question_path(question)
+          %td= question.hashtag
+          /%td= question.topic_id
+          %td.has-tooltip{:rel => "tooltip", "data-original-title" => question.created_at, "data-placement" => "bottom"}
+            = question.created_at.strftime "%m/%d"
+          %td
+            %a.post-question{:style => "cursor:pointer;"} edit
+            &nbsp;|&nbsp;
+            = link_to "Delete", question_path(question), :method => :delete, :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?'))
+
+  = render "feeds/question_modal"
+  #questions.hide= @questions_hash.to_json

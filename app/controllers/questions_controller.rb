@@ -1,10 +1,16 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new, :refer, :show]
   before_filter :admin?, :only => [:moderate, :moderate_update]
+  #before_filter :author?, :only => [:index]
   # GET /questions
   # GET /questions.json
   def index
-    @questions = current_user.questions
+    #@break !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    current_user = User.find 20
+
+    @questions = current_user.questions.order("created_at DESC")
+
+    @questions_hash = Hash[@questions.collect{|q| [q.id, q]}]
 
     respond_to do |format|
       format.html # index.html.erb

@@ -1,7 +1,10 @@
 #post_question_modal.modal.hide
 	.modal-header
 		%button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
-		%h3= "Post a Question on #{@asker.twi_screen_name}"
+		- if  @asker
+			%h3= "Post a Question on #{@asker.twi_screen_name}"
+		- else
+			%h3 Edit Question
 	.modal-body
 		%h3
 			%i.icon-question-sign
