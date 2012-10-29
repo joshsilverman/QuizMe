@@ -15,6 +15,7 @@ class QuestionsController < ApplicationController
   # GET /questions/1
   # GET /questions/1.json
   def show
+    @show_answer = !params[:ans].nil?
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
     @publication = Publication.where(:question_id => params[:id], :published => true).order("created_at DESC").limit(1).first
