@@ -143,7 +143,8 @@ class FeedsController < ApplicationController
           :in_reply_to_post_id => params[:in_reply_to_post_id], 
           :in_reply_to_user_id => params[:in_reply_to_user_id], 
           :link_to_parent => false,
-          :resource_url => resource_url
+          :resource_url => resource_url,
+          :show_answer => true
         })
 
         # Check for followup test completion
