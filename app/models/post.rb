@@ -82,43 +82,43 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet(user, text, options = {})
-    puts user.twi_screen_name, text, options
-    # short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    # short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
-    # tweet = Post.format_tweet(text, {
-    #   :in_reply_to_user => options[:reply_to],
-    #   :question_backlink => short_url,
-    #   :hashtag => options[:hashtag],
-    #   :resource_backlink => short_resource_url,
-    #   :via_user => options[:via]
-    # })   
-    # if options[:in_reply_to_post_id] and options[:link_to_parent]
-    #   parent_post = Post.find(options[:in_reply_to_post_id]) 
-    #   twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
-    # else
-    #   twitter_response = user.twitter.update(tweet)
-    # end  
-    # post = Post.create(
-    #   :user_id => user.id,
-    #   :provider => 'twitter',
-    #   :text => tweet,
-    #   :provider_post_id => twitter_response.id.to_s,
-    #   :in_reply_to_post_id => options[:in_reply_to_post_id],
-    #   :in_reply_to_user_id => options[:in_reply_to_user_id],
-    #   :conversation_id => options[:conversation_id],
-    #   :publication_id => options[:publication_id],
-    #   :url => options[:long_url] ? short_url : nil,
-    #   :posted_via_app => true, 
-    #   :requires_action => false,
-    #   :interaction_type => options[:interaction_type],
-    #   :correct => options[:correct],
-    #   :intention => options[:intention]
-    # )   
-    # if options[:publication_id]
-    #   publication = Publication.find(options[:publication_id])
-    #   publication.posts << post
-    # end
-    # return post        
+    # puts user.twi_screen_name, text, options
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
+    tweet = Post.format_tweet(text, {
+      :in_reply_to_user => options[:reply_to],
+      :question_backlink => short_url,
+      :hashtag => options[:hashtag],
+      :resource_backlink => short_resource_url,
+      :via_user => options[:via]
+    })   
+    if options[:in_reply_to_post_id] and options[:link_to_parent]
+      parent_post = Post.find(options[:in_reply_to_post_id]) 
+      twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+    else
+      twitter_response = user.twitter.update(tweet)
+    end  
+    post = Post.create(
+      :user_id => user.id,
+      :provider => 'twitter',
+      :text => tweet,
+      :provider_post_id => twitter_response.id.to_s,
+      :in_reply_to_post_id => options[:in_reply_to_post_id],
+      :in_reply_to_user_id => options[:in_reply_to_user_id],
+      :conversation_id => options[:conversation_id],
+      :publication_id => options[:publication_id],
+      :url => options[:long_url] ? short_url : nil,
+      :posted_via_app => true, 
+      :requires_action => false,
+      :interaction_type => options[:interaction_type],
+      :correct => options[:correct],
+      :intention => options[:intention]
+    )   
+    if options[:publication_id]
+      publication = Publication.find(options[:publication_id])
+      publication.posts << post
+    end
+    return post        
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
@@ -167,7 +167,7 @@ class Post < ActiveRecord::Base
     Mixpanel.track_event "answered", {
       :distinct_id => current_user.id,
       :account => asker.twi_screen_name,
-      :source => params[:s]
+      :source => "twi"
     }
     return {:app_message => app_post.text, :user_message => user_post.text}
   end

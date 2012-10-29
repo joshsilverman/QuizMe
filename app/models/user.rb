@@ -110,12 +110,14 @@ class User < ActiveRecord::Base
   def self.reengage_inactive_users(threshold = 1.week.ago)
     ## COLLECT DISENGAGING USERS
     all_asker_ids = User.askers.collect(&:id)
+    puts all_asker_ids.to_json
     user_ids = []
-    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage')
+    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage last week inactive')
     all_posts.group_by(&:user_id).each do |user_id, posts|
-      user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage', :in_reply_to_user_id => user_id).present?
+      user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage last week inactive', :in_reply_to_user_id => user_id).present?
     end
-    disengaging_user_ids = user_ids - Post.not_spam.where("created_at > ? and user_id in (?)", threshold.end_of_day, user_ids).collect(&:user_id).uniq!
+    engaged_user_ids = Post.not_spam.where("created_at > ? and user_id in (?)", threshold.end_of_day, user_ids).collect(&:user_id).uniq! || []
+    disengaging_user_ids = user_ids - engaged_user_ids
 
     ## GET POPULAR PUBLICATIONS
     askers_users = {}
