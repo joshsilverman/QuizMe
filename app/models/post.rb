@@ -164,6 +164,10 @@ class Post < ActiveRecord::Base
       Post.trigger_split_test(current_user.id, 'mention reengagement')
       puts Split.redis.hget("user_store:#{current_user.id}", "mention reengagement")
     end
+    Mixpanel.track_event "answered", {
+      :account => asker.twi_screen_name,
+      :source => params[:s]
+    }
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 

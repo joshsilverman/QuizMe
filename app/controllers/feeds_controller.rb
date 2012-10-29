@@ -145,6 +145,11 @@ class FeedsController < ApplicationController
           puts "test completion triggered!"
           Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement')
         end
+        Mixpanel.track_event "answered", {
+          :time => user_post.created_at.to_i,
+          :account => asker.twi_screen_name,
+          :source => params[:s]
+        }
       else         
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
