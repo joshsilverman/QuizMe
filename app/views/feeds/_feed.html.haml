@@ -47,7 +47,7 @@
 						.subsidiary.post{:class => ("answered" if i < (count - 1))}
 							.content
 								- if response["user_id"] == asker.id
-									= image_tag(user.twi_profile_img_url, :class => "rounded")
+									= image_tag(asker.twi_profile_img_url, :class => "rounded")
 									%h5= asker.twi_screen_name
 									%p= response['text']
 								- else
