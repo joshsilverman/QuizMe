@@ -123,40 +123,46 @@ ACCOUNT_DATA = {
 
   ## Govt101
   2 => {
-    :retweet => [66, 191, 231, 322, 325], 
+    :retweet => [66, 191, 231, 322, 325, 9217], 
     :hashtags => ["election2012", "govt", "politics"],
     :category => "Social Sciences"
   }, 
   ## USPresidents101
   66 => {
-    :retweet => [2, 191, 231, 322, 325, 324], 
+    :retweet => [2, 191, 231, 322, 325, 324, 9217], 
     :hashtags => ["presidents", "history", "trivia"],
     :category => "Social Sciences"
   }, 
   ## PhilosophyQuiz
   191 => {
-    :retweet => [2, 66, 231, 322, 325, 108], 
+    :retweet => [2, 66, 231, 322, 325, 108, 9217], 
     :hashtags => ["philosophy", "philosopher"],
     :category => "Social Sciences"
   }, 
   ## HistoryHabit
   231 => {
-    :retweet => [2, 66, 191, 322, 325], 
+    :retweet => [2, 66, 191, 322, 325, 9217], 
     :hashtags => ["history", "trivia", "historybuff"],
     :category => "Social Sciences"
   }, 
   ## QuizMeEcon  
   322 => {
-    :retweet => [2, 66, 191, 223, 231, 325], 
+    :retweet => [2, 66, 191, 223, 231, 325, 9217], 
     :hashtags => ["econ", "economics"],
     :category => "Social Sciences"
   },
   ## AP US History 
   325 => {
-    :retweet => [2, 66, 191, 231, 322, 374], 
+    :retweet => [2, 66, 191, 231, 322, 374, 9217], 
     :hashtags => ["history", "trivia", "historybuff"],
     :category => "Social Sciences"
-  },    
+  },
+  ## PrepMeLSAT
+  9217 => {
+    :retweet => [2, 66, 191, 231, 322, 374, 325], 
+    :hashtags => ["lsat", "lawschool", "law"],
+    :category => "Social Sciences"
+  },     
 
   ## Marketing_Quiz
   223 => {
