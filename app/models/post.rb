@@ -82,7 +82,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet(user, text, options = {})
-    # puts user.twi_screen_name, text, options
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
     short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
     tweet = Post.format_tweet(text, {
