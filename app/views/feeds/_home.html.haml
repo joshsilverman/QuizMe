@@ -1,4 +1,4 @@
-- user = User.find(1)
+- user = User.find(8765)
 #header.row.rounded.border-color
 	#account_information.span6
 		.container
@@ -15,14 +15,12 @@
 										.dropdown.nav-link
 											%a{:href => "#", 'data-target' => "#"} 
 												%i.icon-cog
-											
 											%ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
 												%li
 													%a{:href => "/feeds/#{@asker.id}/manage"} Moderate
 												%li
 													%a{:href => "/askers/#{@asker.id}/edit"} Edit
 						.clr
-						
 					.clr
 					%h3= "@#{user.twi_screen_name}"
 					%p= "Wisr is a fun way to learn collaboratively."
