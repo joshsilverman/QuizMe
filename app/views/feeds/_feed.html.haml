@@ -2,9 +2,10 @@
 	- show_activity = ab_test("question activity", "true", "false")
 	- quiz_type = ab_test("ask a friend", "rollover", "cta")
 	- @publications.each do |post|
+		- user = post.asker
 		- conversation = @responses[post.id]
 		- conversation ? responded = true : responded = false
-		.conversation.border-color
+		.conversation.border-color{:asker_id => user.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				.content
@@ -14,13 +15,13 @@
 						%i.icon-user
 						%h5=user.twi_screen_name
 					- else
-						= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-						%h5= @asker.twi_screen_name
+						= image_tag(user.twi_profile_img_url, :class => "rounded")
+						%h5= user.twi_screen_name
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
 						- if quiz_type == "rollover"
-							%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => @asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{@asker.twi_screen_name}&url=http://wisr.com/feeds/#{@asker.id}/#{post.id}"}
+							%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => user.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{user.twi_screen_name}&url=http://wisr.com/feeds/#{user.id}/#{post.id}"}
 								%i.icon-share
 								Ask a Friend
 				- unless responded
@@ -32,8 +33,8 @@
 							.answer_container.input{:type => 'text'}
 								.shadow-top
 								.tweet
-									%span#account= "@#{@asker.twi_screen_name}"
-									%span#answer= " #{answer.tweetable(@asker.twi_screen_name)}"
+									%span#account= "@#{user.twi_screen_name}"
+									%span#answer= " #{answer.tweetable(user.twi_screen_name)}"
 									/ %span#url= " #{post.url}"
 									/ %span#additional{:contenteditable => true}
 								.answer_controls
@@ -45,9 +46,9 @@
 					- conversation.first.posts.each_with_index do |response, i|
 						.subsidiary.post{:class => ("answered" if i < (count - 1))}
 							.content
-								- if response["user_id"] == @asker.id
-									= image_tag(@asker.twi_profile_img_url, :class => "rounded")
-									%h5= @asker.twi_screen_name
+								- if response["user_id"] == user.id
+									= image_tag(user.twi_profile_img_url, :class => "rounded")
+									%h5= user.twi_screen_name
 									%p= response['text']
 								- else
 									= image_tag(current_user.twi_profile_img_url, :class => "rounded")

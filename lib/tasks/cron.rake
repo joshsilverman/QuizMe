@@ -53,7 +53,6 @@ task :dm_new_followers => :environment do
 		next if asker.new_user_q_id.nil?
 		Post.dm_new_followers(asker)		
 	end
-
 end
 
 task :reengage_incorrect_answerers => :environment do

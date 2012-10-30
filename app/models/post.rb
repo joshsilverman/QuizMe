@@ -200,15 +200,16 @@ class Post < ActiveRecord::Base
     to_message = []
     new_followers = current_acct.twitter.follower_ids.ids.first(10)
     new_followers.each do |tid|
-      u= User.find_by_twi_user_id(tid)
-      if u.nil?
-        new_u = User.create(:twi_user_id => tid)
-        to_message.push new_u
+      user = User.find_by_twi_user_id(tid)
+      if user.nil?
+        user = User.create(:twi_user_id => tid)
+        to_message.push user
       else
-        unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => u.id).count > 0
-          to_message.push u
+        unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
+          to_message.push user
         end
       end
+      current_acct.twitter.follow(tid)
     end
 
     to_message.each do |user|

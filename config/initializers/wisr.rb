@@ -59,117 +59,136 @@ REENGAGE = [
 ]
 
 ACCOUNT_DATA = {
-  ## Govt101
-  2 => {
-    :retweet => [66, 191, 231, 322, 325], 
-    :hashtags => ["election2012", "govt", "politics"]
-  }, 
-  ## USPresidents101
-  66 => {
-    :retweet => [2, 191, 231, 322, 325, 324], 
-    :hashtags => ["presidents", "history", "trivia"]
-  }, 
-  ## PhilosophyQuiz
-  191 => {
-    :retweet => [2, 66, 231, 322, 325, 108], 
-    :hashtags => ["philosophy", "philosopher"]
-  }, 
-  ## HistoryHabit
-  231 => {
-    :retweet => [2, 66, 191, 322, 325], 
-    :hashtags => ["history", "trivia", "historybuff"]
-  }, 
-  ## QuizMeEcon  
-  322 => {
-    :retweet => [2, 66, 191, 223, 231, 325], 
-    :hashtags => ["econ", "economics"]
-  },
-  ## AP US History 
-  325 => {
-    :retweet => [2, 66, 191, 231, 322, 374], 
-    :hashtags => ["history", "trivia", "historybuff"]
-  },    
-
   ## QuizMeBio
   18 => {
     :retweet => [19, 31, 108, 326, 7362], 
-    :hashtags => ["science", "biology", "premed", "medschool"]
+    :hashtags => ["science", "biology", "premed", "medschool"],
+    :category => "Science"
   }, 
   ## QuizMeChem
   19 => {
     :retweet => [18, 31, 108, 326, 7362], 
-    :hashtags => ["science", "chemistry"]
+    :hashtags => ["science", "chemistry"],
+    :category => "Science"
   },  
   ## QuizMeOrgo
   31 => {
     :retweet => [18, 19, 108, 326], 
-    :hashtags => ["science", "premed", "orgo"]
+    :hashtags => ["science", "premed", "orgo"],
+    :category => "Science"
   }, 
   ## QuizMePsych
   108 => {
     :retweet => [18, 19, 31, 326, 191], 
-    :hashtags => ["science", "psych"]
+    :hashtags => ["science", "psych"],
+    :category => "Science"
   },  
   ## QuizMeAnat  
   326 => {
     :retweet => [18, 19, 31, 108], 
-    :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"]
-  },    
-
-  ## Marketing_Quiz
-  223 => {
-    :retweet => [322], 
-    :hashtags => ["marketing"]
+    :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
+    :category => "Science"
+  },  
+  ## QuizMeWeather
+  7362 => {
+    :retweet => [18, 19], 
+    :hashtags => ["trivia", "weather", "meteorology", "meteo"],
+    :category => "Science"
   },  
 
   ## SATvocabQuiz
   227 => {
     :retweet => [324, 308, 284], 
-    :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"]
+    :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
+    :category => "Trivia"
   },  
   ## 501 Spanish 
   308 => {
     :retweet => [227, 324], 
-    :hashtags => ["spanish", "espanol"]
+    :hashtags => ["spanish", "espanol"],
+    :category => "Trivia"
   },
   ## US Capitals 
   324 => {
     :retweet => [227, 308, 66, 2], 
-    :hashtags => ["trivia"]
+    :hashtags => ["trivia"],
+    :category => "Trivia"
   },
+  ## QuizMeGeo
+  8367 => {
+    :retweet => [8373, 324],
+    :hashtags => ["geo", "geography", "worldgeo"],
+    :category => "Trivia"
+  }
+
+  ## Govt101
+  2 => {
+    :retweet => [66, 191, 231, 322, 325], 
+    :hashtags => ["election2012", "govt", "politics"],
+    :category => "Social Sciences"
+  }, 
+  ## USPresidents101
+  66 => {
+    :retweet => [2, 191, 231, 322, 325, 324], 
+    :hashtags => ["presidents", "history", "trivia"],
+    :category => "Social Sciences"
+  }, 
+  ## PhilosophyQuiz
+  191 => {
+    :retweet => [2, 66, 231, 322, 325, 108], 
+    :hashtags => ["philosophy", "philosopher"],
+    :category => "Social Sciences"
+  }, 
+  ## HistoryHabit
+  231 => {
+    :retweet => [2, 66, 191, 322, 325], 
+    :hashtags => ["history", "trivia", "historybuff"],
+    :category => "Social Sciences"
+  }, 
+  ## QuizMeEcon  
+  322 => {
+    :retweet => [2, 66, 191, 223, 231, 325], 
+    :hashtags => ["econ", "economics"],
+    :category => "Social Sciences"
+  },
+  ## AP US History 
+  325 => {
+    :retweet => [2, 66, 191, 231, 322, 374], 
+    :hashtags => ["history", "trivia", "historybuff"],
+    :category => "Social Sciences"
+  },    
+
+  ## Marketing_Quiz
+  223 => {
+    :retweet => [322], 
+    :hashtags => ["marketing"],
+    :category => "Marketing"
+  },  
+
+  ## QuizMeBeer  
+  374 => {
+    :retweet => [22, 284, 325], 
+    :hashtags => ["trivia", "beer", "craftbeer", "brewing"],
+    :category => "Misc"
+  },
+  ## QuizMeThailand
+  8373 => {
+    :retweet => [8367, 324, 325],
+    :hashtags => ["thailand", "thai", "thaiTrivia"],
+    :category => "Misc"
+  }  
 
   ## QuizMeCycling 
   22 => {
     :retweet => [284, 374], 
-    :hashtags => ["trivia", "cycling", "bicycle"]
+    :hashtags => ["trivia", "cycling", "bicycle"],
+    :category => "Sports"
   },
   ## QuizMeFootball  
   284 => {
     :retweet => [22, 374, 227], 
-    :hashtags => ["trivia", "football", "nfl"]
-  },
-  ## QuizMeBeer  
-  374 => {
-    :retweet => [22, 284, 325], 
-    :hashtags => ["trivia", "beer", "craftbeer", "brewing"]
-  },
-
-  ## QuizMeWeather
-  7362 => {
-    :retweet => [18, 19], 
-    :hashtags => ["trivia", "weather", "meteorology", "meteo"]
-  },
-
-  ## QuizMeThailand
-  8373 => {
-    :retweet => [8367, 324, 325],
-    :hashtags => ["thailand", "thai", "thaiTrivia"]
-  },
-
-  ## QuizMeGeo
-  8367 => {
-    :retweet => [8373, 324],
-    :hashtags => ["geo", "geography", "worldgeo"]
+    :hashtags => ["trivia", "football", "nfl"],
+    :category => "Sports"
   }
 }
 
