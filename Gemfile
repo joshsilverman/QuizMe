@@ -19,6 +19,7 @@ group :development do
   # gem "guard-livereload"
   gem 'awesome_print'
   gem 'rack-mini-profiler'
+  gem 'quiet_assets'
 end
 
 group :assets do
