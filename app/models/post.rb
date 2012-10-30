@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
       (x > 0 ? "#{text} " : "#{text[0..(-1 + x)]}... ") + 
       (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
       (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
-      (options[:resource_backlink].present? ? "Learn why at #{options[:resource_backlink]} " : "") +
+      (options[:resource_backlink].present? ? "Find the answer at #{options[:resource_backlink]} " : "") +
       (options[:via_user].present? ? "via @#{options[:via_user]}" : "") + 
       (options[:buffer].present? ? (" " * options[:buffer]) : "")
     }
@@ -32,8 +32,8 @@ class Post < ActiveRecord::Base
     end
   end
 
-	def self.shorten_url(url, source, lt, campaign, question_id=nil)
-    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}").short_url
+	def self.shorten_url(url, source, lt, campaign, show_answer=nil)
+    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
 	end
 
   def self.publish(provider, asker, publication)
@@ -83,7 +83,7 @@ class Post < ActiveRecord::Base
 
   def self.tweet(user, text, options = {})
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name) if options[:resource_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name, options[:show_answer]) if options[:resource_url]
     tweet = Post.format_tweet(text, {
       :in_reply_to_user => options[:reply_to],
       :question_backlink => short_url,
@@ -144,7 +144,7 @@ class Post < ActiveRecord::Base
     end
     Post.trigger_split_test(current_user.id, 'dm reengagement')
     response_text = post.generate_response(status)
-    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/{publication.question_id}/#{publication.question.slug}"
+    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
     app_post = Post.tweet(asker, response_text, {
       :reply_to => current_user.twi_screen_name,
       :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
@@ -154,7 +154,8 @@ class Post < ActiveRecord::Base
       :in_reply_to_post_id => (user_post ? user_post.id : nil), 
       :in_reply_to_user_id => current_user.id,
       :link_to_parent => true, 
-      :resource_url => resource_url
+      :resource_url => resource_url,
+      :show_answer => true
     })  
     conversation.posts << app_post if app_post
 
