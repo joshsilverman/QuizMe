@@ -6,6 +6,7 @@ class Question
 	user_name: null
 	name: null
 	publication_id: null
+	show_answer: null
 	constructor: ->
 		@element = $("#question")
 		@id = $("#question_id").val()
@@ -14,12 +15,15 @@ class Question
 		@user_name = $("#user_name").val()
 		@name = $("#feed_name").val()
 		@publication_id = $("#publication_id").val()
+		@show_answer = $("#show_answer").val()
 		answers = $("#question").find(".answers")
+		if @show_answer=='true' then disabled = true else disabled = false
 		answers.accordion({
 			collapsible: true, 
 			autoHeight: false,
 			active: false, 
 			icons: false, 
+			disabled: disabled
 		})
 		$(".tweet_button").on "click", (e) => 
 			if @user_name != undefined

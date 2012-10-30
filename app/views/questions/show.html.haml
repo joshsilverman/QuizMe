@@ -14,7 +14,10 @@
             - answers = @question.answers.shuffle
             - count = answers.size
             - answers.each_with_index do |answer, i|
-              %h2{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id}= answer.text
+              %h2{:id => ('correct_answer' if (answer["correct"] and @show_answer)), :class => "#{('bottom_border' if i < (count - 1))} #{('incorrect_answer' if !answer['correct'] and @show_answer)}", :correct => answer["correct"].to_s, :answer_id => answer.id} 
+                - if answer["correct"] and @show_answer
+                  %i.icon-ok{:style => "color: green;"}
+                = answer.text
               .answer_container.input{:type => 'text'}
                 .shadow-top
                 .tweet
@@ -42,3 +45,4 @@
 = hidden_field_tag :feed_name, @asker.twi_screen_name
 = hidden_field_tag :publication_id, @publication.id
 = hidden_field_tag :answer_id, @answer_id
+= hidden_field_tag :show_answer, @show_answer
