@@ -87,6 +87,7 @@ namespace :questions do
     topic = Topic.find_or_create_by_name(args[:topic_name].downcase)
 
     #get cards from seeder
+    # url = URI.parse("http://localhost:3001/handles/#{args[:seeder_id]}/export.json")
     url = URI.parse("http://seeder.herokuapp.com/handles/#{args[:seeder_id]}/export.json")
     req = Net::HTTP::Get.new(url.path)
     res = Net::HTTP.start(url.host, url.port) {|http|
@@ -114,7 +115,7 @@ namespace :questions do
               q.topic_id == topic.id &&
               q.created_for_asker_id == asker.id &&
               t_answer == card['answer']
-        puts "updating seeder card #{card['card_id']}..."
+        # puts "updating seeder card #{card['card_id']}..."
         q.update_attributes(:text => card['text'],
                             :topic_id => topic.id,
                             :user_id => 1,
