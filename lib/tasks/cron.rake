@@ -56,7 +56,7 @@ task :dm_new_followers => :environment do
 
 end
 
-task :reengage_users => :environment do
+task :reengage_incorrect_answerers => :environment do
 	User.reengage_incorrect_answerers()
 end
 
