@@ -158,6 +158,18 @@ ACCOUNT_DATA = {
   7362 => {
     :retweet => [18, 19], 
     :hashtags => ["trivia", "weather", "meteorology", "meteo"]
+  },
+
+  ## QuizMeThailand
+  8373 => {
+    :retweet => [8367, 324, 325],
+    :hashtags => ["thailand", "thai", "thaiTrivia"]
+  },
+
+  ## QuizMeGeo
+  8367 => {
+    :retweet => [8373, 324],
+    :hashtags => ["geo", "geography", "worldgeo"]
   }
 }
 
