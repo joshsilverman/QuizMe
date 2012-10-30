@@ -155,8 +155,8 @@ class Post < ActiveRecord::Base
       :in_reply_to_post_id => (user_post ? user_post.id : nil), 
       :in_reply_to_user_id => current_user.id,
       :link_to_parent => true, 
-      :resource_url => resource_url,
-      :wisr_question => true
+      :resource_url => answer.correct ? nil : resource_url,
+      :wisr_question => publication.question.resource_url ? false : true
     })  
     conversation.posts << app_post if app_post
 
