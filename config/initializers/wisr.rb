@@ -119,7 +119,7 @@ ACCOUNT_DATA = {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
     :category => "Trivia"
-  }
+  },
 
   ## Govt101
   2 => {
@@ -176,7 +176,7 @@ ACCOUNT_DATA = {
     :retweet => [8367, 324, 325],
     :hashtags => ["thailand", "thai", "thaiTrivia"],
     :category => "Misc"
-  }  
+  },
 
   ## QuizMeCycling 
   22 => {
