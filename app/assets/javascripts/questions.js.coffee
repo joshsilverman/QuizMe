@@ -27,7 +27,11 @@ class Question
 			if @user_name != undefined
 				parent = $(e.target).parents(".answer_container").prev("h2")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))	
-		$('.post-question').click -> question.post()
+
+		$('.post-question').click (a) -> 
+			question.post_new_question(this)
+		$("#add_answer").on "click", => post_new_question_add_answer()
+
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
 	
@@ -73,41 +77,63 @@ class Question
 			@element.find(".subsidiary").after(response.fadeIn(500))
 			@element.find("i").show()
 
-	post: =>
-		$("#post_question_modal").modal()
-		return
+	post_new_question: (elmnt) =>
 
-		$("#add_answer, #submit_question").off "click"
-		$("#add_answer").on "click", => add_answer()
+		question_id = $(elmnt).closest('.question-row').attr('question_id')
+		q = question.questions[question_id]
+		$('#question_input').val q.text
+
+		$('.ianswer').each (i, elmnt) -> 
+			if elmnt.id != 'ianswer1'
+				$(elmnt).remove()
+		$("#add_answer").show()
+		$('#ianswer1 input').val("")
+
+		$(q.answers).each (i, qq) ->
+			if qq.correct == true
+				$('#canswer input').val qq.text
+			else
+				if $('#ianswer1 input').val() == ''
+					$('#ianswer1 input').val qq.text
+				else
+					count = $(".answer").length
+					clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+					clone.find("input").attr("name", "ianswer#{count}").val(qq.text)
+					$("#add_answer").hide() if count == 3
+
+		$("#post_question_modal").modal()
+		$("#submit_question").off "click"
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
-			submit()
+			submit(q.id)
 
-		add_answer = ->
-			count = $(".answer").length
-			return if count > 3
-			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
-			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
-			$("#add_answer").hide() if count == 3
-		submit = ->
-			if validate_form()
-				$("#submit_question").button("loading")
-				data =
-					"question" : $("#question_input").val()
-					"asker_id" : window.feed.id
-					"status" : $("#status").val()
-					"canswer" : $("#canswer input").val()
-					"ianswer1" : $("#ianswer1 input").val()
-					"ianswer2" : $("#ianswer2 input").val()
-					"ianswer3" : $("#ianswer3 input").val()
-				$.ajax
-					url: "/questions/save_question_and_answers",
-					type: "POST",
-					data: data,
-					error: => alert_status(false),
-					success: (e) => 
-						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-						alert_status(true)	
+	post_new_question_submit = (question_id) ->
+		if validate_form()
+			$("#submit_question").button("loading")
+			data =
+				"question" : $("#question_input").val()
+				"asker_id" : window.feed.id
+				"status" : $("#status").val()
+				"canswer" : $("#canswer input").val()
+				"ianswer1" : $("#ianswer1 input").val()
+				"ianswer2" : $("#ianswer2 input").val()
+				"ianswer3" : $("#ianswer3 input").val()
+				"question_id" : question_id
+			$.ajax
+				url: "/questions/save_question_and_answers",
+				type: "POST",
+				data: data,
+				error: => alert_status(false),
+				success: (e) => 
+					$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
+					alert_status(true)	
+
+	post_new_question_add_answer = ->
+		count = $(".answer").length
+		return if count > 3
+		clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+		clone.find("input").attr("name", "ianswer#{count}").val("").focus()
+		$("#add_answer").hide() if count == 3
 
 class Moderator
 

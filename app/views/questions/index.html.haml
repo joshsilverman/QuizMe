@@ -6,12 +6,12 @@
 
 #question
 
-  .page-header
-    %h1= t '.title', :default => 'My Questions'
-
-  .form-actions
+  /.page-header
+  .header.form-actions
+    %h2= t '.title', :default => 'My Questions'
     .btn-group
       = link_to t('.new', :default => t("helpers.links.new")), "#", :class => 'btn btn-primary'
+
 
   - model_class = Question.new.class
   %table.table
@@ -26,8 +26,8 @@
         %th= t '.actions', :default => t("helpers.actions")
     %tbody
       - @questions.each_with_index do |question, i|
-        %tr.question-row
-          %td= i + 1
+        %tr.question-row{:question_id => question.id}
+          %td.faded= i + params[:page].to_i * 25 + 1
           %td= render :partial => "status", :locals => {:status => question.status }
           %td= link_to question.text, question_path(question)
           %td= question.hashtag
@@ -35,9 +35,12 @@
           %td.has-tooltip{:rel => "tooltip", "data-original-title" => question.created_at, "data-placement" => "bottom"}
             = question.created_at.strftime "%m/%d"
           %td
-            %a.post-question{:style => "cursor:pointer;"} edit
+            %a.post-question{:style => "cursor:pointer;"} Edit
             &nbsp;|&nbsp;
             = link_to "Delete", question_path(question), :method => :delete, :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?'))
 
+  .pagination-wrapper
+    = paginate @questions
+
   = render "feeds/question_modal"
-  #questions.hide= @questions_hash.to_json
+  #questions.hide= @questions_hash.to_json :include => :answers

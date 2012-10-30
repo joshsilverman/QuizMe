@@ -311,4 +311,22 @@
 		}
 	}
 
+	.header {
+		h2 {
+			float:left;
+		}
+		.btn-group {
+			float:right;
+		}
+	}
+
+	.pagination-wrapper {
+		text-align:center;
+	}
+
+	.question-row {
+		.faded {
+			color:grey;
+		}
+	}
 }
