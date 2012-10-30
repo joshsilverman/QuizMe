@@ -2,13 +2,14 @@ class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new, :refer, :show]
   before_filter :admin?, :only => [:moderate, :moderate_update]
   #before_filter :author?, :only => [:index]
-  # GET /questions
-  # GET /questions.json
+
+
   def index
     #@break !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     current_user = User.find 20
-
-    @questions = current_user.questions.order("created_at DESC")
+ 
+    @questions = current_user.questions.includes(:answers).order("created_at DESC").page(params[:page]).per(25)
+    #@questions = current_user.questions.order("created_at DESC")
 
     @questions_hash = Hash[@questions.collect{|q| [q.id, q]}]
 
@@ -18,8 +19,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # GET /questions/1
-  # GET /questions/1.json
   def show
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
@@ -27,8 +26,6 @@ class QuestionsController < ApplicationController
     redirect_to "/feeds/#{@asker.id}" unless (@question and @publication and @question.slug == params[:slug])
   end
 
-  # GET /questions/new
-  # GET /questions/new.json
   def new
     @asker = User.asker(params[:asker_id])
     topic = @asker.topics.first
@@ -43,14 +40,11 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # GET /questions/1/edit
   def edit
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
   end
 
-  # POST /questions
-  # POST /questions.json
   def create
     @question = Question.new(params[:question])
 
@@ -65,8 +59,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # PUT /questions/1
-  # PUT /questions/1.json
   def update
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
@@ -82,8 +74,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # DELETE /questions/1
-  # DELETE /questions/1.json
   def destroy
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
