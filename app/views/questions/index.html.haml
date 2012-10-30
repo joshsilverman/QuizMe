@@ -18,6 +18,7 @@
     %thead
       %tr
         %th
+        %th
         %th Status
         %th{:style => 'width:55%;'}= model_class.human_attribute_name(:text)
         %th= model_class.human_attribute_name(:hashtag)
@@ -28,6 +29,7 @@
       - @questions.each_with_index do |question, i|
         %tr.question-row{:question_id => question.id}
           %td.faded= i + params[:page].to_i * 25 + 1
+          %td= question.created_for_asker_id
           %td= render :partial => "status", :locals => {:status => question.status }
           %td= link_to question.text, question_path(question)
           %td= question.hashtag
