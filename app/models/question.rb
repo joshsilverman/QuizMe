@@ -4,6 +4,7 @@ class Question < ActiveRecord::Base
   has_many :publications
   belongs_to :topic
   belongs_to :user
+  before_create :generate_slug
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude)
     recent_question_ids = asker.publications.where("question_id is not null and published = ?", true).order('created_at DESC').limit(num_days_back_to_exclude * asker.posts_per_day).collect(&:question_id)
@@ -21,6 +22,9 @@ class Question < ActiveRecord::Base
     return self.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")[0..69]
   end
 
+  def generate_slug
+    self.slug = self.slug_text
+  end
 
   ###THIS IS FOR IMPORTING FROM QB###
 	require 'net/http'
