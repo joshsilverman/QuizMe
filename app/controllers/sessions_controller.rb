@@ -46,7 +46,7 @@ class SessionsController < ApplicationController
       )
       session[:user_id] = user.id
       #temporary fix until devise
-      cookies.permanent.signed[:permanent_user_id] = user.id
+      # cookies.permanent.signed[:permanent_user_id] = user.id
       if omni_params["question_id"]
         redirect_to "/questions/#{omni_params['question_id']}/#{omni_params['answer_id']}"
       elsif omni_params["feed_id"]
