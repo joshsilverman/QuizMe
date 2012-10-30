@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
       (x > 0 ? "#{text} " : "#{text[0..(-1 + x)]}... ") + 
       (options[:question_backlink].present? ? "#{options[:question_backlink]} " : "") +
       (options[:hashtag].present? ? "##{options[:hashtag]} " : "") +
-      (options[:resource_backlink].present? ? "Find the answer at #{options[:resource_backlink]} " : "") +
+      (options[:resource_backlink].present? ? "#{options[:wisr_question] ? 'Find the answer at' : 'Find out why at'} #{options[:resource_backlink]} " : "") +
       (options[:via_user].present? ? "via @#{options[:via_user]}" : "") + 
       (options[:buffer].present? ? (" " * options[:buffer]) : "")
     }
@@ -83,13 +83,14 @@ class Post < ActiveRecord::Base
 
   def self.tweet(user, text, options = {})
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name, options[:show_answer]) if options[:resource_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name, options[:wisr_question]) if options[:resource_url]
     tweet = Post.format_tweet(text, {
       :in_reply_to_user => options[:reply_to],
       :question_backlink => short_url,
       :hashtag => options[:hashtag],
       :resource_backlink => short_resource_url,
-      :via_user => options[:via]
+      :via_user => options[:via],
+      :wisr_question => options[:wisr_question]
     })   
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
@@ -155,7 +156,7 @@ class Post < ActiveRecord::Base
       :in_reply_to_user_id => current_user.id,
       :link_to_parent => true, 
       :resource_url => resource_url,
-      :show_answer => true
+      :wisr_question => true
     })  
     conversation.posts << app_post if app_post
 

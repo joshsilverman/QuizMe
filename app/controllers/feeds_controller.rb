@@ -190,10 +190,17 @@ class FeedsController < ApplicationController
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
         long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-        if correct.nil?
+        if correct.nil? or correct
           resource_url = nil
+          wisr_question = false
         else
-          pub.question.resource_url.nil? ? resource_url = "#{URL}/questions/#{pub.question_id}/#{pub.question.slug}" : resource_url = "#{URL}/posts/#{post.id}/refer"
+          if pub.question.resource_url.nil?
+            resource_url = "#{URL}/questions/#{pub.question_id}/#{pub.question.slug}"
+            wisr_question = true
+          else
+            resource_url = "#{URL}/posts/#{post.id}/refer"
+            wisr_question = false
+          end
         end
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
@@ -204,7 +211,7 @@ class FeedsController < ApplicationController
           :in_reply_to_user_id => params[:in_reply_to_user_id], 
           :link_to_parent => false,
           :resource_url => resource_url,
-          :show_answer => true
+          :wisr_question => wisr_question
         })
 
         # Check for followup test completion
