@@ -105,6 +105,16 @@ class FeedsController < ApplicationController
           @correct = user[:correct]
         end        
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
+        puts "pre"
+        unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
+          # puts user_followers.to_json
+          puts current_user.to_json
+          user_followers = current_user.twitter.follower_ids()
+          puts user_followers.to_json
+          Rails.cache.write("follower_ids:#{current_user.id}", user_followers.ids)
+          # puts user_followers.to_json
+        end
+        puts "post"
       else
         @responses = []
       end
@@ -115,12 +125,16 @@ class FeedsController < ApplicationController
         @author = User.find @asker.author_id
       end
 
+      ## Activity Stream
+      # asker_followers = Rails.cache.read()
+        # @asker.follower_ids()
+
       respond_to do |format|
         format.html # show.html.erb
         format.json { render json: @posts }
       end
     else
-      redirect_to "/feeds/2"
+      redirect_to "/"
     end
   end
 
