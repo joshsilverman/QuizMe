@@ -8,7 +8,24 @@
 		resize: none;
 		margin-left: 20px;
 		width: 480px;		
-		height: 65px;
+		height: 38px;
+	}
+
+	#handle_input, .dropdown-menu {
+		resize: none;
+		margin-left: 20px;
+		width:210px;
+	}
+
+	hr {
+		margin:14px 0;
+	}
+
+	.dropdown-menu {
+		margin-top: -5px;
+		height:154px;
+		width:218px;
+		overflow:scroll;
 	}
 
 	#answers {
@@ -39,6 +56,11 @@
 
 		.answer {
 			clear:both;
+			height:23px;
+
+			span, input {
+				float:left;
+			}
 		}
 	}
 	
@@ -51,6 +73,13 @@
 		float:right;
 		margin-top: 5px;
 		margin-right: 5px;
+	}
+
+	.dropdown {
+
+		.ui-state-hover {
+			border:none !important;
+		}
 	}
 }
 
@@ -320,4 +349,35 @@
 		}
 	}
 
+	.header {
+		h2 {
+			float:left;
+		}
+		.btn-group {
+			float:right;
+		}
+
+		.stats {
+			float:right;
+
+			.breadcrumb {
+				margin-bottom:0;
+
+				.badge {
+					margin-left:5px;
+					white-space: inherit;
+				}
+			}
+		}
+	}
+
+	.pagination-wrapper {
+		text-align:center;
+	}
+
+	.question-row {
+		.faded {
+			color:grey;
+		}
+	}
 }
