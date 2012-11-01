@@ -1,0 +1,18 @@
+#activity_stream.rounded.border-color
+	.header
+		%h4
+			Activity	
+	%ul.unstyled
+		- @stream.each do |action|
+			%li 
+				.content
+					= image_tag(action.user.twi_profile_img_url, :class => "rounded")
+					%h5= "#{action.user.twi_screen_name}"
+					- puts action.to_json
+					/ # = action.publication.question.text
+					.clr
+				.clr      
+		/ - @stream.each_with_index do |(category, askers), i|
+		/ 	.directory_item{:class => ("border_bottom" if i < (@stream.size - 1))}
+		/ 		%h5= category
+		/ 		.asker_thumbnails     

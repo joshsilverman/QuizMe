@@ -105,16 +105,9 @@ class FeedsController < ApplicationController
           @correct = user[:correct]
         end        
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
-        puts "pre"
         unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
-          # puts user_followers.to_json
-          puts current_user.to_json
-          user_followers = current_user.twitter.follower_ids()
-          puts user_followers.to_json
-          Rails.cache.write("follower_ids:#{current_user.id}", user_followers.ids)
-          # puts user_followers.to_json
+          Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids)
         end
-        puts "post"        
       else
         @responses = []
       end
@@ -126,8 +119,15 @@ class FeedsController < ApplicationController
       end
 
       ## Activity Stream
-      # asker_followers = Rails.cache.read()
-        # @asker.follower_ids()
+      @stream = []
+      unless (asker_followers = Rails.cache.read("follower_ids:#{@asker.id}")).present?
+        Rails.cache.write("follower_ids:#{@asker.id}", asker_followers = @asker.twitter.follower_ids().ids, :timeToLive => 3.days)
+      end
+      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and (posts.interaction_type = 3 or posts.correct is not null) and posts.created_at > ? and conversation_id is not null", (asker_followers & user_followers), 10.weeks.ago).order("created_at DESC").includes(:publication => :question)
+      recent_posts.group_by(&:user_id).each { |user_id, posts| @stream << posts.shift }
+      @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
+      @stream = @stream[0..3]
+      @stream += Post.where("id not in (?) and (posts.interaction_type = 3 or posts.correct is not null)", @stream.collect(&:id)).order("created_at DESC").limit(5 - @stream.size).includes(:publication => :question) if @stream.size < 5
 
       respond_to do |format|
         format.html # show.html.erb
