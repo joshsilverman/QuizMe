@@ -105,16 +105,6 @@ class FeedsController < ApplicationController
           @correct = user[:correct]
         end        
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
-        puts "pre"
-        unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
-          # puts user_followers.to_json
-          puts current_user.to_json
-          user_followers = current_user.twitter.follower_ids()
-          puts user_followers.to_json
-          Rails.cache.write("follower_ids:#{current_user.id}", user_followers.ids)
-          # puts user_followers.to_json
-        end
-        puts "post"
       else
         @responses = []
       end
