@@ -29,6 +29,9 @@
             - elsif current_user.is_role? 'client'
               %li
                 %a.nav-link{:href => "/clients/2/report"} Reporting
+            - elsif current_user.is_role? 'author'
+              %li
+                %a.nav-link{:href => "/questions"} My Questions
             - else
               %li
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"

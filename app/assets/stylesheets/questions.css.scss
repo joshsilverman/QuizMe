@@ -347,6 +347,19 @@
 		.btn-group {
 			float:right;
 		}
+
+		.stats {
+			float:right;
+
+			.breadcrumb {
+				margin-bottom:0;
+
+				.badge {
+					margin-left:5px;
+					white-space: inherit;
+				}
+			}
+		}
 	}
 
 	.pagination-wrapper {

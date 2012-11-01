@@ -6,9 +6,21 @@
 
 #question
 
-  /.page-header
+  / .page-header
   .header.form-actions
     %h2= t '.title', :default => 'My Questions'
+    .stats
+      %ul.breadcrumb
+        %li
+          %span.divider
+            Approved:
+            %span.badge-success.badge
+              = current_user.questions.where(:status => 1).count
+        %li
+          %span.divider
+            Pending:
+            %span.badge
+              = current_user.questions.where(:status => 0).count
 
   - model_class = Question.new.class
   %table.table
@@ -29,7 +41,8 @@
           %td
             - asker = User.find question.created_for_asker_id if question.created_for_asker_id
             - if question.created_for_asker_id
-              = image_tag(asker.twi_profile_img_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name} answered", "data-placement" => "bottom")
+              %a{:href => "/feeds/#{asker.id}"}
+                = image_tag(asker.twi_profile_img_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name} answered", "data-placement" => "bottom")
           %td= render :partial => "status", :locals => {:status => question.status }
           %td= link_to question.text, question_path(question)
           %td= question.hashtag

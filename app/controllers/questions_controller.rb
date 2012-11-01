@@ -81,14 +81,13 @@ class QuestionsController < ApplicationController
     end
   end
 
+  # this method turned into a clusterf*ck because it combines update/create actions
+  # @amateur-hour
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
 
     if params[:question_id]
       @question = Question.find params[:question_id]
-      puts @question unless @question.nil?
-      puts "couldn't find question" if @question.nil?
-
       return if current_user.id != @question.user_id
     end
     @question ||= Question.new
@@ -96,7 +95,6 @@ class QuestionsController < ApplicationController
     @question.text = params[:question]
     @question.user_id = current_user.id
     @question.priority = true
-    # @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
     @question.created_for_asker_id = params[:asker_id]
     @question.status = 0
     @question.save
