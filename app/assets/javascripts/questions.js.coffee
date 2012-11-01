@@ -16,6 +16,7 @@ class Question
 		@name = $("#feed_name").val()
 		@publication_id = $("#publication_id").val()
 		@questions = $.parseJSON $("#questions").html()
+		@handle_data = $.parseJSON($('#handle_data').html())
 		answers = $("#question").find(".answers")
 		answers.accordion({
 			collapsible: true, 
@@ -28,9 +29,9 @@ class Question
 				parent = $(e.target).parents(".answer_container").prev("h2")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))	
 
-		$('.post-question').click (a) -> 
-			question.post_new_question(this)
-		$("#add_answer").on "click", => post_new_question_add_answer()
+		$('.post-question').click (a) -> question.post_edit_question(this)
+		$('.post-new-question').click (a) -> question.post_new_question()
+		$("#add_answer").on "click", -> question.post_new_question_add_answer()
 
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
@@ -77,8 +78,42 @@ class Question
 			@element.find(".subsidiary").after(response.fadeIn(500))
 			@element.find("i").show()
 
-	post_new_question: (elmnt) =>
+	post_new_question: () =>
+		$('.ianswer').each (i, elmnt) -> 
+			if elmnt.id != 'ianswer1'
+				$(elmnt).remove()
+		$("#add_answer").show()
+		$('#ianswer1 input, #canswer input').val("")
 
+		$('#post_question_modal .modal-header h3').html "New Question"
+		$("#post_question_modal").modal()
+		$("#submit_question").off "click"
+		$("#submit_question").on "click", (e) => 
+			e.preventDefault()
+			question.post_new_question_submit()
+
+		$('#handle_input').autocomplete
+			source: @handle_data.map (h) -> h[0]
+			open: (e, ui) ->
+				menu = $('.ui-menu, .dropdown-menu')
+				menu_items = menu.find('li')
+				menu_links = menu.find('a')
+
+				menu.removeClass()
+				menu.removeAttr('style')
+				menu_items.removeClass()
+				menu_links.removeClass()
+
+
+				menu.addClass 'dropdown-menu'
+				$(this).after menu
+				menu.show()
+				
+				menu_links.click ->
+					$('#handle_input').val $(this).html()
+					$('.dropdown-menu').hide()
+
+	post_edit_question: (elmnt) =>
 		question_id = $(elmnt).closest('.question-row').attr('question_id')
 		q = question.questions[question_id]
 		$('#question_input').val q.text
@@ -92,48 +127,92 @@ class Question
 		$(q.answers).each (i, qq) ->
 			if qq.correct == true
 				$('#canswer input').val qq.text
+				$('#canswer input').attr 'answer_id', qq.id
 			else
 				if $('#ianswer1 input').val() == ''
 					$('#ianswer1 input').val qq.text
+					$('#ianswer1 input').attr 'answer_id', qq.id
 				else
 					count = $(".answer").length
 					clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 					clone.find("input").attr("name", "ianswer#{count}").val(qq.text)
+					clone.find("input").attr 'answer_id', qq.id
 					$("#add_answer").hide() if count == 3
 
+		$.each @handle_data, (i, r) -> $('#handle_input').val r[0] if r[1] == q.created_for_asker_id
+
+		$('#post_question_modal .modal-header h3').html "Edit Question"
 		$("#post_question_modal").modal()
 		$("#submit_question").off "click"
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
-			submit(q.id)
+			question.post_edit_question_submit(q.id)
 
-	post_new_question_submit = (question_id) ->
-		if validate_form()
+	post_new_question_submit: ->
+		return if question.post_question_validate_form()
+
+		$("#submit_question").button("loading")
+		data =
+			"question" : $("#question_input").val()
+			#"asker_id" : window.feed.id
+			"status" : $("#status").val()
+			"canswer" : $("#canswer input").val()
+			"ianswer1" : $("#ianswer1 input").val()
+			"ianswer2" : $("#ianswer2 input").val()
+			"ianswer3" : $("#ianswer3 input").val()
+			"handle" : $("handle_input").val()
+		$.ajax
+			url: "/questions/save_question_and_answers",
+			type: "POST",
+			data: data,
+			error: => alert_status(false),
+			success: (e) => location.href = location.href.split("?")[0]
+
+	post_edit_question_submit: (question_id) ->
+		if question.post_question_validate_form()
 			$("#submit_question").button("loading")
 			data =
 				"question" : $("#question_input").val()
-				"asker_id" : window.feed.id
+				"asker_id" : question.questions[question_id]['created_for_asker_id']
 				"status" : $("#status").val()
 				"canswer" : $("#canswer input").val()
 				"ianswer1" : $("#ianswer1 input").val()
 				"ianswer2" : $("#ianswer2 input").val()
 				"ianswer3" : $("#ianswer3 input").val()
+				"canswer_id" : $("#canswer input").attr('answer_id')
+				"ianswer1_id" : $("#ianswer1 input").attr('answer_id')
+				"ianswer2_id" : $("#ianswer2 input").attr('answer_id')
+				"ianswer3_id" : $("#ianswer3 input").attr('answer_id')
 				"question_id" : question_id
+				"handle" : $("handle_input").val()
 			$.ajax
 				url: "/questions/save_question_and_answers",
 				type: "POST",
 				data: data,
 				error: => alert_status(false),
 				success: (e) => 
-					$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-					alert_status(true)	
+					location.reload()
 
-	post_new_question_add_answer = ->
+	post_new_question_add_answer: ->
 		count = $(".answer").length
 		return if count > 3
 		clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 		clone.find("input").attr("name", "ianswer#{count}").val("").focus()
+		clone.find("input").removeAttr("answer_id")
 		$("#add_answer").hide() if count == 3
+
+	post_question_validate_form: ->
+		if $("#question_input").val() == ""
+			alert "Please enter a question!"
+			return false
+		else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
+			alert "Please enter at least one correct and incorrect answer!"
+			return false
+		else if @handle_data[$("#handle_input").val()] == undefined and $('#handle-selector').is(":visible")
+			alert "Please enter a valid handle!"
+			return false
+		else
+			return true
 
 class Moderator
 
@@ -157,5 +236,6 @@ class Moderator
 $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
+	question.post_new_question()
 	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
 	# target.click() if target.length > 0

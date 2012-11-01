@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user, :except => [:new, :refer, :show]
-  before_filter :admin?, :only => [:moderate, :moderate_update]
+  # before_filter :authenticate_user, :except => [:new, :refer, :show]
+  # before_filter :admin?, :only => [:moderate, :moderate_update]
   #before_filter :author?, :only => [:index]
 
 
@@ -12,6 +12,7 @@ class QuestionsController < ApplicationController
     #@questions = current_user.questions.order("created_at DESC")
 
     @questions_hash = Hash[@questions.collect{|q| [q.id, q]}]
+    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
 
     respond_to do |format|
       format.html # index.html.erb
@@ -86,8 +87,20 @@ class QuestionsController < ApplicationController
   end
 
   def save_question_and_answers
+    #@break !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    current_user = User.find 20
+
     return if params[:question].blank? or params[:canswer].blank?
-    @question = Question.new
+
+    if params[:question_id]
+      @question = Question.find params[:question_id]
+      puts @question unless @question.nil?
+      puts "couldn't find question" if @question.nil?
+
+      return if current_user.id != @question.user_id
+    end
+    @question ||= Question.new
+
     @question.text = params[:question]
     @question.user_id = current_user.id
     @question.priority = true
@@ -96,10 +109,28 @@ class QuestionsController < ApplicationController
     @question.status = 0
     @question.save
 
-    @question.answers << Answer.create(:text => params[:canswer], :correct => true)
-    @question.answers << Answer.create(:text => params[:ianswer1], :correct => false) unless params[:ianswer1].nil? or params[:ianswer1].blank? 
-    @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
-    @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
+    #correct answer save
+    @answer = Answer.find_or_create_by_id(params[:canswer_id])
+    @answer.update_attributes(:text => params[:canswer], :correct => true)
+    @question.answers << @answer
+
+    #other answers save
+    [:ianswer1, :ianswer2, :ianswer3].each do |answer_key|
+      if !params[answer_key].nil? and !params[answer_key].blank?
+        @answer = nil
+        @answer = Answer.find(params[answer_key.to_s + "_id"]) unless params[answer_key.to_s + "_id"].nil?
+        puts @answer.nil?
+        if @answer
+          @answer.update_attributes(:text => params[answer_key], :correct => false)
+        else
+          @answer = Answer.create :text => params[answer_key], :correct => false
+          @question.answers << @answer
+        end
+      elsif !params[answer_key.to_s + "_id"].nil?
+        Answer.find(params[answer_key.to_s + "_id"]).destroy
+      end
+    end
+
     render :json => @question
   end
 

@@ -10,7 +10,7 @@
   .header.form-actions
     %h2= t '.title', :default => 'My Questions'
     .btn-group
-      = link_to t('.new', :default => t("helpers.links.new")), "#", :class => 'btn btn-primary'
+      = link_to t('.new', :default => t("helpers.links.new")), "#", :class => 'btn btn-primary post-new-question'
 
 
   - model_class = Question.new.class
@@ -18,7 +18,7 @@
     %thead
       %tr
         %th
-        %th
+        %th{:style => 'width:16px;'}
         %th Status
         %th{:style => 'width:55%;'}= model_class.human_attribute_name(:text)
         %th= model_class.human_attribute_name(:hashtag)
@@ -29,7 +29,10 @@
       - @questions.each_with_index do |question, i|
         %tr.question-row{:question_id => question.id}
           %td.faded= i + params[:page].to_i * 25 + 1
-          %td= question.created_for_asker_id
+          %td
+            - asker = User.find question.created_for_asker_id if question.created_for_asker_id
+            - if question.created_for_asker_id
+              = image_tag(asker.twi_profile_img_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name} answered", "data-placement" => "bottom")
           %td= render :partial => "status", :locals => {:status => question.status }
           %td= link_to question.text, question_path(question)
           %td= question.hashtag
