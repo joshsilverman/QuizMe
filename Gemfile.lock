@@ -69,7 +69,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.3.3)
+    coffee-script-source (1.4.0)
     commonjs (0.2.6)
     crack (0.3.1)
     dalli (2.1.0)
@@ -103,7 +103,7 @@ GEM
     json (1.7.5)
     less (2.2.2)
       commonjs (~> 0.2.6)
-    less-rails (2.2.3)
+    less-rails (2.2.6)
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
@@ -119,7 +119,7 @@ GEM
     multi_json (1.3.6)
     multi_xml (0.5.1)
     multipart-post (1.1.5)
-    newrelic_rpm (3.5.0)
+    newrelic_rpm (3.5.0.1)
     oauth (0.4.7)
     oauth2 (0.6.1)
       faraday (~> 0.7)
@@ -223,7 +223,7 @@ GEM
       libv8 (~> 3.3.10)
     thor (0.14.6)
     tilt (1.3.3)
-    treetop (1.4.11)
+    treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
     tumblife (1.2.0)
@@ -243,7 +243,7 @@ GEM
       less-rails (~> 2.2.2)
       railties (>= 3.1)
       therubyracer (= 0.10.1)
-    tzinfo (0.3.33)
+    tzinfo (0.3.34)
     uglifier (1.2.6)
       execjs (>= 0.3.0)
       multi_json (~> 1.3)
@@ -265,7 +265,7 @@ DEPENDENCIES
   haml (= 3.1.6)
   hirb
   jquery-rails (= 1.0.19)
-  mixpanel
+  mixpanel (= 1.1.3)
   newrelic_rpm
   omniauth (= 1.1.0)
   omniauth-facebook (= 1.4.0)
