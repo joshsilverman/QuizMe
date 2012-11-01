@@ -1,19 +1,20 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new, :refer, :show]
   before_filter :admin?, :only => [:moderate, :moderate_update]
-  # GET /questions
-  # GET /questions.json
+  before_filter :author?, :only => [:index]
+
+
   def index
-    @questions = current_user.questions
+    @questions = current_user.questions.includes(:answers).order("created_at DESC").page(params[:page]).per(25)
+    @questions_hash = Hash[@questions.collect{|q| [q.id, q]}]
+    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html
       format.json { render json: @questions }
     end
   end
 
-  # GET /questions/1
-  # GET /questions/1.json
   def show
     @show_answer = !params[:ans].nil?
     @question = Question.find(params[:id])
@@ -22,8 +23,6 @@ class QuestionsController < ApplicationController
     redirect_to "/feeds/#{@asker.id}" unless (@question and @publication and @question.slug == params[:slug])
   end
 
-  # GET /questions/new
-  # GET /questions/new.json
   def new
     @asker = User.asker(params[:asker_id])
     topic = @asker.topics.first
@@ -38,14 +37,11 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # GET /questions/1/edit
   def edit
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
   end
 
-  # POST /questions
-  # POST /questions.json
   def create
     @question = Question.new(params[:question])
 
@@ -60,8 +56,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # PUT /questions/1
-  # PUT /questions/1.json
   def update
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
@@ -77,8 +71,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # DELETE /questions/1
-  # DELETE /questions/1.json
   def destroy
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
@@ -90,21 +82,46 @@ class QuestionsController < ApplicationController
     end
   end
 
+  # this method turned into a clusterf*ck because it combines update/create actions
+  # @amateur-hour
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
-    @question = Question.new
+
+    if params[:question_id]
+      @question = Question.find params[:question_id]
+      return if current_user.id != @question.user_id
+    end
+    @question ||= Question.new
+
     @question.text = params[:question]
     @question.user_id = current_user.id
     @question.priority = true
-    # @question.topic_id = params[:topic_tag] unless params[:topic_tag].nil?
     @question.created_for_asker_id = params[:asker_id]
     @question.status = 0
     @question.save
 
-    @question.answers << Answer.create(:text => params[:canswer], :correct => true)
-    @question.answers << Answer.create(:text => params[:ianswer1], :correct => false) unless params[:ianswer1].nil? or params[:ianswer1].blank? 
-    @question.answers << Answer.create(:text => params[:ianswer2], :correct => false) unless params[:ianswer2].nil? or params[:ianswer2].blank? 
-    @question.answers << Answer.create(:text => params[:ianswer3], :correct => false) unless params[:ianswer3].nil? or params[:ianswer3].blank? 
+    #correct answer save
+    @answer = Answer.find_or_create_by_id(params[:canswer_id])
+    @answer.update_attributes(:text => params[:canswer], :correct => true)
+    @question.answers << @answer
+
+    #other answers save
+    [:ianswer1, :ianswer2, :ianswer3].each do |answer_key|
+      if !params[answer_key].nil? and !params[answer_key].blank?
+        @answer = nil
+        @answer = Answer.find(params[answer_key.to_s + "_id"]) unless params[answer_key.to_s + "_id"].nil?
+        puts @answer.nil?
+        if @answer
+          @answer.update_attributes(:text => params[answer_key], :correct => false)
+        else
+          @answer = Answer.create :text => params[answer_key], :correct => false
+          @question.answers << @answer
+        end
+      elsif !params[answer_key.to_s + "_id"].nil?
+        Answer.find(params[answer_key.to_s + "_id"]).destroy
+      end
+    end
+
     render :json => @question
   end
 

@@ -24,6 +24,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def author?
+    if current_user
+      redirect_to '/' unless current_user.is_role? "author" or current_user.is_role? "admin"
+    else
+      redirect_to '/'
+    end
+  end
+
   private
   
   def current_user

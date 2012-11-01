@@ -27,6 +27,7 @@ group :assets do
   gem 'coffee-rails', '3.1.1'
   gem 'uglifier', '1.2.6'
   gem 'therubyracer', '0.10.1'
+  gem 'jquery-ui-rails'
 end
 
 gem 'haml', '3.1.6'
@@ -43,6 +44,10 @@ gem 'rabl', '0.6.14'
 gem 'dalli', '2.1.0'
 gem 'hirb'
 gem 'twitter', '3.0.2'
+
+gem 'kaminari'
+gem 'kaminari-bootstrap'
+
 gem 'tumblife', '1.2.0'
 gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'pusher'

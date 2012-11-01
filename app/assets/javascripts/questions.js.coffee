@@ -7,6 +7,7 @@ class Question
 	name: null
 	publication_id: null
 	show_answer: null
+
 	constructor: ->
 		@element = $("#question")
 		@id = $("#question_id").val()
@@ -16,6 +17,8 @@ class Question
 		@name = $("#feed_name").val()
 		@publication_id = $("#publication_id").val()
 		@show_answer = $("#show_answer").val()
+		@questions = $.parseJSON $("#questions").html()
+		@handle_data = $.parseJSON($('#handle_data').html())
 		answers = $("#question").find(".answers")
 		if @show_answer=='true' then disabled = true else disabled = false
 		answers.accordion({
@@ -28,9 +31,14 @@ class Question
 		$(".tweet_button").on "click", (e) => 
 			if @user_name != undefined
 				parent = $(e.target).parents(".answer_container").prev("h2")
-				@respond_to_question(parent.text(), parent.attr("answer_id"))		
+				@respond_to_question(parent.text(), parent.attr("answer_id"))	
+
+		$('.post-question').click (a) -> question.post_edit_question(this)
+		$("#add_answer").on "click", -> question.post_new_question_add_answer()
+
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
+	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Tweeting your answer...")
@@ -57,6 +65,7 @@ class Question
 				# mixpanel.track("answered", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
+
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 		response.find("p").text(message_hash.app_message) 
@@ -70,12 +79,89 @@ class Question
 			)
 		else
 			@element.find(".subsidiary").after(response.fadeIn(500))
-			@element.find("i").show()			
+			@element.find("i").show()
+
+	post_edit_question: (elmnt) =>
+		question_id = $(elmnt).closest('.question-row').attr('question_id')
+		q = question.questions[question_id]
+		$('#question_input').val q.text
+
+		$('.ianswer').each (i, elmnt) -> 
+			if elmnt.id != 'ianswer1'
+				$(elmnt).remove()
+		$("#add_answer").show()
+		$('#ianswer1 input').val("")
+
+		$(q.answers).each (i, qq) ->
+			if qq.correct == true
+				$('#canswer input').val qq.text
+				$('#canswer input').attr 'answer_id', qq.id
+			else
+				if $('#ianswer1 input').val() == ''
+					$('#ianswer1 input').val qq.text
+					$('#ianswer1 input').attr 'answer_id', qq.id
+				else
+					count = $(".answer").length
+					clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+					clone.find("input").attr("name", "ianswer#{count}").val(qq.text)
+					clone.find("input").attr 'answer_id', qq.id
+					$("#add_answer").hide() if count == 3
+
+		$('#post_question_modal .modal-header h3').html "Edit Question"
+		$("#post_question_modal").modal()
+		$("#submit_question").off "click"
+		$("#submit_question").on "click", (e) => 
+			e.preventDefault()
+			question.post_edit_question_submit(q.id)
+
+	post_edit_question_submit: (question_id) ->
+		if question.post_question_validate_form()
+			$("#submit_question").button("loading")
+			data =
+				"question" : $("#question_input").val()
+				"asker_id" : question.questions[question_id]['created_for_asker_id']
+				"status" : $("#status").val()
+				"canswer" : $("#canswer input").val()
+				"ianswer1" : $("#ianswer1 input").val()
+				"ianswer2" : $("#ianswer2 input").val()
+				"ianswer3" : $("#ianswer3 input").val()
+				"canswer_id" : $("#canswer input").attr('answer_id')
+				"ianswer1_id" : $("#ianswer1 input").attr('answer_id')
+				"ianswer2_id" : $("#ianswer2 input").attr('answer_id')
+				"ianswer3_id" : $("#ianswer3 input").attr('answer_id')
+				"question_id" : question_id
+			$.ajax
+				url: "/questions/save_question_and_answers",
+				type: "POST",
+				data: data,
+				error: => alert_status(false),
+				success: (e) => 
+					location.reload()
+
+	post_new_question_add_answer: ->
+		count = $(".answer").length
+		return if count > 3
+		clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+		clone.find("input").attr("name", "ianswer#{count}").val("").focus()
+		clone.find("input").removeAttr("answer_id")
+		$("#add_answer").hide() if count == 3
+
+	post_question_validate_form: ->
+		if $("#question_input").val() == ""
+			alert "Please enter a question!"
+			return false
+		else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
+			alert "Please enter at least one correct and incorrect answer!"
+			return false
+		else
+			return true
 
 class Moderator
+
 	constructor: ->
 		$('.btn.btn-success').on "click", (e) => @respond(true, $(e.target).attr('qid'))
-		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))		
+		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))
+
 	respond: (accepted, id) ->
 		q = {}
 		q['question_id'] = parseInt id
