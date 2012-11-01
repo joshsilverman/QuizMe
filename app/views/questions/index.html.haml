@@ -9,9 +9,6 @@
   /.page-header
   .header.form-actions
     %h2= t '.title', :default => 'My Questions'
-    .btn-group
-      = link_to t('.new', :default => t("helpers.links.new")), "#", :class => 'btn btn-primary post-new-question'
-
 
   - model_class = Question.new.class
   %table.table

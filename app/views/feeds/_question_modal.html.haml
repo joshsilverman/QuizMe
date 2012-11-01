@@ -12,17 +12,6 @@
     %textarea#question_input
     %hr
 
-    #handle-selector
-      - if @asker.nil?
-        %h3
-          %i.icon-question-sign
-          Handle
-        .dropdown
-          %a#dLabel.dropdown-toggle{"data-target" => "#", "data-toggle" => "dropdown", :href => "/page.html", :role => "button"}
-            %input#handle_input{'type' => 'text'}
-            #handle_data.hide= @handle_data
-        %hr
-
     %h3
       %i.icon-info-sign 
       Answers
