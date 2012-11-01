@@ -49,16 +49,21 @@ class ApplicationController < ActionController::Base
     puts session[:ip]
     if current_user
       if session[:split] and session[:split] != current_user.id
-        keys = Split.redis.hkeys("user_store:#{session[:split]}")
-        keys.each do |key|
-          if value = Split.redis.hget("user_store:#{session[:split]}", key)
-            Split.redis.hset("user_store:#{current_user.id}", key, value)
+        user_keys = Split.redis.hkeys("user_store:#{current_user.id}")
+        if user_keys.blank?
+          keys = Split.redis.hkeys("user_store:#{session[:split]}")
+          keys.each do |key|
+            if value = Split.redis.hget("user_store:#{session[:split]}", key)
+              Split.redis.hset("user_store:#{current_user.id}", key, value)
+            end
           end
+          confirmjs = Split.redis.get("user_store:#{session[:split]}:confirmed")
+          Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs) unless confirmjs.nil?
         end
-        confirmjs = Split.redis.get("user_store:#{session[:split]}:confirmed")
-        Split.redis.set("user_store:#{current_user.id}:confirmed", confirmjs) unless confirmjs.nil?
-        Split.redis.del("user_store:#{session[:split]}")
-        Split.redis.del("user_store:#{session[:split]}:confirmed")
+        if session[:split] > User.last.id
+          Split.redis.del("user_store:#{session[:split]}")
+          Split.redis.del("user_store:#{session[:split]}:confirmed")
+        end
       end
       session[:split] = current_user.id
       ab_user.set_id(current_user.id)
