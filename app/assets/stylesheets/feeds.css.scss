@@ -322,9 +322,31 @@ body {
 				position: relative;
 				margin-bottom: 15px;
 				background-color: rgba(250, 250, 250, .8);	
+				
 				.header {
 					background: none;
-				}				
+				}
+
+				.content {
+					height: 48px;
+					margin-left: 46px !important;
+
+					img {
+						height: 38px !important;
+					}
+
+					.text_content{
+						position: relative;
+						bottom: 3px;
+
+						p {
+							display: none;
+							white-space: normal !important;
+							overflow: default !important;
+							text-overflow: default !important;
+						}		
+					}
+				}
 			}
 
 			#directory {

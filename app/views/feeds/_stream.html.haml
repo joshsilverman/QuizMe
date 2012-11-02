@@ -3,16 +3,15 @@
 		%h4
 			Activity	
 	%ul.unstyled
-		- @stream.each do |action|
-			%li 
-				.content
-					= image_tag(action.user.twi_profile_img_url, :class => "rounded")
-					%h5= "#{action.user.twi_screen_name}"
-					- puts action.to_json
-					/ # = action.publication.question.text
-					.clr
-				.clr      
-		/ - @stream.each_with_index do |(category, askers), i|
-		/ 	.directory_item{:class => ("border_bottom" if i < (@stream.size - 1))}
-		/ 		%h5= category
-		/ 		.asker_thumbnails     
+		- @stream.each_with_index do |action, i|
+			- puts action.id
+			- question = action.conversation.publication.question
+			%a{:href => "/questions/#{question.id}/#{question.slug}"}
+				%li{:class => ("border_bottom" if i < (@stream.size - 1))}
+					.content
+						= image_tag(action.user.twi_profile_img_url, :class => "rounded")
+						.text_content
+							%h5
+								%span{:style => "color: #333;"}= action.user.twi_screen_name
+								%span{:style => "color: #666;"}= (action.interaction_type == 3 ? 'retweeted' : 'answered')
+							%p= question.text
