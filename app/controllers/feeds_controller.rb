@@ -115,12 +115,16 @@ class FeedsController < ApplicationController
         @author = User.find @asker.author_id
       end
 
+      ## Activity Stream
+      # asker_followers = Rails.cache.read()
+        # @asker.follower_ids()
+
       respond_to do |format|
         format.html # show.html.erb
         format.json { render json: @posts }
       end
     else
-      redirect_to "/feeds/2"
+      redirect_to "/"
     end
   end
 
