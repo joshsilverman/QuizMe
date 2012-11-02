@@ -15,6 +15,10 @@ class PostsController < ApplicationController
 		render :nothing => true
 	end
 
+	def retweet
+		render :json => current_user.twitter.retweet(Publication.find(params[:publication_id]).posts.last.provider_post_id)
+	end
+
 	def update
     @post = Post.find(params[:id])
 

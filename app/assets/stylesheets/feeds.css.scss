@@ -389,7 +389,7 @@ body {
 	}
 }
 
-#posts, .modal_conversation_history, .recent_posts, .parent_post {
+#posts, .modal_conversation_history, .recent_posts, .parent_post, #retweet_question_modal {
 	.header {
 		border-style: solid;
 		border-width: 1px;
@@ -1075,3 +1075,7 @@ body {
 		margin-left: 10px;
 	}
 }*/
+
+#retweet_question_modal .conversation {
+	border: 0px;
+}
