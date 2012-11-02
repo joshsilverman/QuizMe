@@ -4,6 +4,7 @@
 
 = hidden_field_tag :paulgraham, @paulgraham.to_json
 = hidden_field_tag :dau_mau, @dau_mau.to_json
+= hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :econ_engine, @econ_engine.to_json
 
 :css
@@ -33,7 +34,7 @@
 						.new
 							.container
 								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:today] * 100 if @display_data[0][:paulgraham]
-								%p.period today
+								%p.period last 24 hours
 						.total
 							.container
 								%p.number= sprintf "%.1f%", @display_data[0][:paulgraham][:total] * 100 if @display_data[0][:paulgraham]
@@ -47,7 +48,7 @@
 						.new
 							.container
 								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:today] * 100 if @display_data[0][:dau_mau]
-								%p.period today
+								%p.period last 24 hours
 						.total
 							.container
 								%p.number= sprintf "%.1f%", @display_data[0][:dau_mau][:total] * 100 if @display_data[0][:dau_mau]
@@ -69,8 +70,21 @@
 								%p.period users involved
 					#econ_engine_graph.graph
 
+				#daus.panel.right.rounded.span6
+					#daus_stats.stats
+						.header
+							%h3 DAUs
+						.new
+							.container
+								%p.number= @display_data[0][:daus][:today] if @display_data[0][:daus]
+								%p.period last 24 hours
+						.total
+							.container
+								%p.number= @display_data[0][:daus][:total] if @display_data[0][:daus]
+								%p.period last 30 days			
+					#daus_graph.graph
 
-				#active_users.panel.right.rounded.span6
+				#active_users.panel.right.rounded.span6.hide
 					#active_users_stats.stats
 						.header
 							%h3 Active Users

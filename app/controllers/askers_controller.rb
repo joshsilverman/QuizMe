@@ -82,6 +82,9 @@ class AskersController < ApplicationController
     @dau_mau, dau_mau_display_data = Stat.dau_mau
     @display_data[0][:dau_mau] = dau_mau_display_data
 
+    @daus, daus_display_data = Stat.daus
+    @display_data[0][:daus] = daus_display_data
+
     @econ_engine, econ_engine_display_data = Stat.econ_engine
     @display_data[0][:econ_engine] = econ_engine_display_data
   end 

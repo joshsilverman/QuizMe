@@ -65,12 +65,12 @@ class Stat < ActiveRecord::Base
 		asker_ids = askers.collect(&:id)
 		graph_data = {:total_followers => {}, :click_throughs => {}, :active_user_ids => {}, :questions_answered => {}, :retweets => {}, :mentions => {}}
 		
-		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 1.month.ago)
+		month_stats = Stat.where("asker_id in (?) and date > ?", asker_ids, 31.days.ago)
 		date_grouped_stats = month_stats.group_by(&:date)
 
 		month_posts = Post.not_spam.where("created_at > ? and user_id not in (?)", 1.month.ago, (asker_ids += ADMINS))
 		date_grouped_posts = month_posts.group_by { |post| post.created_at.to_date }
-		((Date.today - 30)..Date.today).each do |date|
+		((Date.today - 31)..(Date.today - 1)).each do |date|
 			graph_data[:total_followers][date], graph_data[:total_followers][date], graph_data[:click_throughs][date], graph_data[:active_user_ids][date], graph_data[:questions_answered][date], graph_data[:retweets][date], graph_data[:mentions][date] = {}, {}, {}, {}, {}, {}, {}
 			if date_grouped_posts[date]
 				date_grouped_posts[date].group_by { |post| post.in_reply_to_user_id }.each do |asker_id, asker_posts|
@@ -161,20 +161,21 @@ class Stat < ActiveRecord::Base
 		existing_before = {}
 		new_to_existing_before_on = {}
 		domain = 30
-		start_day = Date.today - (domain - 1).days
+		start_day = Date.today - (domain + 1).days
 
 		existing_before[start_day - 1] = new_on\
 			.reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}
 			.collect{|k,v| v}
 			.sum
 
-		((start_day)..Date.today).to_a.each do |n|
+		((start_day)..(Date.today - 1)).to_a.each do |n|
 			existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
 			new_on[n.to_s] ||= 0
 			new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
 			new_to_existing_before_on[n][:raw] = ((new_on[n.to_s].to_f / existing_before[n]) + 1) ** 7 - 1
 			new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
 		end
+		existing_before[Date.today] = existing_before[Date.today - 1] + new_on[(Date.today - 1).to_s].to_i
 
 		new_to_existing_before_on.map do |date, v|
 			group = [v[:raw]]
@@ -182,9 +183,12 @@ class Stat < ActiveRecord::Base
 			new_to_existing_before_on[date][:avg] = group.sum/group.length
 		end
 
+		last_24_hours_new = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
+		last_7_days_new = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
+
 		display_data = {
-			:today => new_to_existing_before_on[Date.today][:raw],
-			:total => new_to_existing_before_on[Date.today][:avg]
+			:today => (last_24_hours_new.to_f / existing_before[Date.today] + 1) ** 7 - 1,
+			:total => last_7_days_new.to_f / existing_before[Date.today]
 		}
 
 		_new_to_existing_before_on = {}
@@ -194,10 +198,9 @@ class Stat < ActiveRecord::Base
 	end
 
 	def self.dau_mau
-
 		asker_ids = User.askers.collect(&:id)
 		date_grouped_posts = Post.not_spam\
-				.where("created_at > ? and user_id not in (?)", 2.month.ago, (asker_ids += ADMINS))\
+				.where("created_at > ? and user_id not in (?)", 61.days.ago, (asker_ids += ADMINS))\
 				.order("created_at ASC")\
 				.group_by { |post| post.created_at.to_date }
 		date_grouped_posts.each do |date, posts|
@@ -205,20 +208,52 @@ class Stat < ActiveRecord::Base
 		end
 
 		graph_data = {}
-		((Date.today - 30)..Date.today).each do |date|
+		most_recent_mau = nil
+		((Date.today - 31)..(Date.today - 1)).each do |date|
 			total = []
 			((date - 30)..date).each do |day|
 				total += date_grouped_posts[day] unless date_grouped_posts[day].blank?
 			end
 
-			graph_data[date] = date_grouped_posts[date].count.to_f / total.uniq.count unless total.empty?
+			total = total.uniq.count
+			graph_data[date] = date_grouped_posts[date].count.to_f / total unless total == 0
+			most_recent_mau = total
+		end
+
+		last_24_hours_aus = Post.not_spam\
+				.where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+				.order("created_at ASC")\
+				.group_by { |post| post.user_id }.keys.count
+
+		display_data = {}
+		display_data[:today] = last_24_hours_aus.to_f / most_recent_mau #0.99 #graph_data[Date.today]
+
+		last_7_days = graph_data.reject{|k,v| 8.days.ago > k}.values
+		display_data[:total] = last_7_days.sum / last_7_days.size
+		return graph_data, display_data
+	end
+
+	def self.daus
+		asker_ids = User.askers.collect(&:id)
+		user_ids_by_date = Post.not_spam\
+				.where("created_at > ? and created_at < ? and user_id not in (?)", 31.days.ago, Date.today, (asker_ids += ADMINS))\
+				.order("created_at ASC")\
+				.group_by { |post| post.created_at.to_date }
+
+		graph_data = {}
+		user_ids_by_date.each do |date, posts|
+			graph_data[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.count
 		end
 
 		display_data = {}
-		display_data[:today] = graph_data[Date.today]
+		display_data[:today] = Post.not_spam\
+				.where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+				.order("created_at ASC")\
+				.group_by { |post| post.user_id }.keys.count
+		display_data[:total] = Post.not_spam\
+				.where("created_at > ? and user_id not in (?)", (24*30).hours.ago, (asker_ids += ADMINS))\
+				.collect(&:user_id).uniq.count
 
-		last_7_days = graph_data.reject{|k,v| 1.week.ago > k}.values
-		display_data[:total] = last_7_days.sum / last_7_days.size
 		return graph_data, display_data
 	end
 
@@ -231,7 +266,6 @@ class Stat < ActiveRecord::Base
         .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
         .order("posts.created_at DESC")\
         .group_by{|p| p.created_at.strftime('%m/%d')}
-    #exclude dms
 
     @posts_by_date_by_asker = {}
     @posts_by_date.each{|date, posts| @posts_by_date_by_asker[date] = posts.group_by{|p| p.in_reply_to_user_id}}

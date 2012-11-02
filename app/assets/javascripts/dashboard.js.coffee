@@ -14,6 +14,7 @@ class Dashboard
 
 		@paulgraham = $.parseJSON($("#paulgraham").val())
 		@dau_mau = $.parseJSON($("#dau_mau").val())
+		@daus = $.parseJSON($("#daus").val())
 
 		@econ_engine = $.parseJSON($("#econ_engine").val())
 		@asker_ids = $.parseJSON($("#asker_ids").val())
@@ -34,6 +35,7 @@ class Dashboard
 
 		@draw_paulgraham()
 		@draw_dau_mau()
+		@draw_daus()
 		@draw_econ_engine()
 
 		@update_metrics()
@@ -130,6 +132,15 @@ class Dashboard
 		graph_data = google.visualization.arrayToDataTable(data_array)
 		chart = new google.visualization.LineChart(document.getElementById("dau_mau_graph"))
 		chart.draw graph_data, dau_mau_options		
+
+	draw_daus: =>
+		data_array = [["Date", "DAU"]]
+		$.each @daus, (k,v) -> 
+			date_array = k.split("-")
+			data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
+		graph_data = google.visualization.arrayToDataTable(data_array)
+		chart = new google.visualization.LineChart(document.getElementById("daus_graph"))
+		chart.draw graph_data, dau_mau_options	
 
 	draw_econ_engine: =>
 		graph_data = google.visualization.arrayToDataTable(@econ_engine)
