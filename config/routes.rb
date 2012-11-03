@@ -1,5 +1,8 @@
 Quizmemanager::Application.routes.draw do
   
+  get "badges/load"  
+  resources :badges
+
   get "feeds/index"
   match "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   match "feeds/:id/scores" => "feeds#scores"
@@ -45,4 +48,9 @@ Quizmemanager::Application.routes.draw do
   mount Split::Dashboard, :at => 'split'
 
   root :to => 'feeds#index'
+
+  #catch user profiles
+  get ":twi_screen_name" => "users#show"
+  get ":twi_screen_name/badges" => "users#badges"
+
 end

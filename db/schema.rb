@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121018223426) do
+ActiveRecord::Schema.define(:version => 20121103214710) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -28,10 +28,26 @@ ActiveRecord::Schema.define(:version => 20121018223426) do
     t.datetime "updated_at"
   end
 
+  create_table "badges", :force => true do |t|
+    t.integer  "asker_id"
+    t.string   "title"
+    t.string   "filename"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "conversations", :force => true do |t|
     t.integer  "publication_id"
     t.integer  "post_id"
     t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "issuances", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "badge_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -98,6 +114,13 @@ ActiveRecord::Schema.define(:version => 20121018223426) do
     t.datetime "updated_at"
     t.integer  "question_id"
     t.integer  "publication_id"
+  end
+
+  create_table "requirements", :force => true do |t|
+    t.integer  "badge_id"
+    t.integer  "question_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "stats", :force => true do |t|

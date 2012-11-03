@@ -26,14 +26,14 @@ group :assets do
   gem 'sass-rails', '3.1.6'
   gem 'coffee-rails', '3.1.1'
   gem 'uglifier', '1.2.6'
-  gem 'therubyracer', '0.10.1'
+  gem 'therubyracer', '0.10.2'
 end
 
 gem 'rails', '3.1.3'
 gem 'jquery-ui-rails'
 gem 'haml', '3.1.6'
 gem 'devise', '2.1.2'
-gem 'twitter-bootstrap-rails', '2.1.1'
+gem 'twitter-bootstrap-rails', '2.1.5'
 gem 'jquery-rails', '1.0.19'
 
 gem 'omniauth', '1.1.0'
