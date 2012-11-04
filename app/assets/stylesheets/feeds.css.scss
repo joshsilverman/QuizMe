@@ -331,6 +331,12 @@ body {
 					height: 48px;
 					margin-left: 46px !important;
 
+					.time_ago {
+						position: absolute;
+						right: 10px;
+						top: 6px;
+					}
+
 					img {
 						height: 38px !important;
 					}

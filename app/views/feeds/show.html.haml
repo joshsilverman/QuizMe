@@ -21,7 +21,7 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
-					= render :partial => "stream"
+					= render :partial => "stream" if @stream.present?
 					.clr
 					= render :partial => "leaderboard"
 					.clr
