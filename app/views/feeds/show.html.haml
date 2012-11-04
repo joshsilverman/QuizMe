@@ -1,4 +1,5 @@
 - content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
+- widget_type = ab_test("activity stream vs. leaderboard", "activity stream", "leaderboard")
 #post_feed
 	#feed_container.span10
 		#wrapper.span9
@@ -21,9 +22,10 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
-					= render :partial => "stream" if @stream.present?
-					.clr
-					= render :partial => "leaderboard"
+					- if widget_type != "activity stream"
+						= render :partial => "stream" 
+					- else
+						= render :partial => "leaderboard"
 					.clr
 					= render :partial => "related"
 
