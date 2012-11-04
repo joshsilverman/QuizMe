@@ -49,6 +49,7 @@ module FeedsHelper
 			time.gsub!(" hours", "h")
 			time.gsub!(" minutes", "m")
 			time.gsub!(" seconds", "s")
+			time.gsub!("less than a minute", "1m")
 		else 
 			time = date.strftime("%m/%d")
 			time.gsub! "/0", "/"
