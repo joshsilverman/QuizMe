@@ -53,13 +53,18 @@ class Feed
 	# 	channel = pusher.subscribe(@name)
 	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	retweet: (e) =>
+		id = e.attr 'publication_id'
 		params = 
-			"publication_id" : e.attr 'id'
+			"publication_id" : id
 		$.ajax "/posts/retweet",
 			type: 'POST',
 			data: params
 			complete: => $("#retweet_question_modal").modal('hide')	
-			success: (e) => 	
+			success: (e) => 
+				post = $(".post[post_id=#{id}]")
+				post.find(".icon-retweet").fadeIn()	
+				post.find(".quiz").remove()
+
 				# Show RT icon, disable RT				
 
 	post_question: =>
@@ -163,7 +168,7 @@ class Post
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
 			$("#retweet_question_modal").find("p").text(@question)
-			$("#retweet_question_modal").find("#retweet_question").attr "id", @id
+			$("#retweet_question_modal").find("#retweet_question").attr "publication_id", @id
 			$("#retweet_question_modal").modal()	
 		@element.hover(
 			=> 

@@ -8,8 +8,8 @@
 		.conversation.border-color{:asker_id => asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
-				- if current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?
-					%i.icon-retweet
+				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
+				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
 				.content
 					- if post.question.user_id != 1 # and @asker.author_id != post.question.user_id 
 						- user = post.question.user
@@ -22,9 +22,10 @@
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
-						%a.quiz.rollover 
-							%i.icon-retweet
-							Retweet
+						- unless retweeted
+							%a.quiz.rollover 
+								%i.icon-retweet
+								Retweet
 						/ - if quiz_type == "rollover"
 						/ 	%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{asker.twi_screen_name}&url=http://wisr.com/feeds/#{asker.id}/#{post.id}"}
 						/ 		%i.icon-share
