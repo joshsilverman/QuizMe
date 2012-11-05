@@ -22,7 +22,7 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
-					- if widget_type != "activity stream"
+					- if widget_type == "activity stream"
 						= render :partial => "stream" 
 					- else
 						= render :partial => "leaderboard"
