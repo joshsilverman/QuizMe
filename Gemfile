@@ -20,6 +20,7 @@ group :development do
   gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'quiet_assets'
+  gem 'oink'
 end
 
 group :assets do
