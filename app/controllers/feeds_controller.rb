@@ -230,7 +230,14 @@ class FeedsController < ApplicationController
         })
 
         # Check for followup test completion
-        Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 
+          Mixpanel.track_event "answered incorrect follow up", {
+            :distinct_id => params[:in_reply_to_user_id],
+            :time => user_post.created_at.to_i,
+            :account => asker.twi_screen_name
+          }
+        end
         # Check for reengage last week inactive test completion
         Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
 

@@ -161,7 +161,13 @@ class Post < ActiveRecord::Base
     conversation.posts << app_post if app_post
 
     #check for follow-up test completion
-    Post.trigger_split_test(current_user.id, 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+      Post.trigger_split_test(current_user.id, 'mention reengagement') 
+      Mixpanel.track_event "answered incorrect follow up", {
+        :distinct_id => current_user.id,
+        :account => asker.twi_screen_name,
+      }
+    end
     #check for re-engage inactive test completion
     Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
     Post.trigger_split_test(current_user.id, 'activity stream vs. leaderboard')
