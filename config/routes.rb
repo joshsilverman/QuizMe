@@ -17,6 +17,8 @@ Quizmemanager::Application.routes.draw do
   post "posts/update_engagement_type"
   post "posts/update"
   post "posts/respond_to_post"
+  post "posts/retweet"
+
   post "questions/save_question_and_answers"
   match "questions/:id/:slug" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
