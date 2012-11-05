@@ -15,6 +15,7 @@ class FeedsController < ApplicationController
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
           :user => {
+            :id => action.user.id,
             :twi_screen_name => action.user.twi_screen_name,
             :twi_profile_img_url => action.user.twi_profile_img_url
           },
@@ -34,13 +35,7 @@ class FeedsController < ApplicationController
     @question_count = publication_ids.size
     @questions_answered = Post.where("correct is not null", params[:id]).count
     @followers = Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
-    # @leaders = User.leaderboard(params[:id])
-    if current_user
-      # @correct = 0
-      # @leaders[:scores].each do |user|
-      #   next if user[:user].id != current_user.id or @correct != 0
-      #   @correct = user[:correct]
-      # end        
+    if current_user      
       @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
       @responses = []

@@ -60,7 +60,7 @@ class Feed
 			data: params
 			complete: => $("#retweet_question_modal").modal('hide')	
 			success: (e) => 	
-				
+				# Show RT icon, disable RT				
 
 	post_question: =>
 		return unless window.feed.correct > 9 or $('.is_author').length > 0
@@ -167,7 +167,7 @@ class Post
 			$("#retweet_question_modal").modal()	
 		@element.hover(
 			=> 
-				@element.find(".quiz.rollover").css("visibility", "visible")
+				@element.find(".quiz.rollover").css("visibility", "visible") if window.feed.user_name != undefined
 				@element.find(".expand").css("color", "#08C")
 			=> 
 				@element.find(".quiz.rollover").css("visibility", "hidden") unless @expanded
@@ -202,7 +202,7 @@ class Post
 			@element.prev(".conversation").removeClass("active_prev")	
 		else 
 			@expanded = true
-			@element.find(".quiz").css("visibility", "visible")
+			@element.find(".quiz").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
 			@element.find(".subsidiaries").toggle(200, => 

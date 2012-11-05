@@ -8,7 +8,8 @@
 		.conversation.border-color{:asker_id => asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
-				/ %i.icon-retweet
+				- if current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?
+					%i.icon-retweet
 				.content
 					- if post.question.user_id != 1 # and @asker.author_id != post.question.user_id 
 						- user = post.question.user
