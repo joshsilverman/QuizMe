@@ -71,6 +71,7 @@ class FeedsController < ApplicationController
         post_activity.each do |action|
           @actions[post_pub_map[post_id]] << {
             :user => {
+              :id => action.user.id,
               :twi_screen_name => action.user.twi_screen_name,
               :twi_profile_img_url => action.user.twi_profile_img_url
             },
@@ -162,6 +163,7 @@ class FeedsController < ApplicationController
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
           :user => {
+            :id => action.user.id,
             :twi_screen_name => action.user.twi_screen_name,
             :twi_profile_img_url => action.user.twi_profile_img_url
           },
@@ -170,6 +172,7 @@ class FeedsController < ApplicationController
       end
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)     
+    puts @actions.to_json
     if @publications.blank?
       render :json => false
     else
