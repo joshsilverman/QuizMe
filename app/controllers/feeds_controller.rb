@@ -172,7 +172,6 @@ class FeedsController < ApplicationController
       end
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)     
-    puts @actions.to_json
     if @publications.blank?
       render :json => false
     else
