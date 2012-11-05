@@ -33,6 +33,7 @@ class Feed
 		$("#activity_stream .content").dotdotdot({height: 55})
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
+			$("#retweet_question").button("loading")
 			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
@@ -65,7 +66,9 @@ class Feed
 		$.ajax "/posts/retweet",
 			type: 'POST',
 			data: params
-			complete: => $("#retweet_question_modal").modal('hide')	
+			complete: => 
+				$("#retweet_question_modal").modal('hide')	
+				$('#retweet_question').button('reset')
 			success: (e) => 
 				post = $(".post[post_id=#{id}]")
 				post.find(".icon-retweet").fadeIn()	
