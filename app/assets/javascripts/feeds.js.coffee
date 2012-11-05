@@ -70,9 +70,7 @@ class Feed
 				post = $(".post[post_id=#{id}]")
 				post.find(".icon-retweet").fadeIn()	
 				post.find(".quiz").remove()
-
-				# Show RT icon, disable RT				
-
+				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	post_question: =>
 		return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#post_question_modal").modal()
@@ -169,7 +167,6 @@ class Post
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		# @element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed", "test-option": (if $(e.target).hasClass "rollover" then "rollover" else "cta")})
 		@element.find(".quiz").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
