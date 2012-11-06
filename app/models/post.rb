@@ -225,6 +225,10 @@ class Post < ActiveRecord::Base
       dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
       q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
       Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
+      Mixpanel.track_event "DM question to new follower", {
+        :distinct_id => user.id,
+        :account => current_acct.twi_screen_name
+      }
     end
   end
 

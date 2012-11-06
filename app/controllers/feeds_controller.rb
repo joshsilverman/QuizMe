@@ -195,7 +195,15 @@ class FeedsController < ApplicationController
     conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id ,:publication_id => params[:publication_id])
     if params[:interaction_type] == "4"
       dm = params[:message].gsub("@#{params[:username]}", "")
-      user_post.update_attribute(:correct, correct)
+      if correct.present?
+        user_post.update_attribute(:correct, correct)
+        # Mixpanel tracking for DM answer conversion
+        Mixpanel.track_event "answered question via DM", {
+          :distinct_id => params[:in_reply_to_user_id],
+          :time => user_post.created_at.to_i,
+          :account => asker.twi_screen_name
+        }        
+      end
       response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
     else
       tweet = params[:message].gsub("@#{params[:username]}", "")
