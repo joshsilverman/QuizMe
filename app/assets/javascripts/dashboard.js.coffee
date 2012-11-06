@@ -229,10 +229,11 @@ handle_activity_options =
 	pointSize: 6
 	lineWidth: 3
 	isStacked: true
+	title: "Total Social Interactions this Week"
 	chartArea:  
 		width: 1100
 		left: 50
-		height: 500
+		height: 450
 	hAxis:
 		textStyle: 
 			fontSize: 9
