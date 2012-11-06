@@ -228,15 +228,18 @@ class Post < ActiveRecord::Base
         :distinct_id => user.id,
         :account => current_acct.twi_screen_name
       }
+      sleep(2)
     end
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
     #@TODO UPDATE POST METHOD
     short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
-    res = current_acct.tumblr.text(current_acct.tum_url,
-                                    :title => "Daily Quiz!",
-                                    :body => "#{text} #{short_url}")
+    res = current_acct.tumblr.text(
+      current_acct.tum_url,
+      :title => "Daily Quiz!",
+      :body => "#{text} #{short_url}"
+    )
     Post.create(
       :asker_id => current_acct.id,
       :question_id => question_id,
