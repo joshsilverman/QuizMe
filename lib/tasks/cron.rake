@@ -42,7 +42,7 @@ task :save_stats => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |asker|
 		Stat.update_stats_from_cache(asker)
-		sleep(10)
+		sleep(5)
 	end
 	Rails.cache.clear
 end
@@ -51,7 +51,8 @@ task :dm_new_followers => :environment do
 	askers = User.askers.where('twi_oauth_token is not null')
 	askers.each do |asker|
 		next if asker.new_user_q_id.nil?
-		Post.dm_new_followers(asker)		
+		Post.dm_new_followers(asker)	
+		sleep(2)	
 	end
 end
 

@@ -182,7 +182,7 @@ class Post < ActiveRecord::Base
   def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
     short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
     begin
-      res = Post.twitter_request(current_acct.twitter.direct_message_create(user.twi_user_id, tweet))
+      res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
       dm = Post.create(
         :user_id => current_acct.id,
         :provider => 'twitter',
@@ -206,7 +206,7 @@ class Post < ActiveRecord::Base
 
   def self.dm_new_followers(current_acct)
     to_message = []
-    new_followers = Post.twitter_request(current_acct.twitter.follower_ids.ids.first(10)) || []
+    new_followers = current_acct.twitter.follower_ids.ids.first(10)
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
       if user.nil?
@@ -265,9 +265,9 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    mentions = Post.twitter_request(client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})) || []
-    retweets = Post.twitter_request(client.retweets_of_me({:count => 50})) || []
-    dms = Post.twitter_request(client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})) || []
+    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
+    retweets = client.retweets_of_me({:count => 50})
+    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
     retweets.each { |r| Post.save_retweet_data(r, current_acct) }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
@@ -315,10 +315,19 @@ class Post < ActiveRecord::Base
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
-    # puts "in save RT data"
-    # puts current_acct.twi_screen_name
-    # puts r.id
-    users = Post.twitter_request(current_acct.twitter.retweeters_of(r.id)) || []
+    begin
+      users = current_acct.twitter.retweeters_of(r.id)  
+    rescue Twitter::Error::ClientError 
+      attempts += 1 
+      retry unless attempts > 2
+      puts "Failed after three attempts"
+      users = []
+    rescue Exception => exception
+      puts "exception while getting retweeters_of"
+      puts exception.message
+      users = []
+    end
+
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
       u.update_attributes(
@@ -428,12 +437,12 @@ class Post < ActiveRecord::Base
       retry unless attempts > 2
       puts "Failed to run #{block} after 3 attempts"
     rescue Exception => exception
-      puts "Exception in twitter request wrapper:"
+      puts "Exception in twitter wrapper:"
       puts exception.message
     end 
     return value   
   end
-
+  
   extend Split::Helper
   def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id, true)
