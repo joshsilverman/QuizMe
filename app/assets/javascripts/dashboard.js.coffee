@@ -6,41 +6,54 @@ class Dashboard
 	dau_mau: null
 	paulgraham: null
 	handle_activity: null
-
 	constructor: -> 
 		@askers = $.parseJSON($("#askers").val())
-		@display_data = $.parseJSON($("#display_data").val())
-		@graph_data = $.parseJSON($("#graph_data").val())
-
 		@paulgraham = $.parseJSON($("#paulgraham").val())
 		@dau_mau = $.parseJSON($("#dau_mau").val())
 		@daus = $.parseJSON($("#daus").val())
-
 		@econ_engine = $.parseJSON($("#econ_engine").val())
-		@handle_activity = $.parseJSON($("#handle_activity").val())
-
 		@asker_ids = $.parseJSON($("#asker_ids").val())
-
-		@active.push("0")
-		$(".select_option").on "change", (e) => 
-			if $(e.target).attr("value") == "0" and $(e.target).is(":checked") 
-				@active.splice(0, 0, "0")
-			else
-				if $(e.target).is(":checked") 
-					@active.push($(e.target).attr "value") 
-				else 
-					@active.remove($(e.target).attr "value")
-			@update_dashboard()
-		@update_dashboard()
-	update_dashboard: =>
-		@draw_graphs()
-
 		@draw_paulgraham()
 		@draw_dau_mau()
 		@draw_daus()
-		@draw_econ_engine()
-		@draw_handle_activity()
+		@draw_econ_engine()	
+		@active.push("0")	
+		$('#tabs a').click (e) => 
+			e.preventDefault()
+			@update_tabs(e)
+	update_tabs: (e) => 
+		if $(e.target).tab().text() == "Detailed"
+			if $("#detailed").is(':empty')
+				$.ajax "/get_detailed_metrics"
+					type: "GET"
+					success: (e) => 
+						$(".tab-content #detailed").append(e)
+						@graph_data = $.parseJSON($("#detailed_graph_data").val())
+						@display_data = $.parseJSON($("#detailed_display_data").val())
+						@draw_graphs()
+						@update_metrics()							
+						$(".select_option").on "change", (e) => 
+							if $(e.target).attr("value") == "0" and $(e.target).is(":checked") 
+								@active.splice(0, 0, "0")
+							else
+								if $(e.target).is(":checked") 
+									@active.push($(e.target).attr "value") 
+								else 
+									@active.remove($(e.target).attr "value")
+							@update_dashboard()
+						@update_dashboard()								
+		else if $(e.target).tab().text() == "Handles"
+			if $("#handles").is(':empty')
+				$.ajax "/get_handle_metrics"
+					type: "GET"
+					success: (e) => 
+						$(".tab-content #handles").append(e)
+						@handle_activity = $.parseJSON($("#handle_activity_data").val())		
+						@draw_handle_activity()
+		$(e.target).tab('show')
 
+	update_dashboard: =>
+		@draw_graphs()
 		@update_metrics()
 	update_metrics: =>
 		askers = []
@@ -155,11 +168,7 @@ class Dashboard
 		chart = new google.visualization.ColumnChart(document.getElementById("handle_activity_graph"))
 		chart.draw graph_data, handle_activity_options	
 
-$ -> 
-	window.dashboard = new Dashboard if $(".dashboard").length > 0
-	$('#tabs a').click (e) ->
-	  e.preventDefault()
-	  $(this).tab('show')
+$ -> window.dashboard = new Dashboard if $(".dashboard").length > 0
 
 pg_options = 
 	width: 425

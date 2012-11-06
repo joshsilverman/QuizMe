@@ -73,22 +73,30 @@ class AskersController < ApplicationController
 
   def dashboard
     @askers = User.askers
-    @graph_data = Stat.get_month_graph_data(@askers)
-    @display_data = Stat.get_display_data(@askers)
+    @core_display_data = {0 => {}}
 
     @paulgraham, pg_display_data = Stat.paulgraham
-    @display_data[0][:paulgraham] = pg_display_data
+    @core_display_data[0][:paulgraham] = pg_display_data
 
     @dau_mau, dau_mau_display_data = Stat.dau_mau
-    @display_data[0][:dau_mau] = dau_mau_display_data
+    @core_display_data[0][:dau_mau] = dau_mau_display_data
 
     @daus, daus_display_data = Stat.daus
-    @display_data[0][:daus] = daus_display_data
+    @core_display_data[0][:daus] = daus_display_data
 
     @econ_engine, econ_engine_display_data = Stat.econ_engine
-    @display_data[0][:econ_engine] = econ_engine_display_data
-
-    @handle_activity = Stat.handle_activity
-    # @display_data[0][:handle_activity] = handle_activity_display_data    
+    @core_display_data[0][:econ_engine] = econ_engine_display_data 
   end 
+
+  def get_detailed_metrics
+    @askers = User.askers
+    @detailed_graph_data = Stat.get_month_graph_data(@askers)
+    @detailed_display_data = Stat.get_display_data(@askers)
+    render :partial => "detailed"
+  end
+
+  def get_handle_metrics
+    @handle_activity = Stat.handle_activity
+    render :partial => "handles"
+  end
 end
