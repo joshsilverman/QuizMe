@@ -170,7 +170,6 @@ class Post < ActiveRecord::Base
     end
     #check for re-engage inactive test completion
     Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
-    Post.trigger_split_test(current_user.id, 'activity stream vs. leaderboard')
 
     Mixpanel.track_event "answered", {
       :distinct_id => current_user.id,
