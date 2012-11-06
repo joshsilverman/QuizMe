@@ -75,8 +75,8 @@ class Post
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
 		if parent_post == undefined		
 			publication_id = null
-			$("#respond_modal").find(".correct").hide()
-			$("#respond_modal").find(".incorrect").hide()
+			# $("#respond_modal").find(".correct").hide()
+			# $("#respond_modal").find(".incorrect").hide()
 		else
 			publication_id = parent_post['publication_id'] 
 			$("#respond_modal").find(".correct").show()		
@@ -92,10 +92,16 @@ class Post
 			correct = true
 			response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length )]
 			complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length )]
-			$("#respond_modal textarea").val("@#{username} #{response} #{complement}")
+			if post.attr("interaction_type") != "4"
+				$("#respond_modal textarea").val("@#{username} #{response} #{complement}")
+			else
+				$("#respond_modal textarea").val("#{response} #{complement}")
 		$("button.btn.incorrect").on 'click', ()=>
 			correct = false
-			$("#respond_modal textarea").val("@#{username} #{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}")
+			if post.attr("interaction_type") != "4"
+				$("#respond_modal textarea").val("@#{username} #{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}")
+			else
+				$("#respond_modal textarea").val("#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}")
 		$("#tweet").on 'click', () =>
 			tweet = $("#respond_modal").find("textarea").val()
 			return if tweet == ""

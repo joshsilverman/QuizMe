@@ -87,5 +87,8 @@ class AskersController < ApplicationController
 
     @econ_engine, econ_engine_display_data = Stat.econ_engine
     @display_data[0][:econ_engine] = econ_engine_display_data
+
+    @handle_activity = Stat.handle_activity
+    # @display_data[0][:handle_activity] = handle_activity_display_data    
   end 
 end

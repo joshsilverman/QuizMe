@@ -5,11 +5,11 @@ class Dashboard
 	active: []
 	dau_mau: null
 	paulgraham: null
+	handle_activity: null
 
 	constructor: -> 
 		@askers = $.parseJSON($("#askers").val())
 		@display_data = $.parseJSON($("#display_data").val())
-		console.log @display_data
 		@graph_data = $.parseJSON($("#graph_data").val())
 
 		@paulgraham = $.parseJSON($("#paulgraham").val())
@@ -17,6 +17,8 @@ class Dashboard
 		@daus = $.parseJSON($("#daus").val())
 
 		@econ_engine = $.parseJSON($("#econ_engine").val())
+		@handle_activity = $.parseJSON($("#handle_activity").val())
+
 		@asker_ids = $.parseJSON($("#asker_ids").val())
 
 		@active.push("0")
@@ -37,6 +39,7 @@ class Dashboard
 		@draw_dau_mau()
 		@draw_daus()
 		@draw_econ_engine()
+		@draw_handle_activity()
 
 		@update_metrics()
 	update_metrics: =>
@@ -147,9 +150,13 @@ class Dashboard
 		chart = new google.visualization.AreaChart(document.getElementById("econ_engine_graph"))
 		chart.draw graph_data, econ_engine_options
 
+	draw_handle_activity: =>
+		graph_data = google.visualization.arrayToDataTable(@handle_activity)
+		chart = new google.visualization.ColumnChart(document.getElementById("handle_activity_graph"))
+		chart.draw graph_data, handle_activity_options	
+
 $ -> 
 	window.dashboard = new Dashboard if $(".dashboard").length > 0
-
 	$('#tabs a').click (e) ->
 	  e.preventDefault()
 	  $(this).tab('show')
@@ -214,6 +221,26 @@ econ_engine_options =
 		minorGridlines:
 			count: 3
 			color: "#eee"
+
+handle_activity_options = 
+	width: 1100
+	height: 550
+	legend: "none"
+	pointSize: 6
+	lineWidth: 3
+	isStacked: true
+	chartArea:  
+		width: 1100
+		left: 50
+		height: 500
+	hAxis:
+		textStyle: 
+			fontSize: 9
+		slantedText: true
+	vAxis:
+		viewWindowMode: 'explicit'
+		viewWindow:
+			min: 0
 
 options = 
 	width: 425

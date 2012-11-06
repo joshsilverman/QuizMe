@@ -214,9 +214,8 @@ class Stat < ActiveRecord::Base
 			((date - 30)..date).each do |day|
 				total += date_grouped_posts[day] unless date_grouped_posts[day].blank?
 			end
-
 			total = total.uniq.count
-			graph_data[date] = date_grouped_posts[date].count.to_f / total unless total == 0
+			graph_data[date] = date_grouped_posts[date].count.to_f / total unless total == 0 or date_grouped_posts[date].blank?
 			most_recent_mau = total
 		end
 
@@ -284,6 +283,30 @@ class Stat < ActiveRecord::Base
 		display_data[:answerers] = @posts_by_date.map{|k, v| [k, v]}.sort{|x,y| x[0] <=> y[0]}.last[1].group_by{|p| p.user_id}.count
 
 		return @econ_engine, display_data
+	end
+
+	def self.handle_activity(handle_activity = {}, graph_data = [])
+		# y axis label
+		# revert active
+		title_row = ['Handle']
+		User.askers.select([:id, :twi_screen_name]).all.each { |asker| handle_activity[asker.id] = [asker.twi_screen_name] }
+		user_grouped_posts = Post.joins(:user).not_spam\
+			.where("posts.in_reply_to_user_id IN (?) AND users.role != 'asker' AND posts.user_id NOT IN (?)", User.askers.collect(&:id), [1,3,4,5,11,12,13,17,25,65,106])\
+			.where("posts.created_at > ?", 1.week.ago)\
+			.where("interaction_type <> 4")\
+			.select([:user_id, :in_reply_to_user_id])\
+			.order("posts.created_at DESC")\
+			.group_by(&:user_id)
+		user_names = User.select([:id, :twi_screen_name]).find(user_grouped_posts.keys).group_by(&:id)
+		user_grouped_posts.each do |user_id, users_posts|
+			asker_grouped_user_posts = users_posts.group_by(&:in_reply_to_user_id)
+			title_row << user_names[user_id][0].twi_screen_name
+			handle_activity.each { |k, v| handle_activity[k] << (asker_grouped_user_posts[k].present? ? asker_grouped_user_posts[k].length : 0) }
+		end
+		handle_activity.each { |k, v| graph_data << v }
+		graph_data.sort! { |a, b| b.drop(1).sum <=> a.drop(1).sum }
+		graph_data.insert 0, title_row
+		return graph_data
 	end
 
 end

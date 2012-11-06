@@ -6,6 +6,7 @@
 = hidden_field_tag :dau_mau, @dau_mau.to_json
 = hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :econ_engine, @econ_engine.to_json
+= hidden_field_tag :handle_activity, @handle_activity.to_json
 
 :css
 	.navbar-fixed-top .container {
@@ -23,9 +24,12 @@
 		%a{:href => "#core"} Core
 	%li
 		%a{:href => "#detailed"} Detailed
+	%li
+		%a{:href => "#handles"} Handles
 .row
 	.tab-content
 		#core.dashboard.span12.tab-pane.active
+			/ .active
 			#data_row.row
 				#paulgraham_users.panel.left.rounded.span6
 					#paulgraham_stats.stats
@@ -98,7 +102,7 @@
 								%p.period last 30 days			
 					#active_user_ids_graph.graph
 
-		#detailed.dashboard.tab-pane
+		#detailed.dashboard.span12.tab-pane
 			.row
 				.well.well-small
 					.select_option
@@ -195,3 +199,7 @@
 								%p.number{:style => "font-size: 32px;"}
 								%p.period all-time				
 					#total_followers_graph.graph
+		#handles.dashboard.span12.tab-pane
+			#data_row.row
+				#handle_activity.panel.rounded.span12		
+					#handle_activity_graph.graph					
