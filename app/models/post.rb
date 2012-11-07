@@ -218,6 +218,7 @@ class Post < ActiveRecord::Base
         end
       end
       current_acct.twitter.follow(tid)
+      sleep(1)
     end
 
     to_message.each do |user|
@@ -228,7 +229,7 @@ class Post < ActiveRecord::Base
         :distinct_id => user.id,
         :account => current_acct.twi_screen_name
       }
-      sleep(2)
+      sleep(1)
     end
   end
 
