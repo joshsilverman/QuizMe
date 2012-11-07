@@ -1,0 +1,919 @@
+<h3>Multiple Choice - Chapter 1</h3>
+<p before="7" lines="5"><b>1. What color is Bilbo's front door into his hobbit hole?</b><br />
+<b>a)</b> Green.<br />
+<b>b)</b> Blue.<br />
+<b>c)</b> Yellow.<br />
+<b>d)</b> Brown.</p>
+<p before="7" lines="5"><b>2. Who is the first dwarf to arrive at Bilbo's house in Chapter 1?</b><br />
+<b>a)</b> Bombur.<br />
+<b>b)</b> Dwalin.<br />
+<b>c)</b> Balin.<br />
+<b>d)</b> Gloin.</p>
+<p before="7" lines="5"><b>3. What does Gloin say about Bilbo that enrages Bilbo so much that he overcomes his fears and joins the adventurers?</b><br />
+<b>a)</b> More like a grocer than a burglar.<br />
+<b>b)</b> As fierce as a dragon in a pinch.<br />
+<b>c)</b> Little fellow bobbing on the mat.<br />
+<b>d)</b> Our friend and fellow conspirator.</p>
+<p before="7" lines="5"><b>4. Who made the map that Gandalf gives to Thorin?</b><br />
+<b>a)</b> Dain.<br />
+<b>b)</b> Thror.<br />
+<b>c)</b> Thrain.<br />
+<b>d)</b> The Necromancer.</p>
+<p before="7" lines="5"><b>5. What was the name of the town of Men that was under the shadow of the Lonely Mountain until the dragon came and destroyed it?</b><br />
+<b>a)</b> Esgaroth.<br />
+<b>b)</b> Bywater.<br />
+<b>c)</b> Dale.<br />
+<b>d)</b> Moria.</p>
+<p before="7" lines="5"><b>6. Which dwarf has a smoke-ring blowing competition or game with Gandalf?</b><br />
+<b>a)</b> Thorin.<br />
+<b>b)</b> Gloin.<br />
+<b>c)</b> Balin.<br />
+<b>d)</b> Bifur.</p>
+<p before="7" lines="5"><b>7. What musical instrument does Thorin Oakenshield play?</b><br />
+<b>a)</b> A clarinet.<br />
+<b>b)</b> A fiddle.<br />
+<b>c)</b> A flute.<br />
+<b>d)</b> A harp.</p>
+<p before="7" lines="5"><b>8. What color is Thorin's hood?</b><br />
+<b>a)</b> Yellow and orange.<br />
+<b>b)</b> Scarlet.<br />
+<b>c)</b> Green.<br />
+<b>d)</b> Sky blue.</p>
+<p before="7" lines="5"><b>9. What game or sport was accidentally invented by Bilbo's ancestor Bullroarer Took?</b><br />
+<b>a)</b> Golf.<br />
+<b>b)</b> Polo.<br />
+<b>c)</b> Snooker.<br />
+<b>d)</b> Football.</p>
+<p before="7" lines="5"><b>10. Which pair of dwarves are the youngest?</b><br />
+<b>a)</b> Fili and Kili.<br />
+<b>b)</b> Balin and Dwalin.<br />
+<b>c)</b> Dori and Nori.<br />
+<b>d)</b> Oin and Gloin.</p>
+<p before="7" lines="5"><b>11. What was the name of Bilbo's mother?</b><br />
+<b>a)</b> Belladonna Took.<br />
+<b>b)</b> Rosemary Took.<br />
+<b>c)</b> Bluebell Belladonna.<br />
+<b>d)</b> Lobelia Sackville-Baggins.</p>
+<p before="7" lines="5"><b>12. What sort of drink does Gandalf ask Bilbo to get him in Chapter 1?</b><br />
+<b>a)</b> Coffee.<br />
+<b>b)</b> Red wine.<br />
+<b>c)</b> Beer.<br />
+<b>d)</b> Porter.</p>
+<h3>Multiple Choice - Chapter 2</h3>
+<p before="7" lines="5"><b>1. What is the name of the inn where the dwarves meet Bilbo in Chapter 2?</b><br />
+<b>a)</b> The Golden Perch.<br />
+<b>b)</b> The Bridge and Bottle.<br />
+<b>c)</b> The Green Dragon.<br />
+<b>d)</b> The Prancing Pony.</p>
+<p before="7" lines="5"><b>2. Whose hood and cloak does Bilbo borrow?</b><br />
+<b>a)</b> Dwalin's.<br />
+<b>b)</b> Thorin's.<br />
+<b>c)</b> Gandalf's.<br />
+<b>d)</b> Gloin's.</p>
+<p before="7" lines="5"><b>3. Which dwarves are the best at lighting fires?</b><br />
+<b>a)</b> Oin and Gloin.<br />
+<b>b)</b> Kili and Fili.<br />
+<b>c)</b> Bifur and Bofur.<br />
+<b>d)</b> Nori and Ori.</p>
+<p before="7" lines="5"><b>4. Which of the following is not a name for the trolls?</b><br />
+<b>a)</b> Sam.<br />
+<b>b)</b> Tom.<br />
+<b>c)</b> Bert.<br />
+<b>d)</b> William.</p>
+<p before="7" lines="5"><b>5. What does Bilbo try to steal from the trolls?</b><br />
+<b>a)</b> A pony.<br />
+<b>b)</b> A jug of beer.<br />
+<b>c)</b> A dagger.<br />
+<b>d)</b> A purse.</p>
+<p before="7" lines="5"><b>6. Which troll catches Bilbo in Chapter 2?</b><br />
+<b>a)</b> Tom.<br />
+<b>b)</b> Bert.<br />
+<b>c)</b> William.<br />
+<b>d)</b> All three of them.</p>
+<p before="7" lines="5"><b>7. Which dwarf puts up the most fight when the trolls try to capture him?</b><br />
+<b>a)</b> Gloin.<br />
+<b>b)</b> Thorin.<br />
+<b>c)</b> Bombur.<br />
+<b>d)</b> Balin.</p>
+<p before="7" lines="5"><b>8. What does Thorin use as a weapon against the trolls in Chapter 2?</b><br />
+<b>a)</b> A cauldron of boiling water.<br />
+<b>b)</b> A burning branch from the fire.<br />
+<b>c)</b> A branch torn off a tree.<br />
+<b>d)</b> A dagger.</p>
+<p before="7" lines="5"><b>9. What cooking method do the trolls decide on first of all before Gandalf stirs up the argument again?</b><br />
+<b>a)</b> Mincing them and making them into pies.<br />
+<b>b)</b> Mincing them and boiling them.<br />
+<b>c)</b> Roasting the dwarves slowly.<br />
+<b>d)</b> Sitting on them and squashing them.</p>
+<p before="7" lines="5"><b>10. What does Bilbo take from the trolls' hoard of loot?</b><br />
+<b>a)</b> A pot full of gold coins.<br />
+<b>b)</b> A long beautiful sword in a jewelled scabbard.<br />
+<b>c)</b> A large, clumsy key.<br />
+<b>d)</b> A knife big enough to serve him as a short sword.</p>
+<p before="7" lines="5"><b>11. What foodstuffs do the adventurers take from the troll's cave for breakfast?</b><br />
+<b>a)</b> Ale, bread, cheese and bacon.<br />
+<b>b)</b> Mutton bones, mince pies and sausages.<br />
+<b>c)</b> Bacon, beer, rabbit pie, and apples.<br />
+<b>d)</b> Cheese, eggs, sausages, and tomatoes.</p>
+<p before="7" lines="5"><b>12. Where does Bilbo hide while the trolls are fighting and arguing?</b><br />
+<b>a)</b> In a bush.<br />
+<b>b)</b> In a tree trunk.<br />
+<b>c)</b> In the trolls' cave.<br />
+<b>d)</b> Under a sack.</p>
+<h3>Multiple Choice - Chapter 3</h3>
+<p before="7" lines="5"><b>1. What is the other name for Rivendell?</b><br />
+<b>a)</b> The Valley of the Elves.<br />
+<b>b)</b> The Hidden Valley.<br />
+<b>c)</b> The Edge of the Wild.<br />
+<b>d)</b> The Last Homely House.</p>
+<p before="7" lines="5"><b>2. What is unusual or rare about Elrond's ancestry?</b><br />
+<b>a)</b> He is half elf and half human.<br />
+<b>b)</b> He is half elf and half goblin.<br />
+<b>c)</b> He is half human and half hobbit.<br />
+<b>d)</b> He is half human and half goblin.</p>
+<p before="7" lines="5"><b>3. On what day does Elrond read the runes on the swords and on the map?</b><br />
+<b>a)</b> Bilbo's birthday.<br />
+<b>b)</b> Midsummer morning.<br />
+<b>c)</b> The autumn equinox.<br />
+<b>d)</b> Midsummer's Eve.</p>
+<p before="7" lines="5"><b>4. What is the English translation for the names of the swords (Orcrist and Glamdring) that Thorin and Gandalf now own?</b><br />
+<b>a)</b> Tailbiter and Flame of the West.<br />
+<b>b)</b> Goblin-cleaver and Foe-hammer.<br />
+<b>c)</b> Warhammer and Dragonslayer.<br />
+<b>d)</b> Truefriend and Goblin-hammer.</p>
+<p before="7" lines="5"><b>5. What is another name for the Dwarves' New Year?</b><br />
+<b>a)</b> The Threshold of Winter.<br />
+<b>b)</b> Durin's Day.<br />
+<b>c)</b> The Day of the Thrush.<br />
+<b>d)</b> The Hunter's Moon.</p>
+<p before="7" lines="5"><b>6. What phase of the moon is showing when Elrond studies the map?</b><br />
+<b>a)</b> A crescent moon.<br />
+<b>b)</b> A new moon.<br />
+<b>c)</b> A gibbous moon.<br />
+<b>d)</b> A full moon.</p>
+<p before="7" lines="5"><b>7. Where were Glamdring and Orcrist originally forged?</b><br />
+<b>a)</b> In the Mines of Moria.<br />
+<b>b)</b> In Rivendell itself.<br />
+<b>c)</b> In Thror's kingdom that was destroyed by the dragon.<br />
+<b>d)</b> In the ancient elvish kingdom of Gondolin.</p>
+<p before="7" lines="5"><b>8. What does Elrond dislike about dwarves?</b><br />
+<b>a)</b> Their singing.<br />
+<b>b)</b> Their love of gold.<br />
+<b>c)</b> Their cruelty and wickedness towards dragons.<br />
+<b>d)</b> Their long beards.</p>
+<p before="7" lines="5"><b>9. Where are the elves hiding when they sing nonsense songs to welcome the adventurers to Rivendell?</b><br />
+<b>a)</b> On the roof of Rivendell.<br />
+<b>b)</b> Beside the stream.<br />
+<b>c)</b> Under the narrow stone bridge.<br />
+<b>d)</b> In trees beside the path.</p>
+<p before="7" lines="5"><b>10. What does Bilbo's handwriting look like?</b><br />
+<b>a)</b> Thin and spidery.<br />
+<b>b)</b> Flowing and beautiful.<br />
+<b>c)</b> Cunning and cryptic.<br />
+<b>d)</b> Crabbed and rather clumsy.</p>
+<p before="7" lines="5"><b>11. Which of the following is not a hazard that needs to be avoided in the path leading to Rivendell?</b><br />
+<b>a)</b> A very narrow bridge over a swift-flowing stream.<br />
+<b>b)</b> Deceptively green bogs.<br />
+<b>c)</b> Avalanches and rock falls.<br />
+<b>d)</b> Steep slopes and deep ravines.</p>
+<p before="7" lines="5"><b>12. What type of bird is named in the moon-letters on the map?</b><br />
+<b>a)</b> A raven.<br />
+<b>b)</b> An eagle.<br />
+<b>c)</b> A sparrow.<br />
+<b>d)</b> A thrush.</p>
+<h3>Multiple Choice - Chapter 4</h3>
+<p before="7" lines="5"><b>1. What weather forces the adventurers to seek shelter in a cave in Chapter 4?</b><br />
+<b>a)</b> A hurricane.<br />
+<b>b)</b> A blizzard.<br />
+<b>c)</b> A thunderstorm.<br />
+<b>d)</b> Hail and sleet.</p>
+<p before="7" lines="5"><b>2. Who found the cave in Chapter 4?</b><br />
+<b>a)</b> Fili and Kili.<br />
+<b>b)</b> Balin and Dwalin.<br />
+<b>c)</b> Bifur, Bofur and Bombur.<br />
+<b>d)</b> Gandalf and Bilbo.</p>
+<p before="7" lines="5"><b>3. How many goblins grab Bilbo?</b><br />
+<b>a)</b> Six.<br />
+<b>b)</b> Thirty.<br />
+<b>c)</b> None - Bilbo escapes.<br />
+<b>d)</b> Two.</p>
+<p before="7" lines="5"><b>4. What do the goblins use to beat time while they sing?</b><br />
+<b>a)</b> Drums and gongs.<br />
+<b>b)</b> Hammers and tongs.<br />
+<b>c)</b> Cymbals and tamborines.<br />
+<b>d)</b> Footsteps and whips.</p>
+<p before="7" lines="5"><b>5. What was the final fate of the ponies?</b><br />
+<b>a)</b> They starved to death.<br />
+<b>b)</b> They escaped back to Rivendell.<br />
+<b>c)</b> The goblins ate them.<br />
+<b>d)</b> The goblins used them to draw carts in the mines.</p>
+<p before="7" lines="5"><b>6. Which of the following devices do the goblins not make (or have made for them)?</b><br />
+<b>a)</b> Pickaxes.<br />
+<b>b)</b> Trumpets.<br />
+<b>c)</b> Instruments of torture.<br />
+<b>d)</b> Tongs.</p>
+<p before="7" lines="5"><b>7. What is the goblin name for Thorin's sword?</b><br />
+<b>a)</b> Murderer.<br />
+<b>b)</b> Biter.<br />
+<b>c)</b> Beater.<br />
+<b>d)</b> Thunderbolt.</p>
+<p before="7" lines="5"><b>8. Who carries Bilbo at first as they try to escape from the mines after Gandalf kills the Great Goblin?</b><br />
+<b>a)</b> Nori.<br />
+<b>b)</b> Dori.<br />
+<b>c)</b> Dwalin.<br />
+<b>d)</b> Ori.</p>
+<p before="7" lines="5"><b>9. What is obviously magical about Gandalf's sword Glamdring (Foe-hammer)?</b><br />
+<b>a)</b> It emits a high-pitched screeching sound when it kills goblins.<br />
+<b>b)</b> It cannot be taken out of the owner's hand unless the owner is killed.<br />
+<b>c)</b> It burns blue when goblins are nearby.<br />
+<b>d)</b> It becomes invisible when the owner is in danger.</p>
+<p before="7" lines="5"><b>10. Who is carrying Bilbo when the goblins find them for the second time?</b><br />
+<b>a)</b> Dori.<br />
+<b>b)</b> Bombur.<br />
+<b>c)</b> Bifur.<br />
+<b>d)</b> Gloin.</p>
+<p before="7" lines="5"><b>11. What light are the adventurers using to guide them inside the tunnels in Chapter 4?</b><br />
+<b>a)</b> A torch dropped by a goblin when Thorin killed one.<br />
+<b>b)</b> A strange green glow given off by Gandalf's smoke rings.<br />
+<b>c)</b> The magical glow on Gandalf's staff.<br />
+<b>d)</b> The magical light given off by Orcrist and Glamdring when goblins are nearby.</p>
+<p before="7" lines="5"><b>12. Why can't the dwarves hear the goblins coming?</b><br />
+<b>a)</b> The echoes inside the caves are too confusing.<br />
+<b>b)</b> The goblins have made themselves invisible.<br />
+<b>c)</b> The goblins are wearing soft shoes.<br />
+<b>d)</b> The dwarves are talking too loudly.</p>
+<h3>Multiple Choice - Chapter 5</h3>
+<p before="7" lines="5"><b>1. Why do the goblins not find Bilbo after he is knocked unconscious?</b><br />
+<b>a)</b> The are too busy looking at the dwarves and Gandalf.<br />
+<b>b)</b> He is lying quietly in a dark corner.<br />
+<b>c)</b> They see him, but do not bother with him.<br />
+<b>d)</b> They have all been killed by Gandalf's magic.</p>
+<p before="7" lines="5"><b>2. What does Bilbo find on the floor in Chapter 5?</b><br />
+<b>a)</b> A knife.<br />
+<b>b)</b> A ring.<br />
+<b>c)</b> A slice of bacon.<br />
+<b>d)</b> His pipe and tobacco pouch.</p>
+<p before="7" lines="5"><b>3. What does Bilbo learn about his sword in Chapter 5?</b><br />
+<b>a)</b> It is an elvish blade like Glamdring and Orcrist.<br />
+<b>b)</b> It acts as a compass so he does not lose his sense of direction.<br />
+<b>c)</b> It helps him see in the dark.<br />
+<b>d)</b> He can use it like a match to make fire.</p>
+<p before="7" lines="5"><b>4. What animals does Bilbo sense as he wanders through the dark tunnels in Chapter 5?</b><br />
+<b>a)</b> Snakes.<br />
+<b>b)</b> None - the goblins have eaten everything alive.<br />
+<b>c)</b> Bats.<br />
+<b>d)</b> Fish.</p>
+<p before="7" lines="5"><b>5. What stops Bilbo from going forward in the dark tunnels in Chapter 5?</b><br />
+<b>a)</b> He hears goblins going fishing.<br />
+<b>b)</b> He comes to the edge of a subterranean lake.<br />
+<b>c)</b> Gollum catches him.<br />
+<b>d)</b> He blunders into a dead end.</p>
+<p before="7" lines="5"><b>6. How does Gollum get from his island to the shore of the lake?</b><br />
+<b>a)</b> His ring helps him walk across the surface of the water.<br />
+<b>b)</b> He paddles a little boat.<br />
+<b>c)</b> He rides on the back of blind fish.<br />
+<b>d)</b> He swims, as he is an excellent swimmer.</p>
+<p before="7" lines="5"><b>7. What does Gollum eat?</b><br />
+<b>a)</b> Bats and spiders.<br />
+<b>b)</b> Fish and goblins. <br />
+<b>c)</b> Ponies and goblins.<br />
+<b>d)</b> Fish and mushrooms.</p>
+<p before="7" lines="5"><b>8. What is the answer to Bilbo's first riddle?</b><br />
+<b>a)</b> Teeth.<br />
+<b>b)</b> White horses.<br />
+<b>c)</b> A mountain.<br />
+<b>d)</b> The wind.</p>
+<p before="7" lines="5"><b>9. What will happen if Bilbo loses the riddle contest?</b><br />
+<b>a)</b> Gollum will hand him over to the goblins in return for food.<br />
+<b>b)</b> Bilbo will become Gollum's slave.<br />
+<b>c)</b> Gollum will eat him.<br />
+<b>d)</b> He will have to give the ring back to Gollum.</p>
+<p before="7" lines="5"><b>10. Where did Gollum live before coming to the underground lake?</b><br />
+<b>a)</b> On the top of a windy mountain.<br />
+<b>b)</b> With his grandmother in a hole in a bank beside a river.<br />
+<b>c)</b> With the goblins, but he was banished after he ate one of them.<br />
+<b>d)</b> Nowhere - he has always lived on his island.</p>
+<p before="7" lines="5"><b>11. What is "never thirsty, ever drinking/All in mail never clinking?"</b><br />
+<b>a)</b> The skeleton of a drowned knight.<br />
+<b>b)</b> Gollum's grandmother.<br />
+<b>c)</b> Goblins.<br />
+<b>d)</b> A fish.</p>
+<p before="7" lines="5"><b>12. What does Gollum call the ring?</b><br />
+<b>a)</b> My special secret.<br />
+<b>b)</b> My hiding place.<br />
+<b>c)</b> My birthday present.<br />
+<b>d)</b> My precious.</p>
+<h3>Multiple Choice - Chapter 6</h3>
+<p before="7" lines="5"><b>1. Who does Bilbo see first after escaping Gollum and the dark tunnels?</b><br />
+<b>a)</b> Balin.<br />
+<b>b)</b> Gollum.<br />
+<b>c)</b> Gandalf.<br />
+<b>d)</b> Bombur.</p>
+<p before="7" lines="5"><b>2. What does Bilbo not tell the dwarves about his adventures inside the tunnels?</b><br />
+<b>a)</b> That his little sword is an elvish blade like Glamdring and Orcrist.<br />
+<b>b)</b> That he now has a ring that makes him invisible when he puts it on.<br />
+<b>c)</b> That Gollum wanted to eat him if he lost the riddle contest.<br />
+<b>d)</b> That he had pity on Gollum and did not kill him when he had the chance.</p>
+<p before="7" lines="5"><b>3. What type of enchantments is Gandalf especially good at?</b><br />
+<b>a)</b> Prophecy and pathfinding.<br />
+<b>b)</b> Illusions and turning his enemies to stone.<br />
+<b>c)</b> Fire and lights.<br />
+<b>d)</b> Calling down lightning and thunder.</p>
+<p before="7" lines="5"><b>4. What day of the week was it when the adventurers were captured?</b><br />
+<b>a)</b> Monday morning (or Sunday night).<br />
+<b>b)</b> Monday night (or Tuesday morning).<br />
+<b>c)</b> Tuesday night (or Wednesday morning).<br />
+<b>d)</b> Thursday evening (or Thursday morning).</p>
+<p before="7" lines="5"><b>5. What does Bilbo find to eat as they walk through the woods in Chapter 6?</b><br />
+<b>a)</b> Blackberries and strawberries.<br />
+<b>b)</b> Hawthorn berries and blackberries.<br />
+<b>c)</b> Mushrooms and crab-apples.<br />
+<b>d)</b> Sorrel and wild strawberries.</p>
+<p before="7" lines="5"><b>6. Why is the magic ring unable to protect the wearer from the wargs?</b><br />
+<b>a)</b> Wargs are magical, and the ring does not work on them.<br />
+<b>b)</b> Wargs can still see the wearer's shadow, even by moonlight.<br />
+<b>c)</b> Wargs can find the wearer by their sense of smell.<br />
+<b>d)</b> Wargs have especially keen hearing.</p>
+<p before="7" lines="5"><b>7. What sort of tree does Gandalf take refuge from the wargs in?</b><br />
+<b>a)</b> A fir.<br />
+<b>b)</b> A pine.<br />
+<b>c)</b> A spruce.<br />
+<b>d)</b> An oak.</p>
+<p before="7" lines="5"><b>8. Why did the wargs come to the clearing where the adventurers were?</b><br />
+<b>a)</b> They were going to meet the goblins so they could go raiding together.<br />
+<b>b)</b> The wolves were running away from the woodsmen who had settled in the area.<br />
+<b>c)</b> The wargs could smell the adventurers and came to hunt them.<br />
+<b>d)</b> The goblins had sent the wargs to hunt down the adventurers.</p>
+<p before="7" lines="5"><b>9. What colors of flame does Gandalf use to drive the wolves back with?</b><br />
+<b>a)</b> Blue, white and purple.<br />
+<b>b)</b> Red, yellow and orange.<br />
+<b>c)</b> Green, black and white.<br />
+<b>d)</b> Blue, red and green.</p>
+<p before="7" lines="5"><b>10. What first alerts the Lord of the Eagles to the events in the wood?</b><br />
+<b>a)</b> A magical message from Gandalf.<br />
+<b>b)</b> The flames in the forest.<br />
+<b>c)</b> The howling of the wolves.<br />
+<b>d)</b> The line of goblin soldiers marching towards the forest.</p>
+<p before="7" lines="5"><b>11. How does the forest catch on fire in Chapter 6?</b><br />
+<b>a)</b> The wargs spread it accidentally after Gandalf sets their coats alight.<br />
+<b>b)</b> A dead tree is hit by summer lightning.<br />
+<b>c)</b> The goblins light it deliberately to kill the adventurers.<br />
+<b>d)</b> Gandalf lights the fire to attract the attention of the eagles.</p>
+<p before="7" lines="5"><b>12. What does Bilbo think the eagles will do to him at first?</b><br />
+<b>a)</b> He is afraid they will drop him over the edge of their eyrie.<br />
+<b>b)</b> He thinks they plan to eat him.<br />
+<b>c)</b> He thinks they will give him back to the goblins.<br />
+<b>d)</b> He hopes that they will give him a meal.</p>
+<h3>Multiple Choice - Chapter 7</h3>
+<p before="7" lines="5"><b>1. What does Bilbo eat for breakfast when he wakes up in the eagles' eyrie?</b><br />
+<b>a)</b> Bacon and eggs.<br />
+<b>b)</b> Cold ham and apples.<br />
+<b>c)</b> Cold mutton and rabbit.<br />
+<b>d)</b> Bread and water.</p>
+<p before="7" lines="5"><b>2. What reward do the dwarves give to the eagles at the end of the adventures?</b><br />
+<b>a)</b> A golden crown for the Lord of Eagles and golden collars for his fifteen chieftans.<br />
+<b>b)</b> A wagon load of silver and gold.<br />
+<b>c)</b> A magnificent necklace set with rubies and emeralds.<br />
+<b>d)</b> Specially designed spurs of steel that will help them fight agains the goblins better.</p>
+<p before="7" lines="5"><b>3. What special ability does Beorn have?</b><br />
+<b>a)</b> He can change from a man into a black bear.<br />
+<b>b)</b> He can handle bees without being stung.<br />
+<b>c)</b> He can hunt any animal alive with his bare hands.<br />
+<b>d)</b> He can lift rocks as big as the Carrock.</p>
+<p before="7" lines="5"><b>4. Which dwarf has to come to Beorn's house alone?</b><br />
+<b>a)</b> Dori.<br />
+<b>b)</b> Bombur.<br />
+<b>c)</b> Thorin.<br />
+<b>d)</b> Dwalin.</p>
+<p before="7" lines="5"><b>5. What is Beorn doing when Gandalf and Bilbo arrive at his house?</b><br />
+<b>a)</b> Shearing sheep.<br />
+<b>b)</b> Churning butter.<br />
+<b>c)</b> Chopping wood.<br />
+<b>d)</b> Extracting honey from his hives.</p>
+<p before="7" lines="5"><b>6. What is the name of Gandalf's cousin?</b><br />
+<b>a)</b> Radagast.<br />
+<b>b)</b> Mithrandir.<br />
+<b>c)</b> Saruman.<br />
+<b>d)</b> Elrond.</p>
+<p before="7" lines="5"><b>7. What animals set up the dinner table and light the lamps in Beorn's hall?</b><br />
+<b>a)</b> Bees, eagles and enslaved wolves.<br />
+<b>b)</b> Bears, boars and oxen.<br />
+<b>c)</b> Ponies, dogs and sheep.<br />
+<b>d)</b> Sheep, cattle and cats.</p>
+<p before="7" lines="5"><b>8. How does Beorn react to the dwarves' talk of gold, silver and jewels?</b><br />
+<b>a)</b> He ignores them, as he has no interest in treasures.<br />
+<b>b)</b> He is angry and perplexed at their greed.<br />
+<b>c)</b> He is amazed at the skill the dwarves talk about.<br />
+<b>d)</b> He is intrigued and starts becoming greedy for a share of the treasure.</p>
+<p before="7" lines="5"><b>9. What happened outside Beorn's hall on the first night the adventurers stayed there?</b><br />
+<b>a)</b> Beorn had a great battle against a pack of Wargs.<br />
+<b>b)</b> Beorn, in bear-shape, tried to kill the adventurers.<br />
+<b>c)</b> Beorn and other bears held a meeting and a dance.<br />
+<b>d)</b> Beorn and Gandalf talked all night on top of the Carrock.</p>
+<p before="7" lines="5"><b>10. How does Beorn find out that Gandalf's story is true?</b><br />
+<b>a)</b> The Lord of the Eagles tells him.<br />
+<b>b)</b> He finds the burnt wolf-glade and also forces a captive warg and goblin to tell him.<br />
+<b>c)</b> His bees bring him the news.<br />
+<b>d)</b> He finds the dead body of the Great Goblin.</p>
+<p before="7" lines="5"><b>11. What does Bilbo see at nightfall as they travel towards Mirkwood?</b><br />
+<b>a)</b> Spies and servants of the Necromancer.<br />
+<b>b)</b> Wargs and goblins trying to sneak past Beorn's borders.<br />
+<b>c)</b> The borrowed ponies trying to escape.<br />
+<b>d)</b> A great black bear (Beorn in his animal shape) following them.</p>
+<p before="7" lines="5"><b>12. What is Gandalf's last piece of advice before he leaves the dwarves and Bilbo?</b><br />
+<b>a)</b> Don't leave the path.<br />
+<b>b)</b> Keep going straight ahead, no matter what happens.<br />
+<b>c)</b> Don't go near the Necromancer's tower.<br />
+<b>d)</b> You must either go through or give up the quest.</p>
+<h3>Multiple Choice - Chapter 8</h3>
+<p before="7" lines="5"><b>1. What animals do the adventurers see quite frequently in the early stages of their journey through Mirkwood?</b><br />
+<b>a)</b> Black squirrels.<br />
+<b>b)</b> Poisonous snakes.<br />
+<b>c)</b> Wild boars.<br />
+<b>d)</b> Deer.</p>
+<p before="7" lines="5"><b>2. Why don't the adventurers drink from the black stream in the middle of Mirkwood?</b><br />
+<b>a)</b> It flows too fast to be safe if they stand on the brink and try to fill their waterskins.<br />
+<b>b)</b> They are more interested in getting across it.<br />
+<b>c)</b> Beorn had warned them that the water was enchanted.<br />
+<b>d)</b> It looks poisonous and unhealthy.</p>
+<p before="7" lines="5"><b>3. Who is supposed to ride in the boat with Bombur?</b><br />
+<b>a)</b> Kili.<br />
+<b>b)</b> Dwalin.<br />
+<b>c)</b> Bofur.<br />
+<b>d)</b> Bilbo.</p>
+<p before="7" lines="5"><b>4. Why does Bombur fall into the enchanted river?</b><br />
+<b>a)</b> He is too fat and clumsy to jump out of the boat without stumbling.<br />
+<b>b)</b> A deer knocks him in.<br />
+<b>c)</b> Dwalin knocks him in accidentally.<br />
+<b>d)</b> The boat starts floating downstream so he jumps into the water.</p>
+<p before="7" lines="5"><b>5. Which of the following is not a change that the adventurers notice after encountering the hunt and the white deer?</b><br />
+<b>a)</b> They begin to hear singing and laughter in the distance.<br />
+<b>b)</b> They start to see and hear birds in the branches above them.<br />
+<b>c)</b> The shadows in the forest do not seem as deep or dark.<br />
+<b>d)</b> They see autumn leaves beginning to fall from the trees.</p>
+<p before="7" lines="5"><b>6. What small creatures does Bilbo find at the top of the oak tree in Chapter 8?</b><br />
+<b>a)</b> Moths and caterpillars.<br />
+<b>b)</b> Black butterflies and spiders.<br />
+<b>c)</b> Squirrels and sparrows.<br />
+<b>d)</b> Centipedes and earwigs.</p>
+<p before="7" lines="5"><b>7. Who is the first to see the lights from the elves' feast?</b><br />
+<b>a)</b> Bilbo.<br />
+<b>b)</b> Balin.<br />
+<b>c)</b> Bombur.<br />
+<b>d)</b> Thorin.</p>
+<p before="7" lines="5"><b>8. Which of the following does not happen when one of the adventurers steps into the ring of lights surrounding the elves' feast?</b><br />
+<b>a)</b> The fire erupts in a shower of sparks.<br />
+<b>b)</b> The elves begin singing an eerie tune.<br />
+<b>c)</b> The adventurers become confused and disoriented.<br />
+<b>d)</b> The lights magically go out.</p>
+<p before="7" lines="5"><b>9. What wakes Bilbo up from his sleep after he realizes he is alone in Chapter 8, after coming across the elves' feast?</b><br />
+<b>a)</b> The hunting horn of the elf king.<br />
+<b>b)</b> A spider, which is trying to wrap him up in sticky thread.<br />
+<b>c)</b> The shouts and cries of the dwarves.<br />
+<b>d)</b> A high-pitched buzzing noise made by a fly attempting to escape from the spiders.</p>
+<p before="7" lines="5"><b>10. How does Bilbo kill the spiders who have captured the dwarves in their webs?</b><br />
+<b>a)</b> He throws stones at them.<br />
+<b>b)</b> He enrages them so much that they fall out of their trees to their deaths.<br />
+<b>c)</b> He stabs them stealthily with Sting.<br />
+<b>d)</b> He uses strands of their own webs to make nooses and strangles them.</p>
+<p before="7" lines="5"><b>11. After they have defeated the spiders, who do the adventurers discover is missing?</b><br />
+<b>a)</b> Dwalin.<br />
+<b>b)</b> Thorin.<br />
+<b>c)</b> Kili.<br />
+<b>d)</b> Bombur.</p>
+<p before="7" lines="5"><b>12. What sort of elves have taken Thorin prisoner?</b><br />
+<b>a)</b> Deep Elves.<br />
+<b>b)</b> Wood Elves.<br />
+<b>c)</b> Light Elves.<br />
+<b>d)</b> Sea Elves.</p>
+<h3>Multiple Choice - Chapter 9</h3>
+<p before="7" lines="5"><b>1. What weapons do the Wood Elves use when they take the dwarves prisoner?</b><br />
+<b>a)</b> They freeze the dwarves with their magical powers.<br />
+<b>b)</b> Swords and daggers.<br />
+<b>c)</b> Whips and clubs.<br />
+<b>d)</b> Bows and spears.</p>
+<p before="7" lines="5"><b>2. What is the Elf King's crown made of during autumn (fall)?</b><br />
+<b>a)</b> Silver and white gems.<br />
+<b>b)</b> Oak leaves and acorns.<br />
+<b>c)</b> Berries and red leaves.<br />
+<b>d)</b> Gold and emeralds.</p>
+<p before="7" lines="5"><b>3. Why are the dwarves glad to be captured by the elves (at first)?</b><br />
+<b>a)</b> They are starving, and the elves will give their prisoners food.<br />
+<b>b)</b> They guess that the elves have taken Thorin prisoner and they want to be reunited with him.<br />
+<b>c)</b> They know that if they promise the elves a share of their treasure, they will be set free.<br />
+<b>d)</b> The elves have been friends with the dwarves for hundreds of years.</p>
+<p before="7" lines="5"><b>4. What question of Balin's enraged the Elvenking?</b><br />
+<b>a)</b> Balin asks what has happened to Thorin.<br />
+<b>b)</b> Balin asks if the spiders are the elves' pets.<br />
+<b>c)</b> Balin asks if the elves know anything about Smaug's treasure.<br />
+<b>d)</b> Balin asks the Elvenking for food and drink before being set free.</p>
+<p before="7" lines="5"><b>5. How does Bilbo find food while skulking around in the Elvenking's palace?</b><br />
+<b>a)</b> He slips out through the magic gates and goes hunting.<br />
+<b>b)</b> He steals it from the stores or the table when nobody is looking.<br />
+<b>c)</b> He takes it out of the barrels sent to Esgaroth.<br />
+<b>d)</b> He scrounges it off the rubbish heaps of the elves.</p>
+<p before="7" lines="5"><b>6. What is mostly transported by river inside the barrels from the people of Laketown to the Wood Elves?</b><br />
+<b>a)</b> Cider.<br />
+<b>b)</b> Mead.<br />
+<b>c)</b> Ale.<br />
+<b>d)</b> Wine./p>
+<p before="7" lines="5"><b>7. In Chapter 9, with whom does the chief guard get drunk?</b><br />
+<b>a)</b> The other guards.<br />
+<b>b)</b> The king's butler.<br />
+<b>c)</b> The men who guided the barrels up the river.<br />
+<b>d)</b> The Elf King.</p>
+<p before="7" lines="5"><b>8. What is the name of the elvenking's butler?</b><br />
+<b>a)</b> Dorwinion.<br />
+<b>b)</b> Thranduil.<br />
+<b>c)</b> Galion.<br />
+<b>d)</b> Legolas.</p>
+<p before="7" lines="5"><b>9. What is the weak point in Bilbo's plan of escape from the elves?</b><br />
+<b>a)</b> He forgot that he had nobody to pack him inside a barrel.<br />
+<b>b)</b> He forgot that he couldn't swim.<br />
+<b>c)</b> He forgot to leave air-holes so the dwarves could breathe through.<br />
+<b>d)</b> He forgot that the elves would notice that the barrels were still full.</p>
+<p before="7" lines="5"><b>10. What nearly gives Bilbo's presence away to the men steering the barrels in spite of the invisibility conferred on him by the ring?</b><br />
+<b>a)</b> His shadow in the torchlight.<br />
+<b>b)</b> He bumps into the men quite frequently.<br />
+<b>c)</b> His wet footprints and his sneezing.<br />
+<b>d)</b> His weight presses the barrels lower in the water.</p>
+<p before="7" lines="5"><b>11. What is Thorin considering doing when he learns that the other dwarves are also in prison with him?</b><br />
+<b>a)</b> Promising the Elvenking a share of the treasure.<br />
+<b>b)</b> Committing suicide.<br />
+<b>c)</b> Telling the Elvenking about the quest and the treasure.<br />
+<b>d)</b> Swearing to become a slave of the elves for the rest of his life.</p>
+<p before="7" lines="5"><b>12. What prediction of Gandalf's comes true in Chapter 9?</b><br />
+<b>a)</b> They came to disaster when they left the path in Mirkwood.<br />
+<b>b)</b> The dwarves have learned to trust Bilbo to save them.<br />
+<b>c)</b> They will have to abandon their quest and return to digging coal.<br />
+<b>d)</b> They will be unable to reach the Lonely Mountain by Durin's Day.</p>
+<h3>Multiple Choice - Chapter 10</h3>
+<p before="7" lines="5"><b>1. What is the first landmark feature that Bilbo notices as the barrel he is riding takes him out of the forest?</b><br />
+<b>a)</b> The Lonely Mountain.<br />
+<b>b)</b> The Long Lake.<br />
+<b>c)</b> A landslide.<br />
+<b>d)</b> The Iron Hills to the northeast of the lake.</p>
+<p before="7" lines="5"><b>2. What is the most common building material used in Laketown?</b><br />
+<b>a)</b> Wood.<br />
+<b>b)</b> Iron.<br />
+<b>c)</b> Rammed earth.<br />
+<b>d)</b> Stone.</p>
+<p before="7" lines="5"><b>3. What had Fili's barrel been used to carry before he escaped inside it?</b><br />
+<b>a)</b> Butter.<br />
+<b>b)</b> Wine.<br />
+<b>c)</b> Cheese.<br />
+<b>d)</b> Apples.</p>
+<p before="7" lines="5"><b>4. How does Bilbo manage to recognize Thorin after freeing him from the barrel?</b><br />
+<b>a)</b> By a distinctive scar left from his encounter with Smaug in the distant past.<br />
+<b>b)</b> By his long nose and bristling beard.<br />
+<b>c)</b> By his blue hood with the silver tassel and by his golden chain.<br />
+<b>d)</b> By his red cloak, black boots and dark green tunic</p>
+<p before="7" lines="5"><b>5. What happened to Thorin's sword Orcrist?</b><br />
+<b>a)</b> Nothing - Thorin uses it to enhance his kingly apperance when he presents himself to the Master of Laketown.<br />
+<b>b)</b> It had become hopelessly rusty in the trip down the river.<br />
+<b>c)</b> It had fallen off and become lost while the Eagles were rescuing the adventurers from the wargs and goblins.<br />
+<b>d)</b> The King of the Wood Elves took it from Thorin when he was made prisoner.</p>
+<p before="7" lines="5"><b>6. What skills or interests does the Master have that have made him the ruler of Laketown?</b><br />
+<b>a)</b> His love of old songs.<br />
+<b>b)</b> His knowledge of the Elvish languages.<br />
+<b>c)</b> His economic expertise.<br />
+<b>d)</b> His excellent memory and people skills.</p>
+<p before="7" lines="5"><b>7. Why is the King of the Wood Elves wiser than the men of Laketown?</b><br />
+<b>a)</b> He believes in the old songs and tales that the Master of Laketown has forgotten about.<br />
+<b>b)</b> He realizes that the dwarves will have to steal from Smaug rather than attempt to kill him, which is what the Lake-men believe.<br />
+<b>c)</b> He knows a way to kill Smaug that the Lake-men do not.<br />
+<b>d)</b> He quickly realizes how the dwarves managed to escape from his dungeons.</p>
+<p before="7" lines="5"><b>8. Why is Bilbo unhappy during their stay in Laketown?</b><br />
+<b>a)</b> He is suspicious about the possible motives of the Master.<br />
+<b>b)</b> He has a bad cold.<br />
+<b>c)</b> He still wishes he was back in his hobbit-hole.<br />
+<b>d)</b> He does not like the food that the Lake-men offer them.</p>
+<p before="7" lines="5"><b>9. What does the Master believe about Thorin and his company at first?</b><br />
+<b>a)</b> That Thorin will be a worthy ally and trade partner.<br />
+<b>b)</b> That Thorin will be killed by the dragon.<br />
+<b>c)</b> That Thorin is the true King Under the Mountain.<br />
+<b>d)</b> That they are frauds.</p>
+<p before="7" lines="5"><b>10. How long do the dwarves and Bilbo stay in Laketown?</b><br />
+<b>a)</b> Two days.<br />
+<b>b)</b> Three weeks.<br />
+<b>c)</b> We are not told.<br />
+<b>d)</b> A fortnight.</p>
+<p before="7" lines="5"><b>11. Who sit beside Thorin at the high table after Thorin proclaims himself as the descendant of Thror, King Under the Mountain?</b><br />
+<b>a)</b> Fili and Kili.<br />
+<b>b)</b> Bilbo and the Master.<br />
+<b>c)</b> Dwalin and Balin.<br />
+<b>d)</b> Bofur and Bombur.</p>
+<p before="7" lines="5"><b>12. What mistaken belief is held by the younger people of Laketown?</b><br />
+<b>a)</b> They believe that the dragon does not exist.<br />
+<b>b)</b> They believe that the river will flow with gold once the King Under the Mountain returns.<br />
+<b>c)</b> They believe that the dragon is harmless and even friendly.<br />
+<b>d)</b> They believe that Thorin is not the rightful King Under the Mountain.</p>
+<h3>Multiple Choice - Chapter 11</h3>
+<p before="7" lines="5"><b>1. What is the name of the hill close to where the dwarves and Bilbo make their first camp approaching the Lonely Mountain?</b><br />
+<b>a)</b> Ravensdown.<br />
+<b>b)</b> Dale.<br />
+<b>c)</b> Dragonmount.<br />
+<b>d)</b> Ravenhill.</p>
+<p before="7" lines="5"><b>2. What type of birds inhabit the area of the mountain and valleys closest to the Front Gate?</b><br />
+<b>a)</b> None  - the dragon has eaten them all.<br />
+<b>b)</b> Ravens.<br />
+<b>c)</b> Thrushes.<br />
+<b>d)</b> Crows.</p>
+<p before="7" lines="5"><b>3. What does Bilbo deduce from seeing the smoke and steam issuing from the Front Gate?</b><br />
+<b>a)</b> That the dragon is watching them from the side of the mountain.<br />
+<b>b)</b> That the dragon is alive.<br />
+<b>c)</b> That the dragon is getting ready to come out and eat them.<br />
+<b>d)</b> That the dragon has set himself on fire.</p>
+<p before="7" lines="5"><b>4. Who finds the 'doorstep' of the secret door in Chapter 11?</b><br />
+<b>a)</b> Bifur, Bofur and Bombur.<br />
+<b>b)</b> Bilbo, Fili and Kili.<br />
+<b>c)</b> Thorin, Bilbo and Balin.<br />
+<b>d)</b> Nori, Dori and Ori.</p>
+<p before="7" lines="5"><b>5. How can the dwarves and Bilbo reach the third camp outside the 'doorstep'?</b><br />
+<b>a)</b> Only by ropes - no other way is possible.<br />
+<b>b)</b> On horseback.<br />
+<b>c)</b> Either by a narrow path along the edge of a precipice or by ropes.<br />
+<b>d)</b> By floating along the river.</p>
+<p before="7" lines="5"><b>6. What phase of the moon is showing when Bilbo realizes that Durin's Day has come and they can find the keyhole?</b><br />
+<b>a)</b> A waning crescent.<br />
+<b>b)</b> A new moon.<br />
+<b>c)</b> A full moon.<br />
+<b>d)</b> A half moon.</p>
+<p before="7" lines="5"><b>7. How high is the doorway that leads into the secret tunnel in Chapter 11?</b><br />
+<b>a)</b> Three feet high.<br />
+<b>b)</b> Five feet high.<br />
+<b>c)</b> We are not told.<br />
+<b>d)</b> Six feet high.</p>
+<p before="7" lines="5"><b>8. Which dwarf is not present on the Doorstep when the door is finally opened?</b><br />
+<b>a)</b> Balin.<br />
+<b>b)</b> Gloin.<br />
+<b>c)</b> Bombur.<br />
+<b>d)</b> Thorin.</p>
+<p before="7" lines="5"><b>9. Which of the following methods do the dwarves not use in an attempt to open the secret door before the keyhole is revealed?</b><br />
+<b>a)</b> Using pickaxes to break through the stone.<br />
+<b>b)</b> Throwing loose rocks at the cliff face.<br />
+<b>c)</b> Beating on the stone and pushing at the cliff face.<br />
+<b>d)</b> Reciting spells that can open locked doors.</p>
+<p before="7" lines="5"><b>10. What animals or creatures can be found near the doorstep?</b><br />
+<b>a)</b> Thrushes and giant snails.<br />
+<b>b)</b> Snails and scorpions.<br />
+<b>c)</b> Snakes, spiders and crows.<br />
+<b>d)</b> Thrushes and ravens.</p>
+<p before="7" lines="5"><b>11. What do the dwarves suggest that Bilbo should do when they begin to despair of being able to open the secret door in Chapter 11?</b><br />
+<b>a)</b> Talk to the thrushes and see if they know the secret of opening the door.<br />
+<b>b)</b> Go into the mountain through the Front Gate using his magic ring.<br />
+<b>c)</b> Go back to Laketown and ask for more supplies and weapons.<br />
+<b>d)</b> Try to capture one of the thrushes, crows or ravens and use its feathers as a disguise to sneak into the mountain through the Front Gate.</p>
+<p before="7" lines="5"><b>12. Why does Bombur choose to stay below and guard the ponies in Chapter 11?</b><br />
+<b>a)</b> He does not believe that Bilbo and the others have really found the secret door.<br />
+<b>b)</b> He is very fond of the ponies and doesn't want to leave them behind.<br />
+<b>c)</b> He lost a bet and had to go on guard duty as a result.<br />
+<b>d)</b> He thinks he is too fat for the ropes and that he will get dizzy or trip on the path.</p>
+<h3>Multiple Choice - Chapter 12</h3>
+<p before="7" lines="5"><b>1. In Chapter 12, who volunteers to come some of the way down the tunnel with Bilbo?</b><br />
+<b>a)</b> Kili.<br />
+<b>b)</b> Fili.<br />
+<b>c)</b> Balin.<br />
+<b>d)</b> Thorin.</p>
+<p before="7" lines="5"><b>2. What is the first hint of the dragon's presence that Bilbo notices as he descends the tunnel?</b><br />
+<b>a)</b> Wisps of smoke.<br />
+<b>b)</b> A reddish glow.<br />
+<b>c)</b> The rumbling sound of Smaug's breathing or snoring.<br />
+<b>d)</b> The air about him grows hotter.</p>
+<p before="7" lines="5"><b>3. What colors is Smaug?</b><br />
+<b>a)</b> Red and black.<br />
+<b>b)</b> Red and green.<br />
+<b>c)</b> Green and gold.<br />
+<b>d)</b> Red and gold.</p>
+<p before="7" lines="5"><b>4. What does Bilbo manage to steal from Smaug in Chapter 12?</b><br />
+<b>a)</b> A sharp sword.<br />
+<b>b)</b> A golden cup.<br />
+<b>c)</b> A pocketful of gold coins.<br />
+<b>d)</b> A necklace of rubies.</p>
+<p before="7" lines="5"><b>5. What did Smaug meet in his nightmare before he wakes up?</b><br />
+<b>a)</b> A brave warrior with a sword.<br />
+<b>b)</b> An army of archers.<br />
+<b>c)</b> A bigger, stronger dragon wanting to steal his hoard.<br />
+<b>d)</b> Thieves stealing from his hoard.</p>
+<p before="7" lines="5"><b>6. Why does Smaug react with such great fury in Chapter 12?</b><br />
+<b>a)</b> He is outraged that someone has dared to steal from him.<br />
+<b>b)</b> He is extremely disturbed by his nightmare.<br />
+<b>c)</b> He is hungry after his long sleep and his hunger infuriates him.<br />
+<b>d)</b> He smells the dwarves and realizes that they are coming to kill him.</p>
+<h3>Multiple Choice - Chapter 13</h3>
+<p before="7" lines="5"><b>1. How does Bilbo know that the gem he stumbles across is the Arkenstone?</b><br />
+<b>a)</b> Bilbo recognizes it from Thorin's description.<br />
+<b>b)</b> He hears the ghost of a long-dead dwarf whisper its name to him as he picks it up.<br />
+<b>c)</b> He does not know it is the Arkenstone at all and fails to recognize it.<br />
+<b>d)</b> It is written in letters of gold across one of the facets of the stone.</p>
+<p before="7" lines="5"><b>2. What makes Bilbo drop his torch after finding the Arkenstone?</b><br />
+<b>a)</b> A bat startles him.<br />
+<b>b)</b> He trips over a necklace of pearls.<br />
+<b>c)</b> He is so surprised when he sees the Arkenstone that he drops the torch.<br />
+<b>d)</b> He believes the dragon is coming back and wants to hide.</p>
+<p before="7" lines="5"><b>3. What does Thorin take as armor and weapons from the hoard of Smaug's treasure?</b><br />
+<b>a)</b> Spears with the heads inlaid with gold, an emerald-studded shield and a crown.<br />
+<b>b)</b> Silver armour, a belt set with rubies and a black mace set with diamonds.<br />
+<b>c)</b> A coat of gold-plated rings, an axe with a silver haft and a belt encrusted with scarlet stones.<br />
+<b>d)</b> A coat of silver mail, a helmet encrusted with diamonds and an ivory bow.</p>
+<p before="7" lines="5"><b>4. For whom was the armor Bilbo is rewarded with in Chapter 13 originally made?</b><br />
+<b>a)</b> The bride of the King Under the Mountain.<br />
+<b>b)</b> Thorin when he was younger.<br />
+<b>c)</b> Bullroarer Took as a reward for killing the goblin chieftain.<br />
+<b>d)</b> A young elf prince.</p>
+<p before="7" lines="5"><b>5. Apart from the dragon, what other animals live inside the Lonely Mountain?</b><br />
+<b>a)</b> Snails<br />
+<b>b)</b> Bats<br />
+<b>c)</b> Nothing<br />
+<b>d)</b> Spiders</p>
+<p before="7" lines="5"><b>6. Who makes the cram that the dwarves and Bilbo eat while camping at Ravenhill?</b><br />
+<b>a)</b> Beorn.<br />
+<b>b)</b> The Wood Elves.<br />
+<b>c)</b> The dwarves, using an ancient and secret recipe.<br />
+<b>d)</b> The Lake-men.</p>
+<h3>Multiple Choice - Chapter 14</h3>
+<p before="7" lines="5"><b>1. What is the full name of the grim-faced man who habitually predicts disasters like floods and poisoned fish?</b><br />
+<b>a)</b> Bard of Esgaroth.<br />
+<b>b)</b> Bard the Bowman.<br />
+<b>c)</b> Bowman the Bard.<br />
+<b>d)</b> Bard ap Girion.</p>
+<p before="7" lines="5"><b>2. Why do the people of Lake-town destroy the bridges as a defense against the onslaught of the dragon?</b><br />
+<b>a)</b> The dragon can then only attack them from the air (which makes him vulnerable to arrows) or have his fire quenched by the cold water of the lake.<br />
+<b>b)</b> They are attempting to fool the dragon into thinking they have left the town.<br />
+<b>c)</b> The bridges are the only part of the town that is vulnerable to dragon-fire.<br />
+<b>d)</b> The Master ordered them to do so in the hopes that his rival, Bard, would be killed.</p>
+<p before="7" lines="5"><b>3. Why do most of the arrows shot at Smaug have no effect on him?</b><br />
+<b>a)</b> The wind from Smaug's wings makes all the arrows miss their targets.<br />
+<b>b)</b> The arrows either bounce off his scales and diamond encrusted underbelly, or he incinerates them with his fiery breath.<br />
+<b>c)</b> Smag has a magic of his own that makes him invulnerable.<br />
+<b>d)</b> Smaug flies so high and fast that no arrows can reach him.</p>
+<p before="7" lines="5"><b>4. Why is Bard astonished when the thrush lands on his shoulder?</b><br />
+<b>a)</b> He thought all the thrushes in the area had been killed by the dragon.<br />
+<b>b)</b> He can understand its speech.<br />
+<b>c)</b> He believes the thrush is a spy of the dragon's sent to distract his aim.<br />
+<b>d)</b> The thrush is the emblem on his family coat of arms.</p>
+<p before="7" lines="5"><b>5. Why can Bard understand the speech of the thrush?</b><br />
+<b>a)</b> His ancestors came from Dale, where the people had the power of understanding the speech of birds.<br />
+<b>b)</b> The thrush spoke Bard's native language.<br />
+<b>c)</b> It was a special, magical thrush that could make any human that spoke to it understand.<br />
+<b>d)</b> He has studied the language of birds and is used to it.</p>
+<p before="7" lines="5"><b>6. In Chapter 14, qho does Bard ask for help in making sure that the refugees from Laketown have food and shelter to help them through the oncoming winter?</b><br />
+<b>a)</b> The dwarves of the Iron Hills.<br />
+<b>b)</b> The goblins of the Misty Mountains.<br />
+<b>c)</b> Beorn and the woodsmen who hunt the Wargs.<br />
+<b>d)</b> The King of the Wood Elves.</p>
+<h3>Multiple Choice - Chapter 15</h3>
+<p before="7" lines="5"><b>1. What type of bird brings Bilbo and the dwarves the news of the dragon's death?</b><br />
+<b>a)</b> A raven.<br />
+<b>b)</b> A thrush.<br />
+<b>c)</b> An eagle.<br />
+<b>d)</b> A crow.</p>
+<p before="7" lines="5"><b>2. How old is Roac the raven?</b><br />
+<b>a)</b> 153.<br />
+<b>b)</b> We are not told.<br />
+<b>c)</b> 135.<br />
+<b>d)</b> 300.</p>
+<p before="7" lines="5"><b>3. What advice does Roac give to Thorin about the Lakemen?</b><br />
+<b>a)</b> To trust Bard, and to share the treasure with them.<br />
+<b>b)</b> To trust all of them, especially the Master.<br />
+<b>c)</b> To attack first before the elf army arrives.<br />
+<b>d)</b> Not to trust any of them, as they want to steal the gold.</p>
+<p before="7" lines="5"><b>4. What does Bilbo most want to happen while the dwarves are preparing for a siege by the elves and Lakemen?</b><br />
+<b>a)</b> He wants the armies to go away and leave them alone.<br />
+<b>b)</b> He wants to steal away with his share of the treasure and leave the dwarves to fight the Lakemen over the rest.<br />
+<b>c)</b> He wants a peaceful resolution to the situation - and enough food<br />
+<b>d)</b> He wants Gandalf to turn up and take him back to his hobbit hole again.</p>
+<p before="7" lines="5"><b>5. How do the dwarves manage to obtain three ponies in Chapter 15?</b><br />
+<b>a)</b> They find that three of the ponies escaped from the dragon and were wandering down the river.<br />
+<b>b)</b> Bilbo steals the ponies off the Lakemen using his magic ring.<br />
+<b>c)</b> They capture and tame wild ponies that were living in the area.<br />
+<b>d)</b> Dain from the Iron Hills sends the ponies to help Thorin.</p>
+<p before="7" lines="5"><b>6. Which of the following does Bard not use as a reason why the dwarves should share the treasure with the people of Laketown?</b><br />
+<b>a)</b> The dragon had a lot of treasure, so there is plenty for all to share.<br />
+<b>b)</b> Bard was the one who actually killed the dragon.<br />
+<b>c)</b> Some of the treasure came from Dale and belonged to Bard's ancestors.<br />
+<b>d)</b> The people of Laketown helped the dwarves when the dwarves were in need, but are now in need themselves.</p>
+<h3>Multiple Choice - Chapter 16</h3>
+<p before="7" lines="5"><b>1. Who is supposed to be on watch when Bilbo steals out of the stronghold to the elves and Lakemen?</b><br />
+<b>a)</b> Dwalin.<br />
+<b>b)</b> Thorin.<br />
+<b>c)</b> Kili.<br />
+<b>d)</b> Bombur.</p>
+<p before="7" lines="5"><b>2. In Chapter 16, who does Bilbo deal with and offer his share of the treasure to, along with the Arkenstone?</b><br />
+<b>a)</b> Bard and the King of the Wood Elves.<br />
+<b>b)</b> Gandalf and Bard.<br />
+<b>c)</b> The Elvish High Council.<br />
+<b>d)</b> Bard and the Master.</p>
+<p before="7" lines="5"><b>3. What unexpected news does Bilbo give the elves and Lakemen?</b><br />
+<b>a)</b> The goblins are on their way to take the treasure.<br />
+<b>b)</b> Thorin is weakening and is prepared to share.<br />
+<b>c)</b> Dain from the Iron Hills is coming to Thorin's aid.<br />
+<b>d)</b> Smaug had a mate who is still alive inside the mountain.</p>
+<p before="7" lines="5"><b>4. How does the Elvenking react to the sight of the Arkenstone?</b><br />
+<b>a)</b> He is unimpressed by it.<br />
+<b>b)</b> He is consumed by lust for the gem and is willing to renounce the rest of the treasure if he can have the Arkenstone.<br />
+<b>c)</b> He rejects Bilbo's offer as treacherous and ignoble, preferring instead to fight fairly for a share of the treasure.<br />
+<b>d)</b> He is amazed by its beauty and questions Bilbo's right to give it to him.</p>
+<p before="7" lines="5"><b>5. Who does Bilbo meet unexpectedly in the camp of the elves and Lakemen?</b><br />
+<b>a)</b> Gandalf.<br />
+<b>b)</b> Beorn.,<br />
+<b>c)</b> Gollum.<br />
+<b>d)</b> Thorin.</p>
+<p before="7" lines="5"><b>6. What is the other name for the Arkenstone?</b><br />
+<b>a)</b> The Heart of Darkness.<br />
+<b>b)</b> The Heart of the Mountain.<br />
+<b>c)</b> The Mountain of Light.<br />
+<b>d)</b> The Heart of the Dragon.</p>
+<h3>Multiple Choice - Chapter 17</h3>
+<p before="7" lines="5"><b>1. How does Thorin learn that Bilbo was the one who gave the Arkenstone to Bard and the Elvenking?</b><br />
+<b>a)</b> Bard tells Thorin where he got the Arkenstone from.<br />
+<b>b)</b> Bilbo confesses to giving it to them.<br />
+<b>c)</b> Thorin finds Bilbo's distinctive footprints leading out of the stronghold.<br />
+<b>d)</b> A raven who saw Bilbo going to the camp tells him.</p>
+<p before="7" lines="5"><b>2. Who carries the wooden casket holding the Arkenstone to the parley with Thorin?</b><br />
+<b>a)</b> The Master of Laketown.<br />
+<b>b)</b> Gandalf.<br />
+<b>c)</b> Bard the Bowman.<br />
+<b>d)</b> An unnamed wood-elf.</p>
+<p before="7" lines="5"><b>3. Which of the following does Thorin not threaten to do to Bilbo in Chapter 17?</b><br />
+<b>a)</b> Never be friends with him again.<br />
+<b>b)</b> Throw him off the cliff.<br />
+<b>c)</b> Stab him with his own elvish dagger.<br />
+<b>d)</b> Shoot at his feet with arrows.</p>
+<p before="7" lines="5"><b>4. What do the dwarves of the Iron Hills wear that is their special technological secret?</b><br />
+<b>a)</b> Knee-length hauberks of stainless steel.<br />
+<b>b)</b> Helmets made of mithril.<br />
+<b>c)</b> Seven-league boots that  help them cover long distances quickly.<br />
+<b>d)</b> Flexible mail trousers or hose.</p>
+<p before="7" lines="5"><b>5. What is the name of Dain's father?</b><br />
+<b>a)</b> Nain.<br />
+<b>b)</b> Carc.<br />
+<b>c)</b> Thrain.<br />
+<b>d)</b> Thorin.</p>
+<p before="7" lines="5"><b>6. Who attacks first and starts the war over the dragon gold?</b><br />
+<b>a)</b> The elves.<br />
+<b>b)</b> The goblins and wargs.<br />
+<b>c)</b> The Lakemen.<br />
+<b>d)</b> The dwarves.</p>
+<h3>Multiple Choice - Chapter 18</h3>
+<p before="7" lines="5"><b>1. What wound has Gandalf sustained during the Battle of the Five Armies?</b><br />
+<b>a)</b> Loss of half a foot when a goblin hacked it off with an axe.<br />
+<b>b)</b> An undefined wound in the arm that requires him to wear a sling.<br />
+<b>c)</b> A broken arm from falling off a cliff.<br />
+<b>d)</b> A bad cut to the head that required stitching.</p>
+<p before="7" lines="5"><b>2. Which dwarves are killed in the battle or die because of wounds sustained during it?</b><br />
+<b>a)</b> Bifur, Bofur and  Bombur.<br />
+<b>b)</b> Thorin, Fili and Kili.<br />
+<b>c)</b> Thorin, Balin and Dwalin.<br />
+<b>d)</b> Dori, Nori and Ori.</p>
+<p before="7" lines="5"><b>3. Who killed Bolg, the goblin cheiftan?</b><br />
+<b>a)</b> Bard the Bowman.<br />
+<b>b)</b> Beorn in bear's shape.<br />
+<b>c)</b> Gandalf, who called down lightning.<br />
+<b>d)</b> Thorin, who got his death-wound fighting single-handed against Bolg.</p>
+<p before="7" lines="5"><b>4. What treasures are placed on Thorin's body and/or tomb when he is buried?</b><br />
+<b>a)</b> The shield and sword he carried in his last battle.<br />
+<b>b)</b> The Arkenstone and the sword Orcrist.<br />
+<b>c)</b> The crown that had been his grandfather's.<br />
+<b>d)</b> A golden statue of Smaug.</p>
+<p before="7" lines="5"><b>5. What gift does Bard the Bowman give to the Elvenking?</b><br />
+<b>a)</b> All the crowns that could be found in Smaug's treasure.<br />
+<b>b)</b> A chest full of diamonds.<br />
+<b>c)</b> The rubies that had belonged to Bard's ancestors.<br />
+<b>d)</b> The emeralds that had belonged to King Girion of Dale.</p>
+<p before="7" lines="5"><b>6. What does Bilbo give to the Elvenking to pay for the food and wine he stole from him?</b><br />
+<b>a)</b> His sword Sting.<br />
+<b>b)</b> A chest of gold.<br />
+<b>c)</b> A necklace of silver and pearls.<br />
+<b>d)</b> A crown of silver set with diamonds.</p>
+<h3>Multiple Choice - Chapter 19</h3>
+<p before="7" lines="5"><b>1. Where are Bilbo and Gandalf when Bilbo learns what Gandalf was doing while they were in Mirkwood?</b><br />
+<b>a)</b> At the palace of the King of the Wood Elves.<br />
+<b>b)</b> In Rivendell.<br />
+<b>c)</b> At Beorn's house.<br />
+<b>d)</b> Going over the mountain road in the Misty Mountains.</p>
+<p before="7" lines="5"><b>2. What wakes Bilbo while he is sleeping at Rivendell in Chapter 19?</b><br />
+<b>a)</b> Gandalf and Elrond talking over their adventures.<br />
+<b>b)</b> Elves singing outside his window.<br />
+<b>c)</b> An alarm warning them of an attack by bandits.<br />
+<b>d)</b> The snoring of a captive goblin.</p>
+<p before="7" lines="5"><b>3. How long do Gandalf and Bilbo stay at Rivendell on the return journey?</b><br />
+<b>a)</b> A fortnight.<br />
+<b>b)</b> We are not told.<br />
+<b>c)</b> A week.<br />
+<b>d)</b> A month.</p>
+<p before="7" lines="5"><b>4. Where else does Bilbo get treasure from, apart from his share of Smaug's hoard?</b><br />
+<b>a)</b> A gift from Beorn.<br />
+<b>b)</b> A gift from Elrond.<br />
+<b>c)</b> The troll's treasure.<br />
+<b>d)</b> He steals some from the goblins.</p>
+<p before="7" lines="5"><b>5. Who are the auctioneers selling off Bilbo's house and effects?</b><br />
+<b>a)</b> Mr. Sackville-Baggins and Company.<br />
+<b>b)</b> Messrs Burrowes, Took and Grubb.<br />
+<b>c)</b> The Hobbiton Historic Places Trust.<br />
+<b>d)</b> Messrs Grubb, Grubb and Burrowes.</p>
+<p before="7" lines="5"><b>6. On what date was the auction of Bilbo's house and effects to take place?</b><br />
+<b>a)</b> The 12 of June.<br />
+<b>b)</b> The 22nd of June.<br />
+<b>c)</b> The first of May.<br />
+<b>d)</b> The 4th of July.</p>

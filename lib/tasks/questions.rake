@@ -265,4 +265,68 @@ namespace :questions do
       # end
 
   end
+
+  task :bookrags_import, [:question_file, :answer_file, :asker_id, :topic_name] => :environment do |t, args|
+    answers = []
+    i = 0
+    #get asker account
+    asker = User.asker(args[:asker_id])
+    if asker.nil?
+      puts 'No Asker Found!'
+      return
+    end
+
+    #get topic
+    topic = Topic.find_or_create_by_name(args[:topic_name].downcase)
+
+    File.open("db/questions/#{args[:answer_file]}").each do |line|
+      next if line=~/<td|<\/p><\/td><\/tr>/
+      l = line.gsub('<p>','').gsub('<b>','').gsub('</b>','').gsub('<br />','').gsub('\n','')
+      letter = l.split('.')[1].strip
+      case letter
+      when 'a'
+        answers[i] = 0
+        i+=1
+      when 'b'
+        answers[i] = 1
+        i+=1
+      when 'c'
+        answers[i] = 2
+        i+=1
+      when 'd'
+        answers[i] = 3
+        i+=1
+      else
+        puts "ERROR"
+        answers[i] = -1
+        i+=1
+      end
+    end
+
+    i = -1
+    j = 0
+    current_q = nil
+    File.open("db/questions/#{args[:question_file]}").each do |line|
+      next if line=~ /<h3>/
+      if line=~/<p before="7" lines="5"><b>/
+        i+=1
+        j = 0
+        l = line.gsub('<p before="7" lines="5"><b>','').gsub('</b>','').gsub('<br />','').gsub('\n','')
+        question = l[l.index('.')+2..-1]
+        current_q = Question.find_or_create_by_text(question)
+        current_q.update_attributes(:topic_id => topic.id,
+                            :user_id => 1,
+                            :status => 0,
+                            :created_for_asker_id => asker.id)
+        current_q.answers.destroy_all
+        current_q.answers = []
+      else
+        l = line.gsub('<b>','').gsub('</b>','').gsub('<br />','').gsub('</p>','').gsub('\n','')
+        answer = l[3..-1]
+        correct = answers[i]==j
+        current_q.answers << Answer.create(:text => answer, :correct => correct)
+        j+=1
+      end
+    end
+  end
 end

@@ -1,0 +1,206 @@
+<table width="100%" border="0"><tr><td width="34%"><h3>Preface</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> b.<br />
+<b>3.</b> d.<br />
+<b>4.</b> c.<br />
+<b>5.</b> d.<br />
+<b>6.</b> a.<br />
+<b>7.</b> d.<br />
+<b>8.</b> c.<br />
+<b>9.</b> c.<br />
+<b>10.</b> c.<br />
+<b>11.</b> d.<br />
+<b>12.</b> b.<br />
+</p></td><td width="33%"><h3>First Sight</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> a.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> d.<br />
+<b>6.</b> a.<br />
+<b>7.</b> d.<br />
+<b>8.</b> a.<br />
+<b>9.</b> d.<br />
+<b>10.</b> d.<br />
+<b>11.</b> d.<br />
+<b>12.</b> d.<br />
+</p></td><td width="33%"><h3>Open Book</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> c.<br />
+<b>3.</b> a.<br />
+<b>4.</b> a.<br />
+<b>5.</b> a.<br />
+<b>6.</b> b.<br />
+<b>7.</b> d.<br />
+<b>8.</b> c.<br />
+<b>9.</b> b.<br />
+<b>10.</b> a.<br />
+<b>11.</b> d.<br />
+<b>12.</b> c.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>Phenomenon</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> b.<br />
+<b>3.</b> d.<br />
+<b>4.</b> d.<br />
+<b>5.</b> c.<br />
+<b>6.</b> b.<br />
+<b>7.</b> d.<br />
+<b>8.</b> a.<br />
+<b>9.</b> a.<br />
+<b>10.</b> d.<br />
+<b>11.</b> c.<br />
+<b>12.</b> d.<br />
+</p></td><td width="33%"><h3>Invitations</h3>
+<p><b>1.</b> b.<br />
+<b>2.</b> d.<br />
+<b>3.</b> c.<br />
+<b>4.</b> c.<br />
+<b>5.</b> a.<br />
+<b>6.</b> d.<br />
+</p></td><td width="33%"><h3>Blood Type</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> d.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> d.<br />
+<b>6.</b> d.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>Scary Stories</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> a.<br />
+<b>3.</b> b.<br />
+<b>4.</b> b.<br />
+<b>5.</b> b.<br />
+<b>6.</b> d.<br />
+</p></td><td width="33%"><h3> Nightmare</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> b.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> b.<br />
+<b>6.</b> b.<br />
+</p></td><td width="33%"><h3>Port Angeles</h3>
+<p><b>1.</b> d.<br />
+<b>2.</b> c.<br />
+<b>3.</b> c.<br />
+<b>4.</b> d.<br />
+<b>5.</b> c.<br />
+<b>6.</b> c.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>Theory</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> a.<br />
+<b>3.</b> a.<br />
+<b>4.</b> b.<br />
+<b>5.</b> a.<br />
+<b>6.</b> b.<br />
+</p></td><td width="33%"><h3>Interrogations</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> c.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> a.<br />
+<b>6.</b> c.<br />
+</p></td><td width="33%"><h3>Complications</h3>
+<p><b>1.</b> b.<br />
+<b>2.</b> b.<br />
+<b>3.</b> a.<br />
+<b>4.</b> a.<br />
+<b>5.</b> d.<br />
+<b>6.</b> d.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>Balancing</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> b.<br />
+<b>3.</b> d.<br />
+<b>4.</b> b.<br />
+<b>5.</b> a.<br />
+<b>6.</b> c.<br />
+</p></td><td width="33%"><h3>Confessions</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> c.<br />
+<b>3.</b> a.<br />
+<b>4.</b> d.<br />
+<b>5.</b> a.<br />
+<b>6.</b> b.<br />
+</p></td><td width="33%"><h3>Mind over Matter</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> a.<br />
+<b>3.</b> c.<br />
+<b>4.</b> a.<br />
+<b>5.</b> d.<br />
+<b>6.</b> c.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>The Cullens</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> a.<br />
+<b>3.</b> c.<br />
+<b>4.</b> b.<br />
+<b>5.</b> b.<br />
+<b>6.</b> a.<br />
+</p></td><td width="33%"><h3>Carlisle</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> c.<br />
+<b>3.</b> c.<br />
+<b>4.</b> b.<br />
+<b>5.</b> b.<br />
+<b>6.</b> c.<br />
+</p></td><td width="33%"><h3>The Game</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> a.<br />
+<b>3.</b> d.<br />
+<b>4.</b> d.<br />
+<b>5.</b> c.<br />
+<b>6.</b> c.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>The Hunt</h3>
+<p><b>1.</b> b.<br />
+<b>2.</b> c.<br />
+<b>3.</b> d.<br />
+<b>4.</b> b.<br />
+<b>5.</b> c.<br />
+<b>6.</b> c.<br />
+</p></td><td width="33%"><h3>Goodbyes</h3>
+<p><b>1.</b> b.<br />
+<b>2.</b> a.<br />
+<b>3.</b> a.<br />
+<b>4.</b> b.<br />
+<b>5.</b> a.<br />
+<b>6.</b> b.<br />
+</p></td><td width="33%"><h3>Impatience</h3>
+<p><b>1.</b> b.<br />
+<b>2.</b> b.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> b.<br />
+<b>6.</b> c.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>Phone Call</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> b.<br />
+<b>3.</b> a.<br />
+<b>4.</b> a.<br />
+<b>5.</b> d.<br />
+<b>6.</b> b.<br />
+</p></td><td width="33%"><h3>Hide-and-Seek</h3>
+<p><b>1.</b> d.<br />
+<b>2.</b> a.<br />
+<b>3.</b> c.<br />
+<b>4.</b> a.<br />
+<b>5.</b> c.<br />
+<b>6.</b> c.<br />
+</p></td><td width="33%"><h3>The Angel</h3>
+<p><b>1.</b> a.<br />
+<b>2.</b> d.<br />
+<b>3.</b> b.<br />
+<b>4.</b> c.<br />
+<b>5.</b> d.<br />
+<b>6.</b> d.<br />
+</p></td></tr>
+<tr><td width="34%"><h3>An Impasse</h3>
+<p><b>1.</b> c.<br />
+<b>2.</b> a.<br />
+<b>3.</b> c.<br />
+<b>4.</b> c.<br />
+</p></td><td colspan="2"> </td></tr></table>
