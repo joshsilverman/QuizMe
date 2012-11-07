@@ -9,10 +9,10 @@
 				%label{:for => "select_#{asker.twi_screen_name}"}= asker.twi_screen_name
 
 #data_row.row
-	#active_users_tranched.panel.right.rounded.span6
-		#active_users_tranched_stats.stats
+	#mentions.panel.right.rounded.span6
+		#mentions_stats.stats
 			.header
-				%h3 Active Users
+				%h3 Mentions
 			.new
 				.container
 					%p.number
@@ -20,9 +20,8 @@
 			.total
 				.container
 					%p.number
-					%p.period last 30 days			
-		#active_users_tranched_graph.graph
-
+					%p.period all-time				
+		#mentions_graph.graph
 	#questions_answered.panel.rounded.span6
 		#questions_answered_stats.stats
 			.header
@@ -38,6 +37,19 @@
 		#questions_answered_graph.graph
 
 #data_row.row
+	#total_followers.panel.left.rounded.span6
+		#followers_stats.stats
+			.header
+				%h3 Followers
+			.new
+				.container
+					%p.number
+					%p.period new
+			.total
+				.container
+					%p.number{:style => "font-size: 32px;"}
+					%p.period all-time				
+		#total_followers_graph.graph
 	#retweets.panel.right.rounded.span6
 		#retweets_stats.stats
 			.header
@@ -52,48 +64,33 @@
 					%p.period all-time
 		#retweets_graph.graph
 
-	#mentions.panel.rounded.span6
-		#mentions_stats.stats
-			.header
-				%h3 Mentions
-			.new
-				.container
-					%p.number
-					%p.period today
-			.total
-				.container
-					%p.number
-					%p.period all-time				
-		#mentions_graph.graph
-
-#data_row.row	
-	#click_throughs.panel.right.rounded.span6
-		#click_throughs_stats.stats
-			.header
-				%h3 CTs
-			.new
-				.container
-					%p.number 
-					%p.period today
-			.total
-				.container
-					%p.number 
-					%p.period all-time				
-		#click_throughs_graph.graph		
-
-	#total_followers.panel.rounded.span6
-		#followers_stats.stats
-			.header
-				%h3 Followers
-			.new
-				.container
-					%p.number
-					%p.period new
-			.total
-				.container
-					%p.number{:style => "font-size: 32px;"}
-					%p.period all-time				
-		#total_followers_graph.graph
+/ #data_row.row	
+/ 	#active_users_tranched.panel.left.rounded.span6
+/ 		#active_users_tranched_stats.stats
+/ 			.header
+/ 				%h3 Active Users
+/ 			.new
+/ 				.container
+/ 					%p.number
+/ 					%p.period today
+/ 			.total
+/ 				.container
+/ 					%p.number
+/ 					%p.period last 30 days			
+/ 		#active_users_tranched_graph.graph
+/ 	#click_throughs.panel.right.rounded.span6
+/ 		#click_throughs_stats.stats
+/ 			.header
+/ 				%h3 CTs
+/ 			.new
+/ 				.container
+/ 					%p.number 
+/ 					%p.period today
+/ 			.total
+/ 				.container
+/ 					%p.number 
+/ 					%p.period all-time				
+/ 		#click_throughs_graph.graph		
 		
 = hidden_field_tag :detailed_graph_data, @detailed_graph_data.to_json
 = hidden_field_tag :detailed_display_data, @detailed_display_data.to_json

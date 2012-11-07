@@ -96,6 +96,7 @@ class Dashboard
 		for account_id in @active
 			if account_id == "0" then title_row.push("Total") else title_row.push(@askers[account_id][0].twi_screen_name) 
 		for attribute_name, attribute_data of @graph_data
+			continue if attribute_name == "active_users" or attribute_name == "click_throughs"
 			data_array = [title_row]
 			for date, asker_data of attribute_data
 				date_array = date.split("-")
