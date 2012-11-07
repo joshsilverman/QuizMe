@@ -119,7 +119,7 @@ class FeedsController < ApplicationController
       end
       @stream = []
       time_ago = 1.day
-      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and (posts.interaction_type = 3 and posts.correct is not null) and posts.created_at > ? and conversation_id is not null", user_followers, time_ago.ago).order("created_at DESC").includes(:conversation => {:publication => :question}).to_a
+      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, time_ago.ago).order("created_at DESC").includes(:conversation => {:publication => :question}).to_a
       recent_posts.group_by(&:user_id).each do |user_id, posts| 
         post = posts.shift
         @stream << post
@@ -127,7 +127,7 @@ class FeedsController < ApplicationController
       end
       @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
       # @stream = @stream[0..3]
-      @stream += Post.joins(:conversation).where("posts.id not in (?) and (posts.interaction_type = 3 and posts.correct is not null)", [0]).order("created_at DESC").limit(5 - @stream.size).includes(:conversation => {:publication => :question}) if @stream.size < 5
+      @stream += Post.joins(:conversation).where("posts.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null))", [0]).order("created_at DESC").limit(5 - @stream.size).includes(:conversation => {:publication => :question}) if @stream.size < 5
 
       respond_to do |format|
         format.html # show.html.erb
