@@ -316,7 +316,7 @@ namespace :questions do
         current_q = Question.find_or_create_by_text(question)
         current_q.update_attributes(:topic_id => topic.id,
                             :user_id => 1,
-                            :status => 0,
+                            :status => 1,
                             :created_for_asker_id => asker.id)
         current_q.answers.destroy_all
         current_q.answers = []
