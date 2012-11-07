@@ -1,0 +1,914 @@
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapters One and Two</h3>
+<p before="7" lines="5"><b>1. What is Panem?</b><br />
+<b>a)</b> The country where Katniss lives.<br />
+<b>b)</b> The town where Katniss lives.<br />
+<b>c)</b> The ocean near where Katniss lives.<br />
+<b>d)</b> The hotel where Katniss lives.</p>
+<p before="7" lines="5"><b>2. What is the Seam?</b><br />
+<b>a)</b> The illegal trading post in District Twelve.<br />
+<b>b)</b> The edge of District Twelve's boundary.<br />
+<b>c)</b> The section of District Twelve where the coal miners live.<br />
+<b>d)</b> The end of the earth.</p>
+<p before="7" lines="5"><b>3. What is District Twelve?</b><br />
+<b>a)</b> A fishing community in Panem.<br />
+<b>b)</b> An agricultural community in Panem.<br />
+<b>c)</b> An industrial community in Panem.<br />
+<b>d)</b> A coal mining community in Panem.</p>
+<p before="7" lines="5"><b>4. What is the Hob?</b><br />
+<b>a)</b> The section of District Twelve where Katniss lives.<br />
+<b>b)</b> The woods near District Twelve.<br />
+<b>c)</b> The section of District Twelve where the blue collar workers live.<br />
+<b>d)</b> An illegal black market in District Twelve.</p>
+<p before="7" lines="5"><b>5. What does reaping mean?</b><br />
+<b>a)</b> To take.<br />
+<b>b)</b> To gather.<br />
+<b>c)</b> To steal.<br />
+<b>d)</b> To harvest.</p>
+<p before="7" lines="5"><b>6. What is Buttercup?</b><br />
+<b>a)</b> A dog.<br />
+<b>b)</b> A cat.<br />
+<b>c)</b> A goose.<br />
+<b>d)</b> A goat.</p>
+<p before="7" lines="5"><b>7. What weapon does Katniss have hidden in the woods which she uses to hunt with?</b><br />
+<b>a)</b> Bow and arrow.<br />
+<b>b)</b> Knife.<br />
+<b>c)</b> Rifle.<br />
+<b>d)</b> Pistol.</p>
+<p before="7" lines="5"><b>8. What is a Peacekeeper?</b><br />
+<b>a)</b> A soldier from the local district who patrol the outer borders of each district.<br />
+<b>b)</b> A soldier from the Capitol who is assigned to keep order in the Districts.<br />
+<b>c)</b> Politicians assigned to govern the districts.<br />
+<b>d)</b> Futuristic cops assigned to enforce the rules of each district.</p>
+<p before="7" lines="5"><b>9. What nickname does Gale use with Katniss?</b><br />
+<b>a)</b> Katie.<br />
+<b>b)</b> Catnip.<br />
+<b>c)</b> Evergreen.<br />
+<b>d)</b> Huntress.</p>
+<p before="7" lines="5"><b>10. What role does Effie Trinket play in the reaping?</b><br />
+<b>a)</b> She draws the names of the tributes.<br />
+<b>b)</b> She directs the television crews.<br />
+<b>c)</b> She reads the history of Panem.<br />
+<b>d)</b> She introduces the previous winners from District Twelve.</p>
+<p before="7" lines="5"><b>11. What does Gale suggest to Katniss they do in Part 1, Chapter 1 as they look ahead to that day's reaping?</b><br />
+<b>a)</b> Form a rebellion.<br />
+<b>b)</b> Steal the collection of names from which the tributes will be chosen.<br />
+<b>c)</b> Run away.<br />
+<b>d)</b> Kill Effie Trinket.</p>
+<p before="7" lines="5"><b>12. What is tesserae?</b><br />
+<b>a)</b> The order mandating all citizens watch the reaping.<br />
+<b>b)</b> Adding one's name additional times to the reaping in exchange for oil and grain.<br />
+<b>c)</b> The random selection of tributes' names during the reaping.<br />
+<b>d)</b> A weapon used in the Hunger Games.</p>
+<p before="7" lines="5"><b>13. How many times is Gale entered into the drawing at the reaping in the first chapter of the novel?</b><br />
+<b>a)</b> Thirty-one.<br />
+<b>b)</b> Twice.<br />
+<b>c)</b> Forty-two.<br />
+<b>d)</b> Fifty.</p>
+<p before="7" lines="5"><b>14. How many times is Katniss' name entered into the drawing at the reaping in the first chapter of the novel?</b><br />
+<b>a)</b> Forty.<br />
+<b>b)</b> Ten.<br />
+<b>c)</b> Twenty.<br />
+<b>d)</b> Once.</p>
+<p before="7" lines="5"><b>15. What was the name of the place where Panem rose out of the ashes into existence?</b><br />
+<b>a)</b> Canada.<br />
+<b>b)</b> Europe.<br />
+<b>c)</b> North America.<br />
+<b>d)</b> South America.</p>
+<p before="7" lines="5"><b>16. What caused the fall of the previous civilization before Panem came into existence?</b><br />
+<b>a)</b> Excess and glutton.<br />
+<b>b)</b> War and nuclear fallout.<br />
+<b>c)</b> Natural disasters and war.<br />
+<b>d)</b> Drought and famine.</p>
+<p before="7" lines="5"><b>17. Whose is the first name called in the reaping?</b><br />
+<b>a)</b> Katniss Everdeen.<br />
+<b>b)</b> Haymitch Abernathy.<br />
+<b>c)</b> Primrose Everdeen.<br />
+<b>d)</b> Peeta Mellark.</p>
+<p before="7" lines="5"><b>18. What item did Peeta once take a beating from his mother to give to Katniss, leaving her indebted to him?</b><br />
+<b>a)</b> Money.<br />
+<b>b)</b> Bread.<br />
+<b>c)</b> Clothing.<br />
+<b>d)</b> Cake.</p>
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapter 3 and Chapter 4</h3>
+<p before="7" lines="5"><b>1. What business has Katniss' mother begun running from their home?</b><br />
+<b>a)</b> A cleaning service.<br />
+<b>b)</b> A butcher's business.<br />
+<b>c)</b> An apothecary business.<br />
+<b>d)</b> A bakery.</p>
+<p before="7" lines="5"><b>2. What can Prim sell that will help she and her mother survive?</b><br />
+<b>a)</b> Flowers.<br />
+<b>b)</b> Goat milk and cheese.<br />
+<b>c)</b> Herbs and spices.<br />
+<b>d)</b> Fresh meat.</p>
+<p before="7" lines="5"><b>3. What promise does Prim force Katniss to make before she goes to the Hunger Games?</b><br />
+<b>a)</b> That she will write every day.<br />
+<b>b)</b> That she will die a good death.<br />
+<b>c)</b> That she will protect Peeta.<br />
+<b>d)</b> That she will try to come back.</p>
+<p before="7" lines="5"><b>4. What gift does the baker bring Katniss when he comes to say goodbye?</b><br />
+<b>a)</b> A cake.<br />
+<b>b)</b> A locket.<br />
+<b>c)</b> Money.<br />
+<b>d)</b> Cookies.</p>
+<p before="7" lines="5"><b>5. What is on the pin Madge gives Katniss to wear in the arena?</b><br />
+<b>a)</b> A jabberjay.<br />
+<b>b)</b> A mockingbird.<br />
+<b>c)</b> A mockingjay.<br />
+<b>d)</b> A hummingbird.</p>
+<p before="7" lines="5"><b>6. What weapon does Gale recommend Katniss get as soon as she can in the Hunger Games' arena?</b><br />
+<b>a)</b> Spear.<br />
+<b>b)</b> Mace.<br />
+<b>c)</b> Bow and arrow.<br />
+<b>d)</b> Knife.</p>
+<p before="7" lines="5"><b>7. Why does Katniss refuse to cry in Part 1, Chapter 3 even as she leaves her family and home behind her?</b><br />
+<b>a)</b> She is afraid once she starts she cannot stop.<br />
+<b>b)</b> She is not sad.<br />
+<b>c)</b> She does not want to appear weak to the other tributes.<br />
+<b>d)</b> She does not want to give the Capitol the satisfaction of breaking her.</p>
+<p before="7" lines="5"><b>8. How did the birds respond to Katniss' father when he sang to them?</b><br />
+<b>a)</b> They sang over him.<br />
+<b>b)</b> They stopped to listen.<br />
+<b>c)</b> They ignored him.<br />
+<b>d)</b> They fell dead under his spell.</p>
+<p before="7" lines="5"><b>9. What comment does Effie Trinket make about Katniss and Peeta's eating habits?</b><br />
+<b>a)</b> At least they have table manners.<br />
+<b>b)</b> They should be less bold.<br />
+<b>c)</b> They should learn table manners.<br />
+<b>d)</b> They should get over their shyness.</p>
+<p before="7" lines="5"><b>10. Which other tribute does Katniss take special notice of while watching the reapings from the other districts?</b><br />
+<b>a)</b> A crippled boy from District Ten.<br />
+<b>b)</b> The twelve year old from District Eleven.<br />
+<b>c)</b> A beautiful fisherman from District Four.<br />
+<b>d)</b> The beautiful girl from District One.</p>
+<p before="7" lines="5"><b>11. When Katniss and Peeta watch the recap of their own reaping, what causes them to laugh?</b><br />
+<b>a)</b> The mayor's uncomfortable speech.<br />
+<b>b)</b> Haymitch's fall from the stage.<br />
+<b>c)</b> Their own appearances.<br />
+<b>d)</b> Effie's crooked wig.</p>
+<p before="7" lines="5"><b>12. Who is on board the train with the tributes from District Twelve whose job it is to care for them?</b><br />
+<b>a)</b> Workers from the train company.<br />
+<b>b)</b> Workers from the Capitol.<br />
+<b>c)</b> Workers from District Twelve.<br />
+<b>d)</b> Workers from District Two.</p>
+<p before="7" lines="5"><b>13. What animal is said to live in the woods outside District Twelve that makes the fence necessary and keeps many from going into the woods?</b><br />
+<b>a)</b> Tracker jackers.<br />
+<b>b)</b> Mutts.<br />
+<b>c)</b> Jabberjays.<br />
+<b>d)</b> Wild dogs.</p>
+<p before="7" lines="5"><b>14. What does Katniss throw out the window of the train?</b><br />
+<b>a)</b> The cookies the baker gave her.<br />
+<b>b)</b> A tape of the reaping.<br />
+<b>c)</b> A dress her mother gave her.<br />
+<b>d)</b> The pin Madge gave her.</p>
+<p before="7" lines="5"><b>15. What is katniss?</b><br />
+<b>a)</b> A plant with tubers that can be eaten like potatoes.<br />
+<b>b)</b> A bush that attracts wild cats.<br />
+<b>c)</b> A tree that grows small, red fruits.<br />
+<b>d)</b> A flower with tiny blue petals.</p>
+<p before="7" lines="5"><b>16. What beverage does Katniss try for the first time aboard the train taking her to the Capitol?</b><br />
+<b>a)</b> Apple juice.<br />
+<b>b)</b> Coke.<br />
+<b>c)</b> Hot chocolate.<br />
+<b>d)</b> Wine.</p>
+<p before="7" lines="5"><b>17. What reason does Peeta give to Katniss for waving at the crowd when the train arrives in the Capitol?</b><br />
+<b>a)</b> He is excited by the situation.<br />
+<b>b)</b> It might intimidate the other tributes.<br />
+<b>c)</b> One might be rich and willing to sponsor him.<br />
+<b>d)</b> It never hurts to be nice.</p>
+<p before="7" lines="5"><b>18. What does Katniss think of Peeta's actions?</b><br />
+<b>a)</b> Peeta is in love with the notoriety he has just gained as a tribute.<br />
+<b>b)</b> Peeta is honestly a good guy.<br />
+<b>c)</b> Peeta is devious and is trying to trick her into friendship.<br />
+<b>d)</b> Peeta is fighting hard to live, which means he is fighting hard to kill her.</p>
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapter 5</h3>
+<p before="7" lines="5"><b>1. What is Katniss' design team doing to her as Part 1, Chapter 5 begins?</b><br />
+<b>a)</b> Shaping her nails.<br />
+<b>b)</b> Scrubbing the dirt from her skin.<br />
+<b>c)</b> Removing all the hair on her body.<br />
+<b>d)</b> Polishing her teeth.</p>
+<p before="7" lines="5"><b>2. What is one of the distinct elements of fashion in the Capitol that Katniss notes among her design team?</b><br />
+<b>a)</b> Coloring one's nails unfortunate colors.<br />
+<b>b)</b> Wearing odd combinations of clothing.<br />
+<b>c)</b> Coloring one's hair and skin bright colors.<br />
+<b>d)</b> Wearing tight clothing.</p>
+<p before="7" lines="5"><b>3. Who is Cinna?</b><br />
+<b>a)</b> Katniss' tutor.<br />
+<b>b)</b> Katniss' stylist.<br />
+<b>c)</b> Katniss' hairdresser.<br />
+<b>d)</b> Katniss' cousin.</p>
+<p before="7" lines="5"><b>4. What is the only aspect of Katniss' appearance that her design team approves of?</b><br />
+<b>a)</b> Her strong, clean nails.<br />
+<b>b)</b> Her hairstyle that her mother created with multiple braids.<br />
+<b>c)</b> Her thin, supple body.<br />
+<b>d)</b> Her classic roman features.</p>
+<p before="7" lines="5"><b>5. What does Katniss think of the meal she shares with Cinna on their first meeting?</b><br />
+<b>a)</b> That she could never afford to make such a meal in Distict Twelve.<br />
+<b>b)</b> It is too rich.<br />
+<b>c)</b> It does not taste very good.<br />
+<b>d)</b> That the Capitol is trying to starve her before the Hunger Games.</p>
+<p before="7" lines="5"><b>6. What is the main component of the outfit Cinna dresses Katniss in for the opening ceremony of the Hunger Games?</b><br />
+<b>a)</b> A purple mask.<br />
+<b>b)</b> A green unitard.<br />
+<b>c)</b> A cape of red, yellow, and orange streams.<br />
+<b>d)</b> A white wedding dress.</p>
+<p before="7" lines="5"><b>7. What is the object of the outfits the tributes wear in the opening ceremony?</b><br />
+<b>a)</b> To represent their industry in their district.<br />
+<b>b)</b> To show off their district pride.<br />
+<b>c)</b> To represent their special interests and hobbies.<br />
+<b>d)</b> To show off their strengths.</p>
+<p before="7" lines="5"><b>8. What does Cinna do to Katniss and Peeta's outfits as their chariot joins the procession?</b><br />
+<b>a)</b> Removes the headpieces.<br />
+<b>b)</b> Lights them on fire with synthetic fire.<br />
+<b>c)</b> Adds flowers.<br />
+<b>d)</b> Rips them away.</p>
+<p before="7" lines="5"><b>9. How does the crowd react as Katniss and Peeta enter the city during the procession?</b><br />
+<b>a)</b> They scream their names and cheer.<br />
+<b>b)</b> They laugh.<br />
+<b>c)</b> They boo.<br />
+<b>d)</b> They ignore them.</p>
+<p before="7" lines="5"><b>10. Why does Peeta ask Katniss not to release his hand during the procession?</b><br />
+<b>a)</b> He is concerned Haymitch will not like it.<br />
+<b>b)</b> He thinks he might fall out of the chariot.<br />
+<b>c)</b> He is afraid.<br />
+<b>d)</b> He wants the crowd to think she loves him.</p>
+<p before="7" lines="5"><b>11. Who is the first to greet Katniss and Peeta as they enter the Training Center?</b><br />
+<b>a)</b> The President.<br />
+<b>b)</b> Their mentors.<br />
+<b>c)</b> The other tributes.<br />
+<b>d)</b> The prep teams.</p>
+<p before="7" lines="5"><b>12. On whose face do the cameras remain even during the President's speech at the end of the opening ceremony?</b><br />
+<b>a)</b> The crowd.<br />
+<b>b)</b> Cinna's and Haymitch's.<br />
+<b>c)</b> Katniss' and Peeta's.<br />
+<b>d)</b> The tributes from District One.</p>
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapter 6</h3>
+<p before="7" lines="5"><b>1. What mode of transportation does Katniss ride after the opening ceremonies that she would like to ride again but feels it might be childish?</b><br />
+<b>a)</b> A crystal elevator.<br />
+<b>b)</b> An escalator.<br />
+<b>c)</b> A subway train.<br />
+<b>d)</b> A shuttle bus.</p>
+<p before="7" lines="5"><b>2. Why does Effie encourage Peeta and Katniss to continue to wow the audience?</b><br />
+<b>a)</b> To gain the support of the president.<br />
+<b>b)</b> To intimidate the other tributes.<br />
+<b>c)</b> To win the support of the Gamemakers.<br />
+<b>d)</b> To get more sponsors.</p>
+<p before="7" lines="5"><b>3. What gadgets in her bedroom in Part 1, Chapter 6 impress Katniss on her first night there?</b><br />
+<b>a)</b> The television.<br />
+<b>b)</b> The shower options and the hair untangler, brusher.<br />
+<b>c)</b> The radio.<br />
+<b>d)</b> The game consol.</p>
+<p before="7" lines="5"><b>4. What does Katniss note about Haymitch's appearance and behavior at dinner the first night in the training center?</b><br />
+<b>a)</b> He is calm and friendly.<br />
+<b>b)</b> He is beligerant and angry.<br />
+<b>c)</b> He is clean and appears sober.<br />
+<b>d)</b> He is drunk and dirty.</p>
+<p before="7" lines="5"><b>5. What catches Katniss' attention about the dessert served the first night in the training center?</b><br />
+<b>a)</b> It is made with rare berries.<br />
+<b>b)</b> It burns.<br />
+<b>c)</b> It is four layers tall.<br />
+<b>d)</b> It is flavored with powdered sugar.</p>
+<p before="7" lines="5"><b>6. Who is Delly Cartwright?</b><br />
+<b>a)</b> An Avox.<br />
+<b>b)</b> A girl from District Twelve.<br />
+<b>c)</b> A girl from District Two.<br />
+<b>d)</b> A slave.</p>
+<p before="7" lines="5"><b>7. What does Haymitch consider a rebellion about Peeta and Katniss' actions in the opening ceremonies?</b><br />
+<b>a)</b> Their choice to sit together in the chariot.<br />
+<b>b)</b> Their fire suits.<br />
+<b>c)</b> Their holding hands.<br />
+<b>d)</b> Their refusal to listen to the president's speech.</p>
+<p before="7" lines="5"><b>8. What is in the trees growing in the roof garden on the training center?</b><br />
+<b>a)</b> Bells.<br />
+<b>b)</b> Bird feeders.<br />
+<b>c)</b> Tracker jacker nests.<br />
+<b>d)</b> Wind chimes.</p>
+<p before="7" lines="5"><b>9. Who does Peeta think Gale is to Katniss in Part 1, Chapter 6?</b><br />
+<b>a)</b> Her boyfriend.<br />
+<b>b)</b> Her uncle.<br />
+<b>c)</b> Her cousin.<br />
+<b>d)</b> Her brother.</p>
+<p before="7" lines="5"><b>10. Who is in Katniss' room when she returns from talking to Peeta on the roof?</b><br />
+<b>a)</b> Portia.<br />
+<b>b)</b> Effie.<br />
+<b>c)</b> Cinna.<br />
+<b>d)</b> The Avox.</p>
+<p before="7" lines="5"><b>11. Why does Katniss think the Avox remembers her from the woods on the day of the girl's capture?</b><br />
+<b>a)</b> You do not forget your last hope.<br />
+<b>b)</b> You do not forget your last conversation.<br />
+<b>c)</b> You do not forget your last living relative.<br />
+<b>d)</b> You do not forget your last friend.</p>
+<p before="7" lines="5"><b>12. What does Katniss wonder if the Avox will enjoy?</b><br />
+<b>a)</b> Her freedom.<br />
+<b>b)</b> Katniss' death.<br />
+<b>c)</b> Her own death.<br />
+<b>d)</b> Katniss' victory.</p>
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapter 7</h3>
+<p before="7" lines="5"><b>1. Why does Katniss wake early the first morning in the training center?</b><br />
+<b>a)</b> She is excited to begin training.<br />
+<b>b)</b> She is homesick.<br />
+<b>c)</b> She is anxious to begin the games.<br />
+<b>d)</b> She has had nightmares.</p>
+<p before="7" lines="5"><b>2. What helps calm Katniss in the early morning hours of the first full day at the training center?</b><br />
+<b>a)</b> A good breakfast.<br />
+<b>b)</b> A long talk with Effie.<br />
+<b>c)</b> Peeta's presence.<br />
+<b>d)</b> Clothing that resemble what she wore back home.</p>
+<p before="7" lines="5"><b>3. What does Katniss think will happen to her and Peeta's friendship strategy once they are in the arena?</b><br />
+<b>a)</b> It will blow up in their faces.<br />
+<b>b)</b> It will continue to intimidate the competition.<br />
+<b>c)</b> It will help them make alliances.<br />
+<b>d)</b> It will help them win sponsors.</p>
+<p before="7" lines="5"><b>4. What one talent does Peeta have that Katniss feels he might be able to use in the arena?</b><br />
+<b>a)</b> He is good with a knife.<br />
+<b>b)</b> He can wrestle.<br />
+<b>c)</b> He is good with poisons.<br />
+<b>d)</b> He is good with fire arms.</p>
+<p before="7" lines="5"><b>5. What compliment does Peeta pay Katniss that confuses her in Part 1, Chapter 7?</b><br />
+<b>a)</b> She is a good flirt.<br />
+<b>b)</b> She is unaware of the effect she has on people.<br />
+<b>c)</b> She can play the piano well.<br />
+<b>d)</b> She can cook well.</p>
+<p before="7" lines="5"><b>6. Where are the training rooms located in the training center?</b><br />
+<b>a)</b> In the center.<br />
+<b>b)</b> On the ground floor.<br />
+<b>c)</b> The roof.<br />
+<b>d)</b> Below ground level.</p>
+<p before="7" lines="5"><b>7. Who is Atala?</b><br />
+<b>a)</b> The head trainer.<br />
+<b>b)</b> The head Gamemaker.<br />
+<b>c)</b> A servant in the cafeteria.<br />
+<b>d)</b> The Avox in charge of cleaning the training room.</p>
+<p before="7" lines="5"><b>8. Who are Career tributes?</b><br />
+<b>a)</b> Tributes from districts that specialize in professional industries.<br />
+<b>b)</b> Paid volunteers who are hired by rich families to take their children's places in the games.<br />
+<b>c)</b> Trainers who teach the other tributes how to fight and win the games.<br />
+<b>d)</b> Tributes from the richer districts who train year round for the games and feel going to the games is an honor.</p>
+<p before="7" lines="5"><b>9. Why is Katniss drawn in by Rue, the girl from District Eleven?</b><br />
+<b>a)</b> She is powerful.<br />
+<b>b)</b> She is pretty.<br />
+<b>c)</b> She reminds Katniss of Prim.<br />
+<b>d)</b> She reminds Katniss of her mother.</p>
+<p before="7" lines="5"><b>10. What does Katniss notice is different about the bow in the training room than the ones she uses at home?</b><br />
+<b>a)</b> The string is tighter.<br />
+<b>b)</b> The wood is too soft.<br />
+<b>c)</b> The feathers are the wrong type.<br />
+<b>d)</b> The arrows are not as straight.</p>
+<p before="7" lines="5"><b>11. What target does Katniss hit with her arrow during the individual demonstration that causes a shower of sparks to fall on the floor?</b><br />
+<b>a)</b> An explosives demonstration station.<br />
+<b>b)</b> A fire cracker.<br />
+<b>c)</b> A light fixture.<br />
+<b>d)</b> An open electrical outlet.</p>
+<p before="7" lines="5"><b>12. What reaction does Katniss get when she shoots an arrow through the apple in the mouth of a roast pig?</b><br />
+<b>a)</b> Respect.<br />
+<b>b)</b> Astonishment and disbelief.<br />
+<b>c)</b> Anger.<br />
+<b>d)</b> Laughter.</p>
+<h3>Multiple Choice - The Hunger Games, Part 1, Chapter 8 and Chapter 9</h3>
+<p before="7" lines="5"><b>1. In Part 1, Chapter 8, what is Katniss's reaction to her own actions during the individual demonstrations for the Gamemakers?</b><br />
+<b>a)</b> She thinks she might be turned into an Avox.<br />
+<b>b)</b> She thinks she did really well.<br />
+<b>c)</b> She thinks she blew her chances at sponsorship.<br />
+<b>d)</b> She thinks she will score high.</p>
+<p before="7" lines="5"><b>2. How often do high scoring tributes win the Hunger Games?</b><br />
+<b>a)</b> Most of the time.<br />
+<b>b)</b> Every time.<br />
+<b>c)</b> Never.<br />
+<b>d)</b> Occasionally.</p>
+<p before="7" lines="5"><b>3. What is the main goal of getting a high score from the Gamemakers in the individual demonstrations?</b><br />
+<b>a)</b> To get gifts from the Gamemakers.<br />
+<b>b)</b> To intimidate the other tributes.<br />
+<b>c)</b> Release from the games.<br />
+<b>d)</b> Sponsors.</p>
+<p before="7" lines="5"><b>4. What did Peeta do in his individual demonstration for the Gamemakers?</b><br />
+<b>a)</b> He threw around some heavy objects.<br />
+<b>b)</b> He painted a picture on the floor.<br />
+<b>c)</b> He threw knives.<br />
+<b>d)</b> He wrestled an Avox.</p>
+<p before="7" lines="5"><b>5. What score does Katniss get from the individual demonstrations with the Gamemakers?</b><br />
+<b>a)</b> Two.<br />
+<b>b)</b> Five.<br />
+<b>c)</b> One.<br />
+<b>d)</b> Eleven.</p>
+<p before="7" lines="5"><b>6. What score does Peeta get from the individual demonstrations with the Gamemakers?</b><br />
+<b>a)</b> Eleven.<br />
+<b>b)</b> Eight.<br />
+<b>c)</b> Five.<br />
+<b>d)</b> Two.</p>
+<p before="7" lines="5"><b>7. What did Gale accuse Katniss of the first time they met?</b><br />
+<b>a)</b> Stealing from his stash of berries.<br />
+<b>b)</b> Spying on him.<br />
+<b>c)</b> Stealing from his snare.<br />
+<b>d)</b> Following him.</p>
+<p before="7" lines="5"><b>8. What does Haymitch complain about in Part 1, Chapter 9 as he attempts to prepare Katniss for the interview?</b><br />
+<b>a)</b> She is too shy.<br />
+<b>b)</b> She is hostile and overly talkative.<br />
+<b>c)</b> She is hostile and will not reveal anything about herself.<br />
+<b>d)</b> She is untruthful.</p>
+<p before="7" lines="5"><b>9. How does the Avox respond when Katniss tries to apologize in Part 1, Chapter 9?</b><br />
+<b>a)</b> She cries.<br />
+<b>b)</b> She becomes angry and walks away.<br />
+<b>c)</b> She gestures that Katniss did the right thing.<br />
+<b>d)</b> She leaves the room without responding.</p>
+<p before="7" lines="5"><b>10. What is Katniss' interview dress covered in that makes it appear that she is on fire?</b><br />
+<b>a)</b> Precious gems.<br />
+<b>b)</b> Feathers.<br />
+<b>c)</b> Synthetic flames.<br />
+<b>d)</b> Multicolored silk.</p>
+<p before="7" lines="5"><b>11. Who tells Katniss to focus on him during the interview to help her feel more comfortable?</b><br />
+<b>a)</b> Peeta.<br />
+<b>b)</b> Gale.<br />
+<b>c)</b> Haymitch.<br />
+<b>d)</b> Cinna.</p>
+<p before="7" lines="5"><b>12. What does Haymitch instruct Peeta and Katniss to do as they enter the interview area?</b><br />
+<b>a)</b> Remember their coaching.<br />
+<b>b)</b> Signal their families at home with prearranged signals.<br />
+<b>c)</b> Act like a happy couple.<br />
+<b>d)</b> Answer the questions honestly.</p>
+<h3>Multiple Choice - The Hunger Games, Part 2, Chapter 10 and Chapter 11</h3>
+<p before="7" lines="5"><b>1. What do the rules of the Hunger Games say about the number of winners?</b><br />
+<b>a)</b> There can only be one.<br />
+<b>b)</b> If the final two are from the same district, they both win.<br />
+<b>c)</b> Only a tribute from the district with the most sponsors can win.<br />
+<b>d)</b> One boy and one girl can win.</p>
+<p before="7" lines="5"><b>2. What does Haymitch say about Peeta's announcement at the end of the interviews?</b><br />
+<b>a)</b> He made Katniss seem weak.<br />
+<b>b)</b> He made Katniss seem desirable.<br />
+<b>c)</b> He made Katniss seem honorable.<br />
+<b>d)</b> He made Katniss seem childish.</p>
+<p before="7" lines="5"><b>3. What is happening in the streets of the Capitol the night before the Hunger Games are to begin?</b><br />
+<b>a)</b> People are protesting.<br />
+<b>b)</b> Sponsors are lining up for their favorite districts.<br />
+<b>c)</b> People are celebrating.<br />
+<b>d)</b> Nothing.</p>
+<p before="7" lines="5"><b>4. What is Peeta's one fear the night before going into the Hunger Games?</b><br />
+<b>a)</b> He might disgrace himself or change into someone he is not.<br />
+<b>b)</b> His family will suffer after his death.<br />
+<b>c)</b> He will die.<br />
+<b>d)</b> Katniss will die./p>
+<p before="7" lines="5"><b>5. What is unusual about the ladder that lifts Katniss into the hovercraft that will take her to the Hunger Games arena?</b><br />
+<b>a)</b> It is too slick to hold on.<br />
+<b>b)</b> It is made of gold.<br />
+<b>c)</b> It is too short to lift Katniss into the craft.<br />
+<b>d)</b> It has a force field that keeps her stuck on.</p>
+<p before="7" lines="5"><b>6. What is placed into Katniss' forearm before she leaves the training center?</b><br />
+<b>a)</b> A bracelet that identifies her district.<br />
+<b>b)</b> A homing beacon for the other tributes to find her easily.<br />
+<b>c)</b> A tracking device for the Gamemakers to keep track of her.<br />
+<b>d)</b> A bracelet that identifies her.</p>
+<p before="7" lines="5"><b>7. What happens to the arenas that were built specifically for the Hunger Games after the games are over?</b><br />
+<b>a)</b> They are turned into memorial sites for the dead tributes.<br />
+<b>b)</b> They are turned into tourist attractions.<br />
+<b>c)</b> They are destroyed and rebuilt for the following year's games.<br />
+<b>d)</b> They are left to ruin.</p>
+<p before="7" lines="5"><b>8. Who is the only person allowed to be with Katniss as she waits to be transported into the Hunger Games arena?</b><br />
+<b>a)</b> Haymitch.<br />
+<b>b)</b> Peeta.<br />
+<b>c)</b> The Avox.<br />
+<b>d)</b> Cinna.</p>
+<p before="7" lines="5"><b>9. How long are the tributes forced to stand on their platforms before rushing to gather supplies at the Cornucopia at the start of the games?</b><br />
+<b>a)</b> Thirty seconds.<br />
+<b>b)</b> Two minutes.<br />
+<b>c)</b> Five minutes.<br />
+<b>d)</b> Sixty seconds.</p>
+<p before="7" lines="5"><b>10. What happens if a tribute steps off of their platform too early?</b><br />
+<b>a)</b> They are given a time penalty.<br />
+<b>b)</b> They are taken out of the game.<br />
+<b>c)</b> A land mine is detonated.<br />
+<b>d)</b> They are imprisoned and sentenced to death.</p>
+<p before="7" lines="5"><b>11. Why does Katniss believe she can get a weapon and some supplies from the Cornucopia despite Haymitch's advice to ignore the Cornucopia?</b><br />
+<b>a)</b> The others are distracted by the announcer's voice.<br />
+<b>b)</b> She can run faster than most of the other tributes.<br />
+<b>c)</b> The others are distracted by checking out the area around them.<br />
+<b>d)</b> She is the only one who can use the bow and arrow.</p>
+<p before="7" lines="5"><b>12. What causes the death of another tribute within site of Katniss' hidden sleeping position in a tree the first night of the Hunger Games?</b><br />
+<b>a)</b> She commits suicide out of homesickness.<br />
+<b>b)</b> She lights a fire in the open.<br />
+<b>c)</b> She runs into a bear.<br />
+<b>d)</b> She panics and announces her presence to the Careers.</p>
+<h3>Multiple Choice - The Hunger Games, Part 2, Chapter 12 and Chapter 13</h3>
+<p before="7" lines="5"><b>1. What is remarkable about Peeta's appearance in the beginning of Part 2, Chapter 12?</b><br />
+<b>a)</b> He has a large number of weapons on his belt.<br />
+<b>b)</b> His face is bruised and he has other injuries.<br />
+<b>c)</b> Nothing.<br />
+<b>d)</b> He has a serious cut on his upper thigh.</p>
+<p before="7" lines="5"><b>2. How does Katniss know a hovercraft is about to approach the arena during the games?</b><br />
+<b>a)</b> A warning trumpet is played.<br />
+<b>b)</b> The birds stop singing and one gives a warning call.<br />
+<b>c)</b> A low hum fills the area.<br />
+<b>d)</b> The Games' announcer tells everyone.</p>
+<p before="7" lines="5"><b>3. What do the cannon signals signify during the Hunger Games?</b><br />
+<b>a)</b> The beginning and end of the day's fight.<br />
+<b>b)</b> A change in rules.<br />
+<b>c)</b> A death.<br />
+<b>d)</b> A natural disaster approaching.</p>
+<p before="7" lines="5"><b>4. What item in the backpack Katniss managed to grab at the Cornucopia does not appear to work properly?</b><br />
+<b>a)</b> A plastic rain coat.<br />
+<b>b)</b> A sleeping bag.<br />
+<b>c)</b> A water purifier.<br />
+<b>d)</b> A pair of sunglasses.</p>
+<p before="7" lines="5"><b>5. Why does Katniss decide Haymitch has not send her any water in Part 2, Chapter 12?</b><br />
+<b>a)</b> She is near to finding a source.<br />
+<b>b)</b> She has no sponsors.<br />
+<b>c)</b> He wants her to die.<br />
+<b>d)</b> It is against the rules.</p>
+<p before="7" lines="5"><b>6. How does Katniss purify the water she finds at the end of Part 2, Chapter 12?</b><br />
+<b>a)</b> With iodine.<br />
+<b>b)</b> With hydrogen peroxide.<br />
+<b>c)</b> With a purifying machine.<br />
+<b>d)</b> With alcohol.</p>
+<p before="7" lines="5"><b>7. What wakes Katniss in the early hours of the morning at the end of Part 2, Chapter 12?</b><br />
+<b>a)</b> The Careers.<br />
+<b>b)</b> The cannon fire of a tribute's weapon.<br />
+<b>c)</b> The stampeding of animals running from a wall of fire.<br />
+<b>d)</b> A fire ball.</p>
+<p before="7" lines="5"><b>8. What part of Katniss's clothing is damaged as she runs from danger in the beginning of Part 2, Chapter 13?</b><br />
+<b>a)</b> Her shirt.<br />
+<b>b)</b> Her pants.<br />
+<b>c)</b> Her jacket.<br />
+<b>d)</b> Her skirt.</p>
+<p before="7" lines="5"><b>9. What does Katniss believe has caused the natural disaster that settles in the arena in Part 2, Chapter 13?</b><br />
+<b>a)</b> A careless solitary tribute.<br />
+<b>b)</b> The Gamemakers.<br />
+<b>c)</b> A bored sponsor.<br />
+<b>d)</b> The Careers.</p>
+<p before="7" lines="5"><b>10. How does Katniss treat her wounds after the natural disaster that strikes the arena?</b><br />
+<b>a)</b> Medication from Haymitch.<br />
+<b>b)</b> Water in a small pond.<br />
+<b>c)</b> Leaves.<br />
+<b>d)</b> She does not.</p>
+<p before="7" lines="5"><b>11. What does Katniss do at the end of Part 2, Chapter 13 when the Careers come to rest under the tree in which she is hiding?</b><br />
+<b>a)</b> She calls down to them and reveals her position.<br />
+<b>b)</b> She jumps into another tree.<br />
+<b>c)</b> She lies quietly and waits for them to leave.<br />
+<b>d)</b> She shoots arrows down at them.</p>
+<p before="7" lines="5"><b>12. Who does Katniss see with the bow and arrow she so desperately wanted from the Cornucopia?</b><br />
+<b>a)</b> Foxface.<br />
+<b>b)</b> Peeta.<br />
+<b>c)</b> Cato.<br />
+<b>d)</b> Glimmer.</p>
+<h3>Multiple Choice - The Hunger Games, Part 2, Chapter 14 and Chapter 15</h3>
+<p before="7" lines="5"><b>1. What are tracker jackers?</b><br />
+<b>a)</b> A type of tracking device.<br />
+<b>b)</b> Deadly popcorn treat.<br />
+<b>c)</b> Government manufactured wasps.<br />
+<b>d)</b> A poisonous bird.</p>
+<p before="7" lines="5"><b>2. What is the significance of the silver parachutes in the Hunger Games?</b><br />
+<b>a)</b> They are bombs from the Gamemakers.<br />
+<b>b)</b> They are secret maps of the arena from the mentors.<br />
+<b>c)</b> They are secret messages from the mentors to the tribute.<br />
+<b>d)</b> They are gifts from sponsors.</p>
+<p before="7" lines="5"><b>3. What does Katniss' first parachute bring her?</b><br />
+<b>a)</b> Burn medicine.<br />
+<b>b)</b> A lethal gas bomb to use on the Careers.<br />
+<b>c)</b> A map back to the Cornucopia.<br />
+<b>d)</b> Instructions on how to cut down a tree branch.</p>
+<p before="7" lines="5"><b>4. How does Rue react to Katniss' plot to drive the Careers away from her tree in Part 2, Chapter 14?</b><br />
+<b>a)</b> She quietly moves away through the trees.<br />
+<b>b)</b> She jumps into Katniss' tree to help.<br />
+<b>c)</b> She calls down to warn the Careers.<br />
+<b>d)</b> She climbs out of her tree and runs.</p>
+<p before="7" lines="5"><b>5. Who is killed in Katniss' silent attack on the Careers in Part 2, Chapter 14?</b><br />
+<b>a)</b> Glimmer and the girl from District Four.<br />
+<b>b)</b> Clove and Cato.<br />
+<b>c)</b> The boy from District Three and Rue.<br />
+<b>d)</b> Glimmer and Cato.</p>
+<p before="7" lines="5"><b>6. How many times is Katniss wounded in her own attack on the Careers in Part 2, Chapter 14?</b><br />
+<b>a)</b> Four times.<br />
+<b>b)</b> Three times.<br />
+<b>c)</b> Twice.<br />
+<b>d)</b> Once.</p>
+<p before="7" lines="5"><b>7. Who finds Katniss as she attempts to reclaim the bow and arrow from Glimmer in Part 2, Chapter 14?</b><br />
+<b>a)</b> Clove.<br />
+<b>b)</b> Peeta.<br />
+<b>c)</b> Cato.<br />
+<b>d)</b> Foxface.</p>
+<p before="7" lines="5"><b>8. Why is Katniss seeing shining things around objects as she runs into the woods after her attack on the Careers in Part 2, Chapter 14?</b><br />
+<b>a)</b> There really are shining things around objects.<br />
+<b>b)</b> The Gamemakers have altered her sesne of sight.<br />
+<b>c)</b> She is hallucinating from the tracker jacker venom.<br />
+<b>d)</b> She is losing a great deal of blood.</p>
+<p before="7" lines="5"><b>9. Where does Katniss wake after her body heals from her own attack on the Careers?</b><br />
+<b>a)</b> In a small pond.<br />
+<b>b)</b> In a hospital.<br />
+<b>c)</b> In a tree.<br />
+<b>d)</b> In a hole in the woods.</p>
+<p before="7" lines="5"><b>10. How long was Katniss unconscious after her attack on the Careers in Part 2, Chapter 14?</b><br />
+<b>a)</b> Several hours.<br />
+<b>b)</b> A month.<br />
+<b>c)</b> Several days.<br />
+<b>d)</b> Several weeks.</p>
+<p before="7" lines="5"><b>11. What reason does Katniss give Rue reassurance that sponsors will soon realize her value in the competition?</b><br />
+<b>a)</b> She is brave.<br />
+<b>b)</b> She is still alive.<br />
+<b>c)</b> She is strong.<br />
+<b>d)</b> She is clever.</p>
+<p before="7" lines="5"><b>12. What does Rue tell Katniss the sunglasses in her backpack are used for?</b><br />
+<b>a)</b> To allow her to see heat signatures of the other tributes.<br />
+<b>b)</b> To give her xray vision.<br />
+<b>c)</b> To shade her eyes from the sun.<br />
+<b>d)</b> To see in darkness.</p>
+<h3>Multiple Choice - The Hunger Games, Part 2, Chapter 16, Chapter 17, and Chapter 18</h3>
+<p before="7" lines="5"><b>1. How many tributes are left alive at the beginning of Part 2, Chapter 16?</b><br />
+<b>a)</b> Nine.<br />
+<b>b)</b> Ten.<br />
+<b>c)</b> Eight.<br />
+<b>d)</b> Eleven.</p>
+<p before="7" lines="5"><b>2. Who does Rue tell Katniss the Careers leave to watch over their food stores by the lake?</b><br />
+<b>a)</b> A boy from District Ten.<br />
+<b>b)</b> A boy from District Three.<br />
+<b>c)</b> A girl from District Three.<br />
+<b>d)</b> A girl from District Ten.</p>
+<p before="7" lines="5"><b>3. What is the one thing Rue tells Katniss she loves most in the world?</b><br />
+<b>a)</b> Nature.<br />
+<b>b)</b> Literature.<br />
+<b>c)</b> Dancing.<br />
+<b>d)</b> Music.</p>
+<p before="7" lines="5"><b>4. What item does Katniss tell Rue in Part 2, Chapter 16 that she plans to steal from the Careers' supplies?</b><br />
+<b>a)</b> Knives.<br />
+<b>b)</b> Food.<br />
+<b>c)</b> A sleeping bag.<br />
+<b>d)</b> Guns.</p>
+<p before="7" lines="5"><b>5. Where does Katniss find the supplies that once filled the Cornucopia?</b><br />
+<b>a)</b> Hidden in a hole near the Careers' camp.<br />
+<b>b)</b> In a pyramid next to the lake.<br />
+<b>c)</b> In the woods.<br />
+<b>d)</b> Hidden in a cave.</p>
+<p before="7" lines="5"><b>6. Who does Katniss hear Cato promising to kill in Part 2, Chapter 16?</b><br />
+<b>a)</b> Katniss.<br />
+<b>b)</b> Rue.<br />
+<b>c)</b> Foxface.<br />
+<b>d)</b> Clove.</p>
+<p before="7" lines="5"><b>7. What injury does Katniss suffer in the explosion she set off to destroy the Careers supplies?</b><br />
+<b>a)</b> A wound in her upper thigh.<br />
+<b>b)</b> Damage to her ear.<br />
+<b>c)</b> A cut on her forehead.<br />
+<b>d)</b> A burn on her leg.</p>
+<p before="7" lines="5"><b>8. Who does Katniss see picking through the wreckage of the Careers' supplies in Part 2, Chapter 17?</b><br />
+<b>a)</b> Clove.<br />
+<b>b)</b> Rue.<br />
+<b>c)</b> Cato.<br />
+<b>d)</b> Foxface.</p>
+<p before="7" lines="5"><b>9. What was Katniss and Rue's signal to alert one another that they are still safe?</b><br />
+<b>a)</b> A mockingbird song.<br />
+<b>b)</b> A tune Katniss once learned from her father.<br />
+<b>c)</b> A four note tune Rue once sang to announce the end of the work day.<br />
+<b>d)</b> A jabberjay song.</p>
+<p before="7" lines="5"><b>10. What trap does Katniss discover Rue has fallen into when she finds her at the end of Part 2, Chapter 17?</b><br />
+<b>a)</b> A bear trap.<br />
+<b>b)</b> A hole in the ground.<br />
+<b>c)</b> A net.<br />
+<b>d)</b> An animal snare.</p>
+<p before="7" lines="5"><b>11. What does Katniss sing to Rue as she lies dying?</b><br />
+<b>a)</b> A District Twelve lullaby.<br />
+<b>b)</b> The national anthem.<br />
+<b>c)</b> Rue's own end of day song.<br />
+<b>d)</b> A folk song taught to her by her father.</p>
+<p before="7" lines="5"><b>12. How many tributes are left at the end of Part 2, Chapter 18?</b><br />
+<b>a)</b> Eight.<br />
+<b>b)</b> Five.<br />
+<b>c)</b> Six.<br />
+<b>d)</b> Ten.</p>
+<h3>Multiple Choice - The Hunger Games, Part 3, Chapter 19 and Chapter 20</h3>
+<p before="7" lines="5"><b>1. Why does Katniss decide she must find Peeta at the beginning of Part 3, Chapter 19?</b><br />
+<b>a)</b> She heard that Cato injured him.<br />
+<b>b)</b> To appease the sponsors and because of the rule change.<br />
+<b>c)</b> She does not want to be alone.<br />
+<b>d)</b> To fulfill a promise to Haymitch.</p>
+<p before="7" lines="5"><b>2. Why is Katniss unhappy with the rocky terrain her search for Peeta takes her?</b><br />
+<b>a)</b> She knows she needs shelter when it gets dark.<br />
+<b>b)</b> She cannot leave tracks to follow back to her camp.<br />
+<b>c)</b> She cannot hunt there.<br />
+<b>d)</b> She knows she cannot fight Cato or Thresh there.</p>
+<p before="7" lines="5"><b>3. What sign does Katniss find on the rocks that tells her she is on the right track in her search for Peeta and Part 3, Chapter 19?</b><br />
+<b>a)</b> Blood stains.<br />
+<b>b)</b> A lean-to near the stream.<br />
+<b>c)</b> A hidden message written in mud.<br />
+<b>d)</b> Clothing.</p>
+<p before="7" lines="5"><b>4. How does Katniss clean Peeta off after she finds him in Part 3, Chapter 19?</b><br />
+<b>a)</b> She uses soap sent to her by a sponsor.<br />
+<b>b)</b> She strips him naked and leaves his clothes on the rocks.<br />
+<b>c)</b> She does not.<br />
+<b>d)</b> She rolls him in the stream.</p>
+<p before="7" lines="5"><b>5. How does Katniss leach the infection from Peeta's leg wound in Part 3, Chapter 19?</b><br />
+<b>a)</b> She presses on it.<br />
+<b>b)</b> She wraps it with tree bark.<br />
+<b>c)</b> She uses medicine Haymitch sent.<br />
+<b>d)</b> The leaves Rue showed her to use.</p>
+<p before="7" lines="5"><b>6. What does Katniss reveal in Part 3, Chapter 19 causes her queasiness?</b><br />
+<b>a)</b> Nudity.<br />
+<b>b)</b> Pus.<br />
+<b>c)</b> Intimacy.<br />
+<b>d)</b> Injured people.</p>
+<p before="7" lines="5"><b>7. What does Haymitch send Katniss the first night after she finds Peeta and hides in a cave?</b><br />
+<b>a)</b> Cheese.<br />
+<b>b)</b> Stew.<br />
+<b>c)</b> Fruit.<br />
+<b>d)</b> Broth.</p>
+<p before="7" lines="5"><b>8. What does Katniss do in Part 3, Chapter 20 to generate food for her and Peeta?</b><br />
+<b>a)</b> Hunts.<br />
+<b>b)</b> Sets snares.<br />
+<b>c)</b> Picks berries.<br />
+<b>d)</b> Calls out to Haymitch.</p>
+<p before="7" lines="5"><b>9. Why does Katniss tell Peeta the story of how she got Prim's goat in Part 3, Chapter 20?</b><br />
+<b>a)</b> At his request, to keep his mind off his injury.<br />
+<b>b)</b> At his request, to reveal more about her intimate life.<br />
+<b>c)</b> To appease the sponsors.<br />
+<b>d)</b> To appease Haymitch.</p>
+<p before="7" lines="5"><b>10. What does Katniss notice the Gamemakers have begun to mess with in Part 3, Chapter 20?</b><br />
+<b>a)</b> The duration of the day in the arena.<br />
+<b>b)</b> The light in the arena.<br />
+<b>c)</b> The animals living in the arena.<br />
+<b>d)</b> The temperature of the arena.</p>
+<p before="7" lines="5"><b>11. When Haymitch sends a vial of medication to Katniss in Part 3, Chapter 20, what does she think it is at first?</b><br />
+<b>a)</b> Medication to draw out more of the infection in Peeta's leg.<br />
+<b>b)</b> Medication to increase Peeta's waning appetite.<br />
+<b>c)</b> Medication to save Peeta's life.<br />
+<b>d)</b> Medication to treat Peeta's tracker jacker stings.</p>
+<p before="7" lines="5"><b>12. In what does Katniss mix the medication she feeds to Peeta?</b><br />
+<b>a)</b> Raspberries.<br />
+<b>b)</b> Sugar berries.<br />
+<b>c)</b> Strawberries.<br />
+<b>d)</b> Blueberries.</p>
+<h3>Multiple Choice - The Hunger Games, Part 3, Chapter 21 and Chapter 22</h3>
+<p before="7" lines="5"><b>1. How does Katniss camouflage the opening of the cave she has been sharing with Peeta in Part 3, Chapter 21?</b><br />
+<b>a)</b> With twigs and leaves.<br />
+<b>b)</b> With rocks.<br />
+<b>c)</b> With a tree branch cut from a nearby tree.<br />
+<b>d)</b> With her burned jacket.</p>
+<p before="7" lines="5"><b>2. Why does Katniss camouflage the opening of the cave she has been sharing with Peeta?</b><br />
+<b>a)</b> To keep Peeta from wandering away in the middle of the night.<br />
+<b>b)</b> To keep animals out of the cave.<br />
+<b>c)</b> To keep the warmth in.<br />
+<b>d)</b> To protect him while she is at the feast, especially if she does not return.</p>
+<p before="7" lines="5"><b>3. What does Katniss think is her greatest asset as she prepares to go to the feast in Part 3, Chapter 21?</b><br />
+<b>a)</b> Her ability to camouflage.<br />
+<b>b)</b> Her ability to run fast.<br />
+<b>c)</b> Her ability to kill at a distance.<br />
+<b>d)</b> Her ability to triumph at hand-to-hand combat.</p>
+<p before="7" lines="5"><b>4. Who does Katniss think of when she thinks of all the kisses she and Peeta have shared since arriving in the cave?</b><br />
+<b>a)</b> Gale.<br />
+<b>b)</b> Haymitch.<br />
+<b>c)</b> Her mother.<br />
+<b>d)</b> Prim.</p>
+<p before="7" lines="5"><b>5. Who is the first to retrieve a backpack at the feast in Part 3, Chapter 21?</b><br />
+<b>a)</b> Thresh.<br />
+<b>b)</b> Clove.<br />
+<b>c)</b> Cato.<br />
+<b>d)</b> Foxface.</p>
+<p before="7" lines="5"><b>6. Where does Katniss hit Clove with an arrow as she attacks in Part 3, Chapter 21?</b><br />
+<b>a)</b> The heart.<br />
+<b>b)</b> The right arm.<br />
+<b>c)</b> The left arm.<br />
+<b>d)</b> The head.</p>
+<p before="7" lines="5"><b>7. Where is Katniss injured during her fight with Clove in Part 3, Chapter 21?</b><br />
+<b>a)</b> The forehead.<br />
+<b>b)</b> The arm.<br />
+<b>c)</b> The chest.<br />
+<b>d)</b> The leg.</p>
+<p before="7" lines="5"><b>8. Where does Clove threaten to begin her mutilation of Katniss as they struggle at the feast in Part 3, Chapter 21?</b><br />
+<b>a)</b> The cheeks.<br />
+<b>b)</b> The mouth.<br />
+<b>c)</b> The chest.<br />
+<b>d)</b> The forehead.</p>
+<p before="7" lines="5"><b>9. Which of the remaining tributes in Part 3, Chapter 22 does Katniss suggest she and Peeta might have liked back in District Twelve?</b><br />
+<b>a)</b> Foxface.<br />
+<b>b)</b> Thresh.<br />
+<b>c)</b> Cato.<br />
+<b>d)</b> Clove.</p>
+<p before="7" lines="5"><b>10. What roles do Katniss and Peeta chose for themselves in regards to providing for their continuing survival?</b><br />
+<b>a)</b> Katniss will hunt and Peeta will cook.<br />
+<b>b)</b> Katniss will hunt and Peeta will provide protection.<br />
+<b>c)</b> Katniss will provide protection and Peeta will hunt.<br />
+<b>d)</b> Katniss will provide protection and Peeta will gather berries.</p>
+<p before="7" lines="5"><b>11. Why is Peeta unhappy that Katniss saved his life in Part 3, Chapter 22?</b><br />
+<b>a)</b> He does not want to go back to District Twelve.<br />
+<b>b)</b> He does not want her to have to kill him later.<br />
+<b>c)</b> He does not want her putting her own life on the line for him.<br />
+<b>d)</b> He does not want to survive only to be killed by Cato.</p>
+<p before="7" lines="5"><b>12. What causes Katniss to wonder at the end of Part 3, Chapter 22 if Peeta might really be in love with her?</b><br />
+<b>a)</b> His statement about her father's ability to silence the birds.<br />
+<b>b)</b> His statement that he was lucky to be picked in the reaping with her.<br />
+<b>c)</b> His anger at her for putting her life in danger for him.<br />
+<b>d)</b> His story about his father's love for her mother.</p>
+<h3>Multiple Choice - The Hunger Games, Part 3, Chapter 23 and Chapter 24</h3>
+<p before="7" lines="5"><b>1. Why does Peeta urge Katniss to go easy on the rich food Haymitch has sent them at the beginning of Part 3, Chapter 23?</b><br />
+<b>a)</b> To make a prettier picture for the sponsors.<br />
+<b>b)</b> To enjoy it more.<br />
+<b>c)</b> To make it last.<br />
+<b>d)</b> To keep from getting sick.</p>
+<p before="7" lines="5"><b>2. Who do Peeta and Katniss make fun of in Part 3, Chapter 23?</b><br />
+<b>a)</b> Cinna.<br />
+<b>b)</b> Haymitch.<br />
+<b>c)</b> Effie.<br />
+<b>d)</b> President Snow.</p>
+<p before="7" lines="5"><b>3. Who does Peeta suggest Katniss does not like because they are too much like one another?</b><br />
+<b>a)</b> Cinna.<br />
+<b>b)</b> Effie.<br />
+<b>c)</b> Haymitch.<br />
+<b>d)</b> Her mother.</p>
+<p before="7" lines="5"><b>4. What does Peeta reveal about his family that takes Katniss by surprise in Part 3, Chapter 23?</b><br />
+<b>a)</b> That they eat the richest foods in the bakery.<br />
+<b>b)</b> That his mother makes him eat the stale food while everyone else eats the rich foods.<br />
+<b>c)</b> That they only eat the stale food from their bakery.<br />
+<b>d)</b> That they do not eat the food from their bakery at all.</p>
+<p before="7" lines="5"><b>5. Which tributes, besides Peeta and Katniss, are left in Part 3, Chapter 23?</b><br />
+<b>a)</b> Cato and Foxface.<br />
+<b>b)</b> Foxface and Thresh.<br />
+<b>c)</b> Cato and Clove.<br />
+<b>d)</b> Cato and Thresh.</p>
+<p before="7" lines="5"><b>6. What is nightlock?</b><br />
+<b>a)</b> A weapon.<br />
+<b>b)</b> Leaves that cause a rash, like poison oak.<br />
+<b>c)</b> A singing bird.<br />
+<b>d)</b> Poisonous berries.</p>
+<p before="7" lines="5"><b>7. What does Katniss believe the Gamemakers will do now that there are only three tributes left?</b><br />
+<b>a)</b> Force them into the same area.<br />
+<b>b)</b> Stage another natural disaster.<br />
+<b>c)</b> Change the rules.<br />
+<b>d)</b> Stop the game.</p>
+<p before="7" lines="5"><b>8. Where do Katniss and Peeta go to wait for Cato?</b><br />
+<b>a)</b> The pond.<br />
+<b>b)</b> Their cave.<br />
+<b>c)</b> The lake.<br />
+<b>d)</b> The woods.</p>
+<p before="7" lines="5"><b>9. What is the Cornucopia made of?</b><br />
+<b>a)</b> Gold.<br />
+<b>b)</b> Silver.<br />
+<b>c)</b> Wood.<br />
+<b>d)</b> Plaster.</p>
+<p before="7" lines="5"><b>10. What song are the mockingjays singing as Katniss and Peeta wait for Cato?</b><br />
+<b>a)</b> Katniss's lullaby.<br />
+<b>b)</b> A song Peeta taught them.<br />
+<b>c)</b> The national anthem.<br />
+<b>d)</b> Rue's song.</p>
+<p before="7" lines="5"><b>11. What alerts Katniss and Peeta that Cato is coming at the end of Part 3, Chapter 24?</b><br />
+<b>a)</b> Cato's screams of terror.<br />
+<b>b)</b> The cries of wovles.<br />
+<b>c)</b> The mockingjays cry out in alarm.<br />
+<b>d)</b> The sound of running feet.</p>
+<p before="7" lines="5"><b>12. Where does Cato run for protection at the end of Part 3, Chapter 24?</b><br />
+<b>a)</b> The Cornucopia.<br />
+<b>b)</b> A small shelter built near the lake.<br />
+<b>c)</b> The woods.<br />
+<b>d)</b> The lake.</p>
+<h3>Multiple Choice - The Hunger Games, Part 3, Chapter 25, Chapter 26, and Chapter 27</h3>
+<p before="7" lines="5"><b>1. What does Katniss see on one of the mutts that makes her realize the mutts are meant to be reincarnations of the dead tributes?</b><br />
+<b>a)</b> A collar with a name on it.<br />
+<b>b)</b> A collar with a plant design on it.<br />
+<b>c)</b> A collar with a number one on it.<br />
+<b>d)</b> A collar with diamonds on it.</p>
+<p before="7" lines="5"><b>2. Who rescues Peeta as a mutt tries to pull him down from the Cornucopia in the beginning of Part 3, Chapter 25?</b><br />
+<b>a)</b> No one.<br />
+<b>b)</b> Cato.<br />
+<b>c)</b> Katniss.<br />
+<b>d)</b> Peeta.</p>
+<p before="7" lines="5"><b>3. What injury does Peeta have from the mutt attack in Part 3, Chapter 25?</b><br />
+<b>a)</b> A wound on his thigh.<br />
+<b>b)</b> A bite on his neck.<br />
+<b>c)</b> A deep wound in his calf.<br />
+<b>d)</b> A scratch across his chest.</p>
+<p before="7" lines="5"><b>4. How does Peeta signal Katniss where to shoot Cato as Cato holds Peeta in a headlock?</b><br />
+<b>a)</b> He marks an x on Cato's hand.<br />
+<b>b)</b> He makes a hand gesture Katniss recognizes.<br />
+<b>c)</b> He signals with his eyes.<br />
+<b>d)</b> He jerks in the hope that Katniss will know to fire at the right moment.</p>
+<p before="7" lines="5"><b>5. Where do the mutts take Cato at the end of Part 3, Chapter 25?</b><br />
+<b>a)</b> Into the Cornucopia.<br />
+<b>b)</b> Into the woods.<br />
+<b>c)</b> No where.<br />
+<b>d)</b> Into the lake.</p>
+<p before="7" lines="5"><b>6. What does Katniss use her last arrow to do in Part 3, Chapter 25?</b><br />
+<b>a)</b> Make a tourniquet for Peeta, then kill Cato.<br />
+<b>b)</b> To save Cato.<br />
+<b>c)</b> To shoot one of the mutts.<br />
+<b>d)</b> To signal the end of the games.</p>
+<p before="7" lines="5"><b>7. Who is the first to tell Peeta has survived in Part 3, Chapter 26?</b><br />
+<b>a)</b> The doctors.<br />
+<b>b)</b> Effie.<br />
+<b>c)</b> Haymitch.<br />
+<b>d)</b> The Avox.</p>
+<p before="7" lines="5"><b>8. Who sneaks Katniss a roll at dinner in Part 3, Chapter 26?</b><br />
+<b>a)</b> Octavia.<br />
+<b>b)</b> Effie.<br />
+<b>c)</b> Flavius.<br />
+<b>d)</b> Cinna.</p>
+<p before="7" lines="5"><b>9. Why does Haymitch warn Katniss that she must continue to act as though she is madly in love with Peeta?</b><br />
+<b>a)</b> To help in Peeta's recovery.<br />
+<b>b)</b> To protect her from the wrath of the president for threatening suicide by berry.<br />
+<b>c)</b> To protect Peeta's feelings.<br />
+<b>d)</b> To protect her family from the media storm about to fall on them.</p>
+<p before="7" lines="5"><b>10. What are Katniss and Peeta forced to watch during the ceremony to celebrate their win of the Hunger Games?</b><br />
+<b>a)</b> A recap of all the deaths suffered at their hands.<br />
+<b>b)</b> A speech by the president.<br />
+<b>c)</b> A recap of the entire games.<br />
+<b>d)</b> A recap of their rescue from the arena.</p>
+<p before="7" lines="5"><b>11. What does Katniss believe to be her fault in respect to Peeta's injuries?</b><br />
+<b>a)</b> The loss of his leg from the tourniquet.<br />
+<b>b)</b> The loss of his leg from the mutt bite.<br />
+<b>c)</b> The loss of his leg from infection.<br />
+<b>d)</b> The loss of his leg from Cato's attack.</p>
+<p before="7" lines="5"><b>12. What awaits Katniss and Peeta as they return to District Twelve?</b><br />
+<b>a)</b> A return to their mundane lives.<br />
+<b>b)</b> Nothing.<br />
+<b>c)</b> Many reporters and their loved ones.<br />
+<b>d)</b> Funerals for the dead tributes.</p>

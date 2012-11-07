@@ -1,0 +1,865 @@
+<h3>Multiple Choice - The Custom House</h3>
+<p before="7" lines="5"><b>1. What is the subtitle of "The Custom-House"?</b><br />
+<b>a)</b> A Preface.<br />
+<b>b)</b> A Novel of Morals.<br />
+<b>c)</b> Introductory to <i>The Scarlet Letter</i>.<br />
+<b>d)</b> A Play in Four Acts.</p>
+<p before="7" lines="5"><b>2. In what point of view is "The Custom House" written?</b><br />
+<b>a)</b> Second.<br />
+<b>b)</b> Third person, omniscient.<br />
+<b>c)</b> First.<br />
+<b>d)</b> Third person, limited.</p>
+<p before="7" lines="5"><b>3. Salem is characterized currently as....?</b><br />
+<b>a)</b> Desolate.<br />
+<b>b)</b> Bustling.<br />
+<b>c)</b> Busy.<br />
+<b>d)</b> Dramatic.</p>
+<p before="7" lines="5"><b>4. How does Hawthorne describe the historic Salem of years ago?</b><br />
+<b>a)</b> A dour harbor. <br />
+<b>b)</b> A sad sailing town.<br />
+<b>c)</b> A bustling port.<br />
+<b>d)</b> A busy metropolis.</p>
+<p before="7" lines="5"><b>5. What symbol of the United States hands in front of the Custom-House?</b><br />
+<b>a)</b> Uncle Sam. <br />
+<b>b)</b> An eagle. <br />
+<b>c)</b> Apple pie.<br />
+<b>d)</b> The stars and stripes. </p>
+<p before="7" lines="5"><b>6. How does Hawthorne metaphorically refer to the United States government in "The Custom House"?</b><br />
+<b>a)</b> Big brother. <br />
+<b>b)</b> The golden eagle.<br />
+<b>c)</b> Uncle Sam.<br />
+<b>d)</b> Washington.</p>
+<p before="7" lines="5"><b>7. What street runs outside the Custom-House?</b><br />
+<b>a)</b> Main Street.<br />
+<b>b)</b> Derby Street. <br />
+<b>c)</b> High Street.<br />
+<b>d)</b> Salem Road.</p>
+<p before="7" lines="5"><b>8. By what moniker does Hawthorne name the Custom-House building itself?</b><br />
+<b>a)</b> Old Manse.<br />
+<b>b)</b> Regal Apartment.<br />
+<b>c)</b> Venerated Palace.<br />
+<b>d)</b> Big House.</p>
+<p before="7" lines="5"><b>9. What is the name of the grave-yard Hawthorne mentions in his discussion of his ancestors?</b><br />
+<b>a)</b> Salem Cemetery.<br />
+<b>b)</b> Town Cemetery.<br />
+<b>c)</b> Charter Street burial-ground.<br />
+<b>d)</b> Old Church burial-ground.</p>
+<p before="7" lines="5"><b>10. Which political party does Hawthorne belong?</b><br />
+<b>a)</b> Whig.<br />
+<b>b)</b> Tory.<br />
+<b>c)</b> Republican.<br />
+<b>d)</b> Bull Moose.</p>
+<p before="7" lines="5"><b>11. Who was the father of the Custom-House?</b><br />
+<b>a)</b> General Miller.<br />
+<b>b)</b> Uncle Sam.<br />
+<b>c)</b> Hawthorne's grandfather.<br />
+<b>d)</b> The permanent Inspector.</p>
+<p before="7" lines="5"><b>12. What does Hawthorne find in a "mysterious package" in the Custom-House?</b><br />
+<b>a)</b> The scarlet letter.<br />
+<b>b)</b> Dimmesdale's diary.<br />
+<b>c)</b> A painting of Hester and Pearl.<br />
+<b>d)</b> Hester's diary.</p>
+<h3>Multiple Choice - Chapter 1</h3>
+<p before="7" lines="5"><b>1. What is the title of the first chapter?</b><br />
+<b>a)</b> TheJail-Door. <br />
+<b>b)</b> The Prison-Door.<br />
+<b>c)</b> Gaol-Door Rock.<br />
+<b>d)</b> The Prison Rose.</p>
+<p before="7" lines="5"><b>2. What was the door to the jail made of?</b><br />
+<b>a)</b> Mahogany.<br />
+<b>b)</b> Maple.<br />
+<b>c)</b> Birch.<br />
+<b>d)</b> Oak.</p>
+<p before="7" lines="5"><b>3. What are the spikes on the door to the jail made of?</b><br />
+<b>a)</b> Bronze.<br />
+<b>b)</b> Iron.<br />
+<b>c)</b> Seashell.<br />
+<b>d)</b> Wood.</p>
+<p before="7" lines="5"><b>4. What distinguishes the men in the "throng" at the beginning of thChapter 1?</b><br />
+<b>a)</b> They are bald.<br />
+<b>b)</b> They are fat. <br />
+<b>c)</b> They are ministers.<br />
+<b>d)</b> They are bearded.</p>
+<p before="7" lines="5"><b>5. What is the shape of the hats worn in the "throng"?</b><br />
+<b>a)</b> Steeple.<br />
+<b>b)</b> Derby.<br />
+<b>c)</b> Pillbox.<br />
+<b>d)</b> Cone.</p>
+<p before="7" lines="5"><b>6. The earliest parts of the colony had been the jail and what other location?</b><br />
+<b>a)</b> The church.<br />
+<b>b)</b> The governor's mansion.<br />
+<b>c)</b> The cemetery.<br />
+<b>d)</b> The schoolhouse.</p>
+<p before="7" lines="5"><b>7. How many years after the founding of Boston does Chapter 1 take place?</b><br />
+<b>a)</b> Approximately 150 or more.<br />
+<b>b)</b> Approximately 90 or 100.<br />
+<b>c)</b> Approximately 15 or 20.<br />
+<b>d)</b> Approximately 50 or 60. </p>
+<p before="7" lines="5"><b>8. Which plant is NOT mentioned in Chapter 1?</b><br />
+<b>a)</b> Pigweed.<br />
+<b>b)</b> Apple-peru.<br />
+<b>c)</b> Burdock.<br />
+<b>d)</b> Milkweed.</p>
+<p before="7" lines="5"><b>9. In what month does Chapter 1 take place?</b><br />
+<b>a)</b> October.<br />
+<b>b)</b> December.<br />
+<b>c)</b> March.<br />
+<b>d)</b> June.</p>
+<p before="7" lines="5"><b>10. What prominent wild plant grows just outside the door to the jail?</b><br />
+<b>a)</b> Dandelions.<br />
+<b>b)</b> A rose bush.<br />
+<b>c)</b> A weeping willow.<br />
+<b>d)</b> Lilacs.</p>
+<p before="7" lines="5"><b>11. What are the "delicate gems" referred to at the end of Chapter 1?</b><br />
+<b>a)</b> The spikes on the door to the jail.<br />
+<b>b)</b> Flowers. <br />
+<b>c)</b> Hester's pearl necklace.<br />
+<b>d)</b> The ladies in the crowd.</p>
+<p before="7" lines="5"><b>12. Chose which of the following best describes the tone in the last sentence of Chapter 1?</b><br />
+<b>a)</b> Ambivalent.<br />
+<b>b)</b> Somber.<br />
+<b>c)</b> Sunny.<br />
+<b>d)</b> Bright.</p>
+<h3>Multiple Choice - Chapter 2</h3>
+<p before="7" lines="5"><b>1. What is NOT one of the possible crimes mentioned in this Chapter 2, as a reason people might flock to the prison?</b><br />
+<b>a)</b> Religious heterodoxy.<br />
+<b>b)</b> Undutiful child.<br />
+<b>c)</b> Murder.<br />
+<b>d)</b> Sluggish bond servant.</p>
+<p before="7" lines="5"><b>2. What are the two non-Puritan sects mentioned in this Chapter 2?</b><br />
+<b>a)</b> Antimonian, Quaker, and Catholic.<br />
+<b>b)</b> Antimonian and Quaker.<br />
+<b>c)</b> Shaker and Quaker.<br />
+<b>d)</b> Quaker and Catholic.</p>
+<p before="7" lines="5"><b>3. Whose widow is Mistress Hibbins?</b><br />
+<b>a)</b> The narrator's.<br />
+<b>b)</b> The magistrate's.<br />
+<b>c)</b> The governor's.<br />
+<b>d)</b> The minister's.</p>
+<p before="7" lines="5"><b>4. How does the narrator describe the former queen of England, Elizabeth I?</b><br />
+<b>a)</b> Feminine.<br />
+<b>b)</b> Dainty.<br />
+<b>c)</b> Man-like.<br />
+<b>d)</b> Iron-willed.</p>
+<p before="7" lines="5"><b>5. Who thinks that Hester's punishment/sentence is too light?</b><br />
+<b>a)</b> The children of town.<br />
+<b>b)</b> The ministers.<br />
+<b>c)</b> The men of town.<br />
+<b>d)</b> The women of town.</p>
+<p before="7" lines="5"><b>6. Who is named as Hester's pastor in Chapter 2?</b><br />
+<b>a)</b> Reverand Wilson.<br />
+<b>b)</b> No pastor is named.<br />
+<b>c)</b> Reverand Hawthorne.<br />
+<b>d)</b> Reverend Dimmesdale.</p>
+<p before="7" lines="5"><b>7. One person suggest that Hester should have an iron brand burned where?</b><br />
+<b>a)</b> On her chest.<br />
+<b>b)</b> On the palms of her hands.<br />
+<b>c)</b> On her forehead. <br />
+<b>d)</b> On her cheek.</p>
+<p before="7" lines="5"><b>8. How old is the baby in Hester's arms when we first see her?</b><br />
+<b>a)</b> A week.<br />
+<b>b)</b> Three months. <br />
+<b>c)</b> Three days.<br />
+<b>d)</b> Six months.</p>
+<p before="7" lines="5"><b>9. What color is the thread that embroiders the scarlet letter?</b><br />
+<b>a)</b> Silver.<br />
+<b>b)</b> Black.<br />
+<b>c)</b> Red.<br />
+<b>d)</b> Gold.</p>
+<p before="7" lines="5"><b>10. What color is Hester's hair?</b><br />
+<b>a)</b> Dark.<br />
+<b>b)</b> Gray.<br />
+<b>c)</b> Red. <br />
+<b>d)</b> Blond.</p>
+<p before="7" lines="5"><b>11. Hawthorne surmises that if there were a Papist in the crowd, whom would Hester remind him of?</b><br />
+<b>a)</b> Mary Magdalene.<br />
+<b>b)</b> The Virgin Mary.<br />
+<b>c)</b> The pope.<br />
+<b>d)</b> Mother Theresa.</p>
+<p before="7" lines="5"><b>12. Who is NOT among the crowd shaming Hester?</b><br />
+<b>a)</b> Hester's pastor.<br />
+<b>b)</b> The governor.<br />
+<b>c)</b> The judges.<br />
+<b>d)</b> Hester's parents.</p>
+<h3>Multiple Choice - Chapter 3</h3>
+<p before="7" lines="5"><b>1. What is the title of Chapter 3?</b><br />
+<b>a)</b> The Recognition.<br />
+<b>b)</b> The Recognizance.<br />
+<b>c)</b> The Meeting.<br />
+<b>d)</b> The Resistance.</p>
+<p before="7" lines="5"><b>2. To whom does this description refer: "a seemingly careless arrangement of his heterogeneous garb"?</b><br />
+<b>a)</b> Wilson.<br />
+<b>b)</b> Chillingworth.<br />
+<b>c)</b> Bellingham.<br />
+<b>d)</b> Dimmesdale.</p>
+<p before="7" lines="5"><b>3. What is one of Chillingworth's distinguishing physical features?</b><br />
+<b>a)</b> One of his shoulders is higher than the other.<br />
+<b>b)</b> He is lame in his right leg.<br />
+<b>c)</b> He is missing most of the toes on his left foot.<br />
+<b>d)</b> His left eye droops.</p>
+<p before="7" lines="5"><b>4. The following description of clothing belongs to which community leader: "a dark feather in his hat, a border of embroidery on his cloak, and a black velvet tunic beneath"?</b><br />
+<b>a)</b> Lee.<br />
+<b>b)</b> Wilson.<br />
+<b>c)</b> Dimmesdale.<br />
+<b>d)</b> Bellingham.</p>
+<p before="7" lines="5"><b>5. Which minister in the book has "a border of grizzled locks beneath his skull-cap" and gray eyes?</b><br />
+<b>a)</b> Lee.<br />
+<b>b)</b> Chillingworth.<br />
+<b>c)</b> Dimmesdale.<br />
+<b>d)</b> Wilson.</p>
+<p before="7" lines="5"><b>6. Whose voice is "tremulously sweet, rich, deep and broken?"</b><br />
+<b>a)</b> Chillingworth's.<br />
+<b>b)</b> Dimmesdale's.<br />
+<b>c)</b> Pearl's.<br />
+<b>d)</b> Hester's.</p>
+<h3>Multiple Choice - Chapter 4</h3>
+<p before="7" lines="5"><b>1. The title of Chapter 4, "The Interview," refers to the meeting between which two characters?</b><br />
+<b>a)</b> Hester and Dimmesdale.<br />
+<b>b)</b> Chillingworth and Bellingham.<br />
+<b>c)</b> Hester and Chillingworth.<br />
+<b>d)</b> Chillingworth and Dimmesdale.</p>
+<p before="7" lines="5"><b>2. Where is Hester when she and Pearl are examined by the doctor?</b><br />
+<b>a)</b> In jail.<br />
+<b>b)</b> At the doctor's office.<br />
+<b>c)</b> In church.<br />
+<b>d)</b> At the governor's mansion.</p>
+<p before="7" lines="5"><b>3. When the doctor gives Hester something to drink, what does she think is in the cup?</b><br />
+<b>a)</b> Water.<br />
+<b>b)</b> Poison.<br />
+<b>c)</b> A truth serum.<br />
+<b>d)</b> Wine.</p>
+<p before="7" lines="5"><b>4. What is the "pedestal of infamy?"</b><br />
+<b>a)</b> The governor's mantle.<br />
+<b>b)</b> The steeple.<br />
+<b>c)</b> The scaffold.<br />
+<b>d)</b> The altar.</p>
+<p before="7" lines="5"><b>5. Who is Hester's legal husband?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> Dimmesdale.<br />
+<b>c)</b> Lee.<br />
+<b>d)</b> Wilson.</p>
+<p before="7" lines="5"><b>6. Whose name does the doctor want Hester to reveal?</b><br />
+<b>a)</b> The name of her husband.<br />
+<b>b)</b> The name of her lover.<br />
+<b>c)</b> The name of her child.<br />
+<b>d)</b> The name of the witch.</p>
+<h3>Multiple Choice - Chapter 5</h3>
+<p before="7" lines="5"><b>1. "Hester at her WHAT" is the title of Chapter 5?</b><br />
+<b>a)</b> Bedside.<br />
+<b>b)</b> Needle. <br />
+<b>c)</b> Wit's End.<br />
+<b>d)</b> Confession.</p>
+<p before="7" lines="5"><b>2. The title of Chapter 5 refers to what?</b><br />
+<b>a)</b> Hester's guilt.<br />
+<b>b)</b> Hester's work.<br />
+<b>c)</b> Hester's past.<br />
+<b>d)</b> Hester's love life.</p>
+<p before="7" lines="5"><b>3. Who, in Chapter 5, is referred to as "the figure, the body, the reality of sin?"</b><br />
+<b>a)</b> Dimmesdale.<br />
+<b>b)</b> Hester.<br />
+<b>c)</b> Pearl.<br />
+<b>d)</b> Hibbins.</p>
+<p before="7" lines="5"><b>4. Why does Hester stay in New England?</b><br />
+<b>a)</b> It is the scene of her crime.<br />
+<b>b)</b> She enjoys whaling.<br />
+<b>c)</b> Her family is there.<br />
+<b>d)</b> She enjoys the brisk winter.</p>
+<p before="7" lines="5"><b>5. Where was Hester's "happy infancy and stainless maidenhood?"</b><br />
+<b>a)</b> Bustling London.<br />
+<b>b)</b> Rural England.<br />
+<b>c)</b> Amsterdam.<br />
+<b>d)</b> Salem.</p>
+<p before="7" lines="5"><b>6. Hester's work is seen everywhere with the exception of:</b><br />
+<b>a)</b> At funerals.<br />
+<b>b)</b> In church.<br />
+<b>c)</b> At weddings.<br />
+<b>d)</b> On babies.</p>
+<h3>Multiple Choice - Chapter 6</h3>
+<p before="7" lines="5"><b>1. Chapter 6 is named after which character?</b><br />
+<b>a)</b> Pearl.<br />
+<b>b)</b> Hester.<br />
+<b>c)</b> Dimmesdale.<br />
+<b>d)</b> Chillingworth.</p>
+<p before="7" lines="5"><b>2. How does Hester dress her daughter?</b><br />
+<b>a)</b> In the "richest tissue."<br />
+<b>b)</b> In "rustic weeds."<br />
+<b>c)</b> In "infinite variety."<br />
+<b>d)</b> In "paler loveliness."</p>
+<p before="7" lines="5"><b>3. Which character is described as having a "wildflower prettiness?"</b><br />
+<b>a)</b> Hester.<br />
+<b>b)</b> Pearl.<br />
+<b>c)</b> Hibbins.<br />
+<b>d)</b> Chillingworth.</p>
+<p before="7" lines="5"><b>4. Which one of the following descriptions does not apply to Pearl?</b><br />
+<b>a)</b> "beautiful munchkin"<br />
+<b>b)</b> "airy sprite"<br />
+<b>c)</b> "little elf"<br />
+<b>d)</b> "sole treasure"</p>
+<p before="7" lines="5"><b>5. Who is described as a/an "intolerant brood?"</b><br />
+<b>a)</b> The governor's family.<br />
+<b>b)</b> The Dutch.<br />
+<b>c)</b> The Indians.<br />
+<b>d)</b> The Puritans.</p>
+<p before="7" lines="5"><b>6. According to the narrator, what is the first thing that Pearl noticed, as a baby?</b><br />
+<b>a)</b> Hester's long black hair.<br />
+<b>b)</b> The scarlet letter.<br />
+<b>c)</b> Seashells.<br />
+<b>d)</b> Her own curls.</p>
+<h3>Multiple Choice - Chapter 7</h3>
+<p before="7" lines="5"><b>1. What is Hester delivering to the governor's house when she goes there in Chapter 7?</b><br />
+<b>a)</b> Lace.<br />
+<b>b)</b> A scarf.<br />
+<b>c)</b> Bonnets.<br />
+<b>d)</b> Gloves.</p>
+<p before="7" lines="5"><b>2. Who is to wear the thing Hester is delivering to the governor's house?</b><br />
+<b>a)</b> The governor's servants.<br />
+<b>b)</b> The governor's daughter.<br />
+<b>c)</b> The governor's wife.<br />
+<b>d)</b> The governor himself.</p>
+<p before="7" lines="5"><b>3. What adjective best characterizes the governor's house?</b><br />
+<b>a)</b> Plain. <br />
+<b>b)</b> Baroque.<br />
+<b>c)</b> Cramped.<br />
+<b>d)</b> Opulent.</p>
+<p before="7" lines="5"><b>4. Which field had Bellingham trained for/been educated in?</b><br />
+<b>a)</b> Military.<br />
+<b>b)</b> Religion.<br />
+<b>c)</b> Medicine.<br />
+<b>d)</b> Law.</p>
+<p before="7" lines="5"><b>5. What does Pearl desperately desire from the governor's garden?</b><br />
+<b>a)</b> A pumpkin.<br />
+<b>b)</b> A tulip.<br />
+<b>c)</b> A rose.<br />
+<b>d)</b> A cabbage.</p>
+<p before="7" lines="5"><b>6. What quiets Pearl in this when she wants something from the governor's garden?</b><br />
+<b>a)</b> Her nanny.<br />
+<b>b)</b> Her obedience to Hester.<br />
+<b>c)</b> The gardener gives her what she wants.<br />
+<b>d)</b> The appearance of the governor.</p>
+<h3>Multiple Choice - Chapter 8</h3>
+<p before="7" lines="5"><b>1. The title of Chapter 8 is the what and "the Minister?"</b><br />
+<b>a)</b> The Miniature and the Minstrel.<br />
+<b>b)</b> The Minstrel and the Minister.<br />
+<b>c)</b> The Elf-Child and the Minister.<br />
+<b>d)</b> The Elfin and the Minister.</p>
+<p before="7" lines="5"><b>2. Who is with the governor when Hester visits his house to deliver something?</b><br />
+<b>a)</b> Wilson, Dimmesdale and Chillingworth.<br />
+<b>b)</b> Dimmesdale, Chillingworth and Hibbins.<br />
+<b>c)</b> Wilson and Dimmesdale.<br />
+<b>d)</b> Lee, Chillingworth, and Dimmesdale.</p>
+<p before="7" lines="5"><b>3. At the governor's house when the men are debating Hester's custody, what does one of them say Pearl should have been named?</b><br />
+<b>a)</b> Scarlet, Rose or Diamond.<br />
+<b>b)</b> Ruby, Coral or Red Rose.<br />
+<b>c)</b> Pinkie, Cora or Rosa.<br />
+<b>d)</b> Ruby, Scarlet or Roseanna.</p>
+<p before="7" lines="5"><b>4. Why is Pearl's mother questioned about whether or not she should have custody of the baby?</b><br />
+<b>a)</b> Because Hester has a drinking problem.<br />
+<b>b)</b> Because of her sin.<br />
+<b>c)</b> Because Pearl is hanging out with a bad crowd.<br />
+<b>d)</b> Because Pearl is acting out in school.</p>
+<p before="7" lines="5"><b>5. When Wilson asks Pearl who made her, what does she answer?</b><br />
+<b>a)</b> That Dimmesdale is her father.<br />
+<b>b)</b> That Hester had made her alone.<br />
+<b>c)</b> That a stork had delivered her.<br />
+<b>d)</b> That her mother had picked her off a rose bush.</p>
+<p before="7" lines="5"><b>6. Which man in at the governor's argues that Hester should be allowed to keep Pearl?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> Dimmesdale.<br />
+<b>c)</b> Wilson.<br />
+<b>d)</b> Bellingham.</p>
+<h3>Multiple Choice - Chapter 9</h3>
+<p before="7" lines="5"><b>1. The title of Chapter 9 ("The Leech") refers to which character?</b><br />
+<b>a)</b> Chilingworth.<br />
+<b>b)</b> Dimmesdale.<br />
+<b>c)</b> Hester.<br />
+<b>d)</b> Pearl.</p>
+<p before="7" lines="5"><b>2. What kind of men are rare in the colony, according to the narrator?</b><br />
+<b>a)</b> Doctors and scientists.<br />
+<b>b)</b> Artists.<br />
+<b>c)</b> Hunters.<br />
+<b>d)</b> Lawyers.</p>
+<p before="7" lines="5"><b>3. Where was Reverend Dimmesdale trained in religion?</b><br />
+<b>a)</b> Harvard.<br />
+<b>b)</b> Cambridge.<br />
+<b>c)</b> Oxford. <br />
+<b>d)</b> Princeton.</p>
+<p before="7" lines="5"><b>4. What is the health problem wrong with Dimmesdale?</b><br />
+<b>a)</b> Tuberculosis.<br />
+<b>b)</b> Scoliosis.<br />
+<b>c)</b> Failing eyesight.<br />
+<b>d)</b> Failing health. </p>
+<p before="7" lines="5"><b>5. Chillingworth has a degree from a university in which country?</b><br />
+<b>a)</b> France.<br />
+<b>b)</b> Germany.<br />
+<b>c)</b> Holland.<br />
+<b>d)</b> Italy. </p>
+<p before="7" lines="5"><b>6. Where does Chillingworth take up residence?</b><br />
+<b>a)</b> At the Governor's.<br />
+<b>b)</b> In the same rooming house as Dimmesdale. <br />
+<b>c)</b> With Mistress Hibbins.<br />
+<b>d)</b> With Dimmesdale, at the rectory.</p>
+<h3>Multiple Choice - Chapter 10</h3>
+<p before="7" lines="5"><b>1. Who is the patient referred to in the title of Chapter 10?</b><br />
+<b>a)</b> Leech.<br />
+<b>b)</b> Bellingham.<br />
+<b>c)</b> Dimmesdale.<br />
+<b>d)</b> Chillingworth.</p>
+<p before="7" lines="5"><b>2. The following description of someone's eyes in Chapter 10 refers to which character: "burning blue and ominous, like the reflection of a furnace....like one of those gleams of ghastly fire"?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> Pearl. <br />
+<b>c)</b> Hester.<br />
+<b>d)</b> Dimmesdale.</p>
+<p before="7" lines="5"><b>3. Where has Chillingworth been gathering herbs, when he is asked by the minister in Chapter 10?</b><br />
+<b>a)</b> In Hester's garden.<br />
+<b>b)</b> In a graveyard.<br />
+<b>c)</b> By the seashoer.<br />
+<b>d)</b> In the governor's garden.</p>
+<p before="7" lines="5"><b>4. Which character says, ironically, "why should a wretched man, guilty, we will say, of murder, prefer to keep the dead corpse buried in his own heart, rather than fling it forth at once"?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> Dimmesdale.<br />
+<b>c)</b> Wilson.<br />
+<b>d)</b> Hester.</p>
+<p before="7" lines="5"><b>5. Which description does not apply to Dimmesdale?</b><br />
+<b>a)</b> Sensitive.<br />
+<b>b)</b> Healthy.<br />
+<b>c)</b> Nervous temperament.<br />
+<b>d)</b> Weak frame.</p>
+<p before="7" lines="5"><b>6. Whom do Dimmesdale and Chillingworth see out the window at the end of Chapter 10?</b><br />
+<b>a)</b> Their own reflections.<br />
+<b>b)</b> Just Hester.<br />
+<b>c)</b> Just Pearl. <br />
+<b>d)</b> Hester and Pearl. </p>
+<h3>Multiple Choice - Chapter 11</h3>
+<p before="7" lines="5"><b>1. Which character seeks to make him or herself "the one trusted friend, to whom should be confided all the fear"?</b><br />
+<b>a)</b> Hibbins.<br />
+<b>b)</b> Dimmesdale.<br />
+<b>c)</b> Wilson. <br />
+<b>d)</b> Chillingworth.</p>
+<p before="7" lines="5"><b>2. Chillingworth is described as which of the following in Chapter 11?</b><br />
+<b>a)</b> Warlock.<br />
+<b>b)</b> Spellcaster.<br />
+<b>c)</b> Magician.<br />
+<b>d)</b> Mage.</p>
+<p before="7" lines="5"><b>3. While his health is failing, Dimmesdale has achieved what in his profession?</b><br />
+<b>a)</b> "Brillant popularity."<br />
+<b>b)</b> "Sturdier texture."<br />
+<b>c)</b> "Sanctimonius reputation."<br />
+<b>d)</b> "Populist ire."</p>
+<p before="7" lines="5"><b>4. Why do most Puritans fast, according to the narrator?</b><br />
+<b>a)</b> To lose weight.<br />
+<b>b)</b> To purify their bodies.<br />
+<b>c)</b> To conserve food.<br />
+<b>d)</b> To cure disease.</p>
+<p before="7" lines="5"><b>5. Where are Dimmesdale's parents?</b><br />
+<b>a)</b> In Salem.<br />
+<b>b)</b> In Boston.<br />
+<b>c)</b> In England.<br />
+<b>d)</b> Dead.</p>
+<p before="7" lines="5"><b>6. What, at the end of Chapter 11, is the "only truth" for Dimmesdale?</b><br />
+<b>a)</b> "The mercy of almightly Heaven."<br />
+<b>b)</b> "The joy in his beating heart."<br />
+<b>c)</b> "The malice in Chillingworth's eyes."<br />
+<b>d)</b> "The anguish in his inmost soul."</p>
+<h3>Multiple Choice - Chapter 12</h3>
+<p before="7" lines="5"><b>1. Where does the minister go in the beginning of Chapter 12?</b><br />
+<b>a)</b> To the governor's. <br />
+<b>b)</b> To the scaffold.<br />
+<b>c)</b> To Hester's.<br />
+<b>d)</b> To church.</p>
+<p before="7" lines="5"><b>2. In what month does this "obscure night" take place in Chapter 12?</b><br />
+<b>a)</b> January.<br />
+<b>b)</b> May.<br />
+<b>c)</b> August.<br />
+<b>d)</b> November.</p>
+<p before="7" lines="5"><b>3. Where does Dimmesdale imagine a "scarlet token?"</b><br />
+<b>a)</b> On Pearl.<br />
+<b>b)</b> On his chest. <br />
+<b>c)</b> On Hester.<br />
+<b>d)</b> On his forehead.</p>
+<p before="7" lines="5"><b>4. Why is Dimmesdale at the town center Chapter 12?</b><br />
+<b>a)</b> To stand side by side with Hester.<br />
+<b>b)</b> To proclaim his guilt in public.<br />
+<b>c)</b> To trick Chillingworth.<br />
+<b>d)</b> To shame Hester.</p>
+<p before="7" lines="5"><b>5. Who is said to ride "with Satan through the air?"</b><br />
+<b>a)</b> Demons.<br />
+<b>b)</b> Witches. <br />
+<b>c)</b> Bats. <br />
+<b>d)</b> Banshees.</p>
+<p before="7" lines="5"><b>6. How is Hibbins related to the Governor?</b><br />
+<b>a)</b> His sister-in-law.<br />
+<b>b)</b> His daughter.<br />
+<b>c)</b> No relation.<br />
+<b>d)</b> His sister.</p>
+<h3>Multiple Choice - Chapter 13</h3>
+<p before="7" lines="5"><b>1. How many years have passed so far in this novel, in Chapter 13?</b><br />
+<b>a)</b> Three.<br />
+<b>b)</b> Less than one.<br />
+<b>c)</b> Eleven.<br />
+<b>d)</b> Seven.</p>
+<p before="7" lines="5"><b>2. What, in Chapter 13, "glimmers" with an "unearthly ray"?</b><br />
+<b>a)</b> Chillingworth's malice.<br />
+<b>b)</b> The scarlet letter.<br />
+<b>c)</b> Pearl's eyes. <br />
+<b>d)</b> The meteor/falling star.</p>
+<p before="7" lines="5"><b>3. Hester is a self-ordained what?</b><br />
+<b>a)</b> Sister of Integrity.<br />
+<b>b)</b> Sister of Mercy.<br />
+<b>c)</b> Sister of Chastity.<br />
+<b>d)</b> Sister of Sin.</p>
+<p before="7" lines="5"><b>4. What, according to many of the townspeople who have come to appreciate Hester, should the A stand for?</b><br />
+<b>a)</b> Angel.<br />
+<b>b)</b> Addled.<br />
+<b>c)</b> Able. <br />
+<b>d)</b> Aloof.</p>
+<p before="7" lines="5"><b>5. Who is mentioned in Chapter 13 as a "foundress of a religious sect?"</b><br />
+<b>a)</b> Hibbins.<br />
+<b>b)</b> Hutichison.<br />
+<b>c)</b> Mother Theresa.<br />
+<b>d)</b> Bradstreet.</p>
+<p before="7" lines="5"><b>6. Whom does Hester decide to seek out for a meeting at the end of Chapter 13?</b><br />
+<b>a)</b> Her confessor.<br />
+<b>b)</b> Her daughter.<br />
+<b>c)</b> Her (former) husband.<br />
+<b>d)</b> Her lover. </p>
+<h3>Multiple Choice - Chapter 14</h3>
+<p before="7" lines="5"><b>1. What is the title of Chapter 14?</b><br />
+<b>a)</b> Hester and the Physician.<br />
+<b>b)</b> Hester and the Magician.<br />
+<b>c)</b> The Magical Doctor.<br />
+<b>d)</b> The Doctor and Mrs. Chillingworth.</p>
+<p before="7" lines="5"><b>2. What does Chillingworth say in Chapter 14 the town council has been debating?</b><br />
+<b>a)</b> Whether to take away Pearl from Hester.<br />
+<b>b)</b> Whether to arrest Hester again.<br />
+<b>c)</b> Whether to take away the scarlet letter.<br />
+<b>d)</b> Whether to exile Hester from Boston.</p>
+<p before="7" lines="5"><b>3. What facial expression of Chillingworth displays his true malice, which the narrator calls "his blackness" in Chapter 14?</b><br />
+<b>a)</b> A shrug.<br />
+<b>b)</b> A grimace.<br />
+<b>c)</b> A smile. <br />
+<b>d)</b> A wink.</p>
+<p before="7" lines="5"><b>4. When Hester exclaims "better he had died at once!," to whom is she referring in Chapter 14?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> The old governor.<br />
+<b>c)</b> Dimmesdale.<br />
+<b>d)</b> The new governor.</p>
+<p before="7" lines="5"><b>5. In Chapter 14, the narrator symbolized the truth by what?</b><br />
+<b>a)</b> "A red-hot iron."<br />
+<b>b)</b> "A mysterious maze."<br />
+<b>c)</b> "A fletched arrow."<br />
+<b>d)</b> "A tall white pedestal."</p>
+<p before="7" lines="5"><b>6. What does Hester threaten to do at the end of Chapter 14?</b><br />
+<b>a)</b> Betray Chillingworth's identity.<br />
+<b>b)</b> Kill herself.<br />
+<b>c)</b> Escape Boston.<br />
+<b>d)</b> Reveal the name of her lover.</p>
+<h3>Multiple Choice - Chapter 15</h3>
+<p before="7" lines="5"><b>1. Where is Hester when Chillingworth leaves, "his gray beard almost" touching the ground?</b><br />
+<b>a)</b> In church.<br />
+<b>b)</b> At the governor's.<br />
+<b>c)</b> In the woods. <br />
+<b>d)</b> At the roominghouse.</p>
+<p before="7" lines="5"><b>2. While she is playing, Pearl makes a little boat out of what?</b><br />
+<b>a)</b> Sand dollars.<br />
+<b>b)</b> Sea weed.<br />
+<b>c)</b> Birch bark.<br />
+<b>d)</b> Acorns.</p>
+<p before="7" lines="5"><b>3. Which of the following creatures is not mentioned while Pearl plays on the shore?</b><br />
+<b>a)</b> Horseshoe crab.<br />
+<b>b)</b> Birds.<br />
+<b>c)</b> Jellyfish.<br />
+<b>d)</b> Lobster. </p>
+<p before="7" lines="5"><b>4. What does Pearl do with sea weed?</b><br />
+<b>a)</b> Wraps it about her head.<br />
+<b>b)</b> Eats it.<br />
+<b>c)</b> Spreads it along the beach.<br />
+<b>d)</b> Lines her pockets with it.</p>
+<p before="7" lines="5"><b>5. What color is the letter A Pearl fashions for herself out of natural objects ?</b><br />
+<b>a)</b> Green.<br />
+<b>b)</b> White.<br />
+<b>c)</b> Red.<br />
+<b>d)</b> Brown.</p>
+<p before="7" lines="5"><b>6. When Pearl repeatedly asks Hester what the letter stand for, what does Hester tell her in Chapter 15?</b><br />
+<b>a)</b> She says it stands for Able.<br />
+<b>b)</b> She does not give an answer.<br />
+<b>c)</b> She says it stands for Adultry<br />
+<b>d)</b> She says it is a witch's mark.</p>
+<h3>Multiple Choice - Chapter 16</h3>
+<p before="7" lines="5"><b>1. Whom does Dimmesdale set out to meet?</b><br />
+<b>a)</b> Disciple Adrian.<br />
+<b>b)</b> Disciple Ellison.<br />
+<b>c)</b> Apostle Elias.<br />
+<b>d)</b> Apostle Eliot.</p>
+<p before="7" lines="5"><b>2. Why, according to Pearl, does sunshine "run away and hide itself" from Hester?</b><br />
+<b>a)</b> Because of the foliage.<br />
+<b>b)</b> Because of her fair skin.<br />
+<b>c)</b> Because of the scarlet letter.<br />
+<b>d)</b> Because of her long gray dress.</p>
+<p before="7" lines="5"><b>3. Who is said to haunt the forest outside town, carrying a big, heavy book with him?</b><br />
+<b>a)</b> The Dark Reverend.<br />
+<b>b)</b> The Evil Man.<br />
+<b>c)</b> The Dark Man.<br />
+<b>d)</b> The Black Man.</p>
+<p before="7" lines="5"><b>4. What metal is the previously mentioned book and pen associated with?</b><br />
+<b>a)</b> Bronze.<br />
+<b>b)</b> Iron.<br />
+<b>c)</b> Gold. <br />
+<b>d)</b> Silver. </p>
+<p before="7" lines="5"><b>5. According to Hester in Chapter 16, where does she tell Pearl she got the scarlet letter?</b><br />
+<b>a)</b> From the Dark Man. <br />
+<b>b)</b> From the Dark Reverend.<br />
+<b>c)</b> From the Black Man.<br />
+<b>d)</b> From Mistress Hibbins.</p>
+<p before="7" lines="5"><b>6. Where does Dimmesdale hold his hand often throughout the novel?</b><br />
+<b>a)</b> In his pocket. <br />
+<b>b)</b> Clutching the Bible. <br />
+<b>c)</b> Over his heart.<br />
+<b>d)</b> Over his eyes.</p>
+<h3>Multiple Choice - Chapter 17</h3>
+<p before="7" lines="5"><b>1. What is the title of Chapter 17?</b><br />
+<b>a)</b> The Pastor and the Thief.<br />
+<b>b)</b> The Pastor and His Parish.<br />
+<b>c)</b> The Pastor and His Lover.<br />
+<b>d)</b> The Pastor and His Parishoner.</p>
+<p before="7" lines="5"><b>2. What describes Dimmesdale's hand, when Hester touches it?</b><br />
+<b>a)</b> "Chill as death."<br />
+<b>b)</b> "Frozen."<br />
+<b>c)</b> "Clammy."<br />
+<b>d)</b> "Cold as ice. "</p>
+<p before="7" lines="5"><b>3. Dimmesdale claims that his scarlet letter burns how?</b><br />
+<b>a)</b> In secret. <br />
+<b>b)</b> On the inside. <br />
+<b>c)</b> In God's eyes. <br />
+<b>d)</b> On his soul.</p>
+<p before="7" lines="5"><b>4. What does Hester tell Dimmesdale about Chillingworth in Chapter 17?</b><br />
+<b>a)</b> That he is her husband.<br />
+<b>b)</b> That he is on an undercover mission for the governor.<br />
+<b>c)</b> That he is really a Catholic.<br />
+<b>d)</b> That he is not really a doctor. </p>
+<p before="7" lines="5"><b>5. According to Dimmesdale, Chillingworth's revenge has been "____ than [his] sin"?</b><br />
+<b>a)</b> Deeper.<br />
+<b>b)</b> Eviler.<br />
+<b>c)</b> Darker.<br />
+<b>d)</b> Blacker.</p>
+<p before="7" lines="5"><b>6. What does Hester mean when she says "Thou shalt not go alone" at the end of Chapter 17?</b><br />
+<b>a)</b> That Chillingworth will follow Dimmesdale.<br />
+<b>b)</b> That she will send Pearl with Dimmesdale. <br />
+<b>c)</b> That Dimmesdale should not leave.<br />
+<b>d)</b> That she will run away with Dimmesdale.</p>
+<h3>Multiple Choice - Chapter 18</h3>
+<p before="7" lines="5"><b>1. What is the title of Chapter 18?</b><br />
+<b>a)</b> A Flood of Sunshine.<br />
+<b>b)</b> A River of Tears.<br />
+<b>c)</b> A Flood of Brightness.<br />
+<b>d)</b> An Ectasy of Light.</p>
+<p before="7" lines="5"><b>2. According to the narrator, which of the following has NOT been one of Hester's "teachers"?</b><br />
+<b>a)</b> Guilt. <br />
+<b>b)</b> Solitude.<br />
+<b>c)</b> Despair.<br />
+<b>d)</b> Shame.</p>
+<p before="7" lines="5"><b>3. Who, according to the narrator, is at the "head of the social system" in Puritan times?</b><br />
+<b>a)</b> Witches.<br />
+<b>b)</b> Doctors.<br />
+<b>c)</b> Clergy.<br />
+<b>d)</b> Governors.</p>
+<p before="7" lines="5"><b>4. When Dimmesdale exclaims, "O Thou to whom I dare not life mine eyes," whom is he addressing?</b><br />
+<b>a)</b> Hester.<br />
+<b>b)</b> Wilson.<br />
+<b>c)</b> God.<br />
+<b>d)</b> Chillingworth.</p>
+<p before="7" lines="5"><b>5. What does Hester fling next to the brook?</b><br />
+<b>a)</b> Her bonnet. <br />
+<b>b)</b> Her scarlet letter.<br />
+<b>c)</b> Dimmesdale's Bible.<br />
+<b>d)</b> Chillingworth's herbs.</p>
+<p before="7" lines="5"><b>6. With what kind of natural objects has Pearl decorated herself in Chapter 18?</b><br />
+<b>a)</b> Sand and driftwood.<br />
+<b>b)</b> Maple leaves. <br />
+<b>c)</b> Wildflowers.<br />
+<b>d)</b> Seashells.</p>
+<h3>Multiple Choice - Chapter 19</h3>
+<p before="7" lines="5"><b>1. In Chapter 19, how does Dimmesdale say Pearl looks?</b><br />
+<b>a)</b> "Strangely beautiful."<br />
+<b>b)</b> "Strangely familiar."<br />
+<b>c)</b> "Uncannily strange."<br />
+<b>d)</b> "Uncannily adorable."</p>
+<p before="7" lines="5"><b>2. Hester says that Pearl is "strange" and what at first?</b><br />
+<b>a)</b> Familar.<br />
+<b>b)</b> Shy.<br />
+<b>c)</b> Creepy.<br />
+<b>d)</b> Outgoing.</p>
+<p before="7" lines="5"><b>3. When Pearl will not cross the brook, what does Hester tell her she can leap like?</b><br />
+<b>a)</b> Bull frog.<br />
+<b>b)</b> Young deer.<br />
+<b>c)</b> Little girls. <br />
+<b>d)</b> Giant grasshopper.</p>
+<p before="7" lines="5"><b>4. Why will Pearl not come to Hester in Chapter 19?</b><br />
+<b>a)</b> She has taken off the letter.<br />
+<b>b)</b> She is angry at her mother.<br />
+<b>c)</b> She is across the brook.<br />
+<b>d)</b> She is talking with a man.</p>
+<p before="7" lines="5"><b>5. Who retrieves the object that Hester flings away?</b><br />
+<b>a)</b> Dimmesdale. <br />
+<b>b)</b> Pearl.<br />
+<b>c)</b> Hester.<br />
+<b>d)</b> No one.</p>
+<p before="7" lines="5"><b>6. What does Pearl do when Dimmesdale kisses her?</b><br />
+<b>a)</b> She washes it off.<br />
+<b>b)</b> She wipes it on Hester's scarlet letter.<br />
+<b>c)</b> She kisses him back. <br />
+<b>d)</b> She laughs.</p>
+<h3>Multiple Choice - Chapter 20</h3>
+<p before="7" lines="5"><b>1. What is the title of Chapter 20?</b><br />
+<b>a)</b> "The Mysterious Minister."<br />
+<b>b)</b> "The Minister in the Mirror."<br />
+<b>c)</b> "The Minister in a Maze."<br />
+<b>d)</b> "The Minister in the Middle."</p>
+<p before="7" lines="5"><b>2. Where have Hester and Dimmesdale decided would be the best place to escape to?</b><br />
+<b>a)</b> An Indian settlement.<br />
+<b>b)</b> Salem.<br />
+<b>c)</b> Europe.<br />
+<b>d)</b> The American South.</p>
+<p before="7" lines="5"><b>3. Why do Hester and Dimmesdale chose the place they do to escape to?</b><br />
+<b>a)</b> Dimmedale's profession.<br />
+<b>b)</b> Dimmesdale's health.<br />
+<b>c)</b> Hester's profession.<br />
+<b>d)</b> Hester's criminal record.</p>
+<p before="7" lines="5"><b>4. Where is the ship the Spanish Main sailing?</b><br />
+<b>a)</b> Atlanta.<br />
+<b>b)</b> Boston. <br />
+<b>c)</b> Bristol.<br />
+<b>d)</b> Barcelona.</p>
+<p before="7" lines="5"><b>5. Dimmesdale learns that he is preach what important sermon?</b><br />
+<b>a)</b> The Election sermon.<br />
+<b>b)</b> Chillingworth's funeral sermon.<br />
+<b>c)</b> The Inauguration sermon.<br />
+<b>d)</b> Hester's marriage sermon.</p>
+<p before="7" lines="5"><b>6. What does Dimmesdale tell Chillingworth while he is writing the sermon is Chapter 20?</b><br />
+<b>a)</b> That he knows Chillingworth's true identity.<br />
+<b>b)</b> That he no longer needs his services as doctor.<br />
+<b>c)</b> That he knows who Hester's lover is.<br />
+<b>d)</b> That he is feeling close to death.</p>
+<h3>Multiple Choice - Chapter 21</h3>
+<p before="7" lines="5"><b>1. What is the holiday referred to in the title of Chapter 21?</b><br />
+<b>a)</b> The arrival of the new governor. <br />
+<b>b)</b> Easter.<br />
+<b>c)</b> The birth of the new prince.<br />
+<b>d)</b> Halloween.</p>
+<p before="7" lines="5"><b>2. What marks particular attendants of the holiday as members of their forest settlements?</b><br />
+<b>a)</b> Their scarlet F's.<br />
+<b>b)</b> Their deer-skin clothing.<br />
+<b>c)</b> Their long hair.<br />
+<b>d)</b> Their rough speech.</p>
+<p before="7" lines="5"><b>3. What is Hester wearing on the public holiday in Chapter 21?</b><br />
+<b>a)</b> Fine scarlet gown.<br />
+<b>b)</b> A white wedding gown.<br />
+<b>c)</b>  Coarse gray cloth.<br />
+<b>d)</b> A plain blue dress.</p>
+<p before="7" lines="5"><b>4. Which of the following is NOT used by the narrator to describe Pearl in Chapter 21?</b><br />
+<b>a)</b> Effervescent. <br />
+<b>b)</b> Dour. <br />
+<b>c)</b> Bird-like.<br />
+<b>d)</b> Gem-like.</p>
+<p before="7" lines="5"><b>5. Who is the "grim, ugly-eyed old man" who recognizes Pearl?</b><br />
+<b>a)</b> The old jailer.<br />
+<b>b)</b> The old governor.<br />
+<b>c)</b> Her father. <br />
+<b>d)</b> Hester's former husband. </p>
+<p before="7" lines="5"><b>6. Who are the "rough-looking desperadoes, with sun-blackened faces" at the holiday in Chapter 21?</b><br />
+<b>a)</b> Puritans.<br />
+<b>b)</b> Indians.<br />
+<b>c)</b> Sailors. <br />
+<b>d)</b> Englishmen.</p>
+<h3>Multiple Choice - Chapter 22</h3>
+<p before="7" lines="5"><b>1. What group of people leads the procession referred to in the title of Chapter 22?</b><br />
+<b>a)</b> The musicians.<br />
+<b>b)</b> The soldiers.<br />
+<b>c)</b> The clergy.<br />
+<b>d)</b> The public officials. </p>
+<p before="7" lines="5"><b>2. "Its ranks were filled with gentlemen, who felt the stirrings of martial impulse" describes which group of men in the procession referred to in the title of Chapter 22?</b><br />
+<b>a)</b> The public officials.<br />
+<b>b)</b> The soliders. <br />
+<b>c)</b> The clergy.<br />
+<b>d)</b> The musicians.</p>
+<p before="7" lines="5"><b>3. This group in the procession referred to in the title of Chapter 22 was showing "a stamp of majesty that made the warrior's haughty stride look vulgar"?</b><br />
+<b>a)</b> The public officials. <br />
+<b>b)</b> The musicians.<br />
+<b>c)</b> The soldiers.<br />
+<b>d)</b> The sailors.</p>
+<p before="7" lines="5"><b>4. Who, in the procession, "exhibited such energy as was seen in the gait and air"?</b><br />
+<b>a)</b> Pearl.<br />
+<b>b)</b> Dimmesdale. <br />
+<b>c)</b> Chillingworth.<br />
+<b>d)</b> Wilson.</p>
+<p before="7" lines="5"><b>5. Pearl recognizes a man in the procession who did what?</b><br />
+<b>a)</b> Kissed her by the brook.<br />
+<b>b)</b> Stole money from Hester.<br />
+<b>c)</b> Gave her a red rose from his garden.<br />
+<b>d)</b> Visited Hester and her in jail.</p>
+<p before="7" lines="5"><b>6. Who in the audience taunts Hester and Pearl at the appearance of Dimmesdale?</b><br />
+<b>a)</b> Brackett.<br />
+<b>b)</b> Chillingworth.<br />
+<b>c)</b> Bellingham.<br />
+<b>d)</b> Hibbins.</p>
+<h3>Multiple Choice - Chapter 23</h3>
+<p before="7" lines="5"><b>1. Dimmesdale's voice is compared to what natural phenomenon in Chapter 23?</b><br />
+<b>a)</b> Patter of raindrops on the roof.<br />
+<b>b)</b> Twisting branches of a dead oak.<br />
+<b>c)</b> Surging wind of the coast.<br />
+<b>d)</b> Swelling waves of the sea.</p>
+<p before="7" lines="5"><b>2. How does the narrator characterize Dimmesdale's sermon?</b><br />
+<b>a)</b> The narrator neither praises nor diminshes it.<br />
+<b>b)</b> The narrator exhalts it. <br />
+<b>c)</b> The narrator disparages it.<br />
+<b>d)</b> The narrator ignores it.</p>
+<p before="7" lines="5"><b>3. Despite his triumph in delivering the sermon in Chapter 23, how does Dimmesdale appear?</b><br />
+<b>a)</b> "Hale and hearty."<br />
+<b>b)</b> "Wanton and wan."<br />
+<b>c)</b> "Delicate and forlorn."<br />
+<b>d)</b> "Feeble and pale."</p>
+<p before="7" lines="5"><b>4. John Wilson is described as having what relationship to Dimmesdale?</b><br />
+<b>a)</b> One of his clerical brethern.<br />
+<b>b)</b> One of his mystical mates.<br />
+<b>c)</b> One of his fatherly teachers.<br />
+<b>d)</b> One of his holy fathers.</p>
+<p before="7" lines="5"><b>5. Whom does Dimmesdale call up to join him in front of everyone?</b><br />
+<b>a)</b> Chillingworth.<br />
+<b>b)</b> Hester. <br />
+<b>c)</b> Wilson.<br />
+<b>d)</b> Hester and Pearl.</p>
+<p before="7" lines="5"><b>6. What is Dimmesdale's "own red stigma"?</b><br />
+<b>a)</b> Pearl.<br />
+<b>b)</b> His guilt. <br />
+<b>c)</b> An "A" carved in his chest.<br />
+<b>d)</b> A scarlet letter he wears underneath his jacket.</p>
+<h3>Multiple Choice - Chapter 24</h3>
+<p before="7" lines="5"><b>1. What had Dimmesdale been doing to himself?</b><br />
+<b>a)</b> He had been treating his own illness.<br />
+<b>b)</b> He had been self-flagellating.<br />
+<b>c)</b> He had been fasting.<br />
+<b>d)</b> He had been staying awake all night.</p>
+<p before="7" lines="5"><b>2. Which of the following is NOT an explanation for Dimmesdale's "red stigma"?</b><br />
+<b>a)</b> Chillingworth did it.<br />
+<b>b)</b> Hester put it there.<br />
+<b>c)</b> The minister did it to himself. <br />
+<b>d)</b> God did it.</p>
+<p before="7" lines="5"><b>3. How long did it take before Chillingworth died?</b><br />
+<b>a)</b> Immediately after Dimmesdale.<br />
+<b>b)</b> Less than a year.<br />
+<b>c)</b> Ten years.<br />
+<b>d)</b> Five years. </p>
+<p before="7" lines="5"><b>4. Who inherited money and property from Chillingworth?</b><br />
+<b>a)</b> Hester. <br />
+<b>b)</b> The church.<br />
+<b>c)</b> His biological children. <br />
+<b>d)</b> Pearl. </p>
+<p before="7" lines="5"><b>5. What suggests that Pearl will have a child of her own at the end of the novel?</b><br />
+<b>a)</b> Hester is sewing infant clothes.<br />
+<b>b)</b> Pearl's stomach is large.<br />
+<b>c)</b> Pearl has gotten married quickly.<br />
+<b>d)</b> Hester calls herself "Grandma Hester."</p>
+<p before="7" lines="5"><b>6. Next to whom is Hester Prynne eventually buried?</b><br />
+<b>a)</b> Dimmesdale.<br />
+<b>b)</b> Chillingworth, her husband.<br />
+<b>c)</b> Pearl.<br />
+<b>d)</b> No one--she is buried alone. </p>

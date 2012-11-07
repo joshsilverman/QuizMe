@@ -1,0 +1,922 @@
+<h3>Multiple Choice - Chapter 1</h3>
+<p before="7" lines="5"><b>1. What is the Dursleys' address?</b><br />
+<b>a)</b> Number Four Privet Drive.<br />
+<b>b)</b> Number 6 Parrot Way.<br />
+<b>c)</b> Number 2 Pandle Court.<br />
+<b>d)</b> Number 8 Pivot Ave.</p>
+<p before="7" lines="5"><b>2. How old does Harry Potter turn at the beginning of the book?</b><br />
+<b>a)</b> 13.<br />
+<b>b)</b> 14.<br />
+<b>c)</b> 15.<br />
+<b>d)</b> 12.</p>
+<p before="7" lines="5"><b>3. Who does Harry live with when he is not at Hogwarts?</b><br />
+<b>a)</b> His godfather.<br />
+<b>b)</b> His aunt and uncle.<br />
+<b>c)</b> Professor Dumbledore.<br />
+<b>d)</b> His parents.</p>
+<p before="7" lines="5"><b>4. What is Harry not allowed to do at home during the summer holiday?</b><br />
+<b>a)</b> Write letters.<br />
+<b>b)</b> Leave his room.<br />
+<b>c)</b> Talk above a whisper.<br />
+<b>d)</b> Practice magic.</p>
+<p before="7" lines="5"><b>5. How does Harry do his homework during the summer holiday?</b><br />
+<b>a)</b> He memorizes his lessons to write down later.<br />
+<b>b)</b> He has no homework over the summer.<br />
+<b>c)</b> He copies it from Hermione.<br />
+<b>d)</b> By wand light at night.</p>
+<p before="7" lines="5"><b>6. Why is Harry forced to live where he does over the summer holidays.</b><br />
+<b>a)</b> He is forced by law to stay there.<br />
+<b>b)</b> He feels that he cannot ask to go somewhere else without causing offense.<br />
+<b>c)</b> Dumbledore believes it is the safest place for him.<br />
+<b>d)</b> It is what his parents wanted for him.</p>
+<p before="7" lines="5"><b>7. What does Harry receive over the summer holiday that brings him great joy?</b><br />
+<b>a)</b> News that he will be able to move.<br />
+<b>b)</b> Letters from Hogwarts.<br />
+<b>c)</b> A picture of his girlfriend.<br />
+<b>d)</b> Birthday cards and presents.</p>
+<p before="7" lines="5"><b>8. At the beginning of the book, how long does Harry have before the start of the next Hogwarts term?</b><br />
+<b>a)</b> 12 days.<br />
+<b>b)</b> 5 days.<br />
+<b>c)</b> 5 weeks.<br />
+<b>d)</b> 12 weeks.</p>
+<p before="7" lines="5"><b>9. What does Harry need his guardians to sign before he leaves for Hogwarts?</b><br />
+<b>a)</b> His report card.<br />
+<b>b)</b> A release form so he can play Quidditch.<br />
+<b>c)</b> A note allowing him to take extra classes.<br />
+<b>d)</b> A permission slip to go to Hogsmeade Village.</p>
+<p before="7" lines="5"><b>10. Why does Harry never receive any phone calls during the summer holiday?</b><br />
+<b>a)</b> He has no friends to call him.<br />
+<b>b)</b> He is not allowed any phone calls.<br />
+<b>c)</b> His friends do not have phones.<br />
+<b>d)</b> There is no phone in the house.</p>
+<p before="7" lines="5"><b>11. What is the term for non-magical people?</b><br />
+<b>a)</b> Morguls.<br />
+<b>b)</b> Mangles.<br />
+<b>c)</b> Muggles.<br />
+<b>d)</b> Muddles.</p>
+<p before="7" lines="5"><b>12. How old does a student have to be before being allowed to visit Hogsmeade Village?</b><br />
+<b>a)</b> 3rd Year Student.<br />
+<b>b)</b> 4th Year Student.<br />
+<b>c)</b> 2nd Year Student.<br />
+<b>d)</b> All students are allowed, provided their grades are good.</p>
+<h3>Multiple Choice - Chapter 2</h3>
+<p before="7" lines="5"><b>1. What is Vernon's sister named?</b><br />
+<b>a)</b> Marcy.<br />
+<b>b)</b> Mary.<br />
+<b>c)</b> Maggy.<br />
+<b>d)</b> Marge.</p>
+<p before="7" lines="5"><b>2. When does Vernon's sister arrive?</b><br />
+<b>a)</b> On Harry's birthday.<br />
+<b>b)</b> The day before Harry returns to school.<br />
+<b>c)</b> On Dudley's birthday.<br />
+<b>d)</b> The day that Harry comes home from school.</p>
+<p before="7" lines="5"><b>3. Who does Vernon's sister treat better than she treats Harry?</b><br />
+<b>a)</b> The messenger boy.<br />
+<b>b)</b> Vernon's hired help.<br />
+<b>c)</b> The mailman.<br />
+<b>d)</b> Her dog.</p>
+<p before="7" lines="5"><b>4. What is Vernon's sister drinking when she starts to talk about how horrible Harry is?</b><br />
+<b>a)</b> Wine.<br />
+<b>b)</b> Water.<br />
+<b>c)</b> Brandy.<br />
+<b>d)</b> Sherry.</p>
+<p before="7" lines="5"><b>5. Why does Harry try so hard to be nice to Vernon's sister when she is being so horrible to him?</b><br />
+<b>a)</b> He does not want to upset his aunt.<br />
+<b>b)</b> He needs Vernon to sign a permission slip.<br />
+<b>c)</b> He knows she will punish him if he is not.<br />
+<b>d)</b> He thinks that what she is saying might be true.</p>
+<p before="7" lines="5"><b>6. How does Vernon's sister think Harry's parents died?</b><br />
+<b>a)</b> From being poisoned.<br />
+<b>b)</b> In a drunken car crash.<br />
+<b>c)</b> From a horrible sickness.<br />
+<b>d)</b> In an attack by Voldemort.</p>
+<p before="7" lines="5"><b>7. What  is so ironic about Vernon's sister calling Harry's father a drunk?</b><br />
+<b>a)</b> James Potter never touched alcohol in his life.<br />
+<b>b)</b> She knew she was lying.<br />
+<b>c)</b> She was practically describing herself.<br />
+<b>d)</b> She was drunk when she said it.</p>
+<p before="7" lines="5"><b>8. What happens to Vernon's sister as she is berating Harry's parents?</b><br />
+<b>a)</b> She vomits on the table.<br />
+<b>b)</b> She turns purple.<br />
+<b>c)</b> She begins to float around like a balloon.<br />
+<b>d)</b> She passes out from drunkeness.</p>
+<p before="7" lines="5"><b>9. What does Harry do after the excitement in the dining room with Vernon's sister?</b><br />
+<b>a)</b> He uses magic to make her well.<br />
+<b>b)</b> He apologizes profusely.<br />
+<b>c)</b> He packs his things and gets ready to leave.<br />
+<b>d)</b> He kicks her dog.</p>
+<p before="7" lines="5"><b>10. What does Harry say about what happened to Marge in the dining room?</b><br />
+<b>a)</b> She seems no worse for the wear.<br />
+<b>b)</b> She got what she deserved.<br />
+<b>c)</b> She could have prevented it.<br />
+<b>d)</b> She did it to herself.</p>
+<p before="7" lines="5"><b>11. What is Harry's owl named?</b><br />
+<b>a)</b> Henwing.<br />
+<b>b)</b> Harrig.<br />
+<b>c)</b> Hedwig.<br />
+<b>d)</b> Halfling.</p>
+<p before="7" lines="5"><b>12. What does Vernon's sister say Harry should feel towards his uncle?</b><br />
+<b>a)</b> Anger.<br />
+<b>b)</b> Gratitude.<br />
+<b>c)</b> Respect.<br />
+<b>d)</b> Envy.</p>
+<h3>Multiple Choice - Chapter 3</h3>
+<p before="7" lines="5"><b>1. What does Harry do after walking a few blocks away from the Dursley's house?</b><br />
+<b>a)</b> He collapses.<br />
+<b>b)</b> He calls for Hedwig.<br />
+<b>c)</b> He yells in anger.<br />
+<b>d)</b> He cries.</p>
+<p before="7" lines="5"><b>2. What does Harry fear will happen to him due to what happened to Vernon's sister?</b><br />
+<b>a)</b> He will be banned from Hogsmeade.<br />
+<b>b)</b> He will be expelled from Hogwarts.<br />
+<b>c)</b> He will be stripped of his wand.<br />
+<b>d)</b> Hermione will not be his friend.</p>
+<p before="7" lines="5"><b>3. Where is Harry's money kept?</b><br />
+<b>a)</b> Gringott's Bank.<br />
+<b>b)</b> The Weasleys' house.<br />
+<b>c)</b> Hagrid's hut.<br />
+<b>d)</b> His room at Hogwarts.</p>
+<p before="7" lines="5"><b>4. How does Harry plan to fly to London unseen?</b><br />
+<b>a)</b> He will fly above the cloud line.<br />
+<b>b)</b> He will travel at night.<br />
+<b>c)</b> A magic spell.<br />
+<b>d)</b> His invisibility cloak.</p>
+<p before="7" lines="5"><b>5. How many levels does the bus have that picks Harry up off the street?</b><br />
+<b>a)</b> 4.<br />
+<b>b)</b> 2.<br />
+<b>c)</b> 3.<br />
+<b>d)</b> 1.</p>
+<p before="7" lines="5"><b>6. What is the bus that picks Harry up off the street called?</b><br />
+<b>a)</b> The Night Rider.<br />
+<b>b)</b> The Night Bus.<br />
+<b>c)</b> The Knight Bus.<br />
+<b>d)</b> The Nite Bus.</p>
+<p before="7" lines="5"><b>7. What is the name of the conductor of the bus that picks Harry up off the street?</b><br />
+<b>a)</b> Stew Shurpike.<br />
+<b>b)</b> Stan Shunpike.<br />
+<b>c)</b> Steve Sherling<br />
+<b>d)</b> Stan Sterling.</p>
+<p before="7" lines="5"><b>8. What is the name of the Wizard newspaper that Harry sees the conductor of the bus reading?</b><br />
+<b>a)</b> The Daily Witch's Brew.<br />
+<b>b)</b> The Daily News of Wizards.<br />
+<b>c)</b> The Daily Prophet.<br />
+<b>d)</b> The Daily Wizard.</p>
+<p before="7" lines="5"><b>9. What is the name of the Wizard jail?</b><br />
+<b>a)</b> Azkaban.<br />
+<b>b)</b> Alastor.<br />
+<b>c)</b> Alcatraz.<br />
+<b>d)</b> Alkazan.</p>
+<p before="7" lines="5"><b>10. Who does Harry read about in the newspaper while riding the bus to London?</b><br />
+<b>a)</b> Sirius Black.<br />
+<b>b)</b> Peter Pettigrew.<br />
+<b>c)</b> Moony Lupin.<br />
+<b>d)</b> Albus Dumbledore.</p>
+<p before="7" lines="5"><b>11. Who does Harry see when he gets off the bus at the Leaky Cauldron?</b><br />
+<b>a)</b> Cornelius Fudge.<br />
+<b>b)</b> Hagrid.<br />
+<b>c)</b> Professor McGonegall.<br />
+<b>d)</b> Mr. Weasley.</p>
+<p before="7" lines="5"><b>12. What is so surprising about Black's escape from prison?</b><br />
+<b>a)</b> Nobody else has ever escaped.<br />
+<b>b)</b> He left the dark mark of Voldemort all along the walls when he left.<br />
+<b>c)</b> He killed many people as he escaped.<br />
+<b>d)</b> He told a guard he was leaving to avenge his master's death.</p>
+<h3>Multiple Choice - Chapter 4</h3>
+<p before="7" lines="5"><b>1. After he gets off the bus, where does Harry stay until the school year starts?</b><br />
+<b>a)</b> The Leaky Cauldron.<br />
+<b>b)</b> Hogwarts.<br />
+<b>c)</b> Hogsmeade Inn.<br />
+<b>d)</b> The Weasley's house.</p>
+<p before="7" lines="5"><b>2. What does Harry see on a cover of a book in Diagon Alley that he feels he has seen before?</b><br />
+<b>a)</b> A picture of a black dog with gleaming eyes.<br />
+<b>b)</b> The triple-decker Knight Bus.<br />
+<b>c)</b> The image of Sirius Black.<br />
+<b>d)</b> A skull and cross bones.</p>
+<p before="7" lines="5"><b>3. Who joins Harry for the last day of the summer holiday?</b><br />
+<b>a)</b> Hagrid.<br />
+<b>b)</b> Draco Malfoy.<br />
+<b>c)</b> Ron and Hermione.<br />
+<b>d)</b> Hedwig.</p>
+<p before="7" lines="5"><b>4. What does Hermione purchase in Diagon Alley?</b><br />
+<b>a)</b> A beautiful snowy owl.<br />
+<b>b)</b> A red rat.<br />
+<b>c)</b> A black toad.<br />
+<b>d)</b> A large orange cat.</p>
+<p before="7" lines="5"><b>5. What does Hermione name her new magical creature?</b><br />
+<b>a)</b> Cronkers.<br />
+<b>b)</b> Crookshanks.<br />
+<b>c)</b> Crowslip.<br />
+<b>d)</b> Creechers.</p>
+<p before="7" lines="5"><b>6. Where did Ron ger his magical creature?</b><br />
+<b>a)</b> It was handed down to him by his brothers.<br />
+<b>b)</b> He found it at Hogwarts.<br />
+<b>c)</b> It was given to him by Hagrid.<br />
+<b>d)</b> He bought it at Diagon Alley.</p>
+<p before="7" lines="5"><b>7. How does Ginny Weasley feel about Harry?</b><br />
+<b>a)</b> She is jealous of his money.<br />
+<b>b)</b> She has a huge crush on him.<br />
+<b>c)</b> She is curious about his muggle upbringing.<br />
+<b>d)</b> She thinks he is a pompous fool.</p>
+<p before="7" lines="5"><b>8. What does Harry overhear Mr. Weasley telling his wife while at the Leaky Cauldron?</b><br />
+<b>a)</b> The dementors will be at Hogwarts on guard this year.<br />
+<b>b)</b> Black is targeting Harry.<br />
+<b>c)</b> Three more prisoners have escaped from prison.<br />
+<b>d)</b> He has had a dream about Harry being killed by a black dog.</p>
+<p before="7" lines="5"><b>9. What does Harry keep dreaming about after overhearing the secret conversation between the Weasleys?</b><br />
+<b>a)</b> His parents being killed.<br />
+<b>b)</b> A dementor attacking him.<br />
+<b>c)</b> The black dog omen of death.<br />
+<b>d)</b> Voldemort.</p>
+<p before="7" lines="5"><b>10. What is Harry's favorite part about the time he spends alone before heading back to Hogwarts?</b><br />
+<b>a)</b> He can use his magic with no restrictions.<br />
+<b>b)</b> He can get some homework done.<br />
+<b>c)</b> He is free to do as he pleases.<br />
+<b>d)</b> He can fly on his broom as much as he pleases.</p>
+<p before="7" lines="5"><b>11. What is Ron's rat named?</b><br />
+<b>a)</b> Scratcher.<br />
+<b>b)</b> Scragglers.<br />
+<b>c)</b> Scabbers.<br />
+<b>d)</b> Scampers.</p>
+<p before="7" lines="5"><b>12. What does Ron want Hermione to do with her new magical creature?</b><br />
+<b>a)</b> Return it to the store.<br />
+<b>b)</b> Train it to be nice ot his rat.<br />
+<b>c)</b> Change its name.<br />
+<b>d)</b> Buy him one as well.</p>
+<h3>Multiple Choice - Chapter 5</h3>
+<p before="7" lines="5"><b>1. Where does Mr. Weasley work?</b><br />
+<b>a)</b> Hogsmeade.<br />
+<b>b)</b> Hogwarts.<br />
+<b>c)</b> The Ministry of Magic.<br />
+<b>d)</b> Diagon Alley.</p>
+<p before="7" lines="5"><b>2. What does Mr. Weasley make Harry promise just before he boards Hogwarts Express?</b><br />
+<b>a)</b> To not sneak into Hogsmeade.<br />
+<b>b)</b> To do everything that Dumbledore tells him to do.<br />
+<b>c)</b> To not play Quidditch.<br />
+<b>d)</b> To not go looking for Sirius Black.</p>
+<p before="7" lines="5"><b>3. Who is in the train compartment with Ron, Harry, and Hermione when they board the Hogwarts Express?</b><br />
+<b>a)</b> Draco Malfoy.<br />
+<b>b)</b> Hagrid.<br />
+<b>c)</b> Neville Longbottom.<br />
+<b>d)</b> A strange man in shabby robes.</p>
+<p before="7" lines="5"><b>4. What position at Hogwarts has opened up once again and needs a replacement before the school year starts?</b><br />
+<b>a)</b> The Defense Against the Dark Arts teacher.<br />
+<b>b)</b> The Potions master.<br />
+<b>c)</b> The ghost wrangler.<br />
+<b>d)</b> The groundskeeper.</p>
+<p before="7" lines="5"><b>5. What is so perplexing to Harry about Mr. Weasley's warning to him before he boards Hogwarts Express?</b><br />
+<b>a)</b> He always tries to do what Dumbledore tells him to.<br />
+<b>b)</b> He has never wanted to go to Hogsmeade.<br />
+<b>c)</b> He can't imagine why he should give up Quidditch.<br />
+<b>d)</b> He does not know why Black would want to hurt him.</p>
+<p before="7" lines="5"><b>6. What odd event takes place as Ron, Harry, and Hermione are discussing Mr. Weasley's warning while heading to Hogwarts?</b><br />
+<b>a)</b> The stranger wakes up.<br />
+<b>b)</b> The train's lights go out.<br />
+<b>c)</b> The train stops.<br />
+<b>d)</b> Harry's scar starts to hurt.</p>
+<p before="7" lines="5"><b>7. What does the fourth person in the train car tell Harry to do when they suddenly wake up?</b><br />
+<b>a)</b> To give him some food.<br />
+<b>b)</b> To never doubt those who love him.<br />
+<b>c)</b> To be quiet.<br />
+<b>d)</b> To remain calm.</p>
+<p before="7" lines="5"><b>8. What does Harry do when the train compartment is entered by the hooded figure in black?</b><br />
+<b>a)</b> He screams.<br />
+<b>b)</b> He passes out.<br />
+<b>c)</b> He charges against it.<br />
+<b>d)</b> He tries to protect Hermione.</p>
+<p before="7" lines="5"><b>9. What does Harry hear when he sees the hooded figure in black enter his train compartment?</b><br />
+<b>a)</b> A shrill, screaming sound.<br />
+<b>b)</b> His heartbeat.<br />
+<b>c)</b> The deep and halting breathing of the figure.<br />
+<b>d)</b> Nothing but utter silence.</p>
+<p before="7" lines="5"><b>10. What was the hooded figure in black that entered the train compartment?</b><br />
+<b>a)</b> The Grim.<br />
+<b>b)</b> A dementor.<br />
+<b>c)</b> A joke by the Weasley twins.<br />
+<b>d)</b> A ghost.</p>
+<p before="7" lines="5"><b>11. Why was Harry so embarrassed by his reaction to the hooded figure in black that entered his train compartment?</b><br />
+<b>a)</b> It was only a joke and he took it too seriously.<br />
+<b>b)</b> Everyone laughed at him when he came to.<br />
+<b>c)</b> Ginny was the only other person who seemed deeply affected by it.<br />
+<b>d)</b> Hermione had seen him faint.</p>
+<p before="7" lines="5"><b>12. Who is made the new Professor of Magical Creatures?</b><br />
+<b>a)</b> Snape.<br />
+<b>b)</b> Lupin.<br />
+<b>c)</b> Hagrid.<br />
+<b>d)</b> Dumbledore.</p>
+<h3>Multiple Choice - Chapter 6</h3>
+<p before="7" lines="5"><b>1. Who taunts Harry during his first morning at Hogwarts?</b><br />
+<b>a)</b> Malfoy.<br />
+<b>b)</b> Ron.<br />
+<b>c)</b> Goyle.<br />
+<b>d)</b> Crabbe.</p>
+<p before="7" lines="5"><b>2. What is Harry taunted about during his first morning at Hogwarts?</b><br />
+<b>a)</b> His run-in with Snape.<br />
+<b>b)</b> His behavior at the welcome feast.<br />
+<b>c)</b> His episode with the dementors.<br />
+<b>d)</b> Ginny's crush on him.</p>
+<p before="7" lines="5"><b>3. How many classes a day does Hermione have on her schedule for the third year?</b><br />
+<b>a)</b> 10.<br />
+<b>b)</b> 5.<br />
+<b>c)</b> 6.<br />
+<b>d)</b> 8.</p>
+<p before="7" lines="5"><b>4. Who does Hermione say has approved her for taking extra classes for her third year?</b><br />
+<b>a)</b> McGonegall.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> Dumbledore.<br />
+<b>d)</b> Flitwick.</p>
+<p before="7" lines="5"><b>5. What is Harry's first class for his third year at Hogwarts?</b><br />
+<b>a)</b> Divination.<br />
+<b>b)</b> Transfiguration.<br />
+<b>c)</b> Potions.<br />
+<b>d)</b> History.</p>
+<p before="7" lines="5"><b>6. Where does Trelawney tell Harry that Grims traditionally walk about?</b><br />
+<b>a)</b> Schools.<br />
+<b>b)</b> Graveyards.<br />
+<b>c)</b> Hospitals.<br />
+<b>d)</b> Diagon Alley.</p>
+<p before="7" lines="5"><b>7. What is the term for people who have the ability to transform themselves into animals?</b><br />
+<b>a)</b> Aniformers.<br />
+<b>b)</b> Animagus.<br />
+<b>c)</b> Transformers.<br />
+<b>d)</b> Transfigurators.</p>
+<p before="7" lines="5"><b>8. What does McGonegall tell Harry's class that Professor Trelawney does every year with her new third year students?</b><br />
+<b>a)</b> Makes the students divine tea leaves.<br />
+<b>b)</b> Predicts that someone will die.<br />
+<b>c)</b> Turns herself into a cat.<br />
+<b>d)</b> Has a fake premonition.</p>
+<p before="7" lines="5"><b>9. Why does McGonegall tell the students to not take their Divination lessons too seriously on their first day of their year?</b><br />
+<b>a)</b> She thinks it is the most imprecise form of magic.<br />
+<b>b)</b> Divination is not on any OWL tests.<br />
+<b>c)</b> It is too hard for young children learn.<br />
+<b>d)</b> She feels that their attention should be placed elsewhere.</p>
+<p before="7" lines="5"><b>10. Where does Hagrid hold his first class of the year?</b><br />
+<b>a)</b> In the Quidditch field.<br />
+<b>b)</b> In the cafeteria.<br />
+<b>c)</b> In the Forbidden Forest.<br />
+<b>d)</b> Outside his hut.</p>
+<p before="7" lines="5"><b>11. What animal does Hagrid introduce in his first lesson of the year?</b><br />
+<b>a)</b> Centaurs.<br />
+<b>b)</b> Mermaids.<br />
+<b>c)</b> Hippogriffs.<br />
+<b>d)</b> Snufflegruffs.</p>
+<p before="7" lines="5"><b>12. What happens when Malfoy insults Buckbeak?</b><br />
+<b>a)</b> Buckbeak faints and plays dead.<br />
+<b>b)</b> Buckbeack flies away.<br />
+<b>c)</b> Buckbeak slashes him with his talons.<br />
+<b>d)</b> Buckbeak shrieks in horror.</p>
+<h3>Multiple Choice - Chapter 7</h3>
+<p before="7" lines="5"><b>1. What is Harry's first class on his second day at Hogwarts?</b><br />
+<b>a)</b> Spells.<br />
+<b>b)</b> Transfiguration.<br />
+<b>c)</b> Defense Against the Dark Arts.<br />
+<b>d)</b> Potions.</p>
+<p before="7" lines="5"><b>2. What does Harry find out during the first class of his second day at school?</b><br />
+<b>a)</b> Snape was denied the Defense Against the Dark Arts position.<br />
+<b>b)</b> Malfoy really is sick.<br />
+<b>c)</b> Snape dislikes him even more than he did the year before.<br />
+<b>d)</b> Sirius Black has been spotted close to the school.</p>
+<p before="7" lines="5"><b>3. What does Hermione keep doing that is confusing Ron at the beginning of the school year?</b><br />
+<b>a)</b> Going days without food.<br />
+<b>b)</b> Talking about classes that he has never heard about.<br />
+<b>c)</b> Appearing out of nowhere.<br />
+<b>d)</b> Writing homework for classes that she isn't taking.</p>
+<p before="7" lines="5"><b>4. What is Hermione carrying around at the beginning of the school year due to her large class load?</b><br />
+<b>a)</b> A magic carpet bag to fit all of her supplies.<br />
+<b>b)</b> Crookshanks.<br />
+<b>c)</b> A large stack of books.<br />
+<b>d)</b> A time turner.</p>
+<p before="7" lines="5"><b>5. Who is the new Defense Against the Dark Arts Teacher?</b><br />
+<b>a)</b> Dumbledore.<br />
+<b>b)</b> Lupin.<br />
+<b>c)</b> Moody.<br />
+<b>d)</b> Snape.</p>
+<p before="7" lines="5"><b>6. What is a Boggart?</b><br />
+<b>a)</b> A friendly creature that can guide a lost traveler to his true path.<br />
+<b>b)</b> Another name for a werewolf.<br />
+<b>c)</b> A large creature that is half eagle, half horse.<br />
+<b>d)</b> A shape-shifting monster that takes the form of its victims worst fear.</p>
+<p before="7" lines="5"><b>7. What is the spell that the new Defense Against the Dark Arts teacher teaches that causes embarrassment?</b><br />
+<b>a)</b> Ridikkulus.<br />
+<b>b)</b> Embarrassio.<br />
+<b>c)</b> Mockento.<br />
+<b>d)</b> Sillify.</p>
+<p before="7" lines="5"><b>8. What is Ron's worst fear?</b><br />
+<b>a)</b> Snakes.<br />
+<b>b)</b> Spiders.<br />
+<b>c)</b> Dementors.<br />
+<b>d)</b> Snape.</p>
+<p before="7" lines="5"><b>9. What is Neville's worst fear?</b><br />
+<b>a)</b> Spiders.<br />
+<b>b)</b> Dementors.<br />
+<b>c)</b> Snakes.<br />
+<b>d)</b> Snape.</p>
+<p before="7" lines="5"><b>10. What is Harry's worst fear?</b><br />
+<b>a)</b> Spiders.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> Dementors.<br />
+<b>d)</b> Snakes.</p>
+<p before="7" lines="5"><b>11. How do most of the students feel about their new Defense Against the Dark Arts Teacher after their first day in class?</b><br />
+<b>a)</b> They do not trust him.<br />
+<b>b)</b> They love him and can't wait for the next class.<br />
+<b>c)</b> They find him very condescending and rude.<br />
+<b>d)</b> They find him odd and eccentric.</p>
+<p before="7" lines="5"><b>12. What house is Snape in charge of?</b><br />
+<b>a)</b> Gryffindor.<br />
+<b>b)</b> Slytherin.<br />
+<b>c)</b> Hufflepuff.<br />
+<b>d)</b> Ravenclaw.</p>
+<h3>Multiple Choice - Chapter 8</h3>
+<p before="7" lines="5"><b>1. What is the one complaint that Malfoy has against Lupin at the beginning of the school year?</b><br />
+<b>a)</b> He assigns too much homework.<br />
+<b>b)</b> He is not teaching useful knowledge.<br />
+<b>c)</b> His robes are shabby.<br />
+<b>d)</b> His class moves too fast.</p>
+<p before="7" lines="5"><b>2. Which of his professors does Harry find boring and odd after his first week of classes?</b><br />
+<b>a)</b> Lupin.<br />
+<b>b)</b> Trelawney.<br />
+<b>c)</b> Snape.<br />
+<b>d)</b> McGonegall.</p>
+<p before="7" lines="5"><b>3. What causes Ron and Hermione to fight so much during the beginning of the school year?</b><br />
+<b>a)</b> Crookshanks keeps chasing Scabbers.<br />
+<b>b)</b> Hermione won't help Ron with his school work.<br />
+<b>c)</b> Ron told Hermione she was too smart to be pretty.<br />
+<b>d)</b> Hermione called Ron a stupid git.</p>
+<p before="7" lines="5"><b>4. What is odd about Ron's rat during the beginning of the school year?</b><br />
+<b>a)</b> He is losing weight and acting odd.<br />
+<b>b)</b> He never comes out of his cage if he can help it.<br />
+<b>c)</b> His fur is coming out.<br />
+<b>d)</b> He has stopped eating.</p>
+<p before="7" lines="5"><b>5. What is so exciting about Halloween for the third years at Hogwarts?</b><br />
+<b>a)</b> They get to go to Hogsmeade Village.<br />
+<b>b)</b> Headless Nick the ghost has his deathday party.<br />
+<b>c)</b> The end of the term has come and they have no homework.<br />
+<b>d)</b> They get to enjoy the big Halloween Feast.</p>
+<p before="7" lines="5"><b>6. Why is Harry not as excited about Halloween as the rest of his classmates?</b><br />
+<b>a)</b> He is sick and does not want to eat anything at the feast.<br />
+<b>b)</b> He is not allowed to go to Hogsmeade.<br />
+<b>c)</b> He is nervous about Sirius Black.<br />
+<b>d)</b> He dislikes Headless Nick and avoids him at all costs.</p>
+<p before="7" lines="5"><b>7. Who gives Lupin a potion while he is talking with Harry on Halloween?</b><br />
+<b>a)</b> McGonegall.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> Dumbledore.<br />
+<b>d)</b> Hagrid.</p>
+<p before="7" lines="5"><b>8. Why does Lupin say he needs a potion on Halloween when he is talking to Harry?</b><br />
+<b>a)</b> He was bit by one of the creatures for class.<br />
+<b>b)</b> He was curious about a new brew.<br />
+<b>c)</b> He is celebrating something special.<br />
+<b>d)</b> He is not feeling well.</p>
+<p before="7" lines="5"><b>9. What do Ron and Hermione give Harry on Halloween?</b><br />
+<b>a)</b> A message from Hedwig.<br />
+<b>b)</b> A secret map of Hogwarts.<br />
+<b>c)</b> Loads of sweets.<br />
+<b>d)</b> Good advice.</p>
+<p before="7" lines="5"><b>10. What does Harry, Ron and Hermione find when they return to their common room after the Halloween Feast?</b><br />
+<b>a)</b> There is a threatening message written on the wall.<br />
+<b>b)</b> The door to the room has been forced open and everything is a mess.<br />
+<b>c)</b> The tapestry by the mantle has caught fire.<br />
+<b>d)</b> The fat lady is missing from her picture.</p>
+<p before="7" lines="5"><b>11. Who is said to have done what was found at the common room after the Halloween Feast?</b><br />
+<b>a)</b> Harry Potter.<br />
+<b>b)</b> Draco Malfoy.<br />
+<b>c)</b> Peeves.<br />
+<b>d)</b> Sirius Black.</p>
+<p before="7" lines="5"><b>12. Who told Dumbledore about who had done what was found at the common room after the Halloween Feast?</b><br />
+<b>a)</b> Peeves.<br />
+<b>b)</b> Hagrid.<br />
+<b>c)</b> Draco Malfoy.<br />
+<b>d)</b> The Fat Lady.</p>
+<h3>Multiple Choice - Chapter 9</h3>
+<p before="7" lines="5"><b>1. What does Dumbledore have the students do after the fearful events in the Gryffindor common room on Halloween?</b><br />
+<b>a)</b> Allow him to place safety spells on them for the night.<br />
+<b>b)</b> Sleep in the Great Hall.<br />
+<b>c)</b> Go calmly to bed.<br />
+<b>d)</b> Undergo interrogation, one at a time.</p>
+<p before="7" lines="5"><b>2. Who does Harry overhear talking in the middle of the night after the fearful events in the Gryffindor common room?</b><br />
+<b>a)</b> Snape and Dumbledore.<br />
+<b>b)</b> Hagrid and McGonegall.<br />
+<b>c)</b> Dumbledore and Peeves.<br />
+<b>d)</b> Sirius Black and Peter Pettigrew,</p>
+<p before="7" lines="5"><b>3. How does Snape think that Sirius Black could possibly enter Hogwarts?</b><br />
+<b>a)</b> With inside help.<br />
+<b>b)</b> Through secret passages that only Black knows about.<br />
+<b>c)</b> By paying off the dementors.<br />
+<b>d)</b> By changing into a dog.</p>
+<p before="7" lines="5"><b>4. Who is teaching Lupin's class the day after Halloween?</b><br />
+<b>a)</b> Flitwick.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> McGonegall.<br />
+<b>d)</b> Dumbledore.</p>
+<p before="7" lines="5"><b>5. Why is Lupin not teaching his own class the day after Halloween?</b><br />
+<b>a)</b> He is too ill.<br />
+<b>b)</b> He has been fired.<br />
+<b>c)</b> He is on a trip.<br />
+<b>d)</b> He is being trained for a different position.</p>
+<p before="7" lines="5"><b>6. What do the students learn about  in Lupin's class the day after Halloween?</b><br />
+<b>a)</b> Boggarts.<br />
+<b>b)</b> Dementors.<br />
+<b>c)</b> Werewolves.<br />
+<b>d)</b> Voldemort.</p>
+<h3>Multiple Choice - Chapter 10</h3>
+<p before="7" lines="5"><b>1. Why does Harry end up in the hospital after his first Quidditch match of the season?</b><br />
+<b>a)</b> He faints when a Dementor comes near and falls off his broom.<br />
+<b>b)</b> He is hit by a spell from the other team's seeker.<br />
+<b>c)</b> He runs into the whomping willow and his broom is smashed into smithereens.<br />
+<b>d)</b> He is hit in the head by a bludger.</p>
+<p before="7" lines="5"><b>2. What does Lupin tell Harry that the dementors feed off of when Harry is released from the hospital?</b><br />
+<b>a)</b> Fear and pain.<br />
+<b>b)</b> Courage and strength.<br />
+<b>c)</b> Happiness.<br />
+<b>d)</b> Endurance.</p>
+<p before="7" lines="5"><b>3. What do the Weasley twins give Harry as an early Christmas present?</b><br />
+<b>a)</b> The Marauder's Map.<br />
+<b>b)</b> A new broom.<br />
+<b>c)</b> A book about Quidditch.<br />
+<b>d)</b> A bunch of candy.</p>
+<p before="7" lines="5"><b>4. What does Harry's early Christmas gift from the Weasley twins allow Harry to do?</b><br />
+<b>a)</b> Take a secret passageway into Hogsmeade.<br />
+<b>b)</b> Study new ways to avoid the bludgers on the Quidditch field.<br />
+<b>c)</b> Get a tummy ache from eating too many sweets.<br />
+<b>d)</b> Practice his moves during the holiday break.</p>
+<p before="7" lines="5"><b>5. What is the candy shop in Hogsmeade called?</b><br />
+<b>a)</b> Honeydukes.<br />
+<b>b)</b> Hogsmeade Sweets.<br />
+<b>c)</b> Sweet and Sours.<br />
+<b>d)</b> Molasses Mayhem.</p>
+<p before="7" lines="5"><b>6. What do Ron and Hermione order at the Three Broomsticks pub on their second trip to Hogsmeade?</b><br />
+<b>a)</b> Brandy Water.<br />
+<b>b)</b> Sarsaparilla.<br />
+<b>c)</b> Sparkling Cider.<br />
+<b>d)</b> Butterbeers.</p>
+<h3>Multiple Choice - Chapter 11</h3>
+<p before="7" lines="5"><b>1. Who was Harry's father's best friend when they were young?</b><br />
+<b>a)</b> Peter Pettigrew.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> Lupin.<br />
+<b>d)</b> Sirius Black.</p>
+<p before="7" lines="5"><b>2. Where does Harry choose to spend the day after hearing some shocking news in Hogsmeade?</b><br />
+<b>a)</b> Dumbledore's study.<br />
+<b>b)</b> His dorm room.<br />
+<b>c)</b> The Weasley's house.<br />
+<b>d)</b> Hagrid's hut.</p>
+<p before="7" lines="5"><b>3. Who is trying to have Buckbeak executed after Hagrid's lesson on Hippogriffs?</b><br />
+<b>a)</b> Dumbledore.<br />
+<b>b)</b> Cornelius Fudge.<br />
+<b>c)</b> Draco Malfoy.<br />
+<b>d)</b> Lucious Malfoy.</p>
+<p before="7" lines="5"><b>4. What mysterious gift does Harry get on Christmas morning?</b><br />
+<b>a)</b> A firebolt broom.<br />
+<b>b)</b> A case of magical ink.<br />
+<b>c)</b> A new cage for Hedwig.<br />
+<b>d)</b> New quidditch robes.</p>
+<p before="7" lines="5"><b>5. Where does Harry spend his Christmas holiday?</b><br />
+<b>a)</b> At Ron's house.<br />
+<b>b)</b> At Hogwarts.<br />
+<b>c)</b> At Hermione's house.<br />
+<b>d)</b> In Hagrid's hut.</p>
+<p before="7" lines="5"><b>6. Who takes Harry's mysterious Christmas gift away from him?</b><br />
+<b>a)</b> McGonegall.<br />
+<b>b)</b> Dumbledore.<br />
+<b>c)</b> Hermione.<br />
+<b>d)</b> Lupin.</p>
+<h3>Multiple Choice - Chapter 12</h3>
+<p before="7" lines="5"><b>1. Why do Ron and Hermione stop speaking to each other during the Christmas holiday?</b><br />
+<b>a)</b> Hermione is angry at Ron for asking her to do his school work for him.<br />
+<b>b)</b> Hermione is too busy with school work to speak with Ron.<br />
+<b>c)</b> Ron is angry with Hermione for having Harry's broom taken away.<br />
+<b>d)</b> Ron is angry with Hermione for letting her cat attack his rat.</p>
+<p before="7" lines="5"><b>2. What does Lupin teach Harry in his private lesson after the Christmas holiday?</b><br />
+<b>a)</b> The Protective Shield Charm.<br />
+<b>b)</b> The Illumination Charm.<br />
+<b>c)</b> The Patronus Charm.<br />
+<b>d)</b> The Introspective Charm.</p>
+<p before="7" lines="5"><b>3. What must Harry do in order to make the charm that Lupin is teaching him work?</b><br />
+<b>a)</b> Think of his happiest memory.<br />
+<b>b)</b> Focus on his deepest fear.<br />
+<b>c)</b> Visualize what he wants to do to his enemy.<br />
+<b>d)</b> Completely clear his mind.</p>
+<p before="7" lines="5"><b>4. Why is Harry receiving private lessons from Lupin after the Christmas holiday?</b><br />
+<b>a)</b> He wants to be able to combat the dementors.<br />
+<b>b)</b> He needs to be better protected against Voldemort.<br />
+<b>c)</b> He is falling behind in his classes and needs extra help.<br />
+<b>d)</b> He wants to be able to fight Sirius Black.</p>
+<p before="7" lines="5"><b>5. Who does Harry play against in the second quidditch game of the season?</b><br />
+<b>a)</b> Ravenclaw.<br />
+<b>b)</b> Gryffindor.<br />
+<b>c)</b> Hufflepuff.<br />
+<b>d)</b> Slytherin.</p>
+<p before="7" lines="5"><b>6. What does Ron find in his room that makes him furious with Hermione after Harry's second quidditch game?</b><br />
+<b>a)</b> A returned gift.<br />
+<b>b)</b> A nasty note from her.<br />
+<b>c)</b> A bloody sheet.<br />
+<b>d)</b> His unfinished homework.</p>
+<h3>Multiple Choice - Chapter 13</h3>
+<p before="7" lines="5"><b>1. What does Ron accuse Hermione of after finding something in his room after the second quidditch game?</b><br />
+<b>a)</b> Not helping him like she promised.<br />
+<b>b)</b> Not accepting a token of his love and friendship.<br />
+<b>c)</b> Letting her cat eat his rat.<br />
+<b>d)</b> Insulting him in a deep and hurtful way.</p>
+<p before="7" lines="5"><b>2. Who is the Seeker of Ravenclaw?</b><br />
+<b>a)</b> Lavender Brown.<br />
+<b>b)</b> Seamus Finnigan.<br />
+<b>c)</b> Cho Chang.<br />
+<b>d)</b> Cedric Diggory.</p>
+<p before="7" lines="5"><b>3. What appears on the field during the quidditch match between Gryffindor and Ravenclaw?</b><br />
+<b>a)</b> Sirius Black.<br />
+<b>b)</b> Three dementors.<br />
+<b>c)</b> A troop of ghosts.<br />
+<b>d)</b> Cornelius Fudge and a group of officials from the Ministry.</p>
+<p before="7" lines="5"><b>4. What does Harry do when he sees the unwelcome visitors on the quidditch field during his game against Ravenclaw?</b><br />
+<b>a)</b> Gets off his broom and approaches them.<br />
+<b>b)</b> Signals to Lupin to help him escape.<br />
+<b>c)</b> Produces a Patronus Charm.<br />
+<b>d)</b> Turns around and flies away.</p>
+<p before="7" lines="5"><b>5. Who enters Harry's room and slashes Ron's bed curtains to shreds?</b><br />
+<b>a)</b> Dementors.<br />
+<b>b)</b> Sirius Black.<br />
+<b>c)</b> Snape.<br />
+<b>d)</b> Peter Pettigrew.</p>
+<p before="7" lines="5"><b>6. How did the unwelcome visitor enter Harry's room when his bed curtains were slashed?</b><br />
+<b>a)</b> He used a secret passageway.<br />
+<b>b)</b> He had the passwords needed to enter.<br />
+<b>c)</b> He apparated into the room.<br />
+<b>d)</b> He used the flew network.</p>
+<h3>Multiple Choice - Chapter 14</h3>
+<p before="7" lines="5"><b>1. What causes Ron to be an instant celebrity at Hogwarts the day after the third quidditch game?</b><br />
+<b>a)</b> He saw someone try to attack Harry.<br />
+<b>b)</b> He knows all the secret passageways in and out of Hogwarts.<br />
+<b>c)</b> He dropped a piece of paper with passwords on it that let Sirius Black enter.<br />
+<b>d)</b> His bed curtains were slashed by Sirius Black.</p>
+<p before="7" lines="5"><b>2. Who stops Harry from taking a secret passageway to Hogsmeade?</b><br />
+<b>a)</b> Lupin.<br />
+<b>b)</b> Neville Longbottom.<br />
+<b>c)</b> Snape.<br />
+<b>d)</b> Peeves.</p>
+<p before="7" lines="5"><b>3. What is the most haunted house in Britain called?</b><br />
+<b>a)</b> The Creepy Cottage.<br />
+<b>b)</b> The Miserable Mansion.<br />
+<b>c)</b> The Shrieking Shack.<br />
+<b>d)</b> The Goulish Gable.</p>
+<p before="7" lines="5"><b>4. What does Harry throw at Malfoy when he begins taunting Ron in Hogsmeade?</b><br />
+<b>a)</b> Mud.<br />
+<b>b)</b> Dirt.<br />
+<b>c)</b> Snowballs.<br />
+<b>d)</b> Rocks.</p>
+<p before="7" lines="5"><b>5. What does the map do when Snape tries to unlocks its secrets?</b><br />
+<b>a)</b> Remains blank.<br />
+<b>b)</b> Spills ink.<br />
+<b>c)</b> Burns to ashes.<br />
+<b>d)</b> Insults him.</p>
+<p before="7" lines="5"><b>6. What does Lupin tell Snape that the map really is?</b><br />
+<b>a)</b> A way to light cigars.<br />
+<b>b)</b> An ink blotter.<br />
+<b>c)</b> A joke parchment.<br />
+<b>d)</b> A magical map.</p>
+<h3>Multiple Choice - Chapter 15</h3>
+<p before="7" lines="5"><b>1. What stops the feud between Ron and Hermione?</b><br />
+<b>a)</b> Hermione apologizes.<br />
+<b>b)</b> Ron apologizes.<br />
+<b>c)</b> Ron finds his rat.<br />
+<b>d)</b> Buckbeak is sentenced to death.</p>
+<p before="7" lines="5"><b>2. What does Hermione do when Malfoy starts mocking them about Buckbeak?</b><br />
+<b>a)</b> Slaps Malfoy.<br />
+<b>b)</b> Laughs with Malfoy.<br />
+<b>c)</b> Puts a silencing spell on Malfoy.<br />
+<b>d)</b> Runs away crying.</p>
+<p before="7" lines="5"><b>3. What does Hermione do in Trelawney's class after her confrontation with Malfoy?</b><br />
+<b>a)</b> Calls Trelwaney a quack and walks out.<br />
+<b>b)</b> Asks Trelawney for some private lessons.<br />
+<b>c)</b> Throws a crystal ball on the floor out of anger.<br />
+<b>d)</b> Fails a test and cries.</p>
+<p before="7" lines="5"><b>4. What does Harry see outside the night before the Quidditch Cup finals?</b><br />
+<b>a)</b> Crookshanks walking with a big black dog.<br />
+<b>b)</b> A werewolf retreating into the forest.<br />
+<b>c)</b> Sirius Black slinking along the walls.<br />
+<b>d)</b> Crabbe and Goyle trying to harm his broom.</p>
+<p before="7" lines="5"><b>5. Who wishes Harry good luck just before he enters to field for the Quidditch Cup finals?</b><br />
+<b>a)</b> Ginny.<br />
+<b>b)</b> Hermione.<br />
+<b>c)</b> Lavender.<br />
+<b>d)</b> Cho.</p>
+<p before="7" lines="5"><b>6. Who fouls Harry during the Quidditch Cup finals?</b><br />
+<b>a)</b> Crabbe.br />
+<b>b)</b> Malfoy.<br />
+<b>c)</b> Cedric.<br />
+<b>d)</b> Goyle.</p>
+<h3>Multiple Choice - Chapter 16</h3>
+<p before="7" lines="5"><b>1. What does the note from Hagrid during Harry's finals say?</b><br />
+<b>a)</b> Buckbeak will be executed.<br />
+<b>b)</b> He has found Ron's rat.<br />
+<b>c)</b> He is planning to sabotage Lucious Malfoy.<br />
+<b>d)</b> He is being fired.</p>
+<p before="7" lines="5"><b>2. Who do Harry, Hermione, and Ron run into after their final exams?</b><br />
+<b>a)</b> Cornelius Fudge.<br />
+<b>b)</b> An Executioner.<br />
+<b>c)</b> Lucious Malfoy.<br />
+<b>d)</b> Hagrid.</p>
+<p before="7" lines="5"><b>3. What does Harry's Divination final exam consist of?</b><br />
+<b>a)</b> Using palm lines to tell the future,<br />
+<b>b)</b> Gazing into a crystal ball and making predictions.<br />
+<b>c)</b> Reading tea leaves.<br />
+<b>d)</b> Writing an essay about everything that was learned.</p>
+<p before="7" lines="5"><b>4. What happens to Trelawney as Harry is leaving after his Divination exam?</b><br />
+<b>a)</b> He knocks over his crystal ball and it falls on her foot.<br />
+<b>b)</b> She sees Buckbeak flying away.<br />
+<b>c)</b> She sees a dementor and faints.<br />
+<b>d)</b> She goes into a trance and gives a prophecy.</p>
+<p before="7" lines="5"><b>5. What does Ron find in Hagrid's hut when he is there trying to comfort Hagrid?</b><br />
+<b>a)</b> His homework.<br />
+<b>b)</b> His rat.<br />
+<b>c)</b> His old wand.<br />
+<b>d)</b> His wallet.</p>
+<p before="7" lines="5"><b>6. How do Ron, Harry, and Hermione hide while Buckbeak is being executed?</b><br />
+<b>a)</b> Harry's invisibility cloak.<br />
+<b>b)</b> They cram into Hagrid's closet.<br />
+<b>c)</b> They hide in a pile of hay.<br />
+<b>d)</b> They sneak out the back door.</p>
+<h3>Multiple Choice - Chapter 17</h3>
+<p before="7" lines="5"><b>1. What do Harry, Ron, and Hermione do when they hear Hagrid crying over Buckbeak's execution?</b><br />
+<b>a)</b> They run to him to calm him.<br />
+<b>b)</b> They help him bury Buckbeak.<br />
+<b>c)</b> They head back to the castle.<br />
+<b>d)</b> They run to tell Dumbledore the news.</p>
+<p before="7" lines="5"><b>2. What starts running towards Ron as he nears the castle after Buckbeak's execution?</b><br />
+<b>a)</b> Scabbers.<br />
+<b>b)</b> A big, black dog.<br />
+<b>c)</b> Hedwig.<br />
+<b>d)</b> Crookshanks.</p>
+<p before="7" lines="5"><b>3. Where does the tunnel under the Whomping Willow lead?</b><br />
+<b>a)</b> The Forbidden Forest.<br />
+<b>b)</b> The Shrieking Shack.<br />
+<b>c)</b> Hagrid's Shack.<br />
+<b>d)</b> Hogsmead Village.</p>
+<p before="7" lines="5"><b>4. Who protects Sirius Black when Harry is about to kill him in the Shrieking Shack?</b><br />
+<b>a)</b> Hermione.<br />
+<b>b)</b> Ron.<br />
+<b>c)</b> Crookshanks.<br />
+<b>d)</b> Lupin.</p>
+<p before="7" lines="5"><b>5. What does Lupin do when he sees Sirius Black in the Shrieking Shack with Harry?</b><br />
+<b>a)</b> He hugs him like a brother.<br />
+<b>b)</b> He holds his wand at the ready and demands an explanation.<br />
+<b>c)</b> He faints.<br />
+<b>d)</b> He punches him.</p>
+<p before="7" lines="5"><b>6. How did Lupin discover that Peter Pettigrew was still alive?</b><br />
+<b>a)</b> Peter told him.<br />
+<b>b)</b> Dumbledore told him.<br />
+<b>c)</b> The Marauder's Map.<br />
+<b>d)</b> He was there the night that the fight between Black and Peter happened.</p>
+<h3>Multiple Choice - Chapter 18</h3>
+<p before="7" lines="5"><b>1. Who was James Potter's secret keeper?</b><br />
+<b>a)</b> Sirius Black.<br />
+<b>b)</b> Remus Lupin.<br />
+<b>c)</b> Peter Pettigrew.<br />
+<b>d)</b> Albus Dumbledore.</p>
+<p before="7" lines="5"><b>2. Why was the Whomping Willow planted at Hogwarts?</b><br />
+<b>a)</b> To protect the school from Lupin.<br />
+<b>b)</b> To hide the passageway to the Shrieking Shack.<br />
+<b>c)</b> As an experiment in herbology.<br />
+<b>d)</b> To create wands from the wood.</p>
+<p before="7" lines="5"><b>3. What did James and Sirius do to help Lupin during his transformations while they were at Hogwarts together?</b><br />
+<b>a)</b> Kept his secret for them.<br />
+<b>b)</b> Built the Shrieking Shack.<br />
+<b>c)</b> Held parties on full-moon nights to distract the students.<br />
+<b>d)</b> Taught themselves to transform into animals.</p>
+<p before="7" lines="5"><b>4. How did Snape find out that Lupin is a werewolf?</b><br />
+<b>a)</b> Lupin once told him back when they were friends.<br />
+<b>b)</b> He knew from the signs he saw.<br />
+<b>c)</b> Sirius played a trick on him and he almost got bit.<br />
+<b>d)</b> Lupin was branded while at Hogwarts as a student.</p>
+<p before="7" lines="5"><b>5. Who walks into the room as Lupin finishes telling his story to Harry the night of Buckbeak's execution?</b><br />
+<b>a)</b> Snape.<br />
+<b>b)</b> Peter Pettigrew.<br />
+<b>c)</b> Dumbledore.<br />
+<b>d)</b> James Potter.</p>
+<p before="7" lines="5"><b>6. Who is Ron holding while Lupin tells his story the night of Buckbeak's execution?</b><br />
+<b>a)</b> Scabbers.<br />
+<b>b)</b> Crookshanks.<br />
+<b>c)</b> Sirius.<br />
+<b>d)</b> Hermione.</p>
+<h3>Multiple Choice - Chapter 19</h3>
+<p before="7" lines="5"><b>1. How are Lupin and Sirius tied up before being taken out of the Shack?</b><br />
+<b>a)</b> With an immobilization spell.<br />
+<b>b)</b> They allow themselves to be tied.<br />
+<b>c)</b> They are knocked unconscious.<br />
+<b>d)</b> With cords that sprung from a wand.</p>
+<p before="7" lines="5"><b>2. What is Harry called by the man who ties up Lupin and Sirius in the Shack?</b><br />
+<b>a)</b> A disgrace to his father's name.<br />
+<b>b)</b> A poor excuse for a legend.<br />
+<b>c)</b> An arrogant boy.<br />
+<b>d)</b> A dirty mud blood.</p>
+<p before="7" lines="5"><b>3. Why was a finger the only thing found of Peter Pettigrew the night of his confrontation with Black?</b><br />
+<b>a)</b> Sirius cut it off as a trophy.<br />
+<b>b)</b> He had the choise of losing a finger or an entire hand.<br />
+<b>c)</b> It was burned off in an explosion.<br />
+<b>d)</b> He cut his own finger off.</p>
+<p before="7" lines="5"><b>4. Who told Voldemort where the Potters were on the night that they were killed?</b><br />
+<b>a)</b> Peter Pettigrew.<br />
+<b>b)</b> Severus Snape.<br />
+<b>c)</b> Sirius Black.<br />
+<b>d)</b> Lucious Malfoy.</p>
+<p before="7" lines="5"><b>5. Why did Sirius not tell Lupin about the change in the Potter's secret keeper?</b><br />
+<b>a)</b> Lupin was not available.<br />
+<b>b)</b> He knew Lupin was a werewolf.<br />
+<b>c)</b> Lupin had already risked too much.<br />
+<b>d)</b> He thought Lupin was a spy.</p>
+<p before="7" lines="5"><b>6. Why does Harry decide to do with the man who was responsible for his parent's death?</b><br />
+<b>a)</b> Kill him on the spot.<br />
+<b>b)</b> Put him in Azkaban.<br />
+<b>c)</b> Take him to the dementors.<br />
+<b>d)</b> Ask Dumbledore what to do.</p>
+<h3>Multiple Choice - Chapter 20</h3>
+<p before="7" lines="5"><b>1. How do Harry and his group take the unconscious man from the Shack back to Hogwarts?</b><br />
+<b>a)</b> They don't; they leave him at the Shack.<br />
+<b>b)</b> They put a floating spell on him.<br />
+<b>c)</b> They drag him along.<br />
+<b>d)</b> They make a splint for him to ride.</p>
+<p before="7" lines="5"><b>2. What does Sirius tell Harry as they are returning to Hogwarts that makes Harry extremely happy?</b><br />
+<b>a)</b> Sirius is innocent.<br />
+<b>b)</b> Sirius is Harry's legal guardian.<br />
+<b>c)</b> Sirius sent him the firebolt.<br />
+<b>d)</b> Sirius will be put to death when they return.</p>
+<p before="7" lines="5"><b>3. How does James Potter's murderer escape from his chains as he is being dragged to Hogwarts?</b><br />
+<b>a)</b> He convinces them all that he is innocent and they let him go.<br />
+<b>b)</b> He turns into a werewolf and breaks his own chains.<br />
+<b>c)</b> He uses a spell to undo his chains.<br />
+<b>d)</b> He uses Lupin's wand to transform and run away.</p>
+<p before="7" lines="5"><b>4. How many dementors does Harry see at the lake attacking Sirius Black?</b><br />
+<b>a)</b> 50.<br />
+<b>b)</b> 6.<br />
+<b>c)</b> 25.<br />
+<b>d)</b> 100.</p>
+<p before="7" lines="5"><b>5. What is it called when the dementors suck the life out of their victims?</b><br />
+<b>a)</b> A loss.<br />
+<b>b)</b> A kiss.<br />
+<b>c)</b> A vacuum.<br />
+<b>d)</b> A void.</p>
+<p before="7" lines="5"><b>6. What does Harry see before he passes out at the lake with the dementors?</b><br />
+<b>a)</b> A bright, galloping figure.<br />
+<b>b)</b> A small girl with a wand.<br />
+<b>c)</b> A green and hazy light.<br />
+<b>d)</b> Dumbledore running towards him.</p>
+<h3>Multiple Choice - Chapter 21</h3>
+<p before="7" lines="5"><b>1. Who is trying to get Harry expelled when he comes to after passing out at the lake with all the dementors?</b><br />
+<b>a)</b> Snape.<br />
+<b>b)</b> McGonegall.<br />
+<b>c)</b> Lupin.<br />
+<b>d)</b> Cornelius Fudge.</p>
+<p before="7" lines="5"><b>2. What does the Minister of Magic choose to do with Sirius Black after finding him unconscious at the lake?</b><br />
+<b>a)</b> Execute him himself.<br />
+<b>b)</b> Sacrifice him to the Dementors.<br />
+<b>c)</b> Release him.<br />
+<b>d)</b> Send him back to prison.</p>
+<p before="7" lines="5"><b>3. What is on the end of the necklace that Hermione uses to send herself and Harry back in time?</b><br />
+<b>a)</b> A sun and moon.<br />
+<b>b)</b> An hourglass.<br />
+<b>c)</b> A clock.<br />
+<b>d)</b> A sun dial.</p>
+<p before="7" lines="5"><b>4. How many times does Hermione turn her time-turner before she sends herself and Harry back in time.</b><br />
+<b>a)</b> 2.<br />
+<b>b)</b> 4.<br />
+<b>c)</b> 3.<br />
+<b>d)</b> 7.</p>
+<p before="7" lines="5"><b>5. Who does Dumbledore want Hermione and Harry to save by going back in time?</b><br />
+<b>a)</b> Scabbers and Sirius.<br />
+<b>b)</b> Buckbeak and Peter Pettigrew.<br />
+<b>c)</b> Buckbeak and Sirius.<br />
+<b>d)</b> Lupin and Buckbeak.</p>
+<p before="7" lines="5"><b>6. Who does Harry think saved him at the lake with the dementors?</b><br />
+<b>a)</b> Dumbledore.<br />
+<b>b)</b> Lupin.<br />
+<b>c)</b> His father.<br />
+<b>d)</b> His mother.</p>
+<h3>Multiple Choice - Chapter 22</h3>
+<p before="7" lines="5"><b>1. What form does Harry's patronus take?</b><br />
+<b>a)</b> A bear.<br />
+<b>b)</b> An eagle.<br />
+<b>c)</b> A wolf.<br />
+<b>d)</b> A stag.</p>
+<p before="7" lines="5"><b>2. Who defends Harry when Snape accuses him of helping Sirius escape?</b><br />
+<b>a)</b> Cornelius Fudge.<br />
+<b>b)</b> Dumbledore.<br />
+<b>c)</b> Madame Pomfrey.<br />
+<b>d)</b> Hermione.</p>
+<p before="7" lines="5"><b>3. Why is Hagrid so happy when he talks to Harry, Hermione, and Ron on their last day before summer holiday?</b><br />
+<b>a)</b> Dumbledore did not allow Buckbeak to be killed.<br />
+<b>b)</b> He was not fired.<br />
+<b>c)</b> He convinced Fudge to not kill Buckbeak.<br />
+<b>d)</b> Buckbeak escaped.</p>
+<p before="7" lines="5"><b>4. Why has Lupin decided to resign from his job as the Defense Against the Dark Arts teacher at Hogwarts?</b><br />
+<b>a)</b> He feels he is a danger to his students.<br />
+<b>b)</b> He wants to spend time with Sirius and help keep him safe.<br />
+<b>c)</b> Snape told everyone he was a werewolf.<br />
+<b>d)</b> Working at Hogwarts brought back too many painful memories.</p>
+<p before="7" lines="5"><b>5. What was James Potter able to transform himself into when he was a student at Hogwarts?</b><br />
+<b>a)</b> A stag.<br />
+<b>b)</b> A wolf.<br />
+<b>c)</b> A bear.<br />
+<b>d)</b> An Eagle.</p>
+<p before="7" lines="5"><b>6. Who sent Harry his Firebolt broom?</b><br />
+<b>a)</b> Sirius Black.<br />
+<b>b)</b> Snape.<br />
+<b>c)</b> Remus Lupin.<br />
+<b>d)</b> Dumbledore.</p>
