@@ -21,7 +21,7 @@ task :post_question => :environment do
 		next unless a.published
 		puts "Posting question for #{a.twi_screen_name}"
 		a.publish_question()
-		sleep(5)
+		sleep(8)
 	end
 	# User.askers.each do |asker|
 	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1
