@@ -440,6 +440,7 @@ class Post < ActiveRecord::Base
   def self.twitter_request(&block)
     puts "in twitter_request"
     value = nil
+    attempts = 0
     begin
       puts "block: #{block}"
       value = block.call()
