@@ -33,6 +33,7 @@ end
 
 task :fill_queue => :environment do
 	User.askers.each do |asker|
+		next unless asker.posts_per_day.present?
 		PublicationQueue.clear_queue(asker)
 		PublicationQueue.enqueue_questions(asker)
 	end
