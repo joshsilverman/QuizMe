@@ -18,9 +18,10 @@ task :post_question => :environment do
 	puts "askers to post for:"
 	puts askers.to_json
 	askers.each do |a|
+		next unless a.published
 		puts "Posting question for #{a.twi_screen_name}"
 		a.publish_question()
-		sleep(5)
+		sleep(8)
 	end
 	# User.askers.each do |asker|
 	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1
@@ -33,6 +34,7 @@ end
 
 task :fill_queue => :environment do
 	User.askers.each do |asker|
+		next unless asker.posts_per_day.present?
 		PublicationQueue.clear_queue(asker)
 		PublicationQueue.enqueue_questions(asker)
 	end
