@@ -206,7 +206,7 @@ class Post < ActiveRecord::Base
 
   def self.dm_new_followers(current_acct)
     to_message = []
-    new_followers = current_acct.twitter.follower_ids.ids.first(10)
+    new_followers = Post.twitter_request(current_acct.twitter.follower_ids.ids.first(10)) || []
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
       if user.nil?
@@ -217,7 +217,7 @@ class Post < ActiveRecord::Base
           to_message.push user
         end
       end
-      current_acct.twitter.follow(tid)
+      Post.twitter_request(current_acct.twitter.follow(tid))
       sleep(1)
     end
 
