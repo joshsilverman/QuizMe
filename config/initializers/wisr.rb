@@ -195,6 +195,13 @@ ACCOUNT_DATA = {
     :retweet => [22, 374, 227], 
     :hashtags => ["trivia", "football", "nfl"],
     :category => "Sports"
+  },
+
+  #HarryPotterBk3
+  10565 => {
+    :retweet => [],
+    :hashtags => ['potterhead', 'potter', 'harrypotter', 'azkaban'],
+    :category => "Literature"
   }
 }
 
