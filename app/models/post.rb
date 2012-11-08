@@ -211,6 +211,7 @@ class Post < ActiveRecord::Base
     puts "got new followers"
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
+      puts "new follower: #{user.twi_screen_name}"
       if user.nil?
         user = User.create(:twi_user_id => tid)
         to_message.push user
@@ -219,7 +220,9 @@ class Post < ActiveRecord::Base
           to_message.push user
         end
       end
+      puts "pre follow req"
       Post.twitter_request(current_acct.twitter.follow(tid))
+      puts "post follow req"
       sleep(1)
     end
     puts "aggregated followers and followed back"
@@ -435,9 +438,12 @@ class Post < ActiveRecord::Base
   end
 
   def self.twitter_request(block, value = nil)
+    puts "in twitter_request"
     begin
+      puts "block: #{block}"
       value = block
     rescue Twitter::Error::ClientError 
+      puts "twitter error, retrying"
       attempts += 1 
       retry unless attempts > 2
       puts "Failed to run #{block} after 3 attempts"
@@ -445,6 +451,7 @@ class Post < ActiveRecord::Base
       puts "Exception in twitter wrapper:"
       puts exception.message
     end 
+    puts "returning value: #{value}"
     return value   
   end
   
