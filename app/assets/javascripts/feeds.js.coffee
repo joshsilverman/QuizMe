@@ -25,7 +25,6 @@ class Feed
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
-
 		$("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
@@ -258,7 +257,7 @@ class Post
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
 					@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-					@element.find("i").show()
+					@element.find(".icon-share-alt").show()
 				)
 			)
 		else
