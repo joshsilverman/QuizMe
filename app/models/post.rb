@@ -204,25 +204,13 @@ class Post < ActiveRecord::Base
     return dm
   end
 
-  def self.dm_new_followers(current_acct)
-    to_message = []
-    puts "in dm_new_followers"
-    new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(10) } || []
-    puts "got new followers"
+  def self.dm_new_followers(current_acct, to_message = [], stop = false)
+    new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(50) } || []
     new_followers.each do |tid|
-      user = User.find_by_twi_user_id(tid)
-      # puts "new follower: #{user.twi_screen_name}"
-      if user.nil?
-        user = User.create(:twi_user_id => tid)
-        to_message.push user
-      else
-        unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-          to_message.push user
-        end
-      end
-      puts "pre follow req"
-      Post.twitter_request { current_acct.twitter.follow(tid) }
-      puts "post follow req"
+      break if stop
+      user = User.find_by_twi_user_id(tid) || User.create(:twi_user_id => tid)
+      to_message.push user unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
+      stop = true if Post.twitter_request { current_acct.twitter.follow(tid) }.blank?
       sleep(1)
     end
     puts "aggregated followers and followed back"
