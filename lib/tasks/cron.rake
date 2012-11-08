@@ -18,6 +18,7 @@ task :post_question => :environment do
 	puts "askers to post for:"
 	puts askers.to_json
 	askers.each do |a|
+		next unless a.published
 		puts "Posting question for #{a.twi_screen_name}"
 		a.publish_question()
 		sleep(5)
