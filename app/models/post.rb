@@ -221,7 +221,7 @@ class Post < ActiveRecord::Base
         end
       end
       puts "pre follow req"
-      Post.twitter_request(current_acct.twitter.follow(tid))
+      Post.twitter_request { current_acct.twitter.follow(tid) }
       puts "post follow req"
       sleep(1)
     end
