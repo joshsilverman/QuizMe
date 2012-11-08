@@ -211,7 +211,7 @@ class Post < ActiveRecord::Base
     puts "got new followers"
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
-      puts "new follower: #{user.twi_screen_name}"
+      # puts "new follower: #{user.twi_screen_name}"
       if user.nil?
         user = User.create(:twi_user_id => tid)
         to_message.push user
