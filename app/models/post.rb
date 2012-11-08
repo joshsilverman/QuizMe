@@ -206,7 +206,9 @@ class Post < ActiveRecord::Base
 
   def self.dm_new_followers(current_acct)
     to_message = []
+    puts "in dm_new_followers"
     new_followers = Post.twitter_request(current_acct.twitter.follower_ids.ids.first(10)) || []
+    puts "got new followers"
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
       if user.nil?
@@ -220,10 +222,11 @@ class Post < ActiveRecord::Base
       Post.twitter_request(current_acct.twitter.follow(tid))
       sleep(1)
     end
-
+    puts "aggregated followers and followed back"
     to_message.each do |user|
       dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
       q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
+      puts "DMing #{user.twi_screen_name}"
       Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
       Mixpanel.track_event "DM question to new follower", {
         :distinct_id => user.id,
@@ -231,6 +234,7 @@ class Post < ActiveRecord::Base
       }
       sleep(1)
     end
+    puts "ending dm_new_followers"
   end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
