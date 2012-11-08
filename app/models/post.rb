@@ -207,7 +207,7 @@ class Post < ActiveRecord::Base
   def self.dm_new_followers(current_acct)
     to_message = []
     puts "in dm_new_followers"
-    new_followers = Post.twitter_request(current_acct.twitter.follower_ids.ids.first(10)) || []
+    new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(10) } || []
     puts "got new followers"
     new_followers.each do |tid|
       user = User.find_by_twi_user_id(tid)
@@ -437,11 +437,12 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 
-  def self.twitter_request(block, value = nil)
+  def self.twitter_request(&block)
     puts "in twitter_request"
+    value = nil
     begin
       puts "block: #{block}"
-      value = block
+      value = block.call()
     rescue Twitter::Error::ClientError 
       puts "twitter error, retrying"
       attempts += 1 
