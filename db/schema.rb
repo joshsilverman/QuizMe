@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121018223426) do
+ActiveRecord::Schema.define(:version => 20121108210342) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -188,6 +188,7 @@ ActiveRecord::Schema.define(:version => 20121018223426) do
     t.string   "bg_image"
     t.boolean  "published"
     t.integer  "author_id"
+    t.string   "learner_level",       :default => "unengaged"
   end
 
 end
