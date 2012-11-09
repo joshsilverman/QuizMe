@@ -25,6 +25,11 @@ class User < ActiveRecord::Base
 		end
 	end
 
+	def update_learner_level(level)
+		current_level = self.learner_level
+		self.update_attribute(:learner_level, level) if LEARNER_LEVELS.index(level) > LEARNER_LEVELS.index(current_level)
+	end
+
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']

@@ -9,6 +9,16 @@ ADMINS = [1, 3, 4, 11]
 
 URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")#"http://localhost:3000")
 
+LEARNER_LEVELS = [
+  "unengaged", 
+  "dm", 
+  "share", 
+  "mention", 
+  "DM answer", 
+  "twitter answer", 
+  "feed answer"
+]
+
 ###Response Bank ###
 CORRECT = [
   "That's right!",

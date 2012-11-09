@@ -159,7 +159,7 @@ class Post < ActiveRecord::Base
       :wisr_question => publication.question.resource_url ? false : true
     })  
     conversation.posts << app_post if app_post
-
+    current_user.update_learner_level("feed answer")
     #check for follow-up test completion
     if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
       Post.trigger_split_test(current_user.id, 'mention reengagement') 

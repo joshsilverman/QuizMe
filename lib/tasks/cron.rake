@@ -13,7 +13,6 @@ task :check_for_posts => :environment do
 end
 
 task :post_question => :environment do
-	# t = Time.now
 	askers = User.askers.where('twi_oauth_token is not null')
 	puts "askers to post for:"
 	puts askers.to_json
@@ -23,13 +22,6 @@ task :post_question => :environment do
 		a.publish_question()
 		sleep(8)
 	end
-	# User.askers.each do |asker|
-	# 	# shift = (t.hour/a.posts_per_day.to_f).floor + 1
-	# 	# queue_index = t.hour%a.posts_per_day
-	# 	# Question.post_question(a, queue_index, shift)
-	# 	asker.publish_question()
-	# 	sleep(10)
-	# end
 end
 
 task :fill_queue => :environment do
