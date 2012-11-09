@@ -12,6 +12,7 @@ Quizmemanager::Application.routes.draw do
   match "/create_split_test" => "feeds#create_split_test"
   match "/trigger_split_test" => "feeds#trigger_split_test"
   match "/dashboard" => "askers#dashboard"
+  match "/dashboard/core_by_handle/:asker_id" => "askers#get_core_by_handle"
   match "/get_detailed_metrics" => 'askers#get_detailed_metrics'
   match "/get_handle_metrics" => 'askers#get_handle_metrics'
   match "/posts/:id/refer" => "posts#refer"

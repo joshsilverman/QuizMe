@@ -74,6 +74,7 @@ class AskersController < ApplicationController
   def dashboard
     @askers = User.askers
     @core_display_data = {0 => {}}
+    return
 
     @paulgraham, pg_display_data = Stat.paulgraham
     @core_display_data[0][:paulgraham] = pg_display_data
@@ -87,6 +88,31 @@ class AskersController < ApplicationController
     @econ_engine, econ_engine_display_data = Stat.econ_engine
     @core_display_data[0][:econ_engine] = econ_engine_display_data 
   end 
+
+  def get_core_by_handle
+    @askers = User.askers
+    @core_display_data = {0 => {}}
+
+    @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
+    @core_display_data[0][:paulgraham] = pg_display_data
+
+    @dau_mau, dau_mau_display_data = Stat.dau_mau params[:asker_id]
+    @core_display_data[0][:dau_mau] = dau_mau_display_data
+
+    @daus, daus_display_data = Stat.daus params[:asker_id]
+    @core_display_data[0][:daus] = daus_display_data
+
+    @econ_engine, econ_engine_display_data = Stat.econ_engine params[:asker_id]
+    @core_display_data[0][:econ_engine] = econ_engine_display_data 
+
+    render :json => {
+      :paulgraham => @paulgraham, 
+      :dau_mau => @dau_mau, 
+      :daus => @daus, 
+      :econ_engine => @econ_engine,
+      :core_display_data => @core_display_data
+    }
+  end
 
   def get_detailed_metrics
     @askers = User.askers

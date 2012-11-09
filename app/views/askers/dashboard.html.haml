@@ -6,7 +6,6 @@
 = hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :econ_engine, @econ_engine.to_json
 
-
 :css
 	.navbar-fixed-top .container {
 		width: 1152px !important;
@@ -21,6 +20,16 @@
 %ul#tabs.nav.nav-tabs
 	%li.active
 		%a{:href => "#core"} Core
+	%li.dropdown
+		%a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+			Core by handle
+			%b.caret
+		%ul.dropdown-menu.handles
+			- User.askers.each do |asker|
+				%li 
+					%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
+						= asker.twi_screen_name
+
 	%li
 		%a{:href => "#detailed"} Detailed
 	%li
@@ -28,6 +37,8 @@
 .row
 	.tab-content
 		#core.dashboard.span12.tab-pane.active
+			= render :partial => "core"
+		#core_by_handle.dashboard.span12.tab-pane
 			= render :partial => "core"
 		#detailed.dashboard.span12.tab-pane
 		#handles.dashboard.span12.tab-pane
