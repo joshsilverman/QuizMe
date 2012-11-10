@@ -21,7 +21,7 @@ class Dashboard
       if window.location.hash.match(hash_exp)
         hash = window.location.hash.match(hash_exp)[0]
       else
-        hash = false
+        hash = '#core'
       @update_tabs null, hash
 
   update_tabs: (e, target) =>
