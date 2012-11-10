@@ -17,61 +17,68 @@ class Dashboard
 
     #load correct tab
     if window.location.href.match(/dashboard[#?]|dashboard$/)
-      console.log(window.location.hash);
       hash_exp = /#[^?]*$|#.*(?=\?)/
       if window.location.hash.match(hash_exp)
         hash = window.location.hash.match(hash_exp)[0]
       else
         hash = false
-
-      console.log(hash);
-      return
-
-      if hash != false
-        $(hash).addClass "active"
-        $(".nav-tabs a[href=" + hash + "]").parent('li').addClass "active"
-      else
-        tab_id = $('.tab-content .tab-pane')[0].id
-        $("#" + tab_id).addClass "active"
-        $(".nav-tabs a[href=#" + tab_id + "]").parent('li').addClass "active"
       @update_tabs null, hash
 
   update_tabs: (e, target) =>
-    console.log e
     target ||= $(e.target).tab().attr 'href'
-    if target == "#detailed"
-      if $("#detailed").is(':empty')
-        $.ajax "/get_detailed_metrics"
-          type: "GET"
-          success: (e) => 
-            $(".tab-content #detailed").append(e)
-            @graph_data = $.parseJSON($("#detailed_graph_data").val())
-            @display_data = $.parseJSON($("#detailed_display_data").val())
-            @draw_graphs()
-            @update_metrics()             
-            $(".select_option").on "change", (e) => 
-              if $(e.target).attr("value") == "0" and $(e.target).is(":checked") 
-                @active.splice(0, 0, "0")
-              else
-                if $(e.target).is(":checked") 
-                  @active.push($(e.target).attr "value") 
-                else 
-                  @active.remove($(e.target).attr "value")
-              @update_dashboard()
-            @update_dashboard()               
-    else if target == "#handles"
-      if $("#handles").is(':empty')
+    if target == "#handles"
+      if @handle_activity
+        null
+      else
+        $(".loading").show()
         $.ajax "/get_handle_metrics"
           type: "GET"
           success: (e) => 
-            $(".tab-content #handles").append(e)
+            $(".tab-content #handles").html(e)
             @handle_activity = $.parseJSON($("#handle_activity_data").val())    
             @draw_handle_activity()
+          complete: -> $(".loading").hide()
+    else if target == "#core"
+      if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
+        @core()
     else if target == "#"
       return
 
-    $(e.target).tab('show')
+    $('a[href=' + target + ']').tab('show')
     window.location.hash = target
+
+  core: -> 
+    #tabs
+    $('.nav-tabs > li').removeClass 'active'
+    $('.core-metrics').addClass 'active'
+
+    #tab content
+    $('.tab-content .tab-pane').removeClass 'active'
+    $('.tab-content #core').addClass 'active'
+
+    $(".loading").show()
+    $.get ("/dashboard/core_by_handle/-1"), (data) =>
+      data = $.parseJSON(data) if ($.type(data) == 'string')
+      window.dashboard.core_data_by_handle['-1'] = data
+
+      dashboard.draw_paulgraham('', data['paulgraham'])
+      dashboard.draw_dau_mau('', data['dau_mau'])
+      dashboard.draw_daus('', data['daus'])
+      dashboard.draw_econ_engine('', data['econ_engine'])
+
+      $('.paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
+      $('.paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
+
+      $('.econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
+      $('.econ_engine .total .number').html data['core_display_data'][0]['econ_engine']['answerers']
+
+      $('.daus .new .number').html data['core_display_data'][0]['daus']['today']
+      $('.daus .total .number').html data['core_display_data'][0]['daus']['total']
+
+      $('.dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
+      $('.dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
+      
+      $(".loading").hide()
 
   core_by_handle: -> 
     asker_id = $(this).attr('data-target').match(/#handle-([0-9]+)/)[1]
@@ -85,10 +92,7 @@ class Dashboard
     $('.tab-content .tab-pane').removeClass 'active'
     $('.tab-content #core_by_handle').addClass 'active'
 
-    #handles
-    $.get ("/dashboard/core_by_handle/" + asker_id), (data) ->
-      window.dashboard.core_data_by_handle[asker_id] = data
-
+    render = (data) ->
       dashboard.draw_paulgraham('#core_by_handle', data['paulgraham'])
       dashboard.draw_dau_mau('#core_by_handle', data['dau_mau'])
       dashboard.draw_daus('#core_by_handle', data['daus'])
@@ -106,89 +110,21 @@ class Dashboard
       $('#core_by_handle .dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('#core_by_handle .dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
 
-      console.log $('#core_by_handle .handle_name')
-      console.log asker_name
-      $('#core_by_handle .handle_name').text asker_name
+    if !window.dashboard or !window.dashboard.core_data_by_handle[asker_id]
+      $('#core_by_handle .handle_name .text').text asker_name
+      $(".loading").show()
+      $.get ("/dashboard/core_by_handle/" + asker_id), (data) ->
+        data = $.parseJSON data if ($.type(data) == 'string')
+        window.dashboard.core_data_by_handle[asker_id] = data
+
+        render(data)
+        $(".loading").hide()
+
+    window.location.hash = "#core"
 
   update_dashboard: =>
     @draw_graphs()
     @update_metrics()
-  update_metrics: =>
-    askers = []
-    display_hash = 
-      followers: today: 0, total: 0
-      active_users: today: [], total: []
-      questions_answered: today: 0, total: []
-      click_throughs: today: 0, total: 0
-      mentions: today: 0, total: 0
-      retweets: today: 0, total: 0
-    if "0" in @active then askers.push(0) else askers.push(asker_id) for asker_id in @active
-    for asker_id in askers
-      for key of display_hash
-        if key == "active_users"
-          display_hash[key]["today"] = display_hash[key]["today"].concat(@display_data[asker_id][key]["today"])
-          display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])
-        else if key == "questions_answered"
-          display_hash[key]["today"] += @display_data[asker_id][key]["today"]
-          display_hash[key]["total"] = display_hash[key]["total"].concat(@display_data[asker_id][key]["total"])       
-        else
-          display_hash[key]["today"] += @display_data[asker_id][key]["today"]
-          display_hash[key]["total"] += @display_data[asker_id][key]["total"]
-    for key, value of display_hash
-      if key == "active_users"
-        $("##{key}_stats .new .number").text(value.today.unique().length)
-        $("##{key}_stats .total .number").text(value.total.unique().length)
-      else if key == "questions_answered"
-        $("##{key}_stats .new .number").text(value.today)
-        $("##{key}_stats .total .number").text(value.total.unique().length)
-      else
-        $("##{key}_stats .new .number").text(value.today)
-        $("##{key}_stats .total .number").text(value.total)
-  draw_graphs: =>
-    colors = []
-    colors.push(line_colors[asker_id]) for asker_id in @active
-    options.colors = colors
-    title_row = ["Date"]
-    accounts = []
-    accounts.push(asker_id) for asker_id, data of @askers
-    for account_id in @active
-      if account_id == "0" then title_row.push("Total") else title_row.push(@askers[account_id][0].twi_screen_name) 
-    for attribute_name, attribute_data of @graph_data
-      continue if attribute_name == "active_users" or attribute_name == "click_throughs"
-      data_array = [title_row]
-      for date, asker_data of attribute_data
-        date_array = date.split("-")
-        row = ["#{date_array[1]}/#{date_array[2]}"]
-        row.push(0) for i in @active
-        if "0" in @active
-          if attribute_name == "active_user_ids" then total = [] else total = 0
-          for asker_id, data of @askers
-            if asker_data[asker_id] == undefined or asker_data[asker_id] == null
-              row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0 if asker_id in @active
-            else
-              if attribute_name == "active_user_ids" 
-                row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].unique().length if asker_id in @active
-                total = total.concat(asker_data[asker_id])
-              else
-                row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id] if asker_id in @active
-                total += asker_data[asker_id]
-          if attribute_name == "active_user_ids"
-            row[title_row.indexOf("Total")] = total.unique().length
-          else 
-            row[title_row.indexOf("Total")] = total
-        else
-          for asker_id in @active
-            if asker_data[asker_id] == undefined or asker_data[asker_id] == null
-              row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = 0
-            else
-              if attribute_name == "active_user_ids" 
-                row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id].unique().length
-              else
-                row[title_row.indexOf(@askers[asker_id][0].twi_screen_name)] = asker_data[asker_id]     
-        data_array.push(row)
-      graph_data = google.visualization.arrayToDataTable(data_array)
-      chart = new google.visualization.LineChart(document.getElementById("#{attribute_name}_graph"))
-      chart.draw graph_data, options
 
   draw_paulgraham: (container, data) =>
     data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
@@ -317,17 +253,16 @@ econ_engine_options =
       color: "#eee"
 
 handle_activity_options = 
-  width: 1100
-  height: 550
+  width: 1170
+  height: 500
   legend: "none"
   pointSize: 6
   lineWidth: 3
   isStacked: true
-  title: "Total Social Interactions this Week"
   chartArea:  
-    width: 1100
-    left: 50
-    height: 450
+    width: 1170
+    left: 42
+    height: 400
   hAxis:
     textStyle: 
       fontSize: 9

@@ -1,6 +1,8 @@
 .core
 
-	%h2.handle_name All Handles 
+	%h2.handle_name 
+		%span.text All Handles 
+		%span.loading.hide= image_tag "ajax-loader.gif"
 
 	.data_row.row
 		.paulgraham_users.panel.left.rounded.span6
@@ -9,11 +11,11 @@
 					%h3 New/Existing 
 				.new
 					.container
-						%p.number= sprintf "%.1f%", @core_display_data[0][:paulgraham][:today] * 100 if @core_display_data[0][:paulgraham]
+						%p.number
 						%p.period last 24 hours
 				.total
 					.container
-						%p.number= sprintf "%.1f%", @core_display_data[0][:paulgraham][:total] * 100 if @core_display_data[0][:paulgraham]
+						%p.number
 						%p.period 7 day avg
 			.paulgraham_graph.graph
 
@@ -23,11 +25,11 @@
 					%h3 DAU/MAU 
 				.new
 					.container
-						%p.number= sprintf "%.1f%", @core_display_data[0][:dau_mau][:today] * 100 if @core_display_data[0][:dau_mau]
+						%p.number
 						%p.period last 24 hours
 				.total
 					.container
-						%p.number= sprintf "%.1f%", @core_display_data[0][:dau_mau][:total] * 100 if @core_display_data[0][:dau_mau]
+						%p.number
 						%p.period 7 day avg
 			.dau_mau_graph.graph
 
@@ -38,11 +40,11 @@
 					%h3 Soc. Actions
 				.new
 					.container
-						%p.number= @core_display_data[0][:econ_engine][:today] if @core_display_data[0][:econ_engine]
+						%p.number
 						%p.period today
 				.total
 					.container
-						%p.number= @core_display_data[0][:econ_engine][:answerers] if @core_display_data[0][:econ_engine]
+						%p.number
 						%p.period users involved
 			.econ_engine_graph.graph
 
@@ -52,10 +54,10 @@
 					%h3 DAUs
 				.new
 					.container
-						%p.number= @core_display_data[0][:daus][:today] if @core_display_data[0][:daus]
+						%p.number
 						%p.period last 24 hours
 				.total
 					.container
-						%p.number= @core_display_data[0][:daus][:total] if @core_display_data[0][:daus]
+						%p.number
 						%p.period last 30 days			
 			.daus_graph.graph
