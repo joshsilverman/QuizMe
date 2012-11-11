@@ -126,7 +126,6 @@ class User < ActiveRecord::Base
 		askers.each do |asker|
 			stop = false
 			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
-			puts new_followers.to_json
 	    new_followers.each do |tid|
 	      break if stop
 	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
