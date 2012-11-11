@@ -78,8 +78,13 @@ class AskersController < ApplicationController
 
     @askers_by_growth_rate = {}
     @askers.each do |asker|
-      last_7_days_new = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker.id).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false).where("users.role <> 'asker'").where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
-      total = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker.id).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false).where("users.role <> 'asker'").count('users.id', :distinct => true)
+      last_7_days_new = User.social_not_spam_with_posts\
+        .where('posts.in_reply_to_user_id = ?', asker.id)\
+        .where("users.created_at > ?", (7 * 24).hours.ago)\
+        .count('users.id', :distinct => true)
+      total = User.social_not_spam_with_posts\
+        .where('posts.in_reply_to_user_id = ?', asker.id)\
+        .count('users.id', :distinct => true)
       if total > 0
         @askers_by_growth_rate[asker.id] = last_7_days_new.to_f / total
       else

@@ -9,7 +9,10 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
+
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
+  scope :social, where('interaction_type IN (2,3)')
+
   @@classifier = Classifier.new
   
   def self.classifier

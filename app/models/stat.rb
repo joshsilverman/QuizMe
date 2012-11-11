@@ -91,25 +91,29 @@ class Stat < ActiveRecord::Base
 		return graph_data
 	end
 
-	def self.paulgraham asker_id = nil
+	def self.paulgraham asker_id = nil, domain = 30
 
 		asker_ids = User.askers.collect(&:id)
-		domain = 30
 		
 		if asker_id
-			new_on = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker_id)\
-			.where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids)\
-			.group("to_char(users.created_at, 'YYYY-MM-DD')")\
-			.count('users.id', :distinct => true) #.group("date_part('week', users.created_at)").count
+			new_on = User.social_not_spam_with_posts\
+        .where('posts.in_reply_to_user_id = ?', asker_id)\
+  			.group("to_char(users.created_at, 'YYYY-MM-DD')")\
+  			.count('users.id', :distinct => true)
 
-      last_24_hours_new = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker_id)\
-        .where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
-      last_7_days_new = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker_id)\
-        .where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
+      last_24_hours_new = User.social_not_spam_with_posts\
+        .where('posts.in_reply_to_user_id = ?', asker_id)\
+        .where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
+      last_7_days_new = User.social_not_spam_with_posts\
+        .where('posts.in_reply_to_user_id = ?', asker_id)\
+        .where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
 		else
-			new_on = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).group("to_char(users.created_at, 'YYYY-MM-DD')").count('users.id', :distinct => true) #.group("date_part('week', users.created_at)").count
-      last_24_hours_new = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
-      last_7_days_new = User.joins(:posts).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?)) and users.id not in (?)", true, false, false, asker_ids).where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
+      new_on = User.social_not_spam_with_posts\
+        .group("to_char(users.created_at, 'YYYY-MM-DD')")\
+        .count('users.id', :distinct => true)
+
+      last_24_hours_new = User.social_not_spam_with_posts.where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
+      last_7_days_new = User.social_not_spam_with_posts.where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
 		end
 
 		existing_before = {}
@@ -121,20 +125,21 @@ class Stat < ActiveRecord::Base
 			.collect{|k,v| v}
 			.sum
 
-		((start_day)..(Date.today - 1)).to_a.each do |n|
-			existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
-			new_on[n.to_s] ||= 0
-			new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
-			new_to_existing_before_on[n][:raw] = ((new_on[n.to_s].to_f / existing_before[n]) + 1) ** 7 - 1
-			new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
-		end
-		existing_before[Date.today] = existing_before[Date.today - 1] + new_on[(Date.today - 1).to_s].to_i
 
-		new_to_existing_before_on.map do |date, v|
-			group = [v[:raw]]
-			new_to_existing_before_on.map{|ddate,vv| group.push vv[:raw] if ddate < date and ddate > date - 7.days}
-			new_to_existing_before_on[date][:avg] = group.sum/group.length
-		end
+    ((start_day)..(Date.today - 1)).to_a.each do |n|
+      existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
+      new_on[n.to_s] ||= 0
+      new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
+      new_to_existing_before_on[n][:raw] = ((new_on[n.to_s].to_f / existing_before[n]) + 1) ** 7 - 1
+      new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
+    end
+    existing_before[Date.today] = existing_before[Date.today - 1] + new_on[(Date.today - 1).to_s].to_i
+    
+    new_to_existing_before_on.map do |date, v|
+      group = [v[:raw]]
+      new_to_existing_before_on.map{|ddate,vv| group.push vv[:raw] if ddate < date and ddate > date - 7.days}
+      new_to_existing_before_on[date][:avg] = group.sum/group.length
+    end
 
 		display_data = {
 			:today => (last_24_hours_new.to_f / existing_before[Date.today] + 1) ** 7 - 1,
@@ -155,24 +160,24 @@ class Stat < ActiveRecord::Base
 		asker_ids = User.askers.collect(&:id)
 
 		if asker_id
-			date_grouped_posts = Post.not_spam\
+			date_grouped_posts = Post.not_spam.social\
 					.where('posts.in_reply_to_user_id = ?', asker_id)\
 					.where("created_at > ? and user_id not in (?)", (domain + 31).days.ago, (asker_ids += ADMINS))\
 					.order("created_at ASC")\
 					.group_by { |post| post.created_at.to_date }			
 
-  		last_24_hours_aus = Post.not_spam\
+  		last_24_hours_aus = Post.not_spam.social\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
   				.where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
   				.order("created_at ASC")\
   				.group_by { |post| post.user_id }.keys.count
     else
-      date_grouped_posts = Post.not_spam\
+      date_grouped_posts = Post.not_spam.social\
           .where("created_at > ? and user_id not in (?)", (domain + 31).days.ago, (asker_ids += ADMINS))\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
 
-      last_24_hours_aus = Post.not_spam\
+      last_24_hours_aus = Post.not_spam.social\
           .where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
           .order("created_at ASC")\
           .group_by { |post| post.user_id }.keys.count
@@ -209,38 +214,36 @@ class Stat < ActiveRecord::Base
 		return graph_data, display_data
 	end
 
-	def self.daus asker_id = nil
-		domain = 30
-
+	def self.daus asker_id = nil, domain = 30
 		asker_ids = User.askers.collect(&:id)
 
 		display_data = {}
     if asker_id
-      user_ids_by_date = Post.not_spam\
+      user_ids_by_date = Post.social.not_spam\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ? and created_at < ? and user_id not in (?)", (domain + 1).days.ago, Date.today, (asker_ids += ADMINS))\
+          .where("created_at > ? and created_at < ?", (domain + 1).days.ago, Date.today)\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
-      display_data[:today] = Post.not_spam\
+      display_data[:today] = Post.social.not_spam\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+          .where("created_at > ?", 24.hours.ago)\
           .order("created_at ASC")\
           .group_by { |post| post.user_id }.keys.count
-      display_data[:total] = Post.not_spam\
+      display_data[:total] = Post.social.not_spam\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ? and user_id not in (?)", (24*domain).hours.ago, (asker_ids += ADMINS))\
+          .where("created_at > ?", (24*domain).hours.ago)\
           .collect(&:user_id).uniq.count
     else
-      user_ids_by_date = Post.not_spam\
-          .where("created_at > ? and created_at < ? and user_id not in (?)", (domain + 1).days.ago, Date.today, (asker_ids += ADMINS))\
+      user_ids_by_date = Post.social.not_spam\
+          .where("created_at > ? and created_at < ?", (domain + 1).days.ago, Date.today)\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
-  		display_data[:today] = Post.not_spam\
-  				.where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+  		display_data[:today] = Post.social.not_spam\
+  				.where("created_at > ?", 24.hours.ago)\
   				.order("created_at ASC")\
   				.group_by { |post| post.user_id }.keys.count
-  		display_data[:total] = Post.not_spam\
-  				.where("created_at > ? and user_id not in (?)", (24*domain).hours.ago, (asker_ids += ADMINS))\
+  		display_data[:total] = Post.social.not_spam\
+  				.where("created_at > ?", (24*domain).hours.ago)\
   				.collect(&:user_id).uniq.count
     end
 
@@ -252,8 +255,7 @@ class Stat < ActiveRecord::Base
 		return graph_data, display_data
 	end
 
-	def self.econ_engine asker_id = nil
-		domain = 30
+	def self.econ_engine asker_id = nil, domain = 30
 
 		if asker_id
 	    @posts_by_date = Post.joins(:user)\
