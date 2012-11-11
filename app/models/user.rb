@@ -25,9 +25,17 @@ class User < ActiveRecord::Base
 		end
 	end
 
-	def update_learner_level(level)
-		current_level = self.learner_level
-		self.update_attribute(:learner_level, level) if LEARNER_LEVELS.index(level) > LEARNER_LEVELS.index(current_level)
+	def update_user_interactions(params = {})
+		if params[:learner_level]
+			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
+		end
+		if params[:last_interaction_at]
+			params.delete :last_interaction_at unless params[:last_interaction_at] > self.last_interaction_at
+		end
+		if params[:last_answer_at]
+			params.delete :last_answer_at unless params[:last_answer_at] > self.last_answer_at
+		end
+		self.update_attributes params	
 	end
 
 	def self.create_with_omniauth(auth)

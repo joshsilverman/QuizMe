@@ -14,7 +14,7 @@ LEARNER_LEVELS = [
   "dm", 
   "share", 
   "mention", 
-  "DM answer", 
+  "dm answer", 
   "twitter answer", 
   "feed answer"
 ]

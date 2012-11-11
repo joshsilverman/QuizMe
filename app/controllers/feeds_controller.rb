@@ -195,6 +195,7 @@ class FeedsController < ApplicationController
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id ,:publication_id => params[:publication_id])
     if params[:interaction_type] == "4"
+      user = user_post.user
       dm = params[:message].gsub("@#{params[:username]}", "")
       if correct.present?
         user_post.update_attribute(:correct, correct)
@@ -205,7 +206,12 @@ class FeedsController < ApplicationController
           :account => asker.twi_screen_name
         }        
       end
-      response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
+      response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user, conversation.id)
+      user.update_user_interactions({
+        :learner_level => (correct.present? ? "dm answer" : "dm"), 
+        :last_interaction_at => user_post.created_at,
+        :last_answer_at => (correct.present? ? user_post.created_at : nil)
+      })
     else
       tweet = params[:message].gsub("@#{params[:username]}", "")
       if params[:publication_id] and params[:correct]
@@ -237,7 +243,11 @@ class FeedsController < ApplicationController
           :resource_url => resource_url,
           :wisr_question => wisr_question
         })
-
+        user_post.user.update_user_interactions({
+          :learner_level => (correct.present? ? "twitter answer" : "mention"), 
+          :last_interaction_at => user_post.created_at,
+          :last_answer_at => (correct.present? ? user_post.created_at : nil)
+        })
         # Check for followup test completion
         if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
           Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 

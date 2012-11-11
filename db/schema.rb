@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121108210342) do
+ActiveRecord::Schema.define(:version => 20121109143949) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -189,6 +189,8 @@ ActiveRecord::Schema.define(:version => 20121108210342) do
     t.boolean  "published"
     t.integer  "author_id"
     t.string   "learner_level",       :default => "unengaged"
+    t.datetime "last_interaction_at"
+    t.datetime "last_answer_at"
   end
 
 end

@@ -68,7 +68,7 @@ task :retweet_related => :environment do
 				a.twitter.retweet(p.provider_post_id)
 			rescue Exception => exception
 				puts exception.message
-				puts "exception while retweeting publication id #{pub.id}"
+				puts "exception while retweeting for #{a.twi_screen_name}"
 			end
 		end
 	end

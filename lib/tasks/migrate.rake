@@ -46,3 +46,45 @@ task :update_post_attributes => :environment do
 		# puts "\n\n"
 	end
 end
+
+task :update_user_with_last_answer_and_interaction => :environment do
+	User.all.each do |user|
+		posts = user.posts.not_spam.order("created_at DESC")
+		last_answer = nil
+		last_interaction = nil
+		next unless posts.present?
+		if answers = posts.where("correct is not null").present?
+			last_answer = answers.first.created_at 
+		end
+		last_interaction = posts.first.created_at
+		user.update_attributes({
+			:last_answer_at => last_answer,
+			:last_interaction_at => last_interaction
+		}) 
+	end  
+end
+
+task :add_learner_level_to_users => :environment do
+  User.all.each_with_index do |user, i|
+  	posts = user.posts.not_spam
+  	# check for requires action?
+  	if posts.where("correct is not null and posted_via_app = ? and interaction_type = 2", true).present?
+  		level = "feed answer"
+  	elsif posts.where("correct is not null and posted_via_app != ? and interaction_type = 2", true).present?
+  		level = "twitter answer"
+  	elsif posts.where("correct is not null and interaction_type = 4").present?
+  		level = "dm answer"
+  	elsif posts.where("correct is null and interaction_type = 2").present?
+  		level = "mention"
+  	elsif posts.where("interaction_type = 3").present?
+  		level = "share"
+  	# lots of correct = null dm answers here...
+  	elsif posts.where("interaction_type = 4").present?
+  		level = "dm"
+  	else
+  		level = "unengaged"
+  	end
+  	puts "#{i}. #{user.twi_screen_name} - #{level}"
+  	user.update_attribute(:learner_level, level)
+  end
+end
