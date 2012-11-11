@@ -132,8 +132,8 @@ class User < ActiveRecord::Base
 	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
 	      sleep(1)
 	      next if User.find_by_twi_user_id(tid)
-	      puts "sending DM!"
 	      user = User.create({:twi_user_id => tid})
+	      next unless new_user_questions[asker.id].present?
 	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}")
 	      Mixpanel.track_event "DM question to new follower", {
 	        :distinct_id => user.id,
