@@ -6,6 +6,7 @@ class Question < ActiveRecord::Base
   belongs_to :user
 
   has_many :badges, :through => :requirements
+  has_many :requirements
 
   before_save :generate_slug
 

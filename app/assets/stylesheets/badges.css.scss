@@ -37,6 +37,9 @@
         height:65px;
         cursor:pointer;
 
+        &.faded {
+          cursor:auto;
+        }
       }
 
       .caption {
@@ -65,6 +68,10 @@
       border:none !important;
       box-shadow:none !important;
 
+      .conversation {
+        border:none;
+      }
+
       .badge-image-wrapper {
         text-align:center;
         padding:20px 0;
@@ -78,6 +85,24 @@
         li {
         }
       }
+
+      &.story {
+        .modal-footer {
+          padding-left:25px;
+          padding-right:25px;
+        }
+
+        .badge-image-wrapper {
+          //padding-left:42px;
+        }
+      }
     }
+  }
+
+}
+.badges.users {
+  .badge-image-wrapper:hover {
+    .caption {
+      background-color:white;    }
   }
 }

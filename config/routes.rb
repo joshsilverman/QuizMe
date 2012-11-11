@@ -1,6 +1,7 @@
 Quizmemanager::Application.routes.draw do
   
   get "badges/load"  
+  get "badges/issuable"  
   resources :badges
 
   get "feeds/index"
@@ -52,5 +53,7 @@ Quizmemanager::Application.routes.draw do
   #catch user profiles
   get ":twi_screen_name" => "users#show"
   get ":twi_screen_name/badges" => "users#badges"
+  get ":twi_screen_name/badges/:badge_title" => "users#badges"
+  get ":twi_screen_name/badges/story/:badge_title" => "users#badges"
 
 end

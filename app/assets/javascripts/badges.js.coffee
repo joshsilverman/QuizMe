@@ -4,7 +4,9 @@
 
 class Badge
   constructor: ->
-    $(".badge-image").click -> $(this).closest('.badge-image-wrapper').next(".modal").modal()
+    $(".badge-image").click -> 
+      return if $(this).hasClass 'faded'
+      $(this).closest('.badge-image-wrapper').next(".modal").modal()
 
 $ ->
   window.badge = new Badge if $(".badges").length > 0

@@ -12,41 +12,50 @@ class BadgesController < ApplicationController
     end
   end
 
-  def show
-    @badge = Badge.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @badge }
-    end
+  def issuable
+    @recent_posts = Post.not_spam.joins(:user)\
+      .includes(:user => {}, :parent => {:user => {}, :publication => {:question => :badges}})\
+      .where("correct IS NOT NULL")\
+      .order('posts.created_at DESC').limit 100
+      #.where("role IN ('user','author')")\
+      #.where("publication_id IS NOT NULL")\
   end
 
-  def new
-    @badge = Badge.new
+  # def show
+  #   @badge = Badge.find(params[:id])
 
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @badge }
-    end
-  end
+  #   respond_to do |format|
+  #     format.html # show.html.erb
+  #     format.json { render json: @badge }
+  #   end
+  # end
 
-  def edit
-    @badge = Badge.find(params[:id])
-  end
+  # def new
+  #   @badge = Badge.new
 
-  def create
-    @badge = Badge.new(params[:badge])
+  #   respond_to do |format|
+  #     format.html # new.html.erb
+  #     format.json { render json: @badge }
+  #   end
+  # end
 
-    respond_to do |format|
-      if @badge.save
-        format.html { redirect_to @badge, notice: 'Badge was successfully created.' }
-        format.json { render json: @badge, status: :created, location: @badge }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @badge.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def edit
+  #   @badge = Badge.find(params[:id])
+  # end
+
+  # def create
+  #   @badge = Badge.new(params[:badge])
+
+  #   respond_to do |format|
+  #     if @badge.save
+  #       format.html { redirect_to @badge, notice: 'Badge was successfully created.' }
+  #       format.json { render json: @badge, status: :created, location: @badge }
+  #     else
+  #       format.html { render action: "new" }
+  #       format.json { render json: @badge.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   def update
     @badge = Badge.find(params[:id])
@@ -62,15 +71,15 @@ class BadgesController < ApplicationController
     end
   end
 
-  def destroy
-    @badge = Badge.find(params[:id])
-    @badge.destroy
+  # def destroy
+  #   @badge = Badge.find(params[:id])
+  #   @badge.destroy
 
-    respond_to do |format|
-      format.html { redirect_to badges_url }
-      format.json { head :ok }
-    end
-  end
+  #   respond_to do |format|
+  #     format.html { redirect_to badges_url }
+  #     format.json { head :ok }
+  #   end
+  # end
 
   def load
     path = "#{Rails.root}/app/assets/images/badges"
