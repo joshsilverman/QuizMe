@@ -283,6 +283,12 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
+    # badge assignment data
+    user_ids = @engagements.map{|k,v| v.user_id}.uniq
+    @earned_badges_by_user = User.joins(:badges).where("users.id in (?)", user_ids).group_by{|u| u.id}
+    @badges = Badge.where(:asker_id => @asker.id)
+    @correct_answer_count_by_user = User.where("users.id in (?)", user_ids)
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @posts }
