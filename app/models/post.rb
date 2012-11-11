@@ -184,20 +184,20 @@ class Post < ActiveRecord::Base
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
-    short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
+  def self.dm(user, recipient, text, options = {})    
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
     begin
-      res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
-      dm = Post.create(
-        :user_id => current_acct.id,
+      puts user, recipient, text, options
+      res = user.twitter.direct_message_create(recipient.twi_user_id, text)
+      post = Post.create(
+        :user_id => user.id,
         :provider => 'twitter',
-        :text => tweet,
-        :engagement_type => 'pm',
+        :text => text,
         :provider_post_id => res.id.to_s,
-        :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
-        :in_reply_to_user_id => user.id,
-        :conversation_id => conversation_id,
-        :url => long_url ? short_url : nil,
+        :in_reply_to_post_id => options[:in_reply_to_post_id],
+        :in_reply_to_user_id => recipient.id,
+        :conversation_id => options[:conversation_id],
+        :url => options[:long_url] ? short_url : nil,
         :posted_via_app => true,
         :requires_action => false,
         :interaction_type => 4
@@ -206,32 +206,32 @@ class Post < ActiveRecord::Base
       puts "exception in DM user"
       puts exception.message
     end    
-    return dm
+    return post
   end
 
-  def self.dm_new_followers(current_acct, to_message = [], stop = false)
-    new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(50) } || []
-    new_followers.each do |tid|
-      break if stop
-      user = User.find_by_twi_user_id(tid) || User.create(:twi_user_id => tid)
-      to_message.push user unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-      stop = true if Post.twitter_request { current_acct.twitter.follow(tid) }.blank?
-      sleep(1)
-    end
-    puts "aggregated followers and followed back"
-    to_message.each do |user|
-      dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
-      q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
-      puts "DMing #{user.twi_screen_name}"
-      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
-      Mixpanel.track_event "DM question to new follower", {
-        :distinct_id => user.id,
-        :account => current_acct.twi_screen_name
-      }
-      sleep(1)
-    end
-    puts "ending dm_new_followers"
-  end
+  # def self.dm_new_followers(current_acct, to_message = [], stop = false)
+  #   new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(50) } || []
+  #   new_followers.each do |tid|
+  #     break if stop
+  #     user = User.find_by_twi_user_id(tid) || User.create(:twi_user_id => tid)
+  #     to_message.push user unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
+  #     stop = true if Post.twitter_request { current_acct.twitter.follow(tid) }.blank?
+  #     sleep(1)
+  #   end
+  #   puts "aggregated followers and followed back"
+  #   to_message.each do |user|
+  #     dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
+  #     q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
+  #     puts "DMing #{user.twi_screen_name}"
+  #     Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
+  #     Mixpanel.track_event "DM question to new follower", {
+  #       :distinct_id => user.id,
+  #       :account => current_acct.twi_screen_name
+  #     }
+  #     sleep(1)
+  #   end
+  #   puts "ending dm_new_followers"
+  # end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
     #@TODO UPDATE POST METHOD
@@ -459,11 +459,11 @@ class Post < ActiveRecord::Base
       puts "Exception in twitter wrapper:"
       puts exception.message
     end 
-    puts "returning value: #{value}"
     return value   
   end
   
   extend Split::Helper
+
   def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id, true)
     finished(test_name, {:reset => reset})

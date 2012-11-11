@@ -206,7 +206,7 @@ class FeedsController < ApplicationController
           :account => asker.twi_screen_name
         }        
       end
-      response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user, conversation.id)
+      response_post = Post.dm(asker, user, params[:message].gsub("@#{params[:username]}", ""), {:conversation_id => conversation.id})
       user.update_user_interactions({
         :learner_level => (correct.present? ? "dm answer" : "dm"), 
         :last_interaction_at => user_post.created_at,

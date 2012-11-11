@@ -120,6 +120,46 @@ class User < ActiveRecord::Base
 		return data
 	end	
 
+	def self.engage_new_users
+		askers = User.askers
+		new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+		askers.each do |asker|
+			stop = false
+			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
+			puts new_followers.to_json
+	    new_followers.each do |tid|
+	      break if stop
+	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
+	      sleep(1)
+	      next if User.find_by_twi_user_id(tid)
+	      puts "sending DM!"
+	      user = User.create({:twi_user_id => tid})
+	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}")
+	      Mixpanel.track_event "DM question to new follower", {
+	        :distinct_id => user.id,
+	        :account => asker.twi_screen_name
+	      }
+	      sleep(1)	      
+	    end
+	  end
+		# users = User.where("learner_level = 'unengaged' or learner_level = 'dm answer' and created_at > ?", 1.week.ago).group_by(&:learner_level)
+		# posts = Post.where("in_reply_to_user_id in (?)", users['unengaged'].collect(&:id)).order("created_at DESC").group_by(&:in_reply_to_user_id)
+		# users['unengaged'].each do |user|
+		# 	if posts[user.id].present?
+		# 		last_post = posts[user.id].last
+		# 		if last_post.intention == "initial dm" and last_post.created_at > 3.days.ago }
+		# 			#send second attempt DM question
+		# 		end			
+		# 	end
+		# end
+		# posts = Post.where("in_reply_to_user_id in (?) and interaction_type = 2", users['dm answer'].collect(&:id)).group_by(&:in_reply_to_user_id)
+		# users['dm answer'].each do |user|
+		# 	if posts[user.id].blank?
+		# 		# send mention question
+		# 	end	
+		# end
+	end
+
   def self.reengage_inactive_users(threshold = 1.week.ago)
     ## COLLECT DISENGAGING USERS
     all_asker_ids = User.askers.collect(&:id)

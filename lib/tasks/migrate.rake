@@ -65,7 +65,7 @@ task :update_user_with_last_answer_and_interaction => :environment do
 end
 
 task :add_learner_level_to_users => :environment do
-  User.all.each_with_index do |user, i|
+  User.includes(:posts).all.each_with_index do |user, i|
   	posts = user.posts.not_spam
   	# check for requires action?
   	if posts.where("correct is not null and posted_via_app = ? and interaction_type = 2", true).present?
