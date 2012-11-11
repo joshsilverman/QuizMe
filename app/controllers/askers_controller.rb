@@ -1,6 +1,8 @@
 class AskersController < ApplicationController
   before_filter :admin?
-  caches_action :dashboard, :expires_in => 5.minutes
+  caches_action :get_core_by_handle, :expires_in => 7.minutes
+  caches_action :get_handle_metrics, :expires_in => 11.minutes
+  caches_action :dashboard, :expires_in => 57.minutes
   
   def index
     @askers = User.askers.order "created_at ASC"
@@ -73,26 +75,46 @@ class AskersController < ApplicationController
 
   def dashboard
     @askers = User.askers
-    @core_display_data = {0 => {}}
 
-    @paulgraham, pg_display_data = Stat.paulgraham
-    @core_display_data[0][:paulgraham] = pg_display_data
-
-    @dau_mau, dau_mau_display_data = Stat.dau_mau
-    @core_display_data[0][:dau_mau] = dau_mau_display_data
-
-    @daus, daus_display_data = Stat.daus
-    @core_display_data[0][:daus] = daus_display_data
-
-    @econ_engine, econ_engine_display_data = Stat.econ_engine
-    @core_display_data[0][:econ_engine] = econ_engine_display_data 
+    @askers_by_growth_rate = {}
+    @askers.each do |asker|
+      last_7_days_new = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker.id).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false).where("users.role <> 'asker'").where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
+      total = User.joins(:posts).where('posts.in_reply_to_user_id = ?', asker.id).where("((posts.interaction_type = 3 or posts.posted_via_app = ?) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false).where("users.role <> 'asker'").count('users.id', :distinct => true)
+      if total > 0
+        @askers_by_growth_rate[asker.id] = last_7_days_new.to_f / total
+      else
+        @askers_by_growth_rate[asker.id] = 0
+      end
+    end
+    puts @askers_by_growth_rate
+    @askers.sort!{|a,b| @askers_by_growth_rate[a.id] <=> @askers_by_growth_rate[b.id]}.reverse!
   end 
 
-  def get_detailed_metrics
+  def get_core_by_handle
     @askers = User.askers
-    @detailed_graph_data = Stat.get_month_graph_data(@askers)
-    @detailed_display_data = Stat.get_display_data(@askers)
-    render :partial => "detailed"
+    @core_display_data = {0 => {}}
+
+    params.delete 'asker_id' if params[:asker_id] == '-1'
+
+    @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
+    @core_display_data[0][:paulgraham] = pg_display_data
+
+    @dau_mau, dau_mau_display_data = Stat.dau_mau params[:asker_id]
+    @core_display_data[0][:dau_mau] = dau_mau_display_data
+
+    @daus, daus_display_data = Stat.daus params[:asker_id]
+    @core_display_data[0][:daus] = daus_display_data
+
+    @econ_engine, econ_engine_display_data = Stat.econ_engine params[:asker_id]
+    @core_display_data[0][:econ_engine] = econ_engine_display_data 
+
+    render :json => {
+      :paulgraham => @paulgraham, 
+      :dau_mau => @dau_mau, 
+      :daus => @daus, 
+      :econ_engine => @econ_engine,
+      :core_display_data => @core_display_data
+    }
   end
 
   def get_handle_metrics

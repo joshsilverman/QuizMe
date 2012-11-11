@@ -1,4 +1,9 @@
-#data_row.row
-	#handle_activity.panel.rounded.span12		
-		#handle_activity_graph.graph
-= hidden_field_tag :handle_activity_data, @handle_activity.to_json
+.handles
+  %h2.handle_name 
+    Total Social Interactions this week
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #handle_activity.panel.rounded.span10
+      #handle_activity_graph.graph
+  = hidden_field_tag :handle_activity_data, @handle_activity.to_json

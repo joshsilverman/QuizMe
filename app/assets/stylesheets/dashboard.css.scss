@@ -1,4 +1,22 @@
-.dashboard {
+.core, .dashboard {
+
+	.handle_name {
+		margin:0px 1px;
+		padding-bottom:10px;
+		color:#666;
+
+		.loading {
+			position:relative;
+			top:-3px;
+		}
+	}
+
+	.handles {
+		.badge {
+			padding: 1px 1px 2px 1px;
+		}
+	}
+
 	margin-left: 0px;
 
 	.row {
@@ -18,7 +36,11 @@
 		}
 	}
 
-	#data_row {
+	#handle_activity {
+		margin-left:0px !important;
+	}
+
+	.data_row {
 		height: 225px;
 		margin: 10px 0px;
 		
@@ -54,7 +76,7 @@
 					padding-top: 34px;
 
 					.number {
-						font-size: 38px;
+						font-size: 34px;
     				margin-bottom: 14px;
 					}
 
@@ -93,10 +115,16 @@
 	}
 }
 
-#core {
+.core {
 	//margin-top:10px;
 }
 
 #handle_activity {
 	border: 0px !important;
+}
+
+.handles {
+	.badge {
+		padding: 1px 1px 2px 1px;
+	}
 }
