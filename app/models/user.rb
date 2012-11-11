@@ -26,14 +26,15 @@ class User < ActiveRecord::Base
 	end
 
 	def update_user_interactions(params = {})
-		if params[:learner_level]
+		puts params.to_json
+		if params[:learner_level].present?
 			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
 		end
-		if params[:last_interaction_at]
-			params.delete :last_interaction_at unless params[:last_interaction_at] > self.last_interaction_at
+		if params[:last_interaction_at].present?
+			params.delete :last_interaction_at unless self.last_interaction_at.present? and params[:last_interaction_at] > self.last_interaction_at
 		end
-		if params[:last_answer_at]
-			params.delete :last_answer_at unless params[:last_answer_at] > self.last_answer_at
+		if params[:last_answer_at].present?
+			params.delete :last_answer_at unless self.last_answer_at.present? and params[:last_answer_at] > self.last_answer_at
 		end
 		self.update_attributes params	
 	end
