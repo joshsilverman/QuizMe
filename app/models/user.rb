@@ -111,6 +111,10 @@ class User < ActiveRecord::Base
 		client
 	end
 
+	def get_popular
+
+	end
+
 	#here is an example of a function that cannot scale
 	def self.leaderboard(id, data = {}, scores = [])
 		posts = Post.select(:user_id).where(:in_reply_to_user_id => id, :correct => true).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..4]
@@ -133,21 +137,53 @@ class User < ActiveRecord::Base
 	      next if User.find_by_twi_user_id(tid)
 	      user = User.create({:twi_user_id => tid})
 	      next unless new_user_questions[asker.id].present?
-	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}")
+	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
 	      Mixpanel.track_event "DM question to new follower", {
 	        :distinct_id => user.id,
 	        :account => asker.twi_screen_name
 	      }
-	      sleep(1)	      
+	      sleep(1)   
 	    end
 	  end
+
+	 #  answered_dm_users = User.where("learner_level = 'dm answer' and created_at > ? and last_answer_at < ?", 1.week.ago, 1.day.ago).includes(:posts)
+		# app_posts = Post.where("in_reply_to_user_id in (?) and intention = 'second question mention'", answered_dm_users.collect(&:id)).group_by(&:in_reply_to_user_id)
+		# answered_dm_users.each do |user|
+		# 	if app_posts[user.id].blank?
+		# 		asker = askers.find(user.posts.first.in_reply_to_user_id)
+		# 		Post.tweet(asker, "Next question: ", {
+		# 			:reply_to => ,
+		# 	    :long_url => "", 
+		# 	    :interaction_type => 2, 
+		# 	    :link_type => "", 
+		# 	    :conversation_id => , 
+		# 	    :in_reply_to_post_id => , 
+		# 	    :in_reply_to_user_id => user.id,
+		# 	    :link_to_parent => false					
+		# 		})
+		# 		Mixpanel.track_event "second question mention", {
+		# 			:distinct_id => user.id
+		# 		}
+		# 	end	
+		# end
+  #   Post.includes(:conversations).where("user_id in (?) and created_at > ? and interaction_type = 1", active_asker_ids, 1.week.ago).group_by(&:user_id).each do |user_id, posts|
+  #     askers_publications[user_id] = posts.sort_by{|p| p.conversations.size}.last.publication_id
+  #   end		
+
+	  ## NEED FOLLOWERS ASSOCIATION TO FIND UNENGAGED RECENT FOLLOWERS
 		# users = User.where("learner_level = 'unengaged' or learner_level = 'dm answer' and created_at > ?", 1.week.ago).group_by(&:learner_level)
 		# posts = Post.where("in_reply_to_user_id in (?)", users['unengaged'].collect(&:id)).order("created_at DESC").group_by(&:in_reply_to_user_id)
 		# users['unengaged'].each do |user|
 		# 	if posts[user.id].present?
 		# 		last_post = posts[user.id].last
-		# 		if last_post.intention == "initial dm" and last_post.created_at > 3.days.ago }
-		# 			#send second attempt DM question
+		# 		if last_post.intention == "initial dm question" and last_post.created_at > 3.days.ago }
+		# 			# pick popular
+		# 			Post.dm(asker, user, "Pop quiz: #{new_user_questions[asker.id][0].text}", {:intention => "second attempt question dm"})
+		#       Mixpanel.track_event "second attempt question DM", {
+		#         :distinct_id => user.id,
+		#         :account => asker.twi_screen_name
+		#       }
+		#       sleep(1)						
 		# 		end			
 		# 	end
 		# end
@@ -155,6 +191,10 @@ class User < ActiveRecord::Base
 		# users['dm answer'].each do |user|
 		# 	if posts[user.id].blank?
 		# 		# send mention question
+		# 		Post.tweet()
+		# 		Mixpanel.track_event "", {
+
+		# 		}
 		# 	end	
 		# end
 	end
@@ -164,7 +204,7 @@ class User < ActiveRecord::Base
     all_asker_ids = User.askers.collect(&:id)
     puts all_asker_ids.to_json
     user_ids = []
-    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage last week inactive')
+    all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null and interaction_type = 2) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage last week inactive')
     all_posts.group_by(&:user_id).each do |user_id, posts|
       user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage last week inactive', :in_reply_to_user_id => user_id).present?
     end

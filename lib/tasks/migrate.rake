@@ -47,15 +47,16 @@ task :update_post_attributes => :environment do
 	end
 end
 
-task :update_user_with_last_answer_and_interaction => :environment do
-	User.all.each do |user|
+task :update_users_with_last_answer_and_interaction => :environment do
+	# User.includes(:posts).all.each_with_index do |user, i|
+	User.includes(:posts).where("posts.user_id is not null").each_with_index do |user, i|
+		puts "#{i}. #{user.twi_screen_name}"
 		posts = user.posts.not_spam.order("created_at DESC")
 		last_answer = nil
 		last_interaction = nil
 		next unless posts.present?
-		if answers = posts.where("correct is not null").present?
-			last_answer = answers.first.created_at 
-		end
+		answers = posts.where("correct is not null")
+		last_answer = answers.first.created_at if answers.present?
 		last_interaction = posts.first.created_at
 		user.update_attributes({
 			:last_answer_at => last_answer,
@@ -65,7 +66,7 @@ task :update_user_with_last_answer_and_interaction => :environment do
 end
 
 task :add_learner_level_to_users => :environment do
-  User.includes(:posts).all.each_with_index do |user, i|
+  User.includes(:posts).where("posts.user_id is not null").each_with_index do |user, i|
   	posts = user.posts.not_spam
   	# check for requires action?
   	if posts.where("correct is not null and posted_via_app = ? and interaction_type = 2", true).present?

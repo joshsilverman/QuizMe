@@ -200,7 +200,8 @@ class Post < ActiveRecord::Base
         :url => options[:long_url] ? short_url : nil,
         :posted_via_app => true,
         :requires_action => false,
-        :interaction_type => 4
+        :interaction_type => 4,
+        :intention => options[:intention]
       )
     rescue Exception => exception
       puts "exception in DM user"
