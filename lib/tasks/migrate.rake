@@ -48,28 +48,24 @@ task :update_post_attributes => :environment do
 end
 
 task :update_users_with_last_answer_and_interaction => :environment do
-	# User.includes(:posts).all.each_with_index do |user, i|
-	puts "starting update_users_with_last_answer_and_interaction rake..."
-	users = User.includes(:posts).where("posts.user_id is not null")
-	puts "users: #{users}"
-	users.each_with_index do |user, i|
+	User.includes(:posts).each_with_index do |user, i|
 		puts "#{i}. #{user.twi_screen_name}"
-		# posts = user.posts.not_spam.order("created_at DESC")
-		# last_answer = nil
-		# last_interaction = nil
-		# next unless posts.present?
-		# answers = posts.where("correct is not null")
-		# last_answer = answers.first.created_at if answers.present?
-		# last_interaction = posts.first.created_at
-		# user.update_attributes({
-		# 	:last_answer_at => last_answer,
-		# 	:last_interaction_at => last_interaction
-		# }) 
+		posts = user.posts.not_spam.order("created_at DESC")
+		last_answer = nil
+		last_interaction = nil
+		next unless posts.present?
+		answers = posts.where("correct is not null")
+		last_answer = answers.first.created_at if answers.present?
+		last_interaction = posts.first.created_at
+		user.update_attributes({
+			:last_answer_at => last_answer,
+			:last_interaction_at => last_interaction
+		}) 
 	end  
 end
 
 task :add_learner_level_to_users => :environment do
-  User.includes(:posts).where("posts.user_id is not null").each_with_index do |user, i|
+  User.includes(:posts).each_with_index do |user, i|
   	posts = user.posts.not_spam
   	# check for requires action?
   	if posts.where("correct is not null and posted_via_app = ? and interaction_type = 2", true).present?
