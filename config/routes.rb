@@ -1,7 +1,8 @@
 Quizmemanager::Application.routes.draw do
   
   get "badges/load"  
-  get "badges/issuable"  
+  get "badges/issuable"
+  post "badges/issue"  
   resources :badges
 
   get "feeds/index"

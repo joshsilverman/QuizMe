@@ -63,46 +63,68 @@
       }
     }
 
-    .modal {
-      outline: none;
-      border:none !important;
-      box-shadow:none !important;
+  }
 
-      .conversation {
-        border:none;
+  .modal {
+    outline: none;
+    border:none !important;
+    box-shadow:none !important;
+
+    .conversation {
+      border:none;
+
+     img {
+        height:inherit;
+      }
+    }
+
+    .badge-image {
+      height:inherit;
+    }
+
+    .badge-image-wrapper {
+      text-align:center;
+      padding:20px 0;
+
+    }
+    .modal-footer {
+      text-align:left;
+      max-height:150px;
+      overflow:scroll;
+
+      li {
+      }
+
+      .issue.btn {
+        float:right;
+      }
+    }
+
+    &.story {
+      .modal-footer {
+        padding-left:25px;
+        padding-right:25px;
       }
 
       .badge-image-wrapper {
-        text-align:center;
-        padding:20px 0;
-
-      }
-      .modal-footer {
-        text-align:left;
-        max-height:150px;
-        overflow:scroll;
-
-        li {
-        }
-      }
-
-      &.story {
-        .modal-footer {
-          padding-left:25px;
-          padding-right:25px;
-        }
-
-        .badge-image-wrapper {
-          //padding-left:42px;
-        }
+        //padding-left:42px;
       }
     }
   }
-
 }
 .badges.users {
   .badge-image-wrapper:hover {
     .caption {
       background-color:white;    }
+  }
+}
+
+.issuable {
+  .table {
+    .badge-image {
+      &.issuable {
+        cursor:pointer;
+      }
+    }
   }
 }

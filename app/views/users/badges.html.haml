@@ -7,7 +7,9 @@
 .badges.users
 
   .form-actions
-    %h1 Badges
+    %h1 
+      = "@#{@user.twi_screen_name}'s "
+      Badges
 
   - @badges_by_asker.each do |asker_id, badges|
     - asker = User.find(asker_id)

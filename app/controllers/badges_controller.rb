@@ -14,11 +14,34 @@ class BadgesController < ApplicationController
 
   def issuable
     @recent_posts = Post.not_spam.joins(:user)\
-      .includes(:user => {}, :parent => {:user => {}, :publication => {:question => :badges}})\
+      .includes(:user => :badges, :parent => {:user => {}, :publication => {:question => :badges}})\
       .where("correct IS NOT NULL")\
       .order('posts.created_at DESC').limit 100
       #.where("role IN ('user','author')")\
       #.where("publication_id IS NOT NULL")\
+  end
+
+  def issue
+    @user = User.find params[:user_id]
+    @badge = Badge.find params[:badge_id]
+    if @user and @badge
+      if @user.badges.include? @badge
+        render :nothing => true, :status => 304
+      else  
+        @user.badges << @badge
+
+        #tweet = params[:tweet].gsub('\n', '').strip
+        # @bug the shortening script is removing way too much
+        tweet = "@#{@user.twi_screen_name} You earned the #{@badge.title} badge"
+        
+        long_url = "#{URL}/#{@user.twi_screen_name}/badges/story/#{@badge.title.parameterize}"
+        Post.tweet(@badge.asker, tweet, :long_url => long_url)
+
+        render :nothing => true, :status => 200
+      end
+    else
+      render :nothing => true, :status => 400
+    end
   end
 
   # def show
