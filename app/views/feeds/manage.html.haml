@@ -107,7 +107,3 @@
 = hidden_field_tag :engagements, @engagements.to_json
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
-
-= hidden_field_tag :earned_badges_by_user, @earned_badges_by_user.to_json
-= hidden_field_tag :badges, @badges.to_json
-= hidden_field_tag :correct_answer_count_by_user, @correct_answer_count_by_user.to_json

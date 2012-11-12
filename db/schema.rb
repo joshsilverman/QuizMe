@@ -11,11 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(:version => 20121103214710) do
-=======
 ActiveRecord::Schema.define(:version => 20121109143949) do
->>>>>>> master
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -32,13 +28,6 @@ ActiveRecord::Schema.define(:version => 20121109143949) do
     t.datetime "updated_at"
   end
 
-<<<<<<< HEAD
-  create_table "badges", :force => true do |t|
-    t.integer  "asker_id"
-    t.string   "title"
-    t.string   "filename"
-    t.text     "description"
-=======
   create_table "cards", :force => true do |t|
     t.text     "front"
     t.text     "back"
@@ -52,7 +41,6 @@ ActiveRecord::Schema.define(:version => 20121109143949) do
   create_table "cards_groups", :force => true do |t|
     t.integer  "card_id"
     t.integer  "group_id"
->>>>>>> master
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -65,11 +53,6 @@ ActiveRecord::Schema.define(:version => 20121109143949) do
     t.datetime "updated_at"
   end
 
-<<<<<<< HEAD
-  create_table "issuances", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "badge_id"
-=======
   create_table "decks", :force => true do |t|
     t.integer  "handle_id"
     t.datetime "created_at"
@@ -90,7 +73,6 @@ ActiveRecord::Schema.define(:version => 20121109143949) do
 
   create_table "handles", :force => true do |t|
     t.string   "name"
->>>>>>> master
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -157,13 +139,6 @@ ActiveRecord::Schema.define(:version => 20121109143949) do
     t.datetime "updated_at"
     t.integer  "question_id"
     t.integer  "publication_id"
-  end
-
-  create_table "requirements", :force => true do |t|
-    t.integer  "badge_id"
-    t.integer  "question_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "stats", :force => true do |t|
