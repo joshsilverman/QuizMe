@@ -189,7 +189,6 @@ class Post < ActiveRecord::Base
   def self.dm(user, recipient, text, options = {})    
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
     begin
-      puts user, recipient, text, options
       res = user.twitter.direct_message_create(recipient.twi_user_id, text)
       post = Post.create(
         :user_id => user.id,

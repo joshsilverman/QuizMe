@@ -50,7 +50,9 @@ end
 task :update_users_with_last_answer_and_interaction => :environment do
 	# User.includes(:posts).all.each_with_index do |user, i|
 	puts "starting update_users_with_last_answer_and_interaction rake..."
-	User.includes(:posts).where("posts.user_id is not null").each_with_index do |user, i|
+	users = User.includes(:posts).where("posts.user_id is not null")
+	puts "users: #{users}"
+	users.each_with_index do |user, i|
 		puts "#{i}. #{user.twi_screen_name}"
 		posts = user.posts.not_spam.order("created_at DESC")
 		last_answer = nil
