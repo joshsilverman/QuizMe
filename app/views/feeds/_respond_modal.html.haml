@@ -1,4 +1,4 @@
-#respond_modal.modal.hide
+#respond_modal.modal
 	.modal-header
 		%button.close{:type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"} &times;
 		%h3 Respond to Post
@@ -12,6 +12,17 @@
 				#split_dm.btn.btn-danger Split Test Nudge?
 				#split_trigger_aaf.btn.btn-danger Ask A Friend Trigger 
 				%p.response_message{:style => "display: none;"}
+		.badges
+			.correct_answers_container
+				Correct answers:
+				%span.correct_answers
+			.earned_badges_container
+				Earned badges:
+				%span.earned_badges
+			.unissued_badges_container
+				Unissued badges:
+				%span.unissued_badges
+
 		.modal_conversation_history
 			.conversation
 				.subsidiary.post

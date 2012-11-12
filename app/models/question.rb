@@ -4,6 +4,10 @@ class Question < ActiveRecord::Base
   has_many :publications
   belongs_to :topic
   belongs_to :user
+
+  has_many :badges, :through => :requirements
+  has_many :requirements
+
   before_save :generate_slug
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude)
