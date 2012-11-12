@@ -1,0 +1,51 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.badges
+
+  .form-actions
+    %h1 Badges
+    .btn-group
+      = link_to 'Reload Badges', "/badges/load", :class => 'btn btn-primary'
+
+  - @badges_by_asker.each do |asker_id, badges|
+    - asker = User.find(asker_id)
+    - next unless asker
+
+    .badge-images
+      .page-header
+        %h3= "@#{asker.twi_screen_name}"
+
+      - badges.each do |badge|
+        .badge-image-wrapper
+          %img.badge-image{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename}"}
+          .caption= best_in_place badge, :title, :type => :input, :nil => "No title", :path => ""
+
+        .modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", :id => "modal[#{badge.id}]"}
+          .modal-header
+            %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+            %h3#myModalLabel= badge.title
+          .modal-body
+            %p.badge-image-wrapper
+              %img.badge-image{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename}"}
+
+          .modal-footer
+            %dl.dl-horizontal
+              %dt Badge id
+              %dd= badge.id
+              %dt Description
+              %dd= best_in_place badge, :description, :type => :textarea, :nil => "No description", :path => ""
+              %dt Questions
+              %dd 
+                %ol
+                  - badge.questions.each do |q|
+                    %li= q.text[0,40] + '...'
+
+      .clr
+      %br
+      %br
+
+%br

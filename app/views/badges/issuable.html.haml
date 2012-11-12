@@ -1,0 +1,69 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.badges.issuable
+  .form-actions
+    %h1 Issue Badges
+    / .btn-group
+    /   = link_to 'Reload Badges', "/badges/load", :class => 'btn btn-primary'
+
+  %table.table
+    %tr
+      %th
+      %th Asker
+      %th User
+      %th Correct
+      %th Current Badges
+      %th Unissued Badges
+
+    - @recent_posts.each_with_index do |post, i|
+      %tr.asker-row
+        %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime "%m/%d %H:%M"
+        %td= image_tag(post.parent.user.twi_profile_img_url) if post.parent
+        %td= post.user.twi_screen_name
+        %td
+          - if post.correct
+            %i.icon-ok
+          - else
+            %i.icon-remove
+        %td
+          - asker = post.parent.user
+          - Badge.where(:asker_id => asker.id).each do |badge|
+            %img.badge-image{:src => badge.img_path, :style => "#{'display:none' unless post.user.badges.include? badge}"}
+        %td
+          - Badge.where(:asker_id => asker.id).each do |badge|
+            %span.badge-image-wrapper
+              %img.badge-image.issuable{:src => badge.img_path, :style => "#{'display:none' if post.user.badges.include? badge}"}
+
+            .story.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", :id => "modal[#{badge.id}]", :badge_id => badge.id, :user_id => post.user.id}
+              .modal-header
+
+                %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+                .conversation.border-color
+                  .post.parent
+                    .content
+                      = image_tag(asker.twi_profile_img_url, :class => "rounded")
+                      %h5
+                        = asker.twi_screen_name
+
+                      %p.question_text 
+                        With your hard work, you earned the 
+                        %strong= badge.title
+                        badge!
+                      / .post_actions
+                      /   %a.expand Retweet
+
+              .modal-body
+                %p.badge-image-wrapper
+                  %img.badge-image{:src => badge.img_path}
+
+              .modal-footer
+                .issue.btn.btn-primary Issue
+                %p
+                  - if badge.description
+                    = badge.description
+                  - else
+                    %i No description. Be sure to fill one in before issuing.

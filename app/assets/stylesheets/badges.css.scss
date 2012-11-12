@@ -1,0 +1,130 @@
+.badges {
+  .page-header {
+    margin: 12px 0;
+    padding-bottom:10px;
+  }
+
+  .form-actions {
+    h1 {
+      float:left;
+    }
+
+    .btn-group {
+      float:right;
+      margin-top:5px;
+
+      a:visited {
+        color:white;
+      }
+    }
+  }
+
+  .badge-images {
+    clear:both;
+
+    .page-header {
+      padding-top:25px;
+    }
+
+    & > .badge-image-wrapper {
+      float:left;
+      //margin:0 18px 0 8px;
+      width:108px;
+      text-align:center;
+
+      .badge-image {
+        width:65px;
+        height:65px;
+        cursor:pointer;
+
+        &.faded {
+          cursor:auto;
+        }
+      }
+
+      .caption {
+        clear:both;
+        margin-top:5px;
+
+        .form_in_place input {
+          width:108px;
+          padding:0;
+          margin:-3px 0 -3px 0;
+          background-color:#eee;
+          border:none;
+          text-align:center;
+        }
+      }
+    }
+
+    .badge-image-wrapper:hover {
+      .caption {
+        background-color:#eee;
+      }
+    }
+
+  }
+
+  .modal {
+    outline: none;
+    border:none !important;
+    box-shadow:none !important;
+
+    .conversation {
+      border:none;
+
+     img {
+        height:inherit;
+      }
+    }
+
+    .badge-image {
+      height:inherit;
+    }
+
+    .badge-image-wrapper {
+      text-align:center;
+      padding:20px 0;
+
+    }
+    .modal-footer {
+      text-align:left;
+      max-height:150px;
+      overflow:scroll;
+
+      li {
+      }
+
+      .issue.btn {
+        float:right;
+      }
+    }
+
+    &.story {
+      .modal-footer {
+        padding-left:25px;
+        padding-right:25px;
+      }
+
+      .badge-image-wrapper {
+        //padding-left:42px;
+      }
+    }
+  }
+}
+.badges.users {
+  .badge-image-wrapper:hover {
+    .caption {
+      background-color:white;    }
+  }
+}
+
+.issuable {
+  .table {
+    .badge-image {
+      &.issuable {
+        cursor:pointer;
+      }
+    }
+  }
+}

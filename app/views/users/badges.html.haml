@@ -1,0 +1,59 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.badges.users
+
+  .form-actions
+    %h1 
+      = "@#{@user.twi_screen_name}'s "
+      Badges
+
+  - @badges_by_asker.each do |asker_id, badges|
+    - asker = User.find(asker_id)
+    - next unless asker
+
+    .badge-images
+      .page-header
+        %h3= "@#{asker.twi_screen_name}"
+
+      - badges.each do |badge|
+        .badge-image-wrapper
+          - puts @user_badges_ids
+          - puts badge.id
+          - puts "\n"
+          - if @user_badges_ids.include? badge.id
+            %img.badge-image{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename}"}
+            .caption= badge.title
+
+          - else
+            %img.badge-image.faded{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename_nocolor}"}
+            .caption.faded unknown
+
+        - if @is_story and badge.id == @badge_for_modal_id
+          = render :partial => "story", :locals => {:asker => asker, :asker_id => asker_id, :badge => badge}
+        - else
+          .modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", :id => "modal[#{badge.id}]", :class => "#{'in' if badge.id == @badge_for_modal_id}", :style => "#{'display:block;' if badge.id == @badge_for_modal_id}"}
+            .modal-header
+              %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+              %h3= badge.title
+            .modal-body
+              %p.badge-image-wrapper
+                - if @user_badges.include? badge
+                  %img.badge-image{:src => badge.img_path}
+                - else
+                  %img.badge-image.faded{:src => badge.img_path_nocolor}
+
+            .modal-footer
+              %p= badge.description
+
+      .clr
+      %br
+      %br
+
+%br
+
+- unless @badge_for_modal_id.nil?
+  %div.modal-backdrop.fade.in

@@ -1,6 +1,8 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :user
+  belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
+
   belongs_to :publication
   belongs_to :conversation
 	belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
