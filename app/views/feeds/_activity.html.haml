@@ -1,7 +1,7 @@
 .activity_container{:style => ("display: none;" unless @actions[post.id])}
 	/ %p.activity ACTIVITY
 	.interactions
-		-if @actions[post.id]
+		- if @actions[post.id]
 			- @actions[post.id].each do |interaction|
 				= image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
 		- if current_user

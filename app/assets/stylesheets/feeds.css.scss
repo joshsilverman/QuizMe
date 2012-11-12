@@ -220,7 +220,7 @@ body {
 				border-top-right-radius: 5px;
 			}
 
-			#related, #scoreboard, #directory {
+			#related, #scoreboard, #directory, #activity_stream {
 				background: white;
 				border-style: solid;
 				border-width: 1px;	
@@ -315,6 +315,46 @@ body {
 				}	
 			}
 
+			#activity_stream {
+				background: white;
+				border-style: solid;
+				border-width: 1px;	
+				position: relative;
+				margin-bottom: 15px;
+				background-color: rgba(250, 250, 250, .8);	
+				
+				.header {
+					background: none;
+				}
+
+				.content {
+					height: 48px;
+					margin-left: 46px !important;
+
+					.time_ago {
+						position: absolute;
+						right: 10px;
+						top: 6px;
+					}
+
+					img {
+						height: 38px !important;
+					}
+
+					.text_content{
+						position: relative;
+						bottom: 3px;
+
+						p {
+							display: none;
+							white-space: normal !important;
+							overflow: default !important;
+							text-overflow: default !important;
+						}		
+					}
+				}
+			}
+
 			#directory {
 				background: white;
 				border-style: solid;
@@ -389,7 +429,7 @@ body {
 	}
 }
 
-#posts, .modal_conversation_history, .recent_posts, .parent_post {
+#posts, .modal_conversation_history, .recent_posts, .parent_post, #retweet_question_modal {
 	.header {
 		border-style: solid;
 		border-width: 1px;
@@ -1004,4 +1044,8 @@ body {
 	.parent.answered {
 		border-bottom-width: 1px;
 	}
+}
+
+#retweet_question_modal .conversation {
+	border: 0px;
 }

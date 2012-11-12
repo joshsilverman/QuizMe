@@ -15,16 +15,25 @@ class Feed
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		@correct = $("#correct").val()
+
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
+
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
+		@initialize_tooltips()
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
 		$("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
+		$("#activity_stream p").show()
+		$("#activity_stream .content").dotdotdot({height: 55})
+		$("#retweet_question").on "click", (e) => 
+			e.preventDefault()
+			$("#retweet_question").button("loading")
+			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
@@ -40,11 +49,30 @@ class Feed
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
+	initialize_tooltips: =>
+		$("#post_question_tooltip").tooltip
+		$(".interaction").tooltip()
+		$("#directory img").tooltip()
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
 	# 	channel = pusher.subscribe(@name)
 	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
+	retweet: (e) =>
+		id = e.attr 'publication_id'
+		params = 
+			"publication_id" : id
+		$.ajax "/posts/retweet",
+			type: 'POST',
+			data: params
+			complete: => 
+				$("#retweet_question_modal").modal('hide')	
+				$('#retweet_question').button('reset')
+			success: (e) => 
+				post = $(".post[post_id=#{id}]")
+				post.find(".icon-retweet").fadeIn()	
+				post.find(".quiz").remove()
+				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	post_question: =>
 		return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#post_question_modal").modal()
@@ -136,15 +164,20 @@ class Post
 	constructor: (element) ->
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
-		@question = @element.find(".question").text()
+		@question = @element.find(".question_text").text()
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.find(".quiz").on "click", (e) => mixpanel.track("ask_a_friend", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed", "test-option": (if $(e.target).hasClass "rollover" then "rollover" else "cta")})
+		@element.find(".quiz").on "click", => 
+			$("#retweet_question_modal").find("img").attr "src", @image_url
+			$("#retweet_question_modal").find("h5").text(@asker_name)
+			$("#retweet_question_modal").find("p").text(@question)
+			$("#retweet_question_modal").find("#retweet_question").attr "publication_id", @id
+			$("#retweet_question_modal").modal()	
 		@element.hover(
 			=> 
-				@element.find(".quiz.rollover").css("visibility", "visible")
+				@element.find(".quiz.rollover").css("visibility", "visible") if window.feed.user_name != undefined
 				@element.find(".expand").css("color", "#08C")
 			=> 
 				@element.find(".quiz.rollover").css("visibility", "hidden") unless @expanded
@@ -179,7 +212,7 @@ class Post
 			@element.prev(".conversation").removeClass("active_prev")	
 		else 
 			@expanded = true
-			@element.find(".quiz").css("visibility", "visible")
+			@element.find(".quiz").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
 			@element.find(".subsidiaries").toggle(200, => 
@@ -224,7 +257,7 @@ class Post
 		if @element.find(".subsidiaries:visible").length > 0
 			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
 					@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-					@element.find("i").show()
+					@element.find(".icon-share-alt").show()
 				)
 			)
 		else
@@ -238,23 +271,6 @@ class Post
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
 		@element.find(".quiz_container").fadeIn(500)
-	open_quiz_modal: (e) => 
-		quiz = $(e.target)
-		unless quiz.attr "href"
-			url = quiz.attr "url"
-			params =
-				"asker_name" : window.feed.name
-				"question_id" : $(e.target).attr "question_id"
-				"provider" : "twi"
-				"intent" : "quiz"
-			$.ajax '/get_shortened_link',
-				type: 'POST'
-				data: params
-				success: (e) => 	
-					updated_url = url + "&url=#{e}"
-					quiz.attr("href", updated_url)
-					window.open(updated_url, "", "height=400,width=600")
-		mixpanel.track("ask_a_friend", {"account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed", "question_id" : $(e.target).attr "question_id"})
 
 
 $ -> 

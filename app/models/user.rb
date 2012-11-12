@@ -28,6 +28,19 @@ class User < ActiveRecord::Base
 		end
 	end
 
+	def update_user_interactions(params = {})
+		if params[:learner_level]
+			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
+		end
+		if params[:last_interaction_at]
+			params.delete :last_interaction_at unless self.last_interaction_at.blank? or params[:last_interaction_at] > self.last_interaction_at
+		end
+		if params[:last_answer_at]
+			params.delete :last_answer_at unless self.last_answer_at.blank? or params[:last_answer_at] > self.last_answer_at
+		end
+		self.update_attributes params	
+	end
+
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']
@@ -109,6 +122,45 @@ class User < ActiveRecord::Base
 		data[:scores] = scores
 		return data
 	end	
+
+	def self.engage_new_users
+		askers = User.askers
+		new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+		askers.each do |asker|
+			stop = false
+			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
+	    new_followers.each do |tid|
+	      break if stop
+	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
+	      sleep(1)
+	      next if User.find_by_twi_user_id(tid)
+	      user = User.create({:twi_user_id => tid})
+	      next unless new_user_questions[asker.id].present?
+	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}")
+	      Mixpanel.track_event "DM question to new follower", {
+	        :distinct_id => user.id,
+	        :account => asker.twi_screen_name
+	      }
+	      sleep(1)	      
+	    end
+	  end
+		# users = User.where("learner_level = 'unengaged' or learner_level = 'dm answer' and created_at > ?", 1.week.ago).group_by(&:learner_level)
+		# posts = Post.where("in_reply_to_user_id in (?)", users['unengaged'].collect(&:id)).order("created_at DESC").group_by(&:in_reply_to_user_id)
+		# users['unengaged'].each do |user|
+		# 	if posts[user.id].present?
+		# 		last_post = posts[user.id].last
+		# 		if last_post.intention == "initial dm" and last_post.created_at > 3.days.ago }
+		# 			#send second attempt DM question
+		# 		end			
+		# 	end
+		# end
+		# posts = Post.where("in_reply_to_user_id in (?) and interaction_type = 2", users['dm answer'].collect(&:id)).group_by(&:in_reply_to_user_id)
+		# users['dm answer'].each do |user|
+		# 	if posts[user.id].blank?
+		# 		# send mention question
+		# 	end	
+		# end
+	end
 
   def self.reengage_inactive_users(threshold = 1.week.ago)
     ## COLLECT DISENGAGING USERS

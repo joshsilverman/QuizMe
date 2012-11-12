@@ -9,6 +9,16 @@ ADMINS = [1, 3, 4, 11]
 
 URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")#"http://localhost:3000")
 
+LEARNER_LEVELS = [
+  "unengaged", 
+  "dm", 
+  "share", 
+  "mention", 
+  "dm answer", 
+  "twitter answer", 
+  "feed answer"
+]
+
 ###Response Bank ###
 CORRECT = [
   "That's right!",
@@ -195,6 +205,13 @@ ACCOUNT_DATA = {
     :retweet => [22, 374, 227], 
     :hashtags => ["trivia", "football", "nfl"],
     :category => "Sports"
+  },
+
+  #HarryPotterBk3
+  10565 => {
+    :retweet => [],
+    :hashtags => ['potterhead', 'potter', 'harrypotter', 'azkaban'],
+    :category => "Literature"
   }
 }
 

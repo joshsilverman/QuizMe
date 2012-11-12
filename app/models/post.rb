@@ -162,8 +162,19 @@ class Post < ActiveRecord::Base
     })  
     conversation.posts << app_post if app_post
 
+    current_user.update_user_interactions({
+      :learner_level => "feed answer", 
+      :last_interaction_at => user_post.created_at,
+      :last_answer_at => user_post.created_at
+    })    
     #check for follow-up test completion
-    Post.trigger_split_test(current_user.id, 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+      Post.trigger_split_test(current_user.id, 'mention reengagement') 
+      Mixpanel.track_event "answered incorrect follow up", {
+        :distinct_id => current_user.id,
+        :account => asker.twi_screen_name,
+      }
+    end
     #check for re-engage inactive test completion
     Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
 
@@ -175,20 +186,20 @@ class Post < ActiveRecord::Base
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(current_acct, tweet, long_url, lt, reply_post, user, conversation_id)
-    short_url = Post.shorten_url(long_url, 'twi', lt, current_acct.twi_screen_name) if long_url
+  def self.dm(user, recipient, text, options = {})    
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
     begin
-      res = current_acct.twitter.direct_message_create(user.twi_user_id, tweet)
-      dm = Post.create(
-        :user_id => current_acct.id,
+      puts user, recipient, text, options
+      res = user.twitter.direct_message_create(recipient.twi_user_id, text)
+      post = Post.create(
+        :user_id => user.id,
         :provider => 'twitter',
-        :text => tweet,
-        :engagement_type => 'pm',
+        :text => text,
         :provider_post_id => res.id.to_s,
-        :in_reply_to_post_id => reply_post.nil? ? nil : reply_post.id,
-        :in_reply_to_user_id => user.id,
-        :conversation_id => conversation_id,
-        :url => long_url ? short_url : nil,
+        :in_reply_to_post_id => options[:in_reply_to_post_id],
+        :in_reply_to_user_id => recipient.id,
+        :conversation_id => options[:conversation_id],
+        :url => options[:long_url] ? short_url : nil,
         :posted_via_app => true,
         :requires_action => false,
         :interaction_type => 4
@@ -197,38 +208,41 @@ class Post < ActiveRecord::Base
       puts "exception in DM user"
       puts exception.message
     end    
-    return dm
+    return post
   end
 
-  def self.dm_new_followers(current_acct)
-    to_message = []
-    new_followers = current_acct.twitter.follower_ids.ids.first(10)
-    new_followers.each do |tid|
-      user = User.find_by_twi_user_id(tid)
-      if user.nil?
-        user = User.create(:twi_user_id => tid)
-        to_message.push user
-      else
-        unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-          to_message.push user
-        end
-      end
-      current_acct.twitter.follow(tid)
-    end
-
-    to_message.each do |user|
-      dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
-      q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
-      Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
-    end
-  end
+  # def self.dm_new_followers(current_acct, to_message = [], stop = false)
+  #   new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(50) } || []
+  #   new_followers.each do |tid|
+  #     break if stop
+  #     user = User.find_by_twi_user_id(tid) || User.create(:twi_user_id => tid)
+  #     to_message.push user unless current_acct.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
+  #     stop = true if Post.twitter_request { current_acct.twitter.follow(tid) }.blank?
+  #     sleep(1)
+  #   end
+  #   puts "aggregated followers and followed back"
+  #   to_message.each do |user|
+  #     dm = user.posts.where(:provider => 'twitter', :engagement_type => 'pm').last
+  #     q = Question.find(current_acct.new_user_q_id) if current_acct.new_user_q_id
+  #     puts "DMing #{user.twi_screen_name}"
+  #     Post.dm(current_acct, "Here's your first question! #{q.text}", nil, nil, dm.nil? ? nil : dm, user, nil)
+  #     Mixpanel.track_event "DM question to new follower", {
+  #       :distinct_id => user.id,
+  #       :account => current_acct.twi_screen_name
+  #     }
+  #     sleep(1)
+  #   end
+  #   puts "ending dm_new_followers"
+  # end
 
   def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
     #@TODO UPDATE POST METHOD
     short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
-    res = current_acct.tumblr.text(current_acct.tum_url,
-                                    :title => "Daily Quiz!",
-                                    :body => "#{text} #{short_url}")
+    res = current_acct.tumblr.text(
+      current_acct.tum_url,
+      :title => "Daily Quiz!",
+      :body => "#{text} #{short_url}"
+    )
     Post.create(
       :asker_id => current_acct.id,
       :question_id => question_id,
@@ -254,9 +268,9 @@ class Post < ActiveRecord::Base
     last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
     last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
     client = current_acct.twitter
-    mentions = client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i})
-    retweets = client.retweets_of_me({:count => 50})
-    dms = client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i})
+    mentions = Post.twitter_request { client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i}) }
+    retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) }
+    dms = Post.twitter_request { client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i}) }
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
     retweets.each { |r| Post.save_retweet_data(r, current_acct) }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
@@ -295,6 +309,11 @@ class Post < ActiveRecord::Base
       :interaction_type => 2,
       :requires_action => true
     )
+
+    u.update_user_interactions({
+      :learner_level => "mention",
+      :last_interaction_at => post.created_at
+    })
 
     Post.classifier.classify post
     Post.trigger_split_test(u.id, 'dm reengagement')
@@ -337,6 +356,10 @@ class Post < ActiveRecord::Base
         :interaction_type => 3,
         :requires_action => true
       )
+      u.update_user_interactions({
+        :learner_level => "share", 
+        :last_interaction_at => post.created_at
+      })
       Post.trigger_split_test(u.id, 'dm reengagement')
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -382,6 +405,12 @@ class Post < ActiveRecord::Base
       :interaction_type => 4,
       :requires_action => true
     )
+
+    u.update_user_interactions({
+      :learner_level => "dm", 
+      :last_interaction_at => post.created_at
+    })
+
     Post.trigger_split_test(u.id, 'dm reengagement')
     Post.classifier.classify post
   end
@@ -418,15 +447,33 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 
+  def self.twitter_request(&block)
+    value = nil
+    attempts = 0
+    begin
+      value = block.call()
+    rescue Twitter::Error::ClientError 
+      puts "twitter error, retrying"
+      attempts += 1 
+      retry unless attempts > 2
+      puts "Failed to run #{block} after 3 attempts"
+    rescue Exception => exception
+      puts "Exception in twitter wrapper:"
+      puts exception.message
+    end 
+    return value   
+  end
+  
   extend Split::Helper
+
   def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id, true)
     finished(test_name, {:reset => reset})
   end
   
-  def self.create_split_test(user_id, test_name, a, b)
+  def self.create_split_test(user_id, test_name, *alternatives)
     ab_user.set_id(user_id, true)
     ab_user.confirm_js("WISR app", '')
-    ab_test(test_name, a, b)
+    ab_test(test_name, *alternatives)
   end
 end

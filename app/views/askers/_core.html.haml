@@ -1,0 +1,63 @@
+.core
+
+	%h2.handle_name 
+		%span.text All Handles 
+		%span.loading.hide= image_tag "ajax-loader.gif"
+
+	.data_row.row
+		.paulgraham_users.panel.left.rounded.span6
+			.paulgraham_stats.stats
+				.header
+					%h3 New/Existing 
+				.new
+					.container
+						%p.number
+						%p.period last 24 hours
+				.total
+					.container
+						%p.number
+						%p.period 7 day avg
+			.paulgraham_graph.graph
+
+		.dau_mau.panel.right.rounded.span6
+			.dau_mau_stats.stats
+				.header
+					%h3 DAU/MAU 
+				.new
+					.container
+						%p.number
+						%p.period last 24 hours
+				.total
+					.container
+						%p.number
+						%p.period 7 day avg
+			.dau_mau_graph.graph
+
+	.data_row.row
+		.econ_engine.panel.rounded.span6
+			.econ_engine_stats.stats
+				.header
+					%h3 Soc. Actions
+				.new
+					.container
+						%p.number
+						%p.period today
+				.total
+					.container
+						%p.number
+						%p.period users involved
+			.econ_engine_graph.graph
+
+		.daus.panel.right.rounded.span6
+			.daus_stats.stats
+				.header
+					%h3 DAUs
+				.new
+					.container
+						%p.number
+						%p.period last 24 hours
+				.total
+					.container
+						%p.number
+						%p.period last 30 days			
+			.daus_graph.graph

@@ -20,6 +20,7 @@ group :development do
   gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'quiet_assets'
+  gem 'oink'
 end
 
 group :assets do
@@ -59,3 +60,5 @@ gem 'sitemap_generator'
 gem 'best_in_place'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard' #  ||:git => 'https://github.com/bderusha/split', :path => '~/Documents/RoR/gems/split'
+gem 'newrelic_rpm'
+gem 'hirefireapp'

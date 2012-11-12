@@ -1,0 +1,920 @@
+<h3>Multiple Choice - Act 1, Scene 1</h3>
+<p before="7" lines="5"><b>1. Where is Elsinore in Act 1, Scene 1?</b><br />
+<b>a)</b> Denmark.<br />
+<b>b)</b> England.<br />
+<b>c)</b> Italy.<br />
+<b>d)</b> France.</p>
+<p before="7" lines="5"><b>2. What time of day is it when the play starts?</b><br />
+<b>a)</b> Morning.<br />
+<b>b)</b> Noon.<br />
+<b>c)</b> After dinner.<br />
+<b>d)</b> Late at night.</p>
+<p before="7" lines="5"><b>3. At the start of the play, what are Francisco and Bernardo doing?</b><br />
+<b>a)</b> They are fighting in a battle.<br />
+<b>b)</b> They are getting ready to go to sleep.<br />
+<b>c)</b> They are on watch.<br />
+<b>d)</b> They are eating a meal together.</p>
+<p before="7" lines="5"><b>4. Who does the ghost in Act 1, Scene 1 look like?</b><br />
+<b>a)</b> The king who just died.<br />
+<b>b)</b> The Queen.<br />
+<b>c)</b> The prince, Hamlet.<br />
+<b>d)</b> The king's advisor, Polonius.</p>
+<p before="7" lines="5"><b>5. How many times does the ghost appear in Act 1, Scene 1?</b><br />
+<b>a)</b> Three times.<br />
+<b>b)</b> Four times.<br />
+<b>c)</b> Once.<br />
+<b>d)</b> Twice.</p>
+<p before="7" lines="5"><b>6. What country did the late King go to battle against?</b><br />
+<b>a)</b> Denmark.<br />
+<b>b)</b> England.<br />
+<b>c)</b> Norway.<br />
+<b>d)</b> France.</p>
+<p before="7" lines="5"><b>7. In Act 1, Scene 1, why does Marcellus bring Horatio to talk to Francisco and Bernardo?</b><br />
+<b>a)</b> To show him his father's ghost.<br />
+<b>b)</b> To confirm what they have seen.<br />
+<b>c)</b> To tell them the latest gossip about Hamlet.<br />
+<b>d)</b> To cover for them while they take a break.</p>
+<p before="7" lines="5"><b>8. The ghost appears to Horatio and his companions in Act 1, Scene 1, but something seems to scare it into disappearing. What causes it to disappear?</b><br />
+<b>a)</b> When Horatio talks to it.<br />
+<b>b)</b> When the trumpets sound.<br />
+<b>c)</b> When the sun comes up.<br />
+<b>d)</b> When the cock crows.</p>
+<p before="7" lines="5"><b>9. After the ghost disappears, what does Bernardo say about the ghost's behavior?</b><br />
+<b>a)</b> It looks like it is in pain.<br />
+<b>b)</b> It looks like it wants to speak.<br />
+<b>c)</b> It looks like it is crying.<br />
+<b>d)</b> It looks like it wants to scare people.</p>
+<p before="7" lines="5"><b>10. At the end of Act 1, Scene 1, what does Horatio say he intends to do?</b><br />
+<b>a)</b> Talk to a priest.<br />
+<b>b)</b> Watch for the ghost on the next night.<br />
+<b>c)</b> Tell Prince Hamlet about the ghost.<br />
+<b>d)</b> Talk to the king.</p>
+<p before="7" lines="5"><b>11. Who is Horatio?</b><br />
+<b>a)</b> Ophelia's brother.<br />
+<b>b)</b> Hamlet's friend.<br />
+<b>c)</b> The prince of Denmark.<br />
+<b>d)</b> Hamlet's brother.</p>
+<p before="7" lines="5"><b>12. What is the weather like at the beginning of the play?</b><br />
+<b>a)</b> Hot.<br />
+<b>b)</b> Snowing.<br />
+<b>c)</b> Pouring rain.<br />
+<b>d)</b> Very cold.</p>
+<h3>Multiple Choice - Act 1, Scene 2</h3>
+<p before="7" lines="5"><b>1. In Act 1, Scene 2, what two events does Claudius describe?</b><br />
+<b>a)</b> His coronation and the war with Norway.<br />
+<b>b)</b> The war that killed the last king and the upcoming marriage of his nephew.<br />
+<b>c)</b> His brother's wedding and the birth of his nephew.<br />
+<b>d)</b> His brother's death and his own marriage to Gertrude.</p>
+<p before="7" lines="5"><b>2. What is the Prince of Norway's name?</b><br />
+<b>a)</b> Marcellus.<br />
+<b>b)</b> Claudius.<br />
+<b>c)</b> Fortinbras.<br />
+<b>d)</b> Horatio.</p>
+<p before="7" lines="5"><b>3. Who is Claudius?</b><br />
+<b>a)</b> Hamlet's uncle and the new king.<br />
+<b>b)</b> Hamlet's brother.<br />
+<b>c)</b> The Prince of Norway.<br />
+<b>d)</b> Hamlet's father.</p>
+<p before="7" lines="5"><b>4. What is Hamlet's mother's name?</b><br />
+<b>a)</b> Ophelia.<br />
+<b>b)</b> Fortinbras.<br />
+<b>c)</b> Gertrude.<br />
+<b>d)</b> Hecuba.</p>
+<p before="7" lines="5"><b>5. Which two characters is Laertes related to?</b><br />
+<b>a)</b> Claudius and Hamlet.<br />
+<b>b)</b> Gertrude and Ophelia.<br />
+<b>c)</b> Gertrude and Hamlet.<br />
+<b>d)</b> Polonius and Ophelia.</p>
+<p before="7" lines="5"><b>6. When the audience first sees Claudius, he gives a speech about the current situation in Denmark and then speaks to Hamlet about his behavior. What does Claudius say to Hamlet at this early point in the play?</b><br />
+<b>a)</b> He is too frightened.<br />
+<b>b)</b> He is too sad.<br />
+<b>c)</b> He is too angry.<br />
+<b>d)</b> He is too happy.</p>
+<p before="7" lines="5"><b>7. During his first soliloquy, what does Hamlet say about his mother?</b><br />
+<b>a)</b> She is grieving too much for his father.<br />
+<b>b)</b> She has too much power over the country.<br />
+<b>c)</b> She forgot his father too quickly.<br />
+<b>d)</b> She is responsible for his father's death.</p>
+<p before="7" lines="5"><b>8. Before Hamlet hears about the ghost, how does he feel about Claudius?</b><br />
+<b>a)</b> He misses him.<br />
+<b>b)</b> He is afraid of him.<br />
+<b>c)</b> He loves him.<br />
+<b>d)</b> He does not trust him.</p>
+<p before="7" lines="5"><b>9. How does Horatio describe the ghost to Hamlet?</b><br />
+<b>a)</b> Exciting.<br />
+<b>b)</b> More sad than angry.<br />
+<b>c)</b> More angry than sad.<br />
+<b>d)</b> Frightening.</p>
+<p before="7" lines="5"><b>10. What does Hamlet say when he first hears about the ghost?</b><br />
+<b>a)</b> He wants to talk to it.<br />
+<b>b)</b> He does not believe it exists.<br />
+<b>c)</b> He thinks Horatio is inventing it to distract him.<br />
+<b>d)</b> He wants it to leave him alone.</p>
+<p before="7" lines="5"><b>11. Before he has seen the ghost, how does Hamlet describe his parents' marriage?</b><br />
+<b>a)</b> His mother hated his father.<br />
+<b>b)</b> His father hated his mother.<br />
+<b>c)</b> His parents barely spoke to each other.<br />
+<b>d)</b> His mother was devoted to his father.</p>
+<p before="7" lines="5"><b>12. Early in the play, what country does Claudius send messengers to?</b><br />
+<b>a)</b> Norway.<br />
+<b>b)</b> France.<br />
+<b>c)</b> England.<br />
+<b>d)</b> Denmark.</p>
+<h3>Multiple Choice - Act 1, Scene 3</h3>
+<p before="7" lines="5"><b>1. Who is Ophelia?</b><br />
+<b>a)</b> Daughter of Polonius, sister of Laertes.<br />
+<b>b)</b> Daughter of Claudius, cousin of Hamlet.<br />
+<b>c)</b> Daughter of Gertrude, sister of Hamlet.<br />
+<b>d)</b> Daughter of Hamlet, sister of Horatio.</p>
+<p before="7" lines="5"><b>2. Who is Ophelia in love with?</b><br />
+<b>a)</b> Polonius.<br />
+<b>b)</b> Hamlet.<br />
+<b>c)</b> Laertes.<br />
+<b>d)</b> Horatio.</p>
+<p before="7" lines="5"><b>3. Before he returns to school, what does Laertes tell Ophelia about her boyfriend?</b><br />
+<b>a)</b> Hamlet just wants her to sleep with him.<br />
+<b>b)</b> Horatio just wants her to sleep with him.<br />
+<b>c)</b> Polonius is an abusive boyfriend.<br />
+<b>d)</b> As a prince, Hamlet may not get to choose who he marries.</p>
+<p before="7" lines="5"><b>4. What does Polonius tell Laertes about borrowing money?</b><br />
+<b>a)</b> Borrowing money is all right, but do not lend money.<br />
+<b>b)</b> Do not borrow money, but lend money if you can.<br />
+<b>c)</b> Borrowing and lending money is a good thing to do.<br />
+<b>d)</b> Do not borrow or lend money.</p>
+<p before="7" lines="5"><b>5. What does Polonius say is the most important thing for Laertes to remember as he leaves Elsinore?</b><br />
+<b>a)</b> Do not talk too much.<br />
+<b>b)</b> Do well in school.<br />
+<b>c)</b> Be true to yourself.<br />
+<b>d)</b> Do not borrow money.</p>
+<p before="7" lines="5"><b>6. After Laertes has left in Act 1, Scene 3, Polonius talks to Ophelia about her romance. What does Polonius tell her?</b><br />
+<b>a)</b> Do not go to bed with him.<br />
+<b>b)</b> Make sure he does not hurt you.<br />
+<b>c)</b> Ask him to marry you.<br />
+<b>d)</b> Do not trust his promises of love.</p>
+<p before="7" lines="5"><b>7. In Act 1, Scene 3, what does Polonius ask Ophelia to do about Hamlet?</b><br />
+<b>a)</b> Flirt with him.<br />
+<b>b)</b> Stay away from him.<br />
+<b>c)</b> Make friends with him.<br />
+<b>d)</b> Spy on him.</p>
+<p before="7" lines="5"><b>8. In Act 1, Scene 3, where is Laertes going?</b><br />
+<b>a)</b> Off to war.<br />
+<b>b)</b> To go to a new school.<br />
+<b>c)</b> Back to college.<br />
+<b>d)</b> To live in another country.</p>
+<p before="7" lines="5"><b>9. What does Ophelia tell Laertes about his advice on her love life?</b><br />
+<b>a)</b> Stop telling me what to do.<br />
+<b>b)</b> You give bad advice.<br />
+<b>c)</b> Make sure you follow your own advice.<br />
+<b>d)</b> Your advice is very wise.</p>
+<p before="7" lines="5"><b>10. Polonius gives Laertes plenty of advice before Laertes leaves Elsinore. What does Polonius tell Laertes about talking and listening to people?</b><br />
+<b>a)</b> Practice talking to strangers to build up your confidence.<br />
+<b>b)</b> Talk to people, but do not listen to them.<br />
+<b>c)</b> Let women do the talking; men should listen.<br />
+<b>d)</b> Listen to people, but do not talk very much.</p>
+<p before="7" lines="5"><b>11. When he is giving Laertes advice, what does Polonius say about friends?</b><br />
+<b>a)</b> Good people always have lots of friends.<br />
+<b>b)</b> Keep your good friends close to you.<br />
+<b>c)</b> Good people rarely have any friends.<br />
+<b>d)</b> Do not worry about making friends.</p>
+<p before="7" lines="5"><b>12. In Act 1, Scene 3, before Laertes leaves Elsinore, Polonius gives him advice about clothes. What does Polonius say?</b><br />
+<b>a)</b> Nobody pays attention to what you wear.<br />
+<b>b)</b> Get costly, but not showy or ostentatious clothes.<br />
+<b>c)</b> Buy the least expensive clothes you can find.<br />
+<b>d)</b> Buy the fanciest clothes you can find.</p>
+<h3>Multiple Choice - Act 1, Scene 4</h3>
+<p before="7" lines="5"><b>1. Where does Act 1, Scene 4 take place?</b><br />
+<b>a)</b> On the platform.<br />
+<b>b)</b> On a ship.<br />
+<b>c)</b> In the throne room.<br />
+<b>d)</b> In Hamlet's bedroom.</p>
+<p before="7" lines="5"><b>2. What time of day is it in Act 1, Scene 4?</b><br />
+<b>a)</b> Almost midnight.<br />
+<b>b)</b> After midnight.<br />
+<b>c)</b> Sunset.<br />
+<b>d)</b> Lunch time.</p>
+<p before="7" lines="5"><b>3. As Hamlet and the others wait to see the ghost in Act 1, Scene 4, what do they hear in the distance?</b><br />
+<b>a)</b> A cock crowing.<br />
+<b>b)</b> Men shouting and women screaming.<br />
+<b>c)</b> Trumpets being blown and ordinance being fired.<br />
+<b>d)</b> Drunken singing.</p>
+<p before="7" lines="5"><b>4. What is the King doing during Act 1, Scene 4?</b><br />
+<b>a)</b> Praying.<br />
+<b>b)</b> Drinking and celebrating.<br />
+<b>c)</b> Shouting and starting a fight.<br />
+<b>d)</b> Reading and signing documents.</p>
+<p before="7" lines="5"><b>5. As they wait for the ghost, Hamlet describes the King's nightly tradition. What does Hamlet think about this tradition?</b><br />
+<b>a)</b> It makes the Danes look bad to other countries.<br />
+<b>b)</b> It is something he should stop doing now that he is King.<br />
+<b>c)</b> It should help him be a good leader.<br />
+<b>d)</b> It is an old tradition that every king should follow.</p>
+<p before="7" lines="5"><b>6. How does Hamlet react when he sees the ghost for the first time?</b><br />
+<b>a)</b> He is startled, but tries to talk to it.<br />
+<b>b)</b> He is angry and tries to attack it.<br />
+<b>c)</b> He is frightened and runs away.<br />
+<b>d)</b> He is upset and starts to cry.</p>
+<p before="7" lines="5"><b>7. When Hamlet first sees the ghost, what does he call it?</b><br />
+<b>a)</b> King, father, royal Dane.<br />
+<b>b)</b> Fearsome creature.<br />
+<b>c)</b> Devil, demon, bane of Heaven.<br />
+<b>d)</b> Angel and minister of grace.</p>
+<p before="7" lines="5"><b>8. What does the ghost do to Hamlet in Act 1, Scene 4?</b><br />
+<b>a)</b> Puts a curse on him.<br />
+<b>b)</b> Smiles at him.<br />
+<b>c)</b> Ignores him.<br />
+<b>d)</b> Beckons him to follow.</p>
+<p before="7" lines="5"><b>9. When Hamlet and his friends first see the ghost, what do Hamlet's friends tell him to do?</b><br />
+<b>a)</b> Do not go with the ghost.<br />
+<b>b)</b> Tell the king about the ghost.<br />
+<b>c)/b> Send for a priest.<br />
+<b>d)</b> Go with the ghost.</p>
+<p before="7" lines="5"><b>10. Does Hamlet think the ghost can harm him?</b><br />
+<b>a)</b> No.<br />
+<b>b)</b> Yes.<br />
+<b>c)</b> Only if he is afraid of it.<br />
+<b>d)</b> Not if he carries garlic and a crucifix.</p>
+<p before="7" lines="5"><b>11. What does Horatio say the ghost might do to Hamlet?</b><br />
+<b>a)</b> Curse him.<br />
+<b>b)</b> Bless him.<br />
+<b>c)</b> Kill him.<br />
+<b>d)</b> Drive him crazy.</p>
+<p before="7" lines="5"><b>12. Once Hamlet follows the ghost, what do Hamlet's friends decide to do?</b><br />
+<b>a)</b> Follow Hamlet and the ghost.<br />
+<b>b)</b> Get Hamlet to see a doctor.<br />
+<b>c)</b> Tell the King about Hamlet's strange behavior.<br />
+<b>d)</b> Leave Hamlet alone with the ghost.</p>
+<h3>Multiple Choice - Act 1, Scene 5</h3>
+<p before="7" lines="5"><b>1. Who does the ghost claim to be?</b><br />
+<b>a)</b> Hamlet's father.<br />
+<b>b)</b> Hamlet's grandfather.<br />
+<b>c)</b> A tortured spirit.<br />
+<b>d)</b> The ghost of kings of Denmark past.</p>
+<p before="7" lines="5"><b>2. When the ghost first speaks to Hamlet, how does it describe its experience?</b><br />
+<b>a)</b> It is tortured and burned in a fire all the time.<br />
+<b>b)</b> It walks at night and is frozen in a block of ice during the day.<br />
+<b>c)</b> It walks at night and is tortured by day.<br />
+<b>d)</b> It walks all the time, hoping someone will set it free.</p>
+<p before="7" lines="5"><b>3. What shocking news does the ghost deliver to Hamlet in Act 1, Scene 5?</b><br />
+<b>a)</b> Claudius killed Hamlet's father.<br />
+<b>b)</b> Laertes killed Hamlet's father.<br />
+<b>c)</b> Hamlet's mother killed Hamlet's father.<br />
+<b>d)</b> Ophelia killed Hamlet's father.</p>
+<p before="7" lines="5"><b>4. What is the public explanation of the last king's death?</b><br />
+<b>a)</b> He had a heart attack.<br />
+<b>b)</b> He died in his sleep.<br />
+<b>c)</b> He was stung by a serpent.<br />
+<b>d)</b> He was stabbed.</p>
+<p before="7" lines="5"><b>5. What is the real reason for the last king's death?</b><br />
+<b>a)</b> Poison poured in his ear.<br />
+<b>b)</b> Poison poured down his throat.<br />
+<b>c)</b> A heart attack.<br />
+<b>d)</b> A knife in the back.</p>
+<p before="7" lines="5"><b>6. What other "crime" has been committed against the last king?</b><br />
+<b>a)</b> Claudius stole from the state treasury.<br />
+<b>b)</b> Laertes seduced his wife.<br />
+<b>c)</b> Claudius seduced his wife.<br />
+<b>d)</b> Polonius stole from the state treasury.</p>
+<p before="7" lines="5"><b>7. During their first conversation, what does the ghost tell Hamlet about his mother?</b><br />
+<b>a)</b> What happened is her fault.<br />
+<b>b)</b> Protect her from the murderer.<br />
+<b>c)</b> Do not blame her for what happened.<br />
+<b>d)</b> She is a good woman.</p>
+<p before="7" lines="5"><b>8. In Act 1, Scene 5, what does the ghost ask Hamlet to do?</b><br />
+<b>a)</b> Hire an exorcist.<br />
+<b>b)</b> Help the new king.<br />
+<b>c)</b> Get revenge.<br />
+<b>d)</b> Have a priest pray for its soul.</p>
+<p before="7" lines="5"><b>9. What does Hamlet tell his friends about his meeting with the ghost?</b><br />
+<b>a)</b> He says the ghost is a liar.<br />
+<b>b)</b> He repeats the truth about the last king's death.<br />
+<b>c)</b> He pretends that he did not see a ghost.<br />
+<b>d)</b> He tells them nothing.</p>
+<p before="7" lines="5"><b>10. After his first meeting with the ghost, what does Hamlet ask his friends to do?</b><br />
+<b>a)</b> Help him avenge the murder.<br />
+<b>b)</b> Tell the world about the last king's death.<br />
+<b>c)</b> Keep his secret.<br />
+<b>d)</b> Help him break the news to his mother.</p>
+<p before="7" lines="5"><b>11. At the end of the first act, what does Hamlet warn his friends he might do?</b><br />
+<b>a)</b> Kill somebody.<br />
+<b>b)</b> Pretend to be crazy.<br />
+<b>c)</b> Get married.<br />
+<b>d)</b> Leave the country forever.</p>
+<p before="7" lines="5"><b>12. Hamlet says "The time is out of joint: O cursed spite/ That ever I was born to set it right!" What does that mean?</b><br />
+<b>a)</b> He wishes he did not have to do the things he expects to do.<br />
+<b>b)</b> He wishes he was not born a prince.<br />
+<b>c)</b> He cannot believe what the ghost has told him.<br />
+<b>d)</b> He cannot believe he has seen a ghost.</p>
+<h3>Multiple Choice - Act 2, Scene 1</h3>
+<p before="7" lines="5"><b>1. At the beginning of Act 2, what does Polonius ask Reynaldo to find out?</b><br />
+<b>a)</b> Find out if his son is getting enough to eat.<br />
+<b>b)</b> Find out if his son is behaving appropriately.<br />
+<b>c)</b> Find out how his son is doing in school.<br />
+<b>d)</b> Find out if his son has a girlfriend.</p>
+<p before="7" lines="5"><b>2. Polonius gives Reynaldo very specific instructions about how to find the information he wants. What are those instructions?</b><br />
+<b>a)</b> Lie about him if that helps bring out the truth.<br />
+<b>b)</b> Ask his son directly.<br />
+<b>c)</b> Talk to the local police department.<br />
+<b>d)</b> Ask his son's friends and teachers.</p>
+<p before="7" lines="5"><b>3. In Act 2, Scene 1, why is Ophelia frightened?</b><br />
+<b>a)</b> She had an unpleasant encounter with Hamlet.<br />
+<b>b)</b> She saw the ghost talking to Hamlet.<br />
+<b>c)</b> She saw a fight between Claudius and Hamlet.<br />
+<b>d)</b> She saw Hamlet slap Gertrude in the face.</p>
+<p before="7" lines="5"><b>4. In Act 2, Scene 1, what does Ophelia say about Hamlet's clothes?</b><br />
+<b>a)</b> He was wearing his father's armor.<br />
+<b>b)</b> His clothes were in disarray.<br />
+<b>c)</b> He was still dressed all in black.<br />
+<b>d)</b> He was wearing the shirt she embroidered for him.</p>
+<p before="7" lines="5"><b>5. In Act 2, Scene 1, what does Ophelia say about the look on Hamlet's face?</b><br />
+<b>a)</b> He looked like he wanted to kiss her.<br />
+<b>b)</b> He looked like he was ready to cry.<br />
+<b>c)</b> He looked like he came out of Hell.<br />
+<b>d)</b> He looked like he had seen a ghost.</p>
+<p before="7" lines="5"><b>6. After hearing Ophelia's description of Hamlet, what reason does Polonius suggest for Hamlet's strange behavior?</b><br />
+<b>a)</b> Hamlet is mad with love for Ophelia.<br />
+<b>b)</b> Hamlet is taking his father's death too hard.<br />
+<b>c)</b> Hamlet has studied too hard at school.<br />
+<b>d)</b> Hamlet has always been a strange boy and his father's death has driven him insane.</p>
+<p before="7" lines="5"><b>7. In Act 2, Scene 1, how does Ophelia describe Hamlet's behavior?</b><br />
+<b>a)</b> He would not look at her and would not speak to her.<br />
+<b>b)</b> He stared at her but did not speak.<br />
+<b>c)</b> He yelled at her but would not look at her.<br />
+<b>d)</b> He stared at her, then started to yell at her.</p>
+<p before="7" lines="5"><b>8. After discussing Hamlet with Polonius in Act 1, how has Ophelia interacted with Hamlet?</b><br />
+<b>a)</b> She has continued to see him.<br />
+<b>b)</b> She has avoided him most of the time.<br />
+<b>c)</b> She has spent even more time with him than she used to.<br />
+<b>d)</b> She has avoided him entirely.</p>
+<p before="7" lines="5"><b>9. After listening to Ophelia's description of Hamlet, Polonius believes he has found the explanation for Hamlet's behavior. What does he decide to do next?</b><br />
+<b>a)</b> Get Hamlet to see a doctor.<br />
+<b>b)</b> Tell the king.<br />
+<b>c)</b> Talk to Hamlet himself.<br />
+<b>d)</b> Tell the queen.</p>
+<p before="7" lines="5"><b>10. What does Polonius ask Reynaldo to give to his son?</b><br />
+<b>a)</b> Money.<br />
+<b>b)</b> Money and written notes.<br />
+<b>c)</b> Clothes.<br />
+<b>d)</b> Written notes.</p>
+<p before="7" lines="5"><b>11. What was Ophelia doing when she was frightened by Hamlet in Act 2, Scene 1?</b><br />
+<b>a)</b> Eating.<br />
+<b>b)</b> Sleeping.<br />
+<b>c)</b> Reading.<br />
+<b>d)</b> Sewing.</p>
+<p before="7" lines="5"><b>12. After hearing about Hamlet's strange behavior, what does Polonius say about his own decisions?</b><br />
+<b>a)</b> By telling the king that Hamlet is crazy, he may have gotten himself in trouble.<br />
+<b>b)</b> By telling the queen that Hamlet is crazy, he may have upset her.<br />
+<b>c)</b> By telling Ophelia to stay away, he may have saved her from worse treatment.<br />
+<b>d)</b> By telling Ophelia to stay away, he may have made Hamlet worse.</p>
+<h3>Multiple Choice - Act 2, Scene 2</h3>
+<p before="7" lines="5"><b>1. Who are Rosencrantz and Guildenstern?</b><br />
+<b>a)</b> The ambassadors to Norway.<br />
+<b>b)</b> Gertrude's nephews.<br />
+<b>c)</b> Servants of the court.<br />
+<b>d)</b> Hamlet's old friends.</p>
+<p before="7" lines="5"><b>2. After welcoming them to Elsinore, what does Claudius ask Rosencrantz and Guildenstern to do?</b><br />
+<b>a)</b> Watch Hamlet and make sure he does not hurt anyone.<br />
+<b>b)</b> Convince Hamlet to go back to school.<br />
+<b>c)</b> Convince Fortinbras not to attack Denmark.<br />
+<b>d)</b> Cheer Hamlet up and find out what is wrong with him.</p>
+<p before="7" lines="5"><b>3. What message do the ambassadors bring Claudius back from Norway?</b><br />
+<b>a)</b> Fortinbras does not plan to attack any country at all.<br />
+<b>b)</b> Fortinbras wants to take over Denmark and Poland.<br />
+<b>c)</b> Fortinbras will attack Poland, not Denmark.<br />
+<b>d)</b> Fortinbras wants to take over Denmark.</p>
+<p before="7" lines="5"><b>4. After the ambassadors have left, what piece of writing does Polonius share with Claudius and Gertrude?</b><br />
+<b>a)</b> A treaty between Norway and Poland.<br />
+<b>b)</b> Hamlet's plan to kill Claudius.<br />
+<b>c)</b> A love letter from Hamlet to Ophelia.<br />
+<b>d)</b> A letter from Hamlet to Fortinbras.</p>
+<p before="7" lines="5"><b>5. Early in Act 2, Polonius believes he has found the cause of Hamlet's behavior. What is the first thing he does to test his theory?</b><br />
+<b>a)</b> Send him to a doctor.<br />
+<b>b)</b> Eavesdrop on him while he talks to Horatio.<br />
+<b>c)</b> Eavesdrop on him while he prays.<br />
+<b>d)</b> Arrange for him to meet Ophelia and spy on them together.</p>
+<p before="7" lines="5"><b>6. In Act 2, Scene 2, what happens when Polonius first tries to speak to Hamlet?</b><br />
+<b>a)</b> Hamlet ignores him.<br />
+<b>b)</b> Hamlet is glad to see him.<br />
+<b>c)</b> Hamlet does not seem to recognize him.<br />
+<b>d)</b> Hamlet argues with him.</p>
+<p before="7" lines="5"><b>7. When Polonius tries to speak with Hamlet, does Polonius really believe Hamlet is crazy?</b><br />
+<b>a)</b> Yes, Polonius says Hamlet is totally insane.<br />
+<b>b)</b> Yes, but Polonius thinks it is easily cured.<br />
+<b>c)</b> No, Polonius does not think Hamlet is crazy at all.<br />
+<b>d)</b> Not entirely -- Polonius sees some reason or logic within the craziness.</p>
+<p before="7" lines="5"><b>8. What does Hamlet learn about Rosencrantz and Guildenstern's reasons for visiting Elsinore?</b><br />
+<b>a)</b> They came to visit him.<br />
+<b>b)</b> They were sent for by the king.<br />
+<b>c)</b> They came to see his father's funeral.<br />
+<b>d)</b> They were sent for by Polonius.</p>
+<p before="7" lines="5"><b>9. In their first conversation together, what important information does Hamlet reveal to Rosencrantz and Guildenstern?</b><br />
+<b>a)</b> He feels like he really is going crazy.<br />
+<b>b)</b> He tells them about the ghost and his suspicions of Claudius.<br />
+<b>c)</b> He tells them that he wants to marry Ophelia.<br />
+<b>d)</b> He is not crazy -- at least, not all the time.</p>
+<p before="7" lines="5"><b>10. Hamlet is delighted that the players, a group of traveling actors, are at Elsinore. He welcomes them and asks them for two favors. What are those two favors?</b><br />
+<b>a)</b> To perform both "The Murder of Gonzago" and "Priam and Hecuba" for the court.<br />
+<b>b)</b> Not to perform "The Murder of Gonzago" and to perform Hamlet's favorite play instead.<br />
+<b>c)</b> To perform "The Murder of Gonzago" and to let Hamlet play a role in it.<br />
+<b>d)</b> To perform "The Murder of Gonzago" and to add in a speech with new lines.</p>
+<p before="7" lines="5"><b>11. After watching the players give a speech about Hecuba and Priam, what does Hamlet say impresses him the most?</b><br />
+<b>a)</b> How much emotion they are able to summon up for a performance.<br />
+<b>b)</b> How confident they are in their performances.<br />
+<b>c)</b> How quickly they can learn new lines in a script.<br />
+<b>d)</b> How intelligent they are.</p>
+<p before="7" lines="5"><b>12. At the end of Act 2, Scene 2, what does Hamlet reveal about his reasons for wanting the players to perform?</b><br />
+<b>a)</b> He thinks the players are very talented.<br />
+<b>b)</b> He thinks the play will distract him.<br />
+<b>c)</b> He wants to use the play to test Claudius's conscience.<br />
+<b>d)</b> He thinks the play will remind Gertrude of her first husband.</p>
+<h3>Multiple Choice - Act 3, Scene 1</h3>
+<p before="7" lines="5"><b>1.  In Act 3, Scene 1, after they have had some time to talk to Hamlet, what do Rosencrantz and Guildenstern say about his behavior?</b><br />
+<b>a)</b> He is just unhappy about his father's death.<br />
+<b>b)</b> He acts strangely, but does not seem crazy.<br />
+<b>c)</b> He has not changed at all. He's normal.<br />
+<b>d)</b> He has lost his mind.</p>
+<p before="7" lines="5"><b>2. What is the main idea of Hamlet's "To be or not to be" speech?</b><br />
+<b>a)</b> Hamlet is thinking about proposing to Ophelia.<br />
+<b>b)</b> Hamlet is thinking about killing himself.<br />
+<b>c)</b> Hamlet is thinking about killing Claudius.<br />
+<b>d)</b> Hamlet is thinking about killing Ophelia.</p>
+<p before="7" lines="5"><b>3. Hamlet sees Ophelia just as he finishes the "To be or not to be" speech. How does he act when he first sees her?</b><br />
+<b>a)</b> He runs away.<br />
+<b>b)</b> He stares at her but says nothing.<br />
+<b>c)</b> He greets her pleasantly.<br />
+<b>d)</b> He yells at her.</p>
+<p before="7" lines="5"><b>4. The tone of the conversation between Hamlet and Ophelia in Act 3, Scene 1 changes abruptly when Ophelia does what?</b><br />
+<b>a)</b> Tries to leave the room.<br />
+<b>b)</b> Gives back the letters and gifts Hamlet gave her.<br />
+<b>c)</b> Mentions her father.<br />
+<b>d)</b> Kisses Hamlet.</p>
+<p before="7" lines="5"><b>5. In Act 3, Scene 1, what does Hamlet tell Ophelia about his feelings for her?</b><br />
+<b>a)</b> He says both that he loved and he did not love her.<br />
+<b>b)</b> He says he does not know if he ever loved her.<br />
+<b>c)</b> He says he is still in love with her.<br />
+<b>d)</b> He says he never loved her.</p>
+<p before="7" lines="5"><b>6. After telling Ophelia to get to a nunnery, what does Hamlet say about marriage?</b><br />
+<b>a)</b> Marriage is the best thing Ophelia can do with her life.<br />
+<b>b)</b> Marriage is better for women than for men.<br />
+<b>c)</b> Marriage is an old-fashioned institution.<br />
+<b>d)</b> We shall have no more marriage.</p>
+<p before="7" lines="5"><b>7. Hamlet makes an ominous statement about married people: "those that are married already, all but one, shall live." What does that mean and who is he talking about?</b><br />
+<b>a)</b> Everyone who is currently married will stay alive, except one person: Claudius.<br />
+<b>b)</b> Everyone who plans to be married soon should be killed, except one person: Ophelia.<br />
+<b>c)</b> Everyone who is currently married will be killed, except one person: Gertrude.<br />
+<b>d)</b> Everyone who is currently married will stay alive, except one person: Polonius.</p>
+<p before="7" lines="5"><b>8. After Hamlet yells at Ophelia to go to a nunnery, what does she say about him?</b><br />
+<b>a)</b> She is angry because she does not think he is crazy, and he has hurt her feelings.<br />
+<b>b)</b> She is angry at him because she thinks he is crazy.<br />
+<b>c)</b> She is sorry for him and for herself, because she thinks he is crazy.<br />
+<b>d)</b> She is relieved that she did not marry him.</p>
+<p before="7" lines="5"><b>9. What do Rosencrantz and Guildenstern tell Claudius that Hamlet is excited about in Act 3, Scene 1?</b><br />
+<b>a)</b> Fencing with Laertes.<br />
+<b>b)</b> Seeing the players perform.<br />
+<b>c)</b> Seeing Ophelia again.<br />
+<b>d)</b> Committing suicide.</p>
+<p before="7" lines="5"><b>10. After Claudius and Polonius watch Hamlet interact with Ophelia in Act 3, Scene 1, what does Claudius say about Hamlet's behavior?</b><br />
+<b>a)</b> He is convinced that Hamlet needs to see a doctor.<br />
+<b>b)</b> He is suspicious that Hamlet is not really crazy.<br />
+<b>c)</b> He does not think Hamlet is crazy because of love for Ophelia.<br />
+<b>d)</b> He is convinced Hamlet is crazy because of love for Ophelia.</p>
+<p before="7" lines="5"><b>11. After watching Hamlet and Ophelia together in Act 3, Scene 1, what does Claudius decide to do with Hamlet?</b><br />
+<b>a)</b> Send him to England.<br />
+<b>b)</b> Have a private talk with him.<br />
+<b>c)</b> Send him back to school.<br />
+<b>d)</b> Send him to a hospital.</p>
+<p before="7" lines="5"><b>12. Polonius asks Claudius to arrange for Hamlet to go somewhere after the play's performance. Where is Hamlet supposed to go?</b><br />
+<b>a)</b> To see a doctor.<br />
+<b>b)</b> To see Ophelia.<br />
+<b>c)</b> To see his mother.<br />
+<b>d)</b> To see Claudius.</p>
+<h3>Multiple Choice - Act 3, Scene 2</h3>
+<p before="7" lines="5"><b>1. Before the play is performed, Hamlet has a long conversation with the First Player. What is he telling the Player?</b><br />
+<b>a)</b> Hamlet is asking him about the life of an actor.<br />
+<b>b)</b> Hamlet is complaining about how Ophelia is acting.<br />
+<b>c)</b> Hamlet is telling him about the king's death.<br />
+<b>d)</b> Hamlet is coaching him on how to perform.</p>
+<p before="7" lines="5"><b>2. What does Hamlet ask Horatio to do during the play's performance?</b><br />
+<b>a)</b> Watch Polonius and see if he reacts to the play.<br />
+<b>b)</b> Help Hamlet kill Claudius as the play is performed.<br />
+<b>c)</b> Watch Gertrude and see if she reacts to the play.<br />
+<b>d)</b> Watch Claudius and see if he reacts to the play.</p>
+<p before="7" lines="5"><b>3. Who asks Hamlet to sit nearby during the play? Who does Hamlet prefer to sit with?</b><br />
+<b>a)</b> Getrude wants Hamlet to sit by her, but he prefers Ophelia.<br />
+<b>b)</b> Gertrude wants Hamlet to sit by her, but he prefers Horatio.<br />
+<b>c)</b> Ophelia wants Hamlet to sit by her, but he prefers Horatio.<br />
+<b>d)</b> Claudius wants Hamlet to sit nearby, but he prefers Ophelia.</p>
+<p before="7" lines="5"><b>4. Ophelia comes to watch the play. Before the play begins, how does Hamlet act towards her?</b><br />
+<b>a)</b> He is friendly and apologizes for his earlier behavior.<br />
+<b>b)</b> He flirts with her and makes suggestive remarks.<br />
+<b>c)</b> He ignores her and pretends he does not see her.<br />
+<b>d)</b> He yells at her and tries to hit her.</p>
+<p before="7" lines="5"><b>5. When the play shows a king being poisoned, how does the current king, Claudius, react?</b><br />
+<b>a)</b> He is angry and asks Hamlet if he is making an accusation.<br />
+<b>b)</b> He is bored and does not seem to care.<br />
+<b>c)</b> He is uneasy and makes a joke about it.<br />
+<b>d)</b> He is upset and leaves before the play ends.</p>
+<p before="7" lines="5"><b>6. What is the first part of the players' performance in Act 3, Scene 2?</b><br />
+<b>a)</b> A welcoming speech by their sponsor, Prince Hamlet.<br />
+<b>b)</b> A prologue, in which they summarize the upcoming play.<br />
+<b>c)</b> A dumbshow, in which they do not speak.<br />
+<b>d)</b> An opening scene that shows how much the king and queen love each other.</p>
+<p before="7" lines="5"><b>7. During "The Mousetrap," Gertrude says, "The lady protests too much, methinks." What is she talking about?</b><br />
+<b>a)</b> The Player Queen swearing her loyalty to her first husband.<br />
+<b>b)</b> The Player Queen swearing her loyalty to her second husband.<br />
+<b>c)</b> Ophelia swearing her loyalty to Hamlet.<br />
+<b>d)</b> Gertrude is speaking about her own claims of love for Claudius.</p>
+<p before="7" lines="5"><b>8. After the play is performed, what do Rosencrantz and Guildenstern ask Hamlet to do?</b><br />
+<b>a)</b> Ask the players to leave Elsinore.<br />
+<b>b)</b> Go see Ophelia.<br />
+<b>c)</b> Go see Claudius.<br />
+<b>d)</b> Go see his mother.</p>
+<p before="7" lines="5"><b>9. Why does Hamlet talk to Rosencrantz and Guildenstern about a recorder?</b><br />
+<b>a)</b> Hamlet asks them to teach him how to play the recorder.<br />
+<b>b)</b> Hamlet says he wants to learn to play the recorder.<br />
+<b>c)</b> Hamlet wants them to make the musicians stop playing the recorder.<br />
+<b>d)</b> Hamlet says they want to play him like a recorder and get information out of him.</p>
+<p before="7" lines="5"><b>10. After the play is performed, what does Polonius ask Hamlet to do?</b><br />
+<b>a)</b> Go see the Queen.<br />
+<b>b)</b> Go see Claudius.<br />
+<b>c)</b> Ask the players to leave Elsinore.<br />
+<b>d)</b> Go see Ophelia.</p>
+<p before="7" lines="5"><b>11. When Claudius reacts to the play, what does Hamlet say in response?</b><br />
+<b>a)</b> "It would cost you a groaning to take off my edge. "<br />
+<b>b)</b> "Get me a fellowship in a cry of players."<br />
+<b>c)</b> "For if the king like not the comedy, Why then, belike, he likes it not, perdy. "<br />
+<b>d)</b> "What, frighted with false fire!" </p>
+<p before="7" lines="5"><b>12. What does Hamlet mean when he says "I will speak daggers to her, but use none."</b><br />
+<b>a)</b> He will speak harshly and honestly to Ophelia, but will not hurt her.<br />
+<b>b)</b> He will try to kill Gertrude.<br />
+<b>c)</b> He will insult Ophelia when he sees her again.<br />
+<b>d)</b> He will speak harshly and honestly to Gertrude, but will not hurt her.</p>
+<h3>Multiple Choice - Act 3, Scene 3</h3>
+<p before="7" lines="5"><b>1. After witnessing Hamlet's behavior during the play, what does Claudius say about his condition?</b><br />
+<b>a)</b> Hamlet is not crazy.<br />
+<b>b)</b> Hamlet is crazy, but harmless.<br />
+<b>c)</b> Hamlet is not crazy, but he is dangerous.<br />
+<b>d)</b> Hamlet is crazy and dangerous.</p>
+<p before="7" lines="5"><b>2. After the play, Claudius meets with Rosencrantz and Guildenstern to discuss Hamlet's condition. Are Rosencrantz and Guildenstern more sympathetic to Claudius, Hamlet, or someone else?</b><br />
+<b>a)</b> Ophelia.<br />
+<b>b)</b> Claudius.<br />
+<b>c)</b> Hamlet.<br />
+<b>d)</b> Gertrude.</p>
+<p before="7" lines="5"><b>3. After Hamlet's behavior during the play-within-a-play, what do Rosencrantz and Guildenstern agree to do with Hamlet?</b><br />
+<b>a)</b> Take him to England right away.<br />
+<b>b)</b> Take him to England next summer.<br />
+<b>c)</b> Kill him.<br />
+<b>d)</b> Take him to a doctor.</p>
+<p before="7" lines="5"><b>4. After the play, Rosencrantz, Guildenstern, and Claudius meet to discuss Hamlet. Polonius joins them. What does he tell Claudius?</b><br />
+<b>a)</b> Hamlet is acting crazy and threatening Gertrude.<br />
+<b>b)</b> Hamlet is on his way to come see Ophelia.<br />
+<b>c)</b> Hamlet is on his way to come see Claudius.<br />
+<b>d)</b> Hamlet is going to see his mother and Polonius will eavesdrop on their conversation.</p>
+<p before="7" lines="5"><b>5. Once left alone on stage in Act 3, Scene 3, what does Cladius express guilt about?</b><br />
+<b>a)</b> Having Hamlet killed.<br />
+<b>b)</b> Killing his brother.<br />
+<b>c)</b> Marrying Gertrude.<br />
+<b>d)</b> Hamlet going crazy.</p>
+<p before="7" lines="5"><b>6. As Claudius speaks about his guilt in Act 3, Scene 3, what does he say about repenting?</b><br />
+<b>a)</b> He cannot repent because he still has the crown and the queen -- the two things he did the murder for.<br />
+<b>b)</b> Only the weak repent.<br />
+<b>c)</b> He wants to repent, but cannot tell anyone what he has done.<br />
+<b>d)</b> He is sure that heaven will forgive him for his crime.</p>
+<p before="7" lines="5"><b>7. Claudius says his crime "hath the primal eldest curse upon't." What does he mean?</b><br />
+<b>a)</b> Stealing your brother's wife is an especially bad crime.<br />
+<b>b)</b> Killing your oldest brother is an especially bad crime.<br />
+<b>c)</b> A brother's murder is an especially bad crime.<br />
+<b>d)</b> Killing the king is an especially bad crime.</p>
+<p before="7" lines="5"><b>8. Hamlet enters about halfway through Act 3, Scene 3. When he comes in, what is Claudius doing?</b><br />
+<b>a)</b> Eating.<br />
+<b>b)</b> Sleeping.<br />
+<b>c)</b> Praying.<br />
+<b>d)</b> Talking to Polonius.</p>
+<p before="7" lines="5"><b>9. On his way to see his mother in Act 3, Scene 3, Hamlet finds Claudius. What does Hamlet decide not to do in that scene?</b><br />
+<b>a)</b> Trick him into admitting his guilt.<br />
+<b>b)</b> Kill him.<br />
+<b>c)</b> Argue with him.<br />
+<b>d)</b> Avoid him.</p>
+<p before="7" lines="5"><b>10. Hamlet says of Claudius: "He took my father grossly, full of bread; With all his crimes broad blown, as flush as May." What does Hamlet mean by that?</b><br />
+<b>a)</b> Claudius killed Hamlet's father by poisoning him with a heavy meal.<br />
+<b>b)</b> Claudius looks like Hamlet's father.<br />
+<b>c)</b> Claudius killed Hamlet's father when he was sleeping after a heavy meal.<br />
+<b>d)</b> Claudius killed Hamlet's father before Hamlet's father could repent his sins.</p>
+<p before="7" lines="5"><b>11. What specific thing does Hamlet determine Claudius must do before Hamlet can murder him?</b><br />
+<b>a)</b> Stand trial for his crime so he can face public justice.<br />
+<b>b)</b> Confess his crime so the world will know about his guilt.<br />
+<b>c)</b> Apologize to Hamlet for killing his father.<br />
+<b>d)</b> Commit a sin so Hamlet can send his soul to hell.</p>
+<p before="7" lines="5"><b>12. What does Claudius say in Act 3, Scene 3 about his own thoughts and words?</b><br />
+<b>a)</b> His words and thoughts are not enough to convince heaven to forgive him.<br />
+<b>b)</b> He says the right words, but they do not reach heaven because his thoughts are on earth.<br />
+<b>c)</b> He does not speak his thoughts.<br />
+<b>d)</b> His words lie, but his thoughts tell the truth.</p>
+<h3>Multiple Choice - Act 3, Scene 4</h3>
+<p before="7" lines="5"><b>1. What does Polonius tell Gertrude to do in Act 3, Scene 4 regarding Hamlet?</b><br />
+<b>a)</b> Be kind to Hamlet and invite him to confide in her.<br />
+<b>b)</b> Be stern with Hamlet about his behavior.<br />
+<b>c)</b> Convince Hamlet to talk about Ophelia.<br />
+<b>d)</b> Make sure Hamlet knows that Polonius is listening to their conversation.</p>
+<p before="7" lines="5"><b>2. When Hamlet and his mother finally talk in Gertrude's room, she says, "Hamlet, thou hast thy father much offended." Hamlet responds, "Mother, you have my father much offended." Why is that dialogue important?</b><br />
+<b>a)</b> Gertrude is talking about the dead king, but Hamlet is talking about Claudius.<br />
+<b>b)</b> Getrude is talking about Claudius, but Hamlet is talking about the dead king.<br />
+<b>c)</b> Gertrude is using the dead king to force Hamlet to behave himself.<br />
+<b>d)</b> Hamlet has decided to act crazy even with his mother.</p>
+<p before="7" lines="5"><b>3. Hamlet's mother tries to leave the room during their conversation in Act 3, Scene 4, but Hamlet stops her and says she cannot leave until he does what?</b><br />
+<b>a)</b> Kills her.<br />
+<b>b)</b> Kills Claudius.<br />
+<b>c)</b> Forces her to face what she has done.<br />
+<b>d)</b> Tells her about the ghost.</p>
+<p before="7" lines="5"><b>4. Who does Hamlet kill in his mother's room?</b><br />
+<b>a)</b> Getrude.<br />
+<b>b)</b> Polonius.<br />
+<b>c)</b> Fortinbras.<br />
+<b>d)</b> Laertes.</p>
+<p before="7" lines="5"><b>5. When Hamlet visits his mother in her room in Act 3, Scene 4, he speaks very harshly to his mother. What makes him stop?</b><br />
+<b>a)</b> Ophelia enters the room.<br />
+<b>b)</b> Claudius enters the room.<br />
+<b>c)</b> Getrude kills herself.<br />
+<b>d)</b> The ghost appears.</p>
+<p before="7" lines="5"><b>6. When Hamlet leaves his mother's room in Act 3, Scene 4, what does he take with him?</b><br />
+<b>a)</b> A portrait of his mother.<br />
+<b>b)</b> The dead body of Claudius.<br />
+<b>c)</b> The dead body of Polonius.<br />
+<b>d)</b> A portrait of his dead father.</p>
+<h3>Multiple Choice - Act 4, Scene 1</h3>
+<p before="7" lines="5"><b>1. After witnessing Hamlet kill someone, Gertrude hurries to find Claudius. Who is he talking to when she comes in?</b><br />
+<b>a)</b> Laertes and Ophelia.<br />
+<b>b)</b> Rosencrantz and Guildenstern.<br />
+<b>c)</b> Laertes.<br />
+<b>d)</b> The ambassadors to Norway.</p>
+<p before="7" lines="5"><b>2. After talking to Hamlet in her room, what does Gertrude say about Hamlet?</b><br />
+<b>a)</b> He is mad with love for Ophelia.<br />
+<b>b)</b> He is determined to get revenge.<br />
+<b>c)</b> He is crazy.<br />
+<b>d)</b> He is not crazy.</p>
+<p before="7" lines="5"><b>3. When Claudius hears that Hamlet has killed someone, what does he say?</b><br />
+<b>a)</b> Hamlet might have killed him.<br />
+<b>b)</b> Hamlet needs to be sent to jail.<br />
+<b>c)</b> Hamlet needs to be executed.<br />
+<b>d)</b> Hamlet is a brave man.</p>
+<p before="7" lines="5"><b>4. Who is Gertrude truly loyal to?</b><br />
+<b>a)</b> Herself.<br />
+<b>b)</b> Claudius.<br />
+<b>c)</b> Hamlet.<br />
+<b>d)</b> No one.</p>
+<p before="7" lines="5"><b>5. When Claudius finds out Hamlet has killed someone, what is he most worried about?</b><br />
+<b>a)</b> Whether Hamlet should stand trial.<br />
+<b>b)</b> Whether Hamlet will try to kill.<br />
+<b>c)</b> Whether the murder will affect his power and ability to rule.<br />
+<b>d)</b> Whether a doctor can help Hamlet get better.</p>
+<p before="7" lines="5"><b>6. What does Claudius ask Rosencrantz and Guildenstern to do, after learning that Hamlet has committed murder?</b><br />
+<b>a)</b> Find Hamlet so the guards can arrest him.<br />
+<b>b)</b> Get the body from Hamlet.<br />
+<b>c)</b> Protect Ophelia from Hamlet.<br />
+<b>d)</b> Protect Getrude from Hamlet.</p>
+<h3>Multiple Choice - Act 4, Scene 2</h3>
+<p before="7" lines="5"><b>1. The first time the audience sees Hamlet after he has killed someone, he says "Safely stowed." What does he mean?</b><br />
+<b>a)</b> He has established proof that he is crazy.<br />
+<b>b)</b> He has scared Ophelia away from him forever.<br />
+<b>c)</b> He has convinced his mother to help him.<br />
+<b>d)</b> He has hidden the body.</p>
+<p before="7" lines="5"><b>2. Hamlet's attitude towards Rosencrantz and Guildenstern changes over the course of the play. By Act 4, Scene 2, what does he say about them?</b><br />
+<b>a)</b> They are spies for Claudius.<br />
+<b>b)</b> They are dangerous.<br />
+<b>c)</b> They are good, true friends.<br />
+<b>d)</b> They are weak and foolish.</p>
+<p before="7" lines="5"><b>3. How does Hamlet act after he has killed someone?</b><br />
+<b>a)</b> He does not seem sorry for his crime.<br />
+<b>b)</b> He is sorry for his crime.<br />
+<b>c)</b> He is relieved to have finally done something.<br />
+<b>d)</b> He is frightened that someone will now try to kill him.</p>
+<p before="7" lines="5"><b>4. When he is asked where his first victim's body is, what does Hamlet do?</b><br />
+<b>a)</b> He answers with a riddle.<br />
+<b>b)</b> He threatens to kill more people.<br />
+<b>c)</b> He laughs.<br />
+<b>d)</b> He refuses to speak.</p>
+<p before="7" lines="5"><b>5. Where does Claudius want the body of Hamlet's first victim to be taken?</b><br />
+<b>a)</b> To the doctor.<br />
+<b>b)</b> To the police.<br />
+<b>c)</b> To the chapel.<br />
+<b>d)</b> To the graveyard.</p>
+<p before="7" lines="5"><b>6. At the end of Act 4, Scene 2, what does Hamlet agree to do?</b><br />
+<b>a)</b> Talk to Gertrude.<br />
+<b>b)</b> Go see the king.<br />
+<b>c)</b> See a doctor.<br />
+<b>d)</b> Go to England.</p>
+<h3>Multiple Choice - Act 4, Scene 3</h3>
+<p before="7" lines="5"><b>1. While explaining Hamlet's crime to his courtiers, why does Claudius say he has to be gentle with Hamlet?</b><br />
+<b>a)</b> He is crazy, but not a bad person.<br />
+<b>b)</b> Gertrude will be upset if they are hard on him.<br />
+<b>c)</b> He is still a prince.<br />
+<b>d)</b> The people of Denmark love him.</p>
+<p before="7" lines="5"><b>2. What is Hamlet's response when Claudius demands to know where the body of Hamlet's murdered victim is?</b><br />
+<b>a)</b> The victim is eating supper in Heaven.<br />
+<b>b)</b> The victim is not really dead and is eating supper in the castle.<br />
+<b>c)</b> The victim is eating supper in Hell.<br />
+<b>d)</b> The worms are eating the victim for supper.</p>
+<p before="7" lines="5"><b>3. Claudius asks Hamlet a second time about where they can find his victim. Hamlet responds, "In heaven; send hither to see: if your messenger find him not there, seek him i' the other place yourself." What other place is Hamlet suggesting Claudius visit?</b><br />
+<b>a)</b> The graveyard.<br />
+<b>b)</b> The chapel.<br />
+<b>c)</b> Gertrude's bedroom.<br />
+<b>d)</b> Hell.</p>
+<p before="7" lines="5"><b>4. After the murder, Claudius tells Hamlet to leave right away. Where should Hamlet go?</b><br />
+<b>a)</b> Off to prison.<br />
+<b>b)</b> England.<br />
+<b>c)</b> Back to school.<br />
+<b>d)</b> To be locked in his room.</p>
+<p before="7" lines="5"><b>5. Hamlet finally tells Claudius how to find the body of his first victim: "But indeed, if you find him not within this month, you shall nose him as you go up the stairs into the lobby." How is Hamlet saying that they might find the body?</b><br />
+<b>a)</b> Wait a month till the ground thaws and the grave will be revealed.<br />
+<b>b)</b> Climb the stairs and you will see the body in the lobby.<br />
+<b>c)</b> The body is waiting on the lobby stairs.<br />
+<b>d)</b> Wait a month and you will smell where it is.</p>
+<p before="7" lines="5"><b>6. Claudius finally gives Rosencrantz and Guildenstern sealed orders for how to handle Hamlet. What do those orders say?</b><br />
+<b>a)</b> Hamlet should be put to death.<br />
+<b>b)</b> Hamlet should be put on trial for murder.<br />
+<b>c)</b> Hamlet should be exiled from Denmark.<br />
+<b>d)</b> Hamlet should be locked away forever.</p>
+<h3>Multiple Choice - Act 4, Scene 4</h3>
+<p before="7" lines="5"><b>1. At the start of Act 4, Scene 4, the audience finally sees a character that has been talked about since the start of the play. Who is this character?</b><br />
+<b>a)</b> Bernardo.<br />
+<b>b)</b> Captain.<br />
+<b>c)</b> Laertes.<br />
+<b>d)</b> Fortinbras.</p>
+<p before="7" lines="5"><b>2. What message is the Norwegian Captain supposed to deliver to Claudius in Act 4, Scene 4?</b><br />
+<b>a)</b> The armies of Denmark must surrender their weapons.<br />
+<b>b)</b> The armies of Norway will attack at dawn.<br />
+<b>c)</b> The armies of Norway want passage through Denmark.<br />
+<b>d)</b> The armies of Norway have defeated the Poles.</p>
+<p before="7" lines="5"><b>3. Who are the Norwegian soldiers attacking?</b><br />
+<b>a)</b> Denmark.<br />
+<b>b)</b> Sweden.<br />
+<b>c)</b> Poland.<br />
+<b>d)</b> England.</p>
+<p before="7" lines="5"><b>4. What are the Norwegian soldiers fighting over?</b><br />
+<b>a)</b> A little piece of worthless land.<br />
+<b>b)</b> An insult.<br />
+<b>c)</b> A king's assassination.<br />
+<b>d)</b> A country.</p>
+<p before="7" lines="5"><b>5. Watching the troops attacking, Hamlet decides that he is less of a man than their leader. Why does he say that?</b><br />
+<b>a)</b> The leader is a common man, while Hamlet is a prince.<br />
+<b>b)</b> He has a better reason to fight than the leader, but he does not fight.<br />
+<b>c)</b> Hamlet was never in the army, unlike the troops' leader.<br />
+<b>d)</b> Hamlet has only killed one man and the leader has killed many.</p>
+<p before="7" lines="5"><b>6. In Act 4, scene 4, while watching the troops and reflecting on his own behavior, what does Hamlet promise about his future actions?</b><br />
+<b>a)</b> They will be bloody.<br />
+<b>b)</b> They will be careful.<br />
+<b>c)</b> They will be crafty.<br />
+<b>d)</b> They will be fast.</p>
+<h3>Multiple Choice - Act 4, Scene 5</h3>
+<p before="7" lines="5"><b>1. What happens to Ophelia after her father's death?</b><br />
+<b>a)</b> She goes crazy.<br />
+<b>b)</b> She blames Claudius for her father's death.<br />
+<b>c)</b> She gets sick.<br />
+<b>d)</b> She wants to kill Hamlet.</p>
+<p before="7" lines="5"><b>2. When Laertes returns after his father's death, what do the common people say about him?</b><br />
+<b>a)</b> They think he is to blame for the last king's death<br />
+<b>b)</b> They want to kill him.<br />
+<b>c)</b> They think he should lead the armies against Norway.<br />
+<b>d)</b> They want to make him king.</p>
+<p before="7" lines="5"><b>3. What does Ophelia she say about the herb rosemary?</b><br />
+<b>a)</b> The rosemary died when her father died.<br />
+<b>b)</b> Rosemary is her favorite plant.<br />
+<b>c)</b> Rosemary stands for remembrance.<br />
+<b>d)</b> Rosemary stands for thoughts.</p>
+<p before="7" lines="5"><b>4. When Laertes returns after his father's death, what does he want?</b><br />
+<b>a)</b> Revenge on the people responsible for his father's death.<br />
+<b>b)</b> To visit with his sister.<br />
+<b>c)</b> To talk to Hamlet.<br />
+<b>d)</b> To take over the throne of Denmark.</p>
+<p before="7" lines="5"><b>5. What does Ophelia say about violets?</b><br />
+<b>a)</b> Violets are her favorite flower.<br />
+<b>b)</b> Violets stand for remembrance.<br />
+<b>c)</b> The violets died when her father died.<br />
+<b>d)</b> Violets stand for thoughts.</p>
+<p before="7" lines="5"><b>6. At the end of Act 4, Scene 5, what does Claudius offer to do for Laertes?</b><br />
+<b>a)</b> Tell Laertes the truth about his father's death.<br />
+<b>b)</b> Help Laertes kill Hamlet.<br />
+<b>c)</b> Show Laertes where his father is buried.<br />
+<b>d)</b> Take care of Ophelia.</p>
+<h3>Multiple Choice - Act 4, Scene 6</h3>
+<p before="7" lines="5"><b>1. Some sailors arrive at Elsinore from a pirate ship in Act 4, Scene 6. Who do they deliver a letter to?</b><br />
+<b>a)</b> Laertes.<br />
+<b>b)</b> Gertrude.<br />
+<b>c)</b> Horatio.<br />
+<b>d)</b> Hamlet.</p>
+<p before="7" lines="5"><b>2. The sailors from the pirate ships deliver letters to Elsinore. Who are the letters from?</b><br />
+<b>a)</b> Horatio.<br />
+<b>b)</b> Gertrude.<br />
+<b>c)</b> Laertes.<br />
+<b>d)</b> Hamlet.</p>
+<p before="7" lines="5"><b>3. In the letter that the sailors deliver in Act 4, Scene 6, it says: "when thou shalt have overlooked this, give these fellows some means to the king: they have letters for him." What is the writer of the letter asking?</b><br />
+<b>a)</b> Help the sailors get in to see Claudius.<br />
+<b>b)</b> Give the sailors a tip for delivering the letters.<br />
+<b>c)</b> Help the sailors get in to see the dead king's body.<br />
+<b>d)</b> This letter is meant for the king. You should not read it.</p>
+<p before="7" lines="5"><b>4. How does Hamlet manage to avoid his fate in England?</b><br />
+<b>a)</b> He killed Rosencrantz and Guildenstern.<br />
+<b>b)</b> He made friends with the English queen.<br />
+<b>c)</b> He bribed Rosencrantz and Guildenstern.<br />
+<b>d)</b> He got onto another ship.</p>
+<p before="7" lines="5"><b>5. After he leaves the ship, how will Hamlet make his way back to Elsinore?</b><br />
+<b>a)</b> Claudius must pay a ransom.<br />
+<b>b)</b> Hamlet must escape from the pirates.<br />
+<b>c)</b> Ophelia must come get him.<br />
+<b>d)</b> Horatio must come get him.</p>
+<p before="7" lines="5"><b>6. After reading the letters brought by the sailors in Act 4, Scene 6, what does Horatio say he wants to do?</b><br />
+<b>a)</b> Tell Claudius about Hamlet.<br />
+<b>b)</b> Tell Gertrude about Hamlet.<br />
+<b>c)</b> Wait until Hamlet arrives in Elsinore.<br />
+<b>d)</b> Go get Hamlet.</p>
+<h3>Multiple Choice - Act 4, Scene 7</h3>
+<p before="7" lines="5"><b>1. Claudius tells Laertes there are two reasons why he has not ordered Hamlet killed. What are those reasons?</b><br />
+<b>a)</b> Because Gertrude loves him and the common people love him.<br />
+<b>b)</b> Because Hamlet is heir to the throne and Gertrude loves him.<br />
+<b>c)</b> Because Gertrude loves him and Ophelia might kill herself if he is killed.<br />
+<b>d)</b> Because the common people love him and Fortinbras might attack if he is killed.</p>
+<p before="7" lines="5"><b>2. Claudius suggests a duel between Laertes and Hamlet, but that type of duel usually is not deadly. What does Claudius suggest they do to injure Hamlet?</b><br />
+<b>a)</b> Damage Hamlet's armor so he is vulnerable.<br />
+<b>b)</b> Fix Laertes's sword so it is sharp.<br />
+<b>c)</b> Bribe the referee.<br />
+<b>d)</b> Force Hamlet to drink poison before the fight.</p>
+<p before="7" lines="5"><b>3. Laertes comes up with another idea to make sure his duel with Hamlet will result in Hamlet's death. What is it?</b><br />
+<b>a)</b> Damage Hamlet's armor so he is vulnerable.<br />
+<b>b)</b> Poison the tip of the sword.<br />
+<b>c)</b> Fix Laertes's sword so it is sharp.<br />
+<b>d)</b> Force Hamlet to drink poison before the fight.</p>
+<p before="7" lines="5"><b>4. What additional method does Claudius suggest so that even if Hamlet wins the duel with Laertes, Hamlet will still die?</b><br />
+<b>a)</b> Arrest Hamlet for Polonius's death.<br />
+<b>b)</b> Hire an assassin to kill Hamlet.<br />
+<b>c)</b> Give Hamlet a poisoned drink.<br />
+<b>d)</b> Challenge Hamlet to a duel himself.</p>
+<p before="7" lines="5"><b>5. As Laertes and Claudius discuss how to kill Hamlet, what news does Gertrude bring?</b><br />
+<b>a)</b> Ophelia has died by stabbing herself.<br />
+<b>b)</b> Ophelia has died by taking poison.<br />
+<b>c)</b> Ophelia has died by drowning.<br />
+<b>d)</b> Ophelia has died by hanging herself.</p>
+<p before="7" lines="5"><b>6. What does Claudius say about Laertes and Ophelia's death?</b><br />
+<b>a)</b> He thinks Laertes is responsible for Ophelia's death.<br />
+<b>b)</b> He is worried Ophelia's death will enrage Laertes.<br />
+<b>c)</b> He knew about Ophelia's death, but did not want to tell Laertes.<br />
+<b>d)</b> He is afraid Laertes may kill himself because of Ophelia's death.</p>
+<h3>Multiple Choice - Act 5, Scene 1</h3>
+<p before="7" lines="5"><b>1. What do the gravediggers say about Ophelia's burial?</b><br />
+<b>a)</b> If she is a suicide, so she should not be buried in the churchyard.<br />
+<b>b)</b> It is a shame that someone so young is dead.<br />
+<b>c)</b> She should have been getting married, not buried.<br />
+<b>d)</b> Her burial should get more ceremony and more attention than it is receiving.</p>
+<p before="7" lines="5"><b>2. Who is "poor Yorick"?</b><br />
+<b>a)</b> Hamlet's grandfather, now dead.<br />
+<b>b)</b> Hamlet's servant, who is old and tired.<br />
+<b>c)</b> The gravedigger who is old and tired.<br />
+<b>d)</b> The king's jester, now dead.</p>
+<p before="7" lines="5"><b>3. As the funeral procession makes it way through the graveyard, Hamlet notices there are "maimed rites." What does that signify?</b><br />
+<b>a)</b> That the person died from the plague.<br />
+<b>b)</b> That the person who died was very old.<br />
+<b>c)</b> That the person died by suicide.<br />
+<b>d)</b> That the person who died was poor.</p>
+<p before="7" lines="5"><b>4. When Hamlet first sees Laertes in the graveyard scene, what does Hamlet say about him?</b><br />
+<b>a)</b> He is a noble youth.<br />
+<b>b)</b> He is just like his father and not to be trusted.<br />
+<b>c)</b> He is an arrogant, bossy man.<br />
+<b>d)</b> He is always mean to his sister.</p>
+<p before="7" lines="5"><b>5. As Gertrude lays flowers at Ophelia's grave, what does she say?</b><br />
+<b>a)</b> She hoped Ophelia and Hamlet would marry.<br />
+<b>b)</b> She is glad Ophelia will be with her father now.<br />
+<b>c)</b> She believes Ophelia is now an angel.<br />
+<b>d)</b> She is sorry Ophelia died so young.</p>
+<p before="7" lines="5"><b>6. What happens between Laertes and Hamlet in the graveyard scene?</b><br />
+<b>a)</b> Laertes tries to kill Hamlet.<br />
+<b>b)</b> They both jump into Ophelia's grave and get in a fight.<br />
+<b>c)</b> They shake hands over Ophelia's grave.<br />
+<b>d)</b> Laertes blames Hamlet for his sister's death.</p>
+<h3>Multiple Choice - Act 5, Scene 2</h3>
+<p before="7" lines="5"><b>1. How does Gertrude die?</b><br />
+<b>a)</b> Hamlet kills her with a poisoned sword.<br />
+<b>b)</b> Laertes kills her with a poisoned sword.<br />
+<b>c)</b> She drinks poisoned wine meant for Hamlet.<br />
+<b>d)</b> She kills herself by drowning.</p>
+<p before="7" lines="5"><b>2. How does Laertes die?</b><br />
+<b>a)</b> He drinks poisoned wine meant for Hamlet.<br />
+<b>b)</b> Hamlet kills him with a poisoned sword.<br />
+<b>c)</b> He is forced to drink poisoned wine and is stabbed with a poisoned sword.<br />
+<b>d)</b> He kills himself.</p>
+<p before="7" lines="5"><b>3. How does Claudius die?</b><br />
+<b>a)</b> He drinks poisoned wine meant for Hamlet.<br />
+<b>b)</b> He kills himself.<br />
+<b>c)</b> He is forced to drink poisoned wine and is stabbed with a poisoned sword.<br />
+<b>d)</b> Laertes kills him with a poisoned sword.</p>
+<p before="7" lines="5"><b>4. What happens to Horatio at the end of the play?</b><br />
+<b>a)</b> He wants to kill himself, but Fortinbras stops him.<br />
+<b>b)</b> He gets poisoned by accident.<br />
+<b>c)</b> He wants to kill himself, but Hamlet asks him to live.<br />
+<b>d)</b> He kills himself.</p>
+<p before="7" lines="5"><b>5. At the end of the play, a messenger arrives from England with news. What is the news?</b><br />
+<b>a)</b> Rosencrantz and Guildenstern are on their way back to Denmark.<br />
+<b>b)</b> Rosencrantz and Guildenstern have arrived safely.<br />
+<b>c)</b> Rosencrantz and Guildenstern have sent help to Denmark.<br />
+<b>d)</b> Rosencrantz and Guildenstern have been executed.</p>
+<p before="7" lines="5"><b>6. At the end of the play, who will rule Denmark?</b><br />
+<b>a)</b> Hamlet.<br />
+<b>b)</b> Horatio.<br />
+<b>c)</b> Fortinbras.<br />
+<b>d)</b> Laertes.</p>

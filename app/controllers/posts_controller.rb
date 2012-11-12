@@ -1,18 +1,16 @@
 class PostsController < ApplicationController
-	
-	def update_engagement_type
-		post = Post.find(params[:id])
-		puts params[:engagement_type]
-		puts post.engagement_type
-		# post.update_attribute(:engagement_type, params[:engagement_type])
 
-    # Stat.update_stat_cache("retweets", 1, current_acct, post.created_at, u.id)
-    # Stat.update_stat_cache("active_users", u.id, current_acct, post.created_at, u.id)		
-    # Stat.update_stat_cache("questions_answered", 1, asker, user_post.created_at, current_user.id)
-    # Stat.update_stat_cache("internal_answers", 1, asker, user_post.created_at, current_user.id)
-    # Stat.update_stat_cache("active_users", current_user.id, asker, user_post.created_at, current_user.id)
-
-		render :nothing => true
+	def retweet
+		post = Publication.find(params[:publication_id]).posts.last
+		Post.create({
+			:user_id => current_user.id,
+			:provider => "twitter",
+			:in_reply_to_post_id => post.id, 
+			:in_reply_to_user_id => post.user_id,
+			:posted_via_app => true, 
+			:interaction_type => 3
+		})
+		render :json => current_user.twitter.retweet(post.provider_post_id)
 	end
 
 	def update

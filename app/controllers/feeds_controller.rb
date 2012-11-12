@@ -15,6 +15,7 @@ class FeedsController < ApplicationController
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
           :user => {
+            :id => action.user.id,
             :twi_screen_name => action.user.twi_screen_name,
             :twi_profile_img_url => action.user.twi_profile_img_url
           },
@@ -34,13 +35,7 @@ class FeedsController < ApplicationController
     @question_count = publication_ids.size
     @questions_answered = Post.where("correct is not null", params[:id]).count
     @followers = Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
-    # @leaders = User.leaderboard(params[:id])
-    if current_user
-      # @correct = 0
-      # @leaders[:scores].each do |user|
-      #   next if user[:user].id != current_user.id or @correct != 0
-      #   @correct = user[:correct]
-      # end        
+    if current_user      
       @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
       @responses = []
@@ -76,6 +71,7 @@ class FeedsController < ApplicationController
         post_activity.each do |action|
           @actions[post_pub_map[post_id]] << {
             :user => {
+              :id => action.user.id,
               :twi_screen_name => action.user.twi_screen_name,
               :twi_profile_img_url => action.user.twi_profile_img_url
             },
@@ -116,8 +112,22 @@ class FeedsController < ApplicationController
       end
 
       ## Activity Stream
-      # asker_followers = Rails.cache.read()
-        # @asker.follower_ids()
+      if current_user
+        unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
+          Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids, :timeToLive => 2.days)
+        end
+      end
+      @stream = []
+      time_ago = 1.day
+      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, time_ago.ago).order("created_at DESC").includes(:conversation => {:publication => :question}).to_a
+      recent_posts.group_by(&:user_id).each do |user_id, posts| 
+        post = posts.shift
+        @stream << post
+        recent_posts.delete post
+      end
+      @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
+      # @stream = @stream[0..3]
+      @stream += Post.joins(:conversation).where("posts.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null))", [0]).order("created_at DESC").limit(5 - @stream.size).includes(:conversation => {:publication => :question}) if @stream.size < 5
 
       respond_to do |format|
         format.html # show.html.erb
@@ -153,6 +163,7 @@ class FeedsController < ApplicationController
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
           :user => {
+            :id => action.user.id,
             :twi_screen_name => action.user.twi_screen_name,
             :twi_profile_img_url => action.user.twi_profile_img_url
           },
@@ -174,6 +185,7 @@ class FeedsController < ApplicationController
 
   def respond_to_question
     finished("question activity", {:reset => false})
+    finished("activity stream vs. leaderboard", {:reset => false})
     render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
   end
 
@@ -183,9 +195,23 @@ class FeedsController < ApplicationController
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id ,:publication_id => params[:publication_id])
     if params[:interaction_type] == "4"
+      user = user_post.user
       dm = params[:message].gsub("@#{params[:username]}", "")
-      user_post.update_attribute(:correct, correct)
-      response_post = Post.dm(asker, params[:message].gsub("@#{params[:username]}", ""), nil, nil, user_post, user_post.user, conversation.id)
+      if correct.present?
+        user_post.update_attribute(:correct, correct)
+        # Mixpanel tracking for DM answer conversion
+        Mixpanel.track_event "answered question via DM", {
+          :distinct_id => params[:in_reply_to_user_id],
+          :time => user_post.created_at.to_i,
+          :account => asker.twi_screen_name
+        }        
+      end
+      response_post = Post.dm(asker, user, params[:message].gsub("@#{params[:username]}", ""), {:conversation_id => conversation.id})
+      user.update_user_interactions({
+        :learner_level => (correct.present? ? "dm answer" : "dm"), 
+        :last_interaction_at => user_post.created_at,
+        :last_answer_at => (correct.present? ? user_post.created_at : nil)
+      })
     else
       tweet = params[:message].gsub("@#{params[:username]}", "")
       if params[:publication_id] and params[:correct]
@@ -217,9 +243,20 @@ class FeedsController < ApplicationController
           :resource_url => resource_url,
           :wisr_question => wisr_question
         })
-
+        user_post.user.update_user_interactions({
+          :learner_level => (correct.present? ? "twitter answer" : "mention"), 
+          :last_interaction_at => user_post.created_at,
+          :last_answer_at => (correct.present? ? user_post.created_at : nil)
+        })
         # Check for followup test completion
-        Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 
+          Mixpanel.track_event "answered incorrect follow up", {
+            :distinct_id => params[:in_reply_to_user_id],
+            :time => user_post.created_at.to_i,
+            :account => asker.twi_screen_name
+          }
+        end
         # Check for reengage last week inactive test completion
         Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
 

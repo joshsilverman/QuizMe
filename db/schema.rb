@@ -11,7 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20121103214710) do
+=======
+ActiveRecord::Schema.define(:version => 20121109143949) do
+>>>>>>> master
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -28,11 +32,27 @@ ActiveRecord::Schema.define(:version => 20121103214710) do
     t.datetime "updated_at"
   end
 
+<<<<<<< HEAD
   create_table "badges", :force => true do |t|
     t.integer  "asker_id"
     t.string   "title"
     t.string   "filename"
     t.text     "description"
+=======
+  create_table "cards", :force => true do |t|
+    t.text     "front"
+    t.text     "back"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "deck_id"
+    t.integer  "quizlet_id"
+    t.boolean  "publish"
+  end
+
+  create_table "cards_groups", :force => true do |t|
+    t.integer  "card_id"
+    t.integer  "group_id"
+>>>>>>> master
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -45,9 +65,32 @@ ActiveRecord::Schema.define(:version => 20121103214710) do
     t.datetime "updated_at"
   end
 
+<<<<<<< HEAD
   create_table "issuances", :force => true do |t|
     t.integer  "user_id"
     t.integer  "badge_id"
+=======
+  create_table "decks", :force => true do |t|
+    t.integer  "handle_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "quizlet_id"
+    t.string   "title"
+  end
+
+  create_table "groups", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "question_format"
+    t.text     "answer_format"
+    t.integer  "deck_id"
+    t.boolean  "default"
+  end
+
+  create_table "handles", :force => true do |t|
+    t.string   "name"
+>>>>>>> master
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -170,6 +213,9 @@ ActiveRecord::Schema.define(:version => 20121103214710) do
     t.string   "bg_image"
     t.boolean  "published"
     t.integer  "author_id"
+    t.string   "learner_level",       :default => "unengaged"
+    t.datetime "last_interaction_at"
+    t.datetime "last_answer_at"
   end
 
 end
