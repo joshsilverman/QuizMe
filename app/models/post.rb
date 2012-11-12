@@ -93,7 +93,7 @@ class Post < ActiveRecord::Base
       :resource_backlink => short_resource_url,
       :via_user => options[:via],
       :wisr_question => options[:wisr_question]
-    })   
+    })
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
@@ -121,6 +121,31 @@ class Post < ActiveRecord::Base
       publication.posts << post
     end
     return post        
+  end
+
+  def self.dm(user, recipient, text, options = {})    
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
+    begin
+      res = user.twitter.direct_message_create(recipient.twi_user_id, text)
+      post = Post.create(
+        :user_id => user.id,
+        :provider => 'twitter',
+        :text => text,
+        :provider_post_id => res.id.to_s,
+        :in_reply_to_post_id => options[:in_reply_to_post_id],
+        :in_reply_to_user_id => recipient.id,
+        :conversation_id => options[:conversation_id],
+        :url => options[:long_url] ? short_url : nil,
+        :posted_via_app => true,
+        :requires_action => false,
+        :interaction_type => 4,
+        :intention => options[:intention]
+      )
+    rescue Exception => exception
+      puts "exception in DM user"
+      puts exception.message
+    end    
+    return post
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
@@ -173,7 +198,16 @@ class Post < ActiveRecord::Base
       Mixpanel.track_event "answered incorrect follow up", {
         :distinct_id => current_user.id,
         :account => asker.twi_screen_name,
+        :type => "app"
       }
+    end
+    #check for mention question completion
+    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
+      Mixpanel.track_event "answered new user question mention", {
+        :distinct_id => current_user.id,
+        :account => asker.twi_screen_name,
+        :type => "app"
+      }      
     end
     #check for re-engage inactive test completion
     Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
@@ -181,35 +215,11 @@ class Post < ActiveRecord::Base
     Mixpanel.track_event "answered", {
       :distinct_id => current_user.id,
       :account => asker.twi_screen_name,
-      :source => "twi"
+      :type => "app"
     }
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 
-  def self.dm(user, recipient, text, options = {})    
-    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    begin
-      puts user, recipient, text, options
-      res = user.twitter.direct_message_create(recipient.twi_user_id, text)
-      post = Post.create(
-        :user_id => user.id,
-        :provider => 'twitter',
-        :text => text,
-        :provider_post_id => res.id.to_s,
-        :in_reply_to_post_id => options[:in_reply_to_post_id],
-        :in_reply_to_user_id => recipient.id,
-        :conversation_id => options[:conversation_id],
-        :url => options[:long_url] ? short_url : nil,
-        :posted_via_app => true,
-        :requires_action => false,
-        :interaction_type => 4
-      )
-    rescue Exception => exception
-      puts "exception in DM user"
-      puts exception.message
-    end    
-    return post
-  end
 
   # def self.dm_new_followers(current_acct, to_message = [], stop = false)
   #   new_followers = Post.twitter_request { current_acct.twitter.follower_ids.ids.first(50) } || []

@@ -254,9 +254,19 @@ class FeedsController < ApplicationController
           Mixpanel.track_event "answered incorrect follow up", {
             :distinct_id => params[:in_reply_to_user_id],
             :time => user_post.created_at.to_i,
-            :account => asker.twi_screen_name
+            :account => asker.twi_screen_name,
+            :type => "twitter"
           }
         end
+
+        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          Mixpanel.track_event "answered incorrect follow up", {
+            :distinct_id => params[:in_reply_to_user_id],
+            :time => user_post.created_at.to_i,
+            :account => asker.twi_screen_name,
+            :type => "twitter"
+          }
+        end        
         # Check for reengage last week inactive test completion
         Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
 
@@ -264,6 +274,7 @@ class FeedsController < ApplicationController
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
           :account => asker.twi_screen_name,
+          :type => "twitter",
           :source => params[:s]
         }
       else         
