@@ -54,17 +54,17 @@ task :update_users_with_last_answer_and_interaction => :environment do
 	puts "users: #{users}"
 	users.each_with_index do |user, i|
 		puts "#{i}. #{user.twi_screen_name}"
-		posts = user.posts.not_spam.order("created_at DESC")
-		last_answer = nil
-		last_interaction = nil
-		next unless posts.present?
-		answers = posts.where("correct is not null")
-		last_answer = answers.first.created_at if answers.present?
-		last_interaction = posts.first.created_at
-		user.update_attributes({
-			:last_answer_at => last_answer,
-			:last_interaction_at => last_interaction
-		}) 
+		# posts = user.posts.not_spam.order("created_at DESC")
+		# last_answer = nil
+		# last_interaction = nil
+		# next unless posts.present?
+		# answers = posts.where("correct is not null")
+		# last_answer = answers.first.created_at if answers.present?
+		# last_interaction = posts.first.created_at
+		# user.update_attributes({
+		# 	:last_answer_at => last_answer,
+		# 	:last_interaction_at => last_interaction
+		# }) 
 	end  
 end
 
