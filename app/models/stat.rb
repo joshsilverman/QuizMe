@@ -160,25 +160,25 @@ class Stat < ActiveRecord::Base
 		asker_ids = User.askers.collect(&:id)
 
 		if asker_id
-			date_grouped_posts = Post.not_spam.social\
+			date_grouped_posts = Post.not_spam.social.not_us\
 					.where('posts.in_reply_to_user_id = ?', asker_id)\
-					.where("created_at > ? and user_id not in (?)", (domain + 31).days.ago, (asker_ids += ADMINS))\
+					.where("created_at > ?", Date.today - (domain + 31).days)\
 					.order("created_at ASC")\
 					.group_by { |post| post.created_at.to_date }			
 
-  		last_24_hours_aus = Post.not_spam.social\
+  		last_24_hours_aus = Post.not_spam.social.not_us\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
-  				.where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+  				.where("created_at > ?", 24.hours.ago)\
   				.order("created_at ASC")\
   				.group_by { |post| post.user_id }.keys.count
     else
-      date_grouped_posts = Post.not_spam.social\
-          .where("created_at > ? and user_id not in (?)", (domain + 31).days.ago, (asker_ids += ADMINS))\
+      date_grouped_posts = Post.not_spam.social.not_us\
+          .where("created_at > ?", Date.today - (domain + 31).days)\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
 
-      last_24_hours_aus = Post.not_spam.social\
-          .where("created_at > ? and user_id not in (?)", 24.hours.ago, (asker_ids += ADMINS))\
+      last_24_hours_aus = Post.not_spam.social.not_us\
+          .where("created_at > ?", 24.hours.ago)\
           .order("created_at ASC")\
           .group_by { |post| post.user_id }.keys.count
     end
@@ -219,30 +219,30 @@ class Stat < ActiveRecord::Base
 
 		display_data = {}
     if asker_id
-      user_ids_by_date = Post.social.not_spam\
+      user_ids_by_date = Post.social.not_spam.not_us\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ? and created_at < ?", (domain + 1).days.ago, Date.today)\
+          .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
-      display_data[:today] = Post.social.not_spam\
+      display_data[:today] = Post.social.not_spam.not_us\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
           .where("created_at > ?", 24.hours.ago)\
           .order("created_at ASC")\
           .group_by { |post| post.user_id }.keys.count
-      display_data[:total] = Post.social.not_spam\
+      display_data[:total] = Post.social.not_spam.not_us\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
           .where("created_at > ?", (24*domain).hours.ago)\
           .collect(&:user_id).uniq.count
     else
-      user_ids_by_date = Post.social.not_spam\
-          .where("created_at > ? and created_at < ?", (domain + 1).days.ago, Date.today)\
+      user_ids_by_date = Post.social.not_spam.not_us\
+          .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
           .order("created_at ASC")\
           .group_by { |post| post.created_at.to_date }
-  		display_data[:today] = Post.social.not_spam\
+  		display_data[:today] = Post.social.not_spam.not_us\
   				.where("created_at > ?", 24.hours.ago)\
   				.order("created_at ASC")\
   				.group_by { |post| post.user_id }.keys.count
-  		display_data[:total] = Post.social.not_spam\
+  		display_data[:total] = Post.social.not_spam.not_us\
   				.where("created_at > ?", (24*domain).hours.ago)\
   				.collect(&:user_id).uniq.count
     end
@@ -258,21 +258,16 @@ class Stat < ActiveRecord::Base
 	def self.econ_engine asker_id = nil, domain = 30
 
 		if asker_id
-	    @posts_by_date = Post.joins(:user)\
+	    @posts_by_date = Post.joins(:user).not_us.not_spam.social\
 	    		.where('posts.in_reply_to_user_id = ?', asker_id)\
-	        .where("users.role != 'asker' AND user_id NOT IN (1,3,4,5,11,12,13,17,25,65,106)")\
 	        .where("posts.created_at > ?", Date.today - domain)\
-	        .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
-	        .where("interaction_type <> 4")\
 	        .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
 	        .order("posts.created_at DESC")\
 	        .group_by{|p| p.created_at.strftime('%m/%d')}
 		else
-	    @posts_by_date = Post.joins(:user)\
-	        .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")}) AND users.role != 'asker' AND user_id NOT IN (1,3,4,5,11,12,13,17,25,65,106)")\
+	    @posts_by_date = Post.joins(:user).not_spam.not_us.social\
+	        .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")})")\
 	        .where("posts.created_at > ?", Date.today - domain)\
-	        .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
-	        .where("interaction_type <> 4")\
 	        .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
 	        .order("posts.created_at DESC")\
 	        .group_by{|p| p.created_at.strftime('%m/%d')}

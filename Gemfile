@@ -21,6 +21,7 @@ group :development do
   gem 'rack-mini-profiler'
   gem 'quiet_assets'
   gem 'oink'
+  gem 'ruby-prof'
 end
 
 group :assets do
