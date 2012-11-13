@@ -10,7 +10,7 @@
             / {:class => ("border_bottom" if i < 3)}
             .content
               .place= i + 1
-              = image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
+              = image_tag(leader[:user].twi_profile_img_url, :class => "rounded profile")
               %h5= leader[:user].twi_screen_name
               - if leader[:correct] == 1
                 %p= "#{leader[:correct]} correct answer"

@@ -6,10 +6,10 @@
 		- @stream.each_with_index do |action, i|
 			- puts action.id
 			- question = action.conversation.publication.question
-			%a{:href => "/questions/#{question.id}/#{question.slug}"}
+			%a.stream_item{:href => "/questions/#{question.id}/#{question.slug}"}
 				%li{:class => ("border_bottom" if i < (@stream.size - 1))}
 					.content
-						= image_tag(action.user.twi_profile_img_url, :class => "rounded")
+						= image_tag(action.user.twi_profile_img_url, :class => "rounded profile")
 						%p.time_ago= time_formatter(action.created_at)
 						.text_content
 							%h5
