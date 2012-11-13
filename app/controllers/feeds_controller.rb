@@ -266,7 +266,7 @@ class FeedsController < ApplicationController
         end
 
         if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
-          Mixpanel.track_event "answered incorrect follow up", {
+          Mixpanel.track_event "answered new user question mention", {
             :distinct_id => params[:in_reply_to_user_id],
             :time => user_post.created_at.to_i,
             :account => asker.twi_screen_name,
