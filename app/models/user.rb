@@ -11,10 +11,9 @@ class User < ActiveRecord::Base
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
 
-<<<<<<< HEAD
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
-=======
+  
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
@@ -22,9 +21,7 @@ class User < ActiveRecord::Base
   scope :social_not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
-    .where('interaction_type IN (2,3)')
-  #scope :social, where('interaction_type IN (2,3)').where("role in ('user','author')")
->>>>>>> user definition is social action
+    .where('interaction_type IN (2,3)')\
 
 	def publish_question
 		queue = self.publication_queue
