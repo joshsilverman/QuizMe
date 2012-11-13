@@ -10,33 +10,24 @@
     / .btn-group
     /   = link_to 'Reload Badges', "/badges/load", :class => 'btn btn-primary'
 
-  = render :partial => "kaminari/pagination_top", :locals => {:results => @recent_posts}
+  = render :partial => "kaminari/pagination_top", :locals => {:results => @posts}
 
   %table.table
     %tr
-      %th
-      %th Asker
       %th User
-      %th Correct
-      %th Current Badges
       %th Unissued Badges
+      %th Current Badges
+      %th Correct
 
-    - @recent_posts.each_with_index do |post, i|
+    - @users_with_posts.each_with_index do |user_with_posts, i|
+      - user = user_with_posts[0]
+      - posts = user_with_posts[1]
+      - post = posts.first
       - next unless post.parent and post.parent.user
-
       - asker = post.parent.user
+
       %tr.asker-row
-        %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime "%m/%d %H:%M"
-        %td= image_tag(post.parent.user.twi_profile_img_url) if post.parent
         %td= post.user.twi_screen_name
-        %td
-          - if post.correct
-            %i.icon-ok
-          - else
-            %i.icon-remove
-        %td
-          - Badge.where(:asker_id => asker.id).each do |badge|
-            %img.badge-image{:src => badge.img_path, :style => "#{'display:none' unless post.user.badges.include? badge}"}
         %td
           - Badge.where(:asker_id => asker.id).each do |badge|
             %span.badge-image-wrapper
@@ -57,8 +48,6 @@
                         With your hard work, you earned the 
                         %strong= badge.title
                         badge!
-                      / .post_actions
-                      /   %a.expand Retweet
 
               .modal-body
                 %p.badge-image-wrapper
@@ -71,5 +60,23 @@
                     = badge.description
                   - else
                     %i No description. Be sure to fill one in before issuing.
+        %td
+          - Badge.where(:asker_id => asker.id).each do |badge|
+            %img.badge-image{:src => badge.img_path, :style => "#{'display:none' unless post.user.badges.include? badge}"}
+        %td
 
-  .pagination-wrapper= paginate @recent_posts
+      - posts.each do |p|
+        %tr.asker-row.question
+          %td
+          %td{:colspan => 2}
+            /= image_tag(post.parent.user.twi_profile_img_url) if post.parent
+            = "@#{asker.twi_screen_name} on "
+            = post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime "%m/%d %H:%M"
+            = p.parent.text
+          %td
+            - if p.correct
+              %i.icon-ok
+            - else
+              %i.icon-remove
+
+  .pagination-wrapper= paginate @posts

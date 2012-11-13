@@ -13,13 +13,22 @@ class BadgesController < ApplicationController
   end
 
   def issuable
-    @recent_posts = Post.not_spam.joins(:user)\
+    @posts = Post.not_spam.joins(:user)\
       .includes(:user => :badges, :parent => {:user => {}, :publication => {:question => :badges}})\
       .where("correct IS NOT NULL")\
       .order('posts.created_at DESC')\
       .page(params[:page]).per(25)
-      #.where("role IN ('user','author')")\
-      #.where("publication_id IS NOT NULL")\
+
+    @users_with_posts = []
+    user = nil
+    @posts.each do |post|
+      if user and user == post.user
+        @users_with_posts[@users_with_posts.count - 1][1] << post
+      else
+        user = post.user
+        @users_with_posts << [user, [post]]
+      end
+    end
   end
 
   def issue

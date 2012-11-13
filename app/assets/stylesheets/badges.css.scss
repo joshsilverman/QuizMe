@@ -117,6 +117,7 @@
     .caption {
       background-color:white;    }
   }
+
 }
 
 .issuable {
@@ -124,6 +125,18 @@
     .badge-image {
       &.issuable {
         cursor:pointer;
+      }
+    }
+  }
+
+  .table {
+    .asker-row.question {
+      color:#777;
+      td {
+        border-top:1px solid #f4f4f4;
+      }
+      td.date {
+        padding-left:25px;
       }
     }
   }
