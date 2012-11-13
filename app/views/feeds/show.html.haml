@@ -25,7 +25,8 @@
 					- if widget_type == "activity stream"
 						= render :partial => "stream" 
 					- else
-						= render :partial => "leaderboard"
+						/ = render :partial => "leaderboard"
+						= render :partial => "stream"
 					.clr
 					= render :partial => "related"
 

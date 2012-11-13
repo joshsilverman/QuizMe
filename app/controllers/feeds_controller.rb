@@ -57,8 +57,8 @@ class FeedsController < ApplicationController
   def show
     @asker = User.asker(params[:id])
     if @asker
+      asker_ids = User.askers.collect(&:id)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
-      # @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID in (?)", ACCOUNT_DATA[@asker.id][:retweet]).sample(3)
       @publications = @asker.publications.where("published = ?", true).order("updated_at DESC").limit(15).includes(:question => :answers)
 
       posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
@@ -92,6 +92,7 @@ class FeedsController < ApplicationController
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
+      #look this up on the fly and cache!
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
       @leaders = User.leaderboard(params[:id])
       if current_user
@@ -112,6 +113,7 @@ class FeedsController < ApplicationController
       end
 
       ## Activity Stream
+      user_followers = []
       if current_user
         unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
           Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids, :timeToLive => 2.days)
@@ -119,15 +121,19 @@ class FeedsController < ApplicationController
       end
       @stream = []
       time_ago = 1.day
-      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, time_ago.ago).order("created_at DESC").includes(:conversation => {:publication => :question}).to_a
+      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago).order("created_at DESC").limit(5).includes(:conversation => {:publication => :question}).to_a
       recent_posts.group_by(&:user_id).each do |user_id, posts| 
         post = posts.shift
         @stream << post
         recent_posts.delete post
       end
       @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
-      # @stream = @stream[0..3]
-      @stream += Post.joins(:conversation).where("posts.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null))", [0]).order("created_at DESC").limit(5 - @stream.size).includes(:conversation => {:publication => :question}) if @stream.size < 5
+      if @stream.size < 5
+        users = User.where("last_answer_at is not null and id not in (?)", (asker_ids + user_followers)).order("last_answer_at DESC").limit(5 - @stream.size).includes(:posts)
+        users.each do |user| 
+          @stream << user.posts.where("posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)").order("created_at DESC").limit(1).first
+        end
+      end
 
       respond_to do |format|
         format.html # show.html.erb
