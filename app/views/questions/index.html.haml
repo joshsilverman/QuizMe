@@ -22,6 +22,8 @@
             %span.badge
               = current_user.questions.where(:status => 0).count
 
+  = render :partial => "kaminari/pagination_top", :locals => {:results => @questions}
+
   - model_class = Question.new.class
   %table.table
     %thead

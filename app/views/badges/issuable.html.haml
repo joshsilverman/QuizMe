@@ -10,6 +10,8 @@
     / .btn-group
     /   = link_to 'Reload Badges', "/badges/load", :class => 'btn btn-primary'
 
+  = render :partial => "kaminari/pagination_top", :locals => {:results => @recent_posts}
+
   %table.table
     %tr
       %th
@@ -20,6 +22,9 @@
       %th Unissued Badges
 
     - @recent_posts.each_with_index do |post, i|
+      - next unless post.parent and post.parent.user
+
+      - asker = post.parent.user
       %tr.asker-row
         %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime "%m/%d %H:%M"
         %td= image_tag(post.parent.user.twi_profile_img_url) if post.parent
@@ -30,7 +35,6 @@
           - else
             %i.icon-remove
         %td
-          - asker = post.parent.user
           - Badge.where(:asker_id => asker.id).each do |badge|
             %img.badge-image{:src => badge.img_path, :style => "#{'display:none' unless post.user.badges.include? badge}"}
         %td
@@ -67,3 +71,5 @@
                     = badge.description
                   - else
                     %i No description. Be sure to fill one in before issuing.
+
+  .pagination-wrapper= paginate @recent_posts

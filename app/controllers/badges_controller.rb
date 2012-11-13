@@ -16,7 +16,8 @@ class BadgesController < ApplicationController
     @recent_posts = Post.not_spam.joins(:user)\
       .includes(:user => :badges, :parent => {:user => {}, :publication => {:question => :badges}})\
       .where("correct IS NOT NULL")\
-      .order('posts.created_at DESC').limit 100
+      .order('posts.created_at DESC')\
+      .page(params[:page]).per(25)
       #.where("role IN ('user','author')")\
       #.where("publication_id IS NOT NULL")\
   end

@@ -5,3 +5,8 @@
  *= require_self
  *= require_tree . 
 */
+
+.pagination-wrapper {
+  text-align: center;
+  padding-top: 10px;
+}
