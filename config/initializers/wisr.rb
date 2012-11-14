@@ -210,7 +210,7 @@ ACCOUNT_DATA = {
   #HarryPotterBk3
   10565 => {
     :retweet => [],
-    :hashtags => ['potterhead', 'potter', 'harrypotter', 'azkaban'],
+    :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
   }
 }
