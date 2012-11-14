@@ -131,7 +131,8 @@ class FeedsController < ApplicationController
       if @stream.size < 5
         users = User.where("last_answer_at is not null and id not in (?)", (asker_ids + user_followers)).order("last_answer_at DESC").limit(5 - @stream.size).includes(:posts)
         users.each do |user| 
-          @stream << user.posts.where("posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)").order("created_at DESC").limit(1).first
+          post = user.posts.where("posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)").order("created_at DESC").limit(1).first
+          @stream << post unless post.blank?
         end
       end
 
