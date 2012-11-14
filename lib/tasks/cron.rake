@@ -77,3 +77,15 @@ task :retweet_related => :environment do
 		end
 	end
 end
+
+task :redis_garbage_collector => :environment do
+	r = Split.redis
+	if r.info['used_memory'].to_i > 15000000
+		all_user_keys = r.keys('user_store:*')
+		user_keys = []
+		all_user_keys.each{|k| user_keys << k unless k=~/confirmed|finished/} #filter out any confirmed or finished keys
+		user_keys.each do |k|
+			r.del(k) unless r.get("#{k}:confirmed")
+		end
+	end
+end
