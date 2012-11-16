@@ -204,7 +204,7 @@
               %dt Company
               %dd Bookrags
               %dt Start date
-              %dd= @posts.last.created_at.strftime("%D")
+              %dd= @posts.last.created_at.strftime("%D") unless @posts.blank?
               %dt Handles
               %dd
                 - @askers.each do |asker|
