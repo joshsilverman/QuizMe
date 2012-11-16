@@ -3,17 +3,18 @@
 
 = hidden_field_tag :paulgraham, @paulgraham.to_json
 = hidden_field_tag :dau_mau, @dau_mau.to_json
-= hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :econ_engine, @econ_engine.to_json
+=# hidden_field_tag :daus, @daus.to_json
+= hidden_field_tag :revenue, @revenue.to_json
 
 :css
 	.navbar-fixed-top .container {
 		width: 1152px !important;
 	}
-	body {background:#fff;}
+	body {background:#fff; padding-bottom:0px;}
 	.navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
 	/.nav-tabs li.active a {background-color:#fafafa !important;}
-	.nav-tabs {margin-top:30px;}
+	.nav-tabs {margin-top:10px;}
 	.tab-content {min-height: 618px; margin-left: 30px !important;}
 
 
@@ -29,15 +30,6 @@
 				%li 
 					%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
 						= asker.twi_screen_name
-						- if @askers_by_growth_rate[asker.id] > 0.1
-							%span.badge.badge-warning
-								%i.icon-plus
-						- elsif @askers_by_growth_rate[asker.id] > 0.05
-							%span.badge.badge-success
-								%i.icon-thumbs-up
-						- else
-							%span.badge
-								%i.icon-minus
 
 	%li
 		%a{:href => "#handles"} Soc. Actions	

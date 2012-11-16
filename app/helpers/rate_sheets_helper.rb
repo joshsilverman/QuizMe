@@ -1,0 +1,2 @@
+module RateSheetsHelper
+end

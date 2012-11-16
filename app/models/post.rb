@@ -11,7 +11,7 @@ class Post < ActiveRecord::Base
 	has_many :reps
 
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
-  scope :not_us, where('user_id NOT IN (?)', User.askers.collect(&:id) + ADMINS)
+  scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
 
   @@classifier = Classifier.new

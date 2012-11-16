@@ -22,6 +22,7 @@ group :development do
   gem 'quiet_assets'
   gem 'oink'
   gem 'ruby-prof'
+  gem 'oink'
 end
 
 group :assets do
