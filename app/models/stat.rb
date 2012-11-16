@@ -282,6 +282,7 @@ class Stat < ActiveRecord::Base
       tweet_revenue = posts_by_interaction_type[2].count * @client.rate_sheet.tweet if posts_by_interaction_type[2]
       rt_revenue = posts_by_interaction_type[3].count * @client.rate_sheet.retweet if posts_by_interaction_type[3]
 
+      next if date == Date.today.strftime('%m/%d')
       @revenue << [date, tweet_revenue + rt_revenue]
     end
 
