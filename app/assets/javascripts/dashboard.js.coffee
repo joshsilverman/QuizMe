@@ -72,7 +72,7 @@ class Dashboard
       $('.paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
 
       $('.econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('.econ_engine .total .number').html data['core_display_data'][0]['econ_engine']['answerers']
+      $('.econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
 
       $('.dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('.dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
@@ -107,7 +107,7 @@ class Dashboard
       $('#core_by_handle .paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
 
       $('#core_by_handle .econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('#core_by_handle .econ_engine .total .number').html data['core_display_data'][0]['econ_engine']['answerers']
+      $('#core_by_handle .econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
 
       # $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
       # $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
@@ -199,7 +199,7 @@ class Dashboard
     else
       chart_elmnt = $(container + " .econ_engine_graph")[0]
 
-    chart = new google.visualization.AreaChart(chart_elmnt)
+    chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, econ_engine_options
 
   draw_handle_activity: =>
@@ -254,11 +254,10 @@ dau_mau_options =
   colors: ["#6C69D1"]
 
 econ_engine_options =
-  isStacked: true
   width: 425
   height: 275
-  pointSize: 0
-  lineWidth: 0
+  pointSize: 6
+  lineWidth: 3
   chartArea:  
     width: 420
     left: 30
@@ -270,6 +269,7 @@ econ_engine_options =
     minorGridlines:
       count: 3
       color: "#eee"
+  colors: ["#6C69D1"]
 
 handle_activity_options = 
   width: 1170

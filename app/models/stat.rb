@@ -153,18 +153,20 @@ class Stat < ActiveRecord::Base
     user_ids_by_date_raw.each do |post|
       user_ids_by_date[post.to_char] = post.array_to_string.split(',').uniq
     end
-    user_ids_last_24 = user_ids_last_24_raw[0].array_to_string.split(',').uniq
+    user_ids_last_24 = []
+    user_ids_last_24 = user_ids_last_24_raw[0].array_to_string.split(',').uniq unless user_ids_last_24_raw.blank?
 
     graph_data = {}
     mau = []
     ((Date.today - (domain + 1))..(Date.today - 1)).each do |date|
       datef = date.strftime("%m/%d")
       graph_data[datef] = 0
-      dau = user_ids_by_date[datef].count
+      dau = 0
+      dau = user_ids_by_date[datef].count if user_ids_by_date[datef]
       mau = []
       ((date - domain)..date).each do |ddate|
         ddatef = ddate.strftime("%m/%d")
-        mau += user_ids_by_date[ddatef]
+        mau += user_ids_by_date[ddatef] unless user_ids_by_date[ddatef].blank?
       end
       mau = mau.uniq.count
       graph_data[datef] = dau.to_f / mau.to_f unless mau == 0
@@ -228,26 +230,30 @@ class Stat < ActiveRecord::Base
   end
 
   def self.econ_engine asker_id = nil, domain = 30
-
+    
     if asker_id
       @posts_by_date = Post.joins(:user).not_us.not_spam.social\
           .where('posts.in_reply_to_user_id = ?', asker_id)\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
           .group("to_char(posts.created_at, 'MM/DD')")\
-          .count('users.id')
+          .count('posts.id')
 
     else
       @posts_by_date = Post.joins(:user).not_spam.not_us.social\
-          .where("in_reply_to_user_id IN (#{User.askers.collect(&:id).join(",")})")\
+          .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
           .group("to_char(posts.created_at, 'MM/DD')")\
-          .count('users.id')
+          .count('posts.id')
     end
 
-    @econ_engine = [['Date', 'Soc. Actions']]
+    @econ_engine = []
     @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count]}
+
+    @econ_engine.sort!{|a,b| a[0] <=> b[0]}
+    @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
+    puts @econ_engine
 
     display_data = {}
     display_data[:today] = @econ_engine.last[1]
@@ -293,6 +299,9 @@ class Stat < ActiveRecord::Base
       rt_revenue = posts_by_interaction_type[3].count * @client.rate_sheet.retweet if posts_by_interaction_type[3]
       display_data[period] = tweet_revenue + rt_revenue
     end
+
+    display_data[:today] = sprintf "$%.2f", display_data[:today]
+    display_data[:month] = sprintf "$%.2f", display_data[:month]
 
     return @revenue, display_data
   end
