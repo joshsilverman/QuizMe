@@ -131,7 +131,7 @@ end
 
 
 
-task :segment_with_handles => :environment do
+task :segment_by_handle => :environment do
 
   def init
     @segmented_handles = {}
@@ -170,14 +170,13 @@ task :segment_with_handles => :environment do
     @now = Post.order("created_at DESC").first.created_at
 
     users.each_with_index do |user, i|
-      puts "#{i}. #{user.twi_screen_name}"
       next if user.role == "asker"
       segment_user user
     end
 
     @segmented_handles.each do |handle_id, segments|
       puts "======================"
-      puts "Handle ID: #{handle_id}"
+      puts "    Handle: #{@grouped_askers[handle_id][0].twi_screen_name} (#{handle_id})"
       segments.each do |recency, users_by_level|
 
         puts "          #{recency}:\n"
@@ -186,7 +185,7 @@ task :segment_with_handles => :environment do
           puts "            #{level} (#{users.count}) (#{users.map{|u| u.id}}):\n"
           users.each do |user|
             next unless user.posts.count > 0
-            puts "              #{user.twi_screen_name} (#{user.posts.group_by{|p| p.in_reply_to_user_id}.values.sort{|g1,g2| g1.count <=> g2.count}.last.first.in_reply_to_user_id})\n"
+            puts "              #{user.twi_screen_name}\n"
           end
         end
       end 
