@@ -279,7 +279,7 @@ class Post < ActiveRecord::Base
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
     retweets.each { |r| Post.save_retweet_data(r, current_acct) }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
-    true
+    true 
   end
 
   def self.save_mention_data(m, current_acct)
