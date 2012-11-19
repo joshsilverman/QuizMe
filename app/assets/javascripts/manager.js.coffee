@@ -28,6 +28,9 @@ class Feed
 			$("#respond_modal").find(".correct").removeClass("active")
 			$("#respond_modal").find(".incorrect").removeClass("active")
 			$(".response_message").hide()
+		$("#unlink_post").on "click", => 
+			$("#unlink_post").button("loading")
+			window.current_post.unlink_post()
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 
 class Post
@@ -154,67 +157,44 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
-		$("#split_dm.btn.btn-danger").off()
-		$("#split_dm.btn.btn-danger").on 'click', () =>
-			params =
-				'user_id': window.feed.engagements[@id]['user_id']
-				'test_name': 'dm reengagement'
-				'alt_a': 'Nudge'
-				'alt_b': 'No Nudge'
-			console.log params
-			$.ajax '/create_split_test',
-				type: 'POST'
-				data: params
-				success: (e) =>
-					console.log "SUCCESS"
-					console.log e
-					if e == "Nudge"
-						res = "Right! Nice job! Check out our timeline for more questions"
-					else
-						res = "Right! Nice job"
-					$("#respond_modal").find("textarea").val(res)
-				error: (e) =>
-					console.log "ERROR"
-					console.log e
-
-		$("#split_trigger_aaf.btn.btn-danger").off()
-		$("#split_trigger_aaf.btn.btn-danger").on 'click', () =>
-			params =
-				'user_id': window.feed.engagements[@id]['user_id']
-				'test_name': 'ask a friend'
-			console.log params
-			$.ajax '/trigger_split_test',
-				type: 'POST'
-				data: params
-				success: (e) =>
-					console.log "SUCCESS"
-					console.log e
-					$("#respond_modal").find("textarea").val(e)
-				error: (e) =>
-					console.log "ERROR"
-					console.log e
+	unlink_post: =>
+		params =
+			"link_to_pub_id" : 0
+			"post_id" : @id
+		$.ajax '/link_to_post',
+			type: 'POST'
+			data: params
+			success: (e) =>
+				@element.find('.link_post').text("link")
+				window.feed.conversations[@id] = {"posts":[]}
+				$("#unlink").button('reset')
+				$("#confirm").modal('hide')
 	link_post: (event) =>
 		window.post = event
-		post = event.parents('.post').find('.content')
-		$('#link_post_modal').modal(
-			"keyboard" : true
-		)
-		content = $("#link_post_modal .parent_post .content ")
-		content.find("p").text(post.find("p").text())
-		content.find("h5").text(post.find("h5").text())
-		content.find("img").attr("src", post.find("img").attr("src"))
-		$("#link").off "click"
-		$("#link").on "click", =>
-			params =
-				"link_to_pub_id" : $("input:checked").val()
-				"post_id" : @id
-			$.ajax '/link_to_post',
-				type: 'POST'
-				data: params
-				success: (e) =>
-					window.feed.conversations[@id] = {"posts":[]}
-					window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
-					$("#link_post_modal").modal('hide')
-					window.post.hide()
+		if event.text() == "unlink"
+			window.current_post = @
+			$("#confirm").modal()
+		else
+			post = event.parents('.post').find('.content')
+			$('#link_post_modal').modal(
+				"keyboard" : true
+			)
+			content = $("#link_post_modal .parent_post .content ")
+			content.find("p").text(post.find("p").text())
+			content.find("h5").text(post.find("h5").text())
+			content.find("img").attr("src", post.find("img").attr("src"))
+			$("#link").off "click"
+			$("#link").on "click", =>
+				params =
+					"link_to_pub_id" : $("input:checked").val()
+					"post_id" : @id
+				$.ajax '/link_to_post',
+					type: 'POST'
+					data: params
+					success: (e) =>
+						window.feed.conversations[@id] = {"posts":[]}
+						window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
+						$("#link_post_modal").modal('hide')
+						window.post.text("unlink")
 
 $ -> window.feed = new Feed if $("#manager").length > 0

@@ -289,11 +289,14 @@ class FeedsController < ApplicationController
   end
 
   def link_to_post
-    post_to_link = Post.find(params[:post_id])
-    puts Publication.find(params[:link_to_pub_id]).to_json
-    post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
-    post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
-    render :json => [post_to_link, post_to_link_to]
+    if params[:link_to_pub_id] == "0"
+      render :json => Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, nil)
+    else
+      post_to_link = Post.find(params[:post_id])
+      post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
+      post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
+      render :json => [post_to_link, post_to_link_to]
+    end
   end
 
   def manage
