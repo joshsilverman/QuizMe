@@ -1,16 +1,8 @@
-// Place all the styles related to the sessions controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
-
 .navbar {
 	.navbar-inner {
 		.container {
 			.nav-link, .brand {
 				padding: 9px 10px 11px;
-			}
-
-			a {
-				
 			}
 
 			.sign_in {
@@ -21,8 +13,6 @@
 			.span4 {
 				float: right;
 
-
-
 				h3 {
 					line-height: 36px;
 					float: right;
@@ -31,10 +21,6 @@
 
 				a {
 					line-height: 38px;
-				}
-
-				img {
-
 				}
 			}
 		}
