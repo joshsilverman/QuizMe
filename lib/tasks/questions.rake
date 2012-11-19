@@ -329,4 +329,88 @@ namespace :questions do
       end
     end
   end
+
+  task :testive_import, [:question_file, :asker_id, :topic_name] => :environment do |t, args|
+    answers = []
+    i = 0
+    #get asker account
+    asker = User.asker(args[:asker_id])
+    if asker.nil?
+      puts 'No Asker Found!'
+      return
+    end
+
+    #get topic
+    topic = Topic.find_or_create_by_name(args[:topic_name].downcase)
+    count = 0
+    latex = 0
+    errors = ""
+    CSV.foreach("db/questions/#{args[:question_file]}") do |row|
+      status = 1
+      id, title, answer_a, answer_b, answer_c, answer_d, answer_e, correct, format, body  = row
+      if answer_a=~/\[math\]/ or answer_b=~/\[math\]/ or answer_d=~/\[math\]/ or answer_c=~/\[math\]/ or answer_e=~/\[math\]/ or body=~/\[math\]/
+        latex+=1
+        status = -1
+      end
+      correct_a = false
+      correct_b = false
+      correct_c = false
+      correct_d = false
+      correct_e = false
+      case correct
+      when 'a'
+        correct_a = true
+      when 'b'
+        correct_b = true
+      when 'c'
+        correct_c = true
+      when 'd'
+        correct_d = true
+      when 'e'
+        correct_e = true
+      else
+        p 'ERROR'
+        errors += "#{id} "
+      end
+      
+      q = Question.find_or_create_by_seeder_id(id.to_i + 1000000)
+      q.update_attributes(:created_for_asker_id => asker.id,
+                          :text => body.strip,
+                          :status => status,
+                          :topic_id => topic.id,
+                          :user_id => 1)
+      q.answers.delete_all 
+      q.answers << Answer.create(:text => answer_a.strip, :correct => correct_a)
+      q.answers << Answer.create(:text => answer_b.strip, :correct => correct_b)
+      q.answers << Answer.create(:text => answer_c.strip, :correct => correct_c)
+      q.answers << Answer.create(:text => answer_d.strip, :correct => correct_d)
+      q.answers << Answer.create(:text => answer_e.strip, :correct => correct_e)
+      count+=1
+    end
+    puts "LATEX: #{latex}"
+    puts "Total: #{count}"
+    puts "Errors: #{errors}"
+    # File.open("db/questions/#{args[:question_file]}").each do |line|
+    #   next if line=~ /<h3>/
+    #   if line=~/<p before="7" lines="5"><b>/
+    #     i+=1
+    #     j = 0
+    #     l = line.gsub('<p before="7" lines="5"><b>','').gsub('</b>','').gsub('<br />','').gsub('\n','')
+    #     question = l[l.index('.')+2..-1]
+    #     current_q = Question.find_or_create_by_text(question)
+    #     current_q.update_attributes(:topic_id => topic.id,
+    #                         :user_id => 1,
+    #                         :status => 1,
+    #                         :created_for_asker_id => asker.id)
+    #     current_q.answers.destroy_all
+    #     current_q.answers = []
+    #   else
+    #     l = line.gsub('<b>','').gsub('</b>','').gsub('<br />','').gsub('</p>','').gsub('\n','')
+    #     answer = l[3..-1]
+    #     correct = answers[i]==j
+    #     current_q.answers << Answer.create(:text => answer, :correct => correct)
+    #     j+=1
+    #   end
+    # end
+  end
 end

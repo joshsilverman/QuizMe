@@ -1,0 +1,421 @@
+1,The Olympic Raffle,1/8,2/9,5/8,3/8,3/16,d,DSP,"A raffle will be held for the door prize at a charity fundraiser.  200 gold sponsors, 300 silver sponsors, and 400 bronze sponsors have entered the raffle.  The name of each gold sponsor was entered 3 times, the name of each silver sponsor was entered 2 times, and the name of each bronze sponsor was entered 1 time.   What is the probability that the name of a gold sponsor will be chosen?"
+2,Patriotic Marbles,4/5,7/10,1/2 ,3/10,1/5,d,DSP,"There is a bag of marbles containing 8 red marbles, 12 blue marbles, and 20 white marbles.  If a marble is chosen at random, what is the probability that the selected marble will be blue?"
+3,Precise Pizza Eaters,18%,20%,22%,25%,78%,c,NO,"Abe, Billy, and Cathy order a whole pizza.  Abe eats 1/3 of the pizza, Billy eats 1/4 of the pizza, and Cathy eats 1/5 of the pizza.  Approximately, what percentage of the pizza remains?"
+6,Employee Clock Discount,$4.80 ,$18.00 ,$43.20 ,$20.00 ,$28.80 ,d,AF,A store sells clocks for $30 each.  The price each clock sells for is 20% higher than the amount the store pays to buy each clock.  Employees can buy clocks at 20% off the storeÃ¢â?¬â?¢s cost.  How much do employees pay for each clock?
+11,Fractional Pie Eating,[math]\\displaystyle \\frac {100}{k}[/math],[math]\\displaystyle \\frac{-1}{k}[/math],[math]\\displaystyle \\frac{k-2}{k}[/math],[math]100*\\displaystyle \\frac{k-2}{k}[/math],[math]\\displaystyle \\frac{98}{k}[/math],d,AF,"Judy buys a pie, cuts it into <i>k</i> equal slices, and eats 2 slices.  She makes at least one cut.  In terms of <i>k</i>, what percentage of the pie is left?"
+12,Filling the Rain Tank,50%,53%,45%,58%,55%,e,NO,"A half-full tank contains 80 gallons of water.  During a rainstorm, the tank gains 8 gallons of water.  What percentage of the tank is now full of water?"
+14,Protein-Based Rat Weight,400,480,560,680,784,c,AF,"The projected weight of a full grown rat, in grams, is given by the function,
+
+[math]w(p) = 400\\times   \\displaystyle \\frac{25+p-a}{25}[/math],
+
+where [math]w[/math] is the weight of the rat, [math]p[/math] is the grams of protein in the ratÃ¢â?¬â?¢s daily diet, and [math]a[/math] is a constant.  If, according to the equation, a rat weighs 480g when fed 12g of daily protein, how much will a rat weigh if fed 17g of daily protein?
+"
+15,Exponents Gone Bonkers,4,[math]\\displaystyle \\frac{1}{2}[/math],0,3,2,e,AF,"[display]\\text{If }x > 1 \\text{ and }\\sqrt{x^{n+1}} =   \\displaystyle \\frac{x^3}{x^{1.5}} \\text{, what is the value of }n\\text{?}[/display]"
+16,"IÃ¢â?¬â?¢m divisible, are you?",[math]m-7[/math],[math]m-42[/math],[math]m+3[/math],[math]m+14[/math],[math]m+98[/math],b,AF,"If [math]m > 100[/math] and [math]m[/math] is divisible by 3, 7, and 14, which of the following is also divisible by those numbers."
+17,Easy Ratio Conversion,1 to 4,7 to 5,14 to 1,5 to 7,5 to 70,b,NO,The ratio 1.4 to 1 is equal to which of the following ratios?
+18,Smooth and Sharp Rocks,7,14,17,42,84,b,DSP,"The rocks in a certain bag are either smooth or sharp.  If the ratio of smooth to sharp rocks is 3/4, any of the following could be the number of rocks in the bag EXCEPT,"
+20,Three equations in one,80,60,40,20,10,d,AF,If [math]4x^3 = 5y = 20[/math] what is the value of [math]x^3y[/math]?
+21,Painting Houses,"$2,000 ","$3,000 ","$4,000 ","$5,000 ","$6,000 ",e,AF,"A group of students painted houses to raise money.  The net amount, [math]P[/math], in dollars, raised by painting [math]h[/math] houses is given by the function [math]P(h) = 400h - 2000[/math].  If the group painted 20 houses, what is the net amount they raised?"
+156,2000903, <i>m</i> + 80 , <r>3<i>m</i></r> , [math]\\displaystyle \\frac{\\displaystyle m}{\\displaystyle 3}[/math] , 3<i>m</i> , [math]\\displaystyle \\frac{\\displaystyle m}{\\displaystyle 3}[/math][math]^2[/math] ,d,AF,"A rectangular plot of land is 120 feet long and 40 feet wide, and on a map the shorter side this plot of land  is <i>m</i>  inches long.  In terms of <i>m</i>, what is the longer side, in inches, of the map?
+
+	"
+243,2000291,0,1,2,3,4,d,AF,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00008/Frame0.png\""><br />The graph of <i>y</i> = <i>g</i>(<i>x</i>) is shown.  If -5 ? <i>x</i> ? 4  for how many values of <i>x</i> does <i>g</i>(<i>x</i>) = -1?"
+281,2000336,5,6,9,12,15,c,NO,Each of the following is a factor of 60 except 
+289,2000344,5,2,0,-2,-5,a,AF,"If (<i>a</i> -5)(2 + <i>b</i>) = 0 and <i>b</i> is positive, what is the value of <i>a</i>? "
+291,2000346,58,57,55,54,53,b,AF,"The statistician for a basketball team calculated the average number of points per game the team scored in the first 10 games to be 56.  However, in reviewing his calculations he discovered that he had accidentally entered a 51 as a 57 and a 71 as 55.  What is the correct average points per game for the team in the first 10 games? "
+295,2000350,  I only  ,  II only  ,  I and II  ,  II and III  ,"  I, II and III  ",e,GM,<i>A</i> and <i>B</i> are the endpoints of a diameter of a circle.  If <i>X</i> is located so that line segment <i>[math]\\overline{AX}[/math]</i> is the same length as line segment <i>[math]\\overline{BX}[/math]</i> then which of the following could be true?<br /><br />I. <i>X</i> is the center of the circle.<br />II. <i>X</i> is on the circle.<br />III. <i>X</i> is outside of the circle.<br />
+296,2000351,1.5,3.5,4,5,6.5,d,DSP,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00021/Frame0.png\""><br />The graphs of the functions <i>g</i> and <i>h</i> are lines as shown. What is the value of <i>g</i>(2) + <i>h</i>(2)? """
+320,2000378,3,5,8,16,21,e,GM,"<i>B</i> is the midpoint of line segment <i>[math]\\overline{AE}[/math]</i>, and <i>D</i> is the midpoint of line segment <i>[math]\\overline{BE}[/math]</i>.  If <i>C</i> is a point between <i>B</i> and <i>D</i> such that the length of segment <i>[math]\\overline{CE}[/math]</i> is 11 and the length of segment <i>[math]\\overline{CD}[/math]</i> is 3, what is the length of segment <i>[math]\\overline{AC}[/math]</i>? "
+321,2000379,  [math]\\displaystyle \\frac {\\displaystyle 1275 - a}{\\displaystyle b}[/math]  ,  [math]\\displaystyle \\frac{\\displaystyle 1275 + a - b}{\\displaystyle b}[/math]  ,  [math]\\displaystyle \\frac{\\displaystyle 1275 - a + b}{\\displaystyle b}[/math]  ,  [math]\\displaystyle \\frac{\\displaystyle 1275 - a - b}{\\displaystyle b}[/math]  ,  [math]\\displaystyle \\frac{\\displaystyle 1275 - a}{\\displaystyle a + b}[/math]  ,c,AF,"A candy bar costs <i>a</i> cents for the first one and <i>b</i> cents for every one after the first one.  If you paid $12.75 for some candy bars, which of the following represents the number of candy bars you bought? "
+323,2000381, <i>r</i> = <i>v</i> , <i>s</i> = <i>t</i> , <i>r</i> = <i>u</i> , <i>t</i> = <i>u</i> , <i>t</i> = <i>v</i> ,a,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00022/Frame0.png\""><br />In ?<i>ABC</i>  <i>AB</i> = <i>BC</i>.  Which of the following must be true? """
+325,2000383, 4(4.50) - 85 ? <i>n</i> , 85 - 4(4.50) ? <i>n</i> , 85 - 4(4.50) ? <i>n</i> , 85 + 4(4.50) ? <i>n</i> , 85 - 4.50 ? <i>n</i> ,c,NO,"Sue can spend no more than $85 on groceries.  The first items she chooses are 4 boxes of cereal which cost $4.50 each.  If <i>n</i> represents how much she has left for the rest of her groceries, which of the following inequalities could be used to find the possible values for <i>n</i>? "
+326,2000384,  , <fig>00036.swf</fig> , <fig>00037.swf</fig> , <fig>00038.swf</fig> , <fig>00039.swf</fig> ,c,DSP,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00035/Frame0.png\""><br />If <i>y</i> is always 5 more than <i>x</i>  which of the following could be the graph that shows the relationship between <i>x</i> and <i>y</i>? """
+328,2000386,  , <fig>00041.swf</fig> , <fig>00042.swf</fig> , <fig>00043.swf</fig> , <fig>00044.swf</fig> ,a,DSP,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00040/Frame0.png\""><br />James recently opened a savings account.  At the end of each month he deposits 10% of the original deposit amount until the savings account has 40% more than it had at the beginning.  Which of the following graphs could correctly represent the amount in the account over a 7 week period? """
+329,2000387, [math]\\displaystyle \\frac {\\displaystyle 2}{\\displaystyle 3}[/math] , [math]\\displaystyle \\frac{\\displaystyle 10}{\\displaystyle 21}[/math] , [math]\\displaystyle \\frac{\\displaystyle 2}{\\displaystyle 5}[/math] , [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 7}[/math] , [math]\\displaystyle \\frac{\\displaystyle 2}{\\displaystyle 7}[/math] ,e,AF,"If [math]  \\displaystyle \\frac{\\displaystyle xy}{\\displaystyle ab}[/math] = [math]  \\displaystyle \\frac{\\displaystyle 3}{\\displaystyle 5}[/math], then [math]  \\displaystyle \\frac{\\displaystyle 10xy}{\\displaystyle 21ab}[/math] =                          
+
+
+
+	"
+331,2000389, Three , Four , Five , Six , Nine ,a,NO,"1, 2, 3 <br/>
+
+<br/>
+
+If <i>a</i>, <i>b</i>, and <i>c</i> are assigned different values from the list above, how many different values for (<i>a</i> - <i>b</i>)[math]^c[/math] are possible? "
+334,2000393, 5? , 10? , 20? , 30? , 40? ,c,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00024/Frame0.png\""><br />In the figure above the small circles each have a radius of 5.  They are tangent to the larger circle at <i>X</i> and <i>Z</i> and tangent to each other at <i>Y</i> which is the center of the larger circle.  What is the perimeter of the shaded region? """
+335,2000395,6,8,10,11,14,a,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00025/Frame0.png\""><br />In the figure above  [math]\\overline{<i>XM</i>}[/math] is the height of triangle <i>XYZ</i>. If <i>XY</i> = 7 which of the following could be the length of [math]\\overline{<i>XM</i>}[/math]? """
+339,2000400,10%,30%,50%,70%,90%,e,DSP,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00047/Frame0.png\""><br />From 1980 to 1990 total corn production in the four towns combined increased by approximately what percent? """
+341,2000402,1,2,3,4,5,b,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00048/Frame0.png\""><br />In the figure above [math]\\overline{<i>BD</i>}[/math] divides square <i>ABCD</i> into two triangles and <i>BC</i> = 2.  If <i>D</i> is the midpoint of both [math]\\overline{<i>BF</i>}[/math] and [math]\\overline{<i>CE</i>}[/math]  what is the area of triangle <i>DEF</i>? """
+347,2000408,1, 1[math]\\displaystyle \\frac{\\displaystyle 2}{\\displaystyle 3}[/math] ,2, 2[math]\\displaystyle \\frac{\\displaystyle 2}{\\displaystyle 3}[/math] , 3[math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 3}[/math] ,c,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00051/Frame0.png\""><br />In the figure  segment [math]\\overline{<i>AC</i>}[/math] passes through <i>B</i>  which is the center of both circles.  If <i>AC</i> = 8 and the radius of the larger circle is three times as big as the radius of the smaller circle  what is the radius of the smaller circle? """
+348,2000409, <i>h</i>(<i>t</i>)  =  26<i>t</i> , <i>h</i>(<i>t</i>)  =  [math]\\displaystyle \\frac{\\displaystyle 3600t}{\\displaystyle 26}[/math] , <i>h</i>(<i>t</i>)  =  [math]\\displaystyle \\frac{\\displaystyle 26t}{\\displaystyle 3600}[/math] , <i>h</i>(<i>t</i>)  =  [math]\\displaystyle \\frac{\\displaystyle 26 (3600)}{\\displaystyle t}[/math] , <i>h</i>(<i>t</i>)  =  26 (3600<i>t</i>) ,b,AF,"A tennis player hits the ball during a match an average of once every 26 seconds.  If <i>h</i>(<i>t</i>) represents the number of times the tennis player hits the ball in <i>t</i> hours, which of the following defines <i>h</i>?
+
+	"
+389,2000476, Three , Four , Eight , Twelve , Thirteen ,a,NO,"Natalie, Oscar, and Patricia made a total of 39 calls to invite people to their party.  Oscar made 4 times as many calls as Natalie, and Patricia made twice as many calls as Oscar.  How many calls did Natalie make? "
+397,2000484, 11<i>y</i> , 13<i>y</i> , -2<i>x</i> + 11<i>y</i> , 2<i>x</i> + 11<i>y</i> , 4<i>x</i> + 11<i>y</i> ,e,AF,"1.   Add 6<i>y</i> to <i>x</i>. 2.   Multiply the sum by 2 3.   Subtract <i>y</i> - 2<i>x</i> from the product. If the steps above are followed in order, which of the following is a simplified expression for the result? "
+400,2000487,40,50,60,80,100,c,AF,"Jason is giving away his comic book collection to his friends.  If each friend takes 3 comic books, there will be 12 left.  If 1 of his friends does not take a comic book and the rest of his friends take 4 comic books each, there will be no comic books left.  How many comic books did Jason give away? "
+401,2000488,$0.05 ,$1.40 ,$1.45 ,$1.50 ,$2.80 ,b,NO,"During a sale at a grocery store, shoppers pay the regular price for a box of cereal and pay $0.05 for the second box.  If the regular price of a box of cereal is $2.85, how much per box does a shopper save by buying two boxes of cereal during this sale? "
+403,2000490,0.0001,0.1, [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 2}[/math] ,1,1000,d,NO,"If (0.0005)<i>n</i> = 0.0005, then <i>n</i> = "
+404,2000491,0,2,20,60,120,e,AF,"<i>a</i> = 4<i>bc</i> <i>d</i> = (<i>b</i> - 3)<i>a</i> If <i>a</i> and <i>b</i> are defined by the equations above, what is the value of <i>d</i> when <i>b</i> = 5 and <i>c</i> = 3? "
+405,2000492,3,9,12,27,36,e,AF,"If <i>e</i> = 3<i>f</i>  and  <i>f</i> = 4, what is the value of 3<i>e</i>? "
+408,2000496, [math]\\displaystyle \\frac {\\displaystyle 1}{\\displaystyle 3}[/math] ,3, [math]\\displaystyle \\frac{\\displaystyle y}{\\displaystyle z}[/math] , [math]\\displaystyle \\frac{\\displaystyle z}{\\displaystyle 2x}[/math] , [math]\\displaystyle \\frac{\\displaystyle 2z}{\\displaystyle x}[/math] ,a,AF,"If [math]  \\displaystyle \\frac{\\displaystyle z}{\\displaystyle x}[/math] = 3 and [math]  \\displaystyle \\frac{\\displaystyle w}{\\displaystyle x}[/math] = [math]  \\displaystyle \\frac{\\displaystyle y}{\\displaystyle z}[/math], where [math]y \\neq 0[/math], which of the following must be equal to [math]  \\displaystyle \\frac{\\displaystyle w}{\\displaystyle y}[/math]?"
+436,2000424, 0.55(2.50 + 0.43<i>x</i>) , 0.55(2.50) + 43<i>x</i> , 0.45(2.50 + 0.43<i>x</i>) , 0.45(2.50) + 43<i>x</i> , 0.45(2.50 + 0.45<i>x</i>) ,a,AF,"A coffee shop has a computer with internet access.  The shop charges $2.50 for the first 2 minutes and then <i>x</i> cents for each additional minute.  The total charge is reduced 45% if the customer is over 65 years old.  The cost, in <u>dollars</u>, of a 72 year old using the computer for 45 minutes is "
+437,2000426, 8? , 10? , 16? , 40? , 64? ,b,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00052/Frame0.png\""><br />In the figure above  a rectangle with length 8 and width 4 is cut into 8 equal squares.  What is the area of the circle (not shown) that passes through the points <i>A</i> <i>B</i> <i>C</i> and <i>D</i> which are the centers of the four corner squares? """
+438,2000427,0.0001,0.001,1, [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 2}[/math] ,100,c,AF,"If (0.0031)<i>n</i> = 0.0031, then <i>n</i> =
+
+
+
+	"
+444,2000433, [math]\\displaystyle \\frac {\\displaystyle 1}{\\displaystyle 3}[/math] ,3, [math]\\displaystyle \\frac{\\displaystyle 3a}{\\displaystyle c}[/math] , [math]\\displaystyle \\frac{\\displaystyle c}{\\displaystyle 3a}[/math] , [math]\\displaystyle \\frac{\\displaystyle 3c}{\\displaystyle a}[/math] ,b,AF,"If [math]  \\displaystyle \\frac{\\displaystyle c}{\\displaystyle a}[/math] = 3 and [math]  \\displaystyle \\frac{\\displaystyle a}{\\displaystyle b}[/math] = [math]  \\displaystyle \\frac{\\displaystyle c}{\\displaystyle d}[/math], where <i>a</i> ? 0, which of the following must be equal to [math]  \\displaystyle \\frac{\\displaystyle d}{\\displaystyle b}[/math]? "
+445,2000434, 3<i>x</i> , 180 - 3<i>x</i> , 180 - 4<i>x</i> - 12 , 3<i>x</i> + 12 , 180 - 4<i>x</i> ,d,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00029/Frame0.png\""><br />In the figure above  <i>C</i> lies on <i>[math]\\overline{AE}[/math]</i>.  In terms of <i>x</i>  which of the following must be equivalent to <i>y</i>?"
+453,2000445,75,85,95,105,125,c,NO,"A cell phone company charges you $10 for up to 90 minutes (or displaystyle   \\fraction thereof) of usage per month, $20 for more than 90 minutes but less than or equal to 180 minutes and so on.  If you average 275 minutes per month, how many minutes must you cut from your monthly average to reduce your monthly bill to $20? "
+456,2000448, [math]\\displaystyle \\frac {\\displaystyle -n}{\\displaystyle m}[/math] , [math]\\displaystyle \\frac{\\displaystyle m}{\\displaystyle n}[/math] , [math]\\displaystyle \\frac{\\displaystyle -m}{\\displaystyle n}[/math] ,0, [math]\\displaystyle \\frac{\\displaystyle 2n}{\\displaystyle m}[/math] ,e,NO,"If <i>n</i> &lt; <i>m</i> &lt; 0 then which of the following is greater than [math]  \\displaystyle \\frac{\\displaystyle n}{\\displaystyle m}[/math]?
+
+
+
+	"
+457,2000507,1,2,3,4,5,c,AF,"If <r>64</r> = 2[math]^x[/math] then what is the value of <i>x</i>?
+
+
+
+	"
+459,2000535, <i>x</i>[math]^2[/math] ? 7 , |<i>x</i>| ? 7 , |<i>x</i>[math]^2[/math]| ? 7 , 7<i>x</i> > 7 , <i>x</i>[math]^3[/math] ? 7 ,b,NO,"If -7 ? <i>x</i> ? 7 then which of the following must be true?
+
+
+
+	"
+463,2000521, 5? + 5 , 5? + 10 , 5? + 20 , 10? + 10 , 10? + 20 ,c,GM,"A circular piece of paper is cut in half, and then each of those halves is cut in half again.  If the diameter of the original circular piece was 20 cm, what is the perimeter of one of the quarter circles? "
+464,2000522,40,41,42,43,44,d,DSP,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00057/Frame0.png\""><br />The figure above shows a row of houses with a section of the row not shown.  If the houses are arranged in a repeating pattern of red (R) blue (B)  green (G) and yellow (Y)  from left to right  then how many houses could be in the missing section? """
+481,2001392, 0.0<i>DEF</i> , 0.<i>DEF</i> , <i>D.EF</i> , <i>DE.F</i> ," <i>DE,F</i>00 ",c,AF,"If <i>D</i>, <i>E</i>, and <i>F</i> are digits in the positive three-digit integer, <i>DEF</i> what is the decimal equivalent when <i>DEF</i> is multiplied by 10[math]^{-2}[/math]? 	"
+485,2001391, [math]\\displaystyle \\frac {\\displaystyle 2}{\\displaystyle 3}[/math] ,3,6,9,12,c,NO,<i>X</i> is a set of numbers whose average (arithmetic mean) is 2.  <i>Y</i> is a set of numbers that is generated by tripling each number in set <i>X</i>.  What is the average of the  numbers in set <i>Y</i>?
+503,2000571, [math]\\displaystyle \\frac {\\displaystyle a + b}{\\displaystyle 100c}[/math] % , [math]\\displaystyle \\frac{\\displaystyle 100c}{\\displaystyle a + b}[/math] % , [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle a + b - 100c}[/math] % , [math]\\displaystyle \\frac{\\displaystyle 100(a + b)}{\\displaystyle c}[/math] % , 100<i>c</i>(<i>a</i> + <i>b</i>) % ,b,NO,"If <i>a</i>, <i>b</i> and <i>c</i> are positive numbers, what percent of <i>a</i> + <i>b</i> is <i>c</i>?
+
+
+
+	"
+509,2000581,-900,-3, -[math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 3}[/math] , [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 3}[/math] ,3,b,NO,"If 5<i>x</i> + 2<i>x</i> + 3<i>x</i> = -30, then <i>x</i> =
+
+
+
+	"
+514,2000586,7,12,13,24,81,c,AF,"Let ? be defined by <i>a</i> ? <i>b</i> = <i>a</i>[math]^2[/math] + <i>b</i>[math]^2[/math] - <i>ab</i> for all numbers <i>a</i> and <i>b</i>.  3 ? 4 =
+
+
+
+
+
+	"
+523,2001389, 16 : 1 , 8 : 1 , 4 : 3 , 2 : 1 , 4 : 1 ,e,GM,The diameter of circle <i>O</i> is 4 times the diameter of circle <i>P</i>.  What is the ratio of the radius of  circle <i>O</i> to the radius of circle <i>P</i>?	
+530,2000600, ? ,2,1, [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 2}[/math] , [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle  ? }[/math] ,b,GM,"What is the diameter of a circle whose area is ??
+
+
+
+
+
+	"
+531,2000601, one , two , three , five , seven ,b,NO,"Of the prime factors of 210, how many are greater than 3?
+
+
+
+	"
+535,2000605,25,30,125,150,225,c,GM,"Javier made a cube-shaped box in art class and glued it to a piece of paper.  He then painted the remaining visible faces of the cube.  If the total painted area is equal to 125 square inches, what is the volume of the cube, in cubic inches?
+
+
+
+	"
+536,2000606,4,7,16,21,28,d,NO,"Let <i>A</i> = [math]  \\displaystyle \\frac{\\displaystyle 4}{\\displaystyle 7}[/math]<i>B</i> + 16.  An increase of 12 in <i>A</i> would correspond to how much of an increase in <i>B</i>?
+
+
+
+	"
+540,2000611, [math]\\overline{<i>SD</i>}[/math] , [math]\\overline{<i>SE</i>}[/math] , [math]\\overline{<i>SF</i>}[/math] , [math]\\overline{<i>SG</i>}[/math] , [math]\\overline{<i>SH</i>}[/math] ,e,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00006/Frame0.png\""><br />In the figure above [math]\\overline{<i>SF</i>}[/math] is perpendicular to <i>l</i>. Which of  the following line segments (not shown) has the greatest  length? """
+541,2000609,1200,1250,1300,1500,1600,d,NO,There are 6 photo albums in Megan's collection. Each  album contains at least 220 photos but no more than  260 photos. Which of the following could be the total number of photos in her collection? 
+550,2000620, 8<i>a</i>[math]^4[/math] - 24<i>a</i>[math]^2[/math] + 18 , 8<i>a</i>[math]^4[/math] - 24<i>a</i>[math]^2[/math] + 15 , 4<i>a</i>[math]^4[/math] - 9 , 4<i>a</i>[math]^4[/math] + 9 , 4<i>a</i>[math]^4[/math] - 10<i>a</i>[math]^2[/math] + 9 ,b,AF,"For all values of <i>a</i>, let <i>a</i># be defined by <i>a</i># = 2<i>a</i>[math]^2[/math] - 3. Which of the following is equal to (<i>a</i>#)#?
+
+
+
+	"
+551,2000621, Two, Three , Four , Five , Six ,e,GM,"A circle, a rectangle and a triangle are all drawn on a sheet of paper.  At most how many points could be common to all three?
+
+
+
+	"
+552,2000622, 35<i>f</i> [math]^2[/math]<i>y</i> , [math]\\displaystyle \\frac{\\displaystyle y}{\\displaystyle 35}[/math] , [math]\\displaystyle \\frac{\\displaystyle 5y}{\\displaystyle 7}[/math] , [math]\\displaystyle \\frac{\\displaystyle 35f^2}{\\displaystyle y}[/math] , 35<i>y</i> ,e,AF,"The owners of a restaurant are paying for boxes of flyers to announce their grand opening.  If each box contains <i>f</i> flyers and each employee passes out <i>y</i> flyers per day, how many boxes of flyers do the owners need to supply enough flyers for 5<i>f</i> employees to pass out flyers for 7 days?
+
+
+
+	"
+559,2000630," 3, 4, 5, 11, 12, 13, 14 "," 5, 5, 5, 11, 17, 17, 17 "," 5, 6, 7, 11, 15, 16, 17 "," 8, 8, 8, 11, 14, 15, 16 "," 8, 9, 10, 11, 12, 13, 14 ",d,DSP,"Which of the following lists of numbers has a median that is less than the average (arithmetic mean)?
+
+
+
+	"
+564,2000635, <i>n</i>[math]^2[/math]<i>p</i>[math]^4[/math] , <i>n</i>[math]^3[/math]<i>p</i><p>9</p> , [math]\\displaystyle \\frac{\\displaystyle n<p>2</p>p<p>4</p>}{\\displaystyle 3}[/math] , [math]\\displaystyle \\frac{\\displaystyle n<p>6</p>p<p>12</p>}{\\displaystyle 3}[/math] , [math]\\displaystyle \\frac{\\displaystyle n<p>6</p>p<p>4</p>}{\\displaystyle 3}[/math] ,a,NO,"If <i>m</i>[math]^3[/math] = <i>n</i>[math]^6[/math]<i>p</i>[math]^12[/math] and <i>m, n,</i> and <i>p</i> are positive integers, then <i>m</i> =
+
+
+
+
+
+	"
+567,2000638,5,10,15,20,25,b,GM,"Five points lie in a plane.  What is the maximum number of different lines that can be drawn so that each line passes through exactly two of the points?
+
+
+
+	"
+569,2000640,4,8,9,10,11,e,GM,"Four lines are drawn in a plane.  What is the maximum number of non-overlapping regions these lines could divide the plane into?
+
+
+
+	"
+571,2000642,110,111,765,1565,2430,e,NO,"If <i>a</i> represents the sum of the integers from 11 to 40 inclusive and <i>b</i> represents the sum of the integers from 41 to 70 inclusive, what is the value of <i>a</i> + <i>b</i>?
+
+
+
+	"
+572,2000643, 11<i>n</i> + <i>np</i> , 11<i>n</i> + 11<i>p</i> , 11<i>p</i> + <i>np</i> , 11<i>np</i> , 11 + <i>n</i> + <i>p</i> ,a,AF,"There are <i>n</i> lines of people at the concession stands at a baseball game and each line has 11 people in it.  If <i>p</i> people are added to each row, how many total people will be in all the lines, in terms of <i>n</i> and <i>p</i>?
+
+
+
+
+
+
+
+	"
+609,2000681,-9,-3,0,27,81,a,AF,"If <i>x</i>[math]^2[/math] - 81 = 0, which of the following could be a value of <i>x</i>?
+
+
+
+	"
+615,2000687,7.5,9,11.5,13,14,d,AF,"If the average of 6 and <i>e</i>  is 9 and the average of 14 and <i>f</i> is 14, what is the average of <i>e</i> and <i>f</i>?
+
+
+
+	"
+621,2000693,20,22,29,32,33,a,GM,"If the length of [math]\\overline{<i>AB</i>}[/math] is 10 and the length of [math]\\overline{<i>BC</i>}[/math] is 11, which of the following could be the length of [math]\\overline{<i>AC</i>}[/math]?
+
+
+
+	"
+625,2000697, I only , II only , I and II only , II and III only ," I, II, and III ",e,GM,"<img src=\{{QUESTIONS_MEDIA_URL}}mccorkle/00100/Frame0.png\""><br />A circle (not drawn) passes through the point <i>X</i> in the figure above.  What could be the total number of points of intersection of this circle and ?<i>XYZ</i>? <br /><br />I.  1 <br />II.  3 <br />III.  5 <br />"""
+651,2000726,0,1,3, <i>y</i> , 3<i>y</i> ,a,AF,"If <i>y</i> > 0, then <i>y</i><parenth>[math]  \\displaystyle \\frac{\\displaystyle 3y[math]^2[/math]}{\\displaystyle 3y[math]^2[/math]}[/math] - [math]  \\displaystyle \\frac{\\displaystyle 3y[math]^2[/math]}{\\displaystyle 3y[math]^2[/math]}[/math]</parenth> =
+
+
+
+	"
+654,2000729, <i>y</i> = -3 , <i>y</i> = 3 , <i>x</i> = -3 , <i>x</i> = 0 , <i>x</i> = 3 ,e,GM,"What is the equation for a line that is prallel to the <i>y</i> -axis and three units to the right of the <i>y</i> -axis?
+
+
+
+	"
+656,2000731," {-1, 0, 1} "," {-1, 0} "," {-1, 0, 1, 2} "," {0, 1, 2} "," {1, 2} ",d,NO,"A set has property <i>W</i> if 2<i>s</i> - <i>s</i>[math]^2[/math] is in the set whenever <i>s</i>  is in the set.  Which of the following sets has the property <i>W</i>?
+
+
+
+	"
+658,2000733, I only , I and II only , I and III only , III only ," I, II, and III ",c,NO,"If <i>r</i> is an integer, <i>r</i> > 5, and <i>v</i> = <i>r</i> + [math]  \\displaystyle \\frac{\\displaystyle 5}{\\displaystyle r}[/math], which of the following must be true?
+
+
+
+	<br /><br />I.  <i>r</i> &lt; <i>v</i> <br />II.  <i>v</i> is an integer. <br />III.  <i>rv</i>[math]^2[/math] > <i>r</i>[math]^3[/math] <br />"
+671,2000746, <i>w</i> > <i>x</i> , <i>y</i> &lt; <i>z</i> , <i>w</i> = <i>x</i> , <i>w</i> = <i>y</i> , <i>x</i> > <i>y</i> ,c,AF,"If <i>w</i>, <i>x</i>, and <i>y</i> are positive integers, and if <i>z</i> is a negative integer, and if (<i>w</i> - <i>x</i>)(<i>y</i> - <i>z</i>) = 0, which of the following must be true?
+
+
+
+	"
+672,2000747, I only , II only , III only , II and III only ," I, II, and III ",b,NO,"If <i>a</i> &lt; -8 or <i>a</i> > 8, which of the following must be true?
+
+
+
+
+
+
+
+	<br /><br />I.   <i>a</i> - 8 = 0 <br />II.   <i>a</i>[math]^2[/math] > 8 <br />III.   <i>a</i>[math]^3[/math] > 8 <br />"
+675,2000750, None , One , Two , Three , Four or more ,a,NO,"<i>f</i>(<i>x</i>) = <i>x</i>[math]^2[/math]  <i>g</i>(<i>x</i>) = 2<i>x</i> - 4  The functions <i>f</i> and <i>g</i> are defined above.  For how many values of <i>n</i> is it true that <i>f</i>(<i>n</i>) = <i>g</i>(<i>n</i>)?
+
+
+
+	"
+678,2000753,-20,-4,0,4,20,a,AF,"10<i>x</i> - <i>ky</i> = 15 </BR> 
+
+2<i>x</i> + 4<i>y</i> = 7  
+
+</BR>
+
+</BR>
+
+For which of the following values for <i>k</i> will the system of equations above have <u>no</u> solution?
+
+
+
+	"
+683,2000758, None , One , Two , Three , Four or more ,c,AF,"| <i>b</i> - 5 | = 1 For how many values of <i>b</i> is the equation above true?
+
+
+
+	"
+689,2001386," <i>a</i> = 1, <i>b</i> = -2"," <i>a</i> = 3, <i>b</i> =  2"," <i>a</i> = 4, <i>b</i> =  5"," <i>a</i> = 6, <i>b</i> =  4"," <i>a</i> = 8, <i>b</i> =  6",d,NO,"If  [math]  \\displaystyle \\frac{\\displaystyle a[math]^2[/math]}{\\displaystyle b}[/math]  is an integer, which of the following could be values of <i>a</i> and <i>b</i>?"
+691,2001383,4,5,6,7,8,a,DSP,"3, 4, 3, 4, 5, 3, 3, <i>n</i>, 4 <br/>
+
+<br/>
+
+For the numbers listed above, the only mode is 3 and the median is 4.  Each of the following could  be the value of <i>n</i> EXCEPT	"
+707,2000782,-3, -[math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 9}[/math] ,0, [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 9}[/math] , [math]\\displaystyle \\frac{\\displaystyle 1}{\\displaystyle 3}[/math] ,e,AF,"If <i>y</i> [math]^-2[/math] = 9, which of the following could be the value of <i>y</i> ?
+
+
+
+	"
+708,2000783, 3<i>n</i> , 1 + 3<i>n</i> , 2 + 3<i>n</i> , 5 + 3<i>n</i> , 3 + 5<i>n</i> ,c,NO,"The first term of a sequence is 5, and each term after the first is 3 more than the previous term.  Which of the following is an expression for the <i>n</i>th term of the sequence for any positive integer <i>n</i> ?
+
+
+
+	"
+710,2000785, <i>k</i> = -2 , <i>k</i> = -3 , <i>x</i> = -2 , <i>x</i> = -3 , <i>kx</i> = -3 ,b,AF,"If (1 + <i>x</i>)<i>k</i> = -3 + <i>kx</i>, which of the following must be true?
+
+
+
+	"
+712,2000787, 1 : 4? , 1 : 2? , 1 : ? , 2: ? , 2? : 1 ,d,GM,"What is the ratio of the radius <i>r</i>  of a circle to one-fourth of the circumference of the circle?
+
+
+
+	"
+715,2000790,-8,-4,0,6,16,a,AF,"If <i>x</i>[math]^2[/math] - 64 = 0, which of the following could be a value for <i>x</i> ?
+
+
+
+	"
+719,2000794,7,8,9,10,11,b,GM,"A triangle has one side of length 7 and a perimeter of 23.  If the lengths of the other two sides are equal, what is the length of each of them?
+
+
+
+	"
+721,2000796, 3<i>r</i>[math]^2[/math] = (<i>r</i> + 3)[math]^2[/math] , (3<i>r</i>)[math]^2[/math] = <i>r</i>[math]^2[/math] + 3[math]^2[/math] , 3[math]^2[/math]<i>r</i> = <i>r</i><p>2</p> + 3<p>2</p> , (3<i>r</i>)<p>2</p> = (<i>r</i> + 3)<p>2</p> , 3<i>r</i><p>2</p> = <i>r</i><p>2</p> + 3<p>2</p> ,d,AF,"Squaring the product of <i>r</i> and 3 gives the same result as squaring the sum of <i>r</i> and 3.  Which of the following equations could be used to find all possible values of <i>r</i>?
+
+
+
+	"
+729,2000804, <i>b</i> = <i>c</i> , <i>b</i> > <i>c</i> , <i>b</i> &lt; <i>c</i> , <i>a</i> > <i>c</i> , <i>a</i> = <i>b</i> ,c,NO,"<i>a</i> = -(<i>x</i>)[math]^2[/math] + (0.99)[math]^2[/math]  <i>b</i> = (-<i>x</i>)[math]^2[/math] + (0.99)[math]^2[/math]  <i>c</i> = (-<i>x</i> - 0.99)[math]^2[/math]  If <i>x</i> is a positive integer, which of the following statements must be true?
+
+
+
+	"
+733,2000808,84,96,108,128,140,c,NO,"A teacher buys her class pizza as a reward for doing well on a test.  If each student gets 3 pieces of pizza, there will be 12 pieces left over.  If 5 students donÃ¢â?¬â?¢t take any pieces and the rest of the class takes 4 pieces, there will be no pieces left.  How many total pieces of pizza 		did the teacher buy?
+
+"
+735,2000810, None , One , Two , Three , More than three ,e,AF,"For all positive integers <i>a</i> and <i>b</i>, where <i>a</i> > <i>b</i>, let the operation * be defined by <i>a</i> * <i>b</i> = [math]  \\displaystyle \\frac{\\displaystyle 4[math]^a + b[/math]}{\\displaystyle 4[math]^a - b[/math]}[/math].  For how many positive integers <i>a</i> is <i>a</i> * 2 equal to 256?
+
+
+
+	"
+738,2000814,18,22,27,30,36,d,NO,"Which of the following is divisible by 2 and by 3 but not divisible by 9?
+
+
+
+	"
+779,2000880, <i>V</i>(<i>d</i>) = <i>[math]\\pi[/math]dh</i> , <i>V</i>(<i>d</i>) = 2[math]\\pi[/math]<i>dh</i> , <i>V</i>(<i>d</i>) = [math]\\pi[/math]<i>d</i>[math]^2[/math]<i>h</i> , [math]V(d)  = [/math][math]\\displaystyle \\frac{\\displaystyle \\pi d^2h}{\\displaystyle 2}[/math] , [math]V(d)  = [/math] [math] \\displaystyle \\frac{\\displaystyle  \\pi d^2 h}{\\displaystyle 4}[/math]  ,e,GM,"Which of the following represents the volume, <i>V</i>, of a right circular cylinder as a function of its diameter, <i>d</i>, and height, <i>h</i>?
+
+
+
+	"
+783,2000910," (2, 12, 2) "," (2, 11, 0) "," (3, 7, -1) "," (4, 6, 2) "," (5, 5, 2) ",e,NO,"Which of the following triples (<i>x</i>, <i>y</i>, <i>z</i>) does NOT satisfy the equation <i>xy</i> - <i>z</i> = 22 ?
+
+
+
+	"
+788,2000915, <i>h</i>(<i>n</i>) = 6 + 0.15<i>n</i> , <i>h</i>(<i>n</i>) = 6(0.15)[math]^n[/math] , <i>h</i>(<i>n</i>) = 6(0.85)[math]^n[/math] , <i>h</i>(<i>n</i>) = 6(1.15)[math]^n[/math] , <i>h</i>(<i>n</i>) = 6(<i>n</i>)[math]^1.15[/math] ,d,NO,"A certain plant was 6 inches tall when Regina bought it. Over the next several weeks, the plant's height increased by 15 percent each week. Which of the following functions gives the height, h, in inches, of the plant after n weeks of growing at this rate?"
+790,2000917, <i>c</i> , <i>c</i> + 1 , 7[math]^c[/math] , 7[math]^c[/math] + 1 , 7[math]^c - 1[/math] ,c,AF,"If <i>a</i> = 7[math]^b[/math] and <i>b</i> = <i>c</i> + 1, what is [math]  \\displaystyle \\frac{\\displaystyle a}{\\displaystyle 7}[/math] in terms of <i>c</i> ?
+
+
+
+	"
+973,2001121, (<i>x</i> + 1)(<i>x</i> + 2) , (<i>x</i> + 1)(<i>x</i> - 1) , (<i>x</i> - 2)(<i>x</i> + 3) , (<i>x</i> - 4)(<i>x</i> + 4) , (<i>x</i> - 6)(<i>x</i> + 6) ,a,NO,"If <i>x</i> = 6, which of the following is greatest in value?	
+
+	"
+974,2001122,6,24,36,60,72,e,AF,"Boats <i>A</i>, <i>B</i>, and <i>C</i> pass by a navigational buoy at different speeds.  Boat <i>A</i>'s speed is twice  boat <i>B</i>'s speed, and boat <i>C</i>'s speed is 3 times boat <i>A</i>'s. What is boat <i>C</i>'s speed, in miles per  hour, if boat <i>B</i>'s speed is 12 miles per hour?  
+
+	"
+985,2001133,48,24,12,-48,-96,e,NO,"The first term in a sequence of numbers is 3.  If each  term after the first term is the product of -2 and the  preceding term, what is the sixth term of the sequence?
+
+   "
+992,2001147,50.05%,50.10%,50.50%,51%,55%,c,AF,"In an election, 3.6 million votes were cast, and each was either for Candidate A or Candidate B.  Candidate A received 36,000 more votes than Candidate B.  What percent of the 3.6 million votes were cast for Candidate A?
+
+   "
+1052,2001413, [math]\\displaystyle \\frac {\\displaystyle 5}{\\displaystyle 6}[/math] , [math]\\displaystyle \\frac{\\displaystyle 7}{\\displaystyle 8}[/math] , [math]\\displaystyle \\frac{\\displaystyle 9}{\\displaystyle 10}[/math] , [math]\\displaystyle \\frac{\\displaystyle 11}{\\displaystyle 12}[/math] , [math]\\displaystyle \\frac{\\displaystyle 17}{\\displaystyle 18}[/math] ,d,NO,"If a ballet recital lasts for 90 minutes, what fraction of the ballet recital remains 7.5 minutes after the ballet recital begins?
+	"
+1081,2001470,16,24,28,52,64,c,GM,"Any 2 points determine a line.  If there are 8 points  in a plane, no 3 of which lie on the same line, how many lines are determined by pairs of these 8 points? "
+1084,2001473,36,38,41,45,46,d,DSP,"Sarah, Lynn, and Rachel own a total of 142 vinyl records.  If Sarah owns 52 of them, what is the  average (arithmetic mean) number of vinyl records owned by Lynn and Rachel? "
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,r,,,,,,

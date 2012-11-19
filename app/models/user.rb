@@ -251,12 +251,7 @@ class User < ActiveRecord::Base
       next unless asker.is_role? "asker"
       askers_users[asker_id].each do |user_id|
         puts users[user_id][0].twi_screen_name
-        option_text = Post.create_split_test(user_id, "reengage last week inactive", 
-          "Pop quiz:",
-          "A question for you:",
-          "Do you know the answer?",
-          "Quick quiz:",
-          "We've missed you!")
+        option_text = Post.create_split_test(user_id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")
         Post.tweet(asker, "#{option_text} #{publications[publication_id][0].question.text}", {
           :reply_to => users[user_id][0].twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication_id}",
