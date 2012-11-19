@@ -11,7 +11,7 @@ class Post < ActiveRecord::Base
 	has_many :reps
 
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
-  scope :not_us, where('user_id NOT IN (?)', User.askers.collect(&:id) + ADMINS)
+  scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
 
   @@classifier = Classifier.new
@@ -196,31 +196,22 @@ class Post < ActiveRecord::Base
       :last_interaction_at => user_post.created_at,
       :last_answer_at => user_post.created_at
     })    
-    #check for follow-up test completion
+
+    in_reply_to = nil
     if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
       Post.trigger_split_test(current_user.id, 'mention reengagement') 
-      Mixpanel.track_event "answered incorrect follow up", {
-        :distinct_id => current_user.id,
-        :account => asker.twi_screen_name,
-        :type => "app"
-      }
+      in_reply_to = "incorrect answer follow up"  
+    elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
+      in_reply_to = "new follower question mention"
     end
-    #check for mention question completion
-    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
-      Mixpanel.track_event "answered new user question mention", {
-        :distinct_id => current_user.id,
-        :account => asker.twi_screen_name,
-        :type => "app"
-      }      
-    end
-    #check for re-engage inactive test completion
     Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
-
     Mixpanel.track_event "answered", {
       :distinct_id => current_user.id,
       :account => asker.twi_screen_name,
-      :type => "app"
+      :type => "app", 
+      :in_reply_to => in_reply_to
     }
+    
     return {:app_message => app_post.text, :user_message => user_post.text}
   end
 

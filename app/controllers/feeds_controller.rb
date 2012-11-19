@@ -207,11 +207,13 @@ class FeedsController < ApplicationController
       if correct.present?
         user_post.update_attribute(:correct, correct)
         # Mixpanel tracking for DM answer conversion
-        Mixpanel.track_event "answered question via DM", {
+        Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
-          :account => asker.twi_screen_name
-        }        
+          :account => asker.twi_screen_name,
+          :type => "twitter",
+          :in_reply_to => "new follower question DM"
+        }
       end
       response_post = Post.dm(asker, user, params[:message].gsub("@#{params[:username]}", ""), {:conversation_id => conversation.id})
       user.update_user_interactions({
@@ -255,35 +257,22 @@ class FeedsController < ApplicationController
           :last_interaction_at => user_post.created_at,
           :last_answer_at => (correct.present? ? user_post.created_at : nil)
         })
-        # Check for followup test completion
+
+        in_reply_to = nil
         if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
           Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 
-          Mixpanel.track_event "answered incorrect follow up", {
-            :distinct_id => params[:in_reply_to_user_id],
-            :time => user_post.created_at.to_i,
-            :account => asker.twi_screen_name,
-            :type => "twitter"
-          }
-        end
-
-        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
-          Mixpanel.track_event "answered new user question mention", {
-            :distinct_id => params[:in_reply_to_user_id],
-            :time => user_post.created_at.to_i,
-            :account => asker.twi_screen_name,
-            :type => "twitter"
-          }
+          in_reply_to = "incorrect answer follow up"  
+        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+          in_reply_to = "new follower question mention"
         end        
-        # Check for reengage last week inactive test completion
-        Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
-
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
           :account => asker.twi_screen_name,
           :type => "twitter",
-          :source => params[:s]
+          :in_reply_to => in_reply_to
         }
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", params[:in_reply_to_user_id], 'reengage last week inactive').present?
       else         
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 

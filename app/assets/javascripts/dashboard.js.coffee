@@ -63,20 +63,25 @@ class Dashboard
 
       dashboard.draw_paulgraham('', data['paulgraham'])
       dashboard.draw_dau_mau('', data['dau_mau'])
-      dashboard.draw_daus('', data['daus'])
       dashboard.draw_econ_engine('', data['econ_engine'])
+      
+      #dashboard.draw_daus('', data['daus'])
+      dashboard.draw_revenue('', data['revenue'])
 
       $('.paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
       $('.paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
 
       $('.econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('.econ_engine .total .number').html data['core_display_data'][0]['econ_engine']['answerers']
-
-      $('.daus .new .number').html data['core_display_data'][0]['daus']['today']
-      $('.daus .total .number').html data['core_display_data'][0]['daus']['total']
+      $('.econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
 
       $('.dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('.dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
+
+      #$('.daus .new .number').html data['core_display_data'][0]['daus']['today']
+      #$('.daus .total .number').html data['core_display_data'][0]['daus']['total']
+
+      $('.revenue .new .number').html data['core_display_data'][0]['revenue']['today']
+      $('.revenue .total .number').html data['core_display_data'][0]['revenue']['month']
       
       $(".loading").hide()
 
@@ -102,13 +107,16 @@ class Dashboard
       $('#core_by_handle .paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
 
       $('#core_by_handle .econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('#core_by_handle .econ_engine .total .number').html data['core_display_data'][0]['econ_engine']['answerers']
+      $('#core_by_handle .econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
 
-      $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
-      $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
+      # $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
+      # $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
 
       $('#core_by_handle .dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('#core_by_handle .dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
+
+      $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
+      $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
 
     if !window.dashboard or !window.dashboard.core_data_by_handle[asker_id]
       $('#core_by_handle .handle_name .text').text asker_name
@@ -157,17 +165,28 @@ class Dashboard
     chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, dau_mau_options    
 
-  draw_daus: (container, data) =>
-    data_array = [["Date", "DAU"]]
-    $.each data, (k,v) -> 
-      date_array = k.split("-")
-      data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
-    graph_data = google.visualization.arrayToDataTable(data_array)
+  #draw_daus: (container, data) =>
+  #  data_array = [["Date", "DAU"]]
+  #  $.each data, (k,v) -> 
+  #    date_array = k.split("-")
+  #    data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
+  #  graph_data = google.visualization.arrayToDataTable(data_array)
+  #  
+  #  if container == undefined
+  #    chart_elmnt = $(".daus_graph")[0]
+  #  else
+  #    chart_elmnt = $(container + " .daus_graph")[0]
+  #
+  #  chart = new google.visualization.LineChart(chart_elmnt)
+  #  chart.draw graph_data, dau_mau_options  
+
+  draw_revenue: (container, data) =>
+    graph_data = google.visualization.arrayToDataTable(data)
     
     if container == undefined
-      chart_elmnt = $(".daus_graph")[0]
+      chart_elmnt = $(".revenue_graph")[0]
     else
-      chart_elmnt = $(container + " .daus_graph")[0]
+      chart_elmnt = $(container + " .revenue_graph")[0]
   
     chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, dau_mau_options  
@@ -180,7 +199,7 @@ class Dashboard
     else
       chart_elmnt = $(container + " .econ_engine_graph")[0]
 
-    chart = new google.visualization.AreaChart(chart_elmnt)
+    chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, econ_engine_options
 
   draw_handle_activity: =>
@@ -235,11 +254,10 @@ dau_mau_options =
   colors: ["#6C69D1"]
 
 econ_engine_options =
-  isStacked: true
   width: 425
   height: 275
-  pointSize: 0
-  lineWidth: 0
+  pointSize: 6
+  lineWidth: 3
   chartArea:  
     width: 420
     left: 30
@@ -251,6 +269,7 @@ econ_engine_options =
     minorGridlines:
       count: 3
       color: "#eee"
+  colors: ["#6C69D1"]
 
 handle_activity_options = 
   width: 1170

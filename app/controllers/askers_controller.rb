@@ -75,24 +75,6 @@ class AskersController < ApplicationController
 
   def dashboard
     @askers = User.askers
-
-    @askers_by_growth_rate = {}
-    @askers.each do |asker|
-      last_7_days_new = User.social_not_spam_with_posts\
-        .where('posts.in_reply_to_user_id = ?', asker.id)\
-        .where("users.created_at > ?", (7 * 24).hours.ago)\
-        .count('users.id', :distinct => true)
-      total = User.social_not_spam_with_posts\
-        .where('posts.in_reply_to_user_id = ?', asker.id)\
-        .count('users.id', :distinct => true)
-      if total > 0
-        @askers_by_growth_rate[asker.id] = last_7_days_new.to_f / total
-      else
-        @askers_by_growth_rate[asker.id] = 0
-      end
-    end
-    puts @askers_by_growth_rate
-    @askers.sort!{|a,b| @askers_by_growth_rate[a.id] <=> @askers_by_growth_rate[b.id]}.reverse!
   end 
 
   def get_core_by_handle
@@ -101,22 +83,30 @@ class AskersController < ApplicationController
 
     params.delete 'asker_id' if params[:asker_id] == '-1'
 
-    @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
-    @core_display_data[0][:paulgraham] = pg_display_data
-
     @dau_mau, dau_mau_display_data = Stat.dau_mau params[:asker_id]
     @core_display_data[0][:dau_mau] = dau_mau_display_data
 
-    @daus, daus_display_data = Stat.daus params[:asker_id]
-    @core_display_data[0][:daus] = daus_display_data
+    # render :nothing => true
+    # return
 
     @econ_engine, econ_engine_display_data = Stat.econ_engine params[:asker_id]
     @core_display_data[0][:econ_engine] = econ_engine_display_data 
 
+    @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
+    @core_display_data[0][:paulgraham] = pg_display_data
+
+    #@daus, daus_display_data = Stat.daus params[:asker_id]
+    #@core_display_data[0][:daus] = daus_display_data
+
+    @revenue, revenue_display_data = Stat.revenue
+    @core_display_data[0][:revenue] = revenue_display_data
+
+
     render :json => {
       :paulgraham => @paulgraham, 
       :dau_mau => @dau_mau, 
-      :daus => @daus, 
+      #:daus => @daus, 
+      :revenue => @revenue, 
       :econ_engine => @econ_engine,
       :core_display_data => @core_display_data
     }

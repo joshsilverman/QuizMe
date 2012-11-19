@@ -14,7 +14,7 @@
                     %li
                       %a{:href => "/askers", :tabindex => "-1"} All Askers
                     %li.divider
-                    - User.askers.all.each do |a|
+                    - Asker.order("twi_screen_name ASC").all.each do |a|
                       %li
                         %a{:href => "/feeds/#{a.id}", :tabindex => "-1"}= a.twi_screen_name 
               %li
