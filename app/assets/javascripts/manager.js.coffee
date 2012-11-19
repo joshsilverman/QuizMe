@@ -20,9 +20,10 @@ class Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
-		$('.best_in_place').on "ajax:success", -> 
-			conversation = $(this).parents(".conversation")
-			if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
+		$('.best_in_place').on "ajax:success", ->
+			if $(this).data("type") == "checkbox"
+				conversation = $(this).parents(".conversation")
+				if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
 		$("#respond_modal").on "hidden", => 
 			$("#respond_modal").find("textarea").val("")
 			$("#respond_modal").find(".correct").removeClass("active")
@@ -50,6 +51,9 @@ class Post
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
+		@element.find(".show_move").on "click", =>
+			@element.find(".show_move").hide()
+			@element.find(".move").show()
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 
@@ -62,7 +66,7 @@ class Post
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
 			return
-		else if $(e.target).parents("#link_post_modal").length > 0 or $(e.target).is("a span")
+		else if $(e.target).parents("#link_post_modal").length > 0 or $(e.target).is("a span") or $(e.target).hasClass("show_move")
 			return
 		else
 			@open_reply_modal(e) 
