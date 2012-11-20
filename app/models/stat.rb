@@ -330,4 +330,17 @@ class Stat < ActiveRecord::Base
     graph_data.insert 0, title_row
     return graph_data
   end
+
+	def self.cohort_analysis(cohort_activity = {})
+		start_day = (Time.now.beginning_of_week - 4.weeks).to_date
+		cohort_users = User.where("created_at > ?", start_day)
+		cohort_posts = Post.not_spam.where("user_id in (?) and (interaction_type = 2 or interaction_type = 3) and created_at > ?", cohort_users.collect(&:id), start_day).group_by {|post| post.created_at.to_date}
+		cohorts = cohort_users.group_by {|u| u.created_at.beginning_of_week.to_date}
+		(start_day..Date.today).each do |date|
+			cohort_activity[date] = {}
+			cohorts.each do |week, cohort|
+				cohort_activity[date][week] = cohort_posts[date]
+			end
+		end
+	end
 end
