@@ -328,19 +328,29 @@ class Stat < ActiveRecord::Base
     handle_activity.each { |k, v| graph_data << v }
     graph_data.sort! { |a, b| b.drop(1).sum <=> a.drop(1).sum }
     graph_data.insert 0, title_row
+    # puts graph_data.to_json
     return graph_data
   end
 
-	def self.cohort_analysis(cohort_activity = {})
+	def self.cohort_analysis(graph_data = [])
+    title_row = ["Week"]
 		start_day = (Time.now.beginning_of_week - 4.weeks).to_date
 		cohort_users = User.where("created_at > ?", start_day)
-		cohort_posts = Post.not_spam.where("user_id in (?) and (interaction_type = 2 or interaction_type = 3) and created_at > ?", cohort_users.collect(&:id), start_day).group_by {|post| post.created_at.to_date}
+		cohort_posts = Post.not_spam.social.not_us.where("user_id in (?) and (interaction_type = 2 or interaction_type = 3) and created_at > ?", cohort_users.collect(&:id), start_day).group_by {|post| post.created_at.to_date}
 		cohorts = cohort_users.group_by {|u| u.created_at.beginning_of_week.to_date}
+    graph_data << title_row += cohorts.keys
 		(start_day..Date.today).each do |date|
-			cohort_activity[date] = {}
+      date_array = [date]
 			cohorts.each do |week, cohort|
-				cohort_activity[date][week] = cohort_posts[date]
+        if posts = cohort_posts[date]
+          count = posts.select { |p| cohort.collect(&:id).include? p.user_id }.size
+        else
+          count = 0
+        end
+        date_array << count
 			end
+      graph_data << date_array
 		end
+    return graph_data
 	end
 end

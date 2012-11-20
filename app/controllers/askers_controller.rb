@@ -101,7 +101,6 @@ class AskersController < ApplicationController
     @revenue, revenue_display_data = Stat.revenue
     @core_display_data[0][:revenue] = revenue_display_data
 
-
     render :json => {
       :paulgraham => @paulgraham, 
       :dau_mau => @dau_mau, 
@@ -114,6 +113,7 @@ class AskersController < ApplicationController
 
   def get_handle_metrics
     @handle_activity = Stat.handle_activity
+    @cohort = Stat.cohort_analysis
     render :partial => "handles"
   end
 end
