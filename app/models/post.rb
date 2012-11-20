@@ -100,9 +100,9 @@ class Post < ActiveRecord::Base
     })
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
-      twitter_response = user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i})
+      twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
-      twitter_response = user.twitter.update(tweet)
+      twitter_response = Post.twitter_request { user.twitter.update(tweet) }
     end  
     post = Post.create(
       :user_id => user.id,
