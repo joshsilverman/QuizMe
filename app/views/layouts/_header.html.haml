@@ -17,6 +17,18 @@
                     - Asker.order("twi_screen_name ASC").all.each do |a|
                       %li
                         %a{:href => "/feeds/#{a.id}", :tabindex => "-1"}= a.twi_screen_name 
+
+              %li
+                .dropdown.nav-link
+                  %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
+                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+                    %li
+                    - RateSheet.order("created_at ASC").all.each do |r|
+                      - client = r.clients[0]
+                      - next if client.nil?
+                      %li
+                        %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}= r.title 
+
               %li
                 .dropdown.nav-link
                   %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Stats
@@ -28,7 +40,7 @@
 
             - elsif current_user.is_role? 'client'
               %li
-                %a.nav-link{:href => "/clients/2/report"} Reporting
+                %a.nav-link{:href => "/clients/#{current_user.id}/report"} Reporting
             - elsif current_user.is_role? 'author'
               %li
                 %a.nav-link{:href => "/questions"} My Questions
