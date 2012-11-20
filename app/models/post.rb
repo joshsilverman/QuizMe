@@ -294,7 +294,8 @@ class Post < ActiveRecord::Base
 
     in_reply_to_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
     if in_reply_to_post
-      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id,:post_id => in_reply_to_post.id,:user_id => u.id).id
+      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
+      in_reply_to_post.update_attribute(:conversation_id, conversation_id)
     else
       conversation_id = nil
       puts "No in reply to post"
@@ -395,8 +396,8 @@ class Post < ActiveRecord::Base
     end
 
     puts d.text
-    # any issue w/ origin dm and its response being collected 
-    # in same rake, then being created in the wrong order?
+    # possible issue w/ origin dm and its response being collected 
+    # in same rake, then being created in the wrong order
     post = Post.create( 
       :provider_post_id => d.id.to_s,
       :text => d.text,

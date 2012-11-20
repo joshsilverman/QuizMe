@@ -264,7 +264,7 @@ class FeedsController < ApplicationController
           in_reply_to = "incorrect answer follow up"  
         elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
           in_reply_to = "new follower question mention"
-        end        
+        end     
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -293,7 +293,7 @@ class FeedsController < ApplicationController
       render :json => Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, nil)
     else
       post_to_link = Post.find(params[:post_id])
-      post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.last
+      post_to_link_to = Publication.find(params[:link_to_pub_id]).posts.where("in_reply_to_user_id is null").last
       post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
       render :json => [post_to_link, post_to_link_to]
     end
