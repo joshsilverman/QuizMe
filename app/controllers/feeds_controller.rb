@@ -336,6 +336,8 @@ class FeedsController < ApplicationController
     @badges = Badge.where(:asker_id => @asker.id)
     @correct_answer_count_by_user = User.where("users.id in (?)", user_ids)
 
+    puts @new_user_question = Question.includes(:answers).find(@asker.new_user_q_id)
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @posts }
