@@ -8,10 +8,8 @@
 .report
 
   .page-header
-    =image_tag 'logo/fwk-logo.jpg'
-    %h1
-      = @client.twi_name
-      = "(@#{@client.twi_screen_name})"
+    = image_tag "logo/#{@client.rate_sheet.logo_image}"
+    %h2= @client.rate_sheet.title
 
   %br
 
@@ -52,11 +50,8 @@
           %th Dates
           %th Active Members
           %th Retweets
-          %th Mentions (incl. Answers)
-          %th Answers
-          %th Direct Messages
-          / %th Click Throughs
-          %th Total
+          %th Mentions
+          %th Total Soc Actions
 
         - @posts_by_week_by_it.each do |w, posts_by_it|
           - total = retweets = mentions = answers = dms = cts = mentions_excl_answers = 0
@@ -64,11 +59,7 @@
           - waus = @posts_by_week_by_user[w].count
           - retweets = posts_by_it[3].count if posts_by_it[3]
           - mentions = posts_by_it[2].count if posts_by_it[2]
-          - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
-          - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
-          - dms = posts_by_it[4].count if posts_by_it[4]
-          - cts = 0
-          - total = retweets + mentions_excl_answers + answers + dms + cts
+          - total = retweets + mentions
 
           - if @posts_by_week[w].first.created_at.end_of_week > Date.today
             - end_of_week = 'present'
@@ -85,9 +76,6 @@
             %td= waus
             %td= retweets
             %td= mentions
-            %td= answers
-            %td= dms
-            / %td= cts
             %td= total
 
     #activity.tab-pane
@@ -140,12 +128,15 @@
 
           - dms = cts = 0
           - retweets = posts_by_it[3].count if posts_by_it[3]
+          - retweet_rate = @client.rate_sheet.retweet
+          - retweet_rev = retweets * retweet_rate
+
           - mentions = posts_by_it[2].count if posts_by_it[2]
-          - mentions_excl_answers = posts_by_it[2].select{|p| p.correct.nil?}.count if posts_by_it[2]
-          - answers = posts_by_it[2].reject{|p| p.correct.nil?}.count if posts_by_it[2]
-          - dms = posts_by_it[4].count if posts_by_it[4]
-          - cts = 0
-          - total = retweets + mentions_excl_answers + answers + dms + cts
+          - mention_rate = @client.rate_sheet.tweet
+          - mention_rev = mentions * mention_rate
+
+          - total = mentions + retweets
+          - total_rev = retweet_rev + mention_rev
 
           %table.table.table-bordered
             %tr
@@ -154,43 +145,21 @@
               %th{:style => "width:13%;"} Rate
               %th Total
 
-
             %tr
-              %td{:colspan => 4} Mentions
-            %tr
-              %td.indent Answers
-              %td= mentions_excl_answers
-              %td $0.75
-              %td= "$#{mentions_excl_answers * 0.75}"
-            %tr
-              %td.indent Non-answers
-              %td= answers
-              %td $0.75
-              %td= "$#{answers * 0.75}"
-
-            %tr
-              %td Direct Messages
-              %td= dms
-              %td $0.75
-              %td= "$#{dms * 0.75}"
+              %td Mentions
+              %td= mentions
+              %td= sprintf("$%.2f", mention_rate) unless mention_rate.nil?
+              %td= sprintf("$%.2f", mention_rev)
             
             %tr
               %td Retweets
               %td= retweets
-              %td $0.75
-              %td= "$#{retweets * 0.75}"
+              %td= sprintf("$%.2f", retweet_rate) unless retweet_rate.nil?
+              %td= sprintf("$%.2f", retweet_rev)
 
-            %tr
-              %td 
-                %i Click Throughs (incomplete)
-              %td= cts
-              %td $0.75
-              %td= cts * 0.75
             %tr.info
-              %td Total
-              %td= total
-              %td $0.75
-              %td= "$#{total * 0.75}"
+              %td{:colspan => 3} Total
+              %td= sprintf("$%.2f", total_rev)
 
     #account.tab-pane
 
@@ -202,13 +171,19 @@
 
             %dl.dl-horizontal
               %dt Company
-              %dd Bookrags
+              %dd
+                - if current_user.is_role? 'admin'
+                  = best_in_place @client.rate_sheet, :title, :type => 'input', :nil => "untitled"
+                - else
+                  = @client.rate_sheet.title
+
               %dt Start date
               %dd= @posts.last.created_at.strftime("%D") unless @posts.blank?
               %dt Handles
               %dd
-                - @askers.each do |asker|
+                - @askers.each_with_index do |asker, i|
                   = "@#{asker.twi_screen_name}"
+                  = ", " if i < @askers.count - 1
 
         .span4
           %h3 Pricing
@@ -219,8 +194,13 @@
                 /%tr
                 %dt= "#{unit.to_s.humanize}"
                 %dd
-                  $
-                  = best_in_place @rate_sheet, unit, :type => 'input', :nil => "0.0"
+                  - if current_user.is_role? 'admin'
+                    $
+                    = best_in_place @rate_sheet, unit, :type => 'input', :nil => "0.0"
+                  - elsif @rate_sheet[unit].nil?
+                    $0.00
+                  - else
+                    = sprintf("$%.2f", @rate_sheet[unit])
 
               %br
               %dt Monthly cap

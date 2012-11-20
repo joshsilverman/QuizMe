@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121115042715) do
+ActiveRecord::Schema.define(:version => 20121120200518) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -114,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20121115042715) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "logo_image"
   end
 
   create_table "reps", :force => true do |t|
