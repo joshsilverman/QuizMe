@@ -8,5 +8,6 @@ Split.configure do |config|
   config.allowed_user_agent_regex = /Mozilla/
 end
 
-Split.redis = REDIS
-
+if REDIS.present?
+	Split.redis = REDIS 
+end
