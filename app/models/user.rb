@@ -133,27 +133,18 @@ class User < ActiveRecord::Base
 	end	
 
 	def self.engage_new_users
-		puts "engage new users"
 		askers = User.askers
 		new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
 		askers.each do |asker|
-			puts asker.twi_screen_name
 			stop = false
 			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
-			puts new_followers.to_json
 	    new_followers.each do |tid|
-	    	puts tid
 	      break if stop
 	      follow_response = Post.twitter_request { asker.twitter.follow(tid) }
-	      puts follow_response.to_json
 	      stop = true if follow_response.blank?
-	      puts "after stop"
 	      sleep(1)
-	      next if User.find_by_twi_user_id(tid)
-	      puts "create new user"
-	      user = User.create({:twi_user_id => tid})
+	      user = User.find_or_create_by_twi_user_id(tid)
 	      next unless new_user_questions[asker.id].present?
-	      puts "dming #{user.id}"
 	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
 	      Mixpanel.track_event "DM question to new follower", {
 	        :distinct_id => user.id,
