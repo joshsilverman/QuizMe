@@ -26,14 +26,14 @@ class User < ActiveRecord::Base
 	def publish_question
 		queue = self.publication_queue
 		unless queue.blank?
-			puts "current queue index = #{queue.index}"
+			# puts "current queue index = #{queue.index}"
 			puts "current queue order: #{queue.publications.select(:id).to_json}"
-			publication = queue.publications[queue.index]
+			publication = queue.publications.order(:id)[queue.index]
 			PROVIDERS.each do |provider|
 				Post.publish(provider, self, publication)
 			end
 			queue.increment_index(self.posts_per_day)
-			puts "incremented queue index = #{queue.index}"
+			# puts "incremented queue index = #{queue.index}"
 		end
 	end
 
@@ -133,11 +133,14 @@ class User < ActiveRecord::Base
 	end	
 
 	def self.engage_new_users
+		puts "engage new users"
 		askers = User.askers
 		new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
 		askers.each do |asker|
+			puts asker.twi_screen_name
 			stop = false
 			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
+			puts new_followers.to_json
 	    new_followers.each do |tid|
 	      break if stop
 	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
@@ -145,6 +148,7 @@ class User < ActiveRecord::Base
 	      next if User.find_by_twi_user_id(tid)
 	      user = User.create({:twi_user_id => tid})
 	      next unless new_user_questions[asker.id].present?
+	      puts "dming #{user.id}"
 	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
 	      Mixpanel.track_event "DM question to new follower", {
 	        :distinct_id => user.id,

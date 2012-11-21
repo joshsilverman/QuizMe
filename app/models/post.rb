@@ -458,8 +458,8 @@ class Post < ActiveRecord::Base
     attempts = 0
     begin
       value = block.call()
-    rescue Twitter::Error::ClientError 
-      puts "twitter error, retrying"
+    rescue Twitter::Error::ClientError => exception
+      puts "twitter error (#{exception}), retrying"
       attempts += 1 
       retry unless attempts > 2
       puts "Failed to run #{block} after 3 attempts"
