@@ -142,10 +142,15 @@ class User < ActiveRecord::Base
 			new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
 			puts new_followers.to_json
 	    new_followers.each do |tid|
+	    	puts tid
 	      break if stop
-	      stop = true if Post.twitter_request { asker.twitter.follow(tid) }.blank?
+	      follow_response = Post.twitter_request { asker.twitter.follow(tid) }
+	      puts follow_response.to_json
+	      stop = true if follow_response.blank?
+	      puts "after stop"
 	      sleep(1)
 	      next if User.find_by_twi_user_id(tid)
+	      puts "create new user"
 	      user = User.create({:twi_user_id => tid})
 	      next unless new_user_questions[asker.id].present?
 	      puts "dming #{user.id}"
