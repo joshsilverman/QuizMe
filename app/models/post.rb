@@ -300,7 +300,6 @@ class Post < ActiveRecord::Base
       conversation_id = nil
       puts "No in reply to post"
     end
-    puts m.text
 
     post = Post.create( 
       :provider_post_id => m.id.to_s,
@@ -329,19 +328,7 @@ class Post < ActiveRecord::Base
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
-    begin
-      users = current_acct.twitter.retweeters_of(r.id)  
-    rescue Twitter::Error::ClientError 
-      attempts += 1 
-      retry unless attempts > 2
-      puts "Failed after three attempts"
-      users = []
-    rescue Exception => exception
-      puts "exception while getting retweeters_of"
-      puts exception.message
-      users = []
-    end
-
+    users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) }
     users.each do |user|
       u = User.find_or_create_by_twi_user_id(user.id)
       u.update_attributes(
@@ -395,7 +382,6 @@ class Post < ActiveRecord::Base
       puts "No in reply to dm"
     end
 
-    puts d.text
     # possible issue w/ origin dm and its response being collected 
     # in same rake, then being created in the wrong order
     post = Post.create( 
