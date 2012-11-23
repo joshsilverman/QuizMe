@@ -1,3 +1,9 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
 - model_class = Question.new.class
 #moderate_questions
   .page-header
@@ -6,21 +12,25 @@
   %table.table{:style => "background: white;"}
     %thead
       %tr
-        %th.span10= model_class.human_attribute_name(:text)
-        %th= "Handle"
-        %th= model_class.human_attribute_name(:created_at)
-        %th= t '.actions', :default => t("helpers.actions")
-    %tbody
-      - @questions.each do |question|
+        %th
+        %th Author
+        %th Question
+        %th Handle
+        %th Created
+        %th.span2= t '.actions', :default => t("helpers.actions")
+    %tbody.asker-row
+      - @questions.each_with_index do |question, i|
         %tr{:id => "question_#{question.id}"}
-          %td.span10
+          %td= i + 1
+          %td= "@#{question.user.twi_screen_name}" if question.user
+          %td
             %p{:style => "font-weight: bold;"}= question.text
             - question.answers.each_with_index do |answer, i|
               %p= "#{i+1}. #{answer.text} (#{answer.correct})"
           - handle = User.askers.where(:id => question.created_for_asker_id).first.try(:twi_screen_name)
           %td= handle
-          %td= question.created_at.strftime("%m/%d %H:%M")
-          %td
+          %td= question.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %H:%M")
+          %td.span2
             .btn-group
-              %button.btn.btn-success{:qid => question.id} Accept
-              %button.btn.btn-danger{:qid => question.id} Reject
+              %button.btn.btn-mini.btn-success{:qid => question.id} Accept
+              %button.btn.btn-mini.btn-danger{:qid => question.id} Reject
