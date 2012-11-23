@@ -145,7 +145,7 @@ class User < ActiveRecord::Base
 	      sleep(1)
 	      user = User.find_or_create_by_twi_user_id(tid)
 	      next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-	      p "sending dm to user: #{u.id}"
+	      p "sending dm to user: #{user.id}"
 	      Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
 	      Mixpanel.track_event "DM question to new follower", {
 	        :distinct_id => user.id,
