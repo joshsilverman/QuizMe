@@ -222,4 +222,18 @@ class Classifier
     posts_for_training
     @_posts_for_testing
   end
+
+  def post_text(post)
+    if post.interaction_type == 2
+      interaction_type = 'mention'
+    elsif post.interaction_type == 3
+      interaction_type = 'mention'
+    end
+
+    "#{post.user.twi_screen_name} #{post.text}"
+    "#{interaction_type} #{post.text}"
+    "#{post.user.twi_screen_name} #{interaction_type} #{post.text}"
+
+    post.text
+  end
 end
