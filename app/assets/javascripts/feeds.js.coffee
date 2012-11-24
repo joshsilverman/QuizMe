@@ -225,7 +225,7 @@ class Post
 			)	
 	respond_to_question: (text, answer_id) =>
 		answers = @element.find(".answers")
-		loading = @element.find(".loading").text("Tweeting your answer...")
+		loading = @element.find(".loading").text("Posting your answer...")
 		loading.fadeIn(500)
 		answers.toggle(200, => answers.remove())
 		params =
@@ -237,7 +237,7 @@ class Post
 			data: params
 			success: (e) => 
 				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find(".content p").text(e.user_message)
+				subsidiary.find(".content p").text(e.user_message.split("http")[0])
 				subsidiary.find("img").attr("src", window.feed.user_image)
 				subsidiary.find("h5").text(window.feed.user_name)
 				@element.find(".parent").addClass("answered")
@@ -253,7 +253,7 @@ class Post
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	populate_response: (message_hash) =>
 		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find(".content p").text(message_hash.app_message) 
+		response.find(".content p").text(message_hash.app_message.split("http")[0]) 
 		response.find("h5").text(@asker_name)
 		response.find(".rounded").attr("src", @image_url) 
 		loading = @element.find(".loading").text("Thinking...")
