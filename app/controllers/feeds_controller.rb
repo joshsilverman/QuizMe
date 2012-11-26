@@ -145,12 +145,13 @@ class FeedsController < ApplicationController
   end
 
   def more
-    post = Publication.find(params[:last_post_id])
+    publication = Publication.includes(:posts).find(params[:last_post_id])
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
-      @publications = Publication.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
+      @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     
