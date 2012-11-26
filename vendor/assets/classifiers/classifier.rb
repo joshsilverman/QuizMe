@@ -22,7 +22,7 @@ class Classifier
 
         Checking if post #{post.id} is spam:
 
-          #{i + 1}: #{post.text}
+          #{i + 1}: #{post_text(post)}
 
         Spam or real (or next)? (s/r/n)
       EOS
@@ -149,9 +149,9 @@ class Classifier
       EOS
 
       if post.spam == true
-        @stuff_classifier.train(:spam, post.text)
-      elsif post.spam == false
-        @stuff_classifier.train(:real, post.text)
+        @stuff_classifier.train(:spam, post_text(post))
+      else
+        @stuff_classifier.train(:real, post_text(post))
       end
 
       @stuff_classifier.save_state
@@ -161,18 +161,26 @@ class Classifier
   #private
 
   def classify post
-    klass = @stuff_classifier.classify(post.text)
-    if klass == :spam
-      post.update_attribute :autospam, true
+
+    #boolean
+    if false
+
+    #statistical
     else
-      post.update_attribute :autospam, false
+      klass = @stuff_classifier.classify(post_text(post))
+      if klass == :spam
+        post.update_attribute :autospam, true
+      else
+        post.update_attribute :autospam, false
+      end
+
+      grade = nil
+      if post.spam != nil
+        grade = :correct if post.spam == post.autospam
+        grade = :incorrect if post.spam != post.autospam
+      end
     end
 
-    grade = nil
-    if post.spam != nil
-      grade = :correct if post.spam == post.autospam
-      grade = :incorrect if post.spam != post.autospam
-    end
     return klass, grade
   end
 
@@ -187,17 +195,17 @@ class Classifier
   end
 
   def posts_by_users
-    @_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")
+    @_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")#.limit 8000
     @_posts_by_users
   end
 
   def unmarked_posts_by_users
-    @_unmarked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NULL").order("random()")
+    @_unmarked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NULL").order("random()")#.limit 8000
     @_unmarked_posts_by_users
   end
 
   def marked_posts_by_users
-    @_marked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NOT NULL").order("random()")
+    @_marked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")#.limit 8000
     @_marked_posts_by_users
   end
 
@@ -221,5 +229,23 @@ class Classifier
   def posts_for_testing
     posts_for_training
     @_posts_for_testing
+  end
+
+  def post_text(post)
+    if post.interaction_type == 2
+      interaction_type = 'mention'
+    elsif post.interaction_type == 3
+      interaction_type = 'mention'
+    end
+
+
+    post.text
+    # puts "#{interaction_type} #{post.text}"
+    "#{interaction_type} #{post.text}"
+
+    # puts "#{post.user.twi_screen_name} #{post.text}"
+    "#{post.user.twi_screen_name} #{post.text}"
+
+    "#{post.user.twi_screen_name} #{interaction_type} #{post.text}"
   end
 end
