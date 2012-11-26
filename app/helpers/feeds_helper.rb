@@ -46,12 +46,12 @@ module FeedsHelper
 		if date.to_date == Date.today
 			time = time_ago_in_words(date)
 			time.gsub!("about ", "")
-			time.gsub!(" hour", "h")
 			time.gsub!(" hours", "h")
-			time.gsub!(" minute", "m")
+			time.gsub!(" hour", "h")
 			time.gsub!(" minutes", "m")
-			time.gsub!(" second", "s")
+			time.gsub!(" minute", "m")
 			time.gsub!(" seconds", "s")
+			time.gsub!(" second", "s")
 			time.gsub!("less than a minute", "1m")
 		else 
 			time = date.strftime("%m/%d")
