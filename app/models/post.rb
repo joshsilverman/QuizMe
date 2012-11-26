@@ -211,8 +211,7 @@ class Post < ActiveRecord::Base
       :type => "app", 
       :in_reply_to => in_reply_to
     }
-    
-    return {:app_message => app_post.text, :user_message => user_post.text}
+    return conversation
   end
 
 

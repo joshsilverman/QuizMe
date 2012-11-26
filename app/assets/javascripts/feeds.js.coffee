@@ -236,36 +236,40 @@ class Post
 			type: 'POST'
 			data: params
 			success: (e) => 
-				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find(".content p").text(e.user_message.split("http")[0])
-				subsidiary.find("img").attr("src", window.feed.user_image)
-				subsidiary.find("h5").text(window.feed.user_name)
+				console.log e
 				@element.find(".parent").addClass("answered")
+				conversation = @element.find(".subsidiaries")
+				conversation.prepend($(e).hide())
 				loading.fadeOut(500, => 
-					@element.find(".subsidiaries").prepend(subsidiary.fadeIn(500, => 
-						subsidiary.addClass("answered")
-						@populate_response(e)
-					))
-				)		
-				window.feed.answered += 1
+					conversation.find(".post").first().fadeIn(500, =>
+						loading = @element.find(".loading").text("Thinking...")
+						console.log conversation.find(".post").last()
+						loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+								conversation.find(".post").last().fadeIn(500, => @show_activity())
+								@element.find(".icon-share-alt").show()
+							)
+						)						
+					)
+				)
+				# window.feed.answered += 1
 				# mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
 			error: => 
 				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
-	populate_response: (message_hash) =>
-		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find(".content p").text(message_hash.app_message.split("http")[0]) 
-		response.find("h5").text(@asker_name)
-		response.find(".rounded").attr("src", @image_url) 
-		loading = @element.find(".loading").text("Thinking...")
-		if @element.find(".subsidiaries:visible").length > 0
-			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-					@element.find(".icon-share-alt").show()
-				)
-			)
-		else
-			@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-			@element.find("i").show()
+	# populate_response: (message_hash) =>
+	# 	response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+	# 	response.find(".content p").text(message_hash.app_message.split("http")[0]) 
+	# 	response.find("h5").text(@asker_name)
+	# 	response.find(".rounded").attr("src", @image_url) 
+	# 	loading = @element.find(".loading").text("Thinking...")
+	# 	if @element.find(".subsidiaries:visible").length > 0
+	# 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+	# 				@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
+	# 				@element.find(".icon-share-alt").show()
+	# 			)
+	# 		)
+	# 	else
+	# 		@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
+	# 		@element.find("i").show()
 	show_activity: =>
 		if @element.find(".activity_container:visible").length > 0
 			@element.find(".user_answered").fadeIn(500)

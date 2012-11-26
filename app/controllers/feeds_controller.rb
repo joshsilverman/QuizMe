@@ -48,6 +48,8 @@ class FeedsController < ApplicationController
       @directory[ACCOUNT_DATA[id][:category]] = [] unless @directory[ACCOUNT_DATA[id][:category]] 
       @directory[ACCOUNT_DATA[id][:category]] << data[0]
     end
+    puts @responses.to_json
+    # puts @actions.to_json
 
     # if @asker.author_id
     #   @author = User.find @asker.author_id
@@ -191,9 +193,9 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    finished("question activity", {:reset => false})
-    finished("activity stream vs. leaderboard", {:reset => false})
-    render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    @conversation = Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    @local_asker = User.askers.find(params["asker_id"])
+    render :partial => "conversation"
   end
 
   def manager_response

@@ -1,8 +1,8 @@
-- count = conversation.first.posts.size
-- conversation.first.posts.each_with_index do |response, i|
+- count = @conversation.posts.size
+- @conversation.posts.each_with_index do |response, i|
 	.subsidiary.post{:class => ("answered" if i < (count - 1))}
 		.content
-			- user = response["user_id"] == asker.id ? asker : current_user
+			- user = (response["user_id"] == @local_asker.id ? @local_asker : current_user)
 			= image_tag(user.twi_profile_img_url, :class => "rounded")
 			%h5= user.twi_screen_name
 			- formatted_response = format_response(response['text'])
@@ -11,4 +11,4 @@
 					= formatted_response[0]
 					%a{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
 			- else
-				%p= formatted_response[0]	
+				%p= formatted_response[0]		

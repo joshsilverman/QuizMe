@@ -1,9 +1,12 @@
 .feed_section
 	- @publications.each do |post|
-		- asker = post.asker
-		- conversation = @responses[post.id]
-		- conversation ? responded = true : responded = false
-		.conversation.border-color{:asker_id => asker.id}
+		- @local_asker = post.asker
+		- @conversation = nil
+		- responded = false
+		- if @responses[post.id]
+			- @conversation = @responses[post.id].first
+			- responded = true
+		.conversation.border-color{:asker_id => @local_asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
@@ -15,8 +18,8 @@
 						%i.icon-user
 						%h5= user.twi_screen_name
 					- else
-						= image_tag(asker.twi_profile_img_url, :class => "rounded")
-						%h5= asker.twi_screen_name
+						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
+						%h5= @local_asker.twi_screen_name
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
@@ -33,14 +36,14 @@
 							.answer_container.input{:type => 'text'}
 								.shadow-top
 								.tweet
-									%span#account= "@#{asker.twi_screen_name}"
-									%span#answer= " #{answer.tweetable(asker.twi_screen_name)}"
+									%span#account= "@#{@local_asker.twi_screen_name}"
+									%span#answer= " #{answer.tweetable(@local_asker.twi_screen_name)}"
 								.answer_controls
-									%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+									%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@local_asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 								.shadow-bottom
 			.subsidiaries{:style => "display: none;"}
-				- if conversation
-					= render :partial => "conversation", :locals => {:conversation => conversation, :asker => asker}							
+				- if @conversation
+					= render :partial => "conversation"
 			.loading{:style => "display: none;"}
 				Loading...	
 			= render :partial => "activity", :locals => {:post => post}
