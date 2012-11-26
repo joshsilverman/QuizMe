@@ -59,13 +59,12 @@ module FeedsHelper
 	end	
 
 	def format_response(text)
-		if text.include? "Find the answer at"
+		puts text
+		if text.include? "Find the answer at" or text.include? "Find out why at"
 			links = text.scan /http:\/\/wisr.co\/[^ ]*/
 			text = text.gsub links[0], ""
 			text = text.gsub links[1], ""
 			link = links[1]
-			# puts text.sub /http:\/\/wisr.co\/[^ ]*/, ""
-			# puts text.split("Find the answer at")
 		else
 			text = text.split("http")[0]
 			link = nil
