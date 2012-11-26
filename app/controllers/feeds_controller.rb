@@ -48,8 +48,6 @@ class FeedsController < ApplicationController
       @directory[ACCOUNT_DATA[id][:category]] = [] unless @directory[ACCOUNT_DATA[id][:category]] 
       @directory[ACCOUNT_DATA[id][:category]] << data[0]
     end
-    puts @responses.to_json
-    # puts @actions.to_json
 
     # if @asker.author_id
     #   @author = User.find @asker.author_id
@@ -61,8 +59,7 @@ class FeedsController < ApplicationController
     if @asker
       asker_ids = User.askers.collect(&:id)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
-      @publications = @asker.publications.where("published = ?", true).order("updated_at DESC").limit(15).includes(:question => :answers)
-
+      @publications = @asker.publications.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
       posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
       
       @actions = {}
@@ -149,12 +146,11 @@ class FeedsController < ApplicationController
 
   def more
     post = Publication.find(params[:last_post_id])
-    puts post.to_json
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @publications = @asker.publications.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
+      @publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
-      @publications = Publication.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
+      @publications = Publication.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, post.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     

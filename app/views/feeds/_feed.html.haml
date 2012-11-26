@@ -8,6 +8,7 @@
 			- responded = true
 		.conversation.border-color{:asker_id => @local_asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
+				%p.time= time_formatter(post.posts.first.created_at)
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
 				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
