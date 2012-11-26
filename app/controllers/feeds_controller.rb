@@ -5,7 +5,7 @@ class FeedsController < ApplicationController
     @asker = User.find(1)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]    
-    @publications = Publication.where(:published => true).order("updated_at DESC").limit(15).includes(:question => :answers)
+    @publications = Publication.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
     posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
     @actions = {}
     post_pub_map = {}
