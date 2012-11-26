@@ -212,6 +212,13 @@ ACCOUNT_DATA = {
     :retweet => [],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
+  },
+
+  #Spanish_110
+  12982 => {
+    :retweet => [],
+    :hashtags => ['spanish'],
+    :category => "Language"
   }
 }
 

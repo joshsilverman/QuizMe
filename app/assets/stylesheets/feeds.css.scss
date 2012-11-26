@@ -80,13 +80,18 @@ body {
 				.name-wrapper {
 					clear:both;
 
-					.name {
-						float:left;
+					h2 {
+						line-height:26px;
+						margin-top:6px;
+						.name {
+							float:left;
+
+						}
 					}
 
 					ul {
 						float:left;
-						margin: 9px 1px;
+						margin: 4px 1px;
 
 						li {
 							list-style:none;
@@ -140,7 +145,7 @@ body {
 			h3 {
 				color: #777;
 				font-weight: normal;
-				margin-top: -5px;
+				//margin-top: -5px;
 			}
 
 			p {
