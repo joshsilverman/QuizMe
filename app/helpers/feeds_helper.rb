@@ -45,6 +45,7 @@ module FeedsHelper
 	def time_formatter(date)
 		if date.to_date == Date.today
 			time = time_ago_in_words(date)
+			time.gsub!("less than a minute", "1m")
 			time.gsub!("about ", "")
 			time.gsub!(" hours", "h")
 			time.gsub!(" hour", "h")
@@ -52,7 +53,6 @@ module FeedsHelper
 			time.gsub!(" minute", "m")
 			time.gsub!(" seconds", "s")
 			time.gsub!(" second", "s")
-			time.gsub!("less than a minute", "1m")
 		else 
 			time = date.strftime("%m/%d")
 			time.gsub! "/0", "/"
