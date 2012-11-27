@@ -8,7 +8,8 @@
 			- conversation = action.conversation
 			- if conversation
 				- question = conversation.publication.question
-				%a.stream_item{:href => "/questions/#{question.id}/#{question.slug}"}
+				/%a.stream_item{:href => "/questions/#{question.id}/#{question.slug}"}
+				%a.stream_item{:href => "/feeds/#{conversation.publication.asker_id}/#{conversation.publication.id}"}
 					%li{:class => ("border_bottom" if i < (@stream.size - 1))}
 						.content
 							= image_tag(action.user.twi_profile_img_url, :class => "rounded profile")
