@@ -14,17 +14,16 @@
 				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
 				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
 				.content
-					- if post.question.user_id != 1 # and @asker.author_id != post.question.user_id 
+					= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
+					- if post.question.user_id != 1
 						- user = post.question.user
-						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
 						%i.icon-user
 						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
-							%h5= @local_asker.twi_screen_name
+							%h5= @local_asker.twi_screen_name						
 						via
 						%a.question_via{:href => "http://twitter.com/#{user.twi_screen_name}", :target => "_blank"}
-							%h5= user.twi_screen_name
+							%h5= post.question.user.twi_screen_name
 					- else
-						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
 						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
 							%h5= @local_asker.twi_screen_name
 					%p.question_text= post.question.text.html_safe

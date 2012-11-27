@@ -1,4 +1,4 @@
-.activity_container{:style => ("display: none;" unless @actions[post.id])}
+.activity_container{:style => ("display: none;" unless @actions[post.id].present?)}
 	/ %p.activity ACTIVITY
 	.interactions
 		- if @actions[post.id]
