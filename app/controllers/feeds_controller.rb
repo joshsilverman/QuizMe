@@ -93,13 +93,13 @@ class FeedsController < ApplicationController
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       #look this up on the fly and cache!
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
-      @leaders = User.leaderboard(params[:id])
+      # @leaders = User.leaderboard(params[:id])
       if current_user
-        @correct = 0
-        @leaders[:scores].each do |user|
-          next if user[:user].id != current_user.id or @correct != 0
-          @correct = user[:correct]
-        end        
+        # @correct = 0
+        # @leaders[:scores].each do |user|
+        #   next if user[:user].id != current_user.id or @correct != 0
+        #   @correct = user[:correct]
+        # end        
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
       else
         @responses = []

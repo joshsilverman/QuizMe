@@ -37,7 +37,6 @@ class Feed
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
-		mixpanel.track_links(".leader", "profile click", {"account" : @name, "source": source, "type": "leaderboard"})
 		mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})
 
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
