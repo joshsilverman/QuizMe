@@ -209,8 +209,15 @@ ACCOUNT_DATA = {
 
   #HarryPotterBk3
   10565 => {
-    :retweet => [],
+    :retweet => [10567],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
+    :category => "Literature"
+  },
+
+  #QuizHungerGames
+  10567 => {
+    :retweet => [10565],
+    :hashtags => ['hungergames', 'thehungergames', 'katniss'],
     :category => "Literature"
   },
 
