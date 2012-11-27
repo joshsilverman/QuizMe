@@ -16,9 +16,13 @@
 				.content
 					- if post.question.user_id != 1 # and @asker.author_id != post.question.user_id 
 						- user = post.question.user
-						= image_tag(user.twi_profile_img_url, :class => "rounded")
+						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
 						%i.icon-user
-						%h5= user.twi_screen_name
+						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
+							%h5= @local_asker.twi_screen_name
+						via
+						%a.question_via{:href => "http://twitter.com/#{user.twi_screen_name}", :target => "_blank"}
+							%h5= user.twi_screen_name
 					- else
 						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
 						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
