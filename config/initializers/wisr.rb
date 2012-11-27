@@ -209,14 +209,14 @@ ACCOUNT_DATA = {
 
   #HarryPotterBk3
   10565 => {
-    :retweet => [10567],
+    :retweet => [10567, 12982],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
   },
 
   #QuizHungerGames
   10567 => {
-    :retweet => [10565],
+    :retweet => [10565, 12982],
     :hashtags => ['hungergames', 'thehungergames', 'katniss'],
     :category => "Literature"
   },
@@ -224,7 +224,7 @@ ACCOUNT_DATA = {
   #Spanish_110
   12982 => {
     :retweet => [],
-    :hashtags => ['spanish'],
+    :hashtags => ['spanish', 'español', 'learnspanish'],
     :category => "Language"
   }
 }
