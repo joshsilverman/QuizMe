@@ -224,7 +224,7 @@ ACCOUNT_DATA = {
   #Spanish_110
   12982 => {
     :retweet => [],
-    :hashtags => ['spanish', 'español', 'learnspanish'],
+    :hashtags => ['spanish', 'espanol', 'learnspanish'],
     :category => "Language"
   }
 }
