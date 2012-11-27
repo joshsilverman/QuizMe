@@ -29,6 +29,7 @@
         .subsidiaries{:style => "display: none;"}
         .loading{:style => "display: none;"}
           Loading...
+        = render :partial => "feeds/activity", :locals => {:post => @question}
         .more{:style => "display: none;"}
           %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
 

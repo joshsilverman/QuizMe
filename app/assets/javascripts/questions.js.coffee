@@ -20,6 +20,7 @@ class Question
 		@questions = $.parseJSON $("#questions").html()
 		@handle_data = $.parseJSON($('#handle_data').html())
 		answers = $("#question").find(".answers")
+		@initialize_tooltips()
 		if @show_answer=='true' then disabled = true else disabled = false
 		answers.accordion({
 			collapsible: true, 
@@ -31,17 +32,17 @@ class Question
 		$(".tweet_button").on "click", (e) => 
 			if @user_name != undefined
 				parent = $(e.target).parents(".answer_container").prev("h2")
-				@respond_to_question(parent.text(), parent.attr("answer_id"))	
-
+				@respond_to_question(parent.text(), parent.attr("answer_id"), parent.attr "correct")	
 		$('.post-question').click (a) -> question.post_edit_question(this)
 		$("#add_answer").on "click", -> question.post_new_question_add_answer()
 
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
-	
-	respond_to_question: (text, answer_id) =>
+	initialize_tooltips: =>
+		$(".interaction").tooltip()
+	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
-		loading = @element.find(".loading").text("Tweeting your answer...")
+		loading = @element.find(".loading").text("Posting your answer...")
 		loading.fadeIn(500)
 		answers.toggle(200, => answers.remove())
 		params =
@@ -52,34 +53,51 @@ class Question
 			type: 'POST'
 			data: params
 			success: (e) => 
-				@element.find(".subsidiaries").show()
-				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text(e.user_message)
-				subsidiary.find("img").attr("src", @user_image)
-				subsidiary.find("h5").text(@user_name)
-				@element.find(".parent").addClass("answered")
-				loading.fadeOut(500, => 
-					subsidiary.addClass("answered")
-					@element.find(".subsidiaries").append(subsidiary.fadeIn(500, => @populate_response(e)))
-				)
-				# mixpanel.track("answered", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})				
+				if e == ""
+					loading.text("Something went wrong, sorry!")
+				else
+					icon = @element.find(".answered_indicator")
+					icon.removeClass("icon-ok-sign icon-remove-sign")
+					icon.addClass(if correct == "true" then "icon-ok-sign" else "icon-remove-sign")
+					@element.find(".parent").addClass("answered")
+					conversation = @element.find(".subsidiaries")
+					conversation.show()
+					conversation.prepend($(e).hide())
+					loading.fadeOut(500, => 
+						conversation.find(".post").first().fadeIn(500, =>
+							loading = @element.find(".loading").text("Thinking...")
+							loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+									conversation.find(".post").last().fadeIn(500, => @show_activity())
+									icon.fadeIn(250)
+								)
+							)						
+						)
+					)
 			error: => 
-				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
+				loading.text("Something went wrong, sorry!")
 
-	populate_response: (message_hash) =>
-		response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		response.find("p").text(message_hash.app_message) 
-		response.find("h5").text(@name)
-		loading = @element.find(".loading").text("Thinking...")
-		if @element.find(".subsidiaries:visible").length > 0
-			loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-					@element.find(".subsidiary").after(response.fadeIn(500, => $(".more").fadeIn(500)))
-					@element.find("i").show()
-				)
-			)
+	# populate_response: (message_hash) =>
+	# 	response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+	# 	response.find("p").text(message_hash.app_message) 
+	# 	response.find("h5").text(@name)
+	# 	loading = @element.find(".loading").text("Thinking...")
+	# 	if @element.find(".subsidiaries:visible").length > 0
+	# 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+	# 				@element.find(".subsidiary").after(response.fadeIn(500, => $(".more").fadeIn(500)))
+	# 				@element.find("i").show()
+	# 			)
+	# 		)
+	# 	else
+	# 		@element.find(".subsidiary").after(response.fadeIn(500))
+	# 		@element.find("i").show()
+	show_activity: =>
+		if @element.find(".activity_container:visible").length > 0
+			@element.find(".user_answered").fadeIn(500)
 		else
-			@element.find(".subsidiary").after(response.fadeIn(500))
-			@element.find("i").show()
+			@element.find(".user_answered").show()
+			@element.find(".activity_container").fadeIn(500)
+		$(".interaction").tooltip()
+		@element.find(".quiz_container").fadeIn(500)			
 
 	post_edit_question: (elmnt) =>
 		question_id = $(elmnt).closest('.question-row').attr('question_id')

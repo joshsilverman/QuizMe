@@ -15,11 +15,24 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def show
+  def show(posts = [])
     @show_answer = !params[:ans].nil?
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
-    @publication = Publication.where(:question_id => params[:id], :published => true).order("created_at DESC").limit(1).first
+    publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")
+    @publication = publications.first
+    publications.each { |pub| posts += pub.posts.collect(&:id) }
+    @actions = {params[:id].to_i => []}
+    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at ASC").includes(:user).each do |action|
+      @actions[params[:id].to_i]  << {
+        :user => {
+          :id => action.user.id,
+          :twi_screen_name => action.user.twi_screen_name,
+          :twi_profile_img_url => action.user.twi_profile_img_url
+        },
+        :interaction_type => action.interaction_type
+      }
+    end
     redirect_to "/feeds/#{@asker.id}" unless (@question and @publication and @question.slug == params[:slug])
   end
 

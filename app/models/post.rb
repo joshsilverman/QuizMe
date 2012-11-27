@@ -162,7 +162,12 @@ class Post < ActiveRecord::Base
     answer = Answer.select([:text, :correct]).find(answer_id)
     status = (answer.correct ? "correct" : "incorrect")
     post = publication.posts.where(:provider => "twitter").first
-    conversation = Conversation.find_or_create_by_user_id_and_post_id_and_publication_id(current_user.id, post.id, publication_id) 
+    # conversation = Conversation.find_or_create_by_user_id_and_post_id_and_publication_id(current_user.id, post.id, publication_id) 
+    conversation = Conversation.create({
+      :user_id => current_user.id,
+      :post_id => post.id,
+      :publication_id => publication_id
+    })
     user_post = Post.tweet(current_user, answer.text, {
       :reply_to => asker.twi_screen_name,
       :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
@@ -182,38 +187,38 @@ class Post < ActiveRecord::Base
         :last_interaction_at => user_post.created_at,
         :last_answer_at => user_post.created_at
       })        
-    end
-    Post.trigger_split_test(current_user.id, 'dm reengagement')
-    response_text = post.generate_response(status)
-    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
-    app_post = Post.tweet(asker, response_text, {
-      :reply_to => current_user.twi_screen_name,
-      :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
-      :interaction_type => 2, 
-      :link_type => status[0..2], 
-      :conversation_id => conversation.id, 
-      :in_reply_to_post_id => (user_post ? user_post.id : nil), 
-      :in_reply_to_user_id => current_user.id,
-      :link_to_parent => true, 
-      :resource_url => answer.correct ? nil : resource_url,
-      :wisr_question => publication.question.resource_url ? false : true
-    })  
-    conversation.posts << app_post if app_post
+      Post.trigger_split_test(current_user.id, 'dm reengagement')
+      response_text = post.generate_response(status)
+      publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
+      app_post = Post.tweet(asker, response_text, {
+        :reply_to => current_user.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+        :interaction_type => 2, 
+        :link_type => status[0..2], 
+        :conversation_id => conversation.id, 
+        :in_reply_to_post_id => (user_post ? user_post.id : nil), 
+        :in_reply_to_user_id => current_user.id,
+        :link_to_parent => true, 
+        :resource_url => answer.correct ? nil : resource_url,
+        :wisr_question => publication.question.resource_url ? false : true
+      })  
+      conversation.posts << app_post if app_post
 
-    in_reply_to = nil
-    if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
-      Post.trigger_split_test(current_user.id, 'mention reengagement') 
-      in_reply_to = "incorrect answer follow up"  
-    elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
-      in_reply_to = "new follower question mention"
+      in_reply_to = nil
+      if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
+        Post.trigger_split_test(current_user.id, 'mention reengagement') 
+        in_reply_to = "incorrect answer follow up"  
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
+        in_reply_to = "new follower question mention"
+      end
+      Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
+      Mixpanel.track_event "answered", {
+        :distinct_id => current_user.id,
+        :account => asker.twi_screen_name,
+        :type => "app", 
+        :in_reply_to => in_reply_to
+      }
     end
-    Post.trigger_split_test(current_user.id, 'reengage last week inactive') if Post.where("in_reply_to_user_id = ? and intention = ?", current_user.id, 'reengage last week inactive').present?    
-    Mixpanel.track_event "answered", {
-      :distinct_id => current_user.id,
-      :account => asker.twi_screen_name,
-      :type => "app", 
-      :in_reply_to => in_reply_to
-    }
     return conversation
   end
 

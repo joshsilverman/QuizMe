@@ -151,6 +151,7 @@
 		.post.parent {
 			/*padding: 10px;*/
 			padding: 20px 40px;
+			padding-bottom: 10px;
 			position: relative;
 			cursor: pointer;
 
@@ -380,5 +381,12 @@
 		.faded {
 			color:grey;
 		}
+	}
+
+	.activity_container {
+		margin-left: 0px !important;
+		margin-top: 10px;
+		padding: 0px 30px;
+		padding-bottom: 20px;
 	}
 }
