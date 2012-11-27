@@ -104,22 +104,26 @@ class Post < ActiveRecord::Base
     else
       twitter_response = Post.twitter_request { user.twitter.update(tweet) }
     end  
-    post = Post.create(
-      :user_id => user.id,
-      :provider => 'twitter',
-      :text => tweet,
-      :provider_post_id => twitter_response.id.to_s,
-      :in_reply_to_post_id => options[:in_reply_to_post_id],
-      :in_reply_to_user_id => options[:in_reply_to_user_id],
-      :conversation_id => options[:conversation_id],
-      :publication_id => options[:publication_id],
-      :url => options[:long_url] ? short_url : nil,
-      :posted_via_app => true, 
-      :requires_action => false,
-      :interaction_type => options[:interaction_type],
-      :correct => options[:correct],
-      :intention => options[:intention]
-    )   
+    if twitter_response
+      post = Post.create(
+        :user_id => user.id,
+        :provider => 'twitter',
+        :text => tweet,
+        :provider_post_id => twitter_response.id.to_s,
+        :in_reply_to_post_id => options[:in_reply_to_post_id],
+        :in_reply_to_user_id => options[:in_reply_to_user_id],
+        :conversation_id => options[:conversation_id],
+        :publication_id => options[:publication_id],
+        :url => options[:long_url] ? short_url : nil,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => options[:interaction_type],
+        :correct => options[:correct],
+        :intention => options[:intention]
+      ) 
+    else
+      post = nil  
+    end
     if options[:publication_id]
       publication = Publication.find(options[:publication_id])
       publication.posts << post
@@ -173,6 +177,11 @@ class Post < ActiveRecord::Base
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
+      current_user.update_user_interactions({
+        :learner_level => "feed answer", 
+        :last_interaction_at => user_post.created_at,
+        :last_answer_at => user_post.created_at
+      })        
     end
     Post.trigger_split_test(current_user.id, 'dm reengagement')
     response_text = post.generate_response(status)
@@ -190,12 +199,6 @@ class Post < ActiveRecord::Base
       :wisr_question => publication.question.resource_url ? false : true
     })  
     conversation.posts << app_post if app_post
-
-    current_user.update_user_interactions({
-      :learner_level => "feed answer", 
-      :last_interaction_at => user_post.created_at,
-      :last_answer_at => user_post.created_at
-    })    
 
     in_reply_to = nil
     if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
