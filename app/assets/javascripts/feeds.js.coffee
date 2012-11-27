@@ -182,14 +182,16 @@ class Post
 			=> 
 				@element.find(".retweet.rollover").css("visibility", "visible") if window.feed.user_name != undefined
 				@element.find(".expand").css("color", "#08C")
+				@element.find(".answered_indicator").css("opacity", ".6")
 			=> 
 				@element.find(".retweet.rollover").css("visibility", "hidden") unless @expanded
 				@element.find(".expand").css("color", "#999") unless @expanded
+				@element.find(".answered_indicator").css("opacity", ".4") unless @expanded
 		)
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond_to_question(parent.text(), parent.attr("answer_id"))
+				@respond_to_question(parent.text(), parent.attr("answer_id"), parent.attr "correct")
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 
@@ -213,17 +215,19 @@ class Post
 			@element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
+			@element.find(".answered_indicator").css("opacity", ".4")
 		else 
 			@expanded = true
 			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
+			@element.find(".answered_indicator").css("opacity", ".6")
 			@element.find(".subsidiaries").toggle(200, => 
 				@element.toggleClass("active", 200)
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
 			)	
-	respond_to_question: (text, answer_id) =>
+	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Posting your answer...")
 		loading.fadeIn(500)
@@ -236,17 +240,18 @@ class Post
 			type: 'POST'
 			data: params
 			success: (e) => 
-				console.log e
+				icon = @element.find(".answered_indicator")
+				icon.removeClass("icon-ok-sign icon-remove-sign")
+				icon.addClass(if correct == "true" then "icon-ok-sign" else "icon-remove-sign")
 				@element.find(".parent").addClass("answered")
 				conversation = @element.find(".subsidiaries")
 				conversation.prepend($(e).hide())
 				loading.fadeOut(500, => 
 					conversation.find(".post").first().fadeIn(500, =>
 						loading = @element.find(".loading").text("Thinking...")
-						console.log conversation.find(".post").last()
 						loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
 								conversation.find(".post").last().fadeIn(500, => @show_activity())
-								@element.find(".icon-share-alt").show()
+								icon.fadeIn(250)
 							)
 						)						
 					)

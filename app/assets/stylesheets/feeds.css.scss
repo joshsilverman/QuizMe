@@ -804,9 +804,22 @@ body {
 		i {
 			margin-right: 4px;
 			margin-top: -3px;
+
 			.icon-share-alt, .icon-retweet {
 				color: #555;
 			}
+		}
+
+		.answered_indicator {
+			opacity: 0.4;
+		}	
+
+		.icon-remove-sign {
+			color: #910000;
+		}
+
+		.icon-ok-sign {
+			color: #004D0F;
 		}
 
 		.time {
