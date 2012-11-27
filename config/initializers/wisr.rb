@@ -163,7 +163,7 @@ ACCOUNT_DATA = {
   },
   ## PrepMeLSAT
   9217 => {
-    :retweet => [2, 66, 191, 231, 322, 374, 325], 
+    :retweet => [2, 66, 191, 231, 322, 325], 
     :hashtags => ["lsat", "lawschool", "law"],
     :category => "Social Sciences"
   },     
