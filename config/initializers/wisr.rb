@@ -105,6 +105,12 @@ ACCOUNT_DATA = {
     :hashtags => ["trivia", "weather", "meteorology", "meteo"],
     :category => "Science"
   },  
+  ## QuizMeGeo
+  8367 => {
+    :retweet => [8373, 324],
+    :hashtags => ["geo", "geography", "worldgeo"],
+    :category => "Science"
+  },  
 
   ## SATvocabQuiz
   227 => {
@@ -112,22 +118,10 @@ ACCOUNT_DATA = {
     :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
     :category => "Trivia"
   },  
-  ## 501 Spanish 
-  308 => {
-    :retweet => [227, 324], 
-    :hashtags => ["spanish", "espanol"],
-    :category => "Trivia"
-  },
   ## US Capitals 
   324 => {
     :retweet => [227, 308, 66, 2], 
     :hashtags => ["trivia"],
-    :category => "Trivia"
-  },
-  ## QuizMeGeo
-  8367 => {
-    :retweet => [8373, 324],
-    :hashtags => ["geo", "geography", "worldgeo"],
     :category => "Trivia"
   },
 
@@ -178,9 +172,8 @@ ACCOUNT_DATA = {
   223 => {
     :retweet => [322], 
     :hashtags => ["marketing"],
-    :category => "Marketing"
+    :category => "Misc"
   },  
-
   ## QuizMeBeer  
   374 => {
     :retweet => [22, 284, 325], 
@@ -209,30 +202,39 @@ ACCOUNT_DATA = {
 
   #HarryPotterBk3
   10565 => {
-    :retweet => [10567, 12982],
+    :retweet => [10567],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
   },
-
   #QuizHungerGames
   10567 => {
-    :retweet => [10565, 12982],
+    :retweet => [10565],
     :hashtags => ['hungergames', 'thehungergames', 'katniss'],
     :category => "Literature"
   },
+  #Romeo and Juliet
+  10566 => {
+    :retweet => [],
+    :hashtags => ['shakespeare', 'romeoandjuliet'],
+    :category => "Literature"
+  },  
 
+  ## 501 Spanish 
+  308 => {
+    :retweet => [12982, 13588], 
+    :hashtags => ["spanish", "espanol"],
+    :category => "Language"
+  },
   #Spanish_110
   12982 => {
-    :retweet => [],
+    :retweet => [308, 13588],
     :hashtags => ['spanish', 'espanol', 'learnspanish'],
     :category => "Language"
+  },
+  #Beginner Spanish
+  13588 => {
+    :retweet => [308, 12982],
+    :hashtags => ['spanish', 'espanol', 'learnspanish'],
+    :category => "Language"    
   }
 }
-
-# RETWEET_ACCTS = {
-#   2 => [66], #govt101
-#   19 => [31], #quizmechem
-#   31 => [19], #quizmeorgo
-#   66 => [2] #USPresidents101
-#   #108 => [] #psychology 
-# }

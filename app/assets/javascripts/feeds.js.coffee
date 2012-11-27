@@ -74,7 +74,7 @@ class Feed
 			success: (e) => 
 				post = $(".post[post_id=#{id}]")
 				post.find(".icon-retweet").fadeIn()	
-				post.find(".quiz").remove()
+				post.find(".retweet").remove()
 				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	post_question: =>
 		return unless window.feed.correct > 9 or $('.is_author').length > 0
@@ -172,7 +172,7 @@ class Post
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
 		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
-		@element.find(".quiz").on "click", => 
+		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
 			$("#retweet_question_modal").find("p").text(@question)
@@ -180,10 +180,10 @@ class Post
 			$("#retweet_question_modal").modal()	
 		@element.hover(
 			=> 
-				@element.find(".quiz.rollover").css("visibility", "visible") if window.feed.user_name != undefined
+				@element.find(".retweet.rollover").css("visibility", "visible") if window.feed.user_name != undefined
 				@element.find(".expand").css("color", "#08C")
 			=> 
-				@element.find(".quiz.rollover").css("visibility", "hidden") unless @expanded
+				@element.find(".retweet.rollover").css("visibility", "hidden") unless @expanded
 				@element.find(".expand").css("color", "#999") unless @expanded
 		)
 		@element.find(".tweet_button").on "click", (e) => 
@@ -204,7 +204,7 @@ class Post
 			else
 				$(e.target).find("h3").removeClass("active_next")
 	expand: (e) =>
-		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("quiz") or $(e.target).is("a")
+		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
@@ -215,7 +215,7 @@ class Post
 			@element.prev(".conversation").removeClass("active_prev")	
 		else 
 			@expanded = true
-			@element.find(".quiz").css("visibility", "visible") if window.feed.user_name != undefined
+			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
 			@element.find(".answers").toggle(200)
 			@element.find(".subsidiaries").toggle(200, => 

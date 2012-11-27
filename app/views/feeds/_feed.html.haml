@@ -20,12 +20,13 @@
 						%h5= user.twi_screen_name
 					- else
 						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
-						%h5= @local_asker.twi_screen_name
+						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
+							%h5= @local_asker.twi_screen_name
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
 						- unless retweeted
-							%a.quiz.rollover 
+							%a.retweet.rollover 
 								%i.icon-retweet
 								Retweet
 				- unless responded

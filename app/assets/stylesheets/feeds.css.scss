@@ -804,7 +804,9 @@ body {
 		i {
 			margin-right: 4px;
 			margin-top: -3px;
-			color: #555;
+			.icon-share-alt, .icon-retweet {
+				color: #555;
+			}
 		}
 
 		.time {
@@ -888,7 +890,7 @@ body {
 					color: #999;
 				}
 
-				.quiz {
+				.retweet {
 					
 					margin-left: 8px;
 					
@@ -1038,7 +1040,7 @@ body {
 	}
 }
 .conversation:hover {
-	.quiz:hover {
+	.retweet:hover {
 		visibility: visible;
 	}
 
