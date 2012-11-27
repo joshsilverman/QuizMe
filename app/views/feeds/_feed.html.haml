@@ -1,12 +1,14 @@
 .feed_section
-	- show_activity = ab_test("question activity", "true", "false")
-	/ - quiz_type = ab_test("ask a friend", "rollover", "cta")
 	- @publications.each do |post|
-		- asker = post.asker
-		- conversation = @responses[post.id]
-		- conversation ? responded = true : responded = false
-		.conversation.border-color{:asker_id => asker.id}
+		- @local_asker = post.asker
+		- @conversation = nil
+		- responded = false
+		- if @responses[post.id]
+			- @conversation = @responses[post.id].first
+			- responded = true
+		.conversation.border-color{:asker_id => @local_asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
+				%p.time= time_formatter(post.posts.first.created_at)
 				%i.icon-share-alt{:style => ("display: none;" unless responded)}
 				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
 				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
@@ -17,8 +19,8 @@
 						%i.icon-user
 						%h5= user.twi_screen_name
 					- else
-						= image_tag(asker.twi_profile_img_url, :class => "rounded")
-						%h5= asker.twi_screen_name
+						= image_tag(@local_asker.twi_profile_img_url, :class => "rounded")
+						%h5= @local_asker.twi_screen_name
 					%p.question_text= post.question.text
 					.post_actions
 						%a.expand Answer
@@ -26,10 +28,6 @@
 							%a.quiz.rollover 
 								%i.icon-retweet
 								Retweet
-						/ - if quiz_type == "rollover"
-						/ 	%a.quiz.rollover{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{asker.twi_screen_name}&url=http://wisr.com/feeds/#{asker.id}/#{post.id}"}
-						/ 		%i.icon-share
-						/ 		Ask a Friend
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = post.question.answers.shuffle
@@ -39,33 +37,14 @@
 							.answer_container.input{:type => 'text'}
 								.shadow-top
 								.tweet
-									%span#account= "@#{asker.twi_screen_name}"
-									%span#answer= " #{answer.tweetable(asker.twi_screen_name)}"
-									/ %span#url= " #{post.url}"
-									/ %span#additional{:contenteditable => true}
+									%span#account= "@#{@local_asker.twi_screen_name}"
+									%span#answer= " #{answer.tweetable(@local_asker.twi_screen_name)}"
 								.answer_controls
-									%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
+									%a.tweet_button.btn.btn-primary{:href => ("/auth/twitter?feed_id=#{@local_asker.id}&post_id=#{post.id}&answer_id=#{answer.id}" unless current_user)} Tweet!
 								.shadow-bottom
 			.subsidiaries{:style => "display: none;"}
-				- if conversation
-					- count = conversation.first.posts.size
-					- conversation.first.posts.each_with_index do |response, i|
-						.subsidiary.post{:class => ("answered" if i < (count - 1))}
-							.content
-								- if response["user_id"] == asker.id
-									= image_tag(asker.twi_profile_img_url, :class => "rounded")
-									%h5= asker.twi_screen_name
-									%p= response['text']
-								- else
-									= image_tag(current_user.twi_profile_img_url, :class => "rounded")
-									%h5= current_user.twi_screen_name
-									%p= response['text']
-				/ - if quiz_type == "cta"
-				/ 	.quiz_container{:style => ("display: none;" unless conversation.present?)}
-				/ 		%a.quiz.cta{:href => "https://twitter.com/intent/tweet?text=#{u(Post.format_tweet(post.question.text, {:via_user => asker.twi_screen_name, :question_backlink => 'http://bit.ly/abc123', :return_text_only => true, :buffer => 16}).strip)}&via=#{asker.twi_screen_name}&url=http://wisr.com/feeds/#{asker.id}/#{post.id}"}			
-				/ 			%i.icon-share
-				/ 			Tweet this question to a friend.
+				- if @conversation
+					= render :partial => "conversation"
 			.loading{:style => "display: none;"}
 				Loading...	
-			- if show_activity == "true"
-				= render :partial => "activity", :locals => {:post => post}
+			= render :partial => "activity", :locals => {:post => post}

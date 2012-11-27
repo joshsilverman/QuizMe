@@ -5,7 +5,7 @@ class FeedsController < ApplicationController
     @asker = User.find(1)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]    
-    @publications = Publication.where(:published => true).order("updated_at DESC").limit(15).includes(:question => :answers)
+    @publications = Publication.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
     posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
     @actions = {}
     post_pub_map = {}
@@ -59,8 +59,7 @@ class FeedsController < ApplicationController
     if @asker
       asker_ids = User.askers.collect(&:id)
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
-      @publications = @asker.publications.where("published = ?", true).order("updated_at DESC").limit(15).includes(:question => :answers)
-
+      @publications = @asker.publications.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
       posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
       
       @actions = {}
@@ -146,13 +145,13 @@ class FeedsController < ApplicationController
   end
 
   def more
-    post = Publication.find(params[:last_post_id])
-    puts post.to_json
+    publication = Publication.includes(:posts).find(params[:last_post_id])
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @publications = @asker.publications.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
+      @publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
-      @publications = Publication.where("updated_at < ? and id != ? and published = ?", post.created_at, post.id, true).order("updated_at DESC").limit(5).includes(:question => :answers)
+      post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
+      @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     
@@ -191,9 +190,9 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    finished("question activity", {:reset => false})
-    finished("activity stream vs. leaderboard", {:reset => false})
-    render :json => Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    @conversation = Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
+    @local_asker = User.askers.find(params["asker_id"])
+    render :partial => "conversation"
   end
 
   def manager_response

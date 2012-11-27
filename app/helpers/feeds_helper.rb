@@ -45,11 +45,14 @@ module FeedsHelper
 	def time_formatter(date)
 		if date.to_date == Date.today
 			time = time_ago_in_words(date)
+			time.gsub!("less than a minute", "1m")
 			time.gsub!("about ", "")
 			time.gsub!(" hours", "h")
+			time.gsub!(" hour", "h")
 			time.gsub!(" minutes", "m")
+			time.gsub!(" minute", "m")
 			time.gsub!(" seconds", "s")
-			time.gsub!("less than a minute", "1m")
+			time.gsub!(" second", "s")
 		else 
 			time = date.strftime("%m/%d")
 			time.gsub! "/0", "/"
@@ -57,5 +60,18 @@ module FeedsHelper
 		end
 		return time
 	end	
+
+	def format_response(text)
+		if text.include? "Find the answer at" or text.include? "Find out why at"
+			links = text.scan /http:\/\/wisr.co\/[^ ]*/
+			text = text.gsub links[0], ""
+			text = text.gsub links[1], ""
+			link = links[1]
+		else
+			text = text.split("http")[0]
+			link = nil
+		end
+		return text, link
+	end
 
 end
