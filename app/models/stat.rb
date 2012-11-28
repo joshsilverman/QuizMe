@@ -312,12 +312,12 @@ class Stat < ActiveRecord::Base
     # revert active
     title_row = ['Handle']
     User.askers.select([:id, :twi_screen_name]).all.each { |asker| handle_activity[asker.id] = [asker.twi_screen_name] }
-    user_grouped_posts = Post.joins(:user).not_spam\
-      .where("posts.in_reply_to_user_id IN (?) AND users.role != 'asker' AND posts.user_id NOT IN (?)", User.askers.collect(&:id), [1,3,4,5,11,12,13,17,25,65,106])\
-      .where("posts.created_at > ?", 1.week.ago)\
-      .where("interaction_type <> 4")\
-      .select([:user_id, :in_reply_to_user_id])\
-      .order("posts.created_at DESC")\
+    user_grouped_posts = Post.joins(:user).not_spam.not_us.social
+      .where("posts.in_reply_to_user_id IN (?)", User.askers.collect(&:id))
+      .where("posts.created_at > ?", 1.week.ago)
+      .where("interaction_type <> 4")
+      .select([:user_id, :in_reply_to_user_id])
+      .order("posts.created_at DESC")
       .group_by(&:user_id)
     user_names = User.select([:id, :twi_screen_name]).find(user_grouped_posts.keys).group_by(&:id)
     user_grouped_posts.each do |user_id, users_posts|
@@ -332,25 +332,30 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-	def self.cohort_analysis(graph_data = [])
+	def self.cohort_analysis(grouped_posts = {}, graph_data = [])
     title_row = ["Week"]
-		start_day = (Time.now.beginning_of_week - 4.weeks).to_date
-		cohort_users = User.where("created_at > ?", start_day)
-		cohort_posts = Post.not_spam.social.not_us.where("user_id in (?) and (interaction_type = 2 or interaction_type = 3) and created_at > ?", cohort_users.collect(&:id), start_day).group_by {|post| post.created_at.to_date}
-		cohorts = cohort_users.group_by {|u| u.created_at.beginning_of_week.to_date}
-    graph_data << title_row += cohorts.keys
-		(start_day..Date.today).each do |date|
-      date_array = [date]
-			cohorts.each do |week, cohort|
-        if posts = cohort_posts[date]
-          count = posts.select { |p| cohort.collect(&:id).include? p.user_id }.size
+    start_day = 8.weeks.ago.to_date
+    domain = 4.weeks.ago.to_date
+    domain_posts = Post.joins(:user).not_spam.not_us.social\
+      .where("users.created_at > ?", start_day)\
+      .select("to_char(users.created_at, 'MM/W') as week, posts.created_at, posts.user_id")
+      # .group("to_char(users.created_at, 'MM/W')")\
+    weeks = domain_posts.order("users.created_at ASC").uniq_by(&:week).collect {|p| p.week}
+    graph_data << (title_row += weeks)
+    date_grouped_posts = domain_posts.order("posts.created_at ASC").group_by { |p| p.created_at.to_date.to_s }
+    (domain..Date.today.to_date).each do |date|      
+      data = [date]
+      date_posts = date_grouped_posts[date.to_s] || []
+      week_grouped_posts = date_posts.group_by { |p| p.week }
+      weeks.each do |week|
+        if week_grouped_posts[week].present?
+          data << week_grouped_posts[week].uniq{ |p| p.user_id }.size
         else
-          count = 0
-        end
-        date_array << count
-			end
-      graph_data << date_array
-		end
+          data << 0
+        end        
+      end
+      graph_data << data
+    end
     return graph_data
 	end
 end
