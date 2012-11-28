@@ -36,7 +36,9 @@ class Dashboard
           success: (e) => 
             $(".tab-content #handles").html(e)
             @handle_activity = $.parseJSON($("#handle_activity_data").val())    
+            @cohort = $.parseJSON($("#cohort_activity").val())
             @draw_handle_activity()
+            @draw_cohort_analysis()
           complete: -> $(".loading").hide()
     else if target == "#core"
       if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
@@ -207,6 +209,11 @@ class Dashboard
     chart = new google.visualization.ColumnChart(document.getElementById("handle_activity_graph"))
     chart.draw graph_data, handle_activity_options  
 
+  draw_cohort_analysis: =>
+    graph_data = google.visualization.arrayToDataTable(@cohort)
+    chart = new google.visualization.AreaChart(document.getElementById("cohort_graph"))
+    chart.draw graph_data, cohort_options      
+
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
 pg_options = 
@@ -278,6 +285,27 @@ handle_activity_options =
   pointSize: 6
   lineWidth: 3
   isStacked: true
+  chartArea:  
+    width: 1170
+    left: 42
+    height: 400
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
+
+cohort_options = 
+  width: 1170
+  height: 500
+  legend: "none"
+  pointSize: 3
+  lineWidth: 1
+  isStacked: true
+  # colors: ["#BAC4FF", "#ABB7FF", "#99A8FF", "#8295FF", "#6D82FC", "#546EFF", "#3B58FF", "#2647FF", "#1438FF", "#052BFF"]
   chartArea:  
     width: 1170
     left: 42

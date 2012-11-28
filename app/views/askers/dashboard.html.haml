@@ -6,6 +6,7 @@
 = hidden_field_tag :econ_engine, @econ_engine.to_json
 =# hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :revenue, @revenue.to_json
+= hidden_field_tag :cohort, @cohort.to_json
 
 :css
 	.navbar-fixed-top .container {
@@ -33,6 +34,8 @@
 
 	%li
 		%a{:href => "#handles"} Soc. Actions	
+	%li
+		%a{:href => "#users"} Users
 
 .row
 	.tab-content
@@ -42,3 +45,5 @@
 			= render :partial => "core"
 		#handles.dashboard.span12.tab-pane
 			= render :partial => "handles"
+		#users.dashboard.span12.tab-pane
+			= render :partial => "users"

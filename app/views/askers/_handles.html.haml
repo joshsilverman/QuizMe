@@ -7,3 +7,15 @@
     #handle_activity.panel.rounded.span10
       #handle_activity_graph.graph
   = hidden_field_tag :handle_activity_data, @handle_activity.to_json
+
+.cohort
+  %h2.handle_name 
+    Cohort Analysis
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #cohort.panel.rounded.span10
+      #cohort_graph.graph
+  = hidden_field_tag :cohort_activity, @cohort.to_json
+
+ 
