@@ -119,7 +119,7 @@ class FeedsController < ApplicationController
         end
       end
       @stream = []
-      time_ago = 1.day
+      time_ago = 8.hours
       recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago).order("created_at DESC").limit(5).includes(:conversation => {:publication => :question}).to_a
       recent_posts.group_by(&:user_id).each do |user_id, posts| 
         post = posts.shift
