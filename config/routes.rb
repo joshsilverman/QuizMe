@@ -27,11 +27,17 @@ Quizmemanager::Application.routes.draw do
   post "posts/respond_to_post"
   post "posts/retweet"
 
+  match "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
+  match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
+
+  match "questions/asker/:asker_id" => "questions#index"
   post "questions/save_question_and_answers"
   match "questions/:id/:slug" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
+  resources :questions
+
   match 'auth/:provider/callback' => 'sessions#create'
   match "/signout" => "sessions#destroy", :as => :signout
   match "/confirm_js" => "sessions#confirm_js"
@@ -48,7 +54,6 @@ Quizmemanager::Application.routes.draw do
 
   resources :rate_sheets
   resources :users
-  resources :questions
   resources :posts
   resources :mentions
   

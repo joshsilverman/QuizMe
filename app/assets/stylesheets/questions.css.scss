@@ -352,8 +352,27 @@
 	}
 
 	.header {
+		background:none;
+		padding-left:0;
+		border-top:0;
+		border-bottom:1px solid #E5E5E5;
+
 		h2 {
 			float:left;
+
+			select {
+				width:135px;
+				position:relative;
+				top:3px;
+
+				//font-weight:bold;
+				//font-size:16px;
+
+				//background:whitesmoke;
+				//border:none;
+				//box-shadow:none;
+				//-webkit-appearance:none;
+			}
 		}
 		.btn-group {
 			float:right;
@@ -371,6 +390,12 @@
 				}
 			}
 		}
+	}
+
+	table {
+		tr.info {background:#D9EDF7;}
+		tr.disabled {background:#efefef;}
+		tr.success {background:#DFF0D8;}
 	}
 
 	.pagination-wrapper {

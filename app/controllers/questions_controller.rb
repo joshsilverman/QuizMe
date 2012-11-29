@@ -5,14 +5,28 @@ class QuestionsController < ApplicationController
 
 
   def index
-    @questions = current_user.questions.includes(:answers).order("created_at DESC").page(params[:page]).per(25)
-    @questions_hash = Hash[@questions.collect{|q| [q.id, q]}]
-    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
+    params[:asker_id] = nil if params[:asker_id] == '0'
 
-    respond_to do |format|
-      format.html
-      format.json { render json: @questions }
+    if current_user.is_role? 'admin'
+      @questions = Question
+    else
+      @questions = current_user.questions
     end
+
+    if params[:asker_id]
+      @questions = @questions.where(:created_for_asker_id => params[:asker_id])
+    else
+      @questions = @questions
+    end
+
+    @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
+    @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
+    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
+
+    @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
+    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
+    @approved_count = @all_questions.where(:status => 1).count
+    @pending_count = @all_questions.where(:status => 0).count
   end
 
   def show(posts = [])
@@ -161,5 +175,15 @@ class QuestionsController < ApplicationController
   def export
     @questions = Question.all
     respond_to :json
+  end
+
+  def enqueue
+    PublicationQueue.enqueue_question params[:asker_id], params[:question_id]
+    redirect_to "/questions/asker/#{params[:asker_id]}"
+  end
+
+  def dequeue
+    PublicationQueue.dequeue_question params[:asker_id], params[:question_id]
+    redirect_to "/questions/asker/#{params[:asker_id]}"
   end
 end

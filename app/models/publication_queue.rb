@@ -5,20 +5,44 @@ class PublicationQueue < ActiveRecord::Base
 	def self.enqueue_questions(asker)
     queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
     Question.select_questions_to_post(asker, 7).each do |question|
+      break if queue.publications.count >= asker.posts_per_day
       publication = Publication.create(
         :question_id => question.id,
         :asker_id => asker.id, 
         :publication_queue_id => queue.id
       )
-      # publication.update_attribute(:url, Post.shorten_url("#{URL}/feeds/#{asker.id}/#{publication.id}", "app", "cp", asker.twi_screen_name, question.id))
-      # question.update_attribute(:priority, false) if question.priority
+      puts "Enqueue pub #{publication.id} for #{asker.twi_screen_name} and queue #{queue.id}"
+    end
+  end
+
+  def self.enqueue_question(asker_id, question_id)
+    queue = PublicationQueue.find_or_create_by_asker_id(asker_id)
+    question = Question.find question_id
+
+    publication = Publication.create(
+      :question_id => question_id,
+      :asker_id => asker_id, 
+      :publication_queue_id => queue.id
+    )
+  end
+
+  def self.dequeue_question(asker_id, question_id)
+    queue = PublicationQueue.find_or_create_by_asker_id(asker_id)
+    question = Question.find question_id
+    queued_pubs = question.publications.where("publication_queue_id IS NOT NULL")
+
+    queued_pubs.each do |queued_pub|
+      queued_pub.update_attribute :publication_queue_id, nil
     end
   end
 
   def self.clear_queue(asker)
     if asker and asker.publication_queue
       queue = asker.publication_queue
-      queue.publications = []
+      queue.publications.where("published = ?", true).each do |pub|
+        puts "Dequeue pub #{pub.id} for #{asker.twi_screen_name} and queue #{queue.id}"
+        pub.update_attribute :publication_queue_id, nil
+      end
       queue.update_attribute(:index, 0)
     end
   end

@@ -38,6 +38,11 @@ class Question
 
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
+
+		#allow questions index to filter and make sure selector set right
+		$('#askers_select select').change -> window.location = "/questions/asker/" + $(this).children(":selected").attr('value')
+		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')
+
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
 	respond_to_question: (text, answer_id, correct) =>

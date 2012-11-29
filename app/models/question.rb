@@ -4,6 +4,7 @@ class Question < ActiveRecord::Base
   has_many :publications
   belongs_to :topic
   belongs_to :user
+  belongs_to :asker, :foreign_key => :created_for_asker_id
 
   has_many :badges, :through => :requirements
   has_many :requirements
