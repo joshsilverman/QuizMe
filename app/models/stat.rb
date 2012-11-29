@@ -337,8 +337,8 @@ class Stat < ActiveRecord::Base
     start_day = 8.weeks.ago.to_date
     domain = 4.weeks.ago.to_date
     domain_posts = Post.joins(:user).not_spam.not_us.social\
-      .where("users.created_at > ?", start_day)\
       .select("to_char(users.created_at, 'MM/W') as week, posts.created_at, posts.user_id")
+      # .where("users.created_at > ?", start_day)\
       # .group("to_char(users.created_at, 'MM/W')")\
     weeks = domain_posts.order("users.created_at ASC").uniq_by(&:week).collect {|p| p.week}
     graph_data << (title_row += weeks)

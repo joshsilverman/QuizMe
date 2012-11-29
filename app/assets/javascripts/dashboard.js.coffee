@@ -302,10 +302,14 @@ cohort_options =
   width: 1170
   height: 500
   legend: "none"
-  pointSize: 3
-  lineWidth: 1
+  pointSize: 0
+  lineWidth: 0.25
   isStacked: true
-  # colors: ["#BAC4FF", "#ABB7FF", "#99A8FF", "#8295FF", "#6D82FC", "#546EFF", "#3B58FF", "#2647FF", "#1438FF", "#052BFF"]
+  colors: [
+    "#B1C2F0", 
+    "#5E79C4",
+    "#1D3880"
+  ]
   chartArea:  
     width: 1170
     left: 42
