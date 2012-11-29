@@ -98,18 +98,39 @@ class Post < ActiveRecord::Base
       :via_user => options[:via],
       :wisr_question => options[:wisr_question]
     })
-    if options[:in_reply_to_post_id] and options[:link_to_parent]
-      parent_post = Post.find(options[:in_reply_to_post_id]) 
-      twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
+    post_to_twitter = Post.create_split_test(user_id, "wisr posts propagate to twitter", "true", "false")
+    if post_to_twitter == "true"
+      if options[:in_reply_to_post_id] and options[:link_to_parent]
+        parent_post = Post.find(options[:in_reply_to_post_id]) 
+        twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
+      else
+        twitter_response = Post.twitter_request { user.twitter.update(tweet) }
+      end  
+      if twitter_response
+        post = Post.create(
+          :user_id => user.id,
+          :provider => 'twitter',
+          :text => tweet,
+          :provider_post_id => twitter_response.id.to_s,
+          :in_reply_to_post_id => options[:in_reply_to_post_id],
+          :in_reply_to_user_id => options[:in_reply_to_user_id],
+          :conversation_id => options[:conversation_id],
+          :publication_id => options[:publication_id],
+          :url => options[:long_url] ? short_url : nil,
+          :posted_via_app => true, 
+          :requires_action => false,
+          :interaction_type => options[:interaction_type],
+          :correct => options[:correct],
+          :intention => options[:intention]
+        ) 
+      else
+        post = nil  
+      end
     else
-      twitter_response = Post.twitter_request { user.twitter.update(tweet) }
-    end  
-    if twitter_response
       post = Post.create(
         :user_id => user.id,
-        :provider => 'twitter',
+        :provider => 'wisr',
         :text => tweet,
-        :provider_post_id => twitter_response.id.to_s,
         :in_reply_to_post_id => options[:in_reply_to_post_id],
         :in_reply_to_user_id => options[:in_reply_to_user_id],
         :conversation_id => options[:conversation_id],
@@ -120,9 +141,7 @@ class Post < ActiveRecord::Base
         :interaction_type => options[:interaction_type],
         :correct => options[:correct],
         :intention => options[:intention]
-      ) 
-    else
-      post = nil  
+      )    
     end
     if options[:publication_id]
       publication = Publication.find(options[:publication_id])
