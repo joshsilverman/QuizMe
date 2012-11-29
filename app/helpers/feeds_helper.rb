@@ -7,12 +7,8 @@ module FeedsHelper
 			return "Retweet"
 		when 2
 			return "Mention"
-		# when "spam"
-			# return "Spam"
 		when 4
 			return "Private Message"
-		# when "mention reply"
-			# return "Reply"
 		else
 			return "Mention"
 		end
@@ -24,8 +20,6 @@ module FeedsHelper
 			return "btn-success"
 		when 2
 			return "btn-info"
-		# when "spam"
-			# return "btn-warning"
 		when 4
 			return "btn-inverse"
 		end
@@ -63,15 +57,19 @@ module FeedsHelper
 
 	def format_response(text)
 		if text.include? "Find the answer at" or text.include? "Find out why at"
-			links = text.scan /http:\/\/wisr.co\/[^ ]*/
-			text = text.gsub links[0], ""
-			text = text.gsub links[1], ""
-			link = links[1]
+			resource_link = text.match(/Find the answer at http:\/\/wisr.co\/[^ ]*/)
+			if resource_link
+				resource_link = resource_link.to_s.gsub("Find the answer at ", "")
+			else
+				resource_link = text.match(/Find out why at http:\/\/wisr.co\/[^ ]*/).gsub("Find out why at ", "")
+			end
+			text.scan(/http:\/\/wisr.co\/[^ ]*/).each { |link| text.gsub!(link, "") }
+			text = text.gsub "Find the answer at", "Find the correct answer"
+			text = text.gsub "Find out why at", "Find out why"
 		else
 			text = text.split("http")[0]
-			link = nil
+			resource_link = nil
 		end
-		return text, link
+		return text, resource_link
 	end
-
 end
