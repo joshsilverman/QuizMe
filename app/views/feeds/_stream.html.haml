@@ -4,7 +4,6 @@
 			Activity	
 	%ul.unstyled
 		- @stream.each_with_index do |action, i|
-			- puts action.to_json
 			- conversation = action.conversation
 			- if conversation
 				- question = conversation.publication.question
