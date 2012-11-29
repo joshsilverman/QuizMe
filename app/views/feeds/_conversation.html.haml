@@ -9,6 +9,6 @@
 			- if formatted_response[1]
 				%p 
 					= formatted_response[0].html_safe
-					%a.answer_link{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
+					%a.answer_link{:target => "_blank", :href => formatted_response[1]} here.
 			- else
 				%p= formatted_response[0].html_safe
