@@ -36,6 +36,10 @@ Quizmemanager::Application.routes.draw do
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
+  match "/answers/:question_id" => "questions#display_answers"
+
+  match "/answers/:question_id" => "questions#display_answers", :constraints => {:protocol => 'https'}
+
   resources :questions
 
   match 'auth/:provider/callback' => 'sessions#create'

@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user, :except => [:new, :refer, :show]
+  before_filter :authenticate_user, :except => [:new, :refer, :show, :display_answers]
   before_filter :admin?, :only => [:moderate, :moderate_update]
   before_filter :author?, :only => [:index]
 
@@ -185,5 +185,10 @@ class QuestionsController < ApplicationController
   def dequeue
     PublicationQueue.dequeue_question params[:asker_id], params[:question_id]
     redirect_to "/questions/asker/#{params[:asker_id]}"
+  end
+
+  def display_answers
+    @question = Question.includes(:answers).find(params[:question_id])
+    render :partial => "answers"
   end
 end

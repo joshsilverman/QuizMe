@@ -198,8 +198,19 @@ class Moderator
 			success: (data, textStatus, jqXHR) ->
 				$("#question_#{q['question_id']}").fadeOut()
 
+class Card
+	constructor: ->
+		$(".answers").accordion({
+			collapsible: true, 
+			autoHeight: false,
+			active: false, 
+			icons: false, 
+			disabled: true
+		})
+
 $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
+	window.card = new Card if $(".answer_widget").length > 0
 	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
 	# target.click() if target.length > 0
