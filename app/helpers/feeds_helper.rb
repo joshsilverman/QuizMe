@@ -61,11 +61,12 @@ module FeedsHelper
 			if resource_link
 				resource_link = resource_link.to_s.gsub("Find the answer at ", "")
 			else
-				resource_link = text.match(/Find out why at http:\/\/wisr.co\/[^ ]*/).gsub("Find out why at ", "")
+				resource_link = text.match(/Find out why at http:\/\/wisr.co\/[^ ]*/).to_s.gsub("Find out why at ", "")
 			end
 			text.scan(/http:\/\/wisr.co\/[^ ]*/).each { |link| text.gsub!(link, "") }
 			text = text.gsub "Find the answer at", "Find the correct answer"
 			text = text.gsub "Find out why at", "Find out why"
+			text = text.gsub "  ", " "
 		else
 			text = text.split("http")[0]
 			resource_link = nil
