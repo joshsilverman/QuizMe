@@ -1,4 +1,14 @@
 - content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
+- if @render_twitter_card
+	%meta{:content => "player", :name => "twitter:card"}
+	%meta{:content => @asker.twi_screen_name, :name => "twitter:site"}
+	%meta{:content => "http://wisr.com/", :name => "twitter:url"}
+	%meta{:content => "Potential Answers", :name => "twitter:title"}
+	%meta{:content => "Tweet me your response!", :name => "twitter:description"}
+	%meta{:content => "https://s3.amazonaws.com/Wisr/answers.jpg", :name => "twitter:image"}
+	%meta{:content => "https://wisr.com/answers/#{@requested_publication.question_id}", :name => "twitter:player"}
+	%meta{:content => "435", :name => "twitter:player:width"}
+	%meta{:content => "175", :name => "twitter:player:height"}/
 #post_feed
 	#feed_container.span10
 		#wrapper.span9

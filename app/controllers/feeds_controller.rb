@@ -83,8 +83,11 @@ class FeedsController < ApplicationController
 
       #inject requested publication from params
       if params[:post_id]
-        requested_publication = @asker.publications.find(params[:post_id])
-        @publications.reverse!.push(requested_publication).reverse! unless @publications.include? requested_publication
+        @requested_publication = @asker.publications.find(params[:post_id])
+        @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
+        @render_twitter_card = true
+      else
+        @render_twitter_card = false     
       end
       # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
       # @post_times = posts.group_by(&:publication_id)
@@ -93,17 +96,7 @@ class FeedsController < ApplicationController
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       #look this up on the fly and cache!
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
-      # @leaders = User.leaderboard(params[:id])
-      if current_user
-        # @correct = 0
-        # @leaders[:scores].each do |user|
-        #   next if user[:user].id != current_user.id or @correct != 0
-        #   @correct = user[:correct]
-        # end        
-        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
-      else
-        @responses = []
-      end
+      @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
 
