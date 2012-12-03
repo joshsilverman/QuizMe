@@ -347,6 +347,18 @@ class FeedsController < ApplicationController
     end
   end
 
+  def ask
+    post = Post.tweet(current_user, params["text"], {
+      :interaction_type => 2, 
+      :in_reply_to_user_id => params["asker_id"], 
+      :link_to_parent => false,
+      :requires_action => true,
+      :intention => "ask a question"
+    })
+    Post.trigger_split_test(current_user.id, 'ask a question')
+    render :text => post.provider_post_id
+  end
+
   def create_split_test
     res = Post.create_split_test(params[:user_id], params[:test_name], params[:alt_a], params[:alt_b])
     render :text => res.nil? ? 'error' : res, :status => 200

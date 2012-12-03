@@ -225,7 +225,7 @@ body {
 				border-top-right-radius: 5px;
 			}
 
-			#related, #scoreboard, #directory, #activity_stream {
+			#related, #scoreboard, #directory, #activity_stream, #ask {
 				background: white;
 				border-style: solid;
 				border-width: 1px;	
@@ -356,6 +356,59 @@ body {
 							overflow: default !important;
 							text-overflow: default !important;
 						}		
+					}
+				}
+			}
+
+			#ask {
+				.question_container {
+					margin-left: 0px !important;
+
+					.tweet_button {
+						float: right;
+						margin-right: 10px;
+					}
+
+					.character_count {
+						float: right;
+						margin-right: 10px;
+						position: relative;
+						top: 5px;						
+					}
+
+					.ask_success {
+						margin: 10px
+					}
+
+					&.blur {
+						height: 50px;
+
+						textarea {
+							height: 19px;
+							white-space: nowrap;
+						}
+
+						.tweet_button, .character_count {
+							display: none;
+						}
+					}
+
+					&.focus {
+						height: 161px;
+
+						textarea {
+							height: 93px;	
+						}		
+
+						.tweet_button, .character_count {
+							display: inline;
+						}				
+					}
+
+					textarea {	
+						margin: 10px;
+						resize: none;
+						overflow: hidden;
 					}
 				}
 			}

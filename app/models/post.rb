@@ -98,12 +98,14 @@ class Post < ActiveRecord::Base
       :via_user => options[:via],
       :wisr_question => options[:wisr_question]
     })
+    puts tweet
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
       twitter_response = Post.twitter_request { user.twitter.update(tweet) }
     end  
+    puts twitter_response.id.to_s
     if twitter_response
       post = Post.create(
         :user_id => user.id,
@@ -116,7 +118,7 @@ class Post < ActiveRecord::Base
         :publication_id => options[:publication_id],
         :url => options[:long_url] ? short_url : nil,
         :posted_via_app => true, 
-        :requires_action => false,
+        :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
         :interaction_type => options[:interaction_type],
         :correct => options[:correct],
         :intention => options[:intention]
@@ -128,6 +130,7 @@ class Post < ActiveRecord::Base
       publication = Publication.find(options[:publication_id])
       publication.posts << post
     end
+    puts post.provider_post_id
     return post        
   end
 

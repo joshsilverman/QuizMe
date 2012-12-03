@@ -13,6 +13,7 @@ Quizmemanager::Application.routes.draw do
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
 
+  match "/ask" => "feeds#ask"
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
   match "/link_to_post" => "feeds#link_to_post"

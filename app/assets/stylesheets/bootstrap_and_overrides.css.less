@@ -114,6 +114,12 @@ body {
 			}
 		}
 	}
+	#ask {
+		textarea {
+			/*width: 186px !important;*/
+			background: yellow;
+		}
+	}	
 }
 
 /* Portrait tablet to landscape and desktop */
@@ -141,15 +147,27 @@ body {
 			width: 220px !important;
 		}	
 	}
+	#ask {
+		textarea {
+			width: 186px;
+		}
+	}	
+}
+
+@media (min-width: 978px) and (max-width: 1199px) {
+	#ask {
+		textarea {
+			width: 175px;
+		}
+	}
 }
 
 /* Large desktop */
 @media (min-width: 1200px) {
-	body {
-		/*background: red;*/
-	}
-	#wrapper {
-		/*width: 1200px;*/
+	#ask {
+		textarea {
+			width: 253px;
+		}
 	}
 }
 

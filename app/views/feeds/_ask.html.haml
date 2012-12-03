@@ -1,0 +1,15 @@
+#ask.rounded.border-color
+	.header
+		%h4
+			= Post.create_split_test(current_user.id, "ask a question", "Ask a Question", "Ask the Community", "Need a Hand?", "Need Help?")
+	.question_container.blur
+		%textarea{:placeholder => "@#{@asker.twi_screen_name} Help me with..."}
+		%p.ask_success.hide
+			Your question was posted! 
+			%a.ask_again
+				Ask another
+			or
+			%a.post_url{:target => "_blank"}
+				see it on Twitter →
+		.tweet_button.btn.btn-primary Tweet
+		.character_count 140
