@@ -1,5 +1,5 @@
 class Classifier
-  def initialize domain = 20, opts = {}
+  def initialize domain = 500, opts = {:interaction_type => true, :twi_screen_name => true, :previous_spam => true, :previous_real => true}
     @domain = domain
     @opts = opts
 

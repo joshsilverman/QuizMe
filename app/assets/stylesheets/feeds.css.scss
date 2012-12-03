@@ -1077,3 +1077,29 @@ body {
 #retweet_question_modal .conversation {
 	border: 0px;
 }
+
+#manager {
+	#header {
+		#account_stats {
+			iframe{
+			  display:none;
+			}
+		}
+	}
+	#feed {
+		#posts {
+			.btn-group {
+				float:right;
+			}
+		}
+
+		#left_column {
+			width:170px;
+			margin-left:30px;
+		}
+		#right_column {
+			width:670px;
+			margin-left:25px;
+		}
+	}
+}
