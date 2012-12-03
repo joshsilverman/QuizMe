@@ -33,8 +33,9 @@
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
 					= render :partial => "stream" 
-					.clr
-					= render :partial => "ask" 
+					- if current_user
+						.clr
+						= render :partial => "ask" 
 					.clr					
 					= render :partial => "related"
 
