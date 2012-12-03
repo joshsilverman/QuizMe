@@ -19,7 +19,7 @@
 							%h3
 								Activity
 								.btn-group
-									- unless @all_posts_count == 0
+									- unless params[:filter]
 										%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 						- @engagements.each do |id, post|
 							.conversation.border-color

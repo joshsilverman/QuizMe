@@ -295,6 +295,7 @@ class FeedsController < ApplicationController
     #base selection
     @asker = Asker.find params[:id]
     @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
+    @all_posts_count = @posts.not_spam.where("interaction_type <> 3").count
 
     #filter for retweet, spam, starred
     @posts = @posts.where(:interaction_type => 3) if params[:filter] == 'retweets'
@@ -303,7 +304,6 @@ class FeedsController < ApplicationController
 
     #order
     @posts = @posts.order("created_at DESC")
-    @all_posts_count = @posts.count
 
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
     publication_ids = @asker.publications.select(:id).where(:published => true)
