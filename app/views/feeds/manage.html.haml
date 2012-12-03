@@ -3,12 +3,24 @@
 	#feed_container.span10
 		#wrapper.span9
 			= render :partial => "account_info"
+
 			#feed.row
-				#right_column.span6
+				#left_column.span2.hidden-phone
+					#scoreboard.rounded.border-color
+						%ul.unstyled
+							%li{:style => "#{'font-weight:bold;' if @all_posts_count > 0}"}= link_to "All Messages (#{@all_posts_count})", '?'
+							%li= link_to "Retweets", '?filter=retweets'
+							%li= link_to "Spam", '?filter=spam'
+							//%li= link_to "Starred", '?filter=starred'
+
+				#right_column.span7
 					#posts.rounded
 						.header.border-color
 							%h3
 								Activity
+								.btn-group
+									- unless params[:filter]
+										%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 						- @engagements.each do |id, post|
 							.conversation.border-color
 								.post.parent.answered{:post_id => id, :interaction_type => post.interaction_type}
@@ -37,42 +49,6 @@
 												link		
 						#posts_more.border-color
 							Last Post Reached
-				#left_column.span3.hidden-phone
-					#scoreboard.rounded.border-color
-						.header
-							%h4
-								Leaderboard
-						%ul.unstyled
-							- @leaders[:scores].each_with_index do |leader, i|
-								/ {:href => "/feeds/#{related.id}"}
-								%a{:href => "http://www.twitter.com/#{leader[:user].twi_screen_name}", :target => "_blank"}
-									%li 
-										/ {:class => ("border_bottom" if i < 3)}
-										.content
-											.place= i + 1
-											= image_tag(leader[:user].twi_profile_img_url, :class => "rounded")
-											%h5= leader[:user].twi_screen_name
-											- if leader[:correct] == 1
-												%p= "#{leader[:correct]} correct answer"
-											- else
-												%p= "#{leader[:correct]} correct answers"
-											.clr
-										.clr
-						.clr
-					.clr
-					- unless @related.blank?
-						#related.rounded.border-color
-							.header
-								%h4
-									Other Feeds
-							%ul.unstyled
-								- @related.each_with_index do |related, i|
-									%a{:href => "/feeds/#{related.id}"}
-										%li{:class => ("border_bottom" if i < 2)}
-											.content
-												= image_tag(related.twi_profile_img_url, :class => "rounded")
-												%h5= related.twi_name
-												%p= related.description	
 
 = render :partial => "respond_modal"
 = render :partial => "link_post_modal"

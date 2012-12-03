@@ -292,8 +292,19 @@ class FeedsController < ApplicationController
   end
 
   def manage
-    @asker = User.asker(params[:id])
-    @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, User.askers.collect(&:id)).order("created_at DESC")
+    #base selection
+    @asker = Asker.find params[:id]
+    @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
+    @all_posts_count = @posts.not_spam.where("interaction_type <> 3").count
+
+    #filter for retweet, spam, starred
+    @posts = @posts.where(:interaction_type => 3) if params[:filter] == 'retweets'
+    @posts = @posts.where('spam = ? or autospam = ?', true, true) if params[:filter] == 'spam'
+    @posts = @posts.not_spam.where("interaction_type <> 3") unless params[:filter]
+
+    #order
+    @posts = @posts.order("created_at DESC")
+
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
     publication_ids = @asker.publications.select(:id).where(:published => true)
     @question_count = publication_ids.size
@@ -335,13 +346,6 @@ class FeedsController < ApplicationController
       format.json { render json: @posts }
     end
   end
-
-  # def get_split_dm_response
-  #   ab_user.set_id(params[:user_id])
-  #   ab_user.confirm_js("WISR app", '')
-  #   res = ab_test("dm reengagement", "Nudge", "No Nudge")
-  #   render :text => res, :status => 200
-  # end
 
   def create_split_test
     res = Post.create_split_test(params[:user_id], params[:test_name], params[:alt_a], params[:alt_b])

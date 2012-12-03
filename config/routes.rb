@@ -10,12 +10,15 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/scores" => "feeds#scores"
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id/manage" => "feeds#manage"
+  match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
   match "/link_to_post" => "feeds#link_to_post"
   match "/create_split_test" => "feeds#create_split_test"
   match "/trigger_split_test" => "feeds#trigger_split_test"
+
   match "/dashboard" => "askers#dashboard"
   match "/dashboard/core_by_handle/:asker_id" => "askers#get_core_by_handle"
   match "/get_detailed_metrics" => 'askers#get_detailed_metrics'

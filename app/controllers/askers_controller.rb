@@ -5,15 +5,16 @@ class AskersController < ApplicationController
   caches_action :dashboard, :expires_in => 57.minutes
   
   def index
-    @askers = User.askers.order "created_at ASC"
     @new_posts = {}
     @submitted_questions = {}
-    asker_ids = User.askers.collect(&:id)
-    askers_engagements = Post.where("requires_action = ? and in_reply_to_user_id in (?) and (spam = ? or spam is null) and user_id not in (?)", true, asker_ids, false, asker_ids).group_by(&:in_reply_to_user_id)
-    # puts askers_engagements.to_json
+    asker_ids = Asker.all.collect(&:id)
+    askers_engagements = Post.not_spam.where("interaction_type <> 3").where("requires_action = ? and in_reply_to_user_id in (?) and user_id not in (?)", true, asker_ids, asker_ids).group_by(&:in_reply_to_user_id)
+    
+    @askers = Asker.all
+    @askers.each{|a| askers_engagements[a.id] = [] unless askers_engagements[a.id]}
+    @askers = @askers.sort{|a,b| askers_engagements[a.id].count <=> askers_engagements[b.id].count}.reverse
     @askers.each do |a|
       unresponded = askers_engagements[a.id].try(:size) || 0
-      # unresponded = a.engagements.where(:responded_to => false).count
       @new_posts[a.id] = unresponded
       submitted = Question.where(:created_for_asker_id => a.id, :status => 0).count
       @submitted_questions[a.id] = submitted
@@ -21,13 +22,13 @@ class AskersController < ApplicationController
   end
 
   def show
-    @asker = User.find(params[:id])
+    @asker = Asker.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
     @posts = @asker.engagements.where(:requires_action => true).order('created_at DESC')
   end
 
   def edit
-    @asker = User.find(params[:id])
+    @asker = Asker.find(params[:id])
     @linked = true
 
     if @asker.twi_user_id.nil?
@@ -41,7 +42,7 @@ class AskersController < ApplicationController
   end
 
   def update
-  	@asker = User.askers.find(params[:id])
+  	@asker = Asker.find(params[:id])
     redirect_to root_url if @asker.nil?
 
     #update twitter - designed for use with best_in_place - hence the individual field updates
@@ -58,15 +59,22 @@ class AskersController < ApplicationController
   end
 
   def destroy
-    @asker = User.find(params[:id])
+    @asker = Asker.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
     @asker.destroy
 
 		redirect_to askers_url
   end
 
+  def hide_all
+    ids = params[:post_ids].split "+"
+    @posts = Post.where("id IN (?)", ids)
+    @posts.each{|post| post.update_attribute :requires_action, false}
+    redirect_to "/feeds/#{params[:id]}/manage"
+  end
+
   def account_rts
-    @asker = User.find(params[:id])
+    @asker = Asker.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
 
     @rts = @asker.twitter.retweets_of_me({:count => 100})
