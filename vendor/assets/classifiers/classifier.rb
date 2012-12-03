@@ -1,39 +1,11 @@
 class Classifier
-  def initialize
+  def initialize domain = 20, opts = {}
+    @domain = domain
+    @opts = opts
+
     @store = StuffClassifier::FileStorage.new("#{Rails.root}/vendor/assets/classifiers/stuff-classifier")
     StuffClassifier::Base.storage = @store
     @stuff_classifier = StuffClassifier::Bayes.new("Spam or Real", :storage => @store)
-  end
-
-  def build_truthset
-
-    puts <<-EOS
-
-      Building a truthset for the classifier to train and test itself.
-      NOTE: THIS WILL ONLY WORK WITH A MUTABLE FILESYSTEM (ie NOT Heroku)
-
-      How many engagements do you want to tag?
-    EOS
-    input = STDIN.gets.chomp.to_i
-
-    #posts_by_users_pm
-    unmarked_posts_by_users[0..input].each_with_index do |post, i|
-      puts <<-EOS
-
-        Checking if post #{post.id} is spam:
-
-          #{i + 1}: #{post_text(post)}
-
-        Spam or real (or next)? (s/r/n)
-      EOS
-      input = STDIN.gets.chomp
-
-      if input == 's'
-        post.update_attribute :spam, true
-      elsif input == 'r'
-        post.update_attribute :spam, false
-      end
-    end
   end
 
   def classify_all
@@ -42,11 +14,11 @@ class Classifier
       Running classifier on all posts by users
     EOS
     precision, recall, ci, spam_precision, spam_recall = classify_set posts_by_users
-    puts <<-EOS
+    out = <<-EOS
 
       Results for whole corpus including truthset:
         Posts by users (excl. RTs):#{posts_by_users.count}
-        Truthset:#{marked_posts_by_users.count}
+        Truthset:#{posts_by_users.count}
         Training set:#{posts_for_training.count}
 
         Precision on detecting real:#{precision}
@@ -56,6 +28,9 @@ class Classifier
         Precision on detecting spam:#{spam_precision}
         Recall on detecting spam:#{spam_recall}
     EOS
+    puts out
+
+    out
   end
 
   def classify_testing_set
@@ -115,7 +90,7 @@ class Classifier
 
     precision = correctly_detected_real.to_f/detected_real if detected_real
     recall = correctly_detected_real.to_f/real if real
-    ci = confidence_interval marked_posts_by_users.count, posts_by_users.count, recall
+    ci = confidence_interval posts_by_users.count, posts_by_users.count, recall
 
     spam_precision = correctly_detected_spam.to_f/detected_spam if detected_spam
     spam_recall = correctly_detected_spam.to_f/spam if spam
@@ -132,9 +107,9 @@ class Classifier
       Training classifier
 
       This will purge the current classifier.
-      Continue? (y/n)
+      [Skip] Continue? (y/n) 
     EOS
-    return false if STDIN.gets.chomp == "n"
+    # return false if STDIN.gets.chomp == "n"
     purge_classifier
 
     puts <<-EOS
@@ -149,9 +124,9 @@ class Classifier
       EOS
 
       if post.spam == true
-        @stuff_classifier.train(:spam, post_text(post))
+        @stuff_classifier.train(:spam, build_feature_vector(post))
       else
-        @stuff_classifier.train(:real, post_text(post))
+        @stuff_classifier.train(:real, build_feature_vector(post))
       end
 
       @stuff_classifier.save_state
@@ -162,24 +137,19 @@ class Classifier
 
   def classify post
 
-    #boolean
-    if false
-
-    #statistical
+    #statisticalelse
+    klass = @stuff_classifier.classify(build_feature_vector(post))
+    if klass == :spam
+      post.update_attribute :autospam, true
     else
-      klass = @stuff_classifier.classify(post_text(post))
-      if klass == :spam
-        post.update_attribute :autospam, true
-      else
-        post.update_attribute :autospam, false
-      end
-
-      grade = nil
-      if post.spam != nil
-        grade = :correct if post.spam == post.autospam
-        grade = :incorrect if post.spam != post.autospam
-      end
+      post.update_attribute :autospam, false
     end
+
+    truth_val = post.spam
+    truth_val = false if truth_val == nil
+
+    grade = :correct if truth_val == post.autospam
+    grade = :incorrect if truth_val != post.autospam
 
     return klass, grade
   end
@@ -195,18 +165,8 @@ class Classifier
   end
 
   def posts_by_users
-    @_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")#.limit 8000
+    @_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").where(:posted_via_app => false).order("random()").limit @domain
     @_posts_by_users
-  end
-
-  def unmarked_posts_by_users
-    @_unmarked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != '' AND spam IS NULL").order("random()")#.limit 8000
-    @_unmarked_posts_by_users
-  end
-
-  def marked_posts_by_users
-    @_marked_posts_by_users ||= Post.includes(:user).where("users.role = 'user' AND posts.text != ''").order("random()")#.limit 8000
-    @_marked_posts_by_users
   end
 
   def posts_for_training
@@ -214,7 +174,7 @@ class Classifier
       @_posts_for_training = []
       @_posts_for_testing = []
 
-      marked_posts_by_users.each do |post| 
+      posts_by_users.each do |post| 
         if rand(2).zero?
           @_posts_for_training << post
         else
@@ -231,21 +191,33 @@ class Classifier
     @_posts_for_testing
   end
 
-  def post_text(post)
-    if post.interaction_type == 2
-      interaction_type = 'mention'
-    elsif post.interaction_type == 3
-      interaction_type = 'mention'
+  def build_feature_vector(post)
+    if post.interaction_type == 4
+      interaction_type = 'directmessage'
+    elsif post.interaction_type == 2
+      interaction_type = 'atmention'
     end
 
+    vector = post.text
 
-    post.text
-    # puts "#{interaction_type} #{post.text}"
-    "#{interaction_type} #{post.text}"
+    vector = "#{interaction_type} " + vector if @opts[:interaction_type]
 
-    # puts "#{post.user.twi_screen_name} #{post.text}"
-    "#{post.user.twi_screen_name} #{post.text}"
+    vector = "#{post.user.twi_screen_name} " + vector if @opts[:twi_screen_name]
 
-    "#{post.user.twi_screen_name} #{interaction_type} #{post.text}"
+    if @opts[:previous_spam]
+      if Post.where(:user_id => post.user_id).where(:spam => true).count > 0
+        vector = "previous_spam " + vector
+      end
+    end
+
+    if @opts[:previous_real]
+      if Post.where(:user_id => post.user_id).where(:spam => nil).count > 0
+        vector = "previous_real " + vector
+      end
+    end
+
+    puts vector
+
+    vector
   end
 end
