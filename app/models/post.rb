@@ -367,7 +367,6 @@ class Post < ActiveRecord::Base
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
       return if post
       post = Post.create(
-        :engagement_type => 'share',
         :provider => 'twitter',
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,

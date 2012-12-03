@@ -26,7 +26,6 @@ Quizmemanager::Application.routes.draw do
   match "/get_handle_metrics" => 'askers#get_handle_metrics'
   match "/posts/:id/refer" => "posts#refer"
 
-  post "posts/update_engagement_type"
   post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
