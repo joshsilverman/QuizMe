@@ -34,6 +34,7 @@ Quizmemanager::Application.routes.draw do
   match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
 
   match "questions/asker/:asker_id" => "questions#index"
+  match "questions/asker/:asker_id/import" => "questions#import"
   post "questions/save_question_and_answers"
   match "questions/:id/:slug" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
