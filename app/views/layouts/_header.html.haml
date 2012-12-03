@@ -5,7 +5,6 @@
       .in.collapse
         %ul.nav{:style => 'float:right;'}     
           - if current_user
-
             - if current_user.is_role? 'admin'
               %li
                 .dropdown.nav-link

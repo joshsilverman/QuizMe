@@ -1,8 +1,12 @@
-/*.navbar {
+.navbar {
 	.navbar-inner {
 		.container {
 			.nav-link, .brand {
 				padding: 9px 10px 11px;
+			}
+
+			.collapse {
+				overflow: visible !important;
 			}
 
 			.sign_in {
@@ -25,4 +29,4 @@
 			}
 		}
 	}
-}*/
+}
