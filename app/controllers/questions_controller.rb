@@ -1,7 +1,7 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user, :except => [:new, :refer, :show, :display_answers]
   before_filter :admin?, :only => [:moderate, :moderate_update, :import]
-  before_filter :author?, :only => [:index]
+  before_filter :author?, :only => [:index, :enqueue, :dequeue]
 
 
   def index
@@ -190,5 +190,34 @@ class QuestionsController < ApplicationController
   def display_answers
     @question = Question.includes(:answers).find(params[:question_id])
     render :partial => "answers"
+  end
+
+  def import
+    return unless params[:questions]
+
+    @asker = Asker.find params[:asker_id]
+    questions = params[:questions].split "\n"
+    questions.each do |q|
+      q_matchdata = /(.*)\s+(\([^\)]*\))/.match q
+
+      q_text = q_matchdata[1]
+      q_ans = q_matchdata[2]
+
+      as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|,\s/
+      randomized_answers = as.shuffle
+      last_answer = randomized_answers.pop
+      answer_string = randomized_answers.join(", ") + " or #{last_answer}"
+      correct_ans = as.shift
+      q_text = "#{q_text} (#{answer_string})"
+
+      @question = Question.find_by_text q_text
+      #next if @question
+
+      @question = @asker.questions.create :text => q_text, :user_id => current_user.id
+      @question.answers.create :text => correct_ans, :correct => true
+      as.each{|a| @question.answers.create :text => a, :correct => false}
+    end
+
+    render :text => questions.to_yaml
   end
 end
