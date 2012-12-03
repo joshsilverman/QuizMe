@@ -2,7 +2,7 @@
   .navbar-inner
     .container
       %a.brand{:href => "/"} Wisr
-      .nav-collapse.in.collapse
+      .in.collapse
         %ul.nav{:style => 'float:right;'}     
           - if current_user
 
@@ -45,7 +45,7 @@
               %li
                 %a.nav-link{:href => "/questions"} My Questions
             - else
-              %li
+              %li.hidden-phone
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"
 
             %li= link_to "Sign Out", signout_path, :class => "nav-link"

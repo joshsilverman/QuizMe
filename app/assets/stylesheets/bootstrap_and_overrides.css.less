@@ -46,6 +46,7 @@ body {
   @lightgrad:#f1f1f1; /*rgba(98,98,98,.4);*/
   @darkgrad:#dadada; /*rgba(71,71,71,.4);*/
   min-height: 40px;
+  padding: 0px !important;
   padding-left: 20px;
   padding-right: 20px;
   background-color: @lightgrad;
@@ -79,10 +80,10 @@ body {
 		padding-right: 0px !important;
 		/*background: blue;*/
 	}
-	.navbar-fixed-top {
+/*	.navbar-fixed-top {
 		margin-left: 0px !important;
 		margin-right: 0px !important;
-	}	
+	}	*/
 	.answers {
 		margin-left: 0px !important;
 	}
@@ -97,8 +98,10 @@ body {
 	}	
 	#wrapper {
 		margin-top: -36px;
+
 		#header {
 			min-height: 116px !important;
+
 			#account_information {
 				min-height: 116px !important;
 
@@ -114,19 +117,10 @@ body {
 			}
 		}
 	}
-	#ask {
-		textarea {
-			/*width: 186px !important;*/
-			background: yellow;
-		}
-	}	
 }
 
 /* Portrait tablet to landscape and desktop */
-@media (min-width: 768px) and (max-width: 979px) {
-	body {
-		/*background: yellow;*/
-	}	
+@media (min-width: 768px) and (max-width: 977px) {
 	#feed_container {
 		float: left !important;
 	}
@@ -155,9 +149,25 @@ body {
 }
 
 @media (min-width: 978px) and (max-width: 1199px) {
+	#feed_container {
+		float: left !important;
+	}	
+	#wrapper.span9 {
+		width: 800px !important;
+		margin-left: 0px;
+		margin-left: 30px;
+
+		#left_column {
+			width: 281px !important;
+		}
+
+		#right_column {
+			width: 500px !important;
+		}
+	}	
 	#ask {
 		textarea {
-			width: 175px;
+			width: 248px;
 		}
 	}
 }
@@ -174,9 +184,25 @@ body {
 @import "twitter/bootstrap/responsive";
 // @gridGutterWidth: 150px;
 
+@media (max-width: 767px) {
+	.nav {
+		margin-right: 25px !important;
+	}
+
+	.brand {
+		margin-left: 25px !important;
+	}
+}
+
+@media (min-width: 768px) {
+  .navbar-fixed-top .container {
+    width: 700px;
+  }	
+}
+
 @media (min-width: 980px) {
   .navbar-fixed-top .container {
-    width:645px;
+    width: 770px;
   }
 }
 

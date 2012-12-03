@@ -350,6 +350,13 @@ body {
 						position: relative;
 						bottom: 3px;
 
+						h5 {
+							height: 18px;
+							overflow: hidden;
+							white-space: nowrap;
+							text-overflow: ellipsis;
+						}
+
 						p {
 							display: none;
 							white-space: normal !important;
@@ -428,9 +435,15 @@ body {
 				.directory_item {
 					padding: 10px;
 					padding-top: 6px;
+					padding-bottom: 5px;
 
 					h5 {
 						margin-bottom: 3px;
+					}
+
+					a {
+						display: inline-block;
+						height: 36px !important;						
 					}
 
 					a:hover {
