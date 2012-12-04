@@ -23,6 +23,7 @@ class Feed
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
 		@initialize_ask()
+		@activity_stream()
 
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
@@ -30,8 +31,7 @@ class Feed
 		$("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
-		$("#activity_stream p").show()
-		$("#activity_stream .content").dotdotdot({height: 55})
+
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
 			$("#retweet_question").button("loading")
@@ -42,6 +42,13 @@ class Feed
 		mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})
 
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
+	activity_stream: =>
+		$.ajax '/activity_stream',
+			type: 'GET'
+			success: (e) => 
+				$("#activity_stream_container").append(e).toggle(500)
+				$("#activity_stream p").show()
+				$("#activity_stream .content").dotdotdot({height: 55})				
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
