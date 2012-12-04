@@ -46,12 +46,12 @@ class AskersController < ApplicationController
     redirect_to root_url if @asker.nil?
 
     #update twitter - designed for use with best_in_place - hence the individual field updates
-    if (params[:user][:description])
-      profile = {:description => params[:user][:description]}
+    if (params[:asker][:description])
+      profile = {:description => params[:asker][:description]}
       @asker.twitter.update_profile profile
     end
 
-    if @asker.update_attributes(params[:user])
+    if @asker.update_attributes(params[:asker])
       render :status => 200, :text => ''
     else
       render :status => 400, :text => ''
