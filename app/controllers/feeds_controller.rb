@@ -56,12 +56,14 @@ class FeedsController < ApplicationController
 
   def show
     if @asker = User.asker(params[:id])
+      # publications
       @asker_publications = @asker.publications\
         .includes(:posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
         .order("posts.created_at DESC")\
         .limit(15)
 
+      # user responses
       posts = @asker_publications.collect {|p| p.posts}.flatten
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
@@ -74,7 +76,6 @@ class FeedsController < ApplicationController
         .order("created_at ASC")\
         .includes(:user)\
         .group_by(&:in_reply_to_post_id)
-
       actions.each do |post_id, post_activity|
         @actions[post_pub_map[post_id]] = []
         post_activity.each do |action|
@@ -89,9 +90,7 @@ class FeedsController < ApplicationController
         end
       end
 
-      @pub_grouped_posts = posts.group_by(&:publication_id)
-
-      # inject requested publication from params
+      # inject requested publication from params, render twi card
       if params[:post_id]
         @requested_publication = @asker.publications.find(params[:post_id])
         @asker_publications.reverse!.push(@requested_publication).reverse! unless @asker_publications.include? @requested_publication
@@ -99,26 +98,22 @@ class FeedsController < ApplicationController
       else
         @render_twitter_card = false     
       end
-      # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
-      # @post_times = posts.group_by(&:publication_id)
+
+      # stats
       publication_ids = @asker.publications.select(:id).where(:published => true)
       @question_count = publication_ids.size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-      #look this up on the fly and cache!
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
       
+      # misc
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
-
-      if @asker.author_id
-        @author = User.find @asker.author_id
-      end
+      @author = User.find @asker.author_id if @asker.author_id
 
       # related
       @related = User.select([:id, :twi_name, :description, :twi_profile_img_url])\
         .askers\
-        .where("ID != ? AND published = ?", @asker.id, true)\
-        .sample(3)
+        .where(:id => ACCOUNT_DATA.keys.sample(3))
 
       respond_to do |format|
         format.html # show.html.erb
