@@ -24,7 +24,7 @@ class Feed
 		@initialize_tooltips()
 		@initialize_ask()
 		@activity_stream()
-		@timestamps()
+		$(".timeago").timeago()
 
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
@@ -41,8 +41,6 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
-	timestamps: => 
-		$(".timeago").timeago()
 	activity_stream: =>
 		$.ajax '/activity_stream',
 			type: 'GET'
@@ -53,9 +51,9 @@ class Feed
 					$("#activity_stream p").show()
 					$("#activity_stream .content").dotdotdot({height: 55})
 					mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})					
+					$(".timeago").timeago()
 				)
 			complete: => 
-				@timestamps()
 				$("#activity_stream h4 img").hide()
 	initialize_infinite_scroll: =>
 		window.appending = false
@@ -209,7 +207,7 @@ class Feed
 						@initialize_posts($("#feed_content .feed_section").last().find(".conversation"))
 						$('.interaction').tooltip()
 					window.appending = false
-					@timestamps()
+					$(".timeago").timeago()
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
