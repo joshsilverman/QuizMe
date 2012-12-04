@@ -32,7 +32,8 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
-					= render :partial => "stream" 
+					#activity_stream_container.hide
+						/ = render :partial => "stream" 
 					- if current_user
 						.clr
 						= render :partial => "ask" 

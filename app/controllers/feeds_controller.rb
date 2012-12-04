@@ -5,8 +5,8 @@ class FeedsController < ApplicationController
     @asker = User.find(1)
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]    
-    @publications = Publication.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC") 
+    @asker_publications = Publication.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
+    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).order("created_at DESC") 
     @actions = {}
     post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
@@ -55,17 +55,27 @@ class FeedsController < ApplicationController
   end
 
   def show
-    @asker = User.asker(params[:id])
-    if @asker
-      asker_ids = User.askers.collect(&:id)
-      @related = User.select([:id, :twi_name, :description, :twi_profile_img_url]).askers.where("ID != ? AND published = ?", @asker.id, true).sample(3)
-      @publications = @asker.publications.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
-      posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
-      
+    if @asker = User.asker(params[:id])
+      @asker_publications = @asker.publications\
+        .includes(:posts)\
+        .where("publications.published = ? and posts.interaction_type = 1", true)\
+        .order("posts.created_at DESC")\
+        .limit(15)
+
+      posts = @asker_publications.collect {|p| p.posts}.flatten
+      @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+
+      # question activity
       @actions = {}
       post_pub_map = {}
       posts.each { |post| post_pub_map[post.id] = post.publication_id }
-      Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts.collect(&:id)).order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id).each do |post_id, post_activity|
+      actions = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
+        .where(:in_reply_to_post_id => posts.collect(&:id))\
+        .order("created_at ASC")\
+        .includes(:user)\
+        .group_by(&:in_reply_to_post_id)
+
+      actions.each do |post_id, post_activity|
         @actions[post_pub_map[post_id]] = []
         post_activity.each do |action|
           @actions[post_pub_map[post_id]] << {
@@ -81,10 +91,10 @@ class FeedsController < ApplicationController
 
       @pub_grouped_posts = posts.group_by(&:publication_id)
 
-      #inject requested publication from params
+      # inject requested publication from params
       if params[:post_id]
         @requested_publication = @asker.publications.find(params[:post_id])
-        @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
+        @asker_publications.reverse!.push(@requested_publication).reverse! unless @asker_publications.include? @requested_publication
         @render_twitter_card = true
       else
         @render_twitter_card = false     
@@ -96,7 +106,7 @@ class FeedsController < ApplicationController
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       #look this up on the fly and cache!
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
-      @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+      
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
 
@@ -104,29 +114,11 @@ class FeedsController < ApplicationController
         @author = User.find @asker.author_id
       end
 
-      ## Activity Stream
-      user_followers = []
-      if current_user
-        unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
-          Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids, :timeToLive => 2.days)
-        end
-      end
-      @stream = []
-      time_ago = 8.hours
-      recent_posts = Post.joins(:user).where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago).order("created_at DESC").limit(5).includes(:conversation => {:publication => :question}).to_a
-      recent_posts.group_by(&:user_id).each do |user_id, posts| 
-        post = posts.shift
-        @stream << post
-        recent_posts.delete post
-      end
-      @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
-      if @stream.size < 5
-        users = User.where("last_answer_at is not null and id not in (?)", (asker_ids + user_followers)).order("last_answer_at DESC").limit(5 - @stream.size).includes(:posts)
-        users.each do |user| 
-          post = user.posts.where("posts.interaction_type = 2 and posts.correct is not null").order("created_at DESC").limit(1).first
-          @stream << post unless post.blank?
-        end
-      end
+      # related
+      @related = User.select([:id, :twi_name, :description, :twi_profile_img_url])\
+        .askers\
+        .where("ID != ? AND published = ?", @asker.id, true)\
+        .sample(3)
 
       respond_to do |format|
         format.html # show.html.erb
@@ -137,22 +129,59 @@ class FeedsController < ApplicationController
     end
   end
 
+  def activity_stream(user_followers = [])
+    asker_ids = User.askers.collect(&:id)
+    if current_user
+      unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
+        Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids, :timeToLive => 2.days)
+      end
+    end
+    @stream = []
+    time_ago = 8.hours
+    if user_followers.present?
+      recent_posts = Post.joins(:user)\
+        .where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago)\
+        .order("created_at DESC")\
+        .limit(5)\
+        .includes(:conversation => {:publication => :question})\
+        .to_a
+      recent_posts.group_by(&:user_id).each do |user_id, posts| 
+        post = posts.shift
+        @stream << post
+        recent_posts.delete post
+      end
+      @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
+    end
+    if @stream.size < 5
+      users = User.includes(:posts)\
+        .where("users.last_answer_at is not null and users.id not in (?)", (asker_ids + user_followers))\
+        .order("users.last_answer_at DESC")\
+        .limit(5 - @stream.size)\
+        
+      users.each do |user| 
+        post = user.posts.where("posts.interaction_type = 2 and posts.correct is not null").order("created_at DESC").limit(1).first
+        @stream << post unless post.blank?
+      end
+    end
+    render :partial => "stream"
+  end
+
   def more
     publication = Publication.includes(:posts).find(params[:last_post_id])
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @asker_publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
       post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
-      @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @asker_publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
       @responses = []
     end    
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
+    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).order("created_at DESC")
     
     @actions = post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
@@ -171,7 +200,7 @@ class FeedsController < ApplicationController
       end
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)     
-    if @publications.blank?
+    if @asker_publications.blank?
       render :json => false
     else
       render :partial => "feed"
