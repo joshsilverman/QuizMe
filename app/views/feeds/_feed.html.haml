@@ -1,4 +1,5 @@
 .feed_section
+	- now = Time.now
 	- @asker_publications.each do |post|
 		- @local_asker = post.asker
 		- @conversation = nil
@@ -9,7 +10,10 @@
 			- responded = true
 		.conversation.border-color{:asker_id => @local_asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => post.id}
-				%p.time= time_formatter(post.posts.first.created_at)
+				- if post.posts.first.created_at < 1.day.ago
+					%p.time= time_formatter(post.posts.first.created_at)
+				- else
+					%p.time.timeago{:title => post.posts.first.created_at.to_time.iso8601}
 				%i.answered_indicator{:class => (correct ? "icon-ok-sign" : "icon-remove-sign"), :style => ("display: none;" unless responded)}
 				- retweeted = (current_user and @actions[post.id] and @actions[post.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
 				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
