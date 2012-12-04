@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121203234455) do
+ActiveRecord::Schema.define(:version => 20121204175601) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -37,51 +37,10 @@ ActiveRecord::Schema.define(:version => 20121203234455) do
     t.datetime "updated_at"
   end
 
-  create_table "cards", :force => true do |t|
-    t.text     "front"
-    t.text     "back"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "deck_id"
-    t.integer  "quizlet_id"
-    t.boolean  "publish"
-  end
-
-  create_table "cards_groups", :force => true do |t|
-    t.integer  "card_id"
-    t.integer  "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "conversations", :force => true do |t|
     t.integer  "publication_id"
     t.integer  "post_id"
     t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "decks", :force => true do |t|
-    t.integer  "handle_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "quizlet_id"
-    t.string   "title"
-  end
-
-  create_table "groups", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "question_format"
-    t.text     "answer_format"
-    t.integer  "deck_id"
-    t.boolean  "default"
-  end
-
-  create_table "handles", :force => true do |t|
-    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -155,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20121203234455) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "logo_image"
+    t.float    "monthly_cap"
   end
 
   create_table "reps", :force => true do |t|
