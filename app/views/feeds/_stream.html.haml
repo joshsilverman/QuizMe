@@ -1,8 +1,5 @@
-#activity_stream.rounded.border-color
-	.header
-		%h4
-			Activity	
-	%ul.unstyled
+#stream_list
+	- if @stream
 		- @stream.each_with_index do |action, i|
 			- conversation = action.conversation
 			- if conversation

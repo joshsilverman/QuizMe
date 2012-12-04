@@ -32,8 +32,14 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
-					#activity_stream_container.hide
-						/ = render :partial => "stream" 
+					#activity_stream.rounded.border-color
+						.header
+							%h4
+								Activity	
+								=image_tag "ajax-loader.gif"
+						%ul.unstyled	
+							#activity_stream_content				
+								= render :partial => "stream" 
 					- if current_user
 						.clr
 						= render :partial => "ask" 

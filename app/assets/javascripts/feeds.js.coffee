@@ -39,16 +39,19 @@ class Feed
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
-		mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})
-
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 	activity_stream: =>
 		$.ajax '/activity_stream',
 			type: 'GET'
 			success: (e) => 
-				$("#activity_stream_container").append(e).toggle(500)
-				$("#activity_stream p").show()
-				$("#activity_stream .content").dotdotdot({height: 55})				
+				container = $("#activity_stream_content")
+				container.empty().append(e)
+				container.find("#stream_list").hide().slideToggle(500, => 
+					$("#activity_stream p").show()
+					$("#activity_stream .content").dotdotdot({height: 55})
+					mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})					
+				)
+			complete: => $("#activity_stream h4 img").hide()
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
@@ -278,9 +281,9 @@ class Post
 			@expanded = true
 			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
-			@element.find(".answers").toggle(200)
+			@element.find(".answers").slideToggle(200)
 			@element.find(".answered_indicator").css("opacity", ".6")
-			@element.find(".subsidiaries").toggle(200, => 
+			@element.find(".subsidiaries").slideToggle(200, => 
 				@element.toggleClass("active", 200)
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
@@ -289,7 +292,7 @@ class Post
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Posting your answer...")
 		loading.fadeIn(500)
-		answers.toggle(200, => answers.remove())
+		answers.slideToggle(200, => answers.remove())
 		params =
 			"asker_id" : @asker_id
 			"post_id" : @id
