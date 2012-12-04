@@ -71,50 +71,50 @@ REENGAGE = [
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 31, 108, 326, 7362], 
+    :retweet => [19, 31, 108, 326, 7362, 14106, 12640], 
     :hashtags => ["science", "biology", "premed", "medschool"],
-    :category => "Science"
+    :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 108, 326, 7362], 
+    :retweet => [18, 31, 108, 326, 7362, 14106, 12640], 
     :hashtags => ["science", "chemistry"],
-    :category => "Science"
+    :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326], 
+    :retweet => [18, 19, 108, 326, 14106, 12640], 
     :hashtags => ["science", "premed", "orgo"],
-    :category => "Science"
+    :category => "Life Sciences"
   }, 
   ## QuizMePsych
   108 => {
     :retweet => [18, 19, 31, 326, 191], 
     :hashtags => ["science", "psych"],
-    :category => "Science"
+    :category => "Life Sciences"
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108], 
+    :retweet => [18, 19, 31, 108, 14106, 12640], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
-    :category => "Science"
+    :category => "Life Sciences"
   },  
   ## QuizMeWeather
   7362 => {
-    :retweet => [18, 19], 
+    :retweet => [18, 19, 14106, 12640], 
     :hashtags => ["trivia", "weather", "meteorology", "meteo"],
-    :category => "Science"
+    :category => "Life Sciences"
   },  
   ## QuizMeGeo
   8367 => {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
-    :category => "Science"
+    :category => "Life Sciences"
   },  
 
   ## SATvocabQuiz
   227 => {
-    :retweet => [324, 308, 284], 
+    :retweet => [324, 308, 284, 14106, 12640], 
     :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
     :category => "Trivia"
   },  
@@ -125,12 +125,11 @@ ACCOUNT_DATA = {
     :category => "Trivia"
   },
 
-  ## Govt101
-  2 => {
-    :retweet => [66, 191, 231, 322, 325, 9217], 
-    :hashtags => ["election2012", "govt", "politics"],
-    :category => "Social Sciences"
-  }, 
+  # ## Govt101
+  # 2 => {
+  #   :retweet => [], 
+  #   :hashtags => ["election2012", "govt", "politics"]
+  # }, 
   ## USPresidents101
   66 => {
     :retweet => [2, 191, 231, 322, 325, 324, 9217], 
@@ -157,7 +156,7 @@ ACCOUNT_DATA = {
   },
   ## AP US History 
   325 => {
-    :retweet => [2, 66, 191, 231, 322, 374, 9217], 
+    :retweet => [2, 66, 191, 231, 322, 374, 9217, 14106, 12640], 
     :hashtags => ["history", "trivia", "historybuff"],
     :category => "Social Sciences"
   },
@@ -202,7 +201,7 @@ ACCOUNT_DATA = {
 
   #HarryPotterBk3
   10565 => {
-    :retweet => [10567],
+    :retweet => [10567, 14106, 12640],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
   },
@@ -236,5 +235,17 @@ ACCOUNT_DATA = {
     :retweet => [308, 12982],
     :hashtags => ['spanish', 'espanol', 'learnspanish'],
     :category => "Language"    
+  },
+  #SAThabit_algbra
+  14106 => {
+    :retweet => [12640],
+    :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
+    :category => "Math"
+  },
+  #SAThabit_math
+  12640 => {
+    :retweet => [14106],
+    :hashtags => ['math', 'SAT', "SATprep"],
+    :category => "Math"
   }
 }
