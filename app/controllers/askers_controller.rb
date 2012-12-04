@@ -2,7 +2,6 @@ class AskersController < ApplicationController
   before_filter :admin?
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
-  caches_action :dashboard, :expires_in => 57.minutes
   
   def index
     @new_posts = {}
