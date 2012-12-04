@@ -129,10 +129,12 @@
           - dms = cts = 0
           - retweets = posts_by_it[3].count if posts_by_it[3]
           - retweet_rate = @client.rate_sheet.retweet
+          - retweet_rate ||= 0
           - retweet_rev = retweets * retweet_rate
 
           - mentions = posts_by_it[2].count if posts_by_it[2]
           - mention_rate = @client.rate_sheet.tweet
+          - mention_rate ||= 0
           - mention_rev = mentions * mention_rate
 
           - total = mentions + retweets
@@ -204,5 +206,12 @@
 
               %br
               %dt Monthly cap
-              %dd $150.00
+              %dd
+                - if current_user.is_role? 'admin'
+                  $
+                  = best_in_place @rate_sheet, :monthly_cap, :type => 'input', :nil => "0.0"
+                - elsif @rate_sheet[:monthly_cap].nil?
+                  $0.00
+                - else
+                  = sprintf("$%.2f", @rate_sheet[:monthly_cap])
 
