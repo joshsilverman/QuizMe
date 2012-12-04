@@ -316,7 +316,7 @@ class FeedsController < ApplicationController
       @conversations[p.id][:users][p.user.id] = p.user if @conversations[p.id][:users][p.user.id].nil?
       pub_id = nil
       if p.interaction_type == 4
-        dm_history = Post.where("id != ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or user_id = ?)", p.id, @asker.id, p.user_id, p.user_id).order("created_at DESC")
+        dm_history = Post.where("id != ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", p.id, @asker.id, p.user_id, p.user_id, @asker.id).order("created_at DESC")
         dm_history.each do |dm|
           @conversations[p.id][:posts] << dm
           @conversations[p.id][:users][dm.user.id] = dm.user if @conversations[p.id][:users][dm.user.id].nil?
