@@ -356,7 +356,7 @@ class Stat < ActiveRecord::Base
     return graph_data
 	end
 
-  def self.questions(domain = 30)
+  def self.questions(domain = 60)
     graph_data = [["Date", "Answered"]]
     day_grouped_answer_count = Post.social.not_us.not_spam\
       .where("created_at > ? and correct is not null", Date.today - domain.days)\

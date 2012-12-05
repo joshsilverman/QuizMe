@@ -45,6 +45,7 @@
 		margin: 10px 0px;
 		
 		.panel {
+			box-shadow: 0 0 8px -3px #888;
 			background: white;
 			margin: 0 0 25px 0;
 			height: 275px;
@@ -58,7 +59,9 @@
 				
 				.header {
 					height: 49px;
-					background-color: whiteSmoke;
+					/*background-color: whiteSmoke;*/
+					background: url("/assets/light_toast.png");
+					border-bottom: 1px dotted #ccc;
 					-webkit-border-top-left-radius: 5px;
 					-moz-border-top-left-radius: 5px;
 					border-top-left-radius: 5px;	
@@ -94,9 +97,11 @@
 				.new {
 					border-top: 1px #F0F0F0 solid;
 					height: 110px;
+					/*background: url("/assets/light_toast.png");*/
 				}
 
 				.total {
+					/*background: url("/assets/light_toast.png");*/
 					border-top: 1px #ddd dotted;
 					height: 88px;
 				}
