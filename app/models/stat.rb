@@ -336,26 +336,45 @@ class Stat < ActiveRecord::Base
     title_row = ["Week"]
     start_day = 8.weeks.ago.to_date
     domain = 4.weeks.ago.to_date
-    domain_posts = Post.joins(:user).not_spam.not_us.social\
+    domain_posts = Post.joins(:user)\
+      .not_spam\
+      .not_us\
+      .social\
       .select("to_char(users.created_at, 'MM/W') as week, posts.created_at, posts.user_id")
-      # .where("users.created_at > ?", start_day)\
-      # .group("to_char(users.created_at, 'MM/W')")\
     weeks = domain_posts.order("users.created_at ASC").uniq_by(&:week).collect {|p| p.week}
     graph_data << (title_row += weeks)
     date_grouped_posts = domain_posts.order("posts.created_at ASC").group_by { |p| p.created_at.to_date.to_s }
-    (domain..Date.today.to_date).each do |date|      
+    (domain..Date.today.to_date).each do |date|
       data = [date]
       date_posts = date_grouped_posts[date.to_s] || []
       week_grouped_posts = date_posts.group_by { |p| p.week }
       weeks.each do |week|
-        if week_grouped_posts[week].present?
-          data << week_grouped_posts[week].uniq{ |p| p.user_id }.size
-        else
-          data << 0
-        end        
+        data << (week_grouped_posts[week].present? ? week_grouped_posts[week].uniq{ |p| p.user_id }.size : 0)     
       end
       graph_data << data
     end
     return graph_data
 	end
+
+  def self.questions(domain = 30)
+    graph_data = [["Date", "Answered"]]
+    day_grouped_answer_count = Post.social.not_us.not_spam\
+      .where("created_at > ? and correct is not null", Date.today - domain.days)\
+      .select(["to_char(created_at, 'MM/DD')"])\
+      .group("to_char(created_at, 'MM/DD')")\
+      .count
+    day_grouped_user_count = Post.social.not_us.not_spam\
+      .where("created_at > ? and correct is not null", Date.today - domain.days)\
+      .select("to_char(created_at, 'MM/DD')")\
+      .group("to_char(created_at, 'MM/DD')")\
+      .count 'user_id', :distinct => true
+    ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
+      formatted_date = date.strftime("%m/%d")
+      next if day_grouped_answer_count[formatted_date].blank? or day_grouped_user_count[formatted_date].blank?
+      data = [formatted_date]
+      data << day_grouped_answer_count[formatted_date].to_f / day_grouped_user_count[formatted_date].to_f
+      graph_data << data
+    end
+    return graph_data
+  end
 end

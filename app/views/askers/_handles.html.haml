@@ -19,3 +19,12 @@
   = hidden_field_tag :cohort_activity, @cohort.to_json
 
  
+.questions
+  %h2.handle_name 
+    Questions answered per user
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #questions.panel.rounded.span10
+      #questions_graph.graph
+  = hidden_field_tag :question_data, @question_data.to_json

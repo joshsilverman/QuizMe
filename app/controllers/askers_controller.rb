@@ -121,6 +121,7 @@ class AskersController < ApplicationController
   def get_handle_metrics
     @handle_activity = Stat.handle_activity
     @cohort = Stat.cohort_analysis
+    @question_data = Stat.questions
     render :partial => "handles"
   end
 end

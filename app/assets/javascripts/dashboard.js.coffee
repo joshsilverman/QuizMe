@@ -37,8 +37,10 @@ class Dashboard
             $(".tab-content #handles").html(e)
             @handle_activity = $.parseJSON($("#handle_activity_data").val())    
             @cohort = $.parseJSON($("#cohort_activity").val())
+            @question_data = $.parseJSON($("#question_data").val())
             @draw_handle_activity()
             @draw_cohort_analysis()
+            @draw_questions()
           complete: -> $(".loading").hide()
     else if target == "#core"
       if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
@@ -214,6 +216,11 @@ class Dashboard
     chart = new google.visualization.AreaChart(document.getElementById("cohort_graph"))
     chart.draw graph_data, cohort_options      
 
+  draw_questions: =>
+    graph_data = google.visualization.arrayToDataTable(@question_data)
+    chart = new google.visualization.LineChart(document.getElementById("questions_graph"))
+    chart.draw graph_data, questions_options          
+
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
 pg_options = 
@@ -236,17 +243,17 @@ pg_options =
     {type:'area', lineWidth:0},
     {type:'area', lineWidth:0},
     {type:'area', lineWidth:0},
-    {areaOpacity: 0, lineWidth: 0, color:'#6C69D1', pointSize:3},
-    {areaOpacity: 0, pointSize: 0, color:'#6C69D1', curveType: "function"}]
+    {areaOpacity: 0, lineWidth: 0, color:'#1D3880', pointSize:3},
+    {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
   isStacked: true
-  colors: ['orange', 'green', 'orange', "#6C69D1"]
+  colors: ['orange', 'green', 'orange', "#1D3880"]
 
 dau_mau_options = 
   width: 425
   height: 275
   legend: "none"
   pointSize: 6
-  lineWidth: 3
+  lineWidth: 2
   chartArea:  
     width: 420
     left: 30
@@ -258,13 +265,14 @@ dau_mau_options =
   hAxis:
     textStyle: 
       fontSize: 9
-  colors: ["#6C69D1"]
+    slantedText: true
+  colors: ["#1D3880"]
 
 econ_engine_options =
   width: 425
   height: 275
   pointSize: 6
-  lineWidth: 3
+  lineWidth: 2
   chartArea:  
     width: 420
     left: 30
@@ -276,15 +284,37 @@ econ_engine_options =
     minorGridlines:
       count: 3
       color: "#eee"
-  colors: ["#6C69D1"]
+  colors: ["#1D3880"]
 
 handle_activity_options = 
   width: 1170
   height: 500
   legend: "none"
   pointSize: 6
-  lineWidth: 3
+  lineWidth: 2
   isStacked: true
+  chartArea:  
+    width: 1170
+    left: 42
+    height: 400
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
+
+questions_options = 
+  width: 1170
+  height: 500
+  legend: "none"
+  pointSize: 6
+  lineWidth: 1
+  colors: [
+    "#1D3880"
+  ]
   chartArea:  
     width: 1170
     left: 42
