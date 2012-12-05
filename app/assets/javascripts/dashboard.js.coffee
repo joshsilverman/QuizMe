@@ -243,7 +243,7 @@ pg_options =
     {type:'area', lineWidth:0},
     {type:'area', lineWidth:0},
     {type:'area', lineWidth:0},
-    {areaOpacity: 0, lineWidth: 0, color:'#1D3880', pointSize:3},
+    {areaOpacity: 0, lineWidth: 0, color:'#1D3880', pointSize:2},
     {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
   isStacked: true
   colors: ['orange', 'green', 'orange', "#1D3880"]
@@ -252,7 +252,7 @@ dau_mau_options =
   width: 425
   height: 275
   legend: "none"
-  pointSize: 6
+  pointSize: 3
   lineWidth: 2
   chartArea:  
     width: 420
@@ -271,7 +271,7 @@ dau_mau_options =
 econ_engine_options =
   width: 425
   height: 275
-  pointSize: 6
+  pointSize: 3
   lineWidth: 2
   chartArea:  
     width: 420
@@ -290,7 +290,7 @@ handle_activity_options =
   width: 1170
   height: 500
   legend: "none"
-  pointSize: 6
+  pointSize: 3
   lineWidth: 2
   isStacked: true
   chartArea:  
@@ -310,7 +310,7 @@ questions_options =
   width: 1170
   height: 500
   legend: "none"
-  pointSize: 6
+  pointSize: 3
   lineWidth: 1
   colors: [
     "#1D3880"
@@ -357,7 +357,7 @@ options =
   width: 425
   height: 275
   legend: "none"
-  pointSize: 6
+  pointSize: 3
   lineWidth: 3
   chartArea:  
     width: 420
