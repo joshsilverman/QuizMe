@@ -357,24 +357,45 @@ class Stat < ActiveRecord::Base
 	end
 
   def self.questions(domain = 60)
+    # Median
     graph_data = [["Date", "Answered"]]
-    day_grouped_answer_count = Post.social.not_us.not_spam\
+    day_grouped_answers = Post.social.not_us.not_spam\
       .where("created_at > ? and correct is not null", Date.today - domain.days)\
-      .select(["to_char(created_at, 'MM/DD')"])\
-      .group("to_char(created_at, 'MM/DD')")\
-      .count
-    day_grouped_user_count = Post.social.not_us.not_spam\
-      .where("created_at > ? and correct is not null", Date.today - domain.days)\
-      .select("to_char(created_at, 'MM/DD')")\
-      .group("to_char(created_at, 'MM/DD')")\
-      .count 'user_id', :distinct => true
+      .select(["to_char(created_at, 'MM/DD') as date", "array_to_string(array_agg(user_id),',') as user_ids"])\
+      .group("to_char(created_at, 'MM/DD')").all.group_by { |a| a.date }
     ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
       formatted_date = date.strftime("%m/%d")
-      next if day_grouped_answer_count[formatted_date].blank? or day_grouped_user_count[formatted_date].blank?
+      next if day_grouped_answers[formatted_date].blank?
       data = [formatted_date]
-      data << day_grouped_answer_count[formatted_date].to_f / day_grouped_user_count[formatted_date].to_f
+      counts = []
+      values = day_grouped_answers[formatted_date][0].user_ids.split(",")
+      values.each do |e|
+        counts << values.count(e)
+        values.delete(e)
+      end
+      data << counts.sort![(counts.length.to_f / 2).floor]
       graph_data << data
     end
+
+    # Mean
+    # day_grouped_answer_count = Post.social.not_us.not_spam\
+    #   .where("created_at > ? and correct is not null", Date.today - domain.days)\
+    #   .select(["to_char(created_at, 'MM/DD')"])\
+    #   .group("to_char(created_at, 'MM/DD')")\
+    #   .count
+    # # "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
+    # day_grouped_user_count = Post.social.not_us.not_spam\
+    #   .where("created_at > ? and correct is not null", Date.today - domain.days)\
+    #   .select("to_char(created_at, 'MM/DD')")\
+    #   .group("to_char(created_at, 'MM/DD')")\
+    #   .count 'user_id', :distinct => true
+    # ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
+    #   formatted_date = date.strftime("%m/%d")
+    #   next if day_grouped_answer_count[formatted_date].blank? or day_grouped_user_count[formatted_date].blank?
+    #   data = [formatted_date]
+    #   data << day_grouped_answer_count[formatted_date].to_f / day_grouped_user_count[formatted_date].to_f
+    #   graph_data << data
+    # end
     return graph_data
   end
 end
