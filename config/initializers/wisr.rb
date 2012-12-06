@@ -21,12 +21,22 @@ LEARNER_LEVELS = [
 
 ###Response Bank ###
 CORRECT = [
-  "That's right!",
+  "That's right.",
   "Correct!",
-  "Yes!",
-  "That's it!",
-  "You got it!",
-  "Perfect!"
+  "Yes.",
+  "That's it.",
+  "You got it.",
+  "Perfect!",
+  "Perfecto!",
+  "Nailed it!",
+  "Right on!",
+  "Exactly right.",
+  "Right!",
+  "Affirmative!",
+  "Yup!",
+  "Yeah!",
+  "Totally!",
+  "Aye aye!"
 ]
           
 COMPLEMENT = [
@@ -37,6 +47,24 @@ COMPLEMENT = [
   "Booyah",
   "Nice going",
   "Hear that? That's the sound of AWESOME happening",
+  "Woot woot",
+  "Woooooot",
+  "Woohoo!",
+  "Nice",
+  "Like a pro",
+  "You should be teaching this stuff",
+  "Terrific",
+  "Excellent",
+  "Wonderful",
+  "Fantastic",
+  "Tremendous",
+  "Super",
+  "Well look at you",
+  "You must be practicing",
+  "Well done",
+  "Good thinking",
+  "You're really learning a lot",
+  "Good going",
   ""
 ]
 
@@ -57,7 +85,7 @@ FAST = [
   "Too quick to handle!",      
   "Winning isn't everything.  But it certainly is nice ;)",      
   "Fastest Finger Award Winner!",      
-  "Hey, gunslinger! Fastest hands on the interwebs!"        
+  "Hey, gunslinger! Fastest hands on the interwebs!"      
 ]
 
 REENGAGE = [
