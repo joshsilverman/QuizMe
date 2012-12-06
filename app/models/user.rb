@@ -215,25 +215,26 @@ class User < ActiveRecord::Base
 	end
 
   def self.reengage_inactive_users(threshold = 1.week.ago)
-    sent_to = []
+    # sent_to = []
     24.times do |i|
 	  	### MAKE HOURLY
 	  	### SWAP INTENTION
 	  	### ACTIVITY OR ACTION?
 	  	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
+	  	### MAX POST PER ASKER IN 1 SESSION?
 
 	  	# Strategy definition
-	  	strategy = [3, 7, 12]
+	  	strategy = [3, 10, 20]
 
 	  	# Set strategy checkpoints
-	  	now = (Time.now + i.hours)
+	  	now = (Time.now + i.days)
 			puts "\n\n=================="
 	  	puts "Time: #{now}"
 	  	checkpoints = strategy.map { |e| now - e.days }
 
 	  	# Get disengaging users
 			disengaging_users = User.includes(:posts)\
-				.where("users.last_answer_at < ? and users.last_answer_at > ?", checkpoints.first, (checkpoints.last - 1.day))\
+				.where("users.last_interaction_at < ? and users.last_interaction_at > ?", checkpoints.first, (checkpoints.last - 1.day))\
 				.where("posts.created_at > ? and posts.correct is not null", (checkpoints.last - 1.day))
 
 			# Get recently sent re-engagements
@@ -248,7 +249,7 @@ class User < ActiveRecord::Base
 			disengaging_users.each do |user|
 				next_checkpoint = interval = nil
 				checkpoints.each_with_index do |checkpoint, i| 
-					if user.last_answer_at < checkpoint
+					if user.last_interaction_at < checkpoint
 						next_checkpoint = (checkpoints[i + 1] || (checkpoint - 1.day))
 						interval = strategy[i]
 					end
@@ -274,13 +275,15 @@ class User < ActiveRecord::Base
 	    	next unless asker and publication
 	    	recipient_data[:recipients].each do |user_hash|
 	    		user = user_hash[:user]
-	    		# puts "sending reengagement to #{user.twi_screen_name}"
+	    		puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
 	    		Post.create({
 	    			:in_reply_to_user_id => user.id,
 	    			:user_id => asker.id,
-	    			:intention => "reengage inactive"
+	    			:intention => "reengage inactive",
+	    			:created_at => now
 	    		})
-	    		sent_to << user.id
+	    		# sent_to << user.id
+
 	    		# option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
 	        # Post.tweet(asker, "#{option_text} #{publication.question.text}", {
 	        #   :reply_to => user.twi_screen_name,
@@ -297,7 +300,7 @@ class User < ActiveRecord::Base
 	        # Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval]}
 	      end
 	    end
-			puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
+			# puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
 
 	    ## COLLECT DISENGAGING USERS
 	    # all_asker_ids = User.askers.collect(&:id)
