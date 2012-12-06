@@ -43,8 +43,7 @@ class Post < ActiveRecord::Base
 	end
 
   def self.publish(provider, asker, publication)
-    return unless publication
-    question = Question.find(publication.question_id)
+    return unless publication and question = publication.question
     if question.user_id == 1
       via = nil
     else
