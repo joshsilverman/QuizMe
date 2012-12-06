@@ -99,19 +99,19 @@ REENGAGE = [
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 31, 108, 326, 7362, 14106, 12640], 
+    :retweet => [19, 326, 14106], 
     :hashtags => ["science", "biology", "premed", "medschool"],
     :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 108, 326, 7362, 14106, 12640], 
+    :retweet => [18, 31, 326, 7362, 14106], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326, 14106, 12640], 
+    :retweet => [18, 19, 108, 326, 14106], 
     :hashtags => ["science", "premed", "orgo"],
     :category => "Life Sciences"
   }, 
@@ -123,7 +123,7 @@ ACCOUNT_DATA = {
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108, 14106, 12640], 
+    :retweet => [18, 19, 31, 108, 14106], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
     :category => "Life Sciences"
   },  
@@ -142,7 +142,7 @@ ACCOUNT_DATA = {
 
   ## SATvocabQuiz
   227 => {
-    :retweet => [324, 308, 284, 14106, 12640], 
+    :retweet => [324, 308, 284], 
     :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
     :category => "Trivia"
   },  
