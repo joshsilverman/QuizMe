@@ -214,7 +214,7 @@ class User < ActiveRecord::Base
 		# end
 	end
 
-  def self.reengage_inactive_users(recipients = {}, threshold = 1.week.ago)
+  def self.reengage_inactive_users(asker_recipients = {}, threshold = 1.week.ago)
     
   	strategy = [3, 7, 12]
 
@@ -223,18 +223,18 @@ class User < ActiveRecord::Base
 			.where("posts.created_at > ? and posts.correct is not null", (strategy.last.days.ago - 2.days))\
 			.where("users.last_answer_at < ? and users.last_answer_at > ?", strategy.first.days.ago, strategy.last.days.ago)
 
-		# Compile recipients
+		# Compile recipients by asker
 		disengaging_users.each do |user|
 			sample_asker_id = user.posts.sample.in_reply_to_user_id
-			recipients[sample_asker_id] ||= {:users => []}
-			recipients[sample_asker_id][:users] << user
+			asker_recipients[sample_asker_id] ||= {:recipients => []}
+			asker_recipients[sample_asker_id][:recipients] << user
 		end
 
-    # Post.includes(:conversations).where("user_id in (?) and created_at > ? and interaction_type = 1", active_asker_ids, 1.week.ago).group_by(&:user_id).each do |user_id, posts|
-      # askers_publications[user_id] = posts.sort_by{|p| p.conversations.size}.last.publication_id
-    # end		
+    Post.joins(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 1.week.ago).group_by(&:user_id).each do |user_id, posts|
+      asker_recipients[user_id][:publication_id] = posts.sort_by{|p| p.conversations.size}.last.publication_id
+    end		
 
-		puts recipients
+		puts asker_recipients
 
     ## COLLECT DISENGAGING USERS
     # all_asker_ids = User.askers.collect(&:id)
