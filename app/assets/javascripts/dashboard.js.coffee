@@ -104,8 +104,8 @@ class Dashboard
     render = (data) ->
       dashboard.draw_paulgraham('#core_by_handle', data['paulgraham'])
       dashboard.draw_dau_mau('#core_by_handle', data['dau_mau'])
-      dashboard.draw_daus('#core_by_handle', data['daus'])
       dashboard.draw_econ_engine('#core_by_handle', data['econ_engine'])
+      dashboard.draw_daus('#core_by_handle', data['daus'])
 
       $('#core_by_handle .paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
       $('#core_by_handle .paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
@@ -113,14 +113,11 @@ class Dashboard
       $('#core_by_handle .econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
       $('#core_by_handle .econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
 
-      # $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
-      # $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
+      $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
+      $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
 
       $('#core_by_handle .dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('#core_by_handle .dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
-
-      $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
-      $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
 
     if !window.dashboard or !window.dashboard.core_data_by_handle[asker_id]
       $('#core_by_handle .handle_name .text').text asker_name
@@ -156,9 +153,7 @@ class Dashboard
 
   draw_dau_mau: (container, data) =>
     data_array = [["Date", "Ratio"]]
-    $.each data, (k,v) -> 
-      date_array = k.split("-")
-      data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
+    $.each data, (k,v) -> data_array.push([k, v])
     graph_data = google.visualization.arrayToDataTable(data_array)
 
     if container == undefined
@@ -169,20 +164,20 @@ class Dashboard
     chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, dau_mau_options    
 
-  #draw_daus: (container, data) =>
-  #  data_array = [["Date", "DAU"]]
-  #  $.each data, (k,v) -> 
-  #    date_array = k.split("-")
-  #    data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
-  #  graph_data = google.visualization.arrayToDataTable(data_array)
-  #  
-  #  if container == undefined
-  #    chart_elmnt = $(".daus_graph")[0]
-  #  else
-  #    chart_elmnt = $(container + " .daus_graph")[0]
-  #
-  #  chart = new google.visualization.LineChart(chart_elmnt)
-  #  chart.draw graph_data, dau_mau_options  
+  draw_daus: (container, data) =>
+    data_array = [["Date", "DAU"]]
+    $.each data, (k,v) -> 
+      date_array = k.split("-")
+      data_array.push(["#{date_array[1]}/#{date_array[2]}", v])
+    graph_data = google.visualization.arrayToDataTable(data_array)
+    
+    if container == undefined
+      chart_elmnt = $(".daus_graph")[0]
+    else
+      chart_elmnt = $(container + " .daus_graph")[0]
+  
+    chart = new google.visualization.LineChart(chart_elmnt)
+    chart.draw graph_data, dau_mau_options  
 
   draw_revenue: (container, data) =>
     graph_data = google.visualization.arrayToDataTable(data)
