@@ -237,36 +237,63 @@ class User < ActiveRecord::Base
 				.where("users.last_interaction_at < ? and users.last_interaction_at > ?", checkpoints.first, (checkpoints.last - 1.day))\
 				.where("posts.created_at > ? and posts.correct is not null", (checkpoints.last - 1.day))
 
+			puts disengaging_users.size
+
 			# Get recently sent re-engagements
 			recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
 				.where("intention = 'reengage inactive'")\
 				.where("created_at > ?", (checkpoints.last - 1.day))
 
-			# puts recent_reengagements.to_json
+			puts recent_reengagements.size
 
 			# Compile recipients by asker
 			asker_recipients = {}
 			disengaging_users.each do |user|
-				next_checkpoint = interval = nil
-				checkpoints.each_with_index do |checkpoint, i| 
-					if user.last_interaction_at < checkpoint
-						next_checkpoint = (checkpoints[i + 1] || (checkpoint - 1.day))
-						interval = strategy[i]
-					end
+				user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id }.sort_by(&:created_at)
+				next_checkpoint = strategy[user_reengagments.size] || (strategy.last)
+				
+				unless user_reengagments.blank?
+					puts now
+					puts user_reengagments.last.created_at
+					puts (now - user_reengagments.last.created_at)
+					puts next_checkpoint.days
+					puts ((now - user_reengagments.last.created_at) > next_checkpoint.days)
 				end
-				if recent_reengagements.where("in_reply_to_user_id = ? and created_at > ?", user.id, next_checkpoint).blank?
+				if user_reengagments.blank? or (now - user_reengagments.last.created_at) > next_checkpoint.days
 					sample_asker_id = user.posts.sample.in_reply_to_user_id
 					asker_recipients[sample_asker_id] ||= {:recipients => []}
-					asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => interval}
+					asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}					
 				end
+
+				# next_checkpoint = nil
+				# last_checkpoint = nil
+				# interval = nil
+				# checkpoints.each_with_index do |checkpoint, i| 
+				# 	if user.last_interaction_at < checkpoint
+				# 		last_checkpoint = checkpoint
+				# 		next_checkpoint = (checkpoints[i + 1] || (checkpoint - 1.day))
+				# 		interval = strategy[i]
+				# 	end
+				# end
+				# # puts user.to_json
+				# puts next_checkpoint, last_checkpoint
+				# puts recent_reengagements.where("in_reply_to_user_id = ?", user.id).to_json
+				# puts "\n\n"
+
+				# if recent_reengagements.where("in_reply_to_user_id = ? and created_at > ? and created_at < ?", user.id, next_checkpoint, last_checkpoint).blank?
+				# 	sample_asker_id = user.posts.sample.in_reply_to_user_id
+				# 	asker_recipients[sample_asker_id] ||= {:recipients => []}
+				# 	asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => interval}
+				# end
 			end
+			# puts asker_recipients.to_json
 
 			# Get popular publications
 	    Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, checkpoints.first).group_by(&:user_id).each do |user_id, posts|
 	      asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
 	    end		
 
-			# puts asker_recipients    
+			# # puts asker_recipients    
 
 	    # Send tweets
 	    asker_recipients.each do |asker_id, recipient_data|
