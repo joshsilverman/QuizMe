@@ -21,12 +21,22 @@ LEARNER_LEVELS = [
 
 ###Response Bank ###
 CORRECT = [
-  "That's right!",
+  "That's right.",
   "Correct!",
-  "Yes!",
-  "That's it!",
-  "You got it!",
-  "Perfect!"
+  "Yes.",
+  "That's it.",
+  "You got it.",
+  "Perfect!",
+  "Perfecto!",
+  "Nailed it!",
+  "Right on!",
+  "Exactly right.",
+  "Right!",
+  "Affirmative!",
+  "Yup!",
+  "Yeah!",
+  "Totally!",
+  "Aye aye!"
 ]
           
 COMPLEMENT = [
@@ -37,6 +47,24 @@ COMPLEMENT = [
   "Booyah",
   "Nice going",
   "Hear that? That's the sound of AWESOME happening",
+  "Woot woot",
+  "Woooooot",
+  "Woohoo!",
+  "Nice",
+  "Like a pro",
+  "You should be teaching this stuff",
+  "Terrific",
+  "Excellent",
+  "Wonderful",
+  "Fantastic",
+  "Tremendous",
+  "Super",
+  "Well look at you",
+  "You must be practicing",
+  "Well done",
+  "Good thinking",
+  "You're really learning a lot",
+  "Good going",
   ""
 ]
 
@@ -57,7 +85,7 @@ FAST = [
   "Too quick to handle!",      
   "Winning isn't everything.  But it certainly is nice ;)",      
   "Fastest Finger Award Winner!",      
-  "Hey, gunslinger! Fastest hands on the interwebs!"        
+  "Hey, gunslinger! Fastest hands on the interwebs!"      
 ]
 
 REENGAGE = [
@@ -71,19 +99,19 @@ REENGAGE = [
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 31, 108, 326, 7362, 14106, 12640], 
+    :retweet => [19, 326, 14106], 
     :hashtags => ["science", "biology", "premed", "medschool"],
     :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 108, 326, 7362, 14106, 12640], 
+    :retweet => [18, 31, 326, 7362, 14106], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326, 14106, 12640], 
+    :retweet => [18, 19, 108, 326, 14106], 
     :hashtags => ["science", "premed", "orgo"],
     :category => "Life Sciences"
   }, 
@@ -95,7 +123,7 @@ ACCOUNT_DATA = {
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108, 14106, 12640], 
+    :retweet => [18, 19, 31, 108, 14106], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
     :category => "Life Sciences"
   },  
@@ -114,7 +142,7 @@ ACCOUNT_DATA = {
 
   ## SATvocabQuiz
   227 => {
-    :retweet => [324, 308, 284, 14106, 12640], 
+    :retweet => [324, 308, 284], 
     :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
     :category => "Trivia"
   },  

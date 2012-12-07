@@ -8,10 +8,13 @@ class Feed
 	conversations: null
 	engagements: null
 	correct: null
-	correct_responses: ["That's right!","Correct!","Yes!","That's it!","You got it!","Perfect!"]
-	correct_complements: ["Way to go","Keep it up","Nice job","Nice work","Booyah","Nice going","Hear that? That's the sound of AWESOME happening",""]
+	correct_responses: []
+	correct_complements: []
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	constructor: ->
+		@correct_complements = $.parseJSON($("#correct_complements").val())
+		@correct_responses = $.parseJSON($("#correct_responses").val())
+
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
