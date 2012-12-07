@@ -247,8 +247,8 @@ dau_mau_options =
   width: 425
   height: 275
   legend: "none"
-  pointSize: 3
-  lineWidth: 2
+  pointSize: 5
+  lineWidth: 3
   chartArea:  
     width: 420
     left: 30
@@ -266,8 +266,8 @@ dau_mau_options =
 econ_engine_options =
   width: 425
   height: 275
-  pointSize: 3
-  lineWidth: 2
+  pointSize: 5
+  lineWidth: 3
   chartArea:  
     width: 420
     left: 30
@@ -305,8 +305,8 @@ questions_options =
   width: 1170
   height: 500
   legend: "none"
-  pointSize: 3
-  lineWidth: 1
+  pointSize: 5
+  lineWidth: 2
   colors: [
     "#1D3880"
   ]
