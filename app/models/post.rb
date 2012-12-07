@@ -295,25 +295,32 @@ class Post < ActiveRecord::Base
   ###
 
   def self.check_for_posts(current_acct)
-    # puts "check_for_posts for #{current_acct.twi_screen_name}"
-    return unless current_acct.twitter_enabled?
-    asker_ids = User.askers.collect(&:id)
-    last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
-    last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
+    # asker_ids = User.askers.collect(&:id)
+    # last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
+    # last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
+    # mentions = Post.twitter_request { client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i}) } || []
+    # retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
+    # dms = Post.twitter_request { client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i}) } || []
+
     client = current_acct.twitter
-    # puts "getting mentions"
-    mentions = Post.twitter_request { client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i}) } || []
-    # puts "got mentions, getting RTs"
-    retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
-    # puts "got RTs, getting DMs"
-    dms = Post.twitter_request { client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i}) } || []
-    # puts "got DMs, saving mentions"
+
+    # Get mentions, de-dupe, and save
+    last_mention = Post.where("provider_post_id is not null and in_reply_to_user_id = ?", current_acct.id)
+    mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
+    existing_mention_ids = Post.select(:provider_post_id).where(:provider_post_id => mentions.collect { |m| m.id.to_s }).collect(&:provider_post_id)
+    mentions.reject! { |m| existing_mention_ids.include? m.id.to_s }
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
-    # puts "Saved mentions, saving RTs"
-    retweets.each { |r| Post.save_retweet_data(r, current_acct) }
-    # puts "Saved RTs, saving DMs"
+
+    # Get DMs, de-dupe, and save
+    dms = Post.twitter_request { client.direct_messages({:count => 200}) } || []
+    existing_dm_ids = Post.select(:provider_post_id).where(:provider_post_id => dms.collect { |dm| dm.id.to_s }).collect(&:provider_post_id)
+    dms.reject! { |dm| existing_dm_ids.include? dm.id.to_s }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
-    # puts "Saved DMs"
+    
+    # Get RTs and save
+    retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
+    retweets.each { |r| Post.save_retweet_data(r, current_acct) }
+
     true 
   end
 
@@ -324,8 +331,6 @@ class Post < ActiveRecord::Base
       :twi_screen_name => m.user.screen_name,
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
-
-    return if Post.find_by_provider_post_id(m.id.to_s)
 
     in_reply_to_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
     if in_reply_to_post
@@ -350,6 +355,8 @@ class Post < ActiveRecord::Base
       :requires_action => true
     )
 
+    p "saved mention: #{post.text}"
+
     u.update_user_interactions({
       :learner_level => "mention",
       :last_interaction_at => post.created_at
@@ -361,38 +368,6 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
 
-  def self.save_retweet_data(r, current_acct, attempts = 0)
-    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
-    users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
-    users.each do |user|
-      u = User.find_or_create_by_twi_user_id(user.id)
-      u.update_attributes(
-        :twi_name => user.name,
-        :twi_screen_name => user.screen_name,
-        :twi_profile_img_url => user.profile_image_url
-      )
-      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
-      return if post
-      post = Post.create(
-        :provider => 'twitter',
-        :user_id => u.id,
-        :in_reply_to_post_id => retweeted_post.id,
-        :in_reply_to_user_id => retweeted_post.user_id,
-        :posted_via_app => false,
-        :created_at => r.created_at,
-        :interaction_type => 3,
-        :requires_action => true
-      )
-      u.update_user_interactions({
-        :learner_level => "share", 
-        :last_interaction_at => post.created_at
-      })
-      Post.trigger_split_test(u.id, 'dm reengagement')
-      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
-      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
-    end
-  end
-
   def self.save_dm_data(d, current_acct)
     u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
@@ -400,8 +375,6 @@ class Post < ActiveRecord::Base
       :twi_screen_name => d.sender.screen_name,
       :twi_profile_img_url => d.sender.profile_image_url
     )
-    
-    return if Post.find_by_provider_post_id(d.id.to_s)
 
     in_reply_to_post = Post.where(
       :provider => 'twitter',
@@ -432,6 +405,8 @@ class Post < ActiveRecord::Base
       :requires_action => true
     )
 
+    p "saved DM: #{post.text}"
+
     u.update_user_interactions({
       :learner_level => "dm", 
       :last_interaction_at => post.created_at
@@ -440,6 +415,47 @@ class Post < ActiveRecord::Base
     Post.trigger_split_test(u.id, 'dm reengagement')
     Post.classifier.classify post
   end
+
+  def self.save_retweet_data(r, current_acct, attempts = 0)
+    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
+    users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
+    users.each do |user|
+      u = User.find_or_create_by_twi_user_id(user.id)
+
+      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
+      
+      return if post
+
+      u.update_attributes(
+        :twi_name => user.name,
+        :twi_screen_name => user.screen_name,
+        :twi_profile_img_url => user.profile_image_url
+      )
+
+      post = Post.create(
+        :provider => 'twitter',
+        :user_id => u.id,
+        :in_reply_to_post_id => retweeted_post.id,
+        :in_reply_to_user_id => retweeted_post.user_id,
+        :posted_via_app => false,
+        :created_at => r.created_at,
+        :interaction_type => 3,
+        :requires_action => true,
+        :text => retweeted_post.text
+      )
+
+      p "saved RT: #{post.text}"
+
+      u.update_user_interactions({
+        :learner_level => "share", 
+        :last_interaction_at => post.created_at
+      })
+      Post.trigger_split_test(u.id, 'dm reengagement')
+      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+    end
+  end
+
 
   def generate_response(response_type)
     #Include backlink if exists
