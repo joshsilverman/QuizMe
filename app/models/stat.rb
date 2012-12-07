@@ -253,7 +253,7 @@ class Stat < ActiveRecord::Base
 
     @econ_engine.sort!{|a,b| a[0] <=> b[0]}
     @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
-    puts @econ_engine
+    # puts @econ_engine
 
     display_data = {}
     display_data[:today] = @econ_engine.last[1]

@@ -338,7 +338,7 @@ class Post < ActiveRecord::Base
       in_reply_to_post.update_attribute(:conversation_id, conversation_id)
     else
       conversation_id = nil
-      puts "No in reply to post"
+      # puts "No in reply to post"
     end
 
     post = Post.create( 
@@ -384,7 +384,7 @@ class Post < ActiveRecord::Base
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
     else
       conversation_id = nil
-      puts "No in reply to dm"
+      # puts "No in reply to dm"
     end
 
     # possible issue w/ origin dm and its response being collected 
