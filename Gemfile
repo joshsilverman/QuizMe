@@ -47,7 +47,7 @@ gem 'omniauth-tumblr', '1.0'
 gem 'rabl', '0.6.14'
 gem 'dalli', '2.1.0'
 gem 'hirb'
-gem 'twitter', '4.4.0'
+gem 'twitter', '3.0.2'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'

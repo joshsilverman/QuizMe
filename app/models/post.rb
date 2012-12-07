@@ -355,8 +355,6 @@ class Post < ActiveRecord::Base
       :requires_action => true
     )
 
-    p "saved mention: #{post.text}"
-
     u.update_user_interactions({
       :learner_level => "mention",
       :last_interaction_at => post.created_at
@@ -405,8 +403,6 @@ class Post < ActiveRecord::Base
       :requires_action => true
     )
 
-    p "saved DM: #{post.text}"
-
     u.update_user_interactions({
       :learner_level => "dm", 
       :last_interaction_at => post.created_at
@@ -443,8 +439,6 @@ class Post < ActiveRecord::Base
         :requires_action => true,
         :text => retweeted_post.text
       )
-
-      p "saved RT: #{post.text}"
 
       u.update_user_interactions({
         :learner_level => "share", 
