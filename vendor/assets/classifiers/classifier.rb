@@ -216,8 +216,6 @@ class Classifier
       end
     end
 
-    puts vector
-
     vector
   end
 end
