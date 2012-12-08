@@ -41,15 +41,6 @@ task :save_stats => :environment do
   Rails.cache.clear
 end
 
-# task :dm_new_followers => :environment do
-#   askers = User.askers.where('twi_oauth_token is not null')
-#   askers.each do |asker|
-#     next if asker.new_user_q_id.nil?
-#     Post.dm_new_followers(asker)  
-#     sleep(2)  
-#   end
-# end
-
 task :reengage_incorrect_answerers => :environment do
   User.reengage_incorrect_answerers()
 end
