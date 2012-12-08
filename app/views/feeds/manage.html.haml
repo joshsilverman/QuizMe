@@ -24,6 +24,7 @@
 						- @engagements.each do |id, post|
 							.conversation.border-color
 								.post.parent.answered{:post_id => id, :interaction_type => post.interaction_type}
+									%p.time= time_formatter(post.created_at)
 									#classify
 										- if post.autospam
 											%i.icon-warning-sign

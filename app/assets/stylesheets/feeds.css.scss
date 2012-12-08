@@ -905,14 +905,22 @@ body {
 		}
 
 		#classify {
-			position: absolute;
-			top: 5px;
-			right: 10px;
+			//position: absolute;
+			//top: 5px;
+			//right: 10px;
+
+			float: right;
+			margin: 0px;
+			margin-top: -4px !important;
+			margin-right:7px;
+			font-size:13px;
 
 			i {
 				position: relative;
-				top: 0px;
-				right: 0px;
+				top: 3px;
+				left: 4px;
+				font-size:13px;
+				opacity:.85;
 			}
 		}
 
