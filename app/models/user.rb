@@ -162,7 +162,12 @@ class User < ActiveRecord::Base
 			if app_posts[user.id].blank?
 				asker = askers.find(user.posts.first.in_reply_to_user_id)
 				unless publication = popular_asker_publications[asker.id]
-					publication = Publication.includes(:question).find(asker.posts.includes(:conversations).where("created_at > ? and interaction_type = 1", 1.week.ago).sort_by {|p| p.conversations.size}.last.publication_id)
+					if popular_post = asker.posts.includes(:conversations).where("created_at > ? and interaction_type = 1", 1.week.ago).sort_by {|p| p.conversations.size}.last
+						publication_id = popular_post.publication_id
+					else
+						publication_id = asker.posts.where("interaction_type = 1").order("created_at DESC").limit(1).first.publication_id
+					end
+					publication = Publication.includes(:question).find(publication_id)
 					popular_asker_publications[asker.id] = publication
 				end
 				puts "sending mention question to #{user.twi_screen_name}"
