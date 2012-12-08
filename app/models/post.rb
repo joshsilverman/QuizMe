@@ -462,6 +462,67 @@ class Post < ActiveRecord::Base
   end
 
 
+  def self.save_post(interaction_type, tweet, asker_id, conversation_id = nil)
+    puts interaction_type, tweet.to_json
+
+    if interaction_type == 4
+      twi_user = tweet.sender
+      user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
+      # CAN BE EITHER ASKERS, OR THEIRS
+      in_reply_to_post = Post.where(
+        :provider => 'twitter',
+        :interaction_type => 4,
+        :user_id => user.id,
+        :in_reply_to_user_id => asker_id
+      ).order("created_at DESC").limit(1).first      
+      learner_level = "dm"
+    else
+      twi_user = tweet.user
+      user = User.find_or_create_by_twi_user_id(tweet.user.id.to_s)
+      if interaction_type == 2 
+        in_reply_to_post = Post.find_by_provider_post_id(tweet.in_reply_to_status_id.to_s)
+        learner_level = "mention"
+      else
+        in_reply_to_post = Post.find_by_provider_post_id(tweet.retweeted_status.id.to_s)
+        learner_level = "share"
+      end
+    end
+    
+    user.update_attributes({
+      :twi_name => twi_user.name,
+      :twi_screen_name => twi_user.screen_name,
+      :twi_profile_img_url => twi_user.profile_image_url
+    })
+
+    if in_reply_to_post
+      unless conversation_id = in_reply_to_post.conversation_id
+        conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => user.id).id
+        in_reply_to_post.update_attribute(:conversation_id, conversation_id)
+      end
+    end
+
+    post = Post.create({
+      :user_id => user.id, 
+      :provider => 'twitter',
+      :text => (interaction_type == 3 ? in_reply_to_post.try(:text) : tweet.text),
+      :provider_post_id => tweet.id.to_s,
+      :created_at => tweet.created_at,
+      :in_reply_to_post_id => in_reply_to_post.try(:id),
+      :conversation_id => conversation_id,
+      :requires_action => true,
+      :in_reply_to_user_id => asker_id,
+      :posted_via_app => false,
+      :interaction_type => interaction_type
+    })
+
+    user.update_user_interactions({
+      :learner_level => learner_level, 
+      :last_interaction_at => post.created_at
+    })
+
+    Post.classifier.classify post
+  end
+
   def generate_response(response_type)
     #Include backlink if exists
     case response_type
