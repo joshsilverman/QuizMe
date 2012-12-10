@@ -372,11 +372,10 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => d.sender.profile_image_url
     )
 
-    in_reply_to_post = Post.where(
-      :provider => 'twitter',
-      :interaction_type => 4,
-      :user_id => u.id
-    ).order("created_at DESC").limit(1).first
+    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and (user_id = ? or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, u.id)\
+      .order("created_at DESC")\
+      .limit(1)\
+      .first
 
     if in_reply_to_post
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
