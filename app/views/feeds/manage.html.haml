@@ -47,7 +47,23 @@
 											%a.link_post unlink
 										- else 
 											%a.link_post 
-												link		
+												link
+
+										/ quick reply
+										- post_with_question = Post.find post.in_reply_to_post_id if post.in_reply_to_post_id
+										- if post_with_question and post_with_question.publication and post_with_question.publication.question
+											- puts post_with_question.publication.question
+											- post_with_question.publication.question.answers
+											- correct = post_with_question.publication.question.answers.reject{|a| a.correct != true}[0]
+											- puts correct
+											- if correct
+												%p
+													%a.quick-reply-yes yes
+													|
+													%a.quick-reply-no no
+													&nbsp;
+													%span.quick-reply
+														= "(answer: #{ correct.text[0,20]}... )"
 						#posts_more.border-color
 							Last Post Reached
 
