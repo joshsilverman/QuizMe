@@ -13,6 +13,12 @@ class User < ActiveRecord::Base
 
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
+
+  has_many :relationships, :foreign_key => :follower_id, :dependent => :destroy
+  has_many :follows, :through => :relationships, :source => :followed
+
+  has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
+  has_many :followers, :through => :reverse_relationships, :source => :follower
   
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
@@ -218,79 +224,6 @@ class User < ActiveRecord::Base
 		# 	end	
 		# end
 	end
-
-  def self.reengage_inactive_users(threshold = 1.week.ago)
-    # sent_to = []
-  	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
-  	### MAX POST PER ASKER IN 1 SESSION?
-
-  	# Strategy definition
-  	strategy = [3, 7, 10]
-  	now = Time.now
-
-  	# Get disengaging users
-		disengaging_users = User.includes(:posts)\
-			.where("users.last_interaction_at < ? and users.last_interaction_at > ?", (now - strategy.first.days), (now - (strategy.sum.days + 1.day)))\
-			.where("posts.created_at > ? and posts.correct is not null", (now - (strategy.sum.days + 1.day)))
-
-		# Get recently sent re-engagements
-		recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
-			.where("intention = 'reengage inactive'")\
-			.where("created_at > ?", (now - (strategy.sum.days + 1.day)))
-
-		# Compile recipients by asker
-		asker_recipients = {}
-		disengaging_users.each do |user|
-			user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id }.sort_by(&:created_at)
-			next_checkpoint = strategy[user_reengagments.size]
-			next if next_checkpoint.blank?
-			if user_reengagments.blank? or ((now - user_reengagments.last.created_at) > next_checkpoint.days)
-				sample_asker_id = user.posts.sample.in_reply_to_user_id
-				asker_recipients[sample_asker_id] ||= {:recipients => []}
-				asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}					
-			end
-		end
-
-		# Get popular publications
-		Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 5.weeks.ago).group_by(&:user_id).each do |user_id, posts|
-      asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
-    end		  
-
-    # Send tweets
-    asker_recipients.each do |asker_id, recipient_data|
-    	asker = Asker.find(asker_id)
-    	publication = recipient_data[:publication]
-    	question = publication.question
-    	next unless asker and publication
-    	recipient_data[:recipients].each do |user_hash|
-    		user = user_hash[:user]
-    		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
-        Post.tweet(asker, "#{option_text} #{question.text}", {
-          :reply_to => user.twi_screen_name,
-          :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
-          :in_reply_to_user_id => user.id,
-          :posted_via_app => true,
-          :publication_id => publication.id,  
-          :requires_action => false,
-          :interaction_type => 2,
-          :link_to_parent => false,
-          :link_type => "reengage",
-          :intention => "reengage inactive"
-        })
-        Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval]}
-        sleep(1)
-    		# puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
-    		# Post.create({
-    		# 	:in_reply_to_user_id => user.id,
-    		# 	:user_id => asker.id,
-    		# 	:intention => "reengage inactive",
-    		# 	:created_at => now
-    		# })
-        # sent_to << user.id
-      end
-    end
-    # puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
-  end
 
  	def self.reengage_incorrect_answerers
     askers = User.askers
