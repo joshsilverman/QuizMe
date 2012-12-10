@@ -14,10 +14,16 @@ class User < ActiveRecord::Base
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
 
+  has_many :relationships
+  has_many :followers, :through => :relationships, :source => :followed
+
+  # has_many :followeds, :class_name => 'Relationship', :foreign_key => 'followed_id'
+  # has_many :followers, :through => :followeds, :source => :user
+
   # has_many :relationships, :foreign_key => :follower_id
   # has_many :follows, :through => :relationships
-  has_many :reverse_relationships, :foreign_key => :follower_id, :class_name => "Relationship"
-  has_many :follows, :through => :reverse_relationships, :source => :follower
+  # has_many :reverse_relationships, :foreign_key => :follower_id, :class_name => "Relationship"
+  # has_many :follows, :through => :reverse_relationships, :source => :follow
   
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\

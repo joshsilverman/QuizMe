@@ -2,8 +2,8 @@ class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
   
-  has_many :relationships, :foreign_key => :followed_id
-  has_many :followers, :through => :relationships
+  # has_many :relationships, :foreign_key => :followed_id
+  # has_many :followers, :through => :relationships
 
   default_scope where(:role => 'asker')
 
