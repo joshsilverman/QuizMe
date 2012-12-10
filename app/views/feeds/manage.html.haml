@@ -8,7 +8,7 @@
 				#left_column.span2.hidden-phone
 					#scoreboard.rounded.border-color
 						%ul.unstyled
-							%li{:style => "#{'font-weight:bold;' if @all_posts_count > 0}"}= link_to "All Messages (#{@all_posts_count})", '?'
+							%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All Messages (#{@asker.unresponded_count})", '?'
 							%li= link_to "Retweets", '?filter=retweets'
 							%li= link_to "Spam", '?filter=spam'
 							//%li= link_to "Starred", '?filter=starred'
