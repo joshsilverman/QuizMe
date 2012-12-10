@@ -208,7 +208,10 @@ class QuestionsController < ApplicationController
       last_answer = randomized_answers.pop
       answer_string = randomized_answers.join(", ") + " or #{last_answer}"
       correct_ans = as.shift
-      q_text = "#{q_text} (#{answer_string})"
+
+      if params[:hide_answers] != 'on'
+        q_text = "#{q_text} (#{answer_string})"
+      end
 
       @question = Question.find_by_text q_text
       #next if @question
