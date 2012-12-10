@@ -1,20 +1,16 @@
 class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
-  
-  # has_many :relationships, :foreign_key => :followed_id
-  # has_many :followers, :through => :relationships
 
   default_scope where(:role => 'asker')
 
   def update_followers
   	twi_follower_ids = self.twitter.follower_ids.ids
   	followers = User.where(:twi_user_id => twi_follower_ids)
-  	puts self.followers.to_json
-  	puts self.followers.size
+  	# self.followers.clear
   	# self.followers = followers
-  	# (twi_follower_ids - followers.collect(&:twi_user_id)).each { |new_follower_id| User.find_or_create_by_twi_user_id(new_follower_id) }
-  	# return twi_follower_ids
+  	# (twi_follower_ids - followers.collect(&:twi_user_id)).each { |new_follower_id| self.followers << User.find_or_create_by_twi_user_id(new_follower_id) }
+  	return twi_follower_ids
   end 
 
   def self.reengage_inactive_users
