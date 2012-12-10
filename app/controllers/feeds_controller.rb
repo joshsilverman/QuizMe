@@ -318,9 +318,7 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    # @posts = Post.where("requires_action = ? and in_reply_to_user_id = ? and (spam is null or spam = ?) and user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
     @posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
-    @all_posts_count = @posts.not_spam.where("interaction_type <> 3").count
 
     #filter for retweet, spam, starred
     @posts = @posts.where(:interaction_type => 3) if params[:filter] == 'retweets'

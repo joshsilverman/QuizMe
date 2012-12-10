@@ -7,17 +7,14 @@ class AskersController < ApplicationController
     @new_posts = {}
     @submitted_questions = {}
     asker_ids = Asker.all.collect(&:id)
-    askers_engagements = Post.not_spam.where("interaction_type <> 3").where("requires_action = ? and in_reply_to_user_id in (?) and user_id not in (?)", true, asker_ids, asker_ids).group_by(&:in_reply_to_user_id)
     
     @askers = Asker.all
-    @askers.each{|a| askers_engagements[a.id] = [] unless askers_engagements[a.id]}
-    @askers = @askers.sort{|a,b| askers_engagements[a.id].count <=> askers_engagements[b.id].count}.reverse
     @askers.each do |a|
-      unresponded = askers_engagements[a.id].try(:size) || 0
-      @new_posts[a.id] = unresponded
+      @new_posts[a.id] = a.unresponded_count
       submitted = Question.where(:created_for_asker_id => a.id, :status => 0).count
       @submitted_questions[a.id] = submitted
     end
+    @askers = @askers.sort{|a,b| @new_posts[a.id] <=> @new_posts[b.id]}.reverse
   end
 
   def show
