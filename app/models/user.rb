@@ -221,7 +221,6 @@ class User < ActiveRecord::Base
 
   def self.reengage_inactive_users(threshold = 1.week.ago)
     # sent_to = []
-  	### SWAP INTENTION
   	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
   	### MAX POST PER ASKER IN 1 SESSION?
 
@@ -261,11 +260,12 @@ class User < ActiveRecord::Base
     asker_recipients.each do |asker_id, recipient_data|
     	asker = Asker.find(asker_id)
     	publication = recipient_data[:publication]
+    	question = publication.question
     	next unless asker and publication
     	recipient_data[:recipients].each do |user_hash|
     		user = user_hash[:user]
     		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
-        Post.tweet(asker, "#{option_text} #{publication.question.text}", {
+        Post.tweet(asker, "#{option_text} #{question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
           :in_reply_to_user_id => user.id,
