@@ -44,11 +44,18 @@ task :reengage_incorrect_answerers => :environment do
 end
 
 task :reengage_inactive_users => :environment do
-  User.reengage_inactive_users()
+  Asker.reengage_inactive_users()
 end
 
 task :engage_new_users => :environment do 
   User.engage_new_users()
+end
+
+task :update_followers => :environment do
+  Asker.find(18).update_followers()
+  # Asker.all.each do |asker|
+  #   asker.update_followers()
+  # end
 end
 
 task :retweet_related => :environment do
