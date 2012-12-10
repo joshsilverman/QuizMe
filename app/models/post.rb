@@ -103,8 +103,7 @@ class Post < ActiveRecord::Base
       twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
       twitter_response = Post.twitter_request { user.twitter.update(tweet) }
-    end  
-    puts twitter_response.id.to_s
+    end
     if twitter_response
       post = Post.create(
         :user_id => user.id,
