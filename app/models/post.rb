@@ -121,14 +121,13 @@ class Post < ActiveRecord::Base
         :correct => options[:correct],
         :intention => options[:intention]
       ) 
+      if options[:publication_id]
+        publication = Publication.find(options[:publication_id])
+        publication.posts << post
+      end
     else
       post = nil  
     end
-    if options[:publication_id]
-      publication = Publication.find(options[:publication_id])
-      publication.posts << post
-    end
-    puts post.provider_post_id
     return post        
   end
 
