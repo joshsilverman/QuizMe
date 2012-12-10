@@ -216,9 +216,7 @@ class User < ActiveRecord::Base
 
   def self.reengage_inactive_users(threshold = 1.week.ago)
     # sent_to = []
-  	### MAKE HOURLY
   	### SWAP INTENTION
-  	### ACTIVITY OR ACTION?
   	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
   	### MAX POST PER ASKER IN 1 SESSION?
 
@@ -251,7 +249,6 @@ class User < ActiveRecord::Base
 
 		# Get popular publications
 		Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 5.weeks.ago).group_by(&:user_id).each do |user_id, posts|
-    # Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, checkpoints.first).group_by(&:user_id).each do |user_id, posts|
       asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
     end		  
 
@@ -262,88 +259,32 @@ class User < ActiveRecord::Base
     	next unless asker and publication
     	recipient_data[:recipients].each do |user_hash|
     		user = user_hash[:user]
-    		puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
-    		Post.create({
-    			:in_reply_to_user_id => user.id,
-    			:user_id => asker.id,
-    			:intention => "reengage inactive",
-    			:created_at => now
-    		})
-    		# sent_to << user.id
-
-    		# option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
-        # Post.tweet(asker, "#{option_text} #{publication.question.text}", {
-        #   :reply_to => user.twi_screen_name,
-        #   :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
-        #   :in_reply_to_user_id => user.id,
-        #   :posted_via_app => true,
-        #   :publication_id => publication_id,  
-        #   :requires_action => false,
-        #   :interaction_type => 2,
-        #   :link_to_parent => false,
-        #   :link_type => "reengage",
-        #   :intention => "reengage inactive"
-        # })
-        # Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval]}
+    		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
+        Post.tweet(asker, "#{option_text} #{publication.question.text}", {
+          :reply_to => user.twi_screen_name,
+          :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
+          :in_reply_to_user_id => user.id,
+          :posted_via_app => true,
+          :publication_id => publication.id,  
+          :requires_action => false,
+          :interaction_type => 2,
+          :link_to_parent => false,
+          :link_type => "reengage",
+          :intention => "reengage inactive"
+        })
+        Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval]}
+        sleep(1)
+    		# puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
+    		# Post.create({
+    		# 	:in_reply_to_user_id => user.id,
+    		# 	:user_id => asker.id,
+    		# 	:intention => "reengage inactive",
+    		# 	:created_at => now
+    		# })
+        # sent_to << user.id
       end
     end
-		# puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
-
-    ## COLLECT DISENGAGING USERS
-    # all_asker_ids = User.askers.collect(&:id)
-    # user_ids = []
-    # all_posts = Post.not_spam.where("(created_at > ? and created_at < ? and correct is not null and interaction_type = 2) or (created_at > ? and intention = ?)", (threshold - 1.week).beginning_of_day, threshold.end_of_day, threshold.end_of_day, 'reengage last week inactive')
-    # all_posts.group_by(&:user_id).each do |user_id, posts|
-    #   user_ids << user_id unless all_asker_ids.include? user_id or all_posts.where(:intention => 'reengage last week inactive', :in_reply_to_user_id => user_id).present?
-    # end
-    # engaged_user_ids = Post.not_spam.where("created_at > ? and user_id in (?)", threshold.end_of_day, user_ids).collect(&:user_id).uniq! || []
-    # disengaging_user_ids = user_ids - engaged_user_ids
-
-    # ## GET POPULAR PUBLICATIONS
-    # askers_users = {}
-    # askers_publications = {}
-    # active_asker_ids = []
-    # user_grouped_posts = all_posts.group_by(&:user_id)
-    # disengaging_user_ids.each do |user_id|
-    #   asker_id = user_grouped_posts[user_id].sample.in_reply_to_user_id
-    #   active_asker_ids << asker_id
-    #   askers_users[asker_id] = [] if askers_users[asker_id].nil?
-    #   askers_users[asker_id] << user_id
-    # end
-    # # Don't include re-engagement answers towards popularity
-    # Post.includes(:conversations).where("user_id in (?) and created_at > ? and interaction_type = 1", active_asker_ids, 1.week.ago).group_by(&:user_id).each do |user_id, posts|
-    #   askers_publications[user_id] = posts.sort_by{|p| p.conversations.size}.last.publication_id
-    # end
-
-    # ## TWEET POPULAR PUBS TO DISENGAGING USERS
-    # users = User.find(active_asker_ids + disengaging_user_ids).group_by(&:id)
-    # publications = Publication.includes(:question).find(askers_publications.values).group_by(&:id)
-    # askers_publications.each do |asker_id, publication_id|
-    #   asker = users[asker_id][0]
-    #   puts "#{asker.twi_screen_name} sending question: "
-    #   puts "#{publications[publication_id][0].question.text} "
-    #   puts "to user(s):"
-    #   next unless asker.is_role? "asker"
-    #   askers_users[asker_id].each do |user_id|
-    #     puts users[user_id][0].twi_screen_name
-    #     option_text = Post.create_split_test(user_id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")
-    #     Post.tweet(asker, "#{option_text} #{publications[publication_id][0].question.text}", {
-    #       :reply_to => users[user_id][0].twi_screen_name,
-    #       :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication_id}",
-    #       :in_reply_to_user_id => user_id,
-    #       :posted_via_app => true,
-    #       :publication_id => publication_id,  
-    #       :requires_action => false,
-    #       :interaction_type => 2,
-    #       :link_to_parent => false,
-    #       :link_type => "reengage",
-    #       :intention => "reengage last week inactive"
-    #     })  
-				# Mixpanel.track_event "reengage last week inactive", {:distinct_id => users[user_id][0].id}
-    #     sleep(1)
-    #   end
-    #   puts "\n"
-    # end
+    # puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
   end
 
  	def self.reengage_incorrect_answerers
