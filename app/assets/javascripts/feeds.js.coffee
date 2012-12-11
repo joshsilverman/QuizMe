@@ -320,7 +320,7 @@ class Post
 								conversation.find(".post").last().fadeIn(500, => @show_activity())
 								icon.fadeIn(250)
 							)
-						)						
+						)
 					)
 				)
 				# window.feed.answered += 1
