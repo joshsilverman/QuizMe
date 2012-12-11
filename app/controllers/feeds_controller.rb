@@ -64,13 +64,13 @@ class FeedsController < ApplicationController
       #   .order("posts.created_at DESC")\
       #   .limit(15)
 
-      # unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
-      @asker_publications = @asker.publications\
-        .includes(:posts)\
-        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
-        .order("posts.created_at DESC")
-        # Rails.cache.write("askers:#{@asker.id}:show", @asker_publications)
-      # end
+      unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
+        @asker_publications = @asker.publications\
+          .includes(:posts)\
+          .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+          .order("posts.created_at DESC")
+        Rails.cache.write("askers:#{@asker.id}:show", @asker_publications)
+      end
 
       # user responses
       posts = @asker_publications.collect {|p| p.posts}.flatten
@@ -367,7 +367,7 @@ class FeedsController < ApplicationController
       p.text = p.parent.text if p.interaction_type == 3
       @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
     end
-    @leaders = User.leaderboard(params[:id])
+    @leaders = Asker.leaderboard(params[:id])
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 

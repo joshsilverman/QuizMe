@@ -5,7 +5,7 @@
 # Pusher.secret = '782e6b3a20d17f5896dc'
 
 task :check_for_posts => :environment do
-  askers = User.askers.where('twi_oauth_token is not null')
+  askers = Asker.where('twi_oauth_token is not null')
   askers.each do |a|
     Post.check_for_posts(a)
     sleep(3)
@@ -13,7 +13,7 @@ task :check_for_posts => :environment do
 end
 
 task :post_question => :environment do
-  askers = User.askers.where('twi_oauth_token is not null')
+  askers = Asker.where('twi_oauth_token is not null')
   askers.each do |a|
     next unless a.published
     puts "Posting question for #{a.twi_screen_name}"
@@ -23,7 +23,7 @@ task :post_question => :environment do
 end
 
 task :fill_queue => :environment do
-  User.askers.each do |asker|
+  Asker.all.each do |asker|
     next unless asker.posts_per_day.present?
     PublicationQueue.clear_queue(asker)
     PublicationQueue.enqueue_questions(asker)
@@ -31,7 +31,7 @@ task :fill_queue => :environment do
 end
 
 task :save_stats => :environment do
-  askers = User.askers.where('twi_oauth_token is not null')
+  askers = Asker.where('twi_oauth_token is not null')
   askers.each do |asker|
     Stat.update_stats_from_cache(asker)
     sleep(5)
@@ -40,7 +40,7 @@ task :save_stats => :environment do
 end
 
 task :reengage_incorrect_answerers => :environment do
-  User.reengage_incorrect_answerers()
+  Asker.reengage_incorrect_answerers()
 end
 
 task :reengage_inactive_users => :environment do
@@ -48,20 +48,20 @@ task :reengage_inactive_users => :environment do
 end
 
 task :engage_new_users => :environment do 
-  User.engage_new_users()
+  Asker.engage_new_users()
 end
 
-task :update_followers => :environment do
-  Asker.find(18).update_followers()
+# task :update_followers => :environment do
+  # Asker.find(18).update_followers()
   # Asker.all.each do |asker|
   #   asker.update_followers()
   # end
-end
+# end
 
 task :retweet_related => :environment do
   if Time.now.hour % 2 == 0
     ACCOUNT_DATA.each do |k, v|
-      a = User.asker(k)
+      a = Asker.find(k)
       pub = Publication.where(:asker_id => v[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample
       begin
         p = Post.find_by_publication_id_and_provider(pub.id, 'twitter')
