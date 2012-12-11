@@ -64,10 +64,15 @@ class FeedsController < ApplicationController
       #   .order("posts.created_at DESC")\
       #   .limit(15)
 
-      @asker_publications = @asker.publications\
-        .includes(:posts)\
-        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
-        .order("posts.created_at DESC")
+      unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
+        @asker_publications = @asker.publications\
+          .includes(:posts)\
+          .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+          .order("posts.created_at DESC")
+        Rails.cache.write("askers:#{@asker.id}:show", @asker_publications)
+      else
+        puts "using cached show!"
+      end
 
       # user responses
       posts = @asker_publications.collect {|p| p.posts}.flatten
