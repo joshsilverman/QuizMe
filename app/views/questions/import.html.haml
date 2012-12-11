@@ -1,3 +1,5 @@
 = form_tag 'import', :action => 'post' do
   %textarea{:name => 'questions'}
+  Hide answers in question?
+  %input{:name => 'hide_answers', :type => 'checkbox'}
   = submit_tag 'Submit'
