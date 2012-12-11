@@ -44,9 +44,6 @@ class ApplicationController < ActionController::Base
   def split_user
     session[:user_agent] = request.user_agent
     session[:ip] = request.remote_ip
-    puts "ApplicationController session save"
-    puts session[:user_agent]
-    puts session[:ip]
     if current_user
       if session[:split] and session[:split] != current_user.id
         user_keys = Split.redis.hkeys("user_store:#{current_user.id}")

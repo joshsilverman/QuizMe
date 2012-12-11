@@ -29,12 +29,10 @@ class FeedsController < ApplicationController
     # end
     @pub_grouped_posts = posts.group_by(&:publication_id)
 
-    # posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id))
-    # @post_times = posts.group_by(&:publication_id)
-    publication_ids = Publication.select(:id).where(:published => true)
-    @question_count = publication_ids.size
+    @question_count = Publication.select(:id).where(:published => true).size
     @questions_answered = Post.where("correct is not null", params[:id]).count
     @followers = Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
+
     if current_user      
       @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
@@ -55,7 +53,7 @@ class FeedsController < ApplicationController
   end
 
   def show
-    if @asker = User.asker(params[:id])
+    if @asker = Asker.find(params[:id])
       
       # publications
       # @asker_publications = @asker.publications\
@@ -64,9 +62,10 @@ class FeedsController < ApplicationController
       #   .order("posts.created_at DESC")\
       #   .limit(15)
 
+      #include questions, answers
       unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
         @asker_publications = @asker.publications\
-          .includes(:posts)\
+          .includes([:asker, :posts, :question => :answers])\
           .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
           .order("posts.created_at DESC")
         Rails.cache.write("askers:#{@asker.id}:show", @asker_publications)
@@ -109,8 +108,7 @@ class FeedsController < ApplicationController
       end
 
       # stats
-      publication_ids = @asker.publications.select(:id).where(:published => true)
-      @question_count = publication_ids.size
+      @question_count = @asker.publications.select(:id).where(:published => true).size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
       @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
       
