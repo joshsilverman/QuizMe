@@ -55,6 +55,6 @@
 			.subsidiaries{:style => "display: none;"}
 				- if @conversation
 					= render :partial => "conversation"
-			.loading{:style => "display: none;"}
-				Loading...	
+				.loading{:style => "display: none;"}
+					Loading...	
 			= render :partial => "activity", :locals => {:post => publication}

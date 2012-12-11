@@ -530,11 +530,15 @@ body {
 		border-bottom-color: #ddd;						
 	}
 
+	.subsidiaries {
+		margin-bottom: 10px !important;
+	}
+
 	.subsidiary {
 		/*background: #FAFAFA;*/
 		background: whitesmoke;
 		margin-top: 0px !important;
-		margin-bottom: 10px;
+		/*margin-bottom: 10px;*/
 		-webkit-border-bottom-left-radius: 0px;
 		-moz-border-bottom-left-radius: 0px;
 		border-bottom-left-radius: 0px;					
