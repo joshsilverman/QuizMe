@@ -56,12 +56,18 @@ class FeedsController < ApplicationController
 
   def show
     if @asker = User.asker(params[:id])
+      
       # publications
+      # @asker_publications = @asker.publications\
+      #   .includes(:posts)\
+      #   .where("publications.published = ? and posts.interaction_type = 1", true)\
+      #   .order("posts.created_at DESC")\
+      #   .limit(15)
+
       @asker_publications = @asker.publications\
         .includes(:posts)\
-        .where("publications.published = ? and posts.interaction_type = 1", true)\
-        .order("posts.created_at DESC")\
-        .limit(15)
+        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+        .order("posts.created_at DESC")
 
       # user responses
       posts = @asker_publications.collect {|p| p.posts}.flatten
@@ -165,7 +171,7 @@ class FeedsController < ApplicationController
     publication = Publication.includes(:posts).find(params[:last_post_id])
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @asker_publications = @asker.publications.includes(:posts).where("publications.updated_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @asker_publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
       post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
       @asker_publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
