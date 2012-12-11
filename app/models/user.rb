@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
 				Post.publish(provider, self, publication)
 			end
 			queue.increment_index(self.posts_per_day)
-			Rails.cache.delete("askers:#{self.id}:show")
+			# Rails.cache.delete("askers:#{self.id}:show")
 			# puts "incremented queue index = #{queue.index}"
 		end
 	end
