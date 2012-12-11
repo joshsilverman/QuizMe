@@ -54,9 +54,14 @@ class Post
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
+
 		@element.find(".show_move").on "click", =>
 			@element.find(".show_move").hide()
 			@element.find(".move").show()
+
+		@element.find(".quick-reply-yes").on "click", => @quick_reply true
+		@element.find(".quick-reply-no").on "click", => @quick_reply false
+
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 
@@ -75,6 +80,7 @@ class Post
 			@open_reply_modal(e) 
 			return		
 	open_reply_modal: (event) =>
+		console.log "open reply modal"
 		post = $(event.target)
 		post = post.parents(".post") unless post.hasClass "post"
 		window.post = post
@@ -83,14 +89,14 @@ class Post
 		tweet = ''
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+
 		if parent_post == undefined		
 			publication_id = null
-			# $("#respond_modal").find(".correct").hide()
-			# $("#respond_modal").find(".incorrect").hide()
 		else
 			publication_id = parent_post['publication_id'] 
 			$("#respond_modal").find(".correct").show()		
 			$("#respond_modal").find(".incorrect").show()			
+
 		if post.attr("interaction_type") != "4"
 			textarea = $("#respond_modal").find("textarea")
 			text = "@#{username} "
@@ -165,6 +171,58 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
+
+	quick_reply: (correct) =>
+		event.stopPropagation()
+		console.log "quick reply"
+		post = $(event.target)
+		post = post.parents(".post") unless post.hasClass "post"
+		window.post = post
+		username = post.find('h5').html()
+		tweet = ''
+		parent_index = window.feed.conversations[@id]['posts'].length - 1
+		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+
+		if parent_post == undefined		
+			publication_id = null
+		else
+			publication_id = parent_post['publication_id']
+			
+		if correct == true
+			response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length)]
+			complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length)]
+			tweet = "#{response} #{complement}"
+		else
+			tweet = "#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}"
+
+		convo =  window.feed.conversations[post.attr('post_id')]
+		user_post = window.feed.engagements[@id]
+		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+
+		#tweet
+		params =
+			"interaction_type" : post.attr "interaction_type"
+			"asker_id" : window.feed.id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+			"message" : tweet
+			"username" : username
+		params["correct"] = correct
+		params["publication_id"] = publication_id if publication_id
+
+		console.log params
+
+		$.ajax '/manager_response',
+			type: 'POST'
+			data: params
+			error: (e) => console.log "ajax error tweeting response"
+			success: (e) =>
+				if e == false
+					console.log "twitter failed to send message"
+				else
+					console.log "succeeded in sending message"
+					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
+
 	unlink_post: =>
 		params =
 			"link_to_pub_id" : 0
