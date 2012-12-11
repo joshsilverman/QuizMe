@@ -33,10 +33,10 @@ CORRECT = [
   "Exactly.",
   "Right.",
   "Affirmative.",
-  "Yup.",
-  "Yeah.",
+  "Yup!",
+  "Yeah!" #,
   # "Totally.",
-  "Aye aye."
+  # "Aye aye."
 ]
           
 COMPLEMENT = [
@@ -51,7 +51,7 @@ COMPLEMENT = [
   "Woooooot!",
   "Woohoo!!",
   "Nice!",
-  "Like a pro!",
+  # "Like a pro!",
   # "You should be teaching this stuff!",
   "Terrific!",
   "Excellent!",
@@ -62,9 +62,16 @@ COMPLEMENT = [
   # "Well look at you!",
   # "You must be practicing!",
   "Well done!",
-  "Good thinking!",
+  # "Good thinking!",
   # "You're really learning a lot!",
   "Good going!",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
   ""
 ]
 
