@@ -311,10 +311,12 @@ class Post
 				@element.find(".parent").addClass("answered")
 				conversation = @element.find(".subsidiaries")
 				conversation.prepend($(e).hide())
+				first_post = conversation.find(".post").first()
 				loading.fadeOut(500, => 
-					conversation.find(".post").first().fadeIn(500, =>
+					first_post.fadeIn(500, =>
 						loading = @element.find(".loading").text("Thinking...")
-						loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
+						loading.fadeIn(500, => 
+							loading.delay(1000).fadeOut(500, => 
 								conversation.find(".post").last().fadeIn(500, => @show_activity())
 								icon.fadeIn(250)
 							)
