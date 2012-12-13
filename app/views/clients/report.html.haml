@@ -121,7 +121,7 @@
         .bill{:class => "#{'incomplete' if inc}"}
 
           %h3{:class => "#{'incomplete' if inc}"}
-            Activity (incomplete) from
+            = "Activity #{'(incomplete)' if inc} from "
             = posts_by_it.values.flatten.first.created_at.beginning_of_month.strftime("%m/%d")
             to
             = end_of_it
@@ -130,12 +130,18 @@
           - retweets = posts_by_it[3].count if posts_by_it[3]
           - retweet_rate = @client.rate_sheet.retweet
           - retweet_rate ||= 0
+          - retweets ||= 0
           - retweet_rev = retweets * retweet_rate
 
           - mentions = posts_by_it[2].count if posts_by_it[2]
           - mention_rate = @client.rate_sheet.tweet
           - mention_rate ||= 0
           - mention_rev = mentions * mention_rate
+
+          - conversions = 0
+          - conversion_rate = @client.rate_sheet.conversion
+          - conversion_rate ||= 0
+          - conversion_rev = conversions * conversion_rate
 
           - total = mentions + retweets
           - total_rev = retweet_rev + mention_rev
@@ -158,6 +164,12 @@
               %td= retweets
               %td= sprintf("$%.2f", retweet_rate) unless retweet_rate.nil?
               %td= sprintf("$%.2f", retweet_rev)
+            
+            %tr
+              %td Conversions
+              %td= conversions
+              %td= sprintf("$%.2f", conversion_rate) unless conversion_rate.nil?
+              %td= sprintf("$%.2f", conversion_rev)
 
             %tr.info
               %td{:colspan => 3} Total
