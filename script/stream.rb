@@ -1,15 +1,23 @@
-if Rails.env.production?
-	TweetStream.configure do |config|
-	  config.consumer_key       = 'tPuU2krUmUKdeQ8VQBjN9g'
-	  config.consumer_secret    = 'InlkWLx15C5IOKqPBqPKEXHxlEz7ZrrlzKLP2LmVePw'
-	  config.oauth_token        = '612050283-huCJeIt3MltG0ga2eq9rm9oWuGigIP68DL3cyZOP'
-	  config.oauth_token_secret = 'U0t08RRtyfBefNI2PlzZc6wMmBdADIBAqi4piIahBs'
-	  config.auth_method        = :oauth
-	end	
+Thread.new {
+	begin
+		Module.const_get("User")
+	rescue Exception => exception
+	  sleep(1)
+	  retry
+	end 
 
-	STREAMING_ACCOUNT = User.find(18)
+	if Rails.env.production?
+		require 'TweetStream'
 
-	Thread.new {
+		TweetStream.configure do |config|
+		  config.consumer_key       = 'tPuU2krUmUKdeQ8VQBjN9g'
+		  config.consumer_secret    = 'InlkWLx15C5IOKqPBqPKEXHxlEz7ZrrlzKLP2LmVePw'
+		  config.oauth_token        = '612050283-huCJeIt3MltG0ga2eq9rm9oWuGigIP68DL3cyZOP'
+		  config.oauth_token_secret = 'U0t08RRtyfBefNI2PlzZc6wMmBdADIBAqi4piIahBs'
+		  config.auth_method        = :oauth
+		end	
+
+		STREAMING_ACCOUNT = User.find(18)
 		client = TweetStream::Client.new
 
 		client.on_direct_message do |direct_message|
@@ -33,5 +41,5 @@ if Rails.env.production?
 		end	
 
 		client.userstream	
-	}
-end
+	end
+}

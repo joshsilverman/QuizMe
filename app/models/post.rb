@@ -372,6 +372,8 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
+    puts "missed item in stream! mention: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+
     Post.classifier.classify post
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -418,6 +420,8 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
+    puts "missed item in stream! DM: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+
     Post.classifier.classify post
   end
 
@@ -453,9 +457,13 @@ class Post < ActiveRecord::Base
         :learner_level => "share", 
         :last_interaction_at => post.created_at
       })
+
       if retweeted_post.intention == 'post aggregate activity' or retweeted_post.intention == 'grade'
         Post.trigger_split_test(u.id, 'post aggregate activity') 
       end
+
+      puts "missed item in stream! RT: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
@@ -463,18 +471,16 @@ class Post < ActiveRecord::Base
 
 
   def self.save_post(interaction_type, tweet, asker_id, conversation_id = nil)
-    puts interaction_type, tweet.to_json
+    puts "saving post from stream (#{interaction_type}):"
+    puts "#{tweet.text} (ppid: #{tweet.id.to_s})"
 
     if interaction_type == 4
       twi_user = tweet.sender
       user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
-      # CAN BE EITHER ASKERS, OR THEIRS
-      in_reply_to_post = Post.where(
-        :provider => 'twitter',
-        :interaction_type => 4,
-        :user_id => user.id,
-        :in_reply_to_user_id => asker_id
-      ).order("created_at DESC").limit(1).first      
+      in_reply_to_post = Post.where("provider = 'twitter' and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, user.id, user.id, asker_id)\
+        .order("created_at DESC")\
+        .limit(1)\
+        .first
       learner_level = "dm"
     else
       twi_user = tweet.user
