@@ -7,6 +7,8 @@ Thread.new {
 	end 
 
 	if Rails.env.production?
+		puts "Initializing connection to streaming API"
+
 		require 'TweetStream'
 
 		TweetStream.configure do |config|
