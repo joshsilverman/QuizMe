@@ -122,6 +122,8 @@ class FeedsController < ApplicationController
         .askers\
         .where(:id => ACCOUNT_DATA.keys.sample(3))
 
+      @question_form = (params[:question_form] == "1" ? true : false)
+
       respond_to do |format|
         format.html # show.html.erb
         format.json { render json: @posts }

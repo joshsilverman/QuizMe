@@ -29,6 +29,9 @@ class Feed
 		$(".post_question").on "click", (e) =>
 			e.preventDefault()
 			@post_question()
+
+		@post_question() if $("#question_form").val() == "true"
+
 		$("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
@@ -141,7 +144,7 @@ class Feed
 				post.find(".retweet").remove()
 				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 	post_question: =>
-		return unless window.feed.correct > 9 or $('.is_author').length > 0
+		# return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#post_question_modal").modal()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
