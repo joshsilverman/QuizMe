@@ -235,7 +235,7 @@ class Post < ActiveRecord::Base
           :intention => 'grade'
         })  
       else
-        if resource_url
+        if resource_url and answer.correct == false
           short_resource_url = Post.shorten_url(
             resource_url, 
             'wisr', 
@@ -252,7 +252,7 @@ class Post < ActiveRecord::Base
           :in_reply_to_post_id => user_post.id,
           :in_reply_to_user_id => current_user.id,
           :conversation_id => conversation.id,
-          :url => resource_url ? short_resource_url : nil,
+          :url => answer.correct ? short_resource_url : nil,
           :posted_via_app => true, 
           :requires_action => false,
           :interaction_type => 2,

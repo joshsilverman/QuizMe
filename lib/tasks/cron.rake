@@ -56,10 +56,7 @@ task :post_aggregate_activity => :environment do
 end
 
 # task :update_followers => :environment do
-  # Asker.find(18).update_followers()
-  # Asker.all.each do |asker|
-  #   asker.update_followers()
-  # end
+  # Asker.all.each { |asker| asker.update_followers() }
 # end
 
 task :retweet_related => :environment do
