@@ -34,9 +34,9 @@ task :save_stats => :environment do
   askers = Asker.where('twi_oauth_token is not null')
   askers.each do |asker|
     Stat.update_stats_from_cache(asker)
+    Rails.cache.delete("stats:#{asker.id}")
     sleep(5)
   end
-  Rails.cache.clear
 end
 
 task :reengage_incorrect_answerers => :environment do
