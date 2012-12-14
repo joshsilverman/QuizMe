@@ -51,6 +51,10 @@ task :engage_new_users => :environment do
   Asker.engage_new_users()
 end
 
+task :post_aggregate_activity => :environment do 
+  Asker.post_aggregate_activity()
+end
+
 # task :update_followers => :environment do
   # Asker.find(18).update_followers()
   # Asker.all.each do |asker|

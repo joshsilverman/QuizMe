@@ -38,6 +38,43 @@ class Asker < User
   	return twi_follower_ids
   end 
 
+  def self.post_aggregate_activity
+    current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
+    current_cache.keys.each do |user_id|
+      user_cache = current_cache[user_id]
+      user_cache[:askers].keys.each do |asker_id|
+        asker_cache = user_cache[:askers][asker_id]
+        if asker_cache[:last_answer_at] < 5.minutes.ago and asker_cache[:count] > 0
+          asker = Asker.find(asker_id)
+          puts "tweeting aggregate activity to #{user_cache[:twi_screen_name]} from #{asker.twi_screen_name}"
+          if asker_cache[:correct] > 20
+            script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+          elsif asker_cache[:correct] > 3
+            script = AGGREGATE_POST_RESPONSES[:many_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+          elsif asker_cache[:correct] > 1
+            script = AGGREGATE_POST_RESPONSES[:multiple_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+          elsif asker_cache[:count] > 1
+            script = AGGREGATE_POST_RESPONSES[:multiple_answers].sample.gsub("{count}", asker_cache[:count].to_s)
+          else
+            script = AGGREGATE_POST_RESPONSES[:one_answer].sample
+          end
+          user_post = Post.tweet(asker, script, {
+            :reply_to => user_cache[:twi_screen_name],
+            # :long_url => "wisr.com/feeds/#{asker.id}", 
+            :interaction_type => 2, 
+            :link_type => "agg", 
+            :in_reply_to_user_id => user_id,
+            :intention => 'post aggregate activity'
+          })
+          current_cache[user_id][:askers].delete(asker_id)
+          sleep(3)
+        end
+      end
+      current_cache.delete(user_id) if current_cache[user_id][:askers].keys.blank?
+    end
+    Rails.cache.write("aggregate activity", current_cache)
+  end
+
   def self.reengage_inactive_users
   	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
   	
