@@ -103,6 +103,27 @@ REENGAGE = [
   "We've missed you!"
 ]
 
+AGGREGATE_POST_RESPONSES = {
+  :tons_correct => [
+    "answered {num_correct} correctly... I don't think I can even count that high!"
+  ],
+  :many_correct => [
+    "is on a roll! That's {num_correct} correct answers!",
+    "is on fire! That's {num_correct} correct answers!",
+    "is unstoppable! That's {num_correct} correct answers!"
+  ],
+  :multiple_correct => [
+    "answered {num_correct} correctly. Boom!",
+    "answered {num_correct} correctly. Booyah!"
+  ],
+  :multiple_answers => [
+    "just answered {count} questions!"
+  ],
+  :one_answer => [
+    "just answered a question... nice!"
+  ]
+}
+
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {

@@ -168,8 +168,10 @@ class Post < ActiveRecord::Base
       :post_id => post.id,
       :publication_id => publication_id
     })
+
     post_to_twitter = Post.create_split_test(current_user.id, "wisr posts propagate to twitter", "true", "false")
-    if post_to_twitter == "true"
+    post_aggregate_activity = Post.create_split_test(current_user.id, "post aggregate activity", "false", "true")
+    if post_aggregate_activity == "false"
       user_post = Post.tweet(current_user, answer.text, {
         :reply_to => asker.twi_screen_name,
         :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
@@ -180,7 +182,7 @@ class Post < ActiveRecord::Base
         :in_reply_to_user_id => asker.id,
         :link_to_parent => false, 
         :correct => answer.correct,
-        :intention => 'twitter feed propagation experiment'
+        :intention => 'respond to question'
       })
     else
       user_post = Post.create({
@@ -194,9 +196,19 @@ class Post < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 2,
         :correct => answer.correct,
-        :intention => 'twitter feed propagation experiment'
+        :intention => 'respond to question'
       })
+      current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
+      current_cache[current_user.id] ||= {:askers => {}}
+      current_cache[current_user.id][:twi_screen_name] = current_user.twi_screen_name
+      current_cache[current_user.id][:askers][asker.id] ||= Hash.new(0)
+      current_cache[current_user.id][:askers][asker.id][:last_answer_at] = Time.now
+      current_cache[current_user.id][:askers][asker.id][:count] += 1
+      current_cache[current_user.id][:askers][asker.id][:correct] += 1 if answer.correct
+      Rails.cache.write("aggregate activity", current_cache)
+      # p Rails.cache.read("aggregate activity")
     end
+
     if user_post
       conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
@@ -205,10 +217,10 @@ class Post < ActiveRecord::Base
         :last_interaction_at => user_post.created_at,
         :last_answer_at => user_post.created_at
       })        
-      Post.trigger_split_test(current_user.id, 'dm reengagement')
       response_text = post.generate_response(status)
       publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
-      if post_to_twitter == "true"
+      
+      if post_aggregate_activity == "false"
         app_post = Post.tweet(asker, response_text, {
           :reply_to => current_user.twi_screen_name,
           :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
@@ -219,7 +231,8 @@ class Post < ActiveRecord::Base
           :in_reply_to_user_id => current_user.id,
           :link_to_parent => true, 
           :resource_url => answer.correct ? nil : resource_url,
-          :wisr_question => publication.question.resource_url ? false : true
+          :wisr_question => publication.question.resource_url ? false : true,
+          :intention => 'grade'
         })  
       else
         if resource_url
@@ -242,7 +255,8 @@ class Post < ActiveRecord::Base
           :url => resource_url ? short_resource_url : nil,
           :posted_via_app => true, 
           :requires_action => false,
-          :interaction_type => 2  
+          :interaction_type => 2,
+          :intention => 'grade'
         })
       end
 
@@ -359,7 +373,6 @@ class Post < ActiveRecord::Base
     })
 
     Post.classifier.classify post
-    Post.trigger_split_test(u.id, 'dm reengagement')
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
@@ -405,7 +418,6 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    Post.trigger_split_test(u.id, 'dm reengagement')
     Post.classifier.classify post
   end
 
@@ -441,7 +453,9 @@ class Post < ActiveRecord::Base
         :learner_level => "share", 
         :last_interaction_at => post.created_at
       })
-      Post.trigger_split_test(u.id, 'dm reengagement')
+      if retweeted_post.intention == 'post aggregate activity' or retweeted_post.intention == 'grade'
+        Post.trigger_split_test(u.id, 'post aggregate activity') 
+      end
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     end
