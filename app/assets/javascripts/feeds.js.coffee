@@ -32,10 +32,6 @@ class Feed
 
 		@post_question() if $("#question_form").val() == "true"
 
-		$("#post_question_tooltip").tooltip
-		$(".interaction").tooltip()
-		$("#directory img").tooltip()
-
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
 			$("#retweet_question").button("loading")
@@ -70,7 +66,7 @@ class Feed
 			e.preventDefault()
 			@show_more()	
 	initialize_tooltips: =>
-		$("#post_question_tooltip").tooltip
+		# $("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
 	initialize_ask: => 

@@ -21,12 +21,13 @@
 							%h3
 								Questions
 								.ugc
-									- if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
-										%a.post_question{:href => "/"} Post a Question
-										.div.is_author{:style => 'display:none;'}
-									- else
-										/ %p.post_disabled_explanation (10+ correct required!)
-										%a.post_question.disabled{:href => "/", :rel => "tooltip", :title => "10+ correct answers required!", 'data-placement' => 'bottom'} Post a Question
+									%a.post_question{:href => "/"} Post a Question
+									/ - if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
+									/ 	%a.post_question{:href => "/"} Post a Question
+									/ 	.div.is_author{:style => 'display:none;'}
+									/ - else
+									/ 	/ %p.post_disabled_explanation (10+ correct required!)
+									/ 	%a.post_question.disabled{:href => "/", :rel => "tooltip", :title => "10+ correct answers required!", 'data-placement' => 'bottom'} Post a Question
 						#feed_content
 							= render :partial => "feed"
 						#posts_more.border-color
