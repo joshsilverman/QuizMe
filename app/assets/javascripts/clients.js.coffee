@@ -39,9 +39,11 @@ $ ->
 options = 
   width: 864
   height: 280
-  legend: "none"
+  legend: 
+    position: 'in'
   pointSize: 6
   lineWidth: 3
+  isStacked: true
   chartArea:  
     width: 845
     left: 5

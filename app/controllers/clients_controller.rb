@@ -17,7 +17,6 @@ class ClientsController < ApplicationController
         .order("posts.created_at DESC")
     @posts_by_week = @posts.group_by{|p| p.created_at.strftime('%W')}
     @posts_by_month = @posts.group_by{|p| p.created_at.strftime('%m')}
-    #@posts_by_week.delete @posts_by_week.keys.max # ignore most recent week (incomplete)
 
     @posts_by_week_by_it = {}
     @posts_by_month_by_it = {}
@@ -33,11 +32,17 @@ class ClientsController < ApplicationController
 
     #graph data
     @waus = []
+    asker_ids = @posts.group_by{|p| p.in_reply_to_user_id}.keys
     @posts_by_week.each do |w,posts| 
-      @waus << [@posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d"), posts.group_by{|p| p.user_id}.count]
+      row = [@posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")] + [].fill(0, 0, asker_ids.count)
+      posts.group_by{|p| p.in_reply_to_user_id}.each do |asker_id, pposts|
+        next unless asker_ids.index asker_id
+        row[asker_ids.index(asker_id) + 1] = pposts.group_by{|p| p.user_id}.count
+      end
+      @waus << row
     end
     @waus.sort!{|a,b| a[0] <=> b[0]}
-    @waus = [["Date", "WAUs"]] + @waus
+    @waus = [["Date"] + asker_ids.map{|asker_id| Asker.find(asker_id).twi_screen_name}] + @waus
     @waus.pop
   end
 end

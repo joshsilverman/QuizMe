@@ -42,9 +42,12 @@
     #overview.tab-pane.active
 
       #waus{:style => 'display:none;'}= @waus.to_json
-      %h3 Weekly Active Users    
+      %h3 
+        Weekly Active Users
+
       #waus_graph.graph
 
+      %br
       %table.table.wau_stats
         %tr
           %th Dates
