@@ -320,23 +320,18 @@ class Post < ActiveRecord::Base
     # Get mentions, de-dupe, and save
     # last_mention = Post.where("provider_post_id is not null and in_reply_to_user_id = ?", current_acct.id)
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
-    puts "mentions: #{mentions.size}"
     existing_mention_ids = Post.select(:provider_post_id).where(:provider_post_id => mentions.collect { |m| m.id.to_s }).collect(&:provider_post_id)
     mentions.reject! { |m| existing_mention_ids.include? m.id.to_s }
-    puts "deduped mentions: #{mentions.size}"
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
 
     # Get DMs, de-dupe, and save
     dms = Post.twitter_request { client.direct_messages({:count => 200}) } || []
-    puts "DMs: #{dms.size}"
     existing_dm_ids = Post.select(:provider_post_id).where(:provider_post_id => dms.collect { |dm| dm.id.to_s }).collect(&:provider_post_id)
     dms.reject! { |dm| existing_dm_ids.include? dm.id.to_s }
-    puts "deduped DMs: #{dms.size}"
     dms.each { |d| Post.save_dm_data(d, current_acct) }
     
     # Get RTs and save
     retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
-    puts "RTs: #{retweets.size}"
     retweets.each { |r| Post.save_retweet_data(r, current_acct) }
 
     true 
