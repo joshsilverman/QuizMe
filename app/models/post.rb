@@ -372,7 +372,7 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    puts "missed item in stream! mention: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+    # puts "missed item in stream! mention: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
 
     Post.classifier.classify post
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -420,7 +420,7 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    puts "missed item in stream! DM: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+    # puts "missed item in stream! DM: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
 
     Post.classifier.classify post
   end
@@ -462,7 +462,7 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(u.id, 'post aggregate activity') 
       end
 
-      puts "missed item in stream! RT: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+      # puts "missed item in stream! RT: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
 
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -473,6 +473,8 @@ class Post < ActiveRecord::Base
   def self.save_post(interaction_type, tweet, asker_id, conversation_id = nil)
     puts "saving post from stream (#{interaction_type}):"
     puts "#{tweet.text} (ppid: #{tweet.id.to_s})"
+
+    return if Post.find_by_provider_post_id(tweet.id.to_s)
 
     if interaction_type == 4
       twi_user = tweet.sender

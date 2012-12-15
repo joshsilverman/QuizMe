@@ -25,8 +25,7 @@ Thread.new {
 		client.on_direct_message do |direct_message|
 			Post.save_post(4, direct_message, STREAMING_ACCOUNT.id)
 		end
-
-
+		
 		client.on_timeline_status do |status|
 			if status.retweeted_status and status.retweeted_status.user.id == STREAMING_ACCOUNT.twi_user_id
 				Post.save_post(3, status, STREAMING_ACCOUNT.id)
