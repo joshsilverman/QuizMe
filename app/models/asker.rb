@@ -119,8 +119,8 @@ class Asker < User
     	asker = Asker.find(asker_id)
     	follower_ids = asker.update_followers()
     	publication = recipient_data[:publication]
-    	question = publication.question
     	next unless asker and publication
+      question = publication.question
     	recipient_data[:recipients].each do |user_hash|
     		user = user_hash[:user]
     		next unless follower_ids.include? user.twi_user_id
