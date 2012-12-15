@@ -313,24 +313,30 @@ class Post < ActiveRecord::Base
     # mentions = Post.twitter_request { client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i}) } || []
     # retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
     # dms = Post.twitter_request { client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i}) } || []
+    puts current_acct.twi_screen_name
 
     client = current_acct.twitter
 
     # Get mentions, de-dupe, and save
-    last_mention = Post.where("provider_post_id is not null and in_reply_to_user_id = ?", current_acct.id)
+    # last_mention = Post.where("provider_post_id is not null and in_reply_to_user_id = ?", current_acct.id)
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
+    puts "mentions: #{mentions.size}"
     existing_mention_ids = Post.select(:provider_post_id).where(:provider_post_id => mentions.collect { |m| m.id.to_s }).collect(&:provider_post_id)
     mentions.reject! { |m| existing_mention_ids.include? m.id.to_s }
+    puts "deduped mentions: #{mentions.size}"
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
 
     # Get DMs, de-dupe, and save
     dms = Post.twitter_request { client.direct_messages({:count => 200}) } || []
+    puts "DMs: #{dms.size}"
     existing_dm_ids = Post.select(:provider_post_id).where(:provider_post_id => dms.collect { |dm| dm.id.to_s }).collect(&:provider_post_id)
     dms.reject! { |dm| existing_dm_ids.include? dm.id.to_s }
+    puts "deduped DMs: #{dms.size}"
     dms.each { |d| Post.save_dm_data(d, current_acct) }
     
     # Get RTs and save
     retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
+    puts "RTs: #{retweets.size}"
     retweets.each { |r| Post.save_retweet_data(r, current_acct) }
 
     true 
@@ -350,7 +356,7 @@ class Post < ActiveRecord::Base
       in_reply_to_post.update_attribute(:conversation_id, conversation_id)
     else
       conversation_id = nil
-      # puts "No in reply to post"
+      puts "No in reply to post"
     end
 
     post = Post.create( 
@@ -396,7 +402,7 @@ class Post < ActiveRecord::Base
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
     else
       conversation_id = nil
-      # puts "No in reply to dm"
+      puts "No in reply to dm"
     end
 
     # possible issue w/ origin dm and its response being collected 
