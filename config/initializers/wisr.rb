@@ -133,7 +133,7 @@ ACCOUNT_DATA = {
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 326, 7362, 14106], 
+    :retweet => [18, 31, 326, 7362, 19454], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
@@ -157,7 +157,7 @@ ACCOUNT_DATA = {
   },  
   ## QuizMeWeather
   7362 => {
-    :retweet => [18, 19, 14106, 12640], 
+    :retweet => [18, 19, 14106, 19454], 
     :hashtags => ["trivia", "weather", "meteorology", "meteo"],
     :category => "Life Sciences"
   },  
@@ -294,13 +294,19 @@ ACCOUNT_DATA = {
   },
   #SAThabit_algbra
   14106 => {
-    :retweet => [12640],
+    :retweet => [12640, 19454],
+    :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
+    :category => "Math"
+  },
+  #SAThabit_numbrs
+  19454 => {
+    :retweet => [12640, 14106],
     :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
     :category => "Math"
   },
   #SAThabit_math
   12640 => {
-    :retweet => [14106],
+    :retweet => [14106, 19454],
     :hashtags => ['math', 'SAT', "SATprep"],
     :category => "Math"
   }
