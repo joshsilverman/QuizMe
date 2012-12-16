@@ -23,6 +23,7 @@ class Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
+		@initialize_character_count()
 		$('.best_in_place').on "ajax:success", ->
 			if $(this).data("type") == "checkbox"
 				conversation = $(this).parents(".conversation")
@@ -32,10 +33,34 @@ class Feed
 			$("#respond_modal").find(".correct").removeClass("active")
 			$("#respond_modal").find(".incorrect").removeClass("active")
 			$(".response_message").hide()
+			$("#respond_modal #tweet").removeClass("disabled")
+			$(".response_container .character_count").text(140)
+			$(".response_container .character_count").css "color", "#333"
 		$("#unlink_post").on "click", => 
 			$("#unlink_post").button("loading")
 			window.current_post.unlink_post()
+
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
+	initialize_character_count: => 
+		response_container = $(".response_container")
+		textarea = response_container.find("textarea")
+		count = response_container.find(".character_count")
+		button = $("#respond_modal #tweet")
+		textarea.on "keydown", => update_character_count()
+		update_character_count = ->
+			text = 140 - textarea.val().length
+			count.text(text)
+			if text < 0
+				button.addClass("disabled")
+				count.css "color", "red"
+			else if text < 10
+				count.css "font-weight", "bold"
+				button.removeClass("disabled")
+				count.css "color", "#333"
+			else
+				count.css "font-weight", "normal"
+				count.css "color", "#333"
+				button.removeClass("disabled")
 
 class Post
 	id: null
@@ -80,7 +105,6 @@ class Post
 			@open_reply_modal(e) 
 			return		
 	open_reply_modal: (event) =>
-		console.log "open reply modal"
 		post = $(event.target)
 		post = post.parents(".post") unless post.hasClass "post"
 		window.post = post
@@ -90,6 +114,7 @@ class Post
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
 
+		textarea = $("#respond_modal").find("textarea")
 		if parent_post == undefined		
 			publication_id = null
 		else
@@ -98,7 +123,6 @@ class Post
 			$("#respond_modal").find(".incorrect").show()			
 
 		if post.attr("interaction_type") != "4"
-			textarea = $("#respond_modal").find("textarea")
 			text = "@#{username} "
 			textarea.val(text) 
 			textarea.focus()
@@ -171,7 +195,7 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
-
+		textarea.focus()
 	quick_reply: (correct) =>
 		event.stopPropagation()
 		console.log "quick reply"

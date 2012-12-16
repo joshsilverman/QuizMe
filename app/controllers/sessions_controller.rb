@@ -69,10 +69,10 @@ class SessionsController < ApplicationController
   end
 
   def confirm_js
-    puts "CONFIRM JS"
-    puts session[:user_agent]
-    puts session[:remote_ip]
-    puts "done"
+    # puts "CONFIRM JS"
+    # puts session[:user_agent]
+    # puts session[:remote_ip]
+    # puts "done"
     ab_user.confirm_js(session[:user_agent], session[:remote_ip])
     render :nothing => true
   end
