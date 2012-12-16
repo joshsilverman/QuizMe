@@ -275,7 +275,8 @@ class FeedsController < ApplicationController
           :in_reply_to_user_id => params[:in_reply_to_user_id], 
           :link_to_parent => false,
           :resource_url => resource_url,
-          :wisr_question => wisr_question
+          :wisr_question => wisr_question,
+          :intention => 'grade'
         })
         user_post.user.update_user_interactions({
           :learner_level => (correct.present? ? "twitter answer" : "mention"), 

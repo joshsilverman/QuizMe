@@ -39,9 +39,9 @@ function readCookie(name) {
 
 
 function js_check(){
-	console.log('CHECK')
+	// console.log('CHECK')
 	var jsconfirm = readCookie('jsconfirm');
-	console.log(jsconfirm);
+	// console.log(jsconfirm);
 	if(jsconfirm == null){
 		console.log('null... Sending AJAX request')
 		confirm_js();
@@ -56,7 +56,7 @@ function confirm_js(){
     	xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
   	},
 	  success: function(data) {
-	    console.log('JS Success');
+	    // console.log('JS Success');
 	    document.cookie = "jsconfirm=confirmed"
 	  }
 	});
