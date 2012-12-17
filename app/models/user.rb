@@ -133,8 +133,7 @@ class User < ActiveRecord::Base
 				:reply_to => user.twi_screen_name,
 				:in_reply_to_user_id => user.id,
 				:intention => 'solicit ugc',
-				:interaction_type => 2,
-				:link_type => 'ugc'
+				:interaction_type => 2
 	    })	
 	  end
 	end
