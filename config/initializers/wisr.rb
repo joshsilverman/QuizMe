@@ -109,6 +109,8 @@ AGGREGATE_POST_RESPONSES = {
   ],
   :many_correct => [
     "is on a roll! That's {num_correct} correct answers!",
+    "is on a streak! That's {num_correct} correct answers!",
+    "is in the zone! That's {num_correct} correct answers!",
     "is on fire! That's {num_correct} correct answers!",
     "is unstoppable! That's {num_correct} correct answers!"
   ],
@@ -120,9 +122,20 @@ AGGREGATE_POST_RESPONSES = {
     "just answered {count} questions!"
   ],
   :one_answer => [
-    "just answered a question... nice!"
+    "just answered a question... nice!",
+    "just answered a question... sweet!",
+    "answered a question... nice!",
+    "answered a question... sweet!"    
   ]
 }
+
+# UGC_REQUESTS = [
+#   "You know this material pretty well, how about writing a question or two? Go here: {link}",
+#   "You're pretty good at this stuff! Try writing a question or two for others to answer: {link}",
+#   "Want to post your own question on {asker}? Write one here: {link}",
+#   "Would you be interested in contributing some questions of your own? Do so here: {link}",
+#   "Do you have any of your own questions for the community? Share them here: {link}"
+# ]
 
 ACCOUNT_DATA = {
   ## QuizMeBio

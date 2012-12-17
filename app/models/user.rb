@@ -118,4 +118,24 @@ class User < ActiveRecord::Base
 		end
 		client
 	end
+  
+  def self.request_ugc(user, asker)
+	  if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, asker.id).size > 9
+	  	puts "sending ugc request to #{user.twi_screen_name} on handle #{asker.twi_screen_name}"
+	  	script = Post.create_split_test(user.id, 'solicit ugc',
+			  "You know this material pretty well, how about writing a question or two? Go here: {link}",
+			  "You're pretty good at this stuff! Try writing a question or two for others to answer: {link}",
+			  "Want to post your own question on {asker}? Write one here: {link}",
+			  "Would you be interested in contributing some questions of your own? Do so here: {link}",
+			  "Do you have any of your own questions for the community? Share them here: {link}"
+	  	)
+	    Post.tweet(asker, script.gsub("{link}", "wisr.com/feeds/#{asker.id}?q=1").gsub("{asker}", "@#{asker.twi_screen_name}"), {
+				:reply_to => user.twi_screen_name,
+				:in_reply_to_user_id => user.id,
+				:intention => 'solicit ugc',
+				:interaction_type => 2,
+				:link_type => 'ugc'
+	    })	
+	  end
+	end
 end
