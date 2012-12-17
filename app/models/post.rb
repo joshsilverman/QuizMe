@@ -97,7 +97,6 @@ class Post < ActiveRecord::Base
       :via_user => options[:via],
       :wisr_question => options[:wisr_question]
     })
-    puts tweet
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
@@ -259,6 +258,9 @@ class Post < ActiveRecord::Base
           :intention => 'grade'
         })
       end
+
+      # Check if we should ask for UGC
+      User.request_ugc(current_user, asker)
 
       in_reply_to = nil
       if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?

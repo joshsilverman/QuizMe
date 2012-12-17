@@ -122,7 +122,7 @@ class FeedsController < ApplicationController
         .askers\
         .where(:id => ACCOUNT_DATA.keys.sample(3))
 
-      @question_form = (params[:question_form] == "1" ? true : false)
+      @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 
       respond_to do |format|
         format.html # show.html.erb
@@ -278,11 +278,15 @@ class FeedsController < ApplicationController
           :wisr_question => wisr_question,
           :intention => 'grade'
         })
-        user_post.user.update_user_interactions({
+        user = user_post.user
+        user.update_user_interactions({
           :learner_level => (correct.present? ? "twitter answer" : "mention"), 
           :last_interaction_at => user_post.created_at,
           :last_answer_at => (correct.present? ? user_post.created_at : nil)
         })
+
+        # Check if we should ask for UGC
+        User.request_ugc(user, asker)
 
         in_reply_to = nil
         if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?

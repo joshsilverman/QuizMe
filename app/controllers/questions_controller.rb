@@ -127,6 +127,8 @@ class QuestionsController < ApplicationController
     @question.status = 0
     @question.save
 
+    Post.trigger_split_test(current_user.id, 'solicit ugc')
+
     #correct answer save
     @answer = Answer.find_or_create_by_id(params[:canswer_id])
     @answer.update_attributes(:text => params[:canswer], :correct => true)
