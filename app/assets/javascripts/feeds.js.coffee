@@ -40,6 +40,13 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
+		$(".post_another").on "click", => 
+			modal = $("#post_question_modal")
+			$('#submit_question').button('reset')
+			modal.find(".modal-body").slideToggle(250, =>
+				modal.find(".message").hide()
+				modal.find(".question_form").show()
+			).delay(250).slideToggle(250)
 	activity_stream: =>
 		$.ajax '/activity_stream',
 			type: 'GET'
@@ -164,6 +171,9 @@ class Feed
 					"ianswer1" : $("#ianswer1 input").val()
 					"ianswer2" : $("#ianswer2 input").val()
 					"ianswer3" : $("#ianswer3 input").val()
+				$("#submit_question").button("loading")
+				modal = $("#post_question_modal")
+				modal.find(".modal-body").slideToggle(250)
 				$.ajax
 					url: "/questions/save_question_and_answers",
 					type: "POST",
@@ -171,12 +181,14 @@ class Feed
 					error: => alert_status(false),
 					success: (e) => 
 						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-						alert_status(true)
+						modal.find(".question_form").hide()
+						modal.find(".message").show()
+						modal.find(".modal-body").slideToggle(250)
 		alert_status = (status) ->
-			$('#submit_question').button('reset')
-			text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
-			$('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
-			alert text
+			# $('#submit_question').button('reset')
+			# text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
+			# $('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
+			# alert text
 		validate_form = ->
 			if $("#question_input").val() == ""
 				alert "Please enter a question!"
@@ -185,7 +197,7 @@ class Feed
 				alert "Please enter at least one correct and incorrect answer!"
 				return false
 			else
-				return true		
+				return true	
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		if last_post_id == undefined

@@ -6,28 +6,32 @@
     - else
       %h3 Edit Question
   .modal-body
-    %h3
-      %i.icon-question-sign
-      Question
-    %textarea#question_input
-    %hr
+    .question_form
+      %h3
+        %i.icon-question-sign
+        Question
+      %textarea#question_input
+      %hr
 
-    %h3
-      %i.icon-info-sign 
-      Answers
-    #answers
-      #canswer
-        .input-prepend.answer
-          %span.add-on
-            %i.icon-ok
-          %input{:type=>"text", :name => 'canswer', :placeholder => 'Correct answer'}>   
-      #ianswer1.ianswer
-        .input-prepend.answer
-          %span.add-on
-            %i.icon-remove
-          %input{:type=>"text", :name => 'ianswer1', :placeholder => 'Incorrect answer'}>
-    %a#add_answer
-      Add answer    
+      %h3
+        %i.icon-info-sign 
+        Answers
+      #answers
+        #canswer
+          .input-prepend.answer
+            %span.add-on
+              %i.icon-ok
+            %input{:type=>"text", :name => 'canswer', :placeholder => 'Correct answer'}>   
+        #ianswer1.ianswer
+          .input-prepend.answer
+            %span.add-on
+              %i.icon-remove
+            %input{:type=>"text", :name => 'ianswer1', :placeholder => 'Incorrect answer'}>
+      %a#add_answer
+        Add answer    
+    .message.hide
+      Your question was submitted, we'll get in touch when its posted! 
+      %a.post_another Write another →
   .modal-footer
     %a.btn{:href => "#", "data-dismiss" => "modal"} Cancel
     %a#submit_question.btn.btn-primary{:href => "#", "data-loading-text" => "Loading..."} Submit Question
