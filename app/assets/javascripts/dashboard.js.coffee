@@ -57,8 +57,10 @@ class Dashboard
             $(".tab-content #users").html(e)
             @question_data = $.parseJSON($("#questions_answered_data").val())
             @ugc = $.parseJSON($("#ugc_data").val())
+            @learner_levels = $.parseJSON($("#learner_levels_data").val())
             @draw_ugc()
             @draw_questions()
+            @draw_learner_levels()
           complete: -> $(".loading").hide()          
     else if target == "#core"
       if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
@@ -241,7 +243,12 @@ class Dashboard
   draw_answer_source: =>
     graph_data = google.visualization.arrayToDataTable(@answer_source)
     chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
-    chart.draw graph_data, cohort_options                
+    chart.draw graph_data, cohort_options 
+
+  draw_learner_levels: =>
+    graph_data = google.visualization.arrayToDataTable(@learner_levels)
+    chart = new google.visualization.PieChart(document.getElementById("learner_levels_graph"))
+    chart.draw graph_data, learner_levels_options 
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -269,6 +276,33 @@ pg_options =
     {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
   isStacked: true
   colors: ['orange', 'green', 'orange', "#1D3880"]
+
+learner_levels_options = 
+  width: 425
+  height: 425
+  legend: "none"
+  pointSize: 3
+  lineWidth: 3
+  chartArea:  
+    width: 420
+    left: 30
+    height: 420
+  hAxis:
+    textStyle: 
+      fontSize: 9
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
+  colors: [
+    "#C9D4FF",
+    "#9EB0F7", 
+    "#6A82DE",
+    "#3F58BA",
+    "#213996",
+    "#0E2066",
+    "#000C3B"
+  ]
 
 dau_mau_options = 
   width: 425

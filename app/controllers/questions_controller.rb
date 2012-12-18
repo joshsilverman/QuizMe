@@ -151,6 +151,11 @@ class QuestionsController < ApplicationController
       end
     end
 
+    current_user.update_user_interactions({
+      :learner_level => "author", 
+      :last_interaction_at => @question.created_at
+    })        
+
     render :json => @question
   end
 

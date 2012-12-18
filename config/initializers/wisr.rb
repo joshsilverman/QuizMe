@@ -16,7 +16,8 @@ LEARNER_LEVELS = [
   "mention", 
   "dm answer", 
   "twitter answer", 
-  "feed answer"
+  "feed answer",
+  "author"
 ]
 
 ###Response Bank ###

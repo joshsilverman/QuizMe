@@ -17,3 +17,13 @@
     #questions.panel.rounded.span10
       #questions_graph.graph
   = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json
+
+.learner_levels{:style => "height: 600px;"}
+  %h2.handle_name 
+    learner level breakdown
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #learner_levels.panel.rounded.span10
+      #learner_levels_graph.graph
+  = hidden_field_tag :learner_levels_data, @learner_levels_data.to_json

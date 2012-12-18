@@ -431,4 +431,13 @@ class Stat < ActiveRecord::Base
     end
     return graph_data
   end
+
+  def self.learner_levels
+    graph_data = [['learner level', 'users']]
+    LEARNER_LEVELS.each do |level|
+      next if level == "unengaged"
+      graph_data << [level, User.count(:conditions => "learner_level = '#{level}'")]
+    end
+    return graph_data
+  end
 end

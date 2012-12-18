@@ -121,6 +121,7 @@ class AskersController < ApplicationController
   def get_user_metrics
     @questions_answered_data = Stat.questions
     @ugc_data = Stat.ugc
+    @learner_levels_data = Stat.learner_levels
     render :partial => "users"
   end
 
