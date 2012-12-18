@@ -21,7 +21,9 @@
 							%h3
 								Questions
 								.ugc
-									%a.post_question{:href => "/"} Post a Question
+									%a.post_question{:href => "/"}
+										%i.icon-pencil
+										Post a Question
 									/ - if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
 									/ 	%a.post_question{:href => "/"} Post a Question
 									/ 	.div.is_author{:style => 'display:none;'}

@@ -7,12 +7,9 @@ class SessionsController < ApplicationController
     if current_user and current_user.is_role?('admin') and omni_params['update_asker_id'] #if asker update account
 
       user = User.asker(omni_params['update_asker_id'])
-      puts user
       user ||= User.find_by_twi_user_id auth["uid"]
-      puts user.to_yaml
       user ||= User.new
       user.role = 'asker'
-      puts user
 
       case provider
       when 'twitter'
