@@ -72,7 +72,7 @@ task :retweet_related => :environment do
         puts "exception while retweeting for #{a.twi_screen_name}"
       end
       if Time.now.hour % 11 == 0
-        Post.tweet(a, "Want me to publish YOUR questions? Post one here: wisr.com/feeds/#{a.id}?q=1", {
+        Post.tweet(a, "Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{a.id}?q=1", {
           :intention => 'solicit ugc',
           :interaction_type => 2
         })
