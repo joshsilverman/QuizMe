@@ -1,1 +1,19 @@
-SUP YO
+.ugc
+  %h2.handle_name 
+    questions submitted / day
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #ugc.panel.rounded.span10
+      #ugc_graph.graph
+  = hidden_field_tag :ugc_data, @ugc_data.to_json
+
+.questions_answered
+  %h2.handle_name 
+    median questions answered per user
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #questions.panel.rounded.span10
+      #questions_graph.graph
+  = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json

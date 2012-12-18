@@ -7,7 +7,7 @@ class Dashboard
   paulgraham: null
   handle_activity: null
   constructor: -> 
-    @active.push("0") 
+    # @active.push("0") 
     $('#tabs a').click (e) => 
       e.preventDefault()
       @update_tabs(e)
@@ -26,28 +26,43 @@ class Dashboard
 
   update_tabs: (e, target) =>
     target ||= $(e.target).tab().attr 'href'
-    if target == "#handles"
-      if @handle_activity
-        null
-      else
+    if target == "#retention"
+      unless @cohort
         $(".loading").show()
-        $.ajax "/get_handle_metrics"
+        $.ajax "/get_retention_metrics"
           type: "GET"
           success: (e) => 
-            $(".tab-content #handles").html(e)
-            @handle_activity = $.parseJSON($("#handle_activity_data").val())    
+            $(".tab-content #retention").html(e)
             @cohort = $.parseJSON($("#cohort_activity").val())
-            @question_data = $.parseJSON($("#question_data").val())
-            @draw_handle_activity()
             @draw_cohort_analysis()
-            @draw_questions()
+          complete: -> $(".loading").hide()        
+    if target == "#askers"
+      unless @handle_activity
+        $(".loading").show()
+        $.ajax "/get_asker_metrics"
+          type: "GET"
+          success: (e) => 
+            $(".tab-content #askers").html(e)
+            @handle_activity = $.parseJSON($("#handle_activity_data").val())
+            @draw_handle_activity()
           complete: -> $(".loading").hide()
+    if target == "#users"
+      unless @question_data
+        $(".loading").show()
+        $.ajax "/get_user_metrics"
+          type: "GET"
+          success: (e) => 
+            $(".tab-content #users").html(e)
+            @question_data = $.parseJSON($("#questions_answered_data").val())
+            @ugc = $.parseJSON($("#ugc_data").val())
+            @draw_ugc()
+            @draw_questions()
+          complete: -> $(".loading").hide()          
     else if target == "#core"
       if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
         @core()
     else if target == "#"
       return
-
     $('a[href=' + target + ']').tab('show')
     window.location.hash = target
 
@@ -214,6 +229,11 @@ class Dashboard
   draw_questions: =>
     graph_data = google.visualization.arrayToDataTable(@question_data)
     chart = new google.visualization.LineChart(document.getElementById("questions_graph"))
+    chart.draw graph_data, questions_options          
+
+  draw_ugc: => 
+    graph_data = google.visualization.arrayToDataTable(@ugc)
+    chart = new google.visualization.LineChart(document.getElementById("ugc_graph"))
     chart.draw graph_data, questions_options          
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0

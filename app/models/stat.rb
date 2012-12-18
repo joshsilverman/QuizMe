@@ -399,6 +399,20 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
+  def self.ugc(domain = 30)
+    graph_data = [["Date", "# Created"]]
+    day_grouped_questions = Question.where("created_at > ? and user_id not in (?)", 30.days.ago, Asker.all.collect(&:id))\
+      .group("to_char(created_at, 'MM-DD')")\
+      .count
+    ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
+      formatted_date = date.strftime("%m-%d")
+      data = [formatted_date]
+      data << (day_grouped_questions[formatted_date] || 0)
+      graph_data << data
+    end    
+    return graph_data
+  end
+
   def self.answer_source(domain = 8)
     graph_data = [["Date", "Wisr", "Twitter"]]
     off_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, false)\

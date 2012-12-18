@@ -1,5 +1,5 @@
 = hidden_field_tag :core_display_data, @core_display_data.to_json
-= hidden_field_tag :askers, @askers.group_by(&:id).to_json
+= hidden_field_tag :asker_data, @askers.group_by(&:id).to_json
 
 = hidden_field_tag :paulgraham, @paulgraham.to_json
 = hidden_field_tag :dau_mau, @dau_mau.to_json
@@ -7,7 +7,6 @@
 /= hidden_field_tag :daus, @daus.to_json
 = hidden_field_tag :revenue, @revenue.to_json
 = hidden_field_tag :cohort, @cohort.to_json
-/= hidden_field_tag :question_data, @question_data.to_json
 
 :css
 	.navbar-fixed-top .container {
@@ -32,9 +31,12 @@
 				%li 
 					%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
 						= asker.twi_screen_name
-
 	%li
-		%a{:href => "#handles"} Soc. Actions	
+		%a{:href => "#retention"} Retention		
+	%li
+		%a{:href => "#users"} Users		
+	%li
+		%a{:href => "#askers"} Askers
 
 .row
 	.tab-content
@@ -42,5 +44,9 @@
 			= render :partial => "core"
 		#core_by_handle.dashboard.span12.tab-pane
 			= render :partial => "core"
-		#handles.dashboard.span12.tab-pane
-			= render :partial => "handles"
+		#retention.dashboard.span12.tab-pane
+			= render :partial => "retention"			
+		#users.dashboard.span12.tab-pane
+			= render :partial => "users"			
+		#askers.dashboard.span12.tab-pane
+			= render :partial => "askers"

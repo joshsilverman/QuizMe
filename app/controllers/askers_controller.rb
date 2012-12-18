@@ -112,10 +112,20 @@ class AskersController < ApplicationController
     }
   end
 
-  def get_handle_metrics
+  def get_asker_metrics
     @handle_activity = Stat.handle_activity
-    @cohort = Stat.cohort_analysis
-    @question_data = Stat.questions
-    render :partial => "handles"
+    puts "asker_metrics"
+    render :partial => "askers"
   end
+
+  def get_user_metrics
+    @questions_answered_data = Stat.questions
+    @ugc_data = Stat.ugc
+    render :partial => "users"
+  end
+
+  def get_retention_metrics
+    @cohort = Stat.cohort_analysis
+    render :partial => "retention"
+  end  
 end
