@@ -11,10 +11,11 @@ class Question < ActiveRecord::Base
 
   before_save :generate_slug
 
-  def self.select_questions_to_post(asker, num_days_back_to_exclude)
+  def self.select_questions_to_post(asker, num_days_back_to_exclude, priority_questions = [])
     recent_question_ids = asker.publications.where("question_id is not null and published = ?", true).order('created_at DESC').limit(num_days_back_to_exclude * asker.posts_per_day).collect(&:question_id)
     recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
-    priority_questions = Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).collect(&:id)
+    Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).group_by(&:user_id).each { |user_id, user_questions| priority_questions << user_questions.sample.id }
+    # priority_questions = Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).collect(&:id)
     questions = Question.where("created_for_asker_id = ? and id not in (?) and status = 1", asker.id, recent_question_ids+priority_questions).includes(:answers)
     id_queue = priority_questions.sample(asker.posts_per_day) 
     id_queue += questions.sample(asker.posts_per_day - id_queue.size)
