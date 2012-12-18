@@ -22,7 +22,7 @@ class Feed
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
-		@initialize_ask()
+		# @initialize_ask()
 		@activity_stream()
 		$(".timeago").timeago()
 
@@ -76,56 +76,56 @@ class Feed
 		# $("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
-	initialize_ask: => 
-		ask_element = $("#ask .question_container")
-		textarea = ask_element.find("textarea")
-		count = ask_element.find(".character_count")
-		button = ask_element.find(".tweet_button")
-		button.on "click", => 
-			if (140 - textarea.val().length) > 0
-				button.button("loading")
-				params = 
-					"text" : textarea.val()
-					"asker_id" : @id
-				$.ajax '/ask',
-					type: 'POST'
-					data: params
-					success: (e) =>
-						textarea.hide()
-						button.button("reset")
-						ask_element.find(".post_url").attr "href", "http://twitter.com/#{@user_name}/status/#{e}"
-						ask_element.removeClass("focus").addClass("blur")
-						ask_element.find(".ask_success").fadeIn(250)
-					error: =>
-						textarea.hide()
-						button.button("reset")
-						ask_element.removeClass("focus").addClass("blur")
-						ask_element.find(".ask_success").text("Sorry, something went wrong!").fadeIn(250)
-		textarea.on "focus", => 
-			ask_element.removeClass("blur").addClass("focus")
-			if textarea.val() == ""
-				textarea.val("@#{@name} ")
-			update_character_count()
-		textarea.on "blur", => 
-			if textarea.val() == "@#{@name} " or textarea.val() == ""
-				textarea.val("")
-				ask_element.removeClass("focus").addClass("blur")
-			update_character_count()
-		textarea.on "keydown", => update_character_count()
-		$(".ask_again").on "click", =>
-			ask_element.find(".ask_success").hide()
-			textarea.val("").fadeIn(250)
-		update_character_count = ->
-			text = 140 - textarea.val().length
-			count.text(text)
-			if text < 0
-				button.addClass("disabled")
-			else if text < 10
-				count.css "color", "red"
-				button.removeClass("disabled")
-			else
-				count.css "color", "#333"
-				button.removeClass("disabled")
+	# initialize_ask: => 
+	# 	ask_element = $("#ask .question_container")
+	# 	textarea = ask_element.find("textarea")
+	# 	count = ask_element.find(".character_count")
+	# 	button = ask_element.find(".tweet_button")
+	# 	button.on "click", => 
+	# 		if (140 - textarea.val().length) > 0
+	# 			button.button("loading")
+	# 			params = 
+	# 				"text" : textarea.val()
+	# 				"asker_id" : @id
+	# 			$.ajax '/ask',
+	# 				type: 'POST'
+	# 				data: params
+	# 				success: (e) =>
+	# 					textarea.hide()
+	# 					button.button("reset")
+	# 					ask_element.find(".post_url").attr "href", "http://twitter.com/#{@user_name}/status/#{e}"
+	# 					ask_element.removeClass("focus").addClass("blur")
+	# 					ask_element.find(".ask_success").fadeIn(250)
+	# 				error: =>
+	# 					textarea.hide()
+	# 					button.button("reset")
+	# 					ask_element.removeClass("focus").addClass("blur")
+	# 					ask_element.find(".ask_success").text("Sorry, something went wrong!").fadeIn(250)
+	# 	textarea.on "focus", => 
+	# 		ask_element.removeClass("blur").addClass("focus")
+	# 		if textarea.val() == ""
+	# 			textarea.val("@#{@name} ")
+	# 		update_character_count()
+	# 	textarea.on "blur", => 
+	# 		if textarea.val() == "@#{@name} " or textarea.val() == ""
+	# 			textarea.val("")
+	# 			ask_element.removeClass("focus").addClass("blur")
+	# 		update_character_count()
+	# 	textarea.on "keydown", => update_character_count()
+	# 	$(".ask_again").on "click", =>
+	# 		ask_element.find(".ask_success").hide()
+	# 		textarea.val("").fadeIn(250)
+	# 	update_character_count = ->
+	# 		text = 140 - textarea.val().length
+	# 		count.text(text)
+	# 		if text < 0
+	# 			button.addClass("disabled")
+	# 		else if text < 10
+	# 			count.css "color", "red"
+	# 			button.removeClass("disabled")
+	# 		else
+	# 			count.css "color", "#333"
+	# 			button.removeClass("disabled")
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
 	# initializeNewPostListener: =>
 	# 	pusher = new Pusher('bffe5352760b25f9b8bd')

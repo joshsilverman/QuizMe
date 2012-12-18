@@ -1,16 +1,30 @@
 class PostsController < ApplicationController
 
 	def retweet
-		post = Publication.find(params[:publication_id]).posts.last
-		Post.create({
-			:user_id => current_user.id,
-			:provider => "twitter",
-			:in_reply_to_post_id => post.id, 
-			:in_reply_to_user_id => post.user_id,
-			:posted_via_app => true, 
-			:interaction_type => 3
-		})
-		render :json => current_user.twitter.retweet(post.provider_post_id)
+		if params[:publication_id]
+			post = Publication.find(params[:publication_id]).posts.last
+			Post.create({
+				:user_id => current_user.id,
+				:provider => "twitter",
+				:in_reply_to_post_id => post.id, 
+				:in_reply_to_user_id => post.user_id,
+				:posted_via_app => true, 
+				:interaction_type => 3
+			})
+			render :json => current_user.twitter.retweet(post.provider_post_id)
+		else
+			post = Post.find(params[:post_id])
+			asker = Asker.find(params[:asker_id])
+			Post.create({
+				:user_id => params[:asker_id],
+				:provider => "twitter",
+				:in_reply_to_post_id => post.id, 
+				:in_reply_to_user_id => post.user_id,
+				:posted_via_app => true, 
+				:interaction_type => 3
+			})
+			render :json => asker.twitter.retweet(post.provider_post_id)			
+		end
 	end
 
 	def update

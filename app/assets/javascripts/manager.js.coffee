@@ -39,7 +39,10 @@ class Feed
 		$("#unlink_post").on "click", => 
 			$("#unlink_post").button("loading")
 			window.current_post.unlink_post()
-
+		$("#retweet_question").on "click", (e) => 
+			e.preventDefault()
+			$("#retweet_question").button("loading")
+			@retweet($(e.target))
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 	initialize_character_count: => 
 		response_container = $(".response_container")
@@ -61,6 +64,17 @@ class Feed
 				count.css "font-weight", "normal"
 				count.css "color", "#333"
 				button.removeClass("disabled")
+	retweet: (e) =>
+		id = e.attr 'post_id'
+		params = 
+			"post_id" : id
+			"asker_id" : @id
+		$.ajax "/posts/retweet",
+			type: 'POST',
+			data: params
+			complete: => 
+				$("#retweet_question_modal").modal('hide')	
+				$('#retweet_question').button('reset')
 
 class Post
 	id: null
@@ -94,11 +108,15 @@ class Post
 			active: false, 
 			icons: false, 
 			disabled: true
-		})	
+		})		
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
 			return
+		else if $(e.target).hasClass "retweet"
+			$("#retweet_question_modal .modal-body").hide()
+			$("#retweet_question_modal").find("#retweet_question").attr "post_id", @id
+			$("#retweet_question_modal").modal()			
 		else if $(e.target).parents("#link_post_modal").length > 0 or $(e.target).is("a span") or $(e.target).hasClass("show_move")
 			return
 		else
