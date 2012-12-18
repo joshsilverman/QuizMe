@@ -114,7 +114,7 @@ class AskersController < ApplicationController
 
   def get_asker_metrics
     @handle_activity = Stat.handle_activity
-    puts "asker_metrics"
+    @answer_source_data = Stat.answer_source
     render :partial => "askers"
   end
 

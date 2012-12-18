@@ -44,7 +44,9 @@ class Dashboard
           success: (e) => 
             $(".tab-content #askers").html(e)
             @handle_activity = $.parseJSON($("#handle_activity_data").val())
+            @answer_source = $.parseJSON($("#answer_source_data").val())
             @draw_handle_activity()
+            @draw_answer_source()
           complete: -> $(".loading").hide()
     if target == "#users"
       unless @question_data
@@ -234,7 +236,12 @@ class Dashboard
   draw_ugc: => 
     graph_data = google.visualization.arrayToDataTable(@ugc)
     chart = new google.visualization.LineChart(document.getElementById("ugc_graph"))
-    chart.draw graph_data, questions_options          
+    chart.draw graph_data, questions_options 
+
+  draw_answer_source: =>
+    graph_data = google.visualization.arrayToDataTable(@answer_source)
+    chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
+    chart.draw graph_data, cohort_options                
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 

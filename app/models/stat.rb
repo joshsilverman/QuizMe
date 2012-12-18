@@ -429,6 +429,6 @@ class Stat < ActiveRecord::Base
       data << (off_site[formatted_date] || 0)
       graph_data << data
     end
-    puts graph_data.to_json
+    return graph_data
   end
 end

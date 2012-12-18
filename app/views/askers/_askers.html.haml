@@ -7,3 +7,13 @@
     #handle_activity.panel.rounded.span10
       #handle_activity_graph.graph
   = hidden_field_tag :handle_activity_data, @handle_activity.to_json
+
+.answer_source
+  %h2.handle_name 
+    answer source
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #answer_source.panel.rounded.span10
+      #answer_source_graph.graph
+  = hidden_field_tag :answer_source_data, @answer_source_data.to_json
