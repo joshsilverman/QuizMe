@@ -397,6 +397,9 @@ class Post < ActiveRecord::Base
 
     if in_reply_to_post
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
+
+      # Removes need to hide multiple DMs in same thread
+      in_reply_to_post.update_attribute(:requires_action, false)
     else
       conversation_id = nil
       puts "No in reply to dm"
