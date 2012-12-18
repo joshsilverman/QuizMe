@@ -9,6 +9,8 @@ class Question < ActiveRecord::Base
   has_many :badges, :through => :requirements
   has_many :requirements
 
+  scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+
   before_save :generate_slug
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude, priority_questions = [])

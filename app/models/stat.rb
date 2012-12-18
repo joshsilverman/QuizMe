@@ -401,7 +401,8 @@ class Stat < ActiveRecord::Base
 
   def self.ugc(domain = 30)
     graph_data = [["Date", "# Created"]]
-    day_grouped_questions = Question.where("created_at > ? and user_id not in (?)", 30.days.ago, Asker.all.collect(&:id))\
+    day_grouped_questions = Question.where("created_at > ?", domain.days.ago)\
+      .not_us\
       .group("to_char(created_at, 'MM-DD')")\
       .count
     ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
