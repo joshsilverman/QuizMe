@@ -57,7 +57,7 @@
       %a{"data-toggle" => "tab", :href => "#account"} Account
 
   .tab-content
-    #overview.tab-pane
+    #overview.tab-pane.active
 
       #waus{:style => 'display:none;'}= @waus.to_json
       %h3 
@@ -125,15 +125,15 @@
 
                 %tr.asker-row
                   %td= post.created_at.strftime("%m/%d") #post.interaction_type
-                  %td= "@#{post.twi_screen_name}"
+                  %td= "@#{post.user.twi_screen_name}"
                   %td= interaction_type[post.interaction_type]
                   %td= post.text
 
-    #people.tab-pane.active
+    #people.tab-pane
       - interaction_type = [nil, 'Answer', 'Mention', 'Retweet', 'DM']
 
       - @posts_by_week.each do |w, posts|
-        .wau-period.active{:id => "people-#{w}"}
+        .wau-period{:id => "people-#{w}"}
 
           %h3
             People from 
@@ -146,11 +146,12 @@
 
           %table.table
             %tr
-              %th Joined
               %th Last posted
               %th User
-              %th # Answered
-              %th Most recent answered
+              %th # Correct
+              %th # Incorrect
+              %th # Other
+              %th Recent answer
               %th Nudged
 
               - already_shown_users = []
@@ -159,16 +160,14 @@
                 - already_shown_users << post.user
 
                 %tr.asker-row
-                  %td= post.user.created_at.strftime("%m/%d")
                   %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %I:%M %p")
-                  %td= "@#{post.twi_screen_name}"
-                  %td=# Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where('correct IS NOT NULL').count
-                  %td= "Correct" ? post.correct : "Incorrect"
-                  %td= best_in_place post.user, :client_nudge, :type => :checkbox, :collection => ['Not yet', 'Nudged'], :nil => 'Not yet'
-                  %td=# post.user
-
-                  /%td= Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where(:correct => false).count
-                  /%td= Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where(:correct => nil).count
+                  %td= link_to "@#{post.user.twi_screen_name}", "http://twitter.com/#{post.user.twi_screen_name}", :target => :blank
+                  %td= @correct_count_by_user[post.user.id]
+                  %td= @incorrect_count_by_user[post.user.id]
+                  %td= @other_posts_count_by_user[post.user.id]
+                  %td= post.correct ? "Correct" : "Incorrect"
+                  %td
+                    %a{:href => "#"}= best_in_place post.user, :client_nudge, :type => :checkbox, :collection => ['No', 'Yes!'], :nil => 'No'
 
     #invoice.tab-pane
       - @posts_by_month_by_it.each do |w, posts_by_it|

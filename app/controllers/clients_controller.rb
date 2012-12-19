@@ -2,6 +2,7 @@ class ClientsController < ApplicationController
   before_filter :client?
   
   def report
+
     @client = Client.find params[:id]
     redirect_to "/" unless @client
     @askers = @client.askers
@@ -11,7 +12,7 @@ class ClientsController < ApplicationController
       @rate_sheet.clients << @client
     end
 
-    @posts = Post.not_spam.joins(:user)\
+    @posts = Post.not_spam.includes(:user)\
         .where("in_reply_to_user_id IN (?) AND users.role != 'asker'", @askers.collect(&:id))\
         .select([:text, "posts.created_at", :in_reply_to_user_id, :twi_screen_name, :interaction_type, :correct, :user_id, :spam, :autospam, "users.role", "users.twi_screen_name"])\
         .order("posts.created_at DESC")
@@ -45,6 +46,17 @@ class ClientsController < ApplicationController
     @waus = [["Date"] + asker_ids.map{|asker_id| Asker.find(asker_id).twi_screen_name}] + @waus
     @waus.pop
 
-    #@correct_count_by_user = Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where('correct IS NOT NULL').count
+    @correct_count_by_user = Post.not_spam\
+      .where("in_reply_to_user_id IN (?)", @askers.collect(&:id))\
+      .where('correct = ?', true)\
+      .group(:user_id).count
+    @incorrect_count_by_user = Post.not_spam\
+      .where("in_reply_to_user_id IN (?)", @askers.collect(&:id))\
+      .where('correct = ?', false)\
+      .group(:user_id).count
+    @other_posts_count_by_user = Post.not_spam\
+      .where("in_reply_to_user_id IN (?)", @askers.collect(&:id))\
+      .where('correct IS NULL')\
+      .group(:user_id).count
   end
 end

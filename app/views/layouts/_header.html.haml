@@ -21,14 +21,14 @@
                 .dropdown.nav-link
                   %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-                    - RateSheet.order("created_at ASC").all.each do |r|
+                    - RateSheet.includes(:clients).order("created_at ASC").all.each do |r|
                       - client = r.clients[0]
                       - next if client.nil?
                       %li
                         %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}= r.title 
                         
                     %li.divider
-                    - Client.order("created_at ASC").all.each do |client|
+                    - Client.includes(:rate_sheet).order("created_at ASC").all.each do |client|
                       - rs = client.rate_sheet
                       - next unless rs.nil?
                       %li
