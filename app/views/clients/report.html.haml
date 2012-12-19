@@ -16,7 +16,8 @@
   %ul.nav.nav-tabs
     %li.active
       %a{"data-toggle" => "tab", :href => "#overview"} Overview
-    %li.dropdown
+
+    %li.dropdown.activity
       %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
         Activity
         %b.caret
@@ -33,13 +34,30 @@
                 = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
           - i += 1
 
+    %li.dropdown.people
+      %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+        People
+        %b.caret
+      %ul.dropdown-menu.wau-periods
+        - i = 0
+        - @posts_by_week.each do |w, posts|
+          %li
+            %a{"data-toggle" => "tab", :href => "#people", 'data-target' => "#people-#{w}"}
+              = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+              \-
+              - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+                = end_of_week = 'present'
+              - else
+                = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+          - i += 1
+
     %li
       %a{"data-toggle" => "tab", :href => "#invoice"} Billing
     %li
       %a{"data-toggle" => "tab", :href => "#account"} Account
 
   .tab-content
-    #overview.tab-pane.active
+    #overview.tab-pane
 
       #waus{:style => 'display:none;'}= @waus.to_json
       %h3 
@@ -84,12 +102,11 @@
     #activity.tab-pane
       - interaction_type = [nil, 'Answer', 'Mention', 'Retweet', 'DM']
 
-
       - @posts_by_week.each do |w, posts|
         .wau-period{:id => "activity-#{w}"}
 
           %h3
-            Activity  from
+            Activity from
             = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
             to
             - if @posts_by_week[w].first.created_at.end_of_week > Date.today
@@ -111,6 +128,47 @@
                   %td= "@#{post.twi_screen_name}"
                   %td= interaction_type[post.interaction_type]
                   %td= post.text
+
+    #people.tab-pane.active
+      - interaction_type = [nil, 'Answer', 'Mention', 'Retweet', 'DM']
+
+      - @posts_by_week.each do |w, posts|
+        .wau-period.active{:id => "people-#{w}"}
+
+          %h3
+            People from 
+            = @posts_by_week[w].first.created_at.beginning_of_week.strftime("%m/%d")
+            to
+            - if @posts_by_week[w].first.created_at.end_of_week > Date.today
+              = end_of_week = 'present'
+            - else
+              = end_of_week = @posts_by_week[w].first.created_at.end_of_week.strftime("%m/%d")
+
+          %table.table
+            %tr
+              %th Joined
+              %th Last posted
+              %th User
+              %th # Answered
+              %th Most recent answered
+              %th Nudged
+
+              - already_shown_users = []
+              - posts.each_with_index do |post, i|
+                - next if already_shown_users.include? post.user
+                - already_shown_users << post.user
+
+                %tr.asker-row
+                  %td= post.user.created_at.strftime("%m/%d")
+                  %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %I:%M %p")
+                  %td= "@#{post.twi_screen_name}"
+                  %td=# Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where('correct IS NOT NULL').count
+                  %td= "Correct" ? post.correct : "Incorrect"
+                  %td= best_in_place post.user, :client_nudge, :type => :checkbox, :collection => ['Not yet', 'Nudged'], :nil => 'Not yet'
+                  %td=# post.user
+
+                  /%td= Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where(:correct => false).count
+                  /%td= Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where(:correct => nil).count
 
     #invoice.tab-pane
       - @posts_by_month_by_it.each do |w, posts_by_it|
@@ -177,6 +235,8 @@
             %tr.info
               %td{:colspan => 3} Total
               %td= sprintf("$%.2f", total_rev)
+
+
 
     #account.tab-pane
 

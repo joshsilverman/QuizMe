@@ -18,20 +18,20 @@ class Report
 
   show_wau_period: ->
 
-    if this.href.match(/#[^#]*$/)[0] == "#activity"
+    $.each ['activity', 'people'], (i, selector) =>
 
-      #wau periods
-      $('.wau-period').removeClass 'active'
-      $($(this).attr('data-target')).addClass 'active'
+      if this.href.match(/#[^#]*$/)[0] == "##{selector}"
+        #tabs
+        $('.nav-tabs > li').removeClass 'active'
+        $(".nav-tabs > li.dropdown.#{selector}").addClass 'active'
 
-      #tabs
-      $('.nav-tabs > li').removeClass 'active'
-      $('.nav-tabs > li.dropdown').addClass 'active'
+        # tab content wau periods
+        $("##{selector} .wau-period").removeClass 'active'
+        $($(this).attr('data-target')).addClass 'active'
 
-      #tab content
-      $('.tab-pane').removeClass 'active'
-      $("#activity").addClass 'active'
-
+        #tab content
+        $('.tab-pane').removeClass 'active'
+        $("##{selector}").addClass 'active'
 
 $ -> 
   window.report = new Report if $(".report").length > 0

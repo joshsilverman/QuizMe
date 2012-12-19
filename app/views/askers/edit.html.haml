@@ -19,14 +19,14 @@
               %h3= "@#{@asker.twi_screen_name} (#{@asker.twi_user_id})"
               %p
                 %i.icon-edit
-                = best_in_place @asker, :description, :type => :input, :nil => "No description", :path => ""
+                = best_in_place @asker, :description, :type => :input, :nil => "No description"
               - if current_user and (@asker.id == current_user.id or current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
 
                 %br
                 %p{:class => "text-decoration:italics;"}
                   This account will post
                   %i.icon-edit
-                  = best_in_place @asker, :posts_per_day, :type => :input, :nil => "0", :path => ""
+                  = best_in_place @asker, :posts_per_day, :type => :input, :nil => "0"
                   times per day.
                   
                 /%br

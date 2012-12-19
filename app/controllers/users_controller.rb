@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  #before_filter :admin?
+  before_filter :admin?, :except => [:show, :badges]
 
   def show
     @user = User.where("twi_screen_name ILIKE '%#{params[:twi_screen_name]}%'").first
@@ -41,6 +41,20 @@ class UsersController < ApplicationController
 
       if @badge_for_modal.blank? or !@user_badges.include? @badge_for_modal
         redirect_to "/#{params[:twi_screen_name]}/badges"
+      end
+    end
+  end
+
+  def update
+    @user = User.find(params[:id])
+
+    respond_to do |format|
+      if @user.update_attributes(params[:user])
+        format.html { redirect_to @user, notice: 'User was successfully updated.' }
+        format.json { head :ok }
+      else
+        format.html { render action: "edit" }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end

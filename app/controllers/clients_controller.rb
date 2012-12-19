@@ -44,5 +44,7 @@ class ClientsController < ApplicationController
     @waus.sort!{|a,b| a[0] <=> b[0]}
     @waus = [["Date"] + asker_ids.map{|asker_id| Asker.find(asker_id).twi_screen_name}] + @waus
     @waus.pop
+
+    #@correct_count_by_user = Post.not_spam.where("in_reply_to_user_id IN (?)", @askers.collect(&:id)).where(:user_id => post.user_id).where('correct IS NOT NULL').count
   end
 end

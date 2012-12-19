@@ -61,7 +61,7 @@ Quizmemanager::Application.routes.draw do
   match '/get_shortened_link' => 'posts#get_shortened_link'
 
   resources :askers
-  match "users/:id" => "askers#update"
+  #match "users/:id" => "askers#update"
 
   match "clients/:id/report" => "clients#report"
 
