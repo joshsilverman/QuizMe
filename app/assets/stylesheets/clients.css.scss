@@ -56,6 +56,11 @@
           background-color: #D9EDF7;
         }
       }
+      &.warning {
+        td {
+          background-color: #FCF8E3;
+        }
+      }
 
       td {
         &.indent {

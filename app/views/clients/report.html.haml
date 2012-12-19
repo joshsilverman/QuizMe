@@ -159,13 +159,18 @@
                 - next if already_shown_users.include? post.user
                 - already_shown_users << post.user
 
-                %tr.asker-row
+                - row_class = ''
+                - if post.user.client_nudge == true
+                  - row_class = 'info'
+                - elsif post.correct != false and @correct_count_by_user[post.user.id].to_i > 2 and post.user.client_nudge != true
+                  - row_class = 'warning'
+                %tr.asker-row{:class => row_class}
                   %td= post.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %I:%M %p")
                   %td= link_to "@#{post.user.twi_screen_name}", "http://twitter.com/#{post.user.twi_screen_name}", :target => :blank
                   %td= @correct_count_by_user[post.user.id]
                   %td= @incorrect_count_by_user[post.user.id]
                   %td= @other_posts_count_by_user[post.user.id]
-                  %td= post.correct ? "Correct" : "Incorrect"
+                  %td= (post.correct ? "Correct" : "Incorrect") unless post.correct.nil?
                   %td
                     %a{:href => "#"}= best_in_place post.user, :client_nudge, :type => :checkbox, :collection => ['No', 'Yes!'], :nil => 'No'
 
