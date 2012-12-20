@@ -2,8 +2,8 @@
 	- if @stream
 		- @stream.each_with_index do |action, i|
 			- conversation = action.conversation
-			- if conversation
-				- question = conversation.publication.question
+			- if conversation and (publication = conversation.publication)
+				- question = publication.question
 				%a.stream_item{:href => "/feeds/#{conversation.publication.asker_id}/#{conversation.publication.id}"}
 					%li{:class => ("border_bottom" if i < (@stream.size - 1))}
 						.content
