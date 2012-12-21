@@ -6,9 +6,6 @@ require "./config/environment.rb"
 if Rails.env.production?
 	puts "Initializing Twitter streaming API connection"
 
-	# Load tweetstream gem
-	require 'TweetStream'
-
 	TweetStream.configure do |config|
 	  config.consumer_key       = 'tPuU2krUmUKdeQ8VQBjN9g'
 	  config.consumer_secret    = 'InlkWLx15C5IOKqPBqPKEXHxlEz7ZrrlzKLP2LmVePw'
