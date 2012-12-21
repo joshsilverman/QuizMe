@@ -273,9 +273,9 @@ class Post < ActiveRecord::Base
       end
       if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
-        Post.trigger_split_test(current_user.id, 'cohort re-engagement') 
       end
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
+      Post.trigger_split_test(current_user.id, 'cohort re-engagement') 
       
       Mixpanel.track_event "answered", {
         :distinct_id => current_user.id,

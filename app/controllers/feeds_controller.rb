@@ -304,8 +304,8 @@ class FeedsController < ApplicationController
         }
         if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
           Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive')
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
         end
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
       else         
         response_post = Post.tweet(asker, tweet, {
           :reply_to => params[:username], 
