@@ -103,6 +103,7 @@ class Post < ActiveRecord::Base
     else
       twitter_response = Post.twitter_request { user.twitter.update(tweet) }
     end
+    post = nil
     if twitter_response
       options[:in_reply_to_user_id] = [options[:in_reply_to_user_id]] unless options[:in_reply_to_user_id].is_a?(Array)
       options[:in_reply_to_user_id].each do |user_id|
@@ -122,13 +123,11 @@ class Post < ActiveRecord::Base
           :correct => options[:correct],
           :intention => options[:intention]
         )
+        if options[:publication_id]
+          publication = Publication.find(options[:publication_id])
+          publication.posts << post
+        end
       end
-      if options[:publication_id]
-        publication = Publication.find(options[:publication_id])
-        publication.posts << post
-      end
-    else
-      post = nil  
     end
     return post        
   end

@@ -58,7 +58,7 @@ class Asker < User
           else
             script = AGGREGATE_POST_RESPONSES[:one_answer].sample
           end
-          user_post = Post.tweet(asker, script, {
+          Post.tweet(asker, script, {
             :reply_to => user_cache[:twi_screen_name],
             :interaction_type => 2, 
             :link_type => "agg", 
@@ -85,13 +85,13 @@ class Asker < User
 
   	# Get disengaging users
 		disengaging_users = User.includes(:posts)\
-			.where("users.last_interaction_at < ? and users.last_interaction_at > ?", (now - strategy.first.days), (now - (strategy.sum.days + 1.day)))\
-			.where("posts.created_at > ? and posts.correct is not null", (now - (strategy.sum.days + 1.day)))
+			.where("users.last_interaction_at < ? and users.last_interaction_at > ?", (now - strategy.first.days), (now - (strategy.sum.days + 3.days)))\
+			.where("posts.created_at > ? and posts.correct is not null", (now - (strategy.sum.days + 3.days)))
 
 		# Get recently sent re-engagements
 		recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
 			.where("intention = 'reengage inactive'")\
-			.where("created_at > ?", (now - (strategy.sum.days + 1.day)))
+			.where("created_at > ?", (now - (strategy.sum.days + 3.days)))
 
 		# Compile recipients by asker
 		asker_recipients = {}
@@ -129,6 +129,7 @@ class Asker < User
     		user = user_hash[:user]
     		next unless follower_ids.include? user.twi_user_id
     		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")    		
+    		puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
         Post.tweet(asker, "#{option_text} #{question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -143,7 +144,6 @@ class Asker < User
         })
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :cohort => false}
         sleep(1)
-    		# puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
       end
     end
 
