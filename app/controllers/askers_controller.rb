@@ -15,6 +15,7 @@ class AskersController < ApplicationController
       @submitted_questions[a.id] = submitted
     end
     @askers = @askers.sort{|a,b| @new_posts[a.id] <=> @new_posts[b.id]}.reverse
+    @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 
   def show
