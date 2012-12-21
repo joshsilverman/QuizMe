@@ -380,7 +380,7 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    # puts "missed item in stream! mention: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+    puts "missed item in stream! mention: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
@@ -431,7 +431,7 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    # puts "missed item in stream! DM: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+    puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
   end
@@ -473,7 +473,7 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(u.id, 'post aggregate activity') 
       end
 
-      # puts "missed item in stream! RT: #{post.to_json}" if STREAMING_ACCOUNT.id == current_acct.id
+      puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
 
       Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
       Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
