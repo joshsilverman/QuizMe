@@ -179,8 +179,8 @@ class Asker < User
             :link_type => "reengage",
             :intention => "reengage inactive"
           })
-          group_ids.each do |user_id|
-            Mixpanel.track_event "reengage inactive", {:distinct_id => user_id, :interval => user_hash[:interval], :cohort => true}
+          group.each do |recipient|
+            Mixpanel.track_event "reengage inactive", {:distinct_id => recipient[:user][:id], :interval => recipient[:user][:interval], :cohort => true}
           end
           sleep(1)
         end
