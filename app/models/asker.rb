@@ -46,7 +46,7 @@ class Asker < User
         asker_cache = user_cache[:askers][asker_id]
         if asker_cache[:last_answer_at] < 5.minutes.ago and asker_cache[:count] > 0
           asker = Asker.find(asker_id)
-          puts "tweeting aggregate activity to #{user_cache[:twi_screen_name]} from #{asker.twi_screen_name}"
+          # puts "tweeting aggregate activity to #{user_cache[:twi_screen_name]} from #{asker.twi_screen_name}"
           if asker_cache[:correct] > 20
             script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
           elsif asker_cache[:correct] > 3
@@ -58,9 +58,8 @@ class Asker < User
           else
             script = AGGREGATE_POST_RESPONSES[:one_answer].sample
           end
-          user_post = Post.tweet(asker, script, {
+          Post.tweet(asker, script, {
             :reply_to => user_cache[:twi_screen_name],
-            # :long_url => "wisr.com/feeds/#{asker.id}", 
             :interaction_type => 2, 
             :link_type => "agg", 
             :in_reply_to_user_id => user_id,
@@ -76,9 +75,7 @@ class Asker < User
   end
 
   def self.reengage_inactive_users
-  	### ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
-  	
-    # sent_to = []
+  	### BETTER METHOD TO ENSURE WE DONT SEND QUESTIONS ALREADY ANSWERED BY THE USER
 
   	# Strategy definition
   	strategy = [3, 7, 10]
@@ -88,43 +85,51 @@ class Asker < User
 
   	# Get disengaging users
 		disengaging_users = User.includes(:posts)\
-			.where("users.last_interaction_at < ? and users.last_interaction_at > ?", (now - strategy.first.days), (now - (strategy.sum.days + 1.day)))\
-			.where("posts.created_at > ? and posts.correct is not null", (now - (strategy.sum.days + 1.day)))
+			.where("users.last_interaction_at < ? and users.last_interaction_at > ?", (now - strategy.first.days), (now - (strategy.sum.days + 3.days)))\
+			.where("posts.created_at > ? and posts.correct is not null", (now - (strategy.sum.days + 3.days)))
 
 		# Get recently sent re-engagements
 		recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
 			.where("intention = 'reengage inactive'")\
-			.where("created_at > ?", (now - (strategy.sum.days + 1.day)))
+			.where("created_at > ?", (now - (strategy.sum.days + 3.days)))
 
 		# Compile recipients by asker
 		asker_recipients = {}
+    cohort_asker_recipients = {}
 		disengaging_users.each do |user|
 			user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id }.sort_by(&:created_at)
 			next_checkpoint = strategy[user_reengagments.size]
 			next if next_checkpoint.blank?
 			if user_reengagments.blank? or ((now - user_reengagments.last.created_at) > next_checkpoint.days)
 				sample_asker_id = user.posts.sample.in_reply_to_user_id
-				asker_recipients[sample_asker_id] ||= {:recipients => []}
-				asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}					
+	   		asker_recipients[sample_asker_id] ||= {:recipients => []}
+        cohort_asker_recipients[sample_asker_id] ||= {:recipients => []}
+        if Post.create_split_test(user.id, "cohort re-engagement", "false", "true") == "false"
+          asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}
+        else
+          cohort_asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}
+        end
 			end
 		end
 
 		# Get popular publications
 		Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, strategy.first.days.ago).group_by(&:user_id).each do |user_id, posts|
       asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
-    end		  
+      cohort_asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
+    end		 
 
-    # Send tweets
+    # Send regular tweets
     asker_recipients.each do |asker_id, recipient_data|
-    	asker = Asker.find(asker_id)
-    	follower_ids = asker.update_followers()
-    	publication = recipient_data[:publication]
-    	next unless asker and publication
+      asker = Asker.find(asker_id)
+      follower_ids = asker.update_followers()
+      publication = recipient_data[:publication]
+      next unless asker and publication
       question = publication.question
-    	recipient_data[:recipients].each do |user_hash|
+      recipient_data[:recipients].each do |user_hash|
     		user = user_hash[:user]
     		next unless follower_ids.include? user.twi_user_id
-    		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:","A question for you:","Do you know the answer?","Quick quiz:","We've missed you!")    		
+    		option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")    		
+    		puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
         Post.tweet(asker, "#{option_text} #{question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -137,19 +142,50 @@ class Asker < User
           :link_type => "reengage",
           :intention => "reengage inactive"
         })
-        Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval]}
+        Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :cohort => false}
         sleep(1)
-    		# puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
-    		# Post.create({
-    		# 	:in_reply_to_user_id => user.id,
-    		# 	:user_id => asker.id,
-    		# 	:intention => "reengage inactive",
-    		# 	:created_at => now
-    		# })
-        # sent_to << user.id
       end
     end
-    # puts "#{sent_to.size == sent_to.uniq.size} (#{sent_to.size} / #{sent_to.uniq.size})"
+
+    # Send cohort tweets
+    cohort_asker_recipients.each do |asker_id, recipient_data|
+      asker = Asker.find(asker_id)
+      follower_ids = asker.update_followers()
+      recipients = recipient_data[:recipients].select { |recipient| follower_ids.include? recipient[:user][:twi_user_id] }
+      publication = recipient_data[:publication]
+      next unless asker and publication
+      question = publication.question
+      recipients.shuffle.in_groups_of(3, false).each do |group|
+        if group.size < 3
+          puts "delayed sending to #{group.to_json}"
+          next
+        else
+          group_names = []
+          group_ids = []
+          group.each do |recipient| 
+            group_names << ("@" + recipient[:user][:twi_screen_name])
+            group_ids << recipient[:user][:id]
+          end
+          group_names = group_names.join(" ")
+          option_text = ["Pop quiz!", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!"].sample
+          puts "sending cohort re-engagement: #{group_names} #{option_text} twitter.com/#{asker.twi_screen_name}/status/#{publication.posts.where('interaction_type = 1').order('created_at DESC').first.provider_post_id}"
+          Post.tweet(asker, "#{group_names} #{option_text} twitter.com/#{asker.twi_screen_name}/status/#{publication.posts.where('interaction_type = 1').order('created_at DESC').first.provider_post_id}", {
+            :in_reply_to_user_id => group_ids,
+            :posted_via_app => true,
+            :publication_id => publication.id,  
+            :requires_action => false,
+            :interaction_type => 2,
+            :link_to_parent => false,
+            :link_type => "reengage",
+            :intention => "reengage inactive"
+          })
+          group_ids.each do |user_id|
+            Mixpanel.track_event "reengage inactive", {:distinct_id => user_id, :interval => user_hash[:interval], :cohort => true}
+          end
+          sleep(1)
+        end
+      end
+    end    
   end 
 
   def self.engage_new_users
