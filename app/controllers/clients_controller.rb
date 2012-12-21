@@ -1,5 +1,6 @@
 class ClientsController < ApplicationController
   before_filter :client?
+  before_filter :admin?, :except => :report
   
   def report
 
@@ -58,5 +59,28 @@ class ClientsController < ApplicationController
       .where("in_reply_to_user_id IN (?)", @askers.collect(&:id))\
       .where('correct IS NULL')\
       .group(:user_id).count
+  end
+
+  def nudge
+    @user = User.find params[:user_id]
+    @asker = Asker.find params[:asker_id]
+    unless @asker and @user
+      render :text => 'no user or no asker', :status => 404
+      return
+    end
+
+    if @user.client_nudge
+      render :text => 'user already nudged', :status => 400
+      return
+    end
+
+    @user.client_nudge = true
+    message = "You're doing really well! I offer a much more comprehensive (free) course here:"
+    long_url = "http://www.testive.com/sathabit/?version=email&utm_source=wisr&utm_twi_screen_name=#{@user.twi_screen_name}"
+    dm_status = Post.dm(@asker, @user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
+    puts "dm status: #{dm_status}" 
+    @user.save
+
+    render :text => nil, :status => 200
   end
 end

@@ -64,6 +64,7 @@ Quizmemanager::Application.routes.draw do
   #match "users/:id" => "askers#update"
 
   match "clients/:id/report" => "clients#report"
+  post "clients/nudge" => "clients#nudge"
 
   resources :rate_sheets
   resources :users

@@ -172,7 +172,8 @@
                   %td= @other_posts_count_by_user[post.user.id]
                   %td= (post.correct ? "Correct" : "Incorrect") unless post.correct.nil?
                   %td
-                    %a{:href => "#"}= best_in_place post.user, :client_nudge, :type => :checkbox, :collection => ['No', 'Yes!'], :nil => 'No'
+                    - unless post.user.client_nudge
+                      %a.nudge{:href => '#', :user_id => post.user.id, :asker_id => post.in_reply_to_user_id} Nudge
 
     #invoice.tab-pane
       - @posts_by_month_by_it.each do |w, posts_by_it|
