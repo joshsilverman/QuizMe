@@ -36,38 +36,52 @@
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name	
 										%p= post.text
-										%a.show_move move
-										%a.move{:style => "display: none;"}
-											= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action										
-										|
-										%a.retweet retweet
-										|
-										%a
-											= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
-										|
-										- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
-											%a.link_post unlink
-										- else 
-											%a.link_post 
-												link
+										/ %a.show_move move
+										/ %a.move{:style => "display: none;"}
+										/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action										
+										.post_actions
+											%a
+												%i.icon-eye-close
+												= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+											|
+											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
+												%a.link_post 
+													%i.icon-wrench
+													unlink
+											- else 
+												%a.link_post 
+													%i.icon-wrench
+													link
+											|
+											%a.retweet{:style => "margin-left: 0px;"}
+												%i.icon-retweet
+												retweet
+											|
+											%a.mark_ugc
+												%i.icon-question-sign
+												mark ugc
 
-										/ quick reply
-										- post_with_question = Post.find post.in_reply_to_post_id if post.in_reply_to_post_id
+											/ quick reply
+											- post_with_question = Post.find post.in_reply_to_post_id if post.in_reply_to_post_id
 
-										- if post_with_question and post_with_question.publication and post_with_question.publication.question
-											- post_with_question.publication.question.answers
-											- correct = post_with_question.publication.question.answers.reject{|a| a.correct != true}[0]
-										- elsif post.interaction_type == 4 and @asker.new_user_question
-											- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
+											- if post_with_question and post_with_question.publication and post_with_question.publication.question
+												- post_with_question.publication.question.answers
+												- correct = post_with_question.publication.question.answers.reject{|a| a.correct != true}[0]
+											- elsif post.interaction_type == 4 and @asker.new_user_question
+												- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
 
-										- if correct
-											%p
-												%a.quick-reply-yes yes
-												|
-												%a.quick-reply-no no
-												&nbsp;
-												%span.quick-reply
-													= "(answer: #{correct.text})"
+											- if correct
+												%p
+													%a.quick-reply-yes 
+														%i.icon-thumbs-up
+														yes
+													|
+													%a.quick-reply-no 
+														%i.icon-thumbs-down
+														no
+													&nbsp;
+													%span.quick-reply
+														= "(answer: #{correct.text})"
 
 						#posts_more.border-color
 							Last Post Reached

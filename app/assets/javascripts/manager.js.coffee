@@ -43,6 +43,14 @@ class Feed
 			e.preventDefault()
 			$("#retweet_question").button("loading")
 			@retweet($(e.target))
+		$(".mark_ugc").on "click", (e) =>
+			return if $(e.target).text() == "marked ugc"
+			id = $(e.target).parents(".post").first().attr 'post_id'
+			params = "post_id" : id
+			$.ajax "/questions/mark_ugc",
+				type: 'POST',
+				data: params
+
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 	initialize_character_count: => 
 		response_container = $(".response_container")
@@ -113,6 +121,8 @@ class Post
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
 			return
+		else if $(e.target).hasClass "mark_ugc"
+			$(e.target).text("marked ugc")
 		else if $(e.target).hasClass "retweet"
 			$("#retweet_question_modal .modal-body").hide()
 			$("#retweet_question_modal").find("#retweet_question").attr "post_id", @id

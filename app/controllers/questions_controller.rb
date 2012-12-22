@@ -127,7 +127,8 @@ class QuestionsController < ApplicationController
     @question.status = 0
     @question.save
 
-    Post.trigger_split_test(current_user.id, 'solicit ugc')
+    Post.trigger_split_test(current_user.id, 'ugc request type')
+    Post.trigger_split_test(current_user.id, 'ugc script')
 
     #correct answer save
     @answer = Answer.find_or_create_by_id(params[:canswer_id])
@@ -157,6 +158,13 @@ class QuestionsController < ApplicationController
     })        
 
     render :json => @question
+  end
+
+  def mark_ugc
+    user = Post.find(params[:post_id]).user
+    Post.trigger_split_test(user.id, 'ugc request type')
+    Post.trigger_split_test(user.id, 'ugc script')
+    render :nothing => true
   end
 
   def moderate
