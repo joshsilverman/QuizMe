@@ -7,6 +7,7 @@ class Report
     @render()
 
     $('.wau-periods a').click @show_wau_period
+    $('.nudge').click @nudge
 
   render: ->
     @draw_waus()
@@ -32,6 +33,24 @@ class Report
         #tab content
         $('.tab-pane').removeClass 'active'
         $("##{selector}").addClass 'active'
+
+  nudge: ->
+    $(this).html "..."
+    $.ajax
+      type: 'POST',
+      url: '/clients/nudge',
+      data:
+        user_id: $(this).attr('user_id'),
+        asker_id: $(this).attr('asker_id'),
+      success: => 
+        console.log "success"
+        window.ttthis = $(this)
+        $(this).closest('.asker-row').addClass('info')
+        $(this).closest('td').html ""
+      failure: => 
+        console.log "failure"
+        window.ttthis = $(this)
+        $(this).closest('td').html "fail :/"
 
 $ -> 
   window.report = new Report if $(".report").length > 0
