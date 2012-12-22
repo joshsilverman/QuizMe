@@ -74,6 +74,9 @@ Quizmemanager::Application.routes.draw do
   
   #Split Dashboard
   mount Split::Dashboard, :at => 'split'
+  Split::Dashboard.use Rack::Auth::Basic do |username, password|
+    username == 'wisr' && password == 'WrWr@ppl3'
+  end  
 
   root :to => 'feeds#index'
 
