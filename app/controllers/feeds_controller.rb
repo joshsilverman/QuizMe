@@ -45,16 +45,16 @@ class FeedsController < ApplicationController
     if @asker = Asker.find(params[:id])
 
       #include questions, answers
-      unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
-        @asker_publications = @asker.publications\
+      unless @publications = Rails.cache.read("askers:#{@asker.id}:show")
+        @publications = @asker.publications\
           .includes([:asker, :posts, :question => :answers])\
           .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
           .order("posts.created_at DESC")
-        Rails.cache.write("askers:#{@asker.id}:show", @asker_publications)
+        Rails.cache.write("askers:#{@asker.id}:show", @publications)
       end
 
       # user responses
-      posts = @asker_publications.collect {|p| p.posts}.flatten
+      posts = @publications.collect {|p| p.posts}.flatten
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
       # question activity
@@ -83,7 +83,7 @@ class FeedsController < ApplicationController
       # inject requested publication from params, render twi card
       if params[:post_id]
         @requested_publication = @asker.publications.find(params[:post_id])
-        @asker_publications.reverse!.push(@requested_publication).reverse! unless @asker_publications.include? @requested_publication
+        @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
         @render_twitter_card = true
       else
         @render_twitter_card = false     
