@@ -16,6 +16,12 @@ class Post < ActiveRecord::Base
 
   @@classifier = Classifier.new
   
+  def self.answers_count
+    Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
+      Post.where("correct is not null").count
+    end
+  end
+
   def self.classifier
     @@classifier
   end
