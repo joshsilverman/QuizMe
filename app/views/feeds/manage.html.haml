@@ -5,14 +5,6 @@
 			= render :partial => "account_info"
 
 			#feed.row
-				#left_column.span2.hidden-phone
-					#scoreboard.rounded.border-color
-						%ul.unstyled
-							%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All Messages (#{@asker.unresponded_count})", '?'
-							%li= link_to "Retweets", '?filter=retweets'
-							%li= link_to "Spam", '?filter=spam'
-							//%li= link_to "Starred", '?filter=starred'
-
 				#right_column.span7
 					#posts.rounded
 						.header.border-color
@@ -21,9 +13,24 @@
 								.btn-group
 									- unless params[:filter]
 										%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
+							
+						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
+						- unresponded_unlinked_count = unresponded_linked_count = 0
 						- @engagements.each do |id, post|
+							/ quick reply vars
+							- if post.parent and post.parent.publication and post.parent.publication.question
+								- post.parent.publication.question.answers
+								- correct = post.parent.publication.question.answers.reject{|a| a.correct != true}[0]
+							- elsif post.interaction_type == 4 and @asker.new_user_question
+								- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
+
+							- unresponded_unlinked_count += 1 if correct.nil?
+							- unresponded_linked_count += 1 if correct
+							- next if correct and @unlinked
+							- next if correct.nil? and @linked
+
 							.conversation.border-color
-								.post.parent.answered{:post_id => id, :interaction_type => post.interaction_type}
+								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
 									#classify
 										- if post.autospam
@@ -36,9 +43,7 @@
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name	
 										%p= post.text
-										/ %a.show_move move
-										/ %a.move{:style => "display: none;"}
-										/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action										
+										
 										.post_actions
 											%a
 												%i.icon-eye-close
@@ -61,30 +66,27 @@
 												%i.icon-question-sign
 												mark ugc
 
-											/ quick reply
-											- post_with_question = Post.find post.in_reply_to_post_id if post.in_reply_to_post_id
-
-											- if post_with_question and post_with_question.publication and post_with_question.publication.question
-												- post_with_question.publication.question.answers
-												- correct = post_with_question.publication.question.answers.reject{|a| a.correct != true}[0]
-											- elsif post.interaction_type == 4 and @asker.new_user_question
-												- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
-
-											- if correct
-												%p
-													%a.quick-reply-yes 
-														%i.icon-thumbs-up
-														yes
-													|
-													%a.quick-reply-no 
-														%i.icon-thumbs-down
-														no
-													&nbsp;
-													%span.quick-reply
-														= "(answer: #{correct.text})"
+										/ quick reply
+										- if correct
+											%p
+												%a.quick-reply-yes yes
+												|
+												%a.quick-reply-no no
+												&nbsp;
+												%span.quick-reply
+													= "(answer: #{correct.text})"
 
 						#posts_more.border-color
 							Last Post Reached
+
+				#left_column.span2.hidden-phone
+					%ul.nav.nav-tabs.nav-stacked
+						/%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All messages (#{@asker.unresponded_count})", '?'
+						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?'
+						%li{:style => "#{'font-weight:bold;' if unresponded_unlinked_count > 0}", :class => "#{'active' if @unlinked}"}= link_to "Unlinked (#{unresponded_unlinked_count})", '?filter=unlinked'
+						%li= link_to "Retweets", '?filter=retweets'
+						%li= link_to "Spam", '?filter=spam'
+						//%li= link_to "Starred", '?filter=starred'
 
 = render :partial => "respond_modal"
 = render :partial => "link_post_modal"
@@ -131,8 +133,6 @@
 
 = hidden_field_tag :feed_id, @asker.id
 = hidden_field_tag :feed_name, @asker.twi_screen_name
-= hidden_field_tag :post_id, @post_id
-= hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :conversations, @conversations.to_json
 = hidden_field_tag :engagements, @engagements.to_json
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
@@ -141,7 +141,3 @@
 = hidden_field_tag :correct_responses, CORRECT.to_json
 = hidden_field_tag :correct_complements, COMPLEMENT.to_json
 = hidden_field_tag :feed_id, @asker.id
-
-/ = hidden_field_tag :earned_badges_by_user, @earned_badges_by_user.to_json
-/ = hidden_field_tag :badges, @badges.to_json
-/ = hidden_field_tag :correct_answer_count_by_user, @correct_answer_count_by_user.to_json

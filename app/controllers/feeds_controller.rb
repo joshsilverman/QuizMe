@@ -335,68 +335,20 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
+    @posts = Post.includes(:user, :conversation => {:posts => :user}, :parent => {:publication => {:question => :answers}})\
+      .where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
 
     #filter for retweet, spam, starred
     @posts = @posts.where(:interaction_type => 3) if params[:filter] == 'retweets'
     @posts = @posts.where('spam = ? or autospam = ?', true, true) if params[:filter] == 'spam'
-    @posts = @posts.not_spam.where("interaction_type <> 3") unless params[:filter]
 
-    #order
+    @posts = @posts.not_spam.where("interaction_type <> 3") if params[:filter].nil? or params[:filter] == 'unlinked'
+    @linked = true if params[:filter].nil?
+    @unlinked = true if params[:filter] == 'unlinked'
+
     @posts = @posts.order("created_at DESC")
-
-    dm_ids = []
-    @engagements = {}
-    @conversations = {}
-    @posts.each do |p|
-      next if dm_ids.include? p.id
-      @engagements[p.id] = p
-      @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
-      @conversations[p.id][:users][p.user.id] = p.user if @conversations[p.id][:users][p.user.id].nil?
-      pub_id = nil
-      if p.interaction_type == 4
-        dm_history = Post.where("id != ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", p.id, @asker.id, p.user_id, p.user_id, @asker.id).order("created_at DESC")
-        dm_history.each do |dm|
-          @conversations[p.id][:posts] << dm
-          @conversations[p.id][:users][dm.user.id] = dm.user if @conversations[p.id][:users][dm.user.id].nil?
-          dm_ids << dm.id
-        end
-      else  
-        parent = p.parent  
-        while parent
-          if parent.in_reply_to_user_id == @asker.id or parent.user_id == @asker.id
-            @conversations[p.id][:posts] << parent
-            @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
-            pub_id = parent.publication_id unless parent.publication_id.nil?
-          end
-          parent = parent.parent
-        end
-      end
-      p.text = p.parent.text if p.interaction_type == 3
-      @conversations[p.id][:answers] = Publication.find(pub_id).question.answers unless pub_id.nil?
-    end
-    @leaders = Asker.leaderboard(params[:id])
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-
-    # stats
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
-    @question_count = @asker.publications.select(:id).where(:published => true).size
-    @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-    @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0        
-
-    # badge assignment data
-    user_ids = @engagements.map{|k,v| v.user_id}.uniq
-    @earned_badges_by_user = User.joins(:badges).where("users.id in (?)", user_ids).group_by{|u| u.id}
-    @badges = Badge.where(:asker_id => @asker.id)
-    @correct_answer_count_by_user = User.where("users.id in (?)", user_ids)
-
-    @new_user_question = Question.includes(:answers).find(@asker.new_user_q_id)
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @posts }
-    end
+    @engagements, @conversations = Post.grouped_as_conversations @posts
   end
 
   def ask

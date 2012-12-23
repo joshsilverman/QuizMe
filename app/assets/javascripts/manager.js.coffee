@@ -262,8 +262,6 @@ class Post
 		params["correct"] = correct
 		params["publication_id"] = publication_id if publication_id
 
-		console.log params
-
 		$.ajax '/manager_response',
 			type: 'POST'
 			data: params

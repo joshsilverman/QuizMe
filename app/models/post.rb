@@ -543,6 +543,44 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
+  def self.grouped_as_conversations posts
+    return {}, {} if posts.empty?
+    @asker = posts[0].parent.user
+
+    @_posts = {}
+    @conversations = {}
+    dm_ids = []
+    posts.each do |p|
+      next if dm_ids.include? p.id
+      @_posts[p.id] = p
+      @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
+      @conversations[p.id][:users][p.user.id] = p.user
+      parent_publication = nil
+      if p.interaction_type == 4
+        dm_history = p.conversation.posts #Post.where("id != ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", p.id, @asker.id, p.user_id, p.user_id, @asker.id).order("created_at DESC")
+        dm_history.each do |dm|
+          @conversations[p.id][:posts] << dm
+          @conversations[p.id][:users][dm.user.id] = dm.user if @conversations[p.id][:users][dm.user.id].nil?
+          dm_ids << dm.id
+        end
+      else  
+        parent = p.parent  
+        while parent
+          if parent.in_reply_to_user_id == @asker.id or parent.user_id == @asker.id
+            @conversations[p.id][:posts] << parent
+            @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
+            parent_publication = parent.publication unless parent.publication.nil?
+          end
+          parent = parent.parent
+        end
+      end
+      p.text = p.parent.text if p.interaction_type == 3
+      @conversations[p.id][:answers] = parent_publication.question.answers unless parent_publication.nil?
+    end
+
+    return @_posts, @conversations
+  end
+
   def generate_response(response_type)
     #Include backlink if exists
     case response_type
