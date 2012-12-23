@@ -330,7 +330,7 @@ class FeedsController < ApplicationController
 
     @posts = @posts.order("created_at DESC")
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
-    @engagements, @conversations = Post.grouped_as_conversations @posts
+    @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
   end
 
   def ask

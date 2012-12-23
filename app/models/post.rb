@@ -549,9 +549,8 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
-  def self.grouped_as_conversations posts
+  def self.grouped_as_conversations posts, asker
     return {}, {} if posts.empty?
-    @asker = posts[0].parent.user
 
     @_posts = {}
     @conversations = {}
@@ -572,7 +571,7 @@ class Post < ActiveRecord::Base
       else  
         parent = p.parent  
         while parent
-          if parent.in_reply_to_user_id == @asker.id or parent.user_id == @asker.id
+          if parent.in_reply_to_user_id == asker.id or parent.user_id == asker.id
             @conversations[p.id][:posts] << parent
             @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
             parent_publication = parent.publication unless parent.publication.nil?
