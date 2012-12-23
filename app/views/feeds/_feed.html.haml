@@ -1,6 +1,6 @@
 .feed_section
 	- now = Time.now
-	- @asker_publications.each do |publication|
+	- @publications.each do |publication|
 		- @local_asker = publication.asker
 		- @conversation = nil
 		- responded = false
@@ -27,7 +27,7 @@
 							%h5= @local_asker.twi_screen_name						
 						via
 						%a.question_via{:href => "http://twitter.com/#{user.twi_screen_name}", :target => "_blank"}
-							%h5= publication.question.user.twi_screen_name
+							%h5= user.twi_screen_name
 					- else
 						%a.asker_link{:href => "/feeds/#{@local_asker.id}"}
 							%h5= @local_asker.twi_screen_name

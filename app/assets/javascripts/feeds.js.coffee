@@ -22,8 +22,7 @@ class Feed
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
-		# @initialize_ask()
-		@activity_stream()
+		@activity_stream() 
 		$(".timeago").timeago()
 
 		$(".post_question").on "click", (e) =>
@@ -48,6 +47,7 @@ class Feed
 				modal.find(".question_form").show()
 			).delay(250).slideToggle(250)
 	activity_stream: =>
+		return unless $("#activity_stream_content").length > 0
 		$.ajax '/activity_stream',
 			type: 'GET'
 			success: (e) => 

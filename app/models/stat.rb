@@ -1,6 +1,12 @@
 class Stat < ActiveRecord::Base
   belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 
+  def self.followers_count
+    Rails.cache.fetch "stats_followers count", :expires_in => 1.hour do
+      Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
+    end
+  end
+
   def self.update_stats_from_cache(asker)
     today = Date.today.to_date
     stat = Stat.where(:date => today, :asker_id => asker.id).first

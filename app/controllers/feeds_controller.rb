@@ -4,9 +4,10 @@ class FeedsController < ApplicationController
   def index
     @asker = User.find(1)
     @post_id = params[:post_id]
-    @answer_id = params[:answer_id]    
-    @asker_publications = Publication.includes(:posts).where("publications.published = ? and posts.interaction_type = 1", true).order("posts.created_at DESC").limit(15).includes(:question => :answers)
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).order("created_at DESC") 
+    @answer_id = params[:answer_id]
+
+    @publications, posts = Publication.recently_published
+    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC") 
     @actions = {}
     post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
@@ -23,15 +24,7 @@ class FeedsController < ApplicationController
         } unless @actions[post_pub_map[post_id]].nil?
       end
     end
-    # if params[:post_id]
-    #   requested_publication = Publication.find(params[:post_id])
-    #   @publications.reverse!.push(requested_publication).reverse! unless @publications.include? requested_publication
-    # end
     @pub_grouped_posts = posts.group_by(&:publication_id)
-
-    @question_count = Publication.select(:id).where(:published => true).size
-    @questions_answered = Post.where("correct is not null", params[:id]).count
-    @followers = Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
 
     if current_user      
       @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
@@ -46,21 +39,10 @@ class FeedsController < ApplicationController
       @directory[ACCOUNT_DATA[id][:category]] = [] unless @directory[ACCOUNT_DATA[id][:category]] 
       @directory[ACCOUNT_DATA[id][:category]] << data[0]
     end
-
-    # if @asker.author_id
-    #   @author = User.find @asker.author_id
-    # end    
   end
 
   def show
     if @asker = Asker.find(params[:id])
-      
-      # publications
-      # @asker_publications = @asker.publications\
-      #   .includes(:posts)\
-      #   .where("publications.published = ? and posts.interaction_type = 1", true)\
-      #   .order("posts.created_at DESC")\
-      #   .limit(15)
 
       #include questions, answers
       unless @asker_publications = Rails.cache.read("askers:#{@asker.id}:show")
