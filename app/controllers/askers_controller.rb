@@ -6,15 +6,14 @@ class AskersController < ApplicationController
   def index
     @new_posts = {}
     @submitted_questions = {}
-    asker_ids = Asker.all.collect(&:id)
+    asker_ids = Asker.ids
+    
+    @unresponded_counts = Asker.unresponded_counts
+    @unmoderated_counts = Question.unmoderated_counts
+    @question_counts = Question.counts
     
     @askers = Asker.all
-    @askers.each do |a|
-      @new_posts[a.id] = a.unresponded_count
-      submitted = Question.where(:created_for_asker_id => a.id, :status => 0).count
-      @submitted_questions[a.id] = submitted
-    end
-    @askers = @askers.sort{|a,b| @new_posts[a.id] <=> @new_posts[b.id]}.reverse
+    @askers = @askers.sort{|a,b| @unresponded_counts[a.id] <=> @unresponded_counts[b.id]}.reverse
     @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 

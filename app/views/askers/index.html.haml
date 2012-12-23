@@ -26,10 +26,10 @@
       %td= i + 1
       %td= image_tag(asker.twi_profile_img_url)
       %td= link_to asker.twi_name, "/feeds/#{asker.id}"
-      %td= asker.askables.count
-      %td= @new_posts[asker.id]
+      %td= @question_counts[asker.id]
+      %td= @unresponded_counts[asker.id]
       %td
-        %a{:href => "/moderate"}= @submitted_questions[asker.id]
+        %a{:href => "/moderate"}= @unmoderated_counts[asker.id]
       %td
         %a{:href => "/feeds/#{asker.id}/manage"} Moderate
         &nbsp;|&nbsp;

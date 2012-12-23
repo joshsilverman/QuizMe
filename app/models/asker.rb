@@ -16,20 +16,24 @@ class Asker < User
   end
 
   def unresponded_count
-    posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, id, false, Asker.ids)
+    posts = Post.where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
     count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
 
     count
   end
 
-  # def unresponded_counts
-  #   posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id IN (?) and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
-  #   count = posts.not_spam.where("interaction_type = 2").count
-  #   count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
+  def self.unresponded_counts
+    posts = Post.where("posts.requires_action = ? and posts.in_reply_to_user_id IN (?) and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
+    mention_counts = posts.not_spam.where("interaction_type = 2").group('in_reply_to_user_id').count
+    dm_counts = posts.not_spam.where("interaction_type = 4").group('in_reply_to_user_id').count :user_id, :distinct => true
 
-  #   count
-  # end
+    counts = {}
+    Asker.ids.each{|id| counts[id] = 0}
+    counts = counts.merge(mention_counts)
+    counts = counts.merge(dm_counts){|key, v1, v2| v1 + v2}
+    counts
+  end
 
   def publish_question
     queue = self.publication_queue

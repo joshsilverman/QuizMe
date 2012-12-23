@@ -26,6 +26,14 @@ class Question < ActiveRecord::Base
     #@TODO email or some notification that I will actually read if not filled
   end
 
+  def self.unmoderated_counts
+    Question.where(:status => 0).group('created_for_asker_id').count
+  end
+
+  def self.counts
+    Question.group('created_for_asker_id').count
+  end
+
   def slug_text
     return self.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")[0..69]
   end
