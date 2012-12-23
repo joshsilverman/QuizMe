@@ -5,13 +5,31 @@ class Asker < User
 
   default_scope where(:role => 'asker')
 
+  # cached queries
+
+  def self.by_twi_screen_name
+    Rails.cache.fetch('askers_by_twi_screen_name', :expires_in => 5.minutes){Asker.order("twi_screen_name ASC").all}
+  end
+
+  def self.ids
+    Rails.cache.fetch('askers_by_twi_screen_name', :expires_in => 5.minutes){Asker.all.collect(&:id)}
+  end
+
   def unresponded_count
-    posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, id, false, Asker.all.collect(&:id))
+    posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
     count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
 
     count
   end
+
+  # def unresponded_counts
+  #   posts = Post.includes(:conversation).where("posts.requires_action = ? and posts.in_reply_to_user_id IN (?) and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
+  #   count = posts.not_spam.where("interaction_type = 2").count
+  #   count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
+
+  #   count
+  # end
 
   def publish_question
     queue = self.publication_queue
