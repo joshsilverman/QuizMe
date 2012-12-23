@@ -12,7 +12,7 @@ class Asker < User
   end
 
   def self.ids
-    Rails.cache.fetch('askers_by_twi_screen_name', :expires_in => 5.minutes){Asker.all.collect(&:id)}
+    Rails.cache.fetch('asker_ids', :expires_in => 5.minutes){Asker.all.collect(&:id)}
   end
 
   def unresponded_count
