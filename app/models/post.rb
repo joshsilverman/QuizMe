@@ -50,11 +50,7 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     return unless publication and question = publication.question
-    if question.user_id == 1
-      via = nil
-    else
-      via = question.user.twi_screen_name
-    end
+    via = (question.user_id == 1 ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
@@ -92,9 +88,9 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.tweet(user, text, options = {})
-    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], user.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", user.twi_screen_name, options[:wisr_question]) if options[:resource_url]
+  def self.tweet(sender, text, options = {}, post = nil)
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name) if options[:long_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", sender.twi_screen_name, options[:wisr_question]) if options[:resource_url]
     tweet = Post.format_tweet(text, {
       :in_reply_to_user => options[:reply_to],
       :question_backlink => short_url,
@@ -105,16 +101,15 @@ class Post < ActiveRecord::Base
     })
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
-      twitter_response = Post.twitter_request { user.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
+      twitter_response = Post.twitter_request { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
-      twitter_response = Post.twitter_request { user.twitter.update(tweet) }
+      twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
     end
-    post = nil
     if twitter_response
       options[:in_reply_to_user_id] = [options[:in_reply_to_user_id]] unless options[:in_reply_to_user_id].is_a?(Array)
       options[:in_reply_to_user_id].each do |user_id|
         post = Post.create(
-          :user_id => user.id,
+          :user_id => sender.id,
           :provider => 'twitter',
           :text => tweet,
           :provider_post_id => twitter_response.id.to_s,

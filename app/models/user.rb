@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
   
   def self.request_ugc(user, asker)
 	  if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, asker.id).size > 9
-	  	puts "sending ugc request to #{user.twi_screen_name} on handle #{asker.twi_screen_name}"
+	  	puts "attempting to send ugc request to #{user.twi_screen_name} on handle #{asker.twi_screen_name}"
 	  	script = Asker.get_ugc_script(asker, user)
 	  	if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
 	  		Post.dm(asker, user, script, {
