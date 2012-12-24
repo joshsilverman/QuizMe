@@ -1,6 +1,5 @@
 class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage]
-  caches_action :show, :expires_in => 1.minutes
 
   def index
     @asker = User.find(1)
@@ -101,8 +100,7 @@ class FeedsController < ApplicationController
       @author = User.find @asker.author_id if @asker.author_id
 
       # related
-      @related = User.select([:id, :twi_name, :description, :twi_profile_img_url])\
-        .askers\
+      @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
         .where(:id => ACCOUNT_DATA.keys.sample(3))
 
       @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
