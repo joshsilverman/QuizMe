@@ -6,7 +6,10 @@ class Publication < ActiveRecord::Base
 	has_many :posts
 
   def self.recently_published
+    puts "******************"
+    puts "recently_published"
     publications, posts, replies = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes do
+      puts "missed cache"
       publications = Publication.includes(:asker, :posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
         .order("posts.created_at DESC").limit(15).includes(:question => :answers)
