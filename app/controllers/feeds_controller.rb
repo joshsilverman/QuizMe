@@ -1,5 +1,6 @@
 class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage]
+  caches_action :show, :expires_in => 1.minutes
 
   def index
     @asker = User.find(1)
