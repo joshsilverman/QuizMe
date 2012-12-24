@@ -334,12 +334,13 @@ class Asker < User
   end  
 
   def self.get_ugc_script(asker, user)
-    return Post.create_split_test(user.id, 'ugc script',
+    script = Post.create_split_test(user.id, 'ugc script',
       "You know this material pretty well, how about writing a question or two? DM one to me or enter it at wisr.com/feeds/#{asker.id}?q=1",
       "You're pretty good at this stuff, try writing a question for others to answer! DM me or enter it at wisr.com/feeds/#{asker.id}?q=1",
       "Want to post your own question on #{asker.twi_screen_name}? DM me one or input it at wisr.com/feeds/#{asker.id}?q=1",
       "Would you be interested in contributing some questions of your own? If so, DM me or enter them here: wisr.com/feeds/#{asker.id}?q=1",
       "You're a pro! Want to write some of your own questions? DM them to me or enter them at wisr.com/feeds/#{asker.id}?q=1"
     )
+    return script
   end 
 end
