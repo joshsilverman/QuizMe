@@ -25,21 +25,18 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recently_published_by_asker asker
-    publications = posts = replies = []
-    publications = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
+    publications, posts, replies = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
         .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
         .order("posts.created_at DESC")
       posts = publications.collect {|p| p.posts}.flatten 
-      replies = Rails.cache.fetch "_replies_recently_published_by_asker_#{asker.id}" do
-        Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
-          .where(:in_reply_to_post_id => posts.collect(&:id))\
-          .order("created_at ASC")\
-          .includes(:user)\
-          .group_by(&:in_reply_to_post_id)
-      end
-      publications
+      replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
+        .where(:in_reply_to_post_id => posts.collect(&:id))\
+        .order("created_at ASC")\
+        .includes(:user)\
+        .group_by(&:in_reply_to_post_id)
+      return publications, posts, replies
     end
     
     return publications, posts, replies
