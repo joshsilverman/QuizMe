@@ -6,12 +6,12 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
-    @publications, posts = Publication.recently_published
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC") 
-    @actions = {}
+    @publications, posts, replies = Publication.recently_published
     post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
-    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts.collect(&:id)).order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id).each do |post_id, post_activity|
+
+    @actions = {}
+    replies.each do |post_id, post_activity|
       @actions[post_pub_map[post_id]] = []
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
