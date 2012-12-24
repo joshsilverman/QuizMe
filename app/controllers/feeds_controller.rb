@@ -156,18 +156,18 @@ class FeedsController < ApplicationController
     publication = Publication.includes(:posts).find(params[:last_post_id])
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
-      @asker_publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else
       post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
-      @asker_publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     end
 
     if current_user     
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
     else
       @responses = []
     end    
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @asker_publications.collect(&:id)).order("created_at DESC")
+    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
     
     @actions = post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
@@ -186,7 +186,7 @@ class FeedsController < ApplicationController
       end
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)     
-    if @asker_publications.blank?
+    if @publications.blank?
       render :json => false
     else
       render :partial => "feed"
