@@ -7,7 +7,7 @@ class Publication < ActiveRecord::Base
 
   def self.recently_published
     publications = posts = []
-    publications = Rails.cache.fetch 'publications_recently_published', :expires_in => 90.seconds do
+    publications = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes do
       publications = Publication.includes(:asker, :posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
         .order("posts.created_at DESC").limit(15).includes(:question => :answers)
@@ -23,17 +23,24 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recently_published_by_asker asker
-    publications = posts = []
+    publications = posts = actions = []
     publications = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
         .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
         .order("posts.created_at DESC")
       posts = publications.collect {|p| p.posts}.flatten 
+      actions = Rails.cache.fetch "_posts_recently_published_by_asker_#{asker.id}" do
+        Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
+          .where(:in_reply_to_post_id => posts.collect(&:id))\
+          .order("created_at ASC")\
+          .includes(:user)\
+          .group_by(&:in_reply_to_post_id)
+      end
       publications
     end
     
-    return publications, posts
+    return publications, posts, actions
   end
 
   def self.published_count

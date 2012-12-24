@@ -44,21 +44,16 @@ class FeedsController < ApplicationController
   def show
     if @asker = Asker.find(params[:id])
 
-      # publications and user responses
-      @publications, posts = Publication.recently_published_by_asker(@asker)
+      # publications, posts and user responses
+      @publications, posts, actions = Publication.recently_published_by_asker(@asker)
+
+      # user specific responses
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
       # question activity
       @actions = {}
       post_pub_map = {}
       posts.each { |post| post_pub_map[post.id] = post.publication_id }
-
-      actions = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
-        .where(:in_reply_to_post_id => posts.collect(&:id))\
-        .order("created_at ASC")\
-        .includes(:user)\
-        .group_by(&:in_reply_to_post_id)
-
       actions.each do |post_id, post_activity|
         @actions[post_pub_map[post_id]] = []
         post_activity.each do |action|
