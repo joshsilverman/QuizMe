@@ -10,10 +10,10 @@ class Publication < ActiveRecord::Base
     puts "recently_published"
     publications, posts, replies = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes do
       puts "missed cache"
+
       publications = Publication.includes(:asker, :posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
         .order("posts.created_at DESC").limit(15).includes(:question => :answers)
-
       posts = Post.select([:id, :created_at, :publication_id])\
           .where(:provider => "twitter", :publication_id => publications.collect(&:id))\
           .order("created_at DESC")
@@ -21,7 +21,7 @@ class Publication < ActiveRecord::Base
           .where(:in_reply_to_post_id => posts.collect(&:id))\
           .order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id)
 
-      return publications, posts, replies
+      [publications, posts, replies]
     end
 
     return publications, posts, replies
@@ -39,7 +39,7 @@ class Publication < ActiveRecord::Base
         .order("created_at ASC")\
         .includes(:user)\
         .group_by(&:in_reply_to_post_id)
-      return publications, posts, replies
+      [publications, posts, replies]
     end
     
     return publications, posts, replies
