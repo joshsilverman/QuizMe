@@ -22,6 +22,15 @@ class Publication < ActiveRecord::Base
     return publications, posts
   end
 
+  def self.recently_published_by_asker asker
+    Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
+      @publications = asker.publications\
+        .includes([:asker, :posts, :question => :answers])\
+        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+        .order("posts.created_at DESC")
+    end
+  end
+
   def self.published_count
     Rails.cache.fetch('publications_published_count', :expires_in => 10.minutes) do
       Publication.where(:published => true).count
