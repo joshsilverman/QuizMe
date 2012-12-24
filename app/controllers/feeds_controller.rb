@@ -45,8 +45,7 @@ class FeedsController < ApplicationController
     if @asker = Asker.find(params[:id])
 
       # publications and user responses
-      @publications = Publication.recently_published_by_asker(@asker)
-      posts = @publications.collect {|p| p.posts}.flatten
+      @publications, posts = Publication.recently_published_by_asker(@asker)
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
       # question activity

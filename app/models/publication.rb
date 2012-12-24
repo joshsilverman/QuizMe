@@ -23,12 +23,15 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recently_published_by_asker asker
-    Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
-      @publications = asker.publications\
+    publications = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
+      publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
         .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
         .order("posts.created_at DESC")
     end
+    posts = publications.collect {|p| p.posts}.flatten
+
+    return publications, posts
   end
 
   def self.published_count
