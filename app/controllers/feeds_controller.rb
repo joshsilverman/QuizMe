@@ -45,16 +45,8 @@ class FeedsController < ApplicationController
   def show
     if @asker = Asker.find(params[:id])
 
-      #include questions, answers
-      unless @publications = Rails.cache.read("askers:#{@asker.id}:show")
-        @publications = @asker.publications\
-          .includes([:asker, :posts, :question => :answers])\
-          .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
-          .order("posts.created_at DESC")
-        Rails.cache.write("askers:#{@asker.id}:show", @publications)
-      end
-
-      # user responses
+      # publications and user responses
+      @publications = Publication.recently_published_by_asker(@asker)
       posts = @publications.collect {|p| p.posts}.flatten
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
@@ -62,11 +54,13 @@ class FeedsController < ApplicationController
       @actions = {}
       post_pub_map = {}
       posts.each { |post| post_pub_map[post.id] = post.publication_id }
+
       actions = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
         .order("created_at ASC")\
         .includes(:user)\
         .group_by(&:in_reply_to_post_id)
+
       actions.each do |post_id, post_activity|
         @actions[post_pub_map[post_id]] = []
         post_activity.each do |action|
