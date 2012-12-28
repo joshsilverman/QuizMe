@@ -13,6 +13,7 @@ class Post < ActiveRecord::Base
   scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
+  scope :answers, where('correct IS NOT NULL')
 
   @@classifier = Classifier.new
   
@@ -24,6 +25,20 @@ class Post < ActiveRecord::Base
 
   def self.classifier
     @@classifier
+  end
+
+  def clean_text
+    # hashtags and handles
+    _text = text.gsub /(:?@|#)[^\s]+/, ''
+
+    # url
+    _text.gsub! /http:\/\/[^\s]+/, ''
+
+    # whitespace
+    _text.gsub! /[\s]+/, ' '
+    _text.strip!
+
+    _text
   end
 
   def self.format_tweet(text, options = {})

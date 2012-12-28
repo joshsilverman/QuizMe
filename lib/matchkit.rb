@@ -2,22 +2,41 @@ require 'amatch'
 include Amatch
 
 class Matchkit
+
+  def driver
+    posts = Post.answers.not_us.limit 5
+    posts.each do |post|
+      puts "#{post.text} =====> #{post.clean_text}"
+      puts post.to_yaml
+
+      # if post.parent and post.parent. 
+      #   question = 
+
+      correct = 
+      incorrect = []
+    end
+
+    nil
+  end
+
+  private
+
   def test
 
-    # m = Sellers.new("pattern")
-    # # => #<Amatch::Sellers:0x40366324>
-    # puts m.match("pattren")
-    # # => 2.0
-    # m.substitution = m.insertion = 3
-    # # => 3
-    # m.match("pattren")
-    # # => 4.0
-    # m.reset_weights
-    # # => #<Amatch::Sellers:0x40366324>
-    # m.match(["pattren","parent"])
-    # # => [2.0, 4.0]
-    # m.search("abcpattrendef")
-    # # => 2.0
+    m = Sellers.new("pattern")
+    # => #<Amatch::Sellers:0x40366324>
+    puts m.match("pattren")
+    # => 2.0
+    m.substitution = m.insertion = 3
+    # => 3
+    m.match("pattren")
+    # => 4.0
+    m.reset_weights
+    # => #<Amatch::Sellers:0x40366324>
+    m.match(["pattren","parent"])
+    # => [2.0, 4.0]
+    m.search("abcpattrendef")
+    # => 2.0
 
     m = Levenshtein.new("pattern")
     # => #<Amatch::Levenshtein:0x4035919c>
