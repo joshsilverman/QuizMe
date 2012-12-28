@@ -18,9 +18,9 @@
 						- unresponded_unlinked_count = unresponded_linked_count = 0
 						- @engagements.each do |id, post|
 							/ quick reply vars
-							- if post.parent and post.parent.publication and post.parent.publication.question
-								- post.parent.publication.question.answers
-								- correct = post.parent.publication.question.answers.reject{|a| a.correct != true}[0]
+							- if post.conversation and post.conversation.publication and post.conversation.publication.question
+								- post.conversation.publication.question.answers
+								- correct = post.conversation.publication.question.answers.reject{|a| a.correct != true}[0]
 							- elsif post.interaction_type == 4 and @asker.new_user_question
 								- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
 
