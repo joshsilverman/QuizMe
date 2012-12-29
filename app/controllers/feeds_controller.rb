@@ -308,10 +308,14 @@ class FeedsController < ApplicationController
       .where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
 
     #filter for retweet, spam, starred
-    @posts = @posts.where(:interaction_type => 3) if params[:filter] == 'retweets'
-    @posts = @posts.where('spam = ? or autospam = ?', true, true) if params[:filter] == 'spam'
-
-    @posts = @posts.not_spam.where("interaction_type <> 3") if params[:filter].nil? or params[:filter] == 'unlinked'
+    if params[:filter] == 'retweets'
+      @posts = @posts.where(:interaction_type => 3) 
+    elsif params[:filter] == 'spam'
+      @posts = @posts.where('spam = ? or autospam = ?', true, true) 
+    else
+      @posts = @posts.not_spam.where("interaction_type <> 3")
+    end
+    
     @autocorrect = true if params[:filter].nil?
     @linked = true if params[:filter] == 'linked'
     @unlinked = true if params[:filter] == 'unlinked'

@@ -97,7 +97,7 @@
 					%ul.nav.nav-tabs.nav-stacked
 						/%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All messages (#{@asker.unresponded_count})", '?'
 						%li{:style => "#{'font-weight:bold;' if autocorrect_count > 0}", :class => "#{'active' if @autocorrect}"}= link_to "Autocorrect (#{autocorrect_count})", '?'
-						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?filter=unlinked'
+						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?filter=linked'
 						%li{:style => "#{'font-weight:bold;' if unresponded_unlinked_count > 0}", :class => "#{'active' if @unlinked}"}= link_to "Unlinked (#{unresponded_unlinked_count})", '?filter=unlinked'
 						%li= link_to "Retweets", '?filter=retweets'
 						%li= link_to "Spam", '?filter=spam'
