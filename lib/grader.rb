@@ -156,6 +156,8 @@ class Grader
     @feature_names.each do |feature_name|
       feature_pre_reduce = {}
       answer_posts.each do |answer_post|
+        puts post
+        puts answer_post
         next if answer_post.id == post.id # exclude self-comparison during testing
         feature_pre_reduce[match(feature_name, answer_post, post)] = "#{answer_post.text} (#{answer_post.id} - #{answer_post.class})"
       end
