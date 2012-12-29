@@ -17,52 +17,56 @@ class Grader
     }
   end
 
-  def driver id = nil
-    correct = incorrect = missed = error = 0
+  def grade id_or_posts
+    id = id_or_posts if id_or_posts.is_a? Integer
+    posts = id_or_posts.where("autocorrect IS NULL").includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}) if id_or_posts.is_a? ActiveRecord::Relation
 
     posts = [Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id)] if id
-    posts = Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id
+    posts = Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id or posts
+    
+    correct = incorrect = missed = error = 0
     posts.each do |post|
       next if post.provider == 'wisr' # exclude where posted through app
       next if post.posted_via_app # exclude where posted through app
 
-      _autograde = autograde post
-      #adjust_autograde post, _autograde if _autograde != post.correct and !_autograde.nil?
-      if _autograde == post.correct
+      _autocorrect = autocorrect post
+      post.update_attribute :autocorrect, _autocorrect if _autocorrect == true or _autocorrect == false
+      #adjust_autocorrect post, _autocorrect if _autocorrect != post.correct and !_autocorrect.nil?
+      if _autocorrect == post.correct
         correct += 1
-      elsif _autograde == -1
+      elsif _autocorrect == -1
         error +=1
-      elsif _autograde != post.correct and !_autograde.nil?
+      elsif _autocorrect != post.correct and !_autocorrect.nil?
         incorrect += 1
       else
         missed += 1
       end
     end
 
-    puts @thresholds.to_yaml
-    puts <<-EOS
-      Autograde correct: #{correct}
-      Autograde incorrect: #{incorrect}
-      Autograde missed: #{missed}
-      Autograde error: #{error}
+    # puts @thresholds.to_yaml
+    # puts <<-EOS
+    #   Autograde correct: #{correct}
+    #   Autograde incorrect: #{incorrect}
+    #   Autograde missed: #{missed}
+    #   Autograde error: #{error}
 
-      Precision: #{correct.to_f/(correct + incorrect)}
-      Recall (linked): #{correct.to_f/(correct + incorrect + missed)}
-      Recall (all): #{correct.to_f/(correct + incorrect + missed + error)}
+    #   Precision: #{correct.to_f/(correct + incorrect)}
+    #   Recall (linked): #{correct.to_f/(correct + incorrect + missed)}
+    #   Recall (all): #{correct.to_f/(correct + incorrect + missed + error)}
 
-    EOS
+    # EOS
   end
 
-  def autograde post
+  def autocorrect post
     question = get_question post
     unless question
-      puts <<-EOS
+      # puts <<-EOS
 
 
-        ==============================================
-        Answer post: #{post.text} (#{post.id})
+      #   ==============================================
+      #   Answer post: #{post.text} (#{post.id})
 
-      EOS
+      # EOS
       return -1
     end
 
@@ -70,38 +74,38 @@ class Grader
 
     correct_vector = build_match_vector post, answer_posts[:correct]
     incorrect_vector = build_match_vector post, answer_posts[:incorrect]
-    _autograde, decisive_feature  = vectors_to_autograde correct_vector, incorrect_vector
+    _autocorrect, decisive_feature  = vectors_to_autocorrect correct_vector, incorrect_vector
 
-    _autograde
+    _autocorrect
   end
 
-  # the autograde didn't match, but would it have been acceptable if assigned?
-  def adjust_autograde post, _autograde
+  # the autocorrect didn't match, but would it have been acceptable if assigned?
+  def adjust_autocorrect post, _autocorrect
     question = get_question post
     return unless question
-    puts <<-EOS
+    # puts <<-EOS
 
 
-      ==============================================
+    #   ==============================================
 
-      Answer post: #{post.text} (#{post.id})
-      Correct answer: #{question.correct_answer.text if question.correct_answer}
+    #   Answer post: #{post.text} (#{post.id})
+    #   Correct answer: #{question.correct_answer.text if question.correct_answer}
 
-      Provider: #{post.provider}
+    #   Provider: #{post.provider}
 
-      Autograde: #{_autograde}
-      Actual: #{post.correct}
-      Correctly autograded: #{_autograde == post.correct unless _autograde.nil?}
+    #   Autograde: #{_autocorrect}
+    #   Actual: #{post.correct}
+    #   Correctly autocorrected: #{_autocorrect == post.correct unless _autocorrect.nil?}
 
-      Would this have been acceptable? (y/n)
-    EOS
+    #   Would this have been acceptable? (y/n)
+    # EOS
     input = gets.chomp
-    post.update_attribute :correct, _autograde if input == 'y'
+    post.update_attribute :correct, _autocorrect if input == 'y'
   end
 
   private
 
-  def vectors_to_autograde correct_vector, incorrect_vector
+  def vectors_to_autocorrect correct_vector, incorrect_vector
     @feature_names.each do |feature_name|
       correct_score = correct_vector[feature_name][:max] || 0
       incorrect_score = incorrect_vector[feature_name][:max] || 0

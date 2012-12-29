@@ -568,6 +568,11 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
   end
 
+  def self.autocorrect posts
+    @grader = Grader.new
+    @grader.grade posts 
+  end
+
   def self.grouped_as_conversations posts, asker
     return {}, {} if posts.empty?
 

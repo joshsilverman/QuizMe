@@ -15,7 +15,7 @@
 										%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
-						- unresponded_unlinked_count = unresponded_linked_count = 0
+						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
 						- @engagements.each do |id, post|
 							/ quick reply vars
 							- if post.conversation and post.conversation.publication and post.conversation.publication.question
@@ -24,10 +24,20 @@
 							- elsif post.interaction_type == 4 and @asker.new_user_question
 								- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
 
-							- unresponded_unlinked_count += 1 if correct.nil?
-							- unresponded_linked_count += 1 if correct
-							- next if correct and @unlinked
-							- next if correct.nil? and @linked
+							- if !post.autocorrect.nil?
+								- autocorrect_count += 1
+							- elsif correct.nil? and post.autocorrect.nil?
+								- unresponded_unlinked_count += 1
+							- elsif !correct.nil? and post.autocorrect.nil?
+								- unresponded_linked_count += 1
+
+							- if @autocorrect and !post.autocorrect.nil?
+							- elsif @unlinked and correct.nil and post.autocorrect.nil?
+							- elsif @linked and !correct.nil? and post.autocorrect.nil?
+							- else
+								- next
+
+							-# keep if (linked and correct and not autocorrect)
 
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
@@ -73,9 +83,9 @@
 										/ quick reply
 										- if correct
 											%p
-												%a.quick-reply-yes yes
+												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} &nbsp; yes
 												|
-												%a.quick-reply-no no
+												%a.quick-reply-no{:class => "#{'icon-arrow-right' if post.autocorrect == false}"} &nbsp; no
 												&nbsp;
 												%span.quick-reply
 													= "(answer: #{correct.text})"
@@ -86,7 +96,8 @@
 				#left_column.span2.hidden-phone
 					%ul.nav.nav-tabs.nav-stacked
 						/%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All messages (#{@asker.unresponded_count})", '?'
-						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?'
+						%li{:style => "#{'font-weight:bold;' if autocorrect_count > 0}", :class => "#{'active' if @autocorrect}"}= link_to "Autocorrect (#{autocorrect_count})", '?'
+						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?filter=unlinked'
 						%li{:style => "#{'font-weight:bold;' if unresponded_unlinked_count > 0}", :class => "#{'active' if @unlinked}"}= link_to "Unlinked (#{unresponded_unlinked_count})", '?filter=unlinked'
 						%li= link_to "Retweets", '?filter=retweets'
 						%li= link_to "Spam", '?filter=spam'

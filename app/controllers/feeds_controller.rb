@@ -312,10 +312,12 @@ class FeedsController < ApplicationController
     @posts = @posts.where('spam = ? or autospam = ?', true, true) if params[:filter] == 'spam'
 
     @posts = @posts.not_spam.where("interaction_type <> 3") if params[:filter].nil? or params[:filter] == 'unlinked'
-    @linked = true if params[:filter].nil?
+    @autocorrect = true if params[:filter].nil?
+    @linked = true if params[:filter] == 'linked'
     @unlinked = true if params[:filter] == 'unlinked'
 
     @posts = @posts.order("created_at DESC")
+    # Post.autocorrect @posts
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
     @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
   end
