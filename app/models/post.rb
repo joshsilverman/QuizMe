@@ -1,7 +1,7 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :user
-  belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
+  # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 
   belongs_to :publication
   belongs_to :conversation
@@ -28,11 +28,20 @@ class Post < ActiveRecord::Base
   end
 
   def clean_text
+    return '' if text.nil?
+
     # hashtags and handles
     _text = text.gsub /(:?@|#)[^\s]+/, ''
 
     # url
     _text.gsub! /http:\/\/[^\s]+/, ''
+
+    # punctuation
+    _text.gsub! /!+/, ''
+    _text.gsub! /(?::|;|=)(?:-)?(?:\)|D|P)/, ''
+
+    #remove RTs
+    _text.gsub! /RT .+/, ''
 
     # whitespace
     _text.gsub! /[\s]+/, ' '

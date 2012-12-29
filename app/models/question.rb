@@ -42,6 +42,14 @@ class Question < ActiveRecord::Base
     self.slug = self.slug_text if (self.slug.blank? and self.text.present?)
   end
 
+  def correct_answer
+    answers.select{|a| a.correct == true}[0] unless answers.empty?
+  end
+
+  def incorrect_answers
+    answers.select{|a| a.correct != true} || []
+  end
+
   ###THIS IS FOR IMPORTING FROM QB###
 	require 'net/http'
   require 'uri'
