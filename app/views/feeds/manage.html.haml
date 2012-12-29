@@ -32,7 +32,7 @@
 								- unresponded_linked_count += 1
 
 							- if @autocorrect and !post.autocorrect.nil?
-							- elsif @unlinked and correct.nil and post.autocorrect.nil?
+							- elsif @unlinked and correct.nil? and post.autocorrect.nil?
 							- elsif @linked and !correct.nil? and post.autocorrect.nil?
 							- else
 								- next
