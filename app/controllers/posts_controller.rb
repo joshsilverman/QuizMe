@@ -42,9 +42,20 @@ class PostsController < ApplicationController
 	end
 
   def mark_ugc
-    user = Post.find(params[:post_id]).user
-    Post.trigger_split_test(user.id, 'ugc request type')
-    Post.trigger_split_test(user.id, 'ugc script')
+    tag = Tag.find_or_create_by_name "ugc"
+    post = Post.includes(:tags).find(params[:post_id])
+
+    if post.tags.include? tag
+      post_with_tags = Post.includes(:tags).where('tags.name = ?', tag.name).find(params[:post_id])
+      post_with_tags.tags.clear
+    else
+      user = post.user
+      Post.trigger_split_test(user.id, 'ugc request type')
+      Post.trigger_split_test(user.id, 'ugc script')
+
+      tag.posts << post
+    end
+
     render :nothing => true
   end
 

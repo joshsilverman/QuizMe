@@ -2,17 +2,17 @@
 #manager
 	#feed_container.span10
 		#wrapper.span9
-			= render :partial => "account_info"
+			/= render :partial => "account_info"
+			%br
 
 			#feed.row
 				#right_column.span7
 					#posts.rounded
 						.header.border-color
 							%h3
-								Activity
+								&nbsp;
 								.btn-group
-									- unless params[:filter]
-										%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
+									%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
@@ -24,29 +24,17 @@
 							- elsif post.interaction_type == 4 and @asker.new_user_question
 								- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
 
-							- if !post.autocorrect.nil?
-								- autocorrect_count += 1
-							- elsif correct.nil? and post.autocorrect.nil?
-								- unresponded_unlinked_count += 1
-							- elsif !correct.nil? and post.autocorrect.nil?
-								- unresponded_linked_count += 1
-
-							- if @autocorrect and !post.autocorrect.nil?
-							- elsif @unlinked and correct.nil? and post.autocorrect.nil?
-							- elsif @linked and !correct.nil? and post.autocorrect.nil?
-							- else
-								- next
-
-							-# keep if (linked and correct and not autocorrect)
-
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
 									#classify
 										- if post.autospam
 											%i.icon-warning-sign
-										%a
-											= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]										
+										%a.label= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
+										%a.label love
+										%a.label ugc
+										%a.label negative
+										%a.label idea
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
@@ -90,17 +78,16 @@
 												%span.quick-reply
 													= "(answer: #{correct.text})"
 
-						#posts_more.border-color
-							Last Post Reached
-
 				#left_column.span2.hidden-phone
 					%ul.nav.nav-tabs.nav-stacked
-						/%li{:style => "#{'font-weight:bold;' if @asker.unresponded_count > 0}"}= link_to "All messages (#{@asker.unresponded_count})", '?'
-						%li{:style => "#{'font-weight:bold;' if autocorrect_count > 0}", :class => "#{'active' if @autocorrect}"}= link_to "Autocorrect (#{autocorrect_count})", '?'
-						%li{:style => "#{'font-weight:bold;' if unresponded_linked_count > 0}", :class => "#{'active' if @linked}"}= link_to "Linked (#{unresponded_linked_count})", '?filter=linked'
-						%li{:style => "#{'font-weight:bold;' if unresponded_unlinked_count > 0}", :class => "#{'active' if @unlinked}"}= link_to "Unlinked (#{unresponded_unlinked_count})", '?filter=unlinked'
-						%li= link_to "Retweets", '?filter=retweets'
-						%li= link_to "Spam", '?filter=spam'
+						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrect", '?'
+						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked", '?filter=linked'
+						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked", '?filter=unlinked'
+
+					%ul.nav.nav-tabs.nav-stacked
+						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "UGC", '?filter=ugc'
+						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
+						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
 						//%li= link_to "Starred", '?filter=starred'
 
 = render :partial => "respond_modal"

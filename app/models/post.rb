@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :user
+  has_and_belongs_to_many :tags, :uniq => true
   # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 
   belongs_to :publication
@@ -10,10 +11,12 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  scope :not_spam, where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)
+  scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('correct IS NOT NULL')
+  scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
+  scope :not_ugc, where('id NOT IN (?)', Post.ugc)
   
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do

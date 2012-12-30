@@ -304,23 +304,21 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user, :conversation => {:posts => :user}, :parent => {:publication => {:question => :answers}})\
+    @posts = Post.includes(:user)\
       .where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.where(:interaction_type => 3) 
+      @posts = @posts.where(:interaction_type => 3).not_ugc
     elsif params[:filter] == 'spam'
-      @posts = @posts.where('spam = ? or autospam = ?', true, true) 
+      @posts = @posts.where('spam = ? or autospam = ?', true, true).not_ugc
+    elsif params[:filter] == 'ugc'
+      @posts = @posts.ugc  #Tag.where('tags.name = ?', 'ugc').first.posts
     else
-      @posts = @posts.not_spam.where("interaction_type <> 3")
+      @posts = @posts.not_ugc.not_spam.where("posts.interaction_type <> 3")
     end
-    
-    @autocorrect = true if params[:filter].nil?
-    @linked = true if params[:filter] == 'linked'
-    @unlinked = true if params[:filter] == 'unlinked'
 
-    @posts = @posts.order("created_at DESC")
+    @posts = @posts.order("posts.created_at DESC")
     # Post.autocorrect @posts
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
     @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
