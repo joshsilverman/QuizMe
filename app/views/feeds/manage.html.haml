@@ -3,10 +3,24 @@
 	#feed_container.span10
 		#wrapper.span9
 			/= render :partial => "account_info"
-			%br
 
 			#feed.row
-				#right_column.span7
+				#left_column.span3.hidden-phone
+					%ul.nav.nav-tabs.nav-stacked
+						%li
+							.box.top Inbox
+						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected", '?'
+						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts", '?filter=linked'
+						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts", '?filter=unlinked'
+
+						%li
+							.box Labels
+						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
+						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
+						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+						//%li= link_to "Starred", '?filter=starred'
+
+				#right_column.span6
 					#posts.rounded
 						.header.border-color
 							%h3
@@ -18,11 +32,9 @@
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
 						- @engagements.each do |id, post|
 							/ quick reply vars
-							- if post.conversation and post.conversation.publication and post.conversation.publication.question
-								- post.conversation.publication.question.answers
-								- correct = post.conversation.publication.question.answers.reject{|a| a.correct != true}[0]
-							- elsif post.interaction_type == 4 and @asker.new_user_question
-								- correct = @asker.new_user_question.answers.reject{|a| a.correct != true}[0]
+							- correct = nil
+							- if params[:filter] != 'ugc' and question = post.in_answer_to_question
+								- correct = question.answers.reject{|a| a.correct != true}[0]
 
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
@@ -31,10 +43,10 @@
 										- if post.autospam
 											%i.icon-warning-sign
 										%a.label= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
-										%a.label love
-										%a.label ugc
-										%a.label negative
-										%a.label idea
+										/ %a.label love
+										/ %a.label ugc
+										/ %a.label negative
+										/ %a.label idea
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
@@ -42,6 +54,20 @@
 										%h5= post.user.twi_screen_name	
 										%p= post.text
 										
+										/ quick reply
+										- if question
+											%p
+												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} 
+													= "&nbsp;".html_safe if post.autocorrect
+													yes
+												|
+												%a.quick-reply-no{:class => "#{'icon-arrow-right' if post.autocorrect == false}"} 
+													= "&nbsp;".html_safe if post.autocorrect == false
+													no
+													&nbsp;
+												%span.quick-reply
+													= "(answer: #{correct.text})" if correct
+
 										.post_actions
 											%a
 												%i.icon-eye-close
@@ -67,28 +93,6 @@
 											/ %a.show_move move
 											/ %a.move{:style => "display: none;"}
 											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
-
-										/ quick reply
-										- if correct
-											%p
-												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} &nbsp; yes
-												|
-												%a.quick-reply-no{:class => "#{'icon-arrow-right' if post.autocorrect == false}"} &nbsp; no
-												&nbsp;
-												%span.quick-reply
-													= "(answer: #{correct.text})"
-
-				#left_column.span2.hidden-phone
-					%ul.nav.nav-tabs.nav-stacked
-						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrect", '?'
-						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked", '?filter=linked'
-						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked", '?filter=unlinked'
-
-					%ul.nav.nav-tabs.nav-stacked
-						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "UGC", '?filter=ugc'
-						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
-						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
-						//%li= link_to "Starred", '?filter=starred'
 
 = render :partial => "respond_modal"
 = render :partial => "link_post_modal"

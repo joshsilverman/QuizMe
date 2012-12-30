@@ -12,11 +12,23 @@ class Post < ActiveRecord::Base
 	has_many :reps
 
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
+  scope :spam, where('spam = ? or autospam = ?', true, true)
+
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('correct IS NOT NULL')
+
   scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
-  scope :not_ugc, where('id NOT IN (?)', Post.ugc)
+  scope :not_ugc, where('posts.id NOT IN (?)', Post.ugc)
+
+  scope :autocorrected, where("posts.autocorrect IS NOT NULL")
+  scope :not_autocorrected, where("posts.autocorrect IS NULL")
+
+  scope :not_retweet, where("posts.interaction_type <> 3")
+  scope :retweet, where(:interaction_type => 3)
+
+  scope :linked, includes(:conversation => {:publication => :question}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
+  scope :unlinked, includes(:conversation => {:publication => :question}, :parent => {:publication => :question}).where("questions.id IS NULL")
   
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
@@ -30,29 +42,6 @@ class Post < ActiveRecord::Base
 
   def self.grader
     @@_grader ||= Grader.new
-  end
-
-  def clean_text
-    return '' if text.nil?
-
-    # hashtags and handles
-    _text = text.gsub /(:?@|#)[^\s]+/, ''
-
-    # url
-    _text.gsub! /http:\/\/[^\s]+/, ''
-
-    # punctuation
-    _text.gsub! /!+/, ''
-    _text.gsub! /(?::|;|=)(?:-)?(?:\)|D|P)/, ''
-
-    #remove RTs
-    _text.gsub! /RT .+/, ''
-
-    # whitespace
-    _text.gsub! /[\s]+/, ' '
-    _text.strip!
-
-    _text
   end
 
   def self.format_tweet(text, options = {})
@@ -73,9 +62,9 @@ class Post < ActiveRecord::Base
     end
   end
 
-	def self.shorten_url(url, source, lt, campaign, show_answer=nil)
+  def self.shorten_url(url, source, lt, campaign, show_answer=nil)
     Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
-	end
+  end
 
   def self.publish(provider, asker, publication)
     return unless publication and question = publication.question
@@ -576,9 +565,34 @@ class Post < ActiveRecord::Base
     Post.grader.grade post
   end
 
-  def self.autocorrect posts
-    @grader = Grader.new
-    @grader.grade posts 
+  def self.twitter_request(&block)
+    value = nil
+    attempts = 0
+    begin
+      value = block.call()
+    rescue Twitter::Error::ClientError => exception
+      puts "twitter error (#{exception}), retrying"
+      attempts += 1 
+      retry unless attempts > 2
+      puts "Failed to run #{block} after 3 attempts"
+    rescue Exception => exception
+      puts "Exception in twitter wrapper:"
+      puts exception.message
+    end 
+    return value   
+  end
+  
+  extend Split::Helper
+
+  def self.trigger_split_test(user_id, test_name, reset=false)
+    ab_user.set_id(user_id, true)
+    finished(test_name, {:reset => reset})
+  end
+  
+  def self.create_split_test(user_id, test_name, *alternatives)
+    ab_user.set_id(user_id, true)
+    ab_user.confirm_js("WISR app", '')
+    ab_test(test_name, *alternatives)
   end
 
   def self.grouped_as_conversations posts, asker
@@ -651,33 +665,42 @@ class Post < ActiveRecord::Base
     Stat.update_stat_cache("active_users", self.user_id, asker_id, self.created_at, self.user_id)
   end
 
-  def self.twitter_request(&block)
-    value = nil
-    attempts = 0
-    begin
-      value = block.call()
-    rescue Twitter::Error::ClientError => exception
-      puts "twitter error (#{exception}), retrying"
-      attempts += 1 
-      retry unless attempts > 2
-      puts "Failed to run #{block} after 3 attempts"
-    rescue Exception => exception
-      puts "Exception in twitter wrapper:"
-      puts exception.message
-    end 
-    return value   
-  end
-  
-  extend Split::Helper
+  def clean_text
+    return '' if text.nil?
 
-  def self.trigger_split_test(user_id, test_name, reset=false)
-    ab_user.set_id(user_id, true)
-    finished(test_name, {:reset => reset})
+    # hashtags and handles
+    _text = text.gsub /(:?@|#)[^\s]+/, ''
+
+    # url
+    _text.gsub! /http:\/\/[^\s]+/, ''
+
+    # punctuation
+    _text.gsub! /!+/, ''
+    _text.gsub! /(?::|;|=)(?:-)?(?:\)|D|P)/, ''
+
+    #remove RTs
+    _text.gsub! /RT .+/, ''
+
+    # whitespace
+    _text.gsub! /[\s]+/, ' '
+    _text.strip!
+
+    _text
   end
-  
-  def self.create_split_test(user_id, test_name, *alternatives)
-    ab_user.set_id(user_id, true)
-    ab_user.confirm_js("WISR app", '')
-    ab_test(test_name, *alternatives)
+
+  def in_answer_to_question
+    if interaction_type == 3
+      # retweet
+    elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
+      asker = Asker.find(conversation.post.user_id)
+      question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
+    elsif conversation and conversation.publication and conversation.publication.question
+      question = conversation.publication.question
+    elsif parent and parent.publication and parent.publication.question
+      question = parent.publication.question
+    end
+
+    question
   end
+
 end

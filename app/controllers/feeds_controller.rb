@@ -309,13 +309,17 @@ class FeedsController < ApplicationController
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.where(:interaction_type => 3).not_ugc
+      @posts = @posts.retweet.not_ugc
     elsif params[:filter] == 'spam'
-      @posts = @posts.where('spam = ? or autospam = ?', true, true).not_ugc
+      @posts = @posts.spam.not_ugc
     elsif params[:filter] == 'ugc'
-      @posts = @posts.ugc  #Tag.where('tags.name = ?', 'ugc').first.posts
+      @posts = @posts.ugc
+    elsif params[:filter] == 'linked'
+      @posts = @posts.linked.not_autocorrected.not_ugc.not_spam.not_retweet
+    elsif params[:filter] == 'unlinked'
+      @posts = @posts.unlinked.not_autocorrected.not_ugc.not_spam.not_retweet
     else
-      @posts = @posts.not_ugc.not_spam.where("posts.interaction_type <> 3")
+      @posts = @posts.not_ugc.not_spam.not_retweet.autocorrected
     end
 
     @posts = @posts.order("posts.created_at DESC")

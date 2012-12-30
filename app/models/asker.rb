@@ -268,34 +268,6 @@ class Asker < User
         }
       end 
     end
-
-    ## NEED FOLLOWERS ASSOCIATION TO FIND UNENGAGED RECENT FOLLOWERS
-    # users = User.where("learner_level = 'unengaged' or learner_level = 'dm answer' and created_at > ?", 1.week.ago).group_by(&:learner_level)
-    # posts = Post.where("in_reply_to_user_id in (?)", users['unengaged'].collect(&:id)).order("created_at DESC").group_by(&:in_reply_to_user_id)
-    # users['unengaged'].each do |user|
-    #   if posts[user.id].present?
-    #     last_post = posts[user.id].last
-    #     if last_post.intention == "initial dm question" and last_post.created_at > 3.days.ago }
-    #       # pick popular
-    #       Post.dm(asker, user, "Pop quiz: #{new_user_questions[asker.id][0].text}", {:intention => "second attempt question dm"})
-    #       Mixpanel.track_event "second attempt question DM", {
-    #         :distinct_id => user.id,
-    #         :account => asker.twi_screen_name
-    #       }
-    #       sleep(1)            
-    #     end     
-    #   end
-    # end
-    # posts = Post.where("in_reply_to_user_id in (?) and interaction_type = 2", users['dm answer'].collect(&:id)).group_by(&:in_reply_to_user_id)
-    # users['dm answer'].each do |user|
-    #   if posts[user.id].blank?
-    #     # send mention question
-    #     Post.tweet()
-    #     Mixpanel.track_event "", {
-
-    #     }
-    #   end 
-    # end
   end
 
   def self.reengage_incorrect_answerers

@@ -28,7 +28,7 @@ module FeedsHelper
 	def interaction_icon(interaction_type)
 		case interaction_type
 		when 2
-			return "icon-comment"
+			return "" #"icon-comment"
 		when 3
 			return "icon-retweet"
 		when 4

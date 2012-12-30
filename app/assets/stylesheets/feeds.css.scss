@@ -1157,7 +1157,9 @@ body {
 }
 
 #manager {
-	#header {
+	.header {
+		border-radius: 3px 3px 0 0;
+
 		#account_stats {
 			iframe{
 			  display:none;
@@ -1165,6 +1167,11 @@ body {
 		}
 	}
 	#feed {
+		margin-top:10px;
+
+		@media (min-width: 1200px) {
+			margin-left:-15px;
+		}
 		#posts {
 			.btn-group {
 				float:right;
@@ -1172,22 +1179,61 @@ body {
 		}
 
 		#left_column {
-			width:170px;
-			margin-left:30px;
-			float:left;
+			//width:170px;
+			//margin-left:15px;
+			//float:left;
+
 
 			.nav {
+				.box {
+					&.top {
+						border-radius: 3px 3px 0 0;
+					}
+
+					padding-top: 8px;
+					padding-bottom: 8px;
+					line-height: 18px;
+
+					border: 1px solid #ddd;
+					background:#efefef;
+
+					text-shadow: 0px -1px 0px rgba(255, 255, 255, 0.25) !important;
+					color: #777 !important;
+
+					padding-right: 12px;
+					padding-left: 15px;
+				}
+
 				li {
 					a {
-						background:white;
+						background:#efefef;
+						padding-left: 25px;
 					}
 				}
 			}
 		}
 		#right_column {
-			width:670px;
-			margin-left:25px;
-			float:right;
+			margin-top:0px;
+			@media (min-width: 1200px) {
+				margin-left:20px;
+			}
+
+			.conversation {
+				.post_actions {
+					visibility:hidden;
+				}
+				#classify {
+					visibility:hidden;
+				}
+			}
+			.conversation:hover {
+				.post_actions {
+					visibility:visible;
+				}
+				#classify {
+					visibility:visible;
+				}
+			}
 		}
 	}
 }
