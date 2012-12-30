@@ -11,6 +11,7 @@ class Feed
 	correct_responses: []
 	correct_complements: []
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
+	
 	constructor: ->
 		@correct_complements = $.parseJSON($("#correct_complements").val())
 		@correct_responses = $.parseJSON($("#correct_responses").val())
@@ -41,11 +42,12 @@ class Feed
 			window.current_post.unlink_post()
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
-			$.grep(feed.posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
+			$.grep(@posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
 		$(".mark_ugc").on "click", (e) => 
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
 
-	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
+	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
+
 	initialize_character_count: => 
 		response_container = $(".response_container")
 		textarea = response_container.find("textarea")
@@ -73,6 +75,7 @@ class Post
 	question: null
 	correct: null
 	answers: []
+
 	constructor: (element) ->
 		@answers = []
 		@element = $(element)
@@ -99,7 +102,8 @@ class Post
 			active: false, 
 			icons: false, 
 			disabled: true
-		})		
+		})	
+
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
@@ -115,6 +119,7 @@ class Post
 		else
 			@open_reply_modal(e) 
 			return		
+
 	open_reply_modal: (event) =>
 		post = $(event.target)
 		post = post.parents(".post") unless post.hasClass "post"
@@ -207,22 +212,18 @@ class Post
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
 		textarea.focus()
+
 	quick_reply: (correct) =>
 		event.stopPropagation()
-		console.log "quick reply"
+		@correct = correct
 		post = $(event.target)
 		post = post.parents(".post") unless post.hasClass "post"
-		window.post = post
-		username = post.find('h5').html()
-		tweet = ''
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
 
-		if parent_post == undefined		
-			publication_id = null
-		else
-			publication_id = parent_post['publication_id']
-			
+		publication_id = null
+		publication_id = parent_post['publication_id'] unless parent_post == undefined
+
 		if correct == true
 			response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length)]
 			complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length)]
@@ -230,20 +231,15 @@ class Post
 		else
 			tweet = "#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}"
 
-		convo =  window.feed.conversations[post.attr('post_id')]
-		user_post = window.feed.engagements[@id]
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-
-		#tweet
 		params =
 			"interaction_type" : post.attr "interaction_type"
 			"asker_id" : window.feed.id
 			"in_reply_to_post_id" : @id
 			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
 			"message" : tweet
-			"username" : username
-		params["correct"] = correct
-		params["publication_id"] = publication_id if publication_id
+			"username" : post.find('h5').html()
+			"correct" : @correct
+			"publication_id" : publication_id
 
 		$.ajax '/manager_response',
 			type: 'POST'
@@ -268,6 +264,7 @@ class Post
 				window.feed.conversations[@id] = {"posts":[]}
 				$("#unlink").button('reset')
 				$("#confirm").modal('hide')
+
 	link_post: (event) =>
 		window.post = event
 		if event.text() == "unlink"
