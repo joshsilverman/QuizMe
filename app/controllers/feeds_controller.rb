@@ -321,7 +321,7 @@ class FeedsController < ApplicationController
     @unlinked = true if params[:filter] == 'unlinked'
 
     @posts = @posts.order("created_at DESC")
-    Post.autocorrect @posts
+    # Post.autocorrect @posts
     @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
     @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
   end

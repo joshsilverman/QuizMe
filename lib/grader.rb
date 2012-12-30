@@ -17,9 +17,10 @@ class Grader
     }
   end
 
-  def grade id_or_posts
-    id = id_or_posts if id_or_posts.is_a? Integer
-    posts = id_or_posts.where("autocorrect IS NULL").includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}) if id_or_posts.is_a? ActiveRecord::Relation
+  def grade id_or_posts_or_post
+    id = id_or_posts_or_post if id_or_posts_or_post.is_a? Integer
+    posts = id_or_posts_or_post.where("autocorrect IS NULL").includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}) if id_or_posts_or_post.is_a? ActiveRecord::Relation
+    posts = [Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id_or_posts_or_post.id)] if id_or_posts_or_post.is_a? Post
 
     posts = [Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id)] if id
     posts = Post.not_us.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id or posts

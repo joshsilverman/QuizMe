@@ -14,8 +14,6 @@ class Post < ActiveRecord::Base
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('correct IS NOT NULL')
-
-  @@classifier = Classifier.new
   
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
@@ -24,7 +22,11 @@ class Post < ActiveRecord::Base
   end
 
   def self.classifier
-    @@classifier
+    @@_classifier ||= Classifier.new
+  end
+
+  def self.grader
+    @@_grader ||= Grader.new
   end
 
   def clean_text
@@ -409,6 +411,7 @@ class Post < ActiveRecord::Base
     puts "missed item in stream! mention: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
+    Post.grader.grade post
     Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
   end
@@ -460,6 +463,7 @@ class Post < ActiveRecord::Base
     puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
+    Post.grader.grade post
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
@@ -566,6 +570,7 @@ class Post < ActiveRecord::Base
     })
 
     Post.classifier.classify post
+    Post.grader.grade post
   end
 
   def self.autocorrect posts
