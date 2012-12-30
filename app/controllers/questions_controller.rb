@@ -160,13 +160,6 @@ class QuestionsController < ApplicationController
     render :json => @question
   end
 
-  def mark_ugc
-    user = Post.find(params[:post_id]).user
-    Post.trigger_split_test(user.id, 'ugc request type')
-    Post.trigger_split_test(user.id, 'ugc script')
-    render :nothing => true
-  end
-
   def moderate
     @questions = Question.where(:status => 0)    
   end

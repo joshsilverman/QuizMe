@@ -41,15 +41,9 @@ class Feed
 			window.current_post.unlink_post()
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
-			$("#retweet_question").button("loading")
-			@retweet($(e.target))
-		$(".mark_ugc").on "click", (e) =>
-			return if $(e.target).text() == "marked ugc"
-			id = $(e.target).parents(".post").first().attr 'post_id'
-			params = "post_id" : id
-			$.ajax "/questions/mark_ugc",
-				type: 'POST',
-				data: params
+			$.grep(feed.posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
+		$(".mark_ugc").on "click", (e) => 
+			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
 
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts			
 	initialize_character_count: => 
@@ -72,17 +66,6 @@ class Feed
 				count.css "font-weight", "normal"
 				count.css "color", "#333"
 				button.removeClass("disabled")
-	retweet: (e) =>
-		id = e.attr 'post_id'
-		params = 
-			"post_id" : id
-			"asker_id" : @id
-		$.ajax "/posts/retweet",
-			type: 'POST',
-			data: params
-			complete: => 
-				$("#retweet_question_modal").modal('hide')	
-				$('#retweet_question').button('reset')
 
 class Post
 	id: null
@@ -312,5 +295,22 @@ class Post
 						window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
 						$("#link_post_modal").modal('hide')
 						window.post.text("unlink")
+
+	mark_ugc: =>
+		$.ajax "/posts/mark_ugc",
+			type: 'POST',
+			data: "post_id" : @id
+
+	retweet: (asker_id) =>
+		$("#retweet_question").button("loading")
+
+		$.ajax "/posts/retweet",
+			type: 'POST',
+			data:
+				"post_id" : @id
+				"asker_id" : asker_id
+			complete: => 
+				$("#retweet_question_modal").modal('hide')	
+				$('#retweet_question').button('reset')
 
 $ -> window.feed = new Feed if $("#manager").length > 0

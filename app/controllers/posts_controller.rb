@@ -41,37 +41,12 @@ class PostsController < ApplicationController
     end		
 	end
 
-	# def update
-	# 	puts 'UPDATE'
-	# 	eng = Post.find(params[:post_id])
-	# 	correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
-	# 	eng.update_responded(correct) if eng
-	# 	render :nothing => true
-	# end
-
-	# def respond_to_post
-	# 	post = Post.find(params[:post_id].to_i)
-	# 	correct = params[:correct]=='null' ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil
-	# 	unless correct.nil? or post.nil?
- #      asker = User.asker(params[:asker_id].to_i)
- #      user = post.user
- #      conversation = post.conversation
- #      question_id = conversation.publication.question_id
- #      post.update_responded(correct, conversation.publication_id, question_id, asker.id)
- #      tweet = post.generate_response(params[:response_type])
-	# 		if params[:response_type] == 'fast'
-	# 			puts 'fast'
-	# 			Post.tweet(asker, tweet, '','',"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", 2, conversation.id, nil, post.id, user.id, false)
-	# 		else
-	# 			puts 'others'
-	# 			Post.tweet(asker, tweet, '',user.twi_screen_name,"#{URL}/feeds/#{asker.id}/#{conversation.publication_id}", 2, "#{correct ? 'cor' : 'inc'}", conversation.id, nil, post.id, user.id, false)
-	# 		end
-	# 		render :nothing => true, :status => 200
-	# 	else
-	# 		post.update_attribute(:requires_action, false)
-	# 		render :nothing => true, :status => 200
-	# 	end
-	# end
+  def mark_ugc
+    user = Post.find(params[:post_id]).user
+    Post.trigger_split_test(user.id, 'ugc request type')
+    Post.trigger_split_test(user.id, 'ugc script')
+    render :nothing => true
+  end
 
   def refer
   	post = Post.includes(:publication => :question).find(params[:id])

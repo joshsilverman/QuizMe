@@ -32,6 +32,7 @@ Quizmemanager::Application.routes.draw do
   post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
+  match "/posts/mark_ugc" => "posts#mark_ugc"
 
   match "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
   match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
@@ -44,7 +45,6 @@ Quizmemanager::Application.routes.draw do
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
   match "/answers/:question_id" => "questions#display_answers"
-  match "/questions/mark_ugc" => "questions#mark_ugc"
 
   resources :questions
 
