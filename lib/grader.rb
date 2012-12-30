@@ -145,7 +145,8 @@ class Grader
     answer_posts = correct = incorrect = []
     if question
       answer_posts = question.publications.map{|pub| pub.conversations.map{|c| c.posts}}.flatten
-      correct = answer_posts.select{|p| p.correct == true} + [question.correct_answer]
+      correct = answer_posts.select{|p| p.correct == true} 
+      correct += [question.correct_answer] if question.correct_answer
       incorrect = answer_posts.select{|p| p.correct == false} + question.incorrect_answers
     end
     return {:correct => correct, :incorrect => incorrect}
@@ -156,8 +157,6 @@ class Grader
     @feature_names.each do |feature_name|
       feature_pre_reduce = {}
       answer_posts.each do |answer_post|
-        puts post.to_yaml
-        puts answer_post.to_yaml
         next if answer_post.id == post.id # exclude self-comparison during testing
         feature_pre_reduce[match(feature_name, answer_post, post)] = "#{answer_post.text} (#{answer_post.id} - #{answer_post.class})"
       end
