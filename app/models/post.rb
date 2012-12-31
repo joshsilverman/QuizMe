@@ -2,6 +2,8 @@ class Post < ActiveRecord::Base
 	belongs_to :question
 	belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
+  belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
+  # has_many :comments, :conditions => { :published => true }
   # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 
   belongs_to :publication
@@ -11,10 +13,12 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
-  scope :spam, where('spam = ? or autospam = ?', true, true)
+  scope :requires_action, where('posts.requires_action = ?', true)
 
-  scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+  scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
+  scope :spam, where('posts.spam = ? or posts.autospam = ?', true, true)
+
+  scope :not_us, where('posts.user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('correct IS NOT NULL')
 
@@ -27,9 +31,9 @@ class Post < ActiveRecord::Base
   scope :not_retweet, where("posts.interaction_type <> 3")
   scope :retweet, where(:interaction_type => 3)
 
-  scope :linked, includes(:conversation => {:publication => :question}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
-  scope :unlinked, includes(:conversation => {:publication => :question}, :parent => {:publication => :question}).where("questions.id IS NULL")
-  
+  scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
+  scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NULL")
+
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
       Post.where("correct is not null").count

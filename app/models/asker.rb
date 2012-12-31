@@ -16,7 +16,7 @@ class Asker < User
   end
 
   def unresponded_count
-    posts = Post.where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, id, false, Asker.ids)
+    posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id = ? AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
     count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
 
@@ -24,8 +24,8 @@ class Asker < User
   end
 
   def self.unresponded_counts
-    posts = Post.where("posts.requires_action = ? and posts.in_reply_to_user_id IN (?) and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
-    mention_counts = posts.not_spam.where("interaction_type = 2").group('in_reply_to_user_id').count
+    posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id IN (?) AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
+    mention_counts = posts.not_spam.where("interaction_type = 2").not_ugc.group('in_reply_to_user_id').count
     dm_counts = posts.not_spam.where("interaction_type = 4").group('in_reply_to_user_id').count :user_id, :distinct => true
 
     counts = {}
