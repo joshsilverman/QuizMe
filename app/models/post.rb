@@ -301,11 +301,11 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
         in_reply_to = "reengage inactive"
       # Check if in response to incorrect answer follow-up
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, publication_id, 1.week.ago).present?
         Post.trigger_split_test(current_user.id, 'include answer in response')
         in_reply_to = "incorrect answer follow up" 
       # Check if in response to first question mention
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, publication_id, 1.week.ago).present?
         in_reply_to = "new follower question mention"
       end
 
