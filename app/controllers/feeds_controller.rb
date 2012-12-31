@@ -315,9 +315,9 @@ class FeedsController < ApplicationController
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc
     elsif params[:filter] == 'linked'
-      @posts = @posts.linked.not_autocorrected.not_ugc.not_spam.not_retweet
+      @posts = @posts.not_autocorrected.linked.not_ugc.not_spam.not_retweet
     elsif params[:filter] == 'unlinked'
-      @posts = @posts.unlinked.not_autocorrected.not_ugc.not_spam.not_retweet
+      @posts = @posts.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
     else
       @posts = @posts.not_ugc.not_spam.not_retweet.autocorrected
     end

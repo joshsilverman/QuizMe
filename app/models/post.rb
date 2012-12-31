@@ -689,18 +689,22 @@ class Post < ActiveRecord::Base
   end
 
   def in_answer_to_question
-    if interaction_type == 3
+    @_in_answer_to_question = nil
+
+    if @_in_answer_to_question
+      # already have question in memory
+    elsif interaction_type == 3
       # retweet
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
+      @_in_answer_to_question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
     elsif conversation and conversation.publication and conversation.publication.question
-      question = conversation.publication.question
+      @_in_answer_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question
-      question = parent.publication.question
+      @_in_answer_to_question = parent.publication.question
     end
 
-    question
+    @_in_answer_to_question
   end
 
 end

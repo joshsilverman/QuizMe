@@ -24,7 +24,7 @@
 					#posts.rounded
 						.header.border-color
 							%h3
-								&nbsp;
+								= @asker.twi_screen_name
 								.btn-group
 									%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 							
