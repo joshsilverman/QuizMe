@@ -282,7 +282,7 @@ class FeedsController < ApplicationController
           in_reply_to = "new follower question mention"
         end
 
-        Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
+        # Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
 
         # Fire mixpanel answer event
         Mixpanel.track_event "answered", {
