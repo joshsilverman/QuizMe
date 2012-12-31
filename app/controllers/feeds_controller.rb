@@ -216,9 +216,19 @@ class FeedsController < ApplicationController
         :last_answer_at => (correct.present? ? user_post.created_at : nil)
       })
     else
-      tweet = params[:message].gsub("@#{params[:username]}", "")
+      
+      response_text = params[:message].gsub("@#{params[:username]}", "")
+
       if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
+        pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
+
+        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
+          correct_answer = pub.question.answers.where(:correct => true).first()
+          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
+          resource_url = nil
+        end
+
         post = pub.posts.where(:provider => "twitter").first
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
@@ -235,7 +245,8 @@ class FeedsController < ApplicationController
             wisr_question = false
           end
         end
-        response_post = Post.tweet(asker, tweet, {
+        puts response_text
+        response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :long_url => long_url, 
           :interaction_type => 2, 
@@ -259,7 +270,6 @@ class FeedsController < ApplicationController
 
         in_reply_to = nil
         if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 
           in_reply_to = "incorrect answer follow up"  
         elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
           in_reply_to = "new follower question mention"
@@ -275,8 +285,9 @@ class FeedsController < ApplicationController
           Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive')
         end
         Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
+        Post.trigger_split_test(current_user.id, 'include answer in response')         
       else         
-        response_post = Post.tweet(asker, tweet, {
+        response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
           :conversation_id => conversation.id,
