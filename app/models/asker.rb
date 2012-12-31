@@ -289,16 +289,9 @@ class Asker < User
       # eww, think we need a cleaner way to access the question associated w/ a post
       question = incorrect_post.conversation.publication.question
       asker = User.askers.find(incorrect_post.in_reply_to_user_id)
-      if Post.create_split_test(user_id, "mention reengagement", "response follow-up", "re-ask question") == "re-ask question"
-        text = "Try this one again: #{question.text}"       
-        link = false
-      else 
-        text = "Quick follow up... you missed this one yesterday, do you know it now?"
-        link = true
-      end
       # always link? another A/B test?
       # existing re-engages should be changed to follow-up!!!
-      Post.tweet(asker, text, {
+      Post.tweet(asker, "Try this one again: #{question.text}", {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
         :in_reply_to_post_id => incorrect_post.id,
@@ -307,7 +300,7 @@ class Asker < User
         :posted_via_app => true, 
         :requires_action => false,
         :interaction_type => 2,
-        :link_to_parent => link,
+        :link_to_parent => false,
         :link_type => "follow_up",
         :intention => "incorrect answer follow up"
       })  

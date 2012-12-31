@@ -190,7 +190,7 @@ class FeedsController < ApplicationController
     render :partial => "conversation"
   end
 
-  def manager_response
+  def manager_response(in_reply_to = nil)
     asker = User.asker(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
@@ -216,9 +216,13 @@ class FeedsController < ApplicationController
         :last_answer_at => (correct.present? ? user_post.created_at : nil)
       })
     else
-      tweet = params[:message].gsub("@#{params[:username]}", "")
+      
+      response_text = params[:message].gsub("@#{params[:username]}", "")
+
       if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
+        # pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
+
         post = pub.posts.where(:provider => "twitter").first
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
         user_post.update_attribute(:correct, correct)
@@ -234,8 +238,16 @@ class FeedsController < ApplicationController
             resource_url = "#{URL}/posts/#{post.id}/refer"
             wisr_question = false
           end
+        end         
+
+        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
+          correct_answer = pub.question.answers.where(:correct => true).first()
+          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
+          resource_url = nil
+          wisr_question = nil
         end
-        response_post = Post.tweet(asker, tweet, {
+
+        response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :long_url => long_url, 
           :interaction_type => 2, 
@@ -257,13 +269,22 @@ class FeedsController < ApplicationController
         # Check if we should ask for UGC
         User.request_ugc(user, asker)
 
-        in_reply_to = nil
-        if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'mention reengagement') 
-          in_reply_to = "incorrect answer follow up"  
-        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i).present?
+        # Check if in response to re-engage message
+        if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", params[:in_reply_to_user_id], 'reengage inactive', 'reengage last week inactive').present?
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
+          in_reply_to = "reengage inactive"
+        # Check if in response to incorrect answer follow-up
+        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i, 1.week.ago).present?
+          Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')
+          in_reply_to = "incorrect answer follow up" 
+        # Check if in response to first question mention
+        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i, 1.week.ago).present?
           in_reply_to = "new follower question mention"
-        end     
+        end
+
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
+
+        # Fire mixpanel answer event
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -271,12 +292,9 @@ class FeedsController < ApplicationController
           :type => "twitter",
           :in_reply_to => in_reply_to
         }
-        if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive')
-        end
-        Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
+        
       else         
-        response_post = Post.tweet(asker, tweet, {
+        response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
           :conversation_id => conversation.id,
