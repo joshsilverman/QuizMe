@@ -19,7 +19,7 @@ class Post < ActiveRecord::Base
   scope :answers, where('correct IS NOT NULL')
 
   scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
-  scope :not_ugc, where('posts.id NOT IN (?)', Post.ugc.collect(&:id))
+  scope :not_ugc, where('posts.id NOT IN (?)', Post.includes(:tags).where(:tags => {:name => 'ugc'}).collect(&:id))
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
   scope :not_autocorrected, where("posts.autocorrect IS NULL")
