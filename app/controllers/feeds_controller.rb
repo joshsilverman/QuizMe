@@ -322,27 +322,29 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user)\
-      .where("posts.requires_action = ? and posts.in_reply_to_user_id = ? and (posts.spam is null or posts.spam = ?) and posts.user_id not in (?)", true, params[:id], false, Asker.all.collect(&:id))
+    @posts = Post.includes(:user).not_spam\
+      .where("posts.in_reply_to_user_id = ? AND posts.user_id not in (?)", params[:id], Asker.all.collect(&:id))
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.retweet.not_ugc
+      @posts = @posts.requires_action.retweet.not_ugc
     elsif params[:filter] == 'spam'
-      @posts = @posts.spam.not_ugc
+      @posts = @posts.requires_action.spam.not_ugc
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc
     elsif params[:filter] == 'linked'
-      @posts = @posts.not_autocorrected.linked.not_ugc.not_spam.not_retweet
+      @posts = @posts.requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
     elsif params[:filter] == 'unlinked'
-      @posts = @posts.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
-    else
-      @posts = @posts.not_ugc.not_spam.not_retweet.autocorrected
+      @posts = @posts.requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
+    elsif params[:filter] == 'all'
+      @posts = @posts.requires_action.not_spam.not_retweet
+    else #params[:filter].nil? == 'autocorrected'
+      @posts = @posts.requires_action.not_ugc.not_spam.not_retweet.autocorrected
     end
 
     @posts = @posts.order("posts.created_at DESC")
-    # Post.autocorrect @posts
-    @questions = @asker.publications.where(:published => true).order("created_at DESC").includes(:question => :answers).limit(100)
+    @questions = @asker.publications.where(:published => true)\
+      .order("created_at DESC").includes(:question => :answers).limit(100)
     @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
   end
 
