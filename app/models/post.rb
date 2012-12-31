@@ -243,6 +243,9 @@ class Post < ActiveRecord::Base
       response_text = post.generate_response(status)
       publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
 
+      # This line must be before test is created below so that it doesn't trigger immediately.
+      Post.trigger_split_test(current_user.id, 'include answer in response') 
+
       if answer.correct == false and Post.create_split_test(current_user.id, "include answer in response", "false", "true") == "true"
         correct_answer = Answer.where("question_id = ? and correct = ?", answer.question_id, true).first()
         response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
@@ -301,7 +304,6 @@ class Post < ActiveRecord::Base
       if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
       end
-      Post.trigger_split_test(current_user.id, 'include answer in response') 
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
       Post.trigger_split_test(current_user.id, 'cohort re-engagement') 
       

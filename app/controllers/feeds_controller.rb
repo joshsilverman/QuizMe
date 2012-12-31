@@ -221,13 +221,7 @@ class FeedsController < ApplicationController
 
       if params[:publication_id] and params[:correct]
         pub = Publication.find(params[:publication_id].to_i)
-        pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
-
-        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
-          correct_answer = pub.question.answers.where(:correct => true).first()
-          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
-          resource_url = nil
-        end
+        # pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
 
         post = pub.posts.where(:provider => "twitter").first
         user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
@@ -245,7 +239,17 @@ class FeedsController < ApplicationController
             wisr_question = false
           end
         end
-        puts response_text
+
+        # This line must be before test is created below so that it doesn't trigger immediately.
+        Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response') 
+
+        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
+          correct_answer = pub.question.answers.where(:correct => true).first()
+          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
+          resource_url = nil
+          wisr_question = nil
+        end
+
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :long_url => long_url, 
@@ -285,7 +289,6 @@ class FeedsController < ApplicationController
           Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive')
         end
         Post.trigger_split_test(params[:in_reply_to_user_id], 'cohort re-engagement')
-        Post.trigger_split_test(current_user.id, 'include answer in response')         
       else         
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
