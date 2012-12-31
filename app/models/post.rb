@@ -177,7 +177,7 @@ class Post < ActiveRecord::Base
     return post
   end
 
-  def self.app_response(current_user, asker_id, publication_id, answer_id)
+  def self.app_response(current_user, asker_id, publication_id, answer_id, in_reply_to = nil)
     asker = User.asker(asker_id)
     publication = Publication.find(publication_id)
     answer = Answer.find(answer_id)
@@ -243,9 +243,6 @@ class Post < ActiveRecord::Base
       response_text = post.generate_response(status)
       publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
 
-      # This line must be before test is created below so that it doesn't trigger immediately.
-      Post.trigger_split_test(current_user.id, 'include answer in response') 
-
       if answer.correct == false and Post.create_split_test(current_user.id, "include answer in response", "false", "true") == "true"
         correct_answer = Answer.where("question_id = ? and correct = ?", answer.question_id, true).first()
         response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
@@ -295,22 +292,27 @@ class Post < ActiveRecord::Base
       # Check if we should ask for UGC
       User.request_ugc(current_user, asker)
 
-      in_reply_to = nil
-      if Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).present?
-        in_reply_to = "incorrect answer follow up"  
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ?", 'new user question mention', current_user.id, publication_id).present?
-        in_reply_to = "new follower question mention"
-      end
+      # Check if in response to re-engage message
       if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
+        in_reply_to = "reengage inactive"
+      # Check if in response to incorrect answer follow-up
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+        Post.trigger_split_test(current_user.id, 'include answer in response')
+        in_reply_to = "incorrect answer follow up" 
+      # Check if in response to first question mention
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+        in_reply_to = "new follower question mention"
       end
+
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
-      Post.trigger_split_test(current_user.id, 'cohort re-engagement') 
-      
+      Post.trigger_split_test(current_user.id, 'cohort re-engagement')
+
+      # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
         :distinct_id => current_user.id,
         :account => asker.twi_screen_name,
-        :type => "app", 
+        :type => "app",
         :in_reply_to => in_reply_to
       }
     end
