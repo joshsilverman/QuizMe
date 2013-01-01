@@ -1,5 +1,6 @@
 class FeedsController < ApplicationController
-  before_filter :admin?, :only => [:manage]
+  before_filter :authenticate_user, :except => [:index, :show, :activity_stream, :more]
+  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post]
 
   def index
     @asker = User.find(1)
@@ -348,18 +349,6 @@ class FeedsController < ApplicationController
     @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
   end
 
-  def ask
-    post = Post.tweet(current_user, params["text"], {
-      :interaction_type => 2, 
-      :in_reply_to_user_id => params["asker_id"], 
-      :link_to_parent => false,
-      :requires_action => true,
-      :intention => "ask a question"
-    })
-    Post.trigger_split_test(current_user.id, 'ask a question')
-    render :text => post.provider_post_id
-  end
-
   def create_split_test
     res = Post.create_split_test(params[:user_id], params[:test_name], params[:alt_a], params[:alt_b])
     render :text => res.nil? ? 'error' : res, :status => 200
@@ -370,5 +359,4 @@ class FeedsController < ApplicationController
     human_res = res.nil? ? 'Error- could not complete action' : res ? "New Finish" : "Already Completed"
     render :text => human_res, :status => 200
   end
-
 end

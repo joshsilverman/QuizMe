@@ -59,8 +59,6 @@ Quizmemanager::Application.routes.draw do
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
 
-  match '/get_shortened_link' => 'posts#get_shortened_link'
-
   resources :askers
   #match "users/:id" => "askers#update"
 
