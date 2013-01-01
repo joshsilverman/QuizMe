@@ -432,7 +432,7 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => d.sender.profile_image_url
     )
 
-    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and (user_id = ? or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, u.id)\
+    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, current_acct.id, u.id)\
       .order("created_at DESC")\
       .limit(1)\
       .first
@@ -528,7 +528,7 @@ class Post < ActiveRecord::Base
     if interaction_type == 4
       twi_user = tweet.sender
       user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
-      in_reply_to_post = Post.where("provider = 'twitter' and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, user.id, user.id, asker_id)\
+      in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', asker_id, user.id, user.id, asker_id)\
         .order("created_at DESC")\
         .limit(1)\
         .first
