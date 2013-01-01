@@ -134,7 +134,7 @@ class Post < ActiveRecord::Base
           :user_id => sender.id,
           :provider => 'twitter',
           :text => tweet,
-          :provider_post_id => twitter_response.id.to_s,
+          :provider_post_id => twitter_response.present? ? twitter_response.id.to_s : 0,
           :in_reply_to_post_id => options[:in_reply_to_post_id],
           :in_reply_to_user_id => user_id,
           :conversation_id => options[:conversation_id],
@@ -582,6 +582,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.twitter_request(&block)
+    return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     value = nil
     attempts = 0
     begin
@@ -592,13 +593,18 @@ class Post < ActiveRecord::Base
       retry unless attempts > 2
       puts "Failed to run #{block} after 3 attempts"
     rescue Exception => exception
-      puts "Exception in twitter wrapper:"
-      puts exception.message
+      puts "Exception in twitter wrapper: #{exception.message}"
     end 
     return value   
   end
   
   extend Split::Helper
+
+  def self.is_safe_api_call?(block)
+    return true if Rails.env.production?
+    TWI_DEV_SAFE_API_CALLS.each { |allowed_call| return true if block.include? ".#{allowed_call}" }
+    return false
+  end
 
   def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id, true)
