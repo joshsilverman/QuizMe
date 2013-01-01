@@ -47,6 +47,7 @@ Quizmemanager::Application.routes.draw do
   match "/answers/:question_id" => "questions#display_answers"
 
   resources :questions
+  resources :answers
 
   scope :constraints => { :protocol => "https" } do
     match "/answers/:question_id" => "questions#display_answers"
