@@ -34,6 +34,14 @@ class Post < ActiveRecord::Base
   scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
   scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NULL")
 
+  scope :retweet_box, requires_action.retweet.not_ugc
+  scope :spam_box, requires_action.spam.not_ugc
+  scope :ugc_box, ugc
+  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
+  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
+  scope :all_box, requires_action.not_spam.not_retweet
+  scope :autocorrected_box, requires_action.not_ugc.not_spam.not_retweet.autocorrected
+
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
       Post.where("correct is not null").count

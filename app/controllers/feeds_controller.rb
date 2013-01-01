@@ -323,24 +323,29 @@ class FeedsController < ApplicationController
     #base selection
     @asker = Asker.find params[:id]
     @posts = Post.includes(:user).not_spam\
-      .where("posts.in_reply_to_user_id = ? AND posts.user_id not in (?)", params[:id], Asker.all.collect(&:id))
+      .where("posts.in_reply_to_user_id = ? AND posts.user_id not in (?)", params[:id], Asker.ids)
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.requires_action.retweet.not_ugc
+      @posts = @posts.retweet_box
     elsif params[:filter] == 'spam'
-      @posts = @posts.requires_action.spam.not_ugc
+      @posts = @posts.spam_box
     elsif params[:filter] == 'ugc'
-      @posts = @posts.ugc
+      @posts = @posts.ugc_box
     elsif params[:filter] == 'linked'
-      @posts = @posts.requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
+      @posts = @posts.linked_box
     elsif params[:filter] == 'unlinked'
-      @posts = @posts.requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
+      @posts = @posts.unlinked_box
     elsif params[:filter] == 'all'
-      @posts = @posts.requires_action.not_spam.not_retweet
-    else #params[:filter].nil? == 'autocorrected'
-      @posts = @posts.requires_action.not_ugc.not_spam.not_retweet.autocorrected
+      @posts = @posts.all_box
+    else
+      @posts = @posts.autocorrected_box
     end
+
+    @ugc_box_count = @posts.ugc_box.count
+    @linked_box_count = @posts.linked_box.count
+    @unlinked_box_count = @posts.unlinked_box.count
+    @autocorrected_box_count = @posts.autocorrected_box.count
 
     @posts = @posts.order("posts.created_at DESC")
     @questions = @asker.publications.where(:published => true)\
