@@ -84,7 +84,8 @@ class QuestionsController < ApplicationController
   end
 
   def update
-    @question = current_user.questions.find(params[:id])
+    @question = Question.find(params[:id])
+    # @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
 
     respond_to do |format|

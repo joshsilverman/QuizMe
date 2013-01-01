@@ -20,17 +20,17 @@
         %th.span2= t '.actions', :default => t("helpers.actions")
     %tbody.asker-row
       - @questions.each_with_index do |question, i|
+        - puts question.text, question.id
         %tr{:id => "question_#{question.id}"}
           %td= i + 1
           %td= "@#{question.user.twi_screen_name}" if question.user
           %td
             %p{:style => "font-weight: bold;"}
-              = best_in_place question, :text
+              = best_in_place question, :text, :type => :textarea
             - question.answers.each_with_index do |answer, i|
               %p
-                ="#{i+1}."
-                = best_in_place answer, :text
-                = "(#{answer.correct})"
+                %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+                = best_in_place answer, :text, :type => :input
           - handle = User.askers.where(:id => question.created_for_asker_id).first.try(:twi_screen_name)
           %td= handle
           %td= question.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %H:%M")
