@@ -1,5 +1,19 @@
 Quizmemanager::Application.routes.draw do
   
+  get "answer/new"
+
+  get "answer/create"
+
+  get "answer/update"
+
+  get "answer/edit"
+
+  get "answer/destroy"
+
+  get "answer/index"
+
+  get "answer/show"
+
   get "badges/load"  
   get "badges/issuable"
   post "badges/issue"  
@@ -44,14 +58,14 @@ Quizmemanager::Application.routes.draw do
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
-  match "/answers/:question_id" => "questions#display_answers"
+  # match "/answers/:question_id" => "questions#display_answers"
 
   resources :questions
   resources :answers
 
-  scope :constraints => { :protocol => "https" } do
-    match "/answers/:question_id" => "questions#display_answers"
-  end
+  # scope :constraints => { :protocol => "https" } do
+  #   match "/answers/:question_id" => "questions#display_answers"
+  # end
 
   match 'auth/:provider/callback' => 'sessions#create'
   match "/signout" => "sessions#destroy", :as => :signout

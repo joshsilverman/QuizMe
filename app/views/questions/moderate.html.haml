@@ -20,7 +20,6 @@
         %th.span2= t '.actions', :default => t("helpers.actions")
     %tbody.asker-row
       - @questions.each_with_index do |question, i|
-        - puts question.text, question.id
         %tr{:id => "question_#{question.id}"}
           %td= i + 1
           %td= "@#{question.user.twi_screen_name}" if question.user
