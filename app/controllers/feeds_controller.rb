@@ -325,9 +325,9 @@ class FeedsController < ApplicationController
     @asker = Asker.find params[:id]
     @posts = Post.includes(:user).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
 
-    @linked_box_count = 0 #@posts.linked_box.count
-    @unlinked_box_count = 0 #@posts.unlinked_box.count
-    @autocorrected_box_count = 0 #@posts.autocorrected_box.count
+    @linked_box_count = @posts.linked_box.count
+    @unlinked_box_count = @posts.unlinked_box.count
+    @autocorrected_box_count = @posts.autocorrected_box.count
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
