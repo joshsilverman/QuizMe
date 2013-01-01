@@ -24,9 +24,12 @@
           %td= i + 1
           %td= "@#{question.user.twi_screen_name}" if question.user
           %td
-            %p{:style => "font-weight: bold;"}= question.text
+            %p{:style => "font-weight: bold;"}
+              = best_in_place question, :text, :type => :textarea
             - question.answers.each_with_index do |answer, i|
-              %p= "#{i+1}. #{answer.text} (#{answer.correct})"
+              %p
+                %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+                = best_in_place answer, :text, :type => :input
           - handle = User.askers.where(:id => question.created_for_asker_id).first.try(:twi_screen_name)
           %td= handle
           %td= question.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %H:%M")

@@ -66,4 +66,4 @@ gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier
 gem 'split', :git => 'https://github.com/bderusha/split', :require => 'split/dashboard' #  ||:git => 'https://github.com/bderusha/split', :path => '~/Documents/RoR/gems/split'
 
 gem 'amatch'
-
+gem 'sourcify'

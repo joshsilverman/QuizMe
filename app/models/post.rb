@@ -142,7 +142,7 @@ class Post < ActiveRecord::Base
           :user_id => sender.id,
           :provider => 'twitter',
           :text => tweet,
-          :provider_post_id => twitter_response.id.to_s,
+          :provider_post_id => twitter_response.present? ? twitter_response.id.to_s : 0,
           :in_reply_to_post_id => options[:in_reply_to_post_id],
           :in_reply_to_user_id => user_id,
           :conversation_id => options[:conversation_id],
@@ -309,16 +309,16 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
         in_reply_to = "reengage inactive"
       # Check if in response to incorrect answer follow-up
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, publication_id, 1.week.ago).present?
         Post.trigger_split_test(current_user.id, 'include answer in response')
         in_reply_to = "incorrect answer follow up" 
       # Check if in response to first question mention
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, params[:publication_id].to_i, 1.week.ago).present?
+      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, publication_id, 1.week.ago).present?
         in_reply_to = "new follower question mention"
       end
 
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
-      Post.trigger_split_test(current_user.id, 'cohort re-engagement')
+      # Post.trigger_split_test(current_user.id, 'cohort re-engagement')
 
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
@@ -440,7 +440,7 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => d.sender.profile_image_url
     )
 
-    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and (user_id = ? or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, u.id)\
+    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, current_acct.id, u.id)\
       .order("created_at DESC")\
       .limit(1)\
       .first
@@ -536,7 +536,7 @@ class Post < ActiveRecord::Base
     if interaction_type == 4
       twi_user = tweet.sender
       user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
-      in_reply_to_post = Post.where("provider = 'twitter' and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, user.id, user.id, asker_id)\
+      in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', asker_id, user.id, user.id, asker_id)\
         .order("created_at DESC")\
         .limit(1)\
         .first
@@ -590,6 +590,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.twitter_request(&block)
+    return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     value = nil
     attempts = 0
     begin
@@ -600,13 +601,18 @@ class Post < ActiveRecord::Base
       retry unless attempts > 2
       puts "Failed to run #{block} after 3 attempts"
     rescue Exception => exception
-      puts "Exception in twitter wrapper:"
-      puts exception.message
+      puts "Exception in twitter wrapper: #{exception.message}"
     end 
     return value   
   end
   
   extend Split::Helper
+
+  def self.is_safe_api_call?(block)
+    return true if Rails.env.production?
+    TWI_DEV_SAFE_API_CALLS.each { |allowed_call| return true if block.include? ".#{allowed_call}" }
+    return false
+  end
 
   def self.trigger_split_test(user_id, test_name, reset=false)
     ab_user.set_id(user_id, true)

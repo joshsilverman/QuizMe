@@ -1,4 +1,5 @@
 class PostsController < ApplicationController
+  before_filter :admin?
 
 	def retweet
 		if params[:publication_id]
@@ -68,13 +69,4 @@ class PostsController < ApplicationController
       redirect_to "/feeds/#{post.user_id}"
     end
   end	
-
-  def get_shortened_link
-  	unless url = Rails.cache.read("short_url:#{params[:intent]}:question:#{params[:question_id]}")
-  		question = Question.find(params[:question_id])
-  		url = Post.shorten_url("http://wisr.com/questions/#{question.id}/#{question.slug}", params[:provider], params[:intent], params[:asker_name])
-  		Rails.cache.write("short_url:#{params[:intent]}:question:#{params[:question_id]}", url)
-  	end
-  	render :text => url
-  end
 end
