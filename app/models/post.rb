@@ -18,7 +18,7 @@ class Post < ActiveRecord::Base
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
   scope :spam, where('posts.spam = ? or posts.autospam = ?', true, true)
 
-  scope :not_us, where('posts.user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+  scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('correct IS NOT NULL')
 
@@ -30,6 +30,8 @@ class Post < ActiveRecord::Base
 
   scope :not_retweet, where("posts.interaction_type <> 3")
   scope :retweet, where(:interaction_type => 3)
+  scope :mentions, where("posts.interaction_type = 2")
+  scope :dms, where("posts.interaction_type = 4")
 
   scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
   scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NULL")
@@ -40,7 +42,7 @@ class Post < ActiveRecord::Base
   scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
   scope :all_box, requires_action.not_spam.not_retweet
-  scope :autocorrected_box, requires_action.not_ugc.not_spam.not_retweet.autocorrected
+  scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
 
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do

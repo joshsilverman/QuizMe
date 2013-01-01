@@ -24,9 +24,8 @@ class Asker < User
   end
 
   def self.unresponded_counts
-    posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id IN (?) AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, Asker.ids, false, Asker.ids)
-    mention_counts = posts.not_spam.where("interaction_type = 2").not_ugc.group('in_reply_to_user_id').count
-    dm_counts = posts.not_spam.where("interaction_type = 4").group('in_reply_to_user_id').count :user_id, :distinct => true
+    mention_counts = Post.mentions.requires_action.not_us.not_spam.not_ugc.group('in_reply_to_user_id').count
+    dm_counts = Post.not_ugc.not_us.dms.requires_action.not_spam.group('in_reply_to_user_id').count :user_id, :distinct => true
 
     counts = {}
     Asker.ids.each{|id| counts[id] = 0}

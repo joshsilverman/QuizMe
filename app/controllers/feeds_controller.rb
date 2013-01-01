@@ -323,8 +323,11 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user).not_spam\
-      .where("posts.in_reply_to_user_id = ? AND posts.user_id not in (?)", params[:id], Asker.ids)
+    @posts = Post.includes(:user).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
+
+    @linked_box_count = 0 #@posts.linked_box.count
+    @unlinked_box_count = 0 #@posts.unlinked_box.count
+    @autocorrected_box_count = 0 #@posts.autocorrected_box.count
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
@@ -342,11 +345,6 @@ class FeedsController < ApplicationController
     else
       @posts = @posts.autocorrected_box
     end
-
-    @ugc_box_count = @posts.ugc_box.count
-    @linked_box_count = @posts.linked_box.count
-    @unlinked_box_count = @posts.unlinked_box.count
-    @autocorrected_box_count = @posts.autocorrected_box.count
 
     @posts = @posts.order("posts.created_at DESC")
     @questions = @asker.publications.where(:published => true)\
