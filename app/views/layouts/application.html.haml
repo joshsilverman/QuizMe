@@ -5,45 +5,14 @@
 		= stylesheet_link_tag    "application"
 		= javascript_include_tag "application"
 		= javascript_include_tag "https://www.google.com/jsapi"
-		/ = javascript_include_tag "http://js.pusher.com/1.12/pusher.min.js"
 		= csrf_meta_tags
 		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
 	%body{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
 		= render 'layouts/header'
 		.container.row{:style => "margin: auto;"}
 			= yield
-		/ =render 'layouts/footer'
-		%script{:type=>"text/javascript"}
-			var rails_env = "#{Rails.env}";
-			google.load("visualization", "1.0", {"packages": ["corechart"]});
-		%script{:type=>"text/javascript"}
-			- if Rails.env.production?
-				var _gaq = _gaq || [];
-				_gaq.push(['_setAccount', 'UA-34407760-1']);
-				_gaq.push(['_setDomainName', 'wisr.com']);
-				_gaq.push(['_trackPageview']);
-				(function() {
-				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-				})();
-		%script{:type=>"text/javascript"}
-			(function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
-			b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
-			'//cdn.mxpnl.com/libs/mixpanel-2.1.min.js';d=c.getElementsByTagName("script")[0];
-			d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){
-			var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(
-			Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?g=a[f]=[]:
-			f="mixpanel";g.people=g.people||[];h=['disable','track','track_pageview','track_links',
-			'track_forms','register','register_once','unregister','identify','name_tag',
-			'set_config','people.identify','people.set','people.increment'];for(e=0;e<h.length;e++)d(g,h[e]);
-			a._i.push([b,c,f])};a.__SV=1.1;})(document,window.mixpanel||[]);
-			- if Rails.env.production? 
-				mixpanel.init("cc41ff876080a580c5d9ca257d189162");
-			- else
-				mixpanel.init("e568e52157e29acc604c236e9ce4cfa6");
+		= render :partial => "layouts/scripts"
 
-			var campaign = "#{@campaign}";
-			var source = "#{@source}";
-			var link_type = "#{@link_type}";				
+
+			
 			

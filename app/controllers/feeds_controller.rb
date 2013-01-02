@@ -52,22 +52,7 @@ class FeedsController < ApplicationController
       @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
       # question activity
-      @actions = {}
-      post_pub_map = {}
-      posts.each { |post| post_pub_map[post.id] = post.publication_id }
-      actions.each do |post_id, post_activity|
-        @actions[post_pub_map[post_id]] = []
-        post_activity.each do |action|
-          @actions[post_pub_map[post_id]] << {
-            :user => {
-              :id => action.user.id,
-              :twi_screen_name => action.user.twi_screen_name,
-              :twi_profile_img_url => action.user.twi_profile_img_url
-            },
-            :interaction_type => action.interaction_type, 
-          } unless @actions[post_pub_map[post_id]].nil?
-        end
-      end
+      @actions = Post.recent_activity_on_posts(posts, actions)
 
       # inject requested publication from params, render twi card
       if params[:post_id]
