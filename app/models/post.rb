@@ -665,6 +665,24 @@ class Post < ActiveRecord::Base
     return @_posts, @conversations
   end
 
+  def self.recent_activity_on_posts(posts, actions, action_hash = {}, post_pub_map = {})
+    posts.each { |post| post_pub_map[post.id] = post.publication_id }
+    actions.each do |post_id, post_activity|
+      action_hash[post_pub_map[post_id]] = []
+      post_activity.each do |action|
+        action_hash[post_pub_map[post_id]] << {
+          :user => {
+            :id => action.user.id,
+            :twi_screen_name => action.user.twi_screen_name,
+            :twi_profile_img_url => action.user.twi_profile_img_url
+          },
+          :interaction_type => action.interaction_type, 
+        } unless action_hash[post_pub_map[post_id]].nil?
+      end
+    end  
+    action_hash
+  end
+
   def generate_response(response_type)
     #Include backlink if exists
     case response_type
