@@ -22,6 +22,7 @@ class Feed
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
+		@initialize_fix_position_listener()
 		@activity_stream() 
 		$(".timeago").timeago()
 
@@ -61,6 +62,12 @@ class Feed
 				)
 			complete: => 
 				$("#activity_stream h4 img").hide()
+	initialize_fix_position_listener: =>
+		$(window).on "scroll", => 
+			if $(window).scrollTop() >= 204
+				$("#left_column_container").css("position", "fixed").css("top", "15px")
+			else
+				$("#left_column_container").css("position", "").css("top", "auto")
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
