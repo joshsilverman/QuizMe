@@ -9,9 +9,9 @@
 					%ul.nav.nav-tabs.nav-stacked
 						%li
 							.box.top Inbox
-						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected", '?'
-						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts", '?filter=linked'
-						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts", '?filter=unlinked'
+						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?'
+						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts (#{@linked_box_count})", '?filter=linked'
+						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
 
 						%li
 							.box Labels
