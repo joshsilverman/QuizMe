@@ -33,8 +33,8 @@ class Post < ActiveRecord::Base
   scope :mentions, where("posts.interaction_type = 2")
   scope :dms, where("posts.interaction_type = 4")
 
-  scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NOT NULL")
-  scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).where("questions.id IS NULL")
+  scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NOT NULL")
+  scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NULL")
 
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, requires_action.spam.not_ugc
