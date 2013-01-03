@@ -86,13 +86,13 @@ class Asker < User
 
   def self.get_aggregate_post_response_script(answer_count, correct_count)
     if correct_count > 20
-      script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+      script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", correct_count.to_s)
     elsif correct_count > 3
-      script = AGGREGATE_POST_RESPONSES[:many_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+      script = AGGREGATE_POST_RESPONSES[:many_correct].sample.gsub("{num_correct}", correct_count.to_s)
     elsif correct_count > 1
-      script = AGGREGATE_POST_RESPONSES[:multiple_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+      script = AGGREGATE_POST_RESPONSES[:multiple_correct].sample.gsub("{num_correct}", correct_count.to_s)
     elsif answer_count > 1
-      script = AGGREGATE_POST_RESPONSES[:multiple_answers].sample.gsub("{count}", asker_cache[:count].to_s)
+      script = AGGREGATE_POST_RESPONSES[:multiple_answers].sample.gsub("{count}", answer_count.to_s)
     else
       script = AGGREGATE_POST_RESPONSES[:one_answer].sample
     end
