@@ -139,8 +139,7 @@ class Asker < User
       user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_answer_at }.sort_by(&:created_at)
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
-      time_since_last_reengagement = Time.now - user_reengagments.last.created_at
-      if user_reengagments.blank? or (time_since_last_reengagement > next_checkpoint.days)
+      if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}
