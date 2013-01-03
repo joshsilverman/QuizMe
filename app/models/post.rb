@@ -314,7 +314,7 @@ class Post < ActiveRecord::Base
 
       # Check if in response to re-engage message
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', current_user.id, publication_id).order("created_at DESC").limit(1).first
-      if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", current_user.id, last_inactive_reengagement.created_at, publication_id).blank?
+      if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, current_user.id, last_inactive_reengagement.created_at, publication_id).blank?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
         Post.trigger_split_test(current_user.id, "reengagement interval", true)
         in_reply_to = "reengage inactive"
@@ -323,7 +323,7 @@ class Post < ActiveRecord::Base
       # Check if in response to incorrect answer follow-up
       unless in_reply_to
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id).order("created_at DESC").limit(1).first
-        if last_followup.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", current_user.id, last_followup.created_at, publication_id).blank?
+        if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  current_user.id, last_followup.created_at, publication_id).blank?
           Post.trigger_split_test(current_user.id, 'include answer in response')
           in_reply_to = "incorrect answer follow up" 
         end
@@ -332,7 +332,7 @@ class Post < ActiveRecord::Base
       # Check if in response to first question mention
       unless in_reply_to
         new_follower_mention = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'new user question mention', current_user.id, publication_id).order("created_at DESC").limit(1).first
-        if new_follower_mention.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", 'new user question mention', current_user.id, new_follower_mention.created_at, publication_id).present?
+        if new_follower_mention.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  'new user question mention', current_user.id, new_follower_mention.created_at, publication_id).present?
           in_reply_to = "new follower question mention"
         end
       end
