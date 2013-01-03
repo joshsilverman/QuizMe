@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121230061619) do
+ActiveRecord::Schema.define(:version => 20130102173818) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -21,6 +21,8 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.datetime "updated_at"
   end
 
+  add_index "answers", ["question_id"], :name => "index_answers_on_question_id"
+
   create_table "askertopics", :force => true do |t|
     t.integer  "asker_id"
     t.integer  "topic_id"
@@ -28,28 +30,15 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.datetime "updated_at"
   end
 
+  add_index "askertopics", ["asker_id", "topic_id"], :name => "index_askertopics_on_asker_id_and_topic_id"
+  add_index "askertopics", ["asker_id"], :name => "index_askertopics_on_asker_id"
+  add_index "askertopics", ["topic_id"], :name => "index_askertopics_on_topic_id"
+
   create_table "badges", :force => true do |t|
     t.integer  "asker_id"
     t.string   "title"
     t.string   "filename"
     t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "cards", :force => true do |t|
-    t.text     "front"
-    t.text     "back"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "deck_id"
-    t.integer  "quizlet_id"
-    t.boolean  "publish"
-  end
-
-  create_table "cards_groups", :force => true do |t|
-    t.integer  "card_id"
-    t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -62,29 +51,9 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.datetime "updated_at"
   end
 
-  create_table "decks", :force => true do |t|
-    t.integer  "handle_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "quizlet_id"
-    t.string   "title"
-  end
-
-  create_table "groups", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "question_format"
-    t.text     "answer_format"
-    t.integer  "deck_id"
-    t.boolean  "default"
-  end
-
-  create_table "handles", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  add_index "conversations", ["post_id"], :name => "index_conversations_on_post_id"
+  add_index "conversations", ["publication_id"], :name => "index_conversations_on_publication_id"
+  add_index "conversations", ["user_id"], :name => "index_conversations_on_user_id"
 
   create_table "issuances", :force => true do |t|
     t.integer  "user_id"
@@ -115,6 +84,15 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.boolean  "autocorrect"
   end
 
+  add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"
+  add_index "posts", ["created_at"], :name => "index_posts_on_created_at"
+  add_index "posts", ["in_reply_to_post_id"], :name => "index_posts_on_in_reply_to_post_id"
+  add_index "posts", ["in_reply_to_user_id"], :name => "index_posts_on_in_reply_to_user_id"
+  add_index "posts", ["interaction_type"], :name => "index_posts_on_interaction_type"
+  add_index "posts", ["provider_post_id"], :name => "index_posts_on_provider_post_id"
+  add_index "posts", ["publication_id"], :name => "index_posts_on_publication_id"
+  add_index "posts", ["user_id"], :name => "index_posts_on_user_id"
+
   create_table "posts_tags", :force => true do |t|
     t.integer  "post_id"
     t.integer  "tag_id"
@@ -139,6 +117,10 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.boolean  "published",            :default => false
   end
 
+  add_index "publications", ["asker_id"], :name => "index_publications_on_asker_id"
+  add_index "publications", ["published"], :name => "index_publications_on_published"
+  add_index "publications", ["question_id"], :name => "index_publications_on_question_id"
+
   create_table "questions", :force => true do |t|
     t.text     "text"
     t.integer  "topic_id"
@@ -153,6 +135,10 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.text     "resource_url"
     t.string   "slug"
   end
+
+  add_index "questions", ["created_for_asker_id"], :name => "index_questions_on_created_for_asker_id"
+  add_index "questions", ["topic_id"], :name => "index_questions_on_topic_id"
+  add_index "questions", ["user_id"], :name => "index_questions_on_user_id"
 
   create_table "rate_sheets", :force => true do |t|
     t.float    "tweet"
@@ -254,5 +240,12 @@ ActiveRecord::Schema.define(:version => 20121230061619) do
     t.integer  "rate_sheet_id"
     t.boolean  "client_nudge"
   end
+
+  add_index "users", ["author_id"], :name => "index_users_on_author_id"
+  add_index "users", ["client_id"], :name => "index_users_on_client_id"
+  add_index "users", ["learner_level"], :name => "index_users_on_learner_level"
+  add_index "users", ["new_user_q_id"], :name => "index_users_on_new_user_q_id"
+  add_index "users", ["published"], :name => "index_users_on_published"
+  add_index "users", ["rate_sheet_id"], :name => "index_users_on_rate_sheet_id"
 
 end
