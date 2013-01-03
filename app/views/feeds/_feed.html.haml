@@ -5,7 +5,7 @@
 		- @conversation = nil
 		- responded = false
 		- if @responses[publication.id]
-			- correct = (@responses[publication.id].first.posts.present? ? @responses[publication.id].first.posts.where("correct is not null").first.correct : nil)
+			- correct = (@responses[publication.id].first.posts.where("correct is not null").present? ? @responses[publication.id].first.posts.where("correct is not null").first.correct : nil)
 			- @conversation = @responses[publication.id].first
 			- responded = true
 		.conversation.border-color{:asker_id => @local_asker.id}
