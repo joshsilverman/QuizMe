@@ -67,18 +67,7 @@ class Asker < User
         asker_cache = user_cache[:askers][asker_id]
         if asker_cache[:last_answer_at] < 5.minutes.ago and asker_cache[:count] > 0
           asker = Asker.find(asker_id)
-          # puts "tweeting aggregate activity to #{user_cache[:twi_screen_name]} from #{asker.twi_screen_name}"
-          if asker_cache[:correct] > 20
-            script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
-          elsif asker_cache[:correct] > 3
-            script = AGGREGATE_POST_RESPONSES[:many_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
-          elsif asker_cache[:correct] > 1
-            script = AGGREGATE_POST_RESPONSES[:multiple_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
-          elsif asker_cache[:count] > 1
-            script = AGGREGATE_POST_RESPONSES[:multiple_answers].sample.gsub("{count}", asker_cache[:count].to_s)
-          else
-            script = AGGREGATE_POST_RESPONSES[:one_answer].sample
-          end
+          script = Asker.get_aggregate_post_response_script(asker_cache[:count], asker_cache[:correct])
           Post.tweet(asker, script, {
             :reply_to => user_cache[:twi_screen_name],
             :interaction_type => 2, 
@@ -95,8 +84,23 @@ class Asker < User
     Rails.cache.write("aggregate activity", current_cache)
   end
 
+  def self.get_aggregate_post_response_script(answer_count, correct_count)
+    if correct_count > 20
+      script = AGGREGATE_POST_RESPONSES[:tons_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+    elsif correct_count > 3
+      script = AGGREGATE_POST_RESPONSES[:many_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+    elsif correct_count > 1
+      script = AGGREGATE_POST_RESPONSES[:multiple_correct].sample.gsub("{num_correct}", asker_cache[:correct].to_s)
+    elsif answer_count > 1
+      script = AGGREGATE_POST_RESPONSES[:multiple_answers].sample.gsub("{count}", asker_cache[:count].to_s)
+    else
+      script = AGGREGATE_POST_RESPONSES[:one_answer].sample
+    end
+    script
+  end
+
   def self.reengage_inactive_users
-  	# Strategy definition
+  	# Strategy definition, currently overriden in compile_recipients_by_asker
   	strategy = [3, 7, 10]
 
 		# Set time ranges
@@ -179,6 +183,14 @@ class Asker < User
   end
 
   def self.engage_new_users
+    # Send DMs to new users
+    Asker.dm_new_followers
+
+    # Send mentions to new users
+    Asker.mention_new_users
+  end
+
+  def self.dm_new_followers
     askers = Asker.all
     new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
     askers.each do |asker|
@@ -191,7 +203,6 @@ class Asker < User
         sleep(1)
         user = User.find_or_create_by_twi_user_id(tid)
         next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-        p "sending dm to user: #{user.id}"
         Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
         Mixpanel.track_event "DM question to new follower", {
           :distinct_id => user.id,
@@ -199,14 +210,16 @@ class Asker < User
         }
         sleep(1)   
       end
-    end
+    end    
+  end
 
+  def self.mention_new_users
+    askers = Asker.all
     answered_dm_users = User.where("learner_level = 'dm answer' and created_at > ?", 1.week.ago).includes(:posts)
     app_posts = Post.where("in_reply_to_user_id in (?) and intention = 'new user question mention'", answered_dm_users.collect(&:id)).group_by(&:in_reply_to_user_id)
     popular_asker_publications = {}
     answered_dm_users.each do |user|
       if app_posts[user.id].blank?
-        # asker = askers.find(user.posts.first.in_reply_to_user_id)
         asker = askers.select { |a| a.id == user.posts.first.in_reply_to_user_id }.first
         unless publication = popular_asker_publications[asker.id]
           if popular_post = asker.posts.includes(:conversations).where("created_at > ? and interaction_type = 1", 1.week.ago).sort_by {|p| p.conversations.size}.last
@@ -217,7 +230,6 @@ class Asker < User
           publication = Publication.includes(:question).find(publication_id)
           popular_asker_publications[asker.id] = publication
         end
-        puts "sending mention question to #{user.twi_screen_name}"
         Post.tweet(asker, "Next question! #{publication.question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}", 
