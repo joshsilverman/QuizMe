@@ -77,7 +77,11 @@ class Post < ActiveRecord::Base
   end
 
   def self.shorten_url(url, source, lt, campaign, show_answer=nil)
-    Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
+    if Rails.env.production?
+      return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
+    else
+      return "wisr.co/devurl"
+    end
   end
 
   def self.publish(provider, asker, publication)
