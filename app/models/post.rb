@@ -250,7 +250,7 @@ class Post < ActiveRecord::Base
     end
 
     if user_post
-      conversation.posts << user_post
+      # conversation.posts << user_post
       user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
       current_user.update_user_interactions({
         :learner_level => "feed answer", 
