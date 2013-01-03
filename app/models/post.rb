@@ -80,7 +80,7 @@ class Post < ActiveRecord::Base
     if Rails.env.production?
       return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
     else
-      return "wisr.co/devurl"
+      return "http://wisr.co/devurl"
     end
   end
 
@@ -310,17 +310,31 @@ class Post < ActiveRecord::Base
       # Check if we should ask for UGC
       User.request_ugc(current_user, asker)
 
+      # GROSS, CLEAN THESE UP
+
       # Check if in response to re-engage message
-      if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", current_user.id, 'reengage inactive', 'reengage last week inactive').present?
+      last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', current_user.id, publication_id)
+      if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", current_user.id, last_inactive_reengagement.created_at, publication_id).blank?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
+        Post.trigger_split_test(current_user.id, "reengagement interval", true)
         in_reply_to = "reengage inactive"
+      end
+
       # Check if in response to incorrect answer follow-up
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', current_user.id, publication_id, 1.week.ago).present?
-        Post.trigger_split_test(current_user.id, 'include answer in response')
-        in_reply_to = "incorrect answer follow up" 
+      unless in_reply_to
+        last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', current_user.id, publication_id)
+        if last_followup.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", current_user.id, last_followup.created_at, publication_id).blank?
+          Post.trigger_split_test(current_user.id, 'include answer in response')
+          in_reply_to = "incorrect answer follow up" 
+        end
+      end
+
       # Check if in response to first question mention
-      elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', current_user.id, publication_id, 1.week.ago).present?
-        in_reply_to = "new follower question mention"
+      unless in_reply_to
+        new_follower_mention = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'new user question mention', current_user.id, publication_id)
+        if new_follower_mention.present? and Post.joins(:conversation).where("posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", 'new user question mention', current_user.id, new_follower_mention.created_at, publication_id).present?
+          in_reply_to = "new follower question mention"
+        end
       end
 
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?

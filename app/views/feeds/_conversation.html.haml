@@ -1,5 +1,5 @@
 - count = @conversation.posts.size
-- @conversation.posts.each_with_index do |response, i|
+- @conversation.posts.order("created_at ASC").each_with_index do |response, i|
 	.subsidiary.post{:class => ("answered" if i < (count - 1))}
 		.content
 			- user = (response["user_id"] == @local_asker.id ? @local_asker : current_user)

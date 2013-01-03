@@ -255,17 +255,20 @@ class FeedsController < ApplicationController
         # Check if we should ask for UGC
         User.request_ugc(user, asker)
 
-        # Check if in response to re-engage message
-        if Post.where("in_reply_to_user_id = ? and (intention = ? or intention = ?)", params[:in_reply_to_user_id], 'reengage inactive', 'reengage last week inactive').present?
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
-          in_reply_to = "reengage inactive"
-        # Check if in response to incorrect answer follow-up
-        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'incorrect answer follow up', params[:in_reply_to_user_id], params[:publication_id].to_i, 1.week.ago).present?
-          Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')
-          in_reply_to = "incorrect answer follow up" 
-        # Check if in response to first question mention
-        elsif Post.joins(:conversation).where("posts.intention = ? and posts.in_reply_to_user_id = ? and conversations.publication_id = ? and posts.created_at > ?", 'new user question mention', params[:in_reply_to_user_id], params[:publication_id].to_i, 1.week.ago).present?
-          in_reply_to = "new follower question mention"
+        # Analytics + A/B tests
+        parent_post = user_post.parent
+        if parent_post.present?
+          case parent_post.intention
+          when 'reengage inactive'
+            Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
+            Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval", true)
+            in_reply_to = "reengage inactive"
+          when 'incorrect answer follow up'
+            Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')
+            in_reply_to = "incorrect answer follow up" 
+          when 'new user question mention'
+            in_reply_to = "new follower question mention"
+          end
         end
 
         # Fire mixpanel answer event

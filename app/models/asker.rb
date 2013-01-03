@@ -134,12 +134,13 @@ class Asker < User
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
-      # strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7").split("/").map { |e| e.to_i }
+      strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7").split("/").map { |e| e.to_i }
       last_answer_at = user.posts.sort_by { |p| p.created_at }.last.created_at
       user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_answer_at }.sort_by(&:created_at)
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
-      if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
+      time_since_last_reengagement = Time.now - user_reengagments.last.created_at
+      if user_reengagments.blank? or (time_since_last_reengagement > next_checkpoint.days)
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size]}
