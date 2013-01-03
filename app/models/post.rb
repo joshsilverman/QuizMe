@@ -320,7 +320,6 @@ class Post < ActiveRecord::Base
       end
 
       Post.trigger_split_test(current_user.id, 'wisr posts propagate to twitter') if current_user.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
-      # Post.trigger_split_test(current_user.id, 'cohort re-engagement')
 
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
