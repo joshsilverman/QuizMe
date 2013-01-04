@@ -617,8 +617,8 @@ class Post < ActiveRecord::Base
     rescue Twitter::Error::ClientError => exception
       puts "twitter error (#{exception}), retrying"
       attempts += 1 
-      retry unless attempts > 2
-      puts "Failed to run #{block} after 3 attempts"
+      retry unless attempts > 2 or exception.message == "Status is a duplicate."
+      puts "Failed to run #{block} after #{attempts} attempts"
     rescue Exception => exception
       puts "Exception in twitter wrapper: #{exception.message}"
     end 
