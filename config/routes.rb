@@ -51,6 +51,11 @@ Quizmemanager::Application.routes.draw do
   match "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
   match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
 
+  # match "/questions/answers/:question_id" => "questions#display_answers"
+  match "/questions/answers/:question_id" => "questions#display_answers", :constraints => { :protocol => "https" }
+  # match "/questions/answers(/*path)", :to => redirect { |_, request|
+    # "https://" + request.host_with_port + request.fullpath }
+
   match "questions/asker/:asker_id" => "questions#index"
   match "questions/asker/:asker_id/import" => "questions#import"
   post "questions/save_question_and_answers"
@@ -58,14 +63,10 @@ Quizmemanager::Application.routes.draw do
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
-  # match "/answers/:question_id" => "questions#display_answers"
 
   resources :questions
   resources :answers
 
-  # scope :constraints => { :protocol => "https" } do
-  #   match "/answers/:question_id" => "questions#display_answers"
-  # end
 
   match 'auth/:provider/callback' => 'sessions#create'
   match "/signout" => "sessions#destroy", :as => :signout

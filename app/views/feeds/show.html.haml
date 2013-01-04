@@ -1,15 +1,7 @@
 - content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
 - if @render_twitter_card
-	%meta{:content => "player", :name => "twitter:card"}
-	%meta{:content => @asker.twi_screen_name, :name => "twitter:site"}
-	%meta{:content => "http://wisr.com/", :name => "twitter:url"}
-	%meta{:content => "Potential Answers", :name => "twitter:title"}
-	%meta{:content => "Tweet me your response!", :name => "twitter:description"}
-	%meta{:content => "https://s3.amazonaws.com/Wisr/answers.jpg", :name => "twitter:image"}
-	%meta{:content => "https://wisr.com/answers/#{@requested_publication.question_id}", :name => "twitter:player"}
-	%meta{:content => "435", :name => "twitter:player:width"}
-	%meta{:content => "196", :name => "twitter:player:height"}
-	/ %meta{:content => "175", :name => "twitter:player:height"}
+	= render :partial => "twitter_card"
+
 #post_feed
 	#feed_container.span10
 		#wrapper.span9
@@ -24,12 +16,6 @@
 									%a.post_question{:href => "/"}
 										%i.icon-pencil
 										Post a Question
-									/ - if (current_user and ((@correct and @correct > 9) or current_user.is_role? "author"))
-									/ 	%a.post_question{:href => "/"} Post a Question
-									/ 	.div.is_author{:style => 'display:none;'}
-									/ - else
-									/ 	/ %p.post_disabled_explanation (10+ correct required!)
-									/ 	%a.post_question.disabled{:href => "/", :rel => "tooltip", :title => "10+ correct answers required!", 'data-placement' => 'bottom'} Post a Question
 						#feed_content
 							= render :partial => "feed"
 						#posts_more.border-color
@@ -44,9 +30,6 @@
 							%ul.unstyled	
 								#activity_stream_content				
 									= render :partial => "stream" 
-						- if current_user
-							/ .clr
-							/ = render :partial => "ask" 
 						.clr					
 						= render :partial => "related"
 

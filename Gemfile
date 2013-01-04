@@ -18,7 +18,7 @@ group :development do
   # gem "guard"
   # gem "guard-livereload"
   gem 'awesome_print'
-  gem 'rack-mini-profiler'
+  # gem 'rack-mini-profiler'
   gem 'quiet_assets'
   gem 'oink'
   gem 'ruby-prof'
