@@ -685,7 +685,7 @@ class Post < ActiveRecord::Base
   def self.recent_activity_on_posts(posts, actions, action_hash = {}, post_pub_map = {})
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
     actions.each do |post_id, post_activity|
-      action_hash[post_pub_map[post_id]] = []
+      action_hash[post_pub_map[post_id]] ||= []
       post_activity.each do |action|
         action_hash[post_pub_map[post_id]] << {
           :user => {
@@ -696,6 +696,7 @@ class Post < ActiveRecord::Base
           :interaction_type => action.interaction_type, 
         } unless action_hash[post_pub_map[post_id]].nil?
       end
+      action_hash[post_pub_map[post_id]].uniq!{|a|a[:user][:id]}
     end  
     action_hash
   end
