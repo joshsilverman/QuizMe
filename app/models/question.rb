@@ -10,13 +10,16 @@ class Question < ActiveRecord::Base
   has_many :requirements
 
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+
   scope :priority, where('priority = ?', true)
   scope :not_priority, where('priority = ?', false)
+
+  scope :approved, where('status = 1')
 
   before_save :generate_slug
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude, queue = [], priority_questions = [])
-    user_grouped_priority_questions = asker.questions.priority\
+    user_grouped_priority_questions = asker.questions.approved.priority\
       .order("created_at ASC")\
       .group_by(&:user_id)
 
@@ -25,7 +28,7 @@ class Question < ActiveRecord::Base
 
     # Fill queue with non-priority questions, non recent question
     if queue.size < asker.posts_per_day
-      non_priority_questions = asker.questions.not_priority
+      non_priority_questions = asker.questions.approved.not_priority
       
       recent_question_ids = asker.publications\
         .where("question_id is not null and published = ?", true)\
