@@ -618,6 +618,13 @@ class Post < ActiveRecord::Base
 
     Post.classifier.classify post
     Post.grader.grade post
+    post.auto_respond
+  end
+
+  def auto_respond
+    if !self.autocorrect.nil?
+      
+    end
   end
 
   def self.twitter_request(&block)
