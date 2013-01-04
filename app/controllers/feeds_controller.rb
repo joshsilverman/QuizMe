@@ -13,7 +13,7 @@ class FeedsController < ApplicationController
 
     @actions = {}
     replies.each do |post_id, post_activity|
-      @actions[post_pub_map[post_id]] = []
+      @actions[post_pub_map[post_id]] ||= []
       post_activity.each do |action|
         @actions[post_pub_map[post_id]] << {
           :user => {
@@ -24,6 +24,7 @@ class FeedsController < ApplicationController
           :interaction_type => action.interaction_type, 
         } unless @actions[post_pub_map[post_id]].nil?
       end
+      @actions[post_pub_map[post_id]].uniq!{|a|a[:user][:id]}
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)
 
