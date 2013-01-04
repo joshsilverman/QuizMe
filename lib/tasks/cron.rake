@@ -13,12 +13,10 @@ task :check_for_posts => :environment do
 end
 
 task :post_question => :environment do
-  askers = Asker.where('twi_oauth_token is not null')
-  askers.each do |a|
-    next unless a.published
+  Asker.where('twi_oauth_token is not null and published = ?', true).each do |a|
     puts "Posting question for #{a.twi_screen_name}"
     a.publish_question()
-    sleep(8)
+    sleep(3)
   end
 end
 

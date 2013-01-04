@@ -35,6 +35,8 @@ class Publication < ActiveRecord::Base
         .order("created_at ASC")\
         .includes(:user)\
         .group_by(&:in_reply_to_post_id)
+        # We're getting a bunch of posts linked to reengagements here that are not being displayed
+        # as activity on the original posts
         
       [publications, posts, replies]
     end

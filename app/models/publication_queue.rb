@@ -4,10 +4,10 @@ class PublicationQueue < ActiveRecord::Base
 	
 	def self.enqueue_questions(asker)
     queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
-    Question.select_questions_to_post(asker, 7).each do |question|
+    Question.select_questions_to_post(asker, 7).each do |question_id|
       break if queue.publications.count >= asker.posts_per_day
       publication = Publication.create(
-        :question_id => question.id,
+        :question_id => question_id,
         :asker_id => asker.id, 
         :publication_queue_id => queue.id
       )

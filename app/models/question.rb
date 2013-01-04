@@ -10,20 +10,38 @@ class Question < ActiveRecord::Base
   has_many :requirements
 
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+  scope :priority, where('priority = ?', true)
+  scope :not_priority, where('priority = ?', false)
 
   before_save :generate_slug
 
-  def self.select_questions_to_post(asker, num_days_back_to_exclude, priority_questions = [])
-    recent_question_ids = asker.publications.where("question_id is not null and published = ?", true).order('created_at DESC').limit(num_days_back_to_exclude * asker.posts_per_day).collect(&:question_id)
-    recent_question_ids = recent_question_ids.empty? ? [0] : recent_question_ids
-    Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).group_by(&:user_id).each { |user_id, user_questions| priority_questions << user_questions.sample.id }
-    # priority_questions = Question.where("created_for_asker_id = ? and priority = ? and status = 1", asker.id, true).collect(&:id)
-    questions = Question.where("created_for_asker_id = ? and id not in (?) and status = 1", asker.id, recent_question_ids+priority_questions).includes(:answers)
-    id_queue = priority_questions.sample(asker.posts_per_day) 
-    id_queue += questions.sample(asker.posts_per_day - id_queue.size)
-    puts "WARNING THE QUEUE FOR #{asker.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{id_queue.size} of #{asker.posts_per_day} POSTS SCHEDULED" if id_queue.size < asker.posts_per_day
-    return Question.where("id in (?)", id_queue)
-    #@TODO email or some notification that I will actually read if not filled
+  def self.select_questions_to_post(asker, num_days_back_to_exclude, queue = [], priority_questions = [])
+    user_grouped_priority_questions = asker.questions.priority\
+      .order("created_at ASC")\
+      .group_by(&:user_id)
+
+    # Sample one priority question per user
+    user_grouped_priority_questions.each { |user_id, user_questions| queue << user_questions.sample.id if queue.size < asker.posts_per_day }
+
+    # Fill queue with non-priority questions, non recent question
+    if queue.size < asker.posts_per_day
+      non_priority_questions = asker.questions.not_priority
+      
+      recent_question_ids = asker.publications\
+        .where("question_id is not null and published = ?", true)\
+        .where("created_at > ?", num_days_back_to_exclude.days.ago)\
+        .collect(&:question_id)
+      recent_question_ids = [0] if recent_question_ids.blank? 
+
+      queue += non_priority_questions.where("id not in (?)", recent_question_ids).sample(asker.posts_per_day - queue.size).collect(&:id)
+
+      # Fill queue with recent questions
+      if queue.size < asker.posts_per_day
+        queue += non_priority_questions.where("id in (?)", recent_question_ids).sample(asker.posts_per_day - queue.size).collect(&:id)
+      end
+    end
+    puts "WARNING THE QUEUE FOR #{asker.twi_screen_name} WAS NOT FULLY FILLED. ONLY #{queue.size} of #{asker.posts_per_day} POSTS SCHEDULED" if queue.size < asker.posts_per_day
+    queue
   end
 
   def self.unmoderated_counts
