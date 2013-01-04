@@ -96,7 +96,7 @@ class Asker < User
     else
       script = AGGREGATE_POST_RESPONSES[:one_answer].sample
     end
-    script
+    script 
   end
 
   def self.reengage_inactive_users
