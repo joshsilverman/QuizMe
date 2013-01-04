@@ -7,7 +7,7 @@ User-agent: Googlebot
 Allow: /
 
 User-agent: Twitterbot
-Allow: /
+Allow: /questions/answers/
 
 User-agent: *
 Disallow: /
