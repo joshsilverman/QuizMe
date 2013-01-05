@@ -527,7 +527,7 @@ class Post < ActiveRecord::Base
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,
         :in_reply_to_user_id => retweeted_post.user_id,
-        :provider_post_id => r.id.to_s,
+        # :provider_post_id => r.id.to_s,
         :posted_via_app => false,
         :created_at => r.created_at,
         :interaction_type => 3,
