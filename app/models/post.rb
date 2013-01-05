@@ -325,7 +325,7 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
         if current_user.enrolled_in_experiment? "reengagement interval"
-          strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+          strategy = Post.create_split_test(current_user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
         end
         in_reply_to = "reengage inactive"
       end
