@@ -188,6 +188,7 @@ class FeedsController < ApplicationController
       if correct.present?
         user_post.update_attribute(:correct, correct)
         # Mixpanel tracking for DM answer conversion
+        # Double counting if we grade people again via DM
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -203,89 +204,9 @@ class FeedsController < ApplicationController
         :last_answer_at => (correct.present? ? user_post.created_at : nil)
       })
     else
-      
       response_text = params[:message].gsub("@#{params[:username]}", "")
-
       if params[:publication_id] and params[:correct]
-        pub = Publication.find(params[:publication_id].to_i)
-        # pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
-
-        post = pub.posts.where(:provider => "twitter").first
-        user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
-        user_post.update_attribute(:correct, correct)
-        long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-        if correct.nil? or correct
-          resource_url = nil
-          wisr_question = false
-        else
-          if pub.question.resource_url.nil?
-            resource_url = "#{URL}/questions/#{pub.question_id}/#{pub.question.slug}"
-            wisr_question = true
-          else
-            resource_url = "#{URL}/posts/#{post.id}/refer"
-            wisr_question = false
-          end
-        end         
-
-        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
-          correct_answer = pub.question.answers.where(:correct => true).first()
-          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
-          resource_url = nil
-          wisr_question = nil
-        end
-
-        response_post = Post.tweet(asker, response_text, {
-          :reply_to => params[:username], 
-          :long_url => long_url, 
-          :interaction_type => 2, 
-          :conversation_id => conversation.id,
-          :in_reply_to_post_id => params[:in_reply_to_post_id], 
-          :in_reply_to_user_id => params[:in_reply_to_user_id], 
-          :link_to_parent => false,
-          :resource_url => resource_url,
-          :wisr_question => wisr_question,
-          :intention => 'grade'
-        })
-        user = user_post.user
-        user.update_user_interactions({
-          :learner_level => (correct.present? ? "twitter answer" : "mention"), 
-          :last_interaction_at => user_post.created_at,
-          :last_answer_at => (correct.present? ? user_post.created_at : nil)
-        })
-
-        # Check if we should ask for UGC
-        User.request_ugc(user, asker)
-
-        # Analytics + A/B tests
-        parent_post = user_post.parent
-        in_reply_to = nil
-        strategy = nil
-        if parent_post.present?
-          case parent_post.intention
-          when 'reengage inactive'
-            Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
-            # Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval")
-            if user.enrolled_in_experiment? "reengagement interval"
-              strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
-            end
-            in_reply_to = "reengage inactive"
-          when 'incorrect answer follow up'
-            Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')
-            in_reply_to = "incorrect answer follow up" 
-          when 'new user question mention'
-            in_reply_to = "new follower question mention"
-          end
-        end
-
-        # Fire mixpanel answer event
-        Mixpanel.track_event "answered", {
-          :distinct_id => params[:in_reply_to_user_id],
-          :time => user_post.created_at.to_i,
-          :account => asker.twi_screen_name,
-          :type => "twitter",
-          :in_reply_to => in_reply_to
-        }
-        
+        Asker.grade_post()
       else         
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 

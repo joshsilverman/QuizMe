@@ -243,15 +243,8 @@ class Post < ActiveRecord::Base
         :correct => answer.correct,
         :intention => 'respond to question'
       })
-      current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
-      current_cache[current_user.id] ||= {:askers => {}}
-      current_cache[current_user.id][:twi_screen_name] = current_user.twi_screen_name
-      current_cache[current_user.id][:askers][asker.id] ||= Hash.new(0)
-      current_cache[current_user.id][:askers][asker.id][:last_answer_at] = Time.now
-      current_cache[current_user.id][:askers][asker.id][:count] += 1
-      current_cache[current_user.id][:askers][asker.id][:correct] += 1 if answer.correct
-      Rails.cache.write("aggregate activity", current_cache)
-      # p Rails.cache.read("aggregate activity")
+      
+      asker.update_aggregate_activity_cache(answer.correct)
     end
 
     if user_post
