@@ -262,7 +262,7 @@ class FeedsController < ApplicationController
           case parent_post.intention
           when 'reengage inactive'
             Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
-            Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval", true)
+            Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval")
             in_reply_to = "reengage inactive"
           when 'incorrect answer follow up'
             Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')

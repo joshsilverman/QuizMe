@@ -13,6 +13,11 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
+  scope :status, where('interaction_type = 1')
+  scope :mention, where('interaction_type = 2')
+  scope :retweet, where('interaction_type = 3')
+  scope :dm, where('interaction_type = 4')
+
   scope :requires_action, where('posts.requires_action = ?', true)
 
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
@@ -316,7 +321,7 @@ class Post < ActiveRecord::Base
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', current_user.id, publication_id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, current_user.id, last_inactive_reengagement.created_at, publication_id).blank?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
-        Post.trigger_split_test(current_user.id, "reengagement interval", true)
+        Post.trigger_split_test(current_user.id, "reengagement interval")
         in_reply_to = "reengage inactive"
       end
 
@@ -522,6 +527,7 @@ class Post < ActiveRecord::Base
         :user_id => u.id,
         :in_reply_to_post_id => retweeted_post.id,
         :in_reply_to_user_id => retweeted_post.user_id,
+        :provider_post_id => r.id.to_s,
         :posted_via_app => false,
         :created_at => r.created_at,
         :interaction_type => 3,
