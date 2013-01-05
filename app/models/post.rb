@@ -13,10 +13,10 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  scope :status, where('interaction_type = 1')
-  scope :mention, where('interaction_type = 2')
-  scope :retweet, where('interaction_type = 3')
-  scope :dm, where('interaction_type = 4')
+  # scope :statuses, where('interaction_type = 1')
+  # scope :mentions, where('interaction_type = 2')
+  # scope :retweets, where('interaction_type = 3')
+  # scope :dms, where('interaction_type = 4')
 
   scope :requires_action, where('posts.requires_action = ?', true)
 
@@ -200,7 +200,7 @@ class Post < ActiveRecord::Base
     return post
   end
 
-  def self.app_response(current_user, asker_id, publication_id, answer_id, in_reply_to = nil)
+  def self.app_response(current_user, asker_id, publication_id, answer_id)
     asker = User.asker(asker_id)
     publication = Publication.find(publication_id)
     answer = Answer.find(answer_id)
@@ -318,10 +318,15 @@ class Post < ActiveRecord::Base
       # GROSS, CLEAN THESE UP
 
       # Check if in response to re-engage message
+      in_reply_to = nil
+      strategy = nil
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', current_user.id, publication_id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, current_user.id, last_inactive_reengagement.created_at, publication_id).blank?
         Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
-        Post.trigger_split_test(current_user.id, "reengagement interval")
+        # Hackity, just being used to get current user's test option for now
+        if current_user.enrolled_in_experiment? "reengagement interval"
+          strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+        end
         in_reply_to = "reengage inactive"
       end
 
@@ -349,7 +354,8 @@ class Post < ActiveRecord::Base
         :distinct_id => current_user.id,
         :account => asker.twi_screen_name,
         :type => "app",
-        :in_reply_to => in_reply_to
+        :in_reply_to => in_reply_to,
+        :strategy => strategy
       }
     end
     return conversation

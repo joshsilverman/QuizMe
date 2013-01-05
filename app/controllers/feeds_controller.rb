@@ -177,7 +177,7 @@ class FeedsController < ApplicationController
     render :partial => "conversation"
   end
 
-  def manager_response(in_reply_to = nil)
+  def manager_response
     asker = User.asker(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
@@ -258,11 +258,16 @@ class FeedsController < ApplicationController
 
         # Analytics + A/B tests
         parent_post = user_post.parent
+        in_reply_to = nil
+        strategy = nil
         if parent_post.present?
           case parent_post.intention
           when 'reengage inactive'
             Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
-            Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval")
+            # Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval")
+            if user.enrolled_in_experiment? "reengagement interval"
+              strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+            end
             in_reply_to = "reengage inactive"
           when 'incorrect answer follow up'
             Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')

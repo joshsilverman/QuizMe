@@ -118,6 +118,10 @@ class User < ActiveRecord::Base
 		end
 		client
 	end
+
+	def enrolled_in_experiment? experiment_name
+		Split.redis.hkeys("user_store:3").include? experiment_name
+	end
   
   def self.request_ugc(user, asker)
 	  if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, asker.id).size > 9
