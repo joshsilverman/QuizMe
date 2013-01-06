@@ -340,6 +340,9 @@ econ_engine_options =
     minorGridlines:
       count: 3
       color: "#eee"
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
   colors: ["#1D3880"]
 
 handle_activity_options = 
