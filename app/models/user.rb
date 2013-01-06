@@ -119,10 +119,49 @@ class User < ActiveRecord::Base
 		client
 	end
 
+	def app_answer asker, conversation, post, answer, post_aggregate_activity
+    if post_aggregate_activity
+      user_post = Post.create({
+        :user_id => self.id,
+        :provider => 'wisr',
+        :text => answer.text,
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => asker.id,
+        :conversation_id => conversation.id,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => 2,
+        :correct => answer.correct,
+        :intention => 'respond to question'
+      })      
+      asker.update_aggregate_activity_cache(answer.correct)
+    else
+      user_post = Post.tweet(self, answer.text, {
+        :reply_to => asker.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+        :interaction_type => 2, 
+        :link_type => answer.correct ? "cor" : "inc", 
+        :conversation_id => conversation.id, 
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => asker.id,
+        :link_to_parent => false, 
+        :correct => answer.correct,
+        :intention => 'respond to question'
+      })
+    end
+
+    self.update_user_interactions({
+      :learner_level => "feed answer", 
+      :last_interaction_at => user_post.created_at,
+      :last_answer_at => user_post.created_at
+    })
+    user_post
+	end
+  
 	def enrolled_in_experiment? experiment_name
 		Split.redis.hkeys("user_store:#{self.id}").include? experiment_name
 	end
-  
+
   def self.request_ugc(user, asker)
 	  if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, asker.id).size > 9
 	  	puts "attempting to send ugc request to #{user.twi_screen_name} on handle #{asker.twi_screen_name}"

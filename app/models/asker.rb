@@ -292,7 +292,7 @@ class Asker < User
     puts "\n"       
   end 
 
-  def update_responded correct
+  def update_aggregate_activity_cache correct
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
     current_cache[current_user.id] ||= {:askers => {}}
     current_cache[current_user.id][:twi_screen_name] = current_user.twi_screen_name
@@ -302,6 +302,105 @@ class Asker < User
     current_cache[current_user.id][:askers][self.id][:correct] += 1 if correct
     Rails.cache.write("aggregate activity", current_cache)
   end
+
+  def app_response answerer, conversation, user_post, answer, publication, post_aggregate_activity
+    # NECESSARY?
+    # user_post.update_responded(answer.correct, publication_id, publication.question_id, asker_id)
+
+    response_text = post.generate_response(status)
+    publication.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
+    if answer.correct == false and Post.create_split_test(current_user.id, "include answer in response", "false", "true") == "true"
+      correct_answer = Answer.where("question_id = ? and correct = ?", answer.question_id, true).first()
+      response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
+      resource_url = nil
+    end
+    
+    if post_aggregate_activity
+      if resource_url and answer.correct == false
+        short_resource_url = Post.shorten_url(
+          resource_url, 
+          'wisr', 
+          'res', 
+          answerer.twi_screen_name, 
+          publication.question.resource_url ? false : true
+        )
+        response_text += " Find the answer at #{short_resource_url}" if short_resource_url.present?
+      end
+      app_post = Post.create({
+        :user_id => self.id,
+        :provider => 'wisr',
+        :text => response_text,
+        :in_reply_to_post_id => user_post.id,
+        :in_reply_to_user_id => answerer.id,
+        :conversation_id => conversation.id,
+        :url => answer.correct ? short_resource_url : nil,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => 2,
+        :intention => 'grade'
+      })
+    else
+      app_post = Post.tweet(asker, response_text, {
+        :reply_to => answerer.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication_id}", 
+        :interaction_type => 2, 
+        :link_type => status[0..2], 
+        :conversation_id => conversation.id, 
+        :in_reply_to_post_id => (user_post ? user_post.id : nil), 
+        :in_reply_to_user_id => answerer.id,
+        :link_to_parent => true, 
+        :resource_url => answer.correct ? nil : resource_url,
+        :wisr_question => publication.question.resource_url ? false : true,
+        :intention => 'grade'
+      })        
+    end
+
+    # Check if we should ask for UGC
+    User.request_ugc(answerer, asker)
+
+    # GROSS, CLEAN THESE UP
+
+    # Check if in response to re-engage message
+    in_reply_to = nil
+    strategy = nil
+    last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication_id).order("created_at DESC").limit(1).first
+    if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication_id).blank?
+      Post.trigger_split_test(current_user.id, 'reengage last week inactive') 
+      # Hackity, just being used to get current user's test option for now
+      if current_user.enrolled_in_experiment? "reengagement interval"
+        strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+      end
+      in_reply_to = "reengage inactive"
+    end
+
+    # Check if in response to incorrect answer follow-up
+    unless in_reply_to
+      last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication_id).order("created_at DESC").limit(1).first
+      if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication_id).blank?
+        Post.trigger_split_test(current_user.id, 'include answer in response')
+        in_reply_to = "incorrect answer follow up" 
+      end
+    end
+
+    # Check if in response to first question mention
+    unless in_reply_to
+      new_follower_mention = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'new user question mention', answerer.id, publication_id).order("created_at DESC").limit(1).first
+      if new_follower_mention.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  'new user question mention', answerer.id, new_follower_mention.created_at, publication_id).present?
+        in_reply_to = "new follower question mention"
+      end
+    end
+
+    Post.trigger_split_test(answerer.id, 'wisr posts propagate to twitter') if answerer.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
+
+    # Fire mixpanel answer event
+    Mixpanel.track_event "answered", {
+      :distinct_id => answerer.id,
+      :account => asker.twi_screen_name,
+      :type => "app",
+      :in_reply_to => in_reply_to,
+      :strategy => strategy
+    }
+  end    
 
   def self.grade_post()
     pub = Publication.find(params[:publication_id].to_i)

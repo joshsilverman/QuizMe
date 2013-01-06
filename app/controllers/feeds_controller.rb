@@ -172,8 +172,25 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    @conversation = Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
-    @local_asker = User.askers.find(params["asker_id"])
+    publication = Publication.find(publication_id)
+    @local_asker = publication.asker
+    answer = Answer.find(answer_id)
+    
+    # Necessary for wisr responses?
+    post = publication.posts.statuses.order("created_at DESC").limit(1).first
+
+    # Create conversation for posts
+    conversation = Conversation.create({
+      :user_id => self.id,
+      :post_id => post.id,
+      :publication_id => publication_id
+    })
+
+    post_aggregate_activity = Post.create_split_test(current_user.id, "post aggregate activity", "false", "true") == "true" ? true : false
+
+    user_answer = current_user.app_answer(@local_asker, conversation, post, answer, post_aggregate_activity)
+    asker_response = asker.app_response(current_user, conversation, user_post, answer, publication, post_aggregate_activity) if user_answer
+
     render :partial => "conversation"
   end
 

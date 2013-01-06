@@ -13,11 +13,6 @@ class Post < ActiveRecord::Base
   has_many :conversations
 	has_many :reps
 
-  # scope :statuses, where('interaction_type = 1')
-  # scope :mentions, where('interaction_type = 2')
-  # scope :retweets, where('interaction_type = 3')
-  # scope :dms, where('interaction_type = 4')
-
   scope :requires_action, where('posts.requires_action = ?', true)
 
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
@@ -33,6 +28,7 @@ class Post < ActiveRecord::Base
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
   scope :not_autocorrected, where("posts.autocorrect IS NULL")
 
+  scope :statuses, where('interaction_type = 1')
   scope :not_retweet, where("posts.interaction_type <> 3")
   scope :retweet, where(:interaction_type => 3)
   scope :mentions, where("posts.interaction_type = 2")
@@ -201,7 +197,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.app_response(current_user, asker_id, publication_id, answer_id)
-    asker = User.asker(asker_id)
+    asker = Asker.find(asker_id)
     publication = Publication.find(publication_id)
     answer = Answer.find(answer_id)
     status = (answer.correct ? "correct" : "incorrect")
