@@ -120,7 +120,7 @@ class User < ActiveRecord::Base
 	end
 
 	def enrolled_in_experiment? experiment_name
-		Split.redis.hkeys("user_store:3").include? experiment_name
+		Split.redis.hkeys("user_store:#{self.id}").include? experiment_name
 	end
   
   def self.request_ugc(user, asker)
