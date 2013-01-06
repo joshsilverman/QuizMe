@@ -242,7 +242,7 @@ class Stat < ActiveRecord::Base
           .where('posts.in_reply_to_user_id = ?', asker_id)\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-          .group("to_char(posts.created_at, 'MM/DD')")\
+          .group("to_char(posts.created_at, 'YY/MM/DD')")\
           .count('posts.id')
 
     else
@@ -250,7 +250,7 @@ class Stat < ActiveRecord::Base
           .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-          .group("to_char(posts.created_at, 'MM/DD')")\
+          .group("to_char(posts.created_at, 'YY/MM/DD')")\
           .count('posts.id')
     end
 
@@ -258,6 +258,7 @@ class Stat < ActiveRecord::Base
     @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count]}
 
     @econ_engine.sort!{|a,b| a[0] <=> b[0]}
+    @econ_engine = @econ_engine.map{|row| [row[0].gsub(/^[0-9]+\//, ""), row[1]]}
     @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
     # puts @econ_engine
 
