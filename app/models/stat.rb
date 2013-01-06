@@ -139,7 +139,7 @@ class Stat < ActiveRecord::Base
       user_ids_by_date_raw = Post.social.not_us.not_spam\
         .where('in_reply_to_user_id = ?', asker_id)\
         .where("created_at > ?", Date.today - (domain + 31).days)\
-        .select(["to_char(posts.created_at, 'MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'MM/DD')").all    
+        .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all    
 
       user_ids_last_24_raw = Post.social.not_us.not_spam\
         .where('in_reply_to_user_id = ?', asker_id)\
@@ -148,7 +148,7 @@ class Stat < ActiveRecord::Base
     else
       user_ids_by_date_raw = Post.social.not_us.not_spam\
         .where("created_at > ?", Date.today - (domain + 31).days)\
-        .select(["to_char(posts.created_at, 'MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'MM/DD')").all
+        .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all
 
       user_ids_last_24_raw = Post.social.not_us.not_spam\
         .where("created_at > ?", 24.hour.ago)\
@@ -165,13 +165,13 @@ class Stat < ActiveRecord::Base
     graph_data = {}
     mau = []
     ((Date.today - (domain + 1))..(Date.today - 1)).each do |date|
-      datef = date.strftime("%m/%d")
+      datef = date.strftime("%y/%m/%d")
       graph_data[datef] = 0
       dau = 0
       dau = user_ids_by_date[datef].count if user_ids_by_date[datef]
       mau = []
       ((date - domain)..date).each do |ddate|
-        ddatef = ddate.strftime("%m/%d")
+        ddatef = ddate.strftime("%y/%m/%d")
         mau += user_ids_by_date[ddatef] unless user_ids_by_date[ddatef].blank?
       end
       mau = mau.uniq.count
@@ -181,7 +181,7 @@ class Stat < ActiveRecord::Base
     display_data = {}
     display_data[:today] = user_ids_last_24.count.to_f / mau #0.99 #graph_data[Date.today]
 
-    last_7_days = graph_data.reject{|k,v| 8.days.ago > Date.strptime("#{Date.today.year}/#{k}", '%Y/%m/%d')}.values
+    last_7_days = graph_data.reject{|k,v| 8.days.ago > Date.strptime(k, '%y/%m/%d')}.values
     if last_7_days.size > 0
       display_data[:total] = last_7_days.sum / last_7_days.size
     else
@@ -260,7 +260,6 @@ class Stat < ActiveRecord::Base
     @econ_engine.sort!{|a,b| a[0] <=> b[0]}
     @econ_engine = @econ_engine.map{|row| [row[0].gsub(/^[0-9]+\//, ""), row[1]]}
     @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
-    # puts @econ_engine
 
     display_data = {}
     display_data[:today] = @econ_engine.last[1]
