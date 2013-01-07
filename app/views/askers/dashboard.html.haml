@@ -22,15 +22,15 @@
 %ul#tabs.nav.nav-tabs
 	%li.core-metrics
 		%a{:href => "#core"} Core
-	%li.dropdown
-		%a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
-			Core by handle
-			%b.caret
-		%ul.dropdown-menu.handles
-			- @askers.each do |asker|
-				%li 
-					%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
-						= asker.twi_screen_name
+	/ %li.dropdown
+	/ 	%a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+	/ 		Core by handle
+	/ 		%b.caret
+	/ 	%ul.dropdown-menu.handles
+	/ 		- @askers.each do |asker|
+	/ 			%li 
+	/ 				%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
+	/ 					= asker.twi_screen_name
 	%li
 		%a{:href => "#retention"} Retention		
 	%li
