@@ -206,8 +206,8 @@ class Dashboard
     else
       chart_elmnt = $(container + " .revenue_graph")[0]
   
-    chart = new google.visualization.LineChart(chart_elmnt)
-    chart.draw graph_data, dau_mau_options  
+    chart = new google.visualization.AreaChart(chart_elmnt)
+    chart.draw graph_data, revenue_options  
 
   draw_econ_engine: (container, data) =>
     graph_data = google.visualization.arrayToDataTable(data)
@@ -344,6 +344,30 @@ econ_engine_options =
     viewWindow:
       min: 0
   colors: ["#1D3880"]
+
+revenue_options = 
+  width: 425
+  height: 275
+  legend: "none"
+  pointSize: 0
+  lineWidth: 3
+  isStacked: true
+  colors: [
+    "#B1C2F0", 
+    "#5E79C4",
+    "#1D3880"
+  ]
+  chartArea:  
+    width: 420
+    left: 30
+    height: 225
+  hAxis:
+    textStyle: 
+      fontSize: 9
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
 
 handle_activity_options = 
   width: 1170
