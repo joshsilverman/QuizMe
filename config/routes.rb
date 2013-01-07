@@ -41,7 +41,7 @@ Quizmemanager::Application.routes.draw do
   match "/get_asker_metrics" => 'askers#get_asker_metrics'
   match "/get_user_metrics" => 'askers#get_user_metrics'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'
-  match "/posts/:id/refer" => "posts#refer"
+  match "/posts/:publication_id/refer" => "posts#refer"
 
   post "posts/update"
   post "posts/respond_to_post"

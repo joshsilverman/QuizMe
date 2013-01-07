@@ -61,12 +61,12 @@ class PostsController < ApplicationController
   end
 
   def refer
-  	post = Post.includes(:publication => :question).find(params[:id])
-    if post.publication.question.resource_url
-      Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, (current_user ? current_user.id : nil))
-      redirect_to post.publication.question.resource_url
+  	publication = Publication.includes(:question).find(params[:publication_id])
+    if publication.question.resource_url
+      # Stat.update_stat_cache("click_throughs", 1, post.user_id, Date.today, (current_user ? current_user.id : nil))
+      redirect_to publication.question.resource_url
     else
-      redirect_to "/feeds/#{post.user_id}"
+      redirect_to "/feeds/#{publication.user_id}"
     end
   end	
 end
