@@ -303,7 +303,9 @@ class Asker < User
     Rails.cache.write("aggregate activity", current_cache)
   end
 
-  def app_response answerer, publication, user_post, correct, options = {}
+  def app_response user_post, correct, options = {}
+    publication = user_post.parent.publication
+    answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
       response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
       resource_url = nil
@@ -354,6 +356,16 @@ class Asker < User
 
     app_post
   end   
+
+  def auto_respond user_post
+    if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
+      asker_response = app_response(user_post, user_post.autocorrect)
+      conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
+      conversation.posts << user_post
+      conversation.posts << asker_response
+      puts "auto response sent to user_id #{user_post.user_id}, conversation_id #{conversation.id}"
+    end
+  end
 
   def after_answer_filter answerer
     self.request_ugc(answerer)
