@@ -200,7 +200,7 @@ class FeedsController < ApplicationController
     asker = Asker.find(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
-    conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => publication.id)
+    conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => params[:publication_id])
 
     if params[:interaction_type] == "4"
       user = user_post.user
