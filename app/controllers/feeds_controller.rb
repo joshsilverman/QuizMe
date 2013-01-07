@@ -172,22 +172,43 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question
-    @conversation = Post.app_response(current_user, params["asker_id"], params["post_id"], params["answer_id"])
-    @local_asker = User.askers.find(params["asker_id"])
+    publication = Publication.find(params[:publication_id])
+    @question_asker = Asker.find(params[:asker_id])
+    answer = Answer.find(params[:answer_id])
+    
+    # Set parent post for wisr response - is this necessary?
+    post = publication.posts.statuses.order("created_at DESC").limit(1).first
+
+    # Create conversation for posts
+    @conversation = Conversation.create({
+      :user_id => current_user.id,
+      :post_id => post.id,
+      :publication_id => publication.id
+    })
+
+    post_aggregate_activity = Post.create_split_test(current_user.id, "post aggregate activity", "false", "true") == "true" ? true : false
+
+    user_post = current_user.app_answer(@question_asker, post, answer, { :post_aggregate_activity => post_aggregate_activity })
+    @conversation.posts << user_post
+    asker_response = @question_asker.app_response(current_user, publication, user_post, answer.correct, { :post_aggregate_activity => post_aggregate_activity }) if user_post
+    @conversation.posts << asker_response
+
     render :partial => "conversation"
   end
 
   def manager_response
-    asker = User.asker(params[:asker_id])
+    asker = Asker.find(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
-    conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id ,:publication_id => params[:publication_id])
+    conversation = user_post.conversation || Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => publication.id)
+    user = user_post.user
+
     if params[:interaction_type] == "4"
-      user = user_post.user
       dm = params[:message].gsub("@#{params[:username]}", "")
       if correct.present?
         user_post.update_attribute(:correct, correct)
         # Mixpanel tracking for DM answer conversion
+        # Double counting if we grade people again via DM
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -203,89 +224,13 @@ class FeedsController < ApplicationController
         :last_answer_at => (correct.present? ? user_post.created_at : nil)
       })
     else
-      
       response_text = params[:message].gsub("@#{params[:username]}", "")
-
-      if params[:publication_id] and params[:correct]
-        pub = Publication.find(params[:publication_id].to_i)
-        # pub.question.resource_url ? resource_url = "#{URL}/posts/#{post.id}/refer" : resource_url = "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}"
-
-        post = pub.posts.where(:provider => "twitter").first
-        user_post.update_responded(correct, params[:publication_id].to_i, pub.question_id, params[:asker_id])
-        user_post.update_attribute(:correct, correct)
-        long_url = (params[:publication_id].nil? ? nil : "#{URL}/feeds/#{params[:asker_id]}/#{params[:publication_id]}")
-        if correct.nil? or correct
-          resource_url = nil
-          wisr_question = false
-        else
-          if pub.question.resource_url.nil?
-            resource_url = "#{URL}/questions/#{pub.question_id}/#{pub.question.slug}"
-            wisr_question = true
-          else
-            resource_url = "#{URL}/posts/#{post.id}/refer"
-            wisr_question = false
-          end
-        end         
-
-        if params[:correct] == "false" and Post.create_split_test(params[:in_reply_to_user_id], "include answer in response", "false", "true") == "true"
-          correct_answer = pub.question.answers.where(:correct => true).first()
-          response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{correct_answer.text}'"
-          resource_url = nil
-          wisr_question = nil
-        end
-
-        response_post = Post.tweet(asker, response_text, {
-          :reply_to => params[:username], 
-          :long_url => long_url, 
-          :interaction_type => 2, 
-          :conversation_id => conversation.id,
-          :in_reply_to_post_id => params[:in_reply_to_post_id], 
-          :in_reply_to_user_id => params[:in_reply_to_user_id], 
-          :link_to_parent => false,
-          :resource_url => resource_url,
-          :wisr_question => wisr_question,
-          :intention => 'grade'
+      if params[:correct]
+        response_post = asker.app_response(user, Publication.find(params[:publication_id]), user_post, correct, { 
+          :post_aggregate_activity => false, 
+          :response_text => response_text
         })
-        user = user_post.user
-        user.update_user_interactions({
-          :learner_level => (correct.present? ? "twitter answer" : "mention"), 
-          :last_interaction_at => user_post.created_at,
-          :last_answer_at => (correct.present? ? user_post.created_at : nil)
-        })
-
-        # Check if we should ask for UGC
-        User.request_ugc(user, asker)
-
-        # Analytics + A/B tests
-        parent_post = user_post.parent
-        in_reply_to = nil
-        strategy = nil
-        if parent_post.present?
-          case parent_post.intention
-          when 'reengage inactive'
-            Post.trigger_split_test(params[:in_reply_to_user_id], 'reengage last week inactive') 
-            # Post.trigger_split_test(params[:in_reply_to_user_id], "reengagement interval")
-            if user.enrolled_in_experiment? "reengagement interval"
-              strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
-            end
-            in_reply_to = "reengage inactive"
-          when 'incorrect answer follow up'
-            Post.trigger_split_test(params[:in_reply_to_user_id], 'include answer in response')
-            in_reply_to = "incorrect answer follow up" 
-          when 'new user question mention'
-            in_reply_to = "new follower question mention"
-          end
-        end
-
-        # Fire mixpanel answer event
-        Mixpanel.track_event "answered", {
-          :distinct_id => params[:in_reply_to_user_id],
-          :time => user_post.created_at.to_i,
-          :account => asker.twi_screen_name,
-          :type => "twitter",
-          :in_reply_to => in_reply_to
-        }
-        
+        conversation.posts << response_post
       else         
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
@@ -297,6 +242,7 @@ class FeedsController < ApplicationController
         })    
       end
     end
+
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
     render :json => response_post.present?
   end

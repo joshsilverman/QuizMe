@@ -2,7 +2,7 @@
 - @conversation.posts.order("created_at ASC").each_with_index do |response, i|
 	.subsidiary.post{:class => ("answered" if i < (count - 1))}
 		.content
-			- user = (response["user_id"] == @local_asker.id ? @local_asker : current_user)
+			- user = (response["user_id"] == @question_asker.id ? @question_asker : current_user)
 			= image_tag(user.twi_profile_img_url, :class => "rounded")
 			%h5= user.twi_screen_name
 			- formatted_response = format_response(response['text'])

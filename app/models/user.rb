@@ -29,19 +29,6 @@ class User < ActiveRecord::Base
     .where("role in ('user','author')")\
     .where('interaction_type IN (2,3)')\
 
-	def update_user_interactions(params = {})
-		if params[:learner_level]
-			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
-		end
-		if params[:last_interaction_at]
-			params.delete :last_interaction_at unless self.last_interaction_at.blank? or params[:last_interaction_at] > self.last_interaction_at
-		end
-		if params[:last_answer_at]
-			params.delete :last_answer_at unless self.last_answer_at.blank? or params[:last_answer_at] > self.last_answer_at
-		end
-		self.update_attributes params	
-	end
-
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']
@@ -119,27 +106,58 @@ class User < ActiveRecord::Base
 		client
 	end
 
+	def app_answer asker, post, answer, options = {}
+    if options[:post_aggregate_activity] == true
+      user_post = Post.create({
+        :user_id => self.id,
+        :provider => 'wisr',
+        :text => answer.text,
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => asker.id,
+        :posted_via_app => true, 
+        :requires_action => false,
+        :interaction_type => 2,
+        :correct => answer.correct,
+        :intention => 'respond to question'
+      })      
+      asker.update_aggregate_activity_cache(self, answer.correct)
+    else
+      user_post = Post.tweet(self, answer.text, {
+        :reply_to => asker.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
+        :interaction_type => 2, 
+        :link_type => answer.correct ? "cor" : "inc", 
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => asker.id,
+        :link_to_parent => false, 
+        :correct => answer.correct,
+        :intention => 'respond to question'
+      })
+    end
+
+    self.update_user_interactions({
+      :learner_level => "feed answer", 
+      :last_interaction_at => user_post.created_at,
+      :last_answer_at => user_post.created_at
+    })
+
+    user_post
+	end
+
+	def update_user_interactions(params = {})
+		if params[:learner_level]
+			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
+		end
+		if params[:last_interaction_at]
+			params.delete :last_interaction_at unless self.last_interaction_at.blank? or params[:last_interaction_at] > self.last_interaction_at
+		end
+		if params[:last_answer_at]
+			params.delete :last_answer_at unless self.last_answer_at.blank? or params[:last_answer_at] > self.last_answer_at
+		end
+		self.update_attributes params	
+	end
+
 	def enrolled_in_experiment? experiment_name
 		Split.redis.hkeys("user_store:#{self.id}").include? experiment_name
-	end
-  
-  def self.request_ugc(user, asker)
-	  if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, asker.id).size > 9
-	  	puts "attempting to send ugc request to #{user.twi_screen_name} on handle #{asker.twi_screen_name}"
-	  	script = Asker.get_ugc_script(asker, user)
-	  	if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
-	  		Post.dm(asker, user, script, {
-	  			:intention => "solicit ugc"
-	  		})
-	  	else
-		    Post.tweet(asker, script, {
-					:reply_to => user.twi_screen_name,
-					:in_reply_to_user_id => user.id,
-					:intention => 'solicit ugc',
-					:interaction_type => 2
-		    })
-	  	end
-	  	
-	  end
 	end
 end

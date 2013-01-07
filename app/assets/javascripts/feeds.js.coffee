@@ -317,7 +317,7 @@ class Post
 		answers.slideToggle(200, => answers.remove())
 		params =
 			"asker_id" : @asker_id
-			"post_id" : @id
+			"publication_id" : @id
 			"answer_id" : answer_id
 		$.ajax '/respond_to_question',
 			type: 'POST'
