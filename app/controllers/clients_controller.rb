@@ -69,18 +69,10 @@ class ClientsController < ApplicationController
       return
     end
 
-    if @user.client_nudge
+    if Client.nudge @user, @asker
+      render :text => nil, :status => 200
+    else
       render :text => 'user already nudged', :status => 400
-      return
     end
-
-    @user.client_nudge = true
-    message = "You're doing really well! I offer a much more comprehensive (free) course here:"
-    long_url = "http://www.testive.com/sathabit/?version=email&utm_source=wisr&utm_twi_screen_name=#{@user.twi_screen_name}"
-    dm_status = Post.dm(@asker, @user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
-    puts "dm status: #{dm_status}" 
-    @user.save
-
-    render :text => nil, :status => 200
   end
 end
