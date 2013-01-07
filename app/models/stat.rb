@@ -135,7 +135,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.dau_mau asker_id = nil
-    graph_data, display_data = Rails.cache.fetch "stat_dau_mau_asker_id_#{asker_id}", :expires_in => 11.minutes do
+    graph_data, display_data = Rails.cache.fetch "stat_dau_mau_asker_id_#{asker_id}", :expires_in => 13.minutes do
       domain = 30
       asker_ids = User.askers.collect(&:id)
 
@@ -245,7 +245,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.econ_engine asker_id = nil, domain = 30
-    econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 13.minutes do
+    econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 19.minutes do
       if asker_id
         @posts_by_date = Post.joins(:user).not_us.not_spam.social\
             .where('posts.in_reply_to_user_id = ?', asker_id)\
@@ -264,7 +264,7 @@ class Stat < ActiveRecord::Base
       end
 
       @econ_engine = []
-      @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count]}
+      @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count] unless date == Date.today.strftime('%y/%m/%d')}
 
       @econ_engine.sort!{|a,b| a[0] <=> b[0]}
       @econ_engine = @econ_engine.map{|row| [row[0].gsub(/^[0-9]+\//, ""), row[1]]}
@@ -280,7 +280,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.revenue(client_id = nil, domain = 30)
-    revenue, display_data = Rails.cache.fetch "stat_revenue_client_id_#{client_id}_domain_#{domain}", :expires_in => 19.minutes do
+    revenue, display_data = Rails.cache.fetch "stat_revenue_client_id_#{client_id}_domain_#{domain}", :expires_in => 23.minutes do
       @rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
       return if @rate_sheets.empty?
       @clients = @rate_sheets.collect{|rs| rs.clients}.flatten.uniq
