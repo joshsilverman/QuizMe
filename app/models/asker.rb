@@ -369,7 +369,7 @@ class Asker < User
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
         if answerer.enrolled_in_experiment? "reengagement interval"
-          strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+          strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
         end
         in_reply_to = "reengage inactive"
       end
@@ -407,7 +407,7 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-          if user.enrolled_in_experiment? "reengagement interval"
+          if answerer.enrolled_in_experiment? "reengagement interval"
             strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
           end
           in_reply_to = "reengage inactive"
