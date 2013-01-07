@@ -358,6 +358,7 @@ class Asker < User
   end   
 
   def auto_respond user_post
+    puts "in auto_respond, user_post = #{user_post.to_json}"
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
       asker_response = app_response(user_post, user_post.autocorrect)
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
