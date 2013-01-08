@@ -280,7 +280,7 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
     Post.grader.grade post
     
-    asker.auto_respond(post)
+    asker.auto_respond(post.reload)
 
     Stat.update_stat_cache("mentions", 1, asker.id, post.created_at, u.id) unless u.role == "asker"
     Stat.update_stat_cache("active_users", u.id, asker.id, post.created_at, u.id) unless u.role == "asker"

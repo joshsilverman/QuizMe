@@ -304,7 +304,7 @@ class Asker < User
   end
 
   def app_response user_post, correct, options = {}
-    publication = user_post.parent.publication
+    publication = user_post.conversation.publication
     answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
       response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
@@ -358,7 +358,6 @@ class Asker < User
   end   
 
   def auto_respond user_post
-    puts "in auto_respond, user_post = #{user_post.to_json}"
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
       asker_response = app_response(user_post, user_post.autocorrect)
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
@@ -410,7 +409,7 @@ class Asker < User
       Post.trigger_split_test(answerer.id, 'wisr posts propagate to twitter') if answerer.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
 
       puts "strategy: #{strategy}"
-      
+
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
         :distinct_id => answerer.id,
