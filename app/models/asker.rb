@@ -303,7 +303,9 @@ class Asker < User
     Rails.cache.write("aggregate activity", current_cache)
   end
 
-  def app_response answerer, publication, user_post, correct, options = {}
+  def app_response user_post, correct, options = {}
+    publication = user_post.parent.publication
+    answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
       response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
       resource_url = nil
@@ -355,6 +357,17 @@ class Asker < User
     app_post
   end   
 
+  def auto_respond user_post
+    puts "in auto_respond, user_post = #{user_post.to_json}"
+    if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
+      asker_response = app_response(user_post, user_post.autocorrect)
+      conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
+      conversation.posts << user_post
+      conversation.posts << asker_response
+      puts "auto response sent to user_id #{user_post.user_id}, conversation_id #{conversation.id}"
+    end
+  end
+
   def after_answer_filter answerer
     self.request_ugc(answerer)
   end 
@@ -366,10 +379,13 @@ class Asker < User
       # Check if in response to re-engage message
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
+        puts "wisr reengagement!"
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
         if answerer.enrolled_in_experiment? "reengagement interval"
-          strategy = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+          puts "user is enrolled!"
+          strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+          puts "strategy: #{strategy}"
         end
         in_reply_to = "reengage inactive"
       end
@@ -393,6 +409,8 @@ class Asker < User
 
       Post.trigger_split_test(answerer.id, 'wisr posts propagate to twitter') if answerer.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
 
+      puts "strategy: #{strategy}"
+      
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
         :distinct_id => answerer.id,
@@ -407,7 +425,7 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-          if user.enrolled_in_experiment? "reengagement interval"
+          if answerer.enrolled_in_experiment? "reengagement interval"
             strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
           end
           in_reply_to = "reengage inactive"

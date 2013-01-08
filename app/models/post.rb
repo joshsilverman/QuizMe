@@ -99,7 +99,8 @@ class Post < ActiveRecord::Base
           :link_type => 'initial', 
           :publication_id => publication.id, 
           :link_to_parent => false, 
-          :via => via
+          :via => via,
+          :requires_action => false
         })
         publication.update_attribute(:published, true)
         question.update_attribute(:priority, false) if question.priority
@@ -217,24 +218,10 @@ class Post < ActiveRecord::Base
     )
   end
 
-
-  ###
-  ### Getting and Setting Posts retrieved from Twitter
-  ###
-
   def self.check_for_posts(current_acct)
-    # asker_ids = User.askers.collect(&:id)
-    # last_post = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false,).order('created_at DESC').limit(1).last
-    # last_dm = Post.where("provider like ? and provider_post_id is not null and user_id not in (?) and posted_via_app = ?", 'twitter', asker_ids, false).order('created_at DESC').limit(1).last
-    # mentions = Post.twitter_request { client.mentions({:count => 50, :since_id => last_post.nil? ? nil : last_post.provider_post_id.to_i}) } || []
-    # retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
-    # dms = Post.twitter_request { client.direct_messages({:count => 50, :since_id => last_dm.nil? ? nil : last_dm.provider_post_id.to_i}) } || []
-    puts current_acct.twi_screen_name
-
     client = current_acct.twitter
 
     # Get mentions, de-dupe, and save
-    # last_mention = Post.where("provider_post_id is not null and in_reply_to_user_id = ?", current_acct.id)
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
     existing_mention_ids = Post.select(:provider_post_id).where(:provider_post_id => mentions.collect { |m| m.id.to_s }).collect(&:provider_post_id)
     mentions.reject! { |m| existing_mention_ids.include? m.id.to_s }
@@ -253,7 +240,7 @@ class Post < ActiveRecord::Base
     true 
   end
 
-  def self.save_mention_data(m, current_acct)
+  def self.save_mention_data(m, asker)
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
@@ -261,13 +248,12 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
 
+    conversation_id = nil
+    
     in_reply_to_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
     if in_reply_to_post
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
       in_reply_to_post.update_attribute(:conversation_id, conversation_id)
-    else
-      conversation_id = nil
-      puts "No in reply to post"
     end
 
     post = Post.create( 
@@ -276,7 +262,7 @@ class Post < ActiveRecord::Base
       :provider => 'twitter',
       :user_id => u.id,
       :in_reply_to_post_id => in_reply_to_post.try(:id),
-      :in_reply_to_user_id => current_acct.id,
+      :in_reply_to_user_id => asker.id,
       :created_at => m.created_at,
       :conversation_id => conversation_id,
       :posted_via_app => false,
@@ -289,12 +275,15 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    puts "missed item in stream! mention: #{post.to_json}" if current_acct.id == 18
+    puts "missed item in stream! mention: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
     Post.grader.grade post
-    Stat.update_stat_cache("mentions", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
-    Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+    
+    asker.auto_respond(post)
+
+    Stat.update_stat_cache("mentions", 1, asker.id, post.created_at, u.id) unless u.role == "asker"
+    Stat.update_stat_cache("active_users", u.id, asker.id, post.created_at, u.id) unless u.role == "asker"
   end
 
   def self.save_dm_data(d, current_acct)
@@ -453,13 +442,6 @@ class Post < ActiveRecord::Base
 
     Post.classifier.classify post
     Post.grader.grade post
-    post.auto_respond
-  end
-
-  def auto_respond
-    if !self.autocorrect.nil?
-      
-    end
   end
 
   def self.twitter_request(&block)
