@@ -23,7 +23,7 @@
         %tr{:id => "question_#{question.id}"}
           %td= i + 1
           %td= "@#{question.user.twi_screen_name}" if question.user
-          %td
+          %td.question_area
             %p{:style => "font-weight: bold;"}
               = best_in_place question, :text, :type => :textarea
             - question.answers.each_with_index do |answer, i|

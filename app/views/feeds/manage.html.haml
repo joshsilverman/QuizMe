@@ -69,34 +69,16 @@
 													= "(answer: #{correct.text})" if correct
 
 										.post_actions
-											%a
-												%i.icon-eye-close
-												= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
-											|
-											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
-												%a.link_post 
-													%i.icon-wrench
-													unlink
-											- else 
-												%a.link_post 
-													%i.icon-wrench
-													link
-											|
-											%a.retweet{:style => "margin-left: 0px;"}
-												%i.icon-retweet
-												retweet
-											|
-											%a.mark_ugc
-												%i.icon-question-sign
-												mark ugc
+											- if params[:filter] == 'ugc'
+												= render :partial => "ugc_actions", :locals => {:post => post}
+											- else
+												= render :partial => "default_actions", :locals => {:post => post}
 
-											/ %a.show_move move
-											/ %a.move{:style => "display: none;"}
-											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
 
 = render :partial => "respond_modal"
 = render :partial => "link_post_modal"
 = render :partial => "retweet_modal"
+= render :partial => "question_modal"
 
 #confirm.modal.hide
 	.modal-header

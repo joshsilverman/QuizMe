@@ -45,6 +45,7 @@ class PostsController < ApplicationController
   def mark_ugc
     tag = Tag.find_or_create_by_name "ugc"
     post = Post.includes(:tags).find(params[:post_id])
+    post.update_attribute :intention, 'submit ugc'
 
     if post.tags.include? tag
       post_with_tags = Post.includes(:tags).where('tags.name = ?', tag.name).find(params[:post_id])
