@@ -379,6 +379,7 @@ class Asker < User
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         puts "wisr reengagement!"
+        puts "enrolled check => #{answerer.enrolled_in_experiment?('reengagement interval')}"
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
         if answerer.enrolled_in_experiment? "reengagement interval"
