@@ -363,7 +363,6 @@ class Asker < User
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
       conversation.posts << user_post
       conversation.posts << asker_response
-      puts "auto response sent to user_id #{user_post.user_id}, conversation_id #{conversation.id}"
     end
   end
 
