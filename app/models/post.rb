@@ -51,6 +51,10 @@ class Post < ActiveRecord::Base
     end
   end
 
+  def self.ugc_post_counts
+    Post.ugc_box.group('in_reply_to_user_id').count
+  end  
+
   def self.classifier
     @@_classifier ||= Classifier.new
   end

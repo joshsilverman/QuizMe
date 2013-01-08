@@ -10,6 +10,7 @@ class AskersController < ApplicationController
     
     @unresponded_counts = Asker.unresponded_counts
     @unmoderated_counts = Question.unmoderated_counts
+    @ugc_post_counts = Post.ugc_post_counts
     @question_counts = Question.counts
     
     @askers = Asker.all

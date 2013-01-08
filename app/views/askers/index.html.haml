@@ -11,28 +11,34 @@
   .btn-group
     = link_to t('.new', :default => t("helpers.links.new")), "/auth/twitter?update_asker_id=", :class => 'btn btn-primary'
 
-%table.table
-  %tr
-    %th
-    %th
-    %th Handle
-    %th Question count
-    %th New engagements
-    %th New questions
-    %th Actions
+#askers_table
+  %table.table
+    %tr
+      %th
+      %th
+      %th Handle
+      %th Engagements
+      %th UGC posts
+      %th Unapproved Qs
+      %th Questions
+      %th Actions
 
-  - @askers.each_with_index do |asker, i|
-    %tr.asker-row
-      %td= i + 1
-      %td= image_tag(asker.twi_profile_img_url)
-      %td= link_to asker.twi_name, "/feeds/#{asker.id}"
-      %td= @question_counts[asker.id]
-      %td= @unresponded_counts[asker.id]
-      %td
-        %a{:href => "/moderate"}= @unmoderated_counts[asker.id]
-      %td
-        %a{:href => "/feeds/#{asker.id}/manage"} Moderate
-        &nbsp;|&nbsp;
-        %a{:href => "/askers/#{asker.id}/edit"} Edit
-        &nbsp;|&nbsp;
-        %a{:style => 'cursor:pointer;'}= best_in_place asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
+    - @askers.each_with_index do |asker, i|
+      %tr.asker-row
+        %td= i + 1
+        %td= image_tag(asker.twi_profile_img_url)
+        %td= link_to asker.twi_name, "/feeds/#{asker.id}"
+        %td 
+          %a{:href => "/feeds/#{asker.id}/manage"}
+            .td_container= @unresponded_counts[asker.id]
+        %td
+          %a{:href => "/feeds/#{asker.id}/manage?filter=ugc"}
+            .td_container= @ugc_post_counts[asker.id]    
+        %td
+          %a{:href => "/moderate"}
+            .td_container= @unmoderated_counts[asker.id]
+        %td= @question_counts[asker.id]
+        %td
+          %a{:href => "/askers/#{asker.id}/edit"} Edit
+          &nbsp;|&nbsp;
+          %a{:style => 'cursor:pointer;'}= best_in_place asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
