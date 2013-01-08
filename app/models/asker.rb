@@ -349,7 +349,7 @@ class Asker < User
     user_post.update_attributes(:requires_action => false, :correct => correct)
 
     # Trigger after answer actions
-    self.after_answer_filter(answerer)
+    self.after_answer_filter(answerer, user_post)
 
     # Trigger split tests, MP events
     self.update_metrics(answerer, user_post, publication)
@@ -366,8 +366,9 @@ class Asker < User
     end
   end
 
-  def after_answer_filter answerer
+  def after_answer_filter answerer, user_post
     self.request_ugc(answerer)
+    Client.nudge answerer, self, user_post
   end 
 
   def update_metrics answerer, user_post, publication

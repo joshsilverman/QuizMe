@@ -10,11 +10,24 @@ class Client < User
     end
   end
 
-  def self.nudge user, asker
-    # user = User.find params[:user_id]
-    # asker = Asker.find params[:asker_id]
+  def self.nudge user, asker, user_post
 
-    if user.client_nudge
+    @client = Client.find 14699
+    correct_count = user.posts.not_spam\
+      .where("in_reply_to_user_id IN (?)", @client.askers.collect(&:id))\
+      .where('correct = ?', true).count
+
+    if asker.client != @client # vefified
+      puts 'Not for SAThabit'
+      return false
+    elsif user.client_nudge # verified
+      puts 'Already nudged'
+      return false
+    elsif user_post.correct == false
+      puts 'Last answer wrong'
+      return false
+    elsif correct_count < 3
+      puts 'not enough correct answers'
       return false
     end
 
