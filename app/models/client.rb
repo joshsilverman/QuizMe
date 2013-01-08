@@ -24,4 +24,38 @@ class Client < User
     dm_status = Post.dm(asker, user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
     user.save
   end
+
+  def export_stats_to_csv domain = 30
+
+    _user_ids_by_day = Post.not_us.not_spam\
+      .where("in_reply_to_user_id IN (?)", askers.collect(&:id))\
+      .where("created_at > ?", Date.today - (domain + 31).days)\
+      .select(["to_char(posts.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"]).group("to_char(posts.created_at, 'YY/MM/DD')").all\
+      .map{|p| {:created_at => p.created_at, :user_ids => p.user_ids.split(",")}}
+    user_ids_by_day = _user_ids_by_day  
+      .group_by{|p| p[:created_at]}\
+      .each{|k,r| r.replace r.first[:user_ids].uniq }\
+
+    _user_ids_by_week = _user_ids_by_day.group_by{|p| p[:created_at].beginning_of_week}
+    user_ids_by_week = {}
+    _user_ids_by_week.each{|date, ids_wrapped_in_posts| user_ids_by_week[date] = ids_wrapped_in_posts.map{|ids_wrapped_in_post|ids_wrapped_in_post[:user_ids]}.flatten.uniq}
+    user_ids_by_week
+
+    data = []
+    user_ids_by_week.each do |date, user_ids|
+      row = [date]
+      row += [user_ids_by_day.reject{|ddate, user_ids| ddate > date + 6.days}.values.flatten.uniq.count]
+      row += [user_ids_by_day.reject{|ddate, user_ids| ddate > date + 6.days || ddate < date - 24.days}.values.flatten.uniq.count]
+      row += [user_ids.count]
+      row += [(user_ids_by_day.reject{|ddate, user_ids| ddate > date + 6.days || ddate < date }.values.flatten.count.to_f / 7.0).round]
+      data << row
+    end
+    data = [['Date', 'AUs', 'MAUs', 'WAUs', 'DAUs']] + data
+    require 'csv'
+    CSV.open("tmp/client.csv", "wb") do |csv|
+      data.transpose.each do |row|
+        csv << row
+      end
+    end
+  end
 end

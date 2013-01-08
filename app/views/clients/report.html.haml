@@ -200,6 +200,7 @@
           - retweet_rev = retweets * retweet_rate
 
           - mentions = posts_by_it[2].count if posts_by_it[2]
+          - mentions ||= 0
           - mention_rate = @client.rate_sheet.tweet
           - mention_rate ||= 0
           - mention_rev = mentions * mention_rate
