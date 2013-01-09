@@ -140,10 +140,10 @@ class Question
 			e.preventDefault()
 			question.post_edit_question_submit(q.id)
 
-		$('.btn.btn-success').off "click"
-		$('.btn.btn-danger').off "click"
-		$('.btn.btn-success').on "click", (e) => @respond(true, question_id)
-		$('.btn.btn-danger').on "click", (e) => @respond(false, question_id)				
+		$('.accept').off "click"
+		$('.reject').off "click"
+		$('.accept').on "click", (e) => @respond(true, question_id)
+		$('.reject').on "click", (e) => @respond(false, question_id)				
 
 	post_edit_question_submit: (question_id) ->
 		if question.post_question_validate_form()
