@@ -46,7 +46,7 @@ class Asker < User
 
   def update_followers
   	# Get lists of user ids from twitter + wisr
-  	twi_follower_ids = self.twitter.follower_ids.ids
+  	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
   	wisr_follower_ids = self.followers.collect(&:twi_user_id)
 
   	# Add new followers in wisr

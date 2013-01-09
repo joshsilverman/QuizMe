@@ -12,7 +12,8 @@ class PostsController < ApplicationController
 				:posted_via_app => true, 
 				:interaction_type => 3
 			})
-			render :json => current_user.twitter.retweet(post.provider_post_id)
+      retweet = Post.twitter_request { current_user.twitter.retweet(post.provider_post_id) }
+			render :json => retweet
 		else
 			post = Post.find(params[:post_id])
 			asker = Asker.find(params[:asker_id])
@@ -24,7 +25,8 @@ class PostsController < ApplicationController
 				:posted_via_app => true, 
 				:interaction_type => 3
 			})
-			render :json => asker.twitter.retweet(post.provider_post_id)			
+      retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
+			render :json => retweet
 		end
 	end
 

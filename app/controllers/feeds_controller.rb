@@ -93,7 +93,8 @@ class FeedsController < ApplicationController
     asker_ids = User.askers.collect(&:id)
     if current_user
       unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
-        Rails.cache.write("follower_ids:#{current_user.id}", user_followers = current_user.twitter.follower_ids().ids, :timeToLive => 2.days)
+        user_followers = Post.twitter_request { current_user.twitter.follower_ids().ids }
+        Rails.cache.write("follower_ids:#{current_user.id}", user_followers, :timeToLive => 2.days)
       end
     end
     @stream = []
