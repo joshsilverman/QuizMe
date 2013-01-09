@@ -279,13 +279,13 @@ ACCOUNT_DATA = {
 
   #HarryPotterBk3
   10565 => {
-    :retweet => [10567, 14106, 12640],
+    :retweet => [10567, 14106, 12640, 10572, 10573],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
     :category => "Literature"
   },
   #QuizHungerGames
   10567 => {
-    :retweet => [10565],
+    :retweet => [10565, 10572,10573],
     :hashtags => ['hungergames', 'thehungergames', 'katniss'],
     :category => "Literature"
   },
@@ -331,5 +331,17 @@ ACCOUNT_DATA = {
     :retweet => [14106, 19454],
     :hashtags => ['math', 'SAT', "SATprep"],
     :category => "Math"
+  },
+  #quimetwilight
+  10572 => {
+    :retweet => [10573,10565,10567],
+    :hashtags => ['twilight', 'twilightsaga'],
+    :category => "Literature"
+  },
+  #quizmethehobbit
+  10573 => {
+    :retweet => [10572,10565,10567],
+    :hashtags => ['thehobbit', 'lordoftherings', "jrrtolkien"],
+    :category => "Literature"
   }
 }
