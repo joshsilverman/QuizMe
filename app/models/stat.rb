@@ -457,4 +457,18 @@ class Stat < ActiveRecord::Base
     end
     return graph_data
   end
+
+  def self.get_alternative_grouped_user_ids_by_experiment experiment
+    alternatives = {}
+    ab_user = Split::RedisStore.new(Split.redis)
+    experiment = Split::Experiment.find(experiment)
+    User.all.each do |user|
+      ab_user.set_id(user.id)
+      if alternative = ab_user.get_key(experiment.key)
+        alternatives[alternative] ||= []
+        alternatives[alternative] << user.id 
+      end
+    end
+    alternatives
+  end
 end
