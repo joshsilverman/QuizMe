@@ -66,10 +66,10 @@
 
             %td.faded= i + params[:page].to_i * 25 + 1
             %td
-              - asker = question.asker
+              - asker = question.user
               - if question.created_for_asker_id
                 %a{:href => "/feeds/#{asker.id}"}
-                  = image_tag(asker.twi_profile_img_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name} answered", "data-placement" => "bottom")
+                  = image_tag(asker.twi_profile_img_url, :class => "contributor rounded", :rel => "tooltip", :title => asker.twi_screen_name, "data-placement" => "left")
             %td= render :partial => "status", :locals => {:status => question.status }
             / %td= link_to question.text, question_path(question)
             %td

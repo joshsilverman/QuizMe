@@ -43,6 +43,7 @@ class Question
 		$('#askers_select select').change -> window.location = "/questions/asker/" + $(this).children(":selected").attr('value')
 		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')	
 
+		$(".contributor").tooltip()
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
 	respond_to_question: (text, answer_id, correct) =>
