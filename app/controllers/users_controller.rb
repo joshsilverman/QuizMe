@@ -24,7 +24,6 @@ class UsersController < ApplicationController
     @badges_by_asker = @badges.group_by{|b| b.asker_id}
     @user_badges = @user.badges
     @user_badges_ids = @user.badges.collect &:id
-    puts @user_badges
 
     @is_story = !%r/\/story\//.match(request.fullpath).nil?
 

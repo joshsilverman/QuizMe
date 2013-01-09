@@ -12,7 +12,8 @@ class PostsController < ApplicationController
 				:posted_via_app => true, 
 				:interaction_type => 3
 			})
-			render :json => current_user.twitter.retweet(post.provider_post_id)
+      retweet = Post.twitter_request { current_user.twitter.retweet(post.provider_post_id) }
+			render :json => retweet
 		else
 			post = Post.find(params[:post_id])
 			asker = Asker.find(params[:asker_id])
@@ -24,7 +25,8 @@ class PostsController < ApplicationController
 				:posted_via_app => true, 
 				:interaction_type => 3
 			})
-			render :json => asker.twitter.retweet(post.provider_post_id)			
+      retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
+			render :json => retweet
 		end
 	end
 
@@ -45,6 +47,7 @@ class PostsController < ApplicationController
   def mark_ugc
     tag = Tag.find_or_create_by_name "ugc"
     post = Post.includes(:tags).find(params[:post_id])
+    post.update_attribute :intention, 'submit ugc'
 
     if post.tags.include? tag
       post_with_tags = Post.includes(:tags).where('tags.name = ?', tag.name).find(params[:post_id])

@@ -21,7 +21,7 @@ class QuestionsController < ApplicationController
 
     @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
     @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
+    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL and questions.status <> ?", -1).order("status ASC, questions.id DESC").page(params[:page]).per(25)
 
     @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
     @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
@@ -115,14 +115,21 @@ class QuestionsController < ApplicationController
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
 
+    # For questions generated from user posts
+    if params[:post_id]
+      ugc_post = Post.find(params[:post_id]) 
+      ugc_post.tags.delete(Tag.find_by_name("ugc"))
+    end
+
     if params[:question_id]
       @question = Question.find params[:question_id]
       return if current_user.id != @question.user_id
     end
+
     @question ||= Question.new
 
     @question.text = params[:question]
-    @question.user_id = current_user.id
+    @question.user_id = params[:post_id] ? ugc_post.user_id : current_user.id
     @question.priority = true
     @question.created_for_asker_id = params[:asker_id]
     @question.status = 0
@@ -178,7 +185,7 @@ class QuestionsController < ApplicationController
       ## DM user to let them know!
       # Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
     end
-    render :nothing => true, :status => 200
+    render :json => accepted, :status => 200
   end
 
   def export

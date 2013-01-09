@@ -201,27 +201,6 @@ class Post < ActiveRecord::Base
     return post
   end
 
-  def self.create_tumblr_post(current_acct, text, url, lt, question_id, parent_id)
-    short_url = Post.shorten_url(url, 'tum', lt, current_acct.twi_screen_name, question_id)
-    res = current_acct.tumblr.text(
-      current_acct.tum_url,
-      :title => "Daily Quiz!",
-      :body => "#{text} #{short_url}"
-    )
-    Post.create(
-      :asker_id => current_acct.id,
-      :question_id => question_id,
-      :provider => 'tumblr',
-      :text => text,
-      :url => short_url,
-      :link_type => lt,
-      :post_type => 'text',
-      :provider_post_id => res.id.to_s,
-      :parent_id => parent_id,
-      :interaction_type => 1
-    )
-  end
-
   def self.check_for_posts(current_acct)
     client = current_acct.twitter
 

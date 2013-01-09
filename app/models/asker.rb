@@ -46,7 +46,7 @@ class Asker < User
 
   def update_followers
   	# Get lists of user ids from twitter + wisr
-  	twi_follower_ids = self.twitter.follower_ids.ids
+  	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
   	wisr_follower_ids = self.followers.collect(&:twi_user_id)
 
   	# Add new followers in wisr
@@ -223,7 +223,7 @@ class Asker < User
       if app_posts[user.id].blank?
         asker = askers.select { |a| a.id == user.posts.first.in_reply_to_user_id }.first
         unless publication = popular_asker_publications[asker.id]
-          if popular_post = asker.posts.includes(:conversations).where("created_at > ? and interaction_type = 1", 1.week.ago).sort_by {|p| p.conversations.size}.last
+          if popular_post = asker.posts.includes(:conversations => {:publication => :question}).where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?", 1.week.ago, asker.new_user_q_id).sort_by {|p| p.conversations.size}.last
             publication_id = popular_post.publication_id
           else
             publication_id = asker.posts.where("interaction_type = 1").order("created_at DESC").limit(1).first.publication_id

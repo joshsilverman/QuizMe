@@ -1,4 +1,4 @@
-class Feed
+class @Feed
 	id: null
 	name: null 
 	posts: []
@@ -9,7 +9,6 @@ class Feed
 	engagements: null
 	correct: null
 	constructor: ->
-		# $("img").tooltip()
 		@user_name = $("#user_name").val()
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
@@ -40,13 +39,14 @@ class Feed
 		mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
-		$(".post_another").on "click", => 
-			modal = $("#post_question_modal")
-			$('#submit_question').button('reset')
-			modal.find(".modal-body").slideToggle(250, =>
-				modal.find(".message").hide()
-				modal.find(".question_form").show()
-			).delay(250).slideToggle(250)
+		$(".post_another").on "click", => @post_another()
+	post_another: =>
+		modal = $("#post_question_modal")
+		$('#submit_question').button('reset')
+		modal.find(".modal-body").slideToggle(250, =>
+			modal.find(".message").hide()
+			modal.find(".question_form").show()
+		).delay(250).slideToggle(250)
 	activity_stream: =>
 		return unless $("#activity_stream_content").length > 0
 		$.ajax '/activity_stream',
@@ -72,7 +72,6 @@ class Feed
 		window.appending = false
 		$(window).on "scroll", => 
 			return if window.appending
-			# ($(document).height() == ($(window).scrollTop() + $(window).height()))#
 			if ($(window).scrollTop() >= $(document).height() - $(window).height() - 1)
 				window.appending = true
 				@show_more() 
@@ -80,64 +79,9 @@ class Feed
 			e.preventDefault()
 			@show_more()	
 	initialize_tooltips: =>
-		# $("#post_question_tooltip").tooltip
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
-	# initialize_ask: => 
-	# 	ask_element = $("#ask .question_container")
-	# 	textarea = ask_element.find("textarea")
-	# 	count = ask_element.find(".character_count")
-	# 	button = ask_element.find(".tweet_button")
-	# 	button.on "click", => 
-	# 		if (140 - textarea.val().length) > 0
-	# 			button.button("loading")
-	# 			params = 
-	# 				"text" : textarea.val()
-	# 				"asker_id" : @id
-	# 			$.ajax '/ask',
-	# 				type: 'POST'
-	# 				data: params
-	# 				success: (e) =>
-	# 					textarea.hide()
-	# 					button.button("reset")
-	# 					ask_element.find(".post_url").attr "href", "http://twitter.com/#{@user_name}/status/#{e}"
-	# 					ask_element.removeClass("focus").addClass("blur")
-	# 					ask_element.find(".ask_success").fadeIn(250)
-	# 				error: =>
-	# 					textarea.hide()
-	# 					button.button("reset")
-	# 					ask_element.removeClass("focus").addClass("blur")
-	# 					ask_element.find(".ask_success").text("Sorry, something went wrong!").fadeIn(250)
-	# 	textarea.on "focus", => 
-	# 		ask_element.removeClass("blur").addClass("focus")
-	# 		if textarea.val() == ""
-	# 			textarea.val("@#{@name} ")
-	# 		update_character_count()
-	# 	textarea.on "blur", => 
-	# 		if textarea.val() == "@#{@name} " or textarea.val() == ""
-	# 			textarea.val("")
-	# 			ask_element.removeClass("focus").addClass("blur")
-	# 		update_character_count()
-	# 	textarea.on "keydown", => update_character_count()
-	# 	$(".ask_again").on "click", =>
-	# 		ask_element.find(".ask_success").hide()
-	# 		textarea.val("").fadeIn(250)
-	# 	update_character_count = ->
-	# 		text = 140 - textarea.val().length
-	# 		count.text(text)
-	# 		if text < 0
-	# 			button.addClass("disabled")
-	# 		else if text < 10
-	# 			count.css "color", "red"
-	# 			button.removeClass("disabled")
-	# 		else
-	# 			count.css "color", "#333"
-	# 			button.removeClass("disabled")
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
-	# initializeNewPostListener: =>
-	# 	pusher = new Pusher('bffe5352760b25f9b8bd')
-	# 	channel = pusher.subscribe(@name)
-	# 	channel.bind 'new_post', (data) => @displayNewPost(data, "prepend")
 	retweet: (e) =>
 		id = e.attr 'publication_id'
 		params = 
@@ -153,8 +97,9 @@ class Feed
 				post.find(".icon-retweet").fadeIn()	
 				post.find(".retweet").remove()
 				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
-	post_question: =>
+	post_question: (text = null, post_id = null) =>
 		# return unless window.feed.correct > 9 or $('.is_author').length > 0
+		$("#question_input").val(text) if text
 		$("#post_question_modal").modal()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
@@ -178,6 +123,7 @@ class Feed
 					"ianswer1" : $("#ianswer1 input").val()
 					"ianswer2" : $("#ianswer2 input").val()
 					"ianswer3" : $("#ianswer3 input").val()
+				data["post_id"] = post_id if post_id
 				$("#submit_question").button("loading")
 				modal = $("#post_question_modal")
 				modal.find(".modal-body").slideToggle(250)
@@ -185,17 +131,17 @@ class Feed
 					url: "/questions/save_question_and_answers",
 					type: "POST",
 					data: data,
-					error: => alert_status(false),
+					error: => alert "Sorry, something went wrong!",
 					success: (e) => 
 						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-						modal.find(".question_form").hide()
-						modal.find(".message").show()
-						modal.find(".modal-body").slideToggle(250)
-		alert_status = (status) ->
-			# $('#submit_question').button('reset')
-			# text = if status then "Thanks, we'll get in touch when your question is posted!" else "Something went wrong..."
-			# $('#post_question_modal').modal('hide') #window.location.replace("/questions/new?asker_id=#{$("#asker_id").val()}&success=1")
-			# alert text
+						if post_id
+							window.feed.post_another()
+							modal.modal('hide')	
+							$(".post[post_id=#{post_id}]").parent().css("opacity", 0.8)
+						else
+							modal.find(".question_form").hide()
+							modal.find(".message").show()
+							modal.find(".modal-body").slideToggle(250)
 		validate_form = ->
 			if $("#question_input").val() == ""
 				alert "Please enter a question!"
@@ -295,21 +241,29 @@ class Post
 			@element.find(".expand").text("Answer")
 			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.find(".subsidiaries, .loading, .answers").hide()
-			@element.toggleClass("active", 200)
+			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
 			@element.find(".answered_indicator").css("opacity", ".4")
 		else 
+			# Mobile specific improvements
 			@expanded = true
 			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
-			@element.find(".answers").slideToggle(200)
 			@element.find(".answered_indicator").css("opacity", ".6")
-			@element.find(".subsidiaries").slideToggle(200, => 
-				@element.toggleClass("active", 200)
+			if $(window).width() < 400 
+				@element.find(".answers").show()
+				@element.find(".subsidiaries").show()
+				@element.addClass("active")
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
-			)	
+			else
+				@element.find(".answers").slideToggle(200)
+				@element.find(".subsidiaries").slideToggle(200, => 
+					@element.toggleClass("active", 200)
+					@element.next(".conversation").addClass("active_next")
+					@element.prev(".conversation").addClass("active_prev")
+				)
 	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Posting your answer...")

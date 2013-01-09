@@ -41,7 +41,7 @@ class Question
 
 		#allow questions index to filter and make sure selector set right
 		$('#askers_select select').change -> window.location = "/questions/asker/" + $(this).children(":selected").attr('value')
-		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')
+		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')	
 
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
@@ -109,6 +109,8 @@ class Question
 		q = question.questions[question_id]
 		$('#question_input').val q.text
 
+		if $(elmnt).hasClass "pending" then $("#approve_question").css "display", "inline" else $("#approve_question").css "display", "none"
+
 		$('.ianswer').each (i, elmnt) -> 
 			if elmnt.id != 'ianswer1'
 				$(elmnt).remove()
@@ -136,6 +138,11 @@ class Question
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
 			question.post_edit_question_submit(q.id)
+
+		$('.btn.btn-success').off "click"
+		$('.btn.btn-danger').off "click"
+		$('.btn.btn-success').on "click", (e) => @respond(true, question_id)
+		$('.btn.btn-danger').on "click", (e) => @respond(false, question_id)				
 
 	post_edit_question_submit: (question_id) ->
 		if question.post_question_validate_form()
@@ -179,12 +186,34 @@ class Question
 		else
 			return true
 
+	respond: (accepted, id) ->
+		q = {}
+		q['question_id'] = parseInt id
+		q['accepted'] = accepted
+		$.ajax '/moderate/update',
+			type: 'POST'
+			dataType: 'html'
+			data: q
+			error: (jqXHR, textStatus, errorThrown) ->
+				console.log "AJAX Error: #{errorThrown}"
+			success: (data, textStatus, jqXHR) ->
+				if data == "true"
+					label_style = "label-success" 
+					text = "Approved"
+				else 
+					label_style = "label-important"
+					text = "Denied"
+					
+				label = $(".question-row[question_id=#{id}] .label")
+				label.addClass label_style
+				label.text text
+				$("#post_question_modal").modal('hide')
+
 class Moderator
 
 	constructor: ->
 		$('.btn.btn-success').on "click", (e) => @respond(true, $(e.target).attr('qid'))
 		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))
-
 	respond: (accepted, id) ->
 		q = {}
 		q['question_id'] = parseInt id

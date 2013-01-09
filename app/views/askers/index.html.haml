@@ -35,7 +35,7 @@
           %a{:href => "/feeds/#{asker.id}/manage?filter=ugc"}
             .td_container= @ugc_post_counts[asker.id]    
         %td
-          %a{:href => "/moderate"}
+          %a{:href => "/questions/asker/#{asker.id}#not_tweeting"}
             .td_container= @unmoderated_counts[asker.id]
         %td= @question_counts[asker.id]
         %td

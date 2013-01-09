@@ -1,4 +1,4 @@
-class Feed
+class @Manager extends @Feed
 	id: null
 	name: null 
 	posts: []
@@ -46,7 +46,7 @@ class Feed
 			$.grep(@posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
 		$(".mark_ugc").on "click", (e) => 
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
-
+			
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
 
 	initialize_character_count: => 
@@ -109,6 +109,12 @@ class Post
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
 			return
+		else if $(e.target).hasClass "add_question"
+			post = $(e.target).parents(".post")
+			window.feed.post_question(
+				post.find(".content p").text().replace(/\s+/g, ' ').replace(/@[a-zA-Z0-9]* /, "").trim(), 
+				post.attr("post_id")
+			)
 		else if $(e.target).hasClass "mark_ugc"
 			$(e.target).text("marked ugc")
 		else if $(e.target).hasClass "retweet"
@@ -311,4 +317,4 @@ class Post
 				$("#retweet_question_modal").modal('hide')	
 				$('#retweet_question').button('reset')
 
-$ -> window.feed = new Feed if $("#manager").length > 0
+$ -> window.feed = new Manager if $("#manager").length > 0
