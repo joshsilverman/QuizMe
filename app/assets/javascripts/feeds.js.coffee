@@ -241,21 +241,29 @@ class Post
 			@element.find(".expand").text("Answer")
 			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.find(".subsidiaries, .loading, .answers").hide()
-			@element.toggleClass("active", 200)
+			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", 200)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
 			@element.find(".answered_indicator").css("opacity", ".4")
 		else 
+			# Mobile specific improvements
 			@expanded = true
 			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
 			@element.find(".expand").text("Collapse")
-			@element.find(".answers").slideToggle(200)
 			@element.find(".answered_indicator").css("opacity", ".6")
-			@element.find(".subsidiaries").slideToggle(200, => 
-				@element.toggleClass("active", 200)
+			if $(window).width() < 400 
+				@element.find(".answers").show()
+				@element.find(".subsidiaries").show()
+				@element.addClass("active")
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
-			)	
+			else
+				@element.find(".answers").slideToggle(200)
+				@element.find(".subsidiaries").slideToggle(200, => 
+					@element.toggleClass("active", 200)
+					@element.next(".conversation").addClass("active_next")
+					@element.prev(".conversation").addClass("active_prev")
+				)
 	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Posting your answer...")
