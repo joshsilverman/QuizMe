@@ -479,9 +479,6 @@ class Stat < ActiveRecord::Base
 
     puts "aggregate post retweets = #{aggregate_count}"
     puts "grade post retweets = #{grade_count}"
-    # retweets = Post.retweet\
-      # .where("created_at > ?", experiment_data[:start_time])\
-      # .where("user_id in (?)", experiment_data[:alternatives])
   end
 
   def self.get_alternative_grouped_user_ids_by_experiment experiment_name, experiment_data = {:alternatives => {}}

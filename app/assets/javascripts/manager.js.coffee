@@ -205,7 +205,6 @@ class Post
 		subsidiary.find("img").attr("src", image) unless image == null
 		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
 		$.each convo['posts'], (i, p) ->
-			console.log i, p
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 			subsidiary.find("p").text("#{p['text']}") 
 			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
