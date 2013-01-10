@@ -115,21 +115,25 @@ class QuestionsController < ApplicationController
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
 
+    user_id = current_user.id
+
     # For questions generated from user posts
     if params[:post_id]
       ugc_post = Post.find(params[:post_id]) 
       ugc_post.tags.delete(Tag.find_by_name("ugc"))
+      user_id = ugc_post.user_id
     end
 
     if params[:question_id]
       @question = Question.find params[:question_id]
-      return if current_user.id != @question.user_id
+      return if current_user.id != @question.user_id and !current_user.is_role? "admin"
+      user_id = @question.user_id
     end
 
     @question ||= Question.new
 
     @question.text = params[:question]
-    @question.user_id = params[:post_id] ? ugc_post.user_id : current_user.id
+    @question.user_id = user_id
     @question.priority = true
     @question.created_for_asker_id = params[:asker_id]
     @question.status = 0

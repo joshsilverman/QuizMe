@@ -484,7 +484,15 @@ class Post < ActiveRecord::Base
           dm_ids << dm.id
         end
       else  
-        parent = p.parent  
+        child = p.child
+        while child
+          if child.in_reply_to_user_id == asker.id or child.user_id == asker.id
+            @conversations[p.id][:posts] << child
+            @conversations[p.id][:users][child.user.id] = child.user if @conversations[p.id][:users][child.user.id].nil?
+          end
+          child = child.child
+        end
+        parent = p.parent
         while parent
           if parent.in_reply_to_user_id == asker.id or parent.user_id == asker.id
             @conversations[p.id][:posts] << parent
