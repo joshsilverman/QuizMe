@@ -458,17 +458,43 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-  def self.get_alternative_grouped_user_ids_by_experiment experiment
-    alternatives = {}
+
+
+  def self.experiment_summary experiment_name
+    case experiment_name
+    when "post aggregate activity"
+      Stat.post_aggregate_activity_summary()  
+    end
+  end
+
+  def self.post_aggregate_activity_summary
+    experiment_data = Stat.get_alternative_grouped_user_ids_by_experiment "post aggregate activity"
+    aggregate_post_ids = Post.where("intention = 'post aggregate activity'")\
+      .where("created_at > ? and in_reply_to_user_id in (?)", experiment_data[:start_time], experiment_data[:alternatives]["true"]).collect(&:id)
+    grade_post_ids = Post.where("intention = 'grade'")\
+      .where("created_at > ? and in_reply_to_user_id in (?)", experiment_data[:start_time], experiment_data[:alternatives]["false"]).collect(&:id)
+
+    aggregate_count = Post.retweet.where("in_reply_to_post_id in (?) and created_at > ?", aggregate_post_ids, experiment_data[:start_time]).size
+    grade_count = Post.retweet.where("in_reply_to_post_id in (?) and created_at > ?", grade_post_ids, experiment_data[:start_time]).size
+
+    puts "aggregate post retweets = #{aggregate_count}"
+    puts "grade post retweets = #{grade_count}"
+    # retweets = Post.retweet\
+      # .where("created_at > ?", experiment_data[:start_time])\
+      # .where("user_id in (?)", experiment_data[:alternatives])
+  end
+
+  def self.get_alternative_grouped_user_ids_by_experiment experiment_name, experiment_data = {:alternatives => {}}
     ab_user = Split::RedisStore.new(Split.redis)
-    experiment = Split::Experiment.find(experiment)
+    experiment = Split::Experiment.find(experiment_name)
+    experiment_data[:start_time] = experiment.start_time
     User.all.each do |user|
       ab_user.set_id(user.id)
       if alternative = ab_user.get_key(experiment.key)
-        alternatives[alternative] ||= []
-        alternatives[alternative] << user.id 
+        experiment_data[:alternatives][alternative] ||= []
+        experiment_data[:alternatives][alternative] << user.id 
       end
     end
-    alternatives
+    experiment_data
   end
 end
