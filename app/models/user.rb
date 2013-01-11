@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
 	has_many :reps
 	has_many :questions
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
+	has_many :transitions
 
 	has_many :topics, :through => :askertopics
 	has_many :askertopics, :foreign_key => 'asker_id'
@@ -28,6 +29,37 @@ class User < ActiveRecord::Base
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
     .where('interaction_type IN (2,3)')\
+
+  # Lifecycle segmentation scopes
+  scope :unengaged, where("lifecycle_segment is null")
+  scope :edger, where(:lifecycle_segment => 1)
+  scope :noob, where(:lifecycle_segment => 2)
+  scope :regular, where(:lifecycle_segment => 3)
+  scope :advanced, where(:lifecycle_segment => 4)
+  scope :pro, where(:lifecycle_segment => 5)
+  scope :superuser, where(:lifecycle_segment => 6)
+
+  # Activity segmentation scopes
+  scope :disengaged, where(:activity_segment => 1)
+  scope :disengaging, where(:activity_segment => 2)
+  scope :engaging, where(:activity_segment => 3)
+  scope :engaged, where(:activity_segment => 4)
+
+  # Interaction segmentation scopes
+  scope :dmer, where(:interaction_segment => 1)
+  scope :sharer, where(:interaction_segment => 2)
+  scope :commenter, where(:interaction_segment => 3)
+  scope :twitter_answerer, where(:interaction_segment => 4)
+  scope :wisr_answerer, where(:interaction_segment => 5)
+  scope :author, where(:interaction_segment => 6)
+
+  # Author segmentation scopes
+  scope :not_author, where("author_segment is null")
+  scope :unapproved_author, where(:author_segment => 1)
+  scope :message_author, where(:author_segment => 2)
+  scope :wisr_author, where(:author_segment => 3)
+  scope :handle_author, where(:author_segment => 4)
+
 
 	def self.create_with_omniauth(auth)
 	  create! do |user|
@@ -160,5 +192,29 @@ class User < ActiveRecord::Base
 	def enrolled_in_experiment? experiment_name
 		experiments = Split.redis.hkeys("user_store:#{self.id}").map { |e| e.split(":")[0] }
 		experiments.include? experiment_name
+	end
+
+	def transition segment_name, to
+		return if to == (from = self.send("#{segment_name}_segment"))
+
+		self.update_attribute "#{segment_name}_segment", to
+
+		case segment_name
+		when 'lifecycle'
+			segment_type = 1
+		when 'activity'
+			segment_type = 2
+		when 'interaction'
+			segment_type = 3
+		when 'author'
+			segment_type = 4
+		end
+
+		Transition.create({
+			:user_id => self.id,
+			:segment_type => segment_type,
+			:from => from,
+			:to => to
+		})	
 	end
 end
