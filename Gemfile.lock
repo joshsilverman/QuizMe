@@ -106,6 +106,10 @@ GEM
       multipart-post (~> 1.1)
     file-tail (1.0.12)
       tins (~> 0.5)
+    google_drive (0.3.2)
+      nokogiri (>= 1.4.4, != 1.5.2, != 1.5.1)
+      oauth (>= 0.3.6)
+      oauth2 (>= 0.5.0)
     haml (3.1.6)
     hashie (1.2.0)
     heroku (2.33.0)
@@ -160,6 +164,7 @@ GEM
     multipart-post (1.1.5)
     netrc (0.7.7)
     newrelic_rpm (3.5.5.38)
+    nokogiri (1.5.6)
     oauth (0.4.7)
     oauth2 (0.6.1)
       faraday (~> 0.7)
@@ -312,6 +317,7 @@ DEPENDENCIES
   dalli (= 2.1.0)
   database_cleaner
   devise (= 2.1.2)
+  google_drive
   haml (= 3.1.6)
   heroku
   hirb
