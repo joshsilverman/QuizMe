@@ -1,8 +1,4 @@
 #lib/tasks/cron.rake
-# require 'pusher'
-# Pusher.app_id = '23912'
-# Pusher.key = 'bffe5352760b25f9b8bd'
-# Pusher.secret = '782e6b3a20d17f5896dc'
 
 task :check_for_posts => :environment do
   askers = Asker.where('twi_oauth_token is not null')
