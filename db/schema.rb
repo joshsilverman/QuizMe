@@ -11,7 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20130111002935) do
+=======
+ActiveRecord::Schema.define(:version => 20130111223543) do
+>>>>>>> basic mailer
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -289,10 +293,14 @@ ActiveRecord::Schema.define(:version => 20130111002935) do
     t.integer  "client_id"
     t.integer  "rate_sheet_id"
     t.boolean  "client_nudge"
+<<<<<<< HEAD
     t.integer  "lifecycle_segment"
     t.integer  "activity_segment"
     t.integer  "interaction_segment"
     t.integer  "author_segment"
+=======
+    t.string   "email"
+>>>>>>> basic mailer
   end
 
   add_index "users", ["author_id"], :name => "index_users_on_author_id"
