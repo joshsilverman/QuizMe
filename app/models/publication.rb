@@ -28,7 +28,7 @@ class Publication < ActiveRecord::Base
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
         .where("publications.published = ? and posts.created_at > ?", true, 5.day.ago)\
-        .order("posts.created_at DESC").all#.as_json(:include => [:asker, :posts, :question => {:include => :answers}])
+        .order("posts.created_at DESC").all
       posts = publications.collect {|p| p.posts}.flatten 
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
