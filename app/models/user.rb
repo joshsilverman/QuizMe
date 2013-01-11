@@ -217,4 +217,180 @@ class User < ActiveRecord::Base
 			:to => to
 		})	
 	end
+
+
+	def segment
+		update_lifecycle_segment
+		update_activity_segment
+		update_interaction_segment
+		update_author_segment
+	end
+
+	# Lifecycle checks
+	def update_lifecycle_segment
+		answers = posts.answers.size
+		if is_superuser? answers
+			level = 6
+		elsif is_pro? answers
+			level = 5			
+		elsif is_advanced? answers
+			level = 4
+		elsif is_regular? answers
+			level = 3
+		elsif is_noob? answers
+			level = 2		
+		elsif is_edger?
+			level = 1	
+		else
+			level = nil
+		end
+
+		transition :lifecycle, level
+	end
+
+	def is_edger?
+		posts.not_spam.size > 0
+	end
+
+	def is_noob? answers
+		answers > 0 and answers < 4
+	end
+
+	def is_regular? answers
+		enough_posts = true if answers > 3 and answers < 10
+		enough_frequency = true if number_of_weeks_with_posts > 1
+		enough_posts and enough_frequency
+	end
+
+	def is_advanced? answers
+		# (10 - 19 answers across 2 weeks and 3 days) || (Regular && >0 UGC)
+		enough_posts = true if answers > 9 and answers < 20
+		enough_frequency = true if number_of_weeks_with_posts > 1 and number_of_days_with_posts > 2
+		enough_posts and enough_frequency
+	end
+
+	def is_pro? answers
+		# (20+ answers across 3 weeks and 5 days) || (Advanced && >3 UGC)
+		enough_posts = true if answers > 19 and answers < 30
+		enough_frequency = true if number_of_weeks_with_posts > 2 and number_of_days_with_posts > 4
+		enough_posts and enough_frequency		
+	end
+
+	def is_superuser? answers
+		# (30+ answers across 5 weeks and 10 days) || (Pro && >10 UGC)
+		enough_posts = true if answers > 29
+		enough_frequency = true if number_of_weeks_with_posts > 4 and number_of_days_with_posts > 9
+		enough_posts and enough_frequency
+	end
+
+	# Activity checks
+	def update_activity_segment
+		if self.is_disengaged?
+			level = 1
+		elsif self.is_disengaging?
+			level = 2
+		elsif self.is_engaging?
+			level = 3
+		elsif self.is_engaged?
+			level = 4
+		end
+		transition :activity, level
+	end
+
+	def is_disengaged?
+
+	end
+
+	def is_disengaging?
+
+	end
+
+	def is_engaging?
+
+	end
+
+	def is_engaged?
+
+	end
+
+	# Interaction checks
+	def update_interaction_segment
+		if is_PMer?
+			level = 1
+		elsif is_sharer?
+			level = 2
+		elsif is_commenter?
+			level = 3
+		elsif is_twitter_answerer?
+			level = 4
+		elsif is_wisr_answerer?
+			level = 5
+		end
+		transition :interaction, level
+	end
+
+	def is_PMer?
+
+	end
+
+	def is_sharer?
+
+	end
+
+	def is_commenter?
+
+	end
+
+	def is_twitter_answerer?
+
+	end
+
+	def is_wisr_answerer?
+
+	end
+
+	# Author checks
+	def update_author_segment
+		if is_not_author?
+			level = nil
+		elsif is_unapproved_author?
+			level = 1
+		elsif is_DM_mention_author?
+			level = 2
+		elsif is_form_author?
+			level = 3
+		elsif is_handle_author?
+			level = 4
+		end
+		transition :author, level
+	end
+
+	def is_not_author?
+
+	end
+
+	def is_unapproved_author?
+
+	end
+
+	def is_DM_mention_author?
+
+	end
+
+	def is_form_author?
+
+	end
+
+	def is_handle_author?
+
+	end
+
+
+  def number_of_weeks_with_posts
+    posts.group_by {|p| p.created_at.strftime('%W')}.size
+  end
+
+  def number_of_days_with_posts
+    posts.group_by {|p| p.created_at.strftime('%D')}.size
+  end
 end
