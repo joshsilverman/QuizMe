@@ -27,8 +27,8 @@ class Publication < ActiveRecord::Base
     publications, posts, replies = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
-        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
-        .order("posts.created_at DESC")
+        .where("publications.published = ? and posts.created_at > ?", true, 5.day.ago)\
+        .order("posts.created_at DESC").all#.as_json(:include => [:asker, :posts, :question => {:include => :answers}])
       posts = publications.collect {|p| p.posts}.flatten 
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
