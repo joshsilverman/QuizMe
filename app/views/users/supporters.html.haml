@@ -1,0 +1,25 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.page-header
+  %h1= t '.title', :default => 'Supporters'
+
+.form-actions
+  .btn-group
+    = link_to t('.new', :default => t("helpers.links.new")), "/users/supporters/new", :class => 'btn btn-primary'
+
+#askers_table
+  %table.table
+    %tr
+      %th
+      %th Name
+      %th Email
+
+    - @supporters.each_with_index do |supporter, i|
+      %tr.asker-row
+        %td= i + 1
+        %td= supporter.name
+        %td= supporter.email

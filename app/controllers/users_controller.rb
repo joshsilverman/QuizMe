@@ -1,6 +1,10 @@
 class UsersController < ApplicationController
   before_filter :admin?, :except => [:show, :badges]
 
+  def supporters
+    @supporters = User.supporters
+  end
+
   def show
     @user = User.where("twi_screen_name ILIKE '%#{params[:twi_screen_name]}%'").first
     if @user.nil?

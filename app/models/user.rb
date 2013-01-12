@@ -91,6 +91,10 @@ class User < ActiveRecord::Base
 	  end
 	end
 
+  def self.supporters
+    where(:role => 'supporter')
+  end
+
 	def self.askers
 		where(:role => 'asker')
 	end
