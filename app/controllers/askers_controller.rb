@@ -97,8 +97,8 @@ class AskersController < ApplicationController
     @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
     @core_display_data[0][:paulgraham] = pg_display_data
 
-    @daus, daus_display_data = Stat.daus params[:asker_id]
-    @core_display_data[0][:daus] = daus_display_data
+    # @daus, daus_display_data = Stat.daus params[:asker_id]
+    # @core_display_data[0][:daus] = daus_display_data
 
     @revenue, revenue_display_data = Stat.revenue
     @core_display_data[0][:revenue] = revenue_display_data

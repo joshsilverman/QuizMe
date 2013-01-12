@@ -2,7 +2,6 @@ source :rubygems
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
-# gem 'rack-mini-profiler' #won't show up in production
 
 group :test do
   #gem 'sqlite3'
@@ -15,6 +14,7 @@ group :production do
 end
 
 group :development do
+  gem 'rack-mini-profiler' #won't show up in production
   # gem "guard"
   # gem "guard-livereload"
   gem 'awesome_print'
