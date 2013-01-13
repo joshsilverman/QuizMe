@@ -52,6 +52,7 @@ class PostsController < ApplicationController
     if post.tags.include? tag
       post_with_tags = Post.includes(:tags).where('tags.name = ?', tag.name).find(params[:post_id])
       post_with_tags.tags.clear
+      post_with_tags.update_attribute :requires_action, false
     else
       user = post.user
       Post.trigger_split_test(user.id, 'ugc request type')
