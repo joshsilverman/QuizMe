@@ -42,8 +42,10 @@ class User < ActiveRecord::Base
   # Activity segmentation scopes
   scope :disengaged, where(:activity_segment => 1)
   scope :disengaging, where(:activity_segment => 2)
-  scope :engaging, where(:activity_segment => 3)
-  scope :engaged, where(:activity_segment => 4)
+  scope :slipping, where(:activity_segment => 3)
+  scope :active, where(:activity_segment => 4)
+  scope :engaging, where(:activity_segment => 5)
+  scope :engaged, where(:activity_segment => 6)
 
   # Interaction segmentation scopes
   scope :dmer, where(:interaction_segment => 1)
@@ -222,22 +224,21 @@ class User < ActiveRecord::Base
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
-		update_interaction_segment
-		update_author_segment
+		# update_interaction_segment
+		# update_author_segment
 	end
 
-	# Lifecycle checks
+	# Lifecycle checks - include UGC reqs?
 	def update_lifecycle_segment
-		answers = posts.answers.size
-		if is_superuser? answers
+		if is_superuser?
 			level = 6
-		elsif is_pro? answers
+		elsif is_pro?
 			level = 5			
-		elsif is_advanced? answers
+		elsif is_advanced?
 			level = 4
-		elsif is_regular? answers
+		elsif is_regular?
 			level = 3
-		elsif is_noob? answers
+		elsif is_noob?
 			level = 2		
 		elsif is_edger?
 			level = 1	
@@ -252,65 +253,75 @@ class User < ActiveRecord::Base
 		posts.not_spam.size > 0
 	end
 
-	def is_noob? answers
-		answers > 0 and answers < 4
+	def is_noob?
+		posts.answers.size > 0 and posts.answers.size < 4
 	end
 
-	def is_regular? answers
-		enough_posts = true if answers > 3 and answers < 10
-		enough_frequency = true if number_of_weeks_with_posts > 1
+	def is_regular?
+		enough_posts = true if posts.answers.size > 3 and posts.answers.size < 10
+		enough_frequency = true if number_of_weeks_with_answers > 1
 		enough_posts and enough_frequency
 	end
 
-	def is_advanced? answers
-		# (10 - 19 answers across 2 weeks and 3 days) || (Regular && >0 UGC)
-		enough_posts = true if answers > 9 and answers < 20
-		enough_frequency = true if number_of_weeks_with_posts > 1 and number_of_days_with_posts > 2
+	def is_advanced?
+		enough_posts = true if posts.answers.size > 9 and posts.answers.size < 20
+		enough_frequency = true if number_of_weeks_with_answers > 1 and number_of_days_with_answers > 2
 		enough_posts and enough_frequency
 	end
 
-	def is_pro? answers
-		# (20+ answers across 3 weeks and 5 days) || (Advanced && >3 UGC)
-		enough_posts = true if answers > 19 and answers < 30
-		enough_frequency = true if number_of_weeks_with_posts > 2 and number_of_days_with_posts > 4
+	def is_pro?
+		enough_posts = true if posts.answers.size > 19 and posts.answers.size < 30
+		enough_frequency = true if number_of_weeks_with_answers > 2 and number_of_days_with_answers > 4
 		enough_posts and enough_frequency		
 	end
 
-	def is_superuser? answers
-		# (30+ answers across 5 weeks and 10 days) || (Pro && >10 UGC)
-		enough_posts = true if answers > 29
-		enough_frequency = true if number_of_weeks_with_posts > 4 and number_of_days_with_posts > 9
+	def is_superuser?
+		enough_posts = true if posts.answers.size > 29
+		enough_frequency = true if number_of_weeks_with_answers > 4 and number_of_days_with_answers > 9
 		enough_posts and enough_frequency
 	end
 
 	# Activity checks
-	def update_activity_segment
+	def update_activity_segment	
 		if self.is_disengaged?
 			level = 1
 		elsif self.is_disengaging?
 			level = 2
-		elsif self.is_engaging?
-			level = 3
 		elsif self.is_engaged?
+			level = 6
+		elsif self.is_engaging?
+			level = 5
+		elsif self.is_slipping?
+			level = 3
+		else
 			level = 4
 		end
 		transition :activity, level
 	end
 
 	def is_disengaged?
-
+		return true if posts.blank?
+		posts.order("created_at DESC").limit(1).first.created_at < 4.weeks.ago
 	end
 
 	def is_disengaging?
+		posts.order("created_at DESC").limit(1).first.created_at < 2.weeks.ago
+	end
 
+	def is_slipping?
+		no_recent_activity = posts.answers.where("created_at > ?", 1.week.ago).size < 1
+		previous_activity = posts.answers.where("created_at > ? and created_at < ?", 2.weeks.ago, 1.week.ago).size > 0
+		no_recent_activity and previous_activity		
 	end
 
 	def is_engaging?
-
+		recent_activity = posts.answers.where("created_at > ?", 1.week.ago).size > 0
+		no_previous_activity = posts.answers.where("created_at > ? and created_at < ?", 2.weeks.ago, 1.week.ago).size < 1
+		recent_activity and no_previous_activity
 	end
 
 	def is_engaged?
-
+		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 3
 	end
 
 	# Interaction checks
@@ -330,11 +341,13 @@ class User < ActiveRecord::Base
 	end
 
 	def is_PMer?
-
+		user_posts = interaction_type_grouped_posts
+		user_posts[4] == interaction_type_grouped_posts.values.max
 	end
 
 	def is_sharer?
-
+		user_posts = interaction_type_grouped_posts
+		user_posts[3] == interaction_type_grouped_posts.values.max
 	end
 
 	def is_commenter?
@@ -386,11 +399,17 @@ class User < ActiveRecord::Base
 	end
 
 
-  def number_of_weeks_with_posts
-    posts.group_by {|p| p.created_at.strftime('%W')}.size
+  def number_of_weeks_with_answers options = {}
+  	return options[:posts].answers.group_by {|p| p.created_at.strftime('%W')}.size if options[:posts].present?
+    posts.answers.group_by {|p| p.created_at.strftime('%W')}.size
   end
 
-  def number_of_days_with_posts
-    posts.group_by {|p| p.created_at.strftime('%D')}.size
+  def number_of_days_with_answers options = {}
+  	return options[:posts].answers.group_by {|p| p.created_at.strftime('%W')}.size if options[:posts].present?
+    posts.answers.group_by {|p| p.created_at.strftime('%D')}.size
+  end
+
+  def interaction_type_grouped_posts
+  	posts.group('interaction_type').count
   end
 end
