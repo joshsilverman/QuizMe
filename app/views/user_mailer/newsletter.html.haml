@@ -1,5 +1,42 @@
-Hey #{@user.name},
+= stylesheet_link_tag "application"
 
-Thank you for newslettering!
+:css 
+	body {
+		background: #FCFCFC;
+		/ background: url('/assets/low_contrast_linen.png');
+	}
+	.brand {
+		margin-left: 0px !important;
+	}
 
-Josh
+#newsletter
+	.navbar.navbar-fixed-top
+		.navbar-inner
+			%a.brand{:href => "http://www.wisr.com", :target => "_blank"}
+				Wisr
+			/ .date
+			/ 	1/11/13
+	.newsletter_body
+		.hello
+			Hey #{@name}, here's a quick update on where we are:
+		.josh.well
+			%p.title What's new.
+			%p.text= @josh_text
+			%p.author= "- Josh"
+		.jason.well
+			%p.title Our latest experiment.
+			%p.text= @jason_text
+			%p.author= "- Jason"
+		/ .growth
+		/ 	.weeks
+		/ 		%p= @weeks
+		/ 	.desc 
+		/ 		%p.week_description weeks of 7-10% userbase growth!
+		.signature
+			%p Thanks for reading, please drop a line if you have any comments or questions!
+			%br
+			%br
+			Best, 
+			%br
+			%br
+			%p.names Josh and Jason

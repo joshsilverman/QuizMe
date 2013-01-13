@@ -58,6 +58,8 @@ Quizmemanager::Application.routes.draw do
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
 
+  match "/newsletter" => "users#newsletter"
+
   resources :questions
   resources :answers
 

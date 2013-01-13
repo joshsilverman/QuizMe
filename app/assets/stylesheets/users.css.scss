@@ -7,3 +7,55 @@
     }
   }
 }
+
+#newsletter {
+	font-family: Verdana;
+	color: #1F1F1F;
+
+	p {
+		margin: 0px;
+		display: inline;
+	}
+
+	.hello, .josh, .jason, .growth, .signature {
+		margin: 10px;
+
+		.title {
+			font-weight: bold;
+		}
+	}
+
+	.well {
+		background: url('/assets/light_toast.png');
+		color: black;
+	}
+
+	.hello {
+		margin-bottom: 15px;
+		margin-left: 15px;
+		margin-top: 25px;
+	}
+
+	.signature {
+		margin: 0px 15px;
+		margin-top: 15px;
+	}
+
+	.names {
+		margin-left: 20px;
+	}
+
+	.growth {
+		.weeks {
+			font-size: 48px;
+			display: inline;
+			position: relative;
+			top: 7px;
+
+		}
+		.week_description {
+			position: relative;
+			top: 4px;
+		}
+	}
+}

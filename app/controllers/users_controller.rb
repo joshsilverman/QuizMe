@@ -61,4 +61,12 @@ class UsersController < ApplicationController
       end
     end
   end
+
+  def newsletter
+    @name = "Bob"
+    @josh_text = "We're still killin it, this shit is easy We're still killin it, this shit is easy We're still killin it, this shit is easy We're still killin it, this shit is easy We're still killin it, this shit is easy"
+    @jason_text = "We learned all of this shit about experiments and shit! We learned all of this shit about experiments and shit! We learned all of this shit about experiments and shit!"
+    @weeks = 22
+    render "user_mailer/newsletter", :layout => false
+  end
 end
