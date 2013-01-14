@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :followers, :through => :reverse_relationships, :source => :follower
   
-  scope :not_asker_or_us, where('id not in (?)', Asker.ids + ADMINS)
+  scope :not_asker_not_us, where("id not in (?) and role != 'asker'" , ADMINS)
 
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
@@ -227,7 +227,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.update_segments
-		User.not_asker_or_us.where("twi_screen_name is not null").each { |user| user.segment }
+		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
 	end
 
 	def segment
