@@ -218,12 +218,12 @@ class User < ActiveRecord::Base
 			segment_type = 4
 		end
 
-		# Transition.create({
-		# 	:user_id => self.id,
-		# 	:segment_type => segment_type,
-		# 	:from => from,
-		# 	:to => to
-		# })	
+		Transition.create({
+			:user_id => self.id,
+			:segment_type => segment_type,
+			:from => from,
+			:to => to
+		})	
 	end
 
 	def self.update_segments
