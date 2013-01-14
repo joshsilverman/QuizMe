@@ -208,13 +208,13 @@ class User < ActiveRecord::Base
 		self.update_attribute "#{segment_name}_segment", to
 
 		case segment_name
-		when 'lifecycle'
+		when :lifecycle
 			segment_type = 1
-		when 'activity'
+		when :activity
 			segment_type = 2
-		when 'interaction'
+		when :interaction
 			segment_type = 3
-		when 'author'
+		when :author
 			segment_type = 4
 		end
 
