@@ -53,6 +53,10 @@ task :segment_users => :environment do
   User.update_segments()
 end
 
+task :send_weekly_progress_dms => :environment do
+  Asker.send_weekly_progress_dms() if Time.now.wday == 7
+end
+
 # task :update_followers => :environment do
   # Asker.all.each { |asker| asker.update_followers() }
 # end

@@ -13,4 +13,9 @@ class Transition < ActiveRecord::Base
 			puts 'author'
 		end
 	end
+
+	def is_positive?
+		return true if SEGMENT_HIERARCHY[segment_type].index(from_segment).nil? or SEGMENT_HIERARCHY[segment_type].index(to_segment) > SEGMENT_HIERARCHY[segment_type].index(from_segment)
+		false
+	end
 end
