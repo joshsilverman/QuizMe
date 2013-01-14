@@ -240,7 +240,7 @@ class User < ActiveRecord::Base
 			:to_segment => to_segment
 		})	
 
-		Post.trigger_split_test(self.id, "weekly progress report") if transition.is_positive?
+		Post.trigger_split_test(self.id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 	end
 
 	def self.update_segments

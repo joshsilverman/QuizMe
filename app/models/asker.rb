@@ -509,6 +509,7 @@ class Asker < User
       if Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"
         asker, text = Asker.compose_progress_report(recipient, asker_hash)
         Post.dm(asker, recipient, text, {:intention => "progress report"})
+        sleep 1
       end
     end
   end
