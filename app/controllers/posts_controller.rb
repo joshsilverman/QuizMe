@@ -12,6 +12,9 @@ class PostsController < ApplicationController
 				:posted_via_app => true, 
 				:interaction_type => 3
 			})
+
+      current_user.segment
+      
       retweet = Post.twitter_request { current_user.twitter.retweet(post.provider_post_id) }
 			render :json => retweet
 		else

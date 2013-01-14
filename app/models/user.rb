@@ -21,6 +21,8 @@ class User < ActiveRecord::Base
   has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :followers, :through => :reverse_relationships, :source => :follower
   
+  scope :not_asker_or_us, where('id not in (?)', Asker.ids + ADMINS)
+
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
@@ -175,6 +177,8 @@ class User < ActiveRecord::Base
       :last_answer_at => user_post.created_at
     })
 
+    segment
+
     user_post
 	end
 
@@ -196,6 +200,8 @@ class User < ActiveRecord::Base
 		experiments.include? experiment_name
 	end
 
+
+	# Segmentation methods
 	def transition segment_name, to
 		return if to == (from = self.send("#{segment_name}_segment"))
 
@@ -220,6 +226,9 @@ class User < ActiveRecord::Base
 		})	
 	end
 
+	def self.update_segments
+		User.not_asker_or_us.where("twi_screen_name is not null").each { |user| user.segment }
+	end
 
 	def segment
 		update_lifecycle_segment

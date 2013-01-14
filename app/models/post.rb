@@ -258,6 +258,8 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
+    u.segment
+
     puts "missed item in stream! mention: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
@@ -313,6 +315,8 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
+    u.segment
+
     puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
@@ -352,6 +356,8 @@ class Post < ActiveRecord::Base
         :learner_level => "share", 
         :last_interaction_at => post.created_at
       })
+
+      u.segment
 
       if retweeted_post.intention == 'post aggregate activity' or retweeted_post.intention == 'grade'
         Post.trigger_split_test(u.id, 'post aggregate activity') 
@@ -422,6 +428,8 @@ class Post < ActiveRecord::Base
       :learner_level => learner_level, 
       :last_interaction_at => post.created_at
     })
+
+    user.segment
 
     Post.classifier.classify post
     Post.grader.grade post

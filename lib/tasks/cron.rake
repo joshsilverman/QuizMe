@@ -53,6 +53,10 @@ task :post_aggregate_activity => :environment do
   Asker.post_aggregate_activity()
 end
 
+task :segment_users => :environment do
+  User.update_segments()
+end
+
 # task :update_followers => :environment do
   # Asker.all.each { |asker| asker.update_followers() }
 # end
