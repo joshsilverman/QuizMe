@@ -101,13 +101,13 @@ class FeedsController < ApplicationController
     @stream = []
     time_ago = 8.hours
     if user_followers.present?
-      recent_posts = Post.joins(:user)\
-        .where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago)\
+      recent_posts = Post.not_spam.joins(:user)\
+        .where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago)\
         .order("created_at DESC")\
         .limit(5)\
         .includes(:conversation => {:publication => :question})
       recent_posts.group_by(&:user_id).each do |user_id, posts|
-        next unless post.conversation and post.conversation.publication
+        next unless post and post.conversation and post.conversation.publication
         @stream << posts.shift
       end
     end
@@ -117,8 +117,8 @@ class FeedsController < ApplicationController
         .reject{|u| user_followers.include? u.id}
         
       users.each do |user| 
-        post = user.posts.includes(:conversation => :publication).where("posts.interaction_type = 2 and posts.correct is not null").order("created_at DESC").limit(1).first
-        next unless post.conversation and post.conversation.publication
+        post = user.posts.not_spam.includes(:conversation => :publication).where("posts.interaction_type = 2").order("created_at DESC").limit(1).first
+        next unless post and post.conversation and post.conversation.publication
         @stream << post unless post.blank?
         break if @stream.size >= 5
       end
