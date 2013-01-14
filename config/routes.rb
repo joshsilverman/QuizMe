@@ -1,17 +1,11 @@
 Quizmemanager::Application.routes.draw do
   
   get "answer/new"
-
   get "answer/create"
-
   get "answer/update"
-
   get "answer/edit"
-
   get "answer/destroy"
-
   get "answer/index"
-
   get "answer/show"
 
   get "badges/load"  

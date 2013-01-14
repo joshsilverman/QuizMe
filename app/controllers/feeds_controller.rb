@@ -97,6 +97,7 @@ class FeedsController < ApplicationController
         Rails.cache.write("follower_ids:#{current_user.id}", user_followers, :timeToLive => 2.days)
       end
     end
+
     @stream = []
     time_ago = 8.hours
     if user_followers.present?
@@ -104,24 +105,22 @@ class FeedsController < ApplicationController
         .where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2 and posts.correct is not null)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago)\
         .order("created_at DESC")\
         .limit(5)\
-        .includes(:conversation => {:publication => :question})\
-        .to_a
-      recent_posts.group_by(&:user_id).each do |user_id, posts| 
-        post = posts.shift
-        @stream << post
-        recent_posts.delete post
+        .includes(:conversation => {:publication => :question})
+      recent_posts.group_by(&:user_id).each do |user_id, posts|
+        next unless post.conversation and post.conversation.publication
+        @stream << posts.shift
       end
-      @stream << recent_posts.shift while (@stream.size < 5 and recent_posts.present?)
     end
     if @stream.size < 5
-      users = User.includes(:posts)\
-        .where("users.last_answer_at is not null and users.id not in (?)", (asker_ids + user_followers))\
-        .order("users.last_answer_at DESC")\
-        .limit(5 - @stream.size)\
+      users = User.where("users.last_answer_at is not null and users.id not in (?)", (asker_ids))\
+        .order("users.last_answer_at DESC").limit(10)\
+        .reject{|u| user_followers.include? u.id}
         
       users.each do |user| 
-        post = user.posts.where("posts.interaction_type = 2 and posts.correct is not null").order("created_at DESC").limit(1).first
+        post = user.posts.includes(:conversation => :publication).where("posts.interaction_type = 2 and posts.correct is not null").order("created_at DESC").limit(1).first
+        next unless post.conversation and post.conversation.publication
         @stream << post unless post.blank?
+        break if @stream.size >= 5
       end
     end
     render :partial => "stream"

@@ -2,18 +2,18 @@
 	- if @stream
 		- @stream.each_with_index do |action, i|
 			- conversation = action.conversation
-			- if conversation and (publication = conversation.publication)
-				- question = publication.question
-				%a.stream_item{:href => "/feeds/#{conversation.publication.asker_id}/#{conversation.publication.id}"}
-					%li{:class => ("border_bottom" if i < (@stream.size - 1))}
-						.content
-							= image_tag(action.user.twi_profile_img_url, :class => "rounded profile")
-							- if action.created_at < 1.day.ago
-								%p.time_ago.visible-desktop= time_formatter(action.created_at)
-							- else
-								%p.time_ago.visible-desktop.timeago{:title => action.created_at.to_time.iso8601}
-							.text_content
-								%h5
-									%span{:style => "color: #333;"}= action.user.twi_screen_name
-									%span{:style => "color: #666;"}= (action.interaction_type == 3 ? 'retweeted' : 'answered')
-								%p= question.text
+			- publication = conversation.publication
+			- question = publication.question
+			%a.stream_item{:href => "/feeds/#{conversation.publication.asker_id}/#{conversation.publication.id}"}
+				%li{:class => ("border_bottom" if i < (@stream.size - 1))}
+					.content
+						= image_tag(action.user.twi_profile_img_url, :class => "rounded profile")
+						- if action.created_at < 1.day.ago
+							%p.time_ago.visible-desktop= time_formatter(action.created_at)
+						- else
+							%p.time_ago.visible-desktop.timeago{:title => action.created_at.to_time.iso8601}
+						.text_content
+							%h5
+								%span{:style => "color: #333;"}= action.user.twi_screen_name
+								%span{:style => "color: #666;"}= (action.interaction_type == 3 ? 'retweeted' : 'answered')
+							%p= question.text

@@ -11,17 +11,17 @@ end
 
 group :production do
   gem 'bcrypt-ruby', '3.0.1'
+  gem 'dalli', '2.1.0'
 end
 
 group :development do
-  gem 'rack-mini-profiler' #won't show up in production
+  gem 'rack-mini-profiler'
   # gem "guard"
   # gem "guard-livereload"
   gem 'awesome_print'
-  # gem 'rack-mini-profiler'
   gem 'quiet_assets'
-  gem 'oink'
-  gem 'ruby-prof'
+  # gem 'oink'
+  # gem 'ruby-prof'
 end
 
 group :assets do
@@ -44,7 +44,6 @@ gem 'omniauth-twitter', '0.0.12'
 gem 'omniauth-facebook', '1.4.0'
 gem 'omniauth-tumblr', '1.0'
 gem 'rabl', '0.6.14'
-gem 'dalli', '2.1.0'
 gem 'hirb'
 gem 'twitter', '3.0.2'
 # gem 'twitter', '3.8.0'

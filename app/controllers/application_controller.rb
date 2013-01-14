@@ -3,9 +3,20 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
   before_filter :referrer_data
   before_filter :split_user
+  before_filter :preload_models
 
   def authenticate_user
     redirect_to '/' unless current_user 
+  end
+
+  # preload models so caching works in development
+  # http://aaronvb.com/articles/37-rails-caching-and-undefined-class-module
+  def preload_models
+    if Rails.env == "development"
+      Dir.foreach("#{Rails.root}/app/models") do |model_name|
+        require_dependency model_name unless model_name == "." || model_name == ".." || model_name == ".gitkeep"
+      end 
+    end
   end
 
   def admin?
