@@ -56,7 +56,7 @@ class Asker < User
   	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
   	unfollowed_users.each { |unfollowed_user| self.followers.delete(unfollowed_user) }
   	
-  	return twi_follower_ids
+  	return twi_follower_ids 
   end 
 
   def self.post_aggregate_activity
