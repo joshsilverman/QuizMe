@@ -219,10 +219,10 @@ class User < ActiveRecord::Base
 
 
 	# Segmentation methods
-	def transition segment_name, to
-		return if to == (from = self.send("#{segment_name}_segment"))
+	def transition segment_name, to_segment
+		return if to_segment == (from_segment = self.send("#{segment_name}_segment"))
 
-		self.update_attribute "#{segment_name}_segment", to
+		self.update_attribute "#{segment_name}_segment", to_segment
 
 		case segment_name
 		when :lifecycle
@@ -238,8 +238,8 @@ class User < ActiveRecord::Base
 		transition = Transition.create({
 			:user_id => self.id,
 			:segment_type => segment_type,
-			:from => from,
-			:to => to
+			:from_segment => from_segment,
+			:to_segment => to_segment
 		})	
 
 		Post.trigger_split_test(self.id, "weekly progress report") if transition.is_positive?
@@ -324,6 +324,7 @@ class User < ActiveRecord::Base
 		else
 			level = 4
 		end
+		
 		transition :activity, level
 	end
 
