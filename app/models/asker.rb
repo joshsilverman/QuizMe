@@ -509,12 +509,13 @@ class Asker < User
       if Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"
         asker, text = Asker.compose_progress_report(recipient, asker_hash)
         Post.dm(asker, recipient, text, {:intention => "progress report"})
+        sleep 1
       end
     end
   end
 
   def self.compose_progress_report recipient, asker_hash, script = "Last week:"
-    primary_asker = Asker.find(recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first)
+    primary_asker = asker_hash[recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first].first
     activity_hash = User.get_activity_summary(recipient)
 
     ugc_answered_count = recipient.get_my_questions_answered_this_week_count

@@ -196,9 +196,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.get_activity_summary recipient, activity_hash = {}
-    asker_grouped_posts = recipient.posts.group_by(&:in_reply_to_user_id)
-
-    asker_grouped_posts.each do |asker_id, posts|
+    recipient.posts.group_by(&:in_reply_to_user_id).each do |asker_id, posts|
       activity_hash[asker_id] = {:count => 0, :correct => 0}
       activity_hash[asker_id][:count] = posts.count
       activity_hash[asker_id][:correct] = posts.count { |post| post.correct }
@@ -242,7 +240,7 @@ class User < ActiveRecord::Base
 			:to_segment => to_segment
 		})	
 
-		Post.trigger_split_test(self.id, "weekly progress report") if transition.is_positive?
+		Post.trigger_split_test(self.id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 	end
 
 	def self.update_segments
@@ -324,7 +322,7 @@ class User < ActiveRecord::Base
 		else
 			level = 4
 		end
-		
+
 		transition :activity, level
 	end
 
