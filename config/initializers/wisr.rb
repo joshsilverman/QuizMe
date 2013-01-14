@@ -94,6 +94,16 @@ INCORRECT = [
   "That's not it."
 ]
 
+PROGRESS_COMPLEMENTS = [
+  "Keep up the nice work!", 
+  "Awesome work!",
+  "Good going!",
+  "Good stuff!",
+  "Keep it up!",
+  "Solid!",
+  "Nice!"
+]
+
 FAST = [
   "Fast fingers! Faster brain!",      
   "Speed demon!",      
@@ -136,6 +146,13 @@ AGGREGATE_POST_RESPONSES = {
     "answered a question... nice!",
     "answered a question... sweet!"    
   ]
+}
+
+SEGMENT_HIERARCHY = {
+  1 => [1, 2, 3, 4, 5, 6], 
+  2 => [1, 2, 3, 4, 5, 6],
+  3 => [],
+  4 => [],
 }
 
 # UGC_REQUESTS = [

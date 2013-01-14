@@ -494,6 +494,57 @@ class Asker < User
     return script
   end
 
+  def self.send_weekly_progress_dms
+    recipients = Asker.select_progress_report_recipients()
+    Asker.send_progress_report_dms(recipients)
+  end
+
+  def self.select_progress_report_recipients
+    User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ?", 1.week.ago).reject { |user| user.posts.size < 3 }
+  end
+
+  def self.send_progress_report_dms recipients
+    asker_hash = Asker.all.group_by(&:id)
+    recipients.each do |recipient|
+      if Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"
+        asker, text = Asker.compose_progress_report(recipient, asker_hash)
+        Post.dm(asker, recipient, text, {:intention => "progress report"})
+      end
+    end
+  end
+
+  def self.compose_progress_report recipient, asker_hash, script = "Last week:"
+    primary_asker = Asker.find(recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first)
+    activity_hash = User.get_activity_summary(recipient)
+
+    ugc_answered_count = recipient.get_my_questions_answered_this_week_count
+
+    activity_hash.each_with_index do |(asker_id, activity), i|
+      if i < 3 # Only include top 3 askers
+        next if i > 0 and ugc_answered_count > 0
+        script += "," if (i > 0 and activity_hash.size > 2)
+        script += " and" if (((i + 1) == activity_hash.size or i == 2) and i != 0)
+        script += " #{activity[:count]}"
+        script += " #{(activity[:count] > 1 ? "questions" : "question")} answered" if i == 0
+        script += " on #{asker_hash[asker_id][0].twi_screen_name}"
+        script += " (#{activity[:lifetime_total]} all time)" if activity[:lifetime_total] > 9 and script.size < 125
+      end
+    end
+
+    script += "."
+
+    if ugc_answered_count > 0
+      script += " Questions that you wrote were answered "
+      script += ugc_answered_count > 1 ? "#{ugc_answered_count} times!" : "once!"
+    else
+      complement = PROGRESS_COMPLEMENTS.sample
+      script += " #{complement}" if (script.size + complement.size + 1) < 140
+    end
+
+    return primary_asker, script
+  end
+
+
   def self.export_stats_to_csv askers = nil, domain = 9999
 
     askers = Asker.all unless askers

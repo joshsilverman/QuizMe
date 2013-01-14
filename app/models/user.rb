@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :followers, :through => :reverse_relationships, :source => :follower
   
-  scope :not_asker_not_us, where("id not in (?) and role != 'asker'" , ADMINS)
+  scope :not_asker_not_us, where("users.id not in (?) and users.role != 'asker'" , ADMINS)
 
   scope :not_spam_with_posts, joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
@@ -195,6 +195,23 @@ class User < ActiveRecord::Base
 		self.update_attributes params	
 	end
 
+	def self.get_activity_summary recipient, activity_hash = {}
+    asker_grouped_posts = recipient.posts.group_by(&:in_reply_to_user_id)
+
+    asker_grouped_posts.each do |asker_id, posts|
+      activity_hash[asker_id] = {:count => 0, :correct => 0}
+      activity_hash[asker_id][:count] = posts.count
+      activity_hash[asker_id][:correct] = posts.count { |post| post.correct }
+      activity_hash[asker_id][:lifetime_total] = Post.answers.where("user_id = ? and in_reply_to_user_id = ?", recipient.id, asker_id).size
+    end
+
+    activity_hash.sort_by { |k, v| v[:count] }.reverse
+  end
+
+  def get_my_questions_answered_this_week_count
+  	Publication.includes(:conversations).where("publications.question_id in (?) and conversations.created_at > ?", Question.where("user_id = ?", id).collect(&:id), 1.week.ago).collect {|pub| pub.conversations.size}.sum
+  end
+
 	def enrolled_in_experiment? experiment_name
 		experiments = Split.redis.hkeys("user_store:#{self.id}").map { |e| e.split(":")[0] }
 		experiments.include? experiment_name
@@ -218,12 +235,14 @@ class User < ActiveRecord::Base
 			segment_type = 4
 		end
 
-		Transition.create({
+		transition = Transition.create({
 			:user_id => self.id,
 			:segment_type => segment_type,
 			:from => from,
 			:to => to
 		})	
+
+		Post.trigger_split_test(self.id, "weekly progress report") if transition.is_positive?
 	end
 
 	def self.update_segments
