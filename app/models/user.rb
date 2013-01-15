@@ -272,7 +272,7 @@ class User < ActiveRecord::Base
 			level = nil
 		end
 
-		transition :lifecycle, level
+		transition :lifecycle, level if level
 	end
 
 	def is_edger?
