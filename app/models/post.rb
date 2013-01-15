@@ -481,10 +481,14 @@ class Post < ActiveRecord::Base
           dm_ids << dm.id
         end
       else
-        post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
-          conversations[post.id][:posts] << conversation_post
-          conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
-          parent_publication = conversation_post.publication unless conversation_post.publication.nil?          
+        if post.conversation.present?
+          post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
+            conversations[post.id][:posts] << conversation_post
+            conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
+            parent_publication = conversation_post.publication unless conversation_post.publication.nil?          
+          end
+        else
+          conversations[post.id][:posts] << post
         end
       end
       post.text = post.parent.text if post.interaction_type == 3
