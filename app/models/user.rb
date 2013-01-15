@@ -272,7 +272,7 @@ class User < ActiveRecord::Base
 			level = nil
 		end
 
-		transition :lifecycle, level
+		transition :lifecycle, level if level
 	end
 
 	def is_edger?
@@ -280,23 +280,23 @@ class User < ActiveRecord::Base
 	end
 
 	def is_noob?
-		posts.answers.size > 0 and posts.answers.size < 4
+		posts.answers.size > 0
 	end
 
 	def is_regular?
-		enough_posts = true if posts.answers.size > 3 and posts.answers.size < 10
+		enough_posts = true if posts.answers.size > 3
 		enough_frequency = true if number_of_weeks_with_answers > 1
 		enough_posts and enough_frequency
 	end
 
 	def is_advanced?
-		enough_posts = true if posts.answers.size > 9 and posts.answers.size < 20
+		enough_posts = true if posts.answers.size > 9
 		enough_frequency = true if number_of_weeks_with_answers > 1 and number_of_days_with_answers > 2
 		enough_posts and enough_frequency
 	end
 
 	def is_pro?
-		enough_posts = true if posts.answers.size > 19 and posts.answers.size < 30
+		enough_posts = true if posts.answers.size > 19
 		enough_frequency = true if number_of_weeks_with_answers > 2 and number_of_days_with_answers > 4
 		enough_posts and enough_frequency		
 	end
@@ -309,15 +309,15 @@ class User < ActiveRecord::Base
 
 	# Activity checks
 	def update_activity_segment	
-		if self.is_disengaged?
+		if is_disengaged?
 			level = 1
-		elsif self.is_disengaging?
+		elsif is_disengaging?
 			level = 2
-		elsif self.is_engaged?
+		elsif is_engaged?
 			level = 6
-		elsif self.is_engaging?
+		elsif is_engaging?
 			level = 5
-		elsif self.is_slipping?
+		elsif is_slipping?
 			level = 3
 		else
 			level = 4
@@ -427,13 +427,13 @@ class User < ActiveRecord::Base
 
 
   def number_of_weeks_with_answers options = {}
-  	return options[:posts].answers.group_by {|p| p.created_at.strftime('%W')}.size if options[:posts].present?
-    posts.answers.group_by {|p| p.created_at.strftime('%W')}.size
+  	user_posts = options[:posts].present? ? options[:posts] : posts
+    user_posts.answers.group_by {|p| p.created_at.strftime('%W')}.size
   end
 
   def number_of_days_with_answers options = {}
-  	return options[:posts].answers.group_by {|p| p.created_at.strftime('%W')}.size if options[:posts].present?
-    posts.answers.group_by {|p| p.created_at.strftime('%D')}.size
+  	user_posts = options[:posts].present? ? options[:posts] : posts
+    user_posts.answers.group_by {|p| p.created_at.strftime('%D')}.size    
   end
 
   def interaction_type_grouped_posts

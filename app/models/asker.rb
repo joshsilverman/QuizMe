@@ -133,6 +133,7 @@ class Asker < User
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
       .where("created_at > ?", end_range)
+
     return disengaging_users, recent_reengagements
   end
 
@@ -145,6 +146,10 @@ class Asker < User
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
       if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
+        unless user_reengagments.blank?
+          puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
+          puts "next checkpoint = #{next_checkpoint.days.to_i} (strategy[user_reengagments.size])"
+        end
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
@@ -193,7 +198,8 @@ class Asker < User
 
   def self.dm_new_followers
     askers = Asker.all
-    new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+    # new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+    new_user_questions = Question.where(:id => askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
     askers.each do |asker|
       stop = false
       new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
@@ -503,11 +509,16 @@ class Asker < User
     User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ?", 1.week.ago).reject { |user| user.posts.size < 3 }
   end
 
-  def self.send_progress_report_dms recipients
+  def self.send_progress_report_dms recipients, asker_followers = {}
     asker_hash = Asker.all.group_by(&:id)
     recipients.each do |recipient|
-      if Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"
-        asker, text = Asker.compose_progress_report(recipient, asker_hash)
+      asker, text = Asker.compose_progress_report(recipient, asker_hash)
+      
+      if asker_followers[asker.id].blank?
+        asker_followers[asker.id] = Post.twitter_request { asker.twitter.follower_ids().ids } 
+      end
+      
+      if asker_followers[asker.id].include?(recipient.twi_user_id) and Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"          
         Post.dm(asker, recipient, text, {:intention => "progress report"})
         sleep 1
       end
