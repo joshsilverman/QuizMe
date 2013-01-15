@@ -4,6 +4,9 @@ function LastBackupName () {
   heroku pgbackups -a wisr | tail -n 1 | cut -d" " -f 1
 }
 
+old_backup=$(LastBackupName)
+heroku pgbackups:destroy -a wisr $old_backup 
+
 heroku pgbackups:capture -a wisr
 new_backup=$(LastBackupName)
 curl $(heroku pgbackups:url -a wisr $new_backup) > temporary_backup.dump
