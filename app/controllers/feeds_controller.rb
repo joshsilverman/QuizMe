@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
       # stats
       @question_count = @asker.publications.select(:id).where(:published => true).size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
+      @followers = @asker.followers.size
       
       # misc
       @post_id = params[:post_id]

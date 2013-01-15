@@ -260,15 +260,12 @@ class Post < ActiveRecord::Base
 
     u.segment
 
-    puts "missed item in stream! mention: #{post.to_json}" if asker.id == 18
+    # puts "missed item in stream! mention: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
     Post.grader.grade post
     
     asker.auto_respond(post.reload)
-
-    Stat.update_stat_cache("mentions", 1, asker.id, post.created_at, u.id) unless u.role == "asker"
-    Stat.update_stat_cache("active_users", u.id, asker.id, post.created_at, u.id) unless u.role == "asker"
   end
 
   def self.save_dm_data(d, current_acct)
@@ -317,7 +314,7 @@ class Post < ActiveRecord::Base
 
     u.segment
 
-    puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
+    # puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
 
     Post.classifier.classify post
     Post.grader.grade post
@@ -363,17 +360,14 @@ class Post < ActiveRecord::Base
         Post.trigger_split_test(u.id, 'post aggregate activity') 
       end
 
-      puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
-
-      Stat.update_stat_cache("retweets", 1, current_acct.id, post.created_at, u.id) unless u.role == "asker"
-      Stat.update_stat_cache("active_users", u.id, current_acct.id, post.created_at, u.id) unless u.role == "asker"
+      # puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
     end
   end
 
 
   def self.save_post(interaction_type, tweet, asker_id, conversation_id = nil)
-    puts "saving post from stream (#{interaction_type}):"
-    puts "#{tweet.text} (ppid: #{tweet.id.to_s})"
+    # puts "saving post from stream (#{interaction_type}):"
+    # puts "#{tweet.text} (ppid: #{tweet.id.to_s})"
 
     return if Post.find_by_provider_post_id(tweet.id.to_s)
 
