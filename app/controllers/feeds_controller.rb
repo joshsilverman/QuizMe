@@ -273,7 +273,7 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
+    @posts = Post.includes(:user, :conversation => :posts).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
 
     @linked_box_count = @posts.linked_box.count
     @unlinked_box_count = @posts.unlinked_box.count
