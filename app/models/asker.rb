@@ -509,11 +509,16 @@ class Asker < User
     User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ?", 1.week.ago).reject { |user| user.posts.size < 3 }
   end
 
-  def self.send_progress_report_dms recipients
+  def self.send_progress_report_dms recipients, asker_followers = {}
     asker_hash = Asker.all.group_by(&:id)
     recipients.each do |recipient|
-      if Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"
-        asker, text = Asker.compose_progress_report(recipient, asker_hash)
+      asker, text = Asker.compose_progress_report(recipient, asker_hash)
+      
+      if asker_followers[asker.id].blank?
+        asker_followers[asker.id] = Post.twitter_request { asker.twitter.follower_ids().ids } 
+      end
+      
+      if asker_followers[asker.id].include?(recipient.twi_user_id) and Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"          
         Post.dm(asker, recipient, text, {:intention => "progress report"})
         sleep 1
       end
