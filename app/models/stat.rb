@@ -3,7 +3,7 @@ class Stat < ActiveRecord::Base
 
   def self.followers_count
     Rails.cache.fetch "stats_followers count", :expires_in => 1.hour do
-      Stat.where("created_at > ? and created_at < ?", Date.yesterday.beginning_of_day, Date.yesterday.end_of_day).sum(:total_followers) || 0
+      Asker.all.collect {|a| a.followers.collect(&:id) }.flatten.uniq.size
     end
   end
 
