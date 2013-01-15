@@ -198,7 +198,8 @@ class Asker < User
 
   def self.dm_new_followers
     askers = Asker.all
-    new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+    # new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
+    new_user_questions = Question.where(:id => askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
     askers.each do |asker|
       stop = false
       new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
