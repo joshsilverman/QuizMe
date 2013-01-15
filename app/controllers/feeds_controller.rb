@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
   before_filter :authenticate_user, :except => [:index, :show, :activity_stream, :more]
-  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post]
+  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
     @asker = User.find(1)
@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
       # stats
       @question_count = @asker.publications.select(:id).where(:published => true).size
       @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-      @followers = Stat.where(:asker_id => @asker.id).order('date DESC').limit(1).first.try(:total_followers) || 0
+      @followers = @asker.followers.size
       
       # misc
       @post_id = params[:post_id]
@@ -252,6 +252,27 @@ class FeedsController < ApplicationController
     render :json => response_post.present?
   end
 
+  # This should really be rolled up into mgr response!!!
+  def manager_post user_id = nil, interaction_type = 1
+    asker = Asker.find(params[:asker_id])
+    response_text = params[:text]
+
+    if params[:text].include? "@"
+      user_name, response_text = params[:text].split " ", 2
+      user_name.gsub!("@", "")
+      user_id = User.find_by_twi_screen_name(user_name.gsub("@", "")).id
+      interaction_type = 2
+    end
+
+    response_post = Post.tweet(asker, response_text, {
+      :reply_to => user_name, 
+      :interaction_type => interaction_type, 
+      :in_reply_to_user_id => user_id
+    }) 
+
+    render :json => response_post
+  end
+
   def link_to_post
     if params[:link_to_pub_id] == "0"
       render :json => Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, nil)
@@ -273,7 +294,7 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
+    @posts = Post.includes(:user, :conversation => :posts).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
 
     @linked_box_count = @posts.linked_box.count
     @unlinked_box_count = @posts.unlinked_box.count

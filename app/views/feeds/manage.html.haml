@@ -20,6 +20,23 @@
 						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
 						//%li= link_to "Starred", '?filter=starred'
 
+					#send_tweet.rounded.border-color
+						.header
+							%h4 Post as Asker			
+							/ .message_type.btn-group{"data-toggle" => "buttons-radio"}
+							/ 	%button.btn.correct.active Mention
+							/ 	%button.btn.incorrect DM	
+						.question_container.blur
+							%textarea
+							%p.ask_success.hide
+								Your comment was posted! 
+								%a.ask_again Post another →
+								/ or
+								/ %a.post_url{:target => "_blank"}
+								/ 	see it on Twitter →
+							.tweet_button.btn.btn-primary Tweet
+							.character_count 140															
+
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
@@ -35,7 +52,6 @@
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_answer_to_question
 								- correct = question.answers.reject{|a| a.correct != true}[0]
-
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
@@ -67,7 +83,6 @@
 													&nbsp;
 												%span.quick-reply
 													= "(answer: #{correct.text})" if correct
-
 										.post_actions
 											- if params[:filter] == 'ugc'
 												= render :partial => "ugc_actions", :locals => {:post => post}

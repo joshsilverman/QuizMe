@@ -7,66 +7,6 @@ class Stat < ActiveRecord::Base
     end
   end
 
-  def self.update_stats_from_cache(asker)
-    today = Date.today.to_date
-    stat = Stat.where(:date => today, :asker_id => asker.id).first
-    if stat.blank?
-      stat = Stat.new
-      stat.asker_id = asker.id
-      stat.date = today
-    end   
-    total_followers = asker.twitter.user.followers_count
-    stat.total_followers = total_followers
-    if previous_stat = Stat.where("date < ? and asker_id = ?", today, asker.id).order("date DESC").limit(1).first
-      stat.followers = total_followers - previous_stat.total_followers
-    else
-      stat.followers = 0
-    end   
-    stat.save
-    stats_hash = Rails.cache.read("stats:#{asker.id}")
-    unless stats_hash.blank?
-      Hash[stats_hash.sort].each do |date, attributes_hash|
-        stat = Stat.where(:date => date, :asker_id => asker.id).order("date DESC").limit(1).first
-        stat = Stat.new if stat.blank?
-        stat.date = date
-        stat.asker_id = asker.id
-        attributes_hash.each do |attribute, value|
-          if attribute == "active_users"
-            if stat.active_user_ids.blank?
-              stat.active_user_ids += value
-            else
-              stat.active_user_ids += ",#{value}"
-            end
-            stat.active_users = stat.active_user_ids.split(",").uniq.size
-          else
-            stat.increment attribute, value
-          end
-        end     
-        stat.save
-      end   
-    end
-  end
-
-  def self.update_stat_cache(attribute, value, asker_id, date, user_id)
-    return if ADMINS.include? user_id
-    date = date.to_date
-    stats_hash = Rails.cache.read("stats:#{asker_id}") || {}
-    stats_hash = stats_hash.dup
-    stats_hash[date] = {} unless stats_hash.has_key? date
-    if attribute == "active_users"
-      stats_hash[date][attribute] = "" unless stats_hash[date][attribute]
-      if stats_hash[date][attribute].present?
-        stats_hash[date][attribute] += ",#{value}"
-      else
-        stats_hash[date][attribute] += "#{value}"
-      end
-    else
-      stats_hash[date][attribute] = 0 unless stats_hash[date][attribute]
-      stats_hash[date][attribute] += value
-    end
-    Rails.cache.write("stats:#{asker_id}", stats_hash)
-  end
-
   def self.paulgraham asker_id = nil, domain = 30
     new_to_existing_before_on, display_data = Rails.cache.fetch "stat_paulgraham_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 17.minutes do
       asker_ids = User.askers.collect(&:id)
