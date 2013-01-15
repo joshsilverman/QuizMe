@@ -146,9 +146,10 @@ class Asker < User
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
       if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
+        puts "username: #{user.twi_screen_name}, (#{user.id})"
         unless user_reengagments.blank?
           puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
-          puts "next checkpoint = #{next_checkpoint.days.to_i} (strategy[user_reengagments.size])"
+          puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
         end
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
