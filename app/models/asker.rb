@@ -133,6 +133,7 @@ class Asker < User
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
       .where("created_at > ?", end_range)
+
     return disengaging_users, recent_reengagements
   end
 
@@ -145,6 +146,10 @@ class Asker < User
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
       if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
+        unless user_reengagments.blank?
+          puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
+          puts "next checkpoint = #{next_checkpoint.days.to_i} (strategy[user_reengagments.size])"
+        end
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
