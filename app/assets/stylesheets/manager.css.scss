@@ -1,0 +1,73 @@
+#manager {
+	#send_tweet {
+		background: white;
+
+		.header {
+			h4 {
+				display: inline-block;
+			}
+
+			.message_type {
+				/*display: inline;*/
+				float: right;
+				position: relative;
+				bottom: 4px;
+				left: 3px;
+			}
+		}
+		.question_container {
+			margin-left: 0px !important;
+
+			.tweet_button {
+				float: right;
+				margin-right: 10px;
+			}
+
+			.character_count {
+				float: right;
+				margin-right: 10px;
+				position: relative;
+				top: 5px;						
+			}
+
+			.ask_success {
+				margin: 10px
+			}
+
+			textarea {
+				width: 255px;
+			}
+
+			&.blur {
+				height: 50px;
+
+				textarea {
+					height: 19px;
+					white-space: nowrap;
+				}
+
+				.tweet_button, .character_count {
+					display: none;
+				}
+			}
+
+			&.focus {
+				height: 161px;
+
+				textarea {
+					height: 93px;	
+				}		
+
+				.tweet_button, .character_count {
+					display: inline;
+				}				
+			}
+
+			textarea {	
+				margin: 10px;
+				resize: none;
+				overflow: hidden;
+			}
+		}		
+	}	
+}

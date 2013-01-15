@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
   before_filter :authenticate_user, :except => [:index, :show, :activity_stream, :more]
-  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post]
+  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
     @asker = User.find(1)
@@ -250,6 +250,27 @@ class FeedsController < ApplicationController
 
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
     render :json => response_post.present?
+  end
+
+  # This should really be rolled up into mgr response!!!
+  def manager_post user_id = nil, interaction_type = 1
+    asker = Asker.find(params[:asker_id])
+    response_text = params[:text]
+
+    if params[:text].include? "@"
+      user_name, response_text = params[:text].split " ", 2
+      user_name.gsub!("@", "")
+      user_id = User.find_by_twi_screen_name(user_name.gsub("@", "")).id
+      interaction_type = 2
+    end
+
+    response_post = Post.tweet(asker, response_text, {
+      :reply_to => user_name, 
+      :interaction_type => interaction_type, 
+      :in_reply_to_user_id => user_id
+    }) 
+
+    render :json => response_post
   end
 
   def link_to_post

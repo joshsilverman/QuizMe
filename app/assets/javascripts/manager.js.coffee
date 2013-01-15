@@ -25,7 +25,8 @@ class @Manager extends @Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
-		@initialize_character_count()
+		# @initialize_character_count()
+		@initialize_ask()
 		$('.best_in_place').on "ajax:success", ->
 			if $(this).data("type") == "checkbox"
 				conversation = $(this).parents(".conversation")
@@ -48,6 +49,57 @@ class @Manager extends @Feed
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
 			
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
+
+	initialize_ask: => 
+		ask_element = $("#send_tweet .question_container")
+		textarea = ask_element.find("textarea")
+		count = ask_element.find(".character_count")
+		button = ask_element.find(".tweet_button")
+		button.on "click", => 
+			if (140 - textarea.val().length) > 0
+				button.button("loading")
+				params = 
+					"text" : textarea.val()
+					"asker_id" : @id
+				$.ajax '/manager_post',
+					type: 'POST'
+					data: params
+					success: (e) =>
+						textarea.hide()
+						button.button("reset")
+						# ask_element.find(".post_url").attr "href", "http://twitter.com/#{@user_name}/status/#{e}"
+						ask_element.removeClass("focus").addClass("blur")
+						ask_element.find(".ask_success").fadeIn(250)
+					error: =>
+						textarea.hide()
+						button.button("reset")
+						ask_element.removeClass("focus").addClass("blur")
+						ask_element.find(".ask_success").text("Sorry, something went wrong!").fadeIn(250)
+		textarea.on "focus", => 
+			ask_element.removeClass("blur").addClass("focus")
+			# if textarea.val() == ""
+				# textarea.val("@#{@name} ")
+			update_character_count()
+		textarea.on "blur", => 
+			if textarea.val() == "@#{@name} " or textarea.val() == ""
+				textarea.val("")
+				# ask_element.removeClass("focus").addClass("blur")
+			update_character_count()
+		textarea.on "keydown", => update_character_count()
+		$(".ask_again").on "click", =>
+			ask_element.find(".ask_success").hide()
+			textarea.val("").fadeIn(250)
+		update_character_count = ->
+			text = 140 - textarea.val().length
+			count.text(text)
+			if text < 0
+				button.addClass("disabled")
+			else if text < 10
+				count.css "color", "red"
+				button.removeClass("disabled")
+			else
+				count.css "color", "#333"
+				button.removeClass("disabled")
 
 	initialize_character_count: => 
 		response_container = $(".response_container")
@@ -198,12 +250,6 @@ class Post
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 		user_post = window.feed.engagements[@id]
-		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		# subsidiary.find("p").text("#{user_post['text']}") 
-		# subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
-		# image = convo['users'][user_post['user_id']]['twi_profile_img_url']
-		# subsidiary.find("img").attr("src", image) unless image == null
-		# $('.modal_conversation_history').find(".conversation").append(subsidiary.show())
 		$.each convo['posts'], (i, p) ->
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 			subsidiary.find("p").text("#{p['text']}") 
