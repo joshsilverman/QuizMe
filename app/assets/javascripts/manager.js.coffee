@@ -198,12 +198,12 @@ class Post
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 		user_post = window.feed.engagements[@id]
-		subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-		subsidiary.find("p").text("#{user_post['text']}") 
-		subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
-		image = convo['users'][user_post['user_id']]['twi_profile_img_url']
-		subsidiary.find("img").attr("src", image) unless image == null
-		$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+		# subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+		# subsidiary.find("p").text("#{user_post['text']}") 
+		# subsidiary.find("h5").text("#{convo['users'][user_post['user_id']]['twi_screen_name']}")
+		# image = convo['users'][user_post['user_id']]['twi_profile_img_url']
+		# subsidiary.find("img").attr("src", image) unless image == null
+		# $('.modal_conversation_history').find(".conversation").append(subsidiary.show())
 		$.each convo['posts'], (i, p) ->
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
 			subsidiary.find("p").text("#{p['text']}") 
@@ -211,7 +211,7 @@ class Post
 			image = convo['users'][p['user_id']]['twi_profile_img_url']
 			subsidiary.find("img").attr("src", image) unless image == null
 			$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
-			if i == 0
+			if i == 0 and convo['answers'].length > 0
 				html = "<div class='subsidiary post'>"
 				$.each convo['answers'], (j, a) ->
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"

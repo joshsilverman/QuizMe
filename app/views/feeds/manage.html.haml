@@ -35,7 +35,6 @@
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_answer_to_question
 								- correct = question.answers.reject{|a| a.correct != true}[0]
-
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
@@ -67,7 +66,6 @@
 													&nbsp;
 												%span.quick-reply
 													= "(answer: #{correct.text})" if correct
-
 										.post_actions
 											- if params[:filter] == 'ugc'
 												= render :partial => "ugc_actions", :locals => {:post => post}

@@ -465,56 +465,33 @@ class Post < ActiveRecord::Base
     ab_test(test_name, *alternatives)
   end
 
-  def self.grouped_as_conversations posts, asker, engagements = {}
+  def self.grouped_as_conversations posts, asker, engagements = {}, conversations = {}, dm_ids = []
+    return {}, {} if posts.blank?
+
     posts.each do |post|
       engagements[post.id] = post
+      conversations[post.id] = {:posts => [], :answers => [], :users => {}}
+      conversations[post.id][:users][post.user.id] = post.user      
+      parent_publication = nil
+      if post.interaction_type == 4
+        dm_history = Post.where("interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker.id, post.user_id, post.user_id, asker.id).order("created_at DESC")
+        dm_history.each do |dm|
+          conversations[post.id][:posts] << dm
+          conversations[post.id][:users][dm.user.id] = dm.user if conversations[post.id][:users][dm.user.id].nil?
+          dm_ids << dm.id
+        end
+      else
+        post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
+          conversations[post.id][:posts] << conversation_post
+          conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
+          parent_publication = conversation_post.publication unless conversation_post.publication.nil?          
+        end
+      end
+      post.text = post.parent.text if post.interaction_type == 3
+      conversations[post.id][:answers] = parent_publication.question.answers unless parent_publication.nil?      
     end
 
-    return engagements, {}
-
-    # return {}, {} if posts.empty?
-
-    # @_posts = {}
-    # @conversations = {}
-    # dm_ids = []
-    # posts.each do |p|
-    #   next if dm_ids.include? p.id
-    #   @_posts[p.id] = p
-    #   @conversations[p.id] = {:posts => [], :answers => [], :users => {}}
-    #   @conversations[p.id][:users][p.user.id] = p.user
-    #   parent_publication = nil
-    #   if p.interaction_type == 4
-    #     dm_history = Post.where("id != ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", p.id, asker.id, p.user_id, p.user_id, asker.id).order("created_at DESC")
-    #     dm_history.each do |dm|
-    #       next if dm.id == p.id
-    #       @conversations[p.id][:posts] << dm
-    #       @conversations[p.id][:users][dm.user.id] = dm.user if @conversations[p.id][:users][dm.user.id].nil?
-    #       dm_ids << dm.id
-    #     end
-    #   else  
-    #     child = p.child
-    #     while child
-    #       if child.in_reply_to_user_id == asker.id or child.user_id == asker.id
-    #         @conversations[p.id][:posts] << child
-    #         @conversations[p.id][:users][child.user.id] = child.user if @conversations[p.id][:users][child.user.id].nil?
-    #       end
-    #       child = child.child
-    #     end
-    #     parent = p.parent
-    #     while parent
-    #       if parent.in_reply_to_user_id == asker.id or parent.user_id == asker.id
-    #         @conversations[p.id][:posts] << parent
-    #         @conversations[p.id][:users][parent.user.id] = parent.user if @conversations[p.id][:users][parent.user.id].nil?
-    #         parent_publication = parent.publication unless parent.publication.nil?
-    #       end
-    #       parent = parent.parent
-    #     end
-    #   end
-    #   p.text = p.parent.text if p.interaction_type == 3
-    #   @conversations[p.id][:answers] = parent_publication.question.answers unless parent_publication.nil?
-    # end
-
-    # return @_posts, @conversations
+    return engagements, conversations
   end
 
   def self.recent_activity_on_posts(posts, actions, action_hash = {}, post_pub_map = {})
