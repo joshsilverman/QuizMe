@@ -9,44 +9,44 @@
 = hidden_field_tag :cohort, @cohort.to_json
 
 :css
-	.navbar-fixed-top .container {
-		width: 1152px !important;
-	}
-	body {background:#fff; padding-bottom:0px;}
-	.navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
-	/.nav-tabs li.active a {background-color:#fafafa !important;}
-	.nav-tabs {margin-top:10px;}
-	.tab-content {min-height: 618px; margin-left: 30px !important;}
+  .navbar-fixed-top .container {
+    width: 1152px !important;
+  }
+  body {background:#fff; padding-bottom:0px;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
+  /.nav-tabs li.active a {background-color:#fafafa !important;}
+  .nav-tabs {margin-top:10px;}
+  .tab-content {min-height: 618px; margin-left: 30px !important;}
 
 
 %ul#tabs.nav.nav-tabs
-	%li.core-metrics
-		%a{:href => "#core"} Core
-	/ %li.dropdown
-	/ 	%a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
-	/ 		Core by handle
-	/ 		%b.caret
-	/ 	%ul.dropdown-menu.handles
-	/ 		- @askers.each do |asker|
-	/ 			%li 
-	/ 				%a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
-	/ 					= asker.twi_screen_name
-	%li
-		%a{:href => "#retention"} Retention		
-	%li
-		%a{:href => "#users"} Users		
-	%li
-		%a{:href => "#askers"} Askers
+  %li.core-metrics
+    %a{:href => "#core"} Core
+  / %li.dropdown
+  /   %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"} 
+  /     Core by handle
+  /     %b.caret
+  /   %ul.dropdown-menu.handles
+  /     - @askers.each do |asker|
+  /       %li 
+  /         %a{"data-toggle" => "tab", :href => "#", 'data-target' => "#handle-#{asker.id}", 'handle-name' => asker.twi_screen_name}
+  /           = asker.twi_screen_name
+  / %li
+  /   %a{:href => "#retention"} Retention   
+  %li
+    %a{:href => "#users"} Users   
+  %li
+    %a{:href => "#askers"} Askers
 
 .row
-	.tab-content
-		#core.dashboard.span12.tab-pane
-			= render :partial => "core"
-		#core_by_handle.dashboard.span12.tab-pane
-			= render :partial => "core"
-		#retention.dashboard.span12.tab-pane
-			= render :partial => "retention"			
-		#users.dashboard.span12.tab-pane
-			= render :partial => "users"			
-		#askers.dashboard.span12.tab-pane
-			= render :partial => "askers"
+  .tab-content
+    #core.dashboard.span12.tab-pane
+      = render :partial => "core"
+    / #core_by_handle.dashboard.span12.tab-pane
+    /   = render :partial => "core"
+    / #retention.dashboard.span12.tab-pane
+    /   = render :partial => "retention"      
+    #users.dashboard.span12.tab-pane
+      = render :partial => "users"      
+    #askers.dashboard.span12.tab-pane
+      = render :partial => "askers"

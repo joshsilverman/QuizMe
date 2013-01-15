@@ -1,3 +1,13 @@
+.cohort
+  %h2.handle_name 
+    cohort analysis
+    %span.loading.hide= image_tag "ajax-loader.gif"
+
+  #data_row.row
+    #cohort.panel.rounded.span10
+      #cohort_graph.graph
+  = hidden_field_tag :cohort_activity, @cohort.to_json
+
 .ugc
   %h2.handle_name 
     questions submitted / day

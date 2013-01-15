@@ -25,17 +25,7 @@ class Dashboard
       @update_tabs null, hash
 
   update_tabs: (e, target) =>
-    target ||= $(e.target).tab().attr 'href'
-    if target == "#retention"
-      unless @cohort
-        $(".loading").show()
-        $.ajax "/get_retention_metrics"
-          type: "GET"
-          success: (e) => 
-            $(".tab-content #retention").html(e)
-            @cohort = $.parseJSON($("#cohort_activity").val())
-            @draw_cohort_analysis()
-          complete: -> $(".loading").hide()        
+    target ||= $(e.target).tab().attr 'href'    
     if target == "#askers"
       unless @handle_activity
         $(".loading").show()
@@ -58,6 +48,9 @@ class Dashboard
             @question_data = $.parseJSON($("#questions_answered_data").val())
             @ugc = $.parseJSON($("#ugc_data").val())
             @learner_levels = $.parseJSON($("#learner_levels_data").val())
+            @cohort = $.parseJSON($("#cohort_activity").val())
+            
+            @draw_cohort_analysis()
             @draw_ugc()
             @draw_questions()
             @draw_learner_levels()
@@ -87,8 +80,6 @@ class Dashboard
       dashboard.draw_paulgraham('', data['paulgraham'])
       dashboard.draw_dau_mau('', data['dau_mau'])
       dashboard.draw_econ_engine('', data['econ_engine'])
-      
-      #dashboard.draw_daus('', data['daus'])
       dashboard.draw_revenue('', data['revenue'])
 
       $('.paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
@@ -100,55 +91,10 @@ class Dashboard
       $('.dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
       $('.dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
 
-      #$('.daus .new .number').html data['core_display_data'][0]['daus']['today']
-      #$('.daus .total .number').html data['core_display_data'][0]['daus']['total']
-
       $('.revenue .new .number').html data['core_display_data'][0]['revenue']['today']
       $('.revenue .total .number').html data['core_display_data'][0]['revenue']['month']
       
       $(".loading").hide()
-
-  core_by_handle: -> 
-    asker_id = $(this).attr('data-target').match(/#handle-([0-9]+)/)[1]
-    asker_name = $(this).attr('handle-name')
-
-    #tabs
-    $('.nav-tabs > li').removeClass 'active'
-    $('.nav-tabs > li.dropdown').addClass 'active'
-
-    #tab content
-    $('.tab-content .tab-pane').removeClass 'active'
-    $('.tab-content #core_by_handle').addClass 'active'
-
-    render = (data) ->
-      dashboard.draw_paulgraham('#core_by_handle', data['paulgraham'])
-      dashboard.draw_dau_mau('#core_by_handle', data['dau_mau'])
-      dashboard.draw_econ_engine('#core_by_handle', data['econ_engine'])
-      dashboard.draw_daus('#core_by_handle', data['daus'])
-
-      $('#core_by_handle .paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
-      $('#core_by_handle .paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
-
-      $('#core_by_handle .econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('#core_by_handle .econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
-
-      $('#core_by_handle .daus .new .number').html data['core_display_data'][0]['daus']['today']
-      $('#core_by_handle .daus .total .number').html data['core_display_data'][0]['daus']['total']
-
-      $('#core_by_handle .dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
-      $('#core_by_handle .dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
-
-    if !window.dashboard or !window.dashboard.core_data_by_handle[asker_id]
-      $('#core_by_handle .handle_name .text').text asker_name
-      $(".loading").show()
-      $.get ("/dashboard/core_by_handle/" + asker_id), (data) ->
-        data = $.parseJSON data if ($.type(data) == 'string')
-        window.dashboard.core_data_by_handle[asker_id] = data
-
-        render(data)
-        $(".loading").hide()
-
-    window.location.hash = "#core"
 
   update_dashboard: =>
     @draw_graphs()

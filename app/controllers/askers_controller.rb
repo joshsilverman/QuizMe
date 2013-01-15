@@ -123,11 +123,7 @@ class AskersController < ApplicationController
     @questions_answered_data = Stat.questions
     @ugc_data = Stat.ugc
     @learner_levels_data = Stat.learner_levels
+    @cohort = Stat.cohort_analysis
     render :partial => "users"
   end
-
-  def get_retention_metrics
-    @cohort = Stat.cohort_analysis
-    render :partial => "retention"
-  end  
 end
