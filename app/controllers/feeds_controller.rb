@@ -107,7 +107,9 @@ class FeedsController < ApplicationController
         .limit(5)\
         .includes(:conversation => {:publication => :question})
       recent_posts.group_by(&:user_id).each do |user_id, posts|
-        next unless post and post.conversation and post.conversation.publication
+        next if posts.empty?
+        post = posts.first
+        next unless post.conversation and post.conversation.publication
         @stream << posts.shift
       end
     end
