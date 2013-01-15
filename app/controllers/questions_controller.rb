@@ -116,12 +116,14 @@ class QuestionsController < ApplicationController
     return if params[:question].blank? or params[:canswer].blank?
 
     user_id = current_user.id
+    question_created_at = Time.now
 
     # For questions generated from user posts
     if params[:post_id]
       ugc_post = Post.find(params[:post_id]) 
       ugc_post.tags.delete(Tag.find_by_name("ugc"))
       user_id = ugc_post.user_id
+      question_created_at = ugc_post.created_at
     end
 
     if params[:question_id]
@@ -142,6 +144,15 @@ class QuestionsController < ApplicationController
     Post.trigger_split_test(current_user.id, 'ugc request type')
     Post.trigger_split_test(current_user.id, 'ugc script')
 
+    if current_user.is_role? "user" or params[:post_id].present?
+      Mixpanel.track_event "submitted question", {
+        :distinct_id => user_id,
+        :time => question_created_at.to_i,
+        :type => params[:post_id].present? ? "post" : "form",
+        :asker => Asker.find(params[:asker_id]).twi_screen_name
+      }
+    end
+
     #correct answer save
     @answer = Answer.find_or_create_by_id(params[:canswer_id])
     @answer.update_attributes(:text => params[:canswer], :correct => true)
@@ -152,7 +163,6 @@ class QuestionsController < ApplicationController
       if !params[answer_key].nil? and !params[answer_key].blank?
         @answer = nil
         @answer = Answer.find(params[answer_key.to_s + "_id"]) unless params[answer_key.to_s + "_id"].nil?
-        puts @answer.nil?
         if @answer
           @answer.update_attributes(:text => params[answer_key], :correct => false)
         else
