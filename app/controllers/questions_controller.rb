@@ -37,12 +37,16 @@ class QuestionsController < ApplicationController
     @publication = publications.first
     publications.each { |pub| posts += pub.posts.collect(&:id) }
     @actions = {params[:id].to_i => []}
+    user_ids = []
     Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at ASC").includes(:user).each do |action|
+      next if user_ids.include? action.user_id 
+      user = action.user
+      user_ids << user.id
       @actions[params[:id].to_i]  << {
         :user => {
-          :id => action.user.id,
-          :twi_screen_name => action.user.twi_screen_name,
-          :twi_profile_img_url => action.user.twi_profile_img_url
+          :id => user.id,
+          :twi_screen_name => user.twi_screen_name,
+          :twi_profile_img_url => user.twi_profile_img_url
         },
         :interaction_type => action.interaction_type
       }

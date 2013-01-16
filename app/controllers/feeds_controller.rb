@@ -10,21 +10,25 @@ class FeedsController < ApplicationController
     @publications, posts, replies = Publication.recently_published
     post_pub_map = {}
     posts.each { |post| post_pub_map[post.id] = post.publication_id }
-
+    
     @actions = {}
     replies.each do |post_id, post_activity|
       @actions[post_pub_map[post_id]] ||= []
+      user_ids = []
       post_activity.each do |action|
+        next if user_ids.include? action.user_id
+        user = action.user
+        user_ids << user.id        
         @actions[post_pub_map[post_id]] << {
           :user => {
-            :id => action.user.id,
-            :twi_screen_name => action.user.twi_screen_name,
-            :twi_profile_img_url => action.user.twi_profile_img_url
+            :id => user.id,
+            :twi_screen_name => user.twi_screen_name,
+            :twi_profile_img_url => user.twi_profile_img_url
           },
           :interaction_type => action.interaction_type, 
         } unless @actions[post_pub_map[post_id]].nil?
       end
-      @actions[post_pub_map[post_id]].uniq!{|a|a[:user][:id]}
+      @actions[post_pub_map[post_id]].uniq!{|a| a[:user][:id]}
     end
     @pub_grouped_posts = posts.group_by(&:publication_id)
 
