@@ -233,15 +233,15 @@ class User < ActiveRecord::Base
 			segment_type = 4
 		end
 
-		# transition = Transition.create({
-		# 	:user_id => id,
-		# 	:segment_type => segment_type,
-		# 	:from_segment => from_segment,
-		# 	:to_segment => to_segment
-		# })	
+		transition = Transition.create({
+			:user_id => id,
+			:segment_type => segment_type,
+			:from_segment => from_segment,
+			:to_segment => to_segment
+		})	
 
-		# Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
-		# Post.trigger_split_test(id, "reengagement interval") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
+		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
+		Post.trigger_split_test(id, "reengagement interval") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 	end
 
 	def self.update_segments
