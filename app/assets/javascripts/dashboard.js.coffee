@@ -396,7 +396,8 @@ questions_options =
   pointSize: 5
   lineWidth: 2
   colors: [
-    "#1D3880"
+    "#1D3880",
+    "#E01B6A"
   ]
   chartArea:  
     width: 1170

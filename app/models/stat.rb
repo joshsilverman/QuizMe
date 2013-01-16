@@ -335,22 +335,35 @@ class Stat < ActiveRecord::Base
 
   def self.questions(domain = 60)
     # Median
-    graph_data = [["Date", "Answered"]]
-    day_grouped_answers = Post.social.not_us.not_spam\
-      .where("created_at > ? and correct is not null", Date.today - domain.days)\
+    graph_data = [["Date", "Wisr answers", "Twitter answers"]]
+    wisr_day_grouped_answers = Post.social.not_us.not_spam\
+      .where("created_at > ? and correct is not null and posted_via_app = ?", Date.today - domain.days, true)\
+      .select(["to_char(created_at, 'MM/DD') as date", "array_to_string(array_agg(user_id),',') as user_ids"])\
+      .group("to_char(created_at, 'MM/DD')").all.group_by { |a| a.date }
+    twitter_day_grouped_answers = Post.social.not_us.not_spam\
+      .where("created_at > ? and correct is not null and posted_via_app = ?", Date.today - domain.days, false)\
       .select(["to_char(created_at, 'MM/DD') as date", "array_to_string(array_agg(user_id),',') as user_ids"])\
       .group("to_char(created_at, 'MM/DD')").all.group_by { |a| a.date }
     ((domain.days.ago.to_date)..Date.today.to_date).each do |date|
       formatted_date = date.strftime("%m/%d")
-      next if day_grouped_answers[formatted_date].blank?
+      # next if day_grouped_answers[formatted_date].blank?
       data = [formatted_date]
-      counts = []
-      values = day_grouped_answers[formatted_date][0].user_ids.split(",")
-      values.each do |e|
-        counts << values.count(e)
-        values.delete(e)
+      
+      [wisr_day_grouped_answers, twitter_day_grouped_answers].each do |day_grouped_answers|
+        counts = []
+        values = day_grouped_answers[formatted_date][0].user_ids.split(",")
+        values.each do |e|
+          counts << values.count(e)
+          values.delete(e)
+        end
+        
+        # avg
+        data << counts.sum / counts.size
+
+        # median
+        # data << counts.sort![(counts.length.to_f / 2).floor]
       end
-      data << counts.sort![(counts.length.to_f / 2).floor]
+
       graph_data << data
     end
     return graph_data
