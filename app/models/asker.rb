@@ -149,9 +149,9 @@ class Asker < User
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
       puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+      puts "user_reengagments: #{user_reengagments.to_json}"
       if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
         unless user_reengagments.blank?
-          puts "user_reengagments: #{user_reengagments.to_json}"
           puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
         end
         sample_asker_id = user.posts.sample.in_reply_to_user_id
