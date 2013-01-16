@@ -140,16 +140,18 @@ class Asker < User
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
+      puts "checking user #{user.twi_screen_name} (#{user.id}) - #{test_option}"
       strategy = test_option.split("/").map { |e| e.to_i }
       last_answer_at = user.posts.sort_by { |p| p.created_at }.last.created_at
+      puts "last_answer_at = #{last_answer_at}"
       user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_answer_at }.sort_by(&:created_at)
+      puts "user_reengagments size = #{user_reengagments.size}"
       next_checkpoint = strategy[user_reengagments.size]
       next if next_checkpoint.blank?
+      puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
       if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
-        puts "username: #{user.twi_screen_name}, (#{user.id})"
         unless user_reengagments.blank?
           puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
-          puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
         end
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}

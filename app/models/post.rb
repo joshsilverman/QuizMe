@@ -34,6 +34,9 @@ class Post < ActiveRecord::Base
   scope :mentions, where("posts.interaction_type = 2")
   scope :dms, where("posts.interaction_type = 4")
 
+  scope :reengage_inactive, where("posts.intention = 'reengage inactive'")
+  scope :followup, where("posts.intention = 'incorrect answer followup'")
+
   scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NOT NULL")
   scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NULL")
 
