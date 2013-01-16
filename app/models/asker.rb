@@ -311,7 +311,8 @@ class Asker < User
   end
 
   def app_response user_post, correct, options = {}
-    publication = user_post.conversation.publication
+    publication = user_post.conversation.publication || user_post.parent.publication
+
     answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
       response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
