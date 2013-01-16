@@ -524,7 +524,7 @@ class Asker < User
         asker_followers[asker.id] = Post.twitter_request { asker.twitter.follower_ids().ids } 
       end
       
-      if asker_followers[asker.id].include?(recipient.twi_user_id) and Post.create_split_test(recipient.id, "weekly progress report", "true", "false") == "true"          
+      if asker_followers[asker.id].include?(recipient.twi_user_id) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
         Post.dm(asker, recipient, text, {:intention => "progress report"})
         sleep 1
       end

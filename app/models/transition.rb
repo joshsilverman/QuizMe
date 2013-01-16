@@ -6,6 +6,11 @@ class Transition < ActiveRecord::Base
 		false
 	end
 
+	def is_above? above_segment
+		return true if SEGMENT_HIERARCHY[segment_type].index(to_segment) > SEGMENT_HIERARCHY[segment_type].index(above_segment)
+		false
+	end
+
 	def segment
 		case self.segment_type
 		when 1
