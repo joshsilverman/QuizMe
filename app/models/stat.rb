@@ -362,11 +362,11 @@ class Stat < ActiveRecord::Base
         end
         
         # avg
-        denom = (counts.size > 0) ? counts.size : 1
-        data << counts.sum / denom
+        # denom = (counts.size > 0) ? counts.size : 1
+        # data << counts.sum / denom
 
         # median
-        # data << counts.sort![(counts.length.to_f / 2).floor]
+        data << counts.sort![(counts.length.to_f / 2).floor]
       end
 
       graph_data << data
