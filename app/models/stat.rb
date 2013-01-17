@@ -351,14 +351,19 @@ class Stat < ActiveRecord::Base
       
       [wisr_day_grouped_answers, twitter_day_grouped_answers].each do |day_grouped_answers|
         counts = []
-        values = day_grouped_answers[formatted_date][0].user_ids.split(",")
+        if day_grouped_answers[formatted_date].nil?
+          values = []
+        else
+          values = day_grouped_answers[formatted_date][0].user_ids.split(",")
+        end
         values.each do |e|
           counts << values.count(e)
           values.delete(e)
         end
         
         # avg
-        data << counts.sum / counts.size
+        denom = (counts.size > 0) ? counts.size : 1
+        data << counts.sum / denom
 
         # median
         # data << counts.sort![(counts.length.to_f / 2).floor]

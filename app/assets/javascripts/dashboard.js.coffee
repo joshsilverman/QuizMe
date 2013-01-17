@@ -25,6 +25,7 @@ class Dashboard
     target ||= $(e.target).tab().attr 'href'
     target = "#users-answer_source" if target == '#users'
     target = "#askers-handle_activity" if target == '#askers'
+    target = "#authors-ugc" if target == '#authors'
     target = "#core" if target == '#' or target == ''
     party_graph = target.split("-")
     party = party_graph[0].replace /#/, ''
