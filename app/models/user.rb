@@ -314,12 +314,12 @@ class User < ActiveRecord::Base
 			level = 1
 		elsif is_disengaging?
 			level = 2
+		elsif is_slipping?
+			level = 3
 		elsif is_engaged?
 			level = 6
 		elsif is_engaging?
 			level = 5
-		elsif is_slipping?
-			level = 3
 		else
 			level = 4
 		end
@@ -328,28 +328,23 @@ class User < ActiveRecord::Base
 	end
 
 	def is_disengaged?
-		return true if posts.blank?
-		posts.order("created_at DESC").limit(1).first.created_at < 4.weeks.ago
+		posts.blank? or posts.answers.where("created_at > ?", 4.weeks.ago).size < 1
 	end
 
 	def is_disengaging?
-		posts.order("created_at DESC").limit(1).first.created_at < 2.weeks.ago
+		posts.answers.where("created_at > ?", 2.weeks.ago).size < 1
 	end
 
 	def is_slipping?
-		no_recent_activity = posts.answers.where("created_at > ?", 1.week.ago).size < 1
-		previous_activity = posts.answers.where("created_at > ? and created_at < ?", 2.weeks.ago, 1.week.ago).size > 0
-		no_recent_activity and previous_activity		
+		posts.answers.where("created_at > ?", 1.weeks.ago).size < 1
 	end
 
 	def is_engaging?
-		recent_activity = posts.answers.where("created_at > ?", 1.week.ago).size > 0
-		no_previous_activity = posts.answers.where("created_at > ? and created_at < ?", 2.weeks.ago, 1.week.ago).size < 1
-		recent_activity and no_previous_activity
+		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 1
 	end
 
 	def is_engaged?
-		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 3
+		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 2
 	end
 
 	# Interaction checks
