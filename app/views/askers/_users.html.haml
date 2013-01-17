@@ -1,39 +1,43 @@
-.cohort
-  %h2.handle_name 
-    cohort analysis
-    %span.loading.hide= image_tag "ajax-loader.gif"
+.row
+  %ul.nav.nav-tabs.nav-stacked.span3
+    %li 
+      %a{:href => "#users-answer_source"} 
+        Answer source by day
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-cohort"} 
+        Activity By Cohort
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-questions_answered"} 
+        Median answers / user / day
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-learner_levels"} 
+        Learner level breakdown
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
-  #data_row.row
-    #cohort.panel.rounded.span10
-      #cohort_graph.graph
-  = hidden_field_tag :cohort_activity, @cohort.to_json
+  .graphs
+    .cohort
+      #data_row.row
+        #cohort.panel.rounded.span10
+          #cohort_graph.graph
+      = hidden_field_tag :cohort_data, @cohort.to_json if @cohort
 
-.ugc
-  %h2.handle_name 
-    questions submitted / day
-    %span.loading.hide= image_tag "ajax-loader.gif"
+    .questions_answered
+      #data_row.row
+        #questions.panel.rounded.span10
+          #questions_graph.graph
+      = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json if @questions_answered_data
 
-  #data_row.row
-    #ugc.panel.rounded.span10
-      #ugc_graph.graph
-  = hidden_field_tag :ugc_data, @ugc_data.to_json
+    .learner_levels{:style => "height: 600px;"}
+      #data_row.row
+        #learner_levels.panel.rounded.span10
+          #learner_levels_graph.graph
+      = hidden_field_tag :learner_levels_data, @learner_levels_data.to_json if @learner_levels_data
 
-.questions_answered
-  %h2.handle_name 
-    average questions answered per user per platform
-    %span.loading.hide= image_tag "ajax-loader.gif"
-
-  #data_row.row
-    #questions.panel.rounded.span10
-      #questions_graph.graph
-  = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json
-
-.learner_levels{:style => "height: 600px;"}
-  %h2.handle_name 
-    learner level breakdown
-    %span.loading.hide= image_tag "ajax-loader.gif"
-
-  #data_row.row
-    #learner_levels.panel.rounded.span10
-      #learner_levels_graph.graph
-  = hidden_field_tag :learner_levels_data, @learner_levels_data.to_json
+    .answer_source
+      #data_row.row
+        #answer_source.panel.rounded.span10
+          #answer_source_graph.graph
+      = hidden_field_tag :answer_source_data, @answer_source_data.to_json if @answer_source_data

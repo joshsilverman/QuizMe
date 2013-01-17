@@ -62,6 +62,8 @@ function confirm_js(){
 	});
 }
 
+puts = function(o) {console.log(o)}
+
 js_check();
 	//$.ajax '/confirm_js',
 	//		type: 'POST'

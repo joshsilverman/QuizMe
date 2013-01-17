@@ -1,19 +1,17 @@
-.askers
-  %h2.handle_name 
-    social interactions / handle this week
-    %span.loading.hide= image_tag "ajax-loader.gif"
+.row
+  %ul.nav.nav-tabs.nav-stacked.span3
+    %li 
+      %a{:href => "#askers-handle_activity"} 
+        Social interactions / handle this week
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a
+        /{:href => "#users-socactions"} 
+        Users / handle this week (soon)
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
-  #data_row.row
-    #handle_activity.panel.rounded.span10
-      #handle_activity_graph.graph
-  = hidden_field_tag :handle_activity_data, @handle_activity.to_json
-
-.answer_source
-  %h2.handle_name 
-    answer source
-    %span.loading.hide= image_tag "ajax-loader.gif"
-
-  #data_row.row
-    #answer_source.panel.rounded.span10
-      #answer_source_graph.graph
-  = hidden_field_tag :answer_source_data, @answer_source_data.to_json
+  .graphs
+    .handle_activity.panel.rounded.span10
+      #data_row.row
+        #handle_activity_graph.graph
+      = hidden_field_tag :handle_activity_data, @handle_activity.to_json

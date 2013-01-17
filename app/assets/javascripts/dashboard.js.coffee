@@ -8,12 +8,9 @@ class Dashboard
   handle_activity: null
   constructor: -> 
     # @active.push("0") 
-    $('#tabs a').click (e) => 
+    $('#tabs a').click (e) =>
       e.preventDefault()
       @update_tabs(e)
-    
-    @core_data_by_handle = {}
-    $('.handles a').click @core_by_handle
 
     #load correct tab
     if window.location.href.match(/dashboard[#?]|dashboard$/)
@@ -25,42 +22,37 @@ class Dashboard
       @update_tabs null, hash
 
   update_tabs: (e, target) =>
-    target ||= $(e.target).tab().attr 'href'    
-    if target == "#askers"
-      unless @handle_activity
-        $(".loading").show()
-        $.ajax "/get_asker_metrics"
-          type: "GET"
-          success: (e) => 
-            $(".tab-content #askers").html(e)
-            @handle_activity = $.parseJSON($("#handle_activity_data").val())
-            @answer_source = $.parseJSON($("#answer_source_data").val())
-            @draw_handle_activity()
-            @draw_answer_source()
-          complete: -> $(".loading").hide()
-    if target == "#users"
-      unless @question_data
-        $(".loading").show()
-        $.ajax "/get_user_metrics"
-          type: "GET"
-          success: (e) => 
-            $(".tab-content #users").html(e)
-            @question_data = $.parseJSON($("#questions_answered_data").val())
-            @ugc = $.parseJSON($("#ugc_data").val())
-            @learner_levels = $.parseJSON($("#learner_levels_data").val())
-            @cohort = $.parseJSON($("#cohort_activity").val())
-            
-            @draw_cohort_analysis()
-            @draw_ugc()
-            @draw_questions()
-            @draw_learner_levels()
-          complete: -> $(".loading").hide()          
-    else if target == "#core"
-      if !window.dashboard or !window.dashboard.core_data_by_handle['-1']
-        @core()
-    else if target == "#"
-      return
-    $('a[href=' + target + ']').tab('show')
+    target ||= $(e.target).tab().attr 'href'
+    target = "#users-answer_source" if target == '#users'
+    target = "#askers-handle_activity" if target == '#askers'
+    target = "#core" if target == '#' or target == ''
+    party_graph = target.split("-")
+    party = party_graph[0].replace /#/, ''
+    graph = party_graph[1]
+
+    if target == "#core"
+      @core()
+    else
+      $("a[href=#{ target }] .loading").show()
+      url = "/graph/#{ party }/#{ graph }"
+      $.ajax url,
+        type: "GET"
+        success: (e) => 
+          $(".tab-content ##{party}").html(e)
+          this[graph] = $.parseJSON($("##{graph}_data").val())
+          this["draw_#{graph}"]()
+          $(".graphs > div").hide()
+          $("##{ party }, .graphs .#{graph}").show()
+
+          $(".dashboard .nav a").parent().removeClass "active"
+          $(".dashboard .nav a[href=#{ target }]").parent().addClass "active"
+
+          $('.dashboard .nav a').click (e) =>
+            e.preventDefault()
+            @update_tabs(e)
+        complete: -> $(".dashboard .nav a .loading").hide()
+
+    $('a[href=#' + party + ']').tab('show')
     window.location.hash = target
 
   core: -> 
@@ -75,7 +67,6 @@ class Dashboard
     $(".loading").show()
     $.get ("/dashboard/core_by_handle/-1"), (data) =>
       data = $.parseJSON(data) if ($.type(data) == 'string')
-      window.dashboard.core_data_by_handle['-1'] = data
 
       dashboard.draw_paulgraham('', data['paulgraham'])
       dashboard.draw_dau_mau('', data['dau_mau'])
@@ -171,30 +162,30 @@ class Dashboard
     chart = new google.visualization.ColumnChart(document.getElementById("handle_activity_graph"))
     chart.draw graph_data, handle_activity_options  
 
-  draw_cohort_analysis: =>
+  draw_cohort: =>
     graph_data = google.visualization.arrayToDataTable(@cohort)
     chart = new google.visualization.AreaChart(document.getElementById("cohort_graph"))
     chart.draw graph_data, cohort_options      
-
-  draw_questions: =>
-    graph_data = google.visualization.arrayToDataTable(@question_data)
-    chart = new google.visualization.LineChart(document.getElementById("questions_graph"))
-    chart.draw graph_data, questions_options          
 
   draw_ugc: => 
     graph_data = google.visualization.arrayToDataTable(@ugc)
     chart = new google.visualization.LineChart(document.getElementById("ugc_graph"))
     chart.draw graph_data, questions_options 
 
-  draw_answer_source: =>
-    graph_data = google.visualization.arrayToDataTable(@answer_source)
-    chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
-    chart.draw graph_data, cohort_options 
+  draw_questions_answered: =>
+    graph_data = google.visualization.arrayToDataTable(@questions_answered)
+    chart = new google.visualization.LineChart(document.getElementById("questions_graph"))
+    chart.draw graph_data, questions_options          
 
   draw_learner_levels: =>
     graph_data = google.visualization.arrayToDataTable(@learner_levels)
     chart = new google.visualization.PieChart(document.getElementById("learner_levels_graph"))
     chart.draw graph_data, learner_levels_options 
+
+  draw_answer_source: =>
+    graph_data = google.visualization.arrayToDataTable(@answer_source)
+    chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
+    chart.draw graph_data, cohort_options 
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -224,15 +215,15 @@ pg_options =
   colors: ['orange', 'green', 'orange', "#1D3880"]
 
 learner_levels_options = 
-  width: 425
-  height: 425
-  legend: "none"
+  width: 880
+  height: 450
   pointSize: 3
   lineWidth: 3
   chartArea:  
-    width: 420
-    left: 30
-    height: 420
+    height: 520
+    width: 620
+    left: 195
+    top:35
   hAxis:
     textStyle: 
       fontSize: 9
@@ -316,8 +307,8 @@ revenue_options =
       min: 0
 
 handle_activity_options = 
-  width: 1170
-  height: 500
+  width: 880
+  height: 550
   legend: "none"
   pointSize: 3
   lineWidth: 2
@@ -325,11 +316,12 @@ handle_activity_options =
   chartArea:  
     width: 1170
     left: 42
-    height: 400
+    height: 380
+    top: 15
   hAxis:
     textStyle: 
-      fontSize: 9
-    slantedText: true
+      fontSize: 11
+    slantedTextAngle: 90
   vAxis:
     viewWindowMode: 'explicit'
     viewWindow:
@@ -337,7 +329,7 @@ handle_activity_options =
 
 questions_options = 
   width: 1170
-  height: 500
+  height: 450
   legend: "none"
   pointSize: 5
   lineWidth: 2
@@ -346,9 +338,8 @@ questions_options =
     "#E01B6A"
   ]
   chartArea:  
-    width: 1170
     left: 42
-    height: 400
+    height:400
   hAxis:
     textStyle: 
       fontSize: 9
@@ -359,8 +350,8 @@ questions_options =
       min: 0
 
 cohort_options = 
-  width: 1170
-  height: 500
+  width: 880
+  height: 450
   legend: "none"
   pointSize: 0
   lineWidth: 0.25

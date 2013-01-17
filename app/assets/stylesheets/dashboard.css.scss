@@ -21,6 +21,37 @@
 
 	.row {
 		margin: 10px 0px;
+
+		.nav {
+			margin-left: 0px;
+			margin-top:25px;
+
+			a {
+				.loading {
+					float:right;
+				}
+			}
+
+			.active a {
+				color: #ffffff;
+				background-color: #0088cc;
+			}
+		}
+
+		.graphs {
+			//background-color:#eee;
+			border-left:1px solid #ddd;
+			margin-left:5px;
+			float:right;
+
+			height:540px;
+			width:870px;
+			padding:0px 5px;
+
+			margin-top:0px;
+			//padding-top:20px;
+			overflow:hidden;
+		}
 	}
 
 	.select_option {

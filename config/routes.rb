@@ -33,8 +33,7 @@ Quizmemanager::Application.routes.draw do
   match "/dashboard" => "askers#dashboard"
   match "/dashboard/core_by_handle/:asker_id" => "askers#get_core_by_handle"
   match "/get_detailed_metrics" => 'askers#get_detailed_metrics'
-  match "/get_asker_metrics" => 'askers#get_asker_metrics'
-  match "/get_user_metrics" => 'askers#get_user_metrics'
+  match "/graph/:party/:graph" => 'askers#graph'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'
   match "/posts/:publication_id/refer" => "posts#refer"
 

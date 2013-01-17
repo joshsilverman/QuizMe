@@ -97,9 +97,6 @@ class AskersController < ApplicationController
     @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
     @core_display_data[0][:paulgraham] = pg_display_data
 
-    # @daus, daus_display_data = Stat.daus params[:asker_id]
-    # @core_display_data[0][:daus] = daus_display_data
-
     @revenue, revenue_display_data = Stat.revenue
     @core_display_data[0][:revenue] = revenue_display_data
 
@@ -113,17 +110,24 @@ class AskersController < ApplicationController
     }
   end
 
-  def get_asker_metrics
-    @handle_activity = Stat.handle_activity
-    @answer_source_data = Stat.answer_source
-    render :partial => "askers"
-  end
+  def graph
 
-  def get_user_metrics
-    @questions_answered_data = Stat.questions
-    @ugc_data = Stat.ugc
-    @learner_levels_data = Stat.learner_levels
-    @cohort = Stat.cohort_analysis
-    render :partial => "users"
+    #user
+    if params[:graph] == 'cohort'
+      @cohort = Stat.cohort_analysis
+    elsif params[:graph] == 'ugc'
+      @ugc_data = Stat.ugc
+    elsif params[:graph] == 'questions_answered'
+      @questions_answered_data = Stat.questions
+    elsif params[:graph] == 'learner_levels'
+      @learner_levels_data = Stat.learner_levels
+    elsif params[:graph] == 'answer_source'
+      @answer_source_data = Stat.answer_source
+
+    #asker graphs
+    elsif params[:graph] == 'handle_activity'
+      @handle_activity = Stat.handle_activity
+    end
+    render :partial => params[:party]
   end
 end
