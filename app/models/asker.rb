@@ -400,6 +400,7 @@ class Asker < User
   def after_answer_filter answerer, user_post
     self.request_ugc(answerer)
     Client.nudge answerer, self, user_post
+    Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
   def update_metrics answerer, user_post, publication
