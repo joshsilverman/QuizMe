@@ -262,6 +262,25 @@ class Asker < User
     end
   end
 
+  def get_DM_answer_nudge_script feedback, user_id
+    script = Post.create_split_test(user_id, "DM answer response script", 
+      "{feedback}",
+      "{feedback} I tweet new questions frequently, check them out at {twitter feed link}.",
+      "{feedback} Try out some more questions at {wisr feed link}",
+      "{feedback} I'll tweet you another question shortly, hold on...",
+      "{feedback} Check my tweets for more Qs, you can respond on Twitter or follow the links to answer on our website!",
+      "{feedback} Here's your next question: {wisr question link}"
+    )  
+    script.gsub! "{feedback}", feedback
+    script.gsub! "{twitter feed link}", "twitter.com/#{twi_screen_name}"
+    script.gsub! "{wisr feed link}", "wisr.com/feeds/#{id}"
+    
+    if script.include? "{wisr question link}"
+      script.gsub! "{wisr question link}", "wisr.com/feeds/#{id}/#{publications.published.order('created_at DESC').first.id}"
+    end
+    script
+  end
+
   def self.reengage_incorrect_answerers
     askers = User.askers
     current_time = Time.now

@@ -206,7 +206,6 @@ class FeedsController < ApplicationController
     asker = Asker.find(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
-    
 
     unless conversation = user_post.conversation
       conversation = Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => params[:publication_id])
@@ -215,10 +214,13 @@ class FeedsController < ApplicationController
 
     if params[:interaction_type] == "4"
       user = user_post.user
-      dm = params[:message].gsub("@#{params[:username]}", "")
+      response_text = params[:message].gsub("@#{params[:username]}", "")
+
       if correct.present?
+        response_text = asker.get_DM_answer_nudge_script(response_text, user.id)
+
         user_post.update_attribute(:correct, correct)
-        # Mixpanel tracking for DM answer conversion
+
         # Double counting if we grade people again via DM
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
@@ -228,7 +230,11 @@ class FeedsController < ApplicationController
           :in_reply_to => "new follower question DM"
         }
       end
-      response_post = Post.dm(asker, user, params[:message].gsub("@#{params[:username]}", ""), {:conversation_id => conversation.id})
+      
+      response_post = Post.dm(asker, user, response_text, {
+        :conversation_id => conversation.id
+      })
+
       user.update_user_interactions({
         :learner_level => (correct.present? ? "dm answer" : "dm"), 
         :last_interaction_at => user_post.created_at,
