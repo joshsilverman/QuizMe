@@ -122,7 +122,6 @@ class Post < ActiveRecord::Base
 
     tweet_format = entity_order.select { |entity| entity == :text or options.keys.include?(entity)  }
     tweet_format.map! { |entity| entity == :text ? entity : formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity] }
-    # only include answers if (max_text_length - text.size) > answers.size
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
     if options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1) and Post.create_split_test(options[:recipient_id], "include answers in reengagement tweet", "false", "true") == "true"
       text += " #{options[:answers]}"

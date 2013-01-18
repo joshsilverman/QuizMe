@@ -459,6 +459,7 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
+          Post.trigger_split_test(answerer.id, 'include answers in reengagement tweet')
           if answerer.enrolled_in_experiment? "reengagement interval"
             strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
           end
