@@ -270,9 +270,7 @@ class FeedsController < ApplicationController
     response_text = params[:text]
 
     if params[:text].include? "@"
-      user_name, response_text = params[:text].split " ", 2
-      user_name.gsub!("@", "")
-      user_id = User.find_by_twi_screen_name(user_name.gsub("@", "")).id
+      user_id = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9-_]*/).to_s.gsub("@", "")).id
       interaction_type = 2
     end
 

@@ -185,7 +185,8 @@ class Asker < User
           :interaction_type => 2,
           :link_to_parent => false,
           :link_type => "reengage",
-          :intention => "reengage inactive"
+          :intention => "reengage inactive",
+          :include_answers => true
         })
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :strategy => user_hash[:strategy]}
         sleep(1)
