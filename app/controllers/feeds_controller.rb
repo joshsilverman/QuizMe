@@ -265,20 +265,20 @@ class FeedsController < ApplicationController
   end
 
   # This should really be rolled up into mgr response!!!
-  def manager_post user_id = nil, interaction_type = 1
+  def manager_post
     asker = Asker.find(params[:asker_id])
     response_text = params[:text]
 
     if params[:text].include? "@"
-      user_id = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9-_]*/).to_s.gsub("@", "")).id
-      interaction_type = 2
+      user = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9-_]*/).to_s.gsub("@", ""))
+      response_post = Post.tweet(asker, response_text, {
+        :reply_to => user.twi_screen_name, 
+        :interaction_type => 2, 
+        :in_reply_to_user_id => user.id
+      }) 
+    else
+      response_post = Post.tweet(asker, response_text, { :interaction_type => 1 })       
     end
-
-    response_post = Post.tweet(asker, response_text, {
-      :reply_to => user_name, 
-      :interaction_type => interaction_type, 
-      :in_reply_to_user_id => user_id
-    }) 
 
     render :json => response_post
   end

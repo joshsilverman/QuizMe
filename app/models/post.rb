@@ -116,24 +116,25 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def self.format_tweet(text, options = {}, tweet = "")
+  def self.format_tweet(text, options = {})
+    puts text, options.to_json
     entity_order = [:in_reply_to_user, :text, :question_backlink, :hashtag, :resource_backlink, :via_user]
     formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}"}
 
-    tweet_format = entity_order.select { |entity| entity == :text or options.keys.include?(entity)  }
+    tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
     tweet_format.map! { |entity| entity == :text ? entity : formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity] }
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
     if options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1) and Post.create_split_test(options[:recipient_id], "include answers in reengagement tweet", "false", "true") == "true"
       text += " #{options[:answers]}"
     end
-    tweet = tweet_format.map! { |entity| entity != :text ? entity : text.size > max_text_length ? "#{text[0..(max_text_length - 3)]}..." : text }.join " "
+    tweet_format.map! { |entity| entity != :text ? entity : text.size > max_text_length ? "#{text[0..(max_text_length - 3)]}..." : text }.join " "
   end
 
   def self.tweet(sender, text, options = {}, post = nil)
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name) if options[:long_url]
     short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", sender.twi_screen_name, options[:wisr_question]) if options[:resource_url]
 
-    if params[:include_answers].present?
+    if options[:include_answers].present?
       answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.collect {|a| a.text}.join('/')})"
     end
 
@@ -144,7 +145,7 @@ class Post < ActiveRecord::Base
       :resource_backlink => short_resource_url,
       :via_user => options[:via],
       :wisr_question => options[:wisr_question],
-      :answers => params[:include_answers].present? ? answers : nil,
+      :answers => options[:include_answers].present? ? answers : nil,
       :recipient_id => options[:in_reply_to_user_id]
     })
     if options[:in_reply_to_post_id] and options[:link_to_parent]
