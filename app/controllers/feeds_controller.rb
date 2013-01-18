@@ -272,7 +272,6 @@ class FeedsController < ApplicationController
     if params[:text].include? "@"
       user = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9-_]*/).to_s.gsub("@", ""))
       response_post = Post.tweet(asker, response_text, {
-        :reply_to => user.twi_screen_name, 
         :interaction_type => 2, 
         :in_reply_to_user_id => user.id
       }) 
