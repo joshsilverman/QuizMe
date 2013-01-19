@@ -58,6 +58,8 @@ Quizmemanager::Application.routes.draw do
   match "/moderate" => "questions#moderate"
   match "/moderate/update" => "questions#moderate_update"
 
+  match "/newsletter" => "users#newsletter"
+
   resources :questions
   resources :answers
 
@@ -70,7 +72,7 @@ Quizmemanager::Application.routes.draw do
   match '/stats' => 'accounts#stats'
 
   resources :askers
-  #match "users/:id" => "askers#update"
+  get "users/supporters" => "users#supporters"
 
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"

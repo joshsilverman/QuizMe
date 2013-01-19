@@ -85,3 +85,7 @@ task :redis_garbage_collector => :environment do
     end
   end
 end
+
+task :email_supporters => :environment do
+  UserMailer.newsletter.deliver
+end

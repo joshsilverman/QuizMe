@@ -1,6 +1,10 @@
 class UsersController < ApplicationController
   before_filter :admin?, :except => [:show, :badges]
 
+  def supporters
+    @supporters = User.supporters
+  end
+
   def show
     @user = User.where("twi_screen_name ILIKE '%#{params[:twi_screen_name]}%'").first
     if @user.nil?
@@ -56,5 +60,26 @@ class UsersController < ApplicationController
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def newsletter
+    @user = User.find 11
+    @jason_text = "We've been running an A/B test for the past couple of weeks that tests two options: A. we post a tweet on Twitter on behalf of the user whenever they answer a question on Wisr and B. we do not post a tweet, but post a congratulatory summary of their activity from our account at the end of their session. Our goal in comparing these options was to discover which resulted in more retweets/shares, which correlates with higher perceived value to the end-user and free viral growth for us. We've found that, with 95% certainty, option B is superior at getting a given user to retweet. In terms of absolute number of retweets generated via each option, B also comes out ahead at 146 retweet for the lifetime of the experiment versus just 66 for A."
+    @josh_text = "Our monetization strategy moved forward this week with progress with both existing clients and groundwork for a new client. Despite this, I'm more excited about selling directly to our end-users. I don't know when we'll have time to test this but I hope it's soon!"
+
+
+    # drive = GoogleDrive.login("jsilverman@studyegg.com", "GlJnb@n@n@")
+    # spreadsheet = drive.spreadsheet_by_key("0AliLeS3-noSidGJESjZoZy11bHo2ekNQS2I5TGN6eWc").worksheet_by_title('Sheet1')
+    # last_row_index = spreadsheet.num_rows - 2
+    # list = spreadsheet.list
+
+    # @jason_text = [list.get(last_row_index, 'Jason Serendipity'), list.get(last_row_index - 1, 'Jason Serendipity')].reject { |t| t.blank? }.first
+    # @josh_text = [list.get(last_row_index, 'Josh Serendipity'), list.get(last_row_index - 1, 'Josh Serendipity')].reject { |t| t.blank? }.first
+    @name = @user.name || @user.twi_name
+    @weeks = (Date.today - Date.new(2012,8,20)).to_i/7
+
+
+
+    render "user_mailer/newsletter", :layout => false
   end
 end

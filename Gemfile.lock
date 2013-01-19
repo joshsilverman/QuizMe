@@ -75,6 +75,9 @@ GEM
     commonjs (0.2.6)
     cookiejar (0.3.0)
     crack (0.3.2)
+    css_parser (1.2.6)
+      addressable
+      rdoc
     daemons (1.1.9)
     dalli (2.1.0)
     database_cleaner (0.9.1)
@@ -106,6 +109,10 @@ GEM
       multipart-post (~> 1.1)
     file-tail (1.0.12)
       tins (~> 0.5)
+    google_drive (0.3.2)
+      nokogiri (>= 1.4.4, != 1.5.2, != 1.5.1)
+      oauth (>= 0.3.6)
+      oauth2 (>= 0.5.0)
     haml (3.1.6)
     hashie (1.2.0)
     heroku (2.33.0)
@@ -118,6 +125,7 @@ GEM
       excon (~> 0.16.7)
     hike (1.2.1)
     hirb (0.7.0)
+    htmlentities (4.3.1)
     http_parser.rb (0.5.3)
     httparty (0.10.0)
       multi_json (~> 1.0)
@@ -160,6 +168,7 @@ GEM
     multipart-post (1.1.5)
     netrc (0.7.7)
     newrelic_rpm (3.5.5.38)
+    nokogiri (1.5.6)
     oauth (0.4.7)
     oauth2 (0.6.1)
       faraday (~> 0.7)
@@ -184,6 +193,12 @@ GEM
     orm_adapter (0.4.0)
     pg (0.14.0)
     polyglot (0.3.3)
+    premailer (1.7.3)
+      css_parser (>= 1.1.9)
+      htmlentities (>= 4.0.0)
+    premailer-rails3 (1.3.1)
+      premailer (~> 1.7)
+      rails (~> 3)
     quiet_assets (1.0.1)
       railties (~> 3.1)
     rabl (0.6.14)
@@ -312,6 +327,7 @@ DEPENDENCIES
   dalli (= 2.1.0)
   database_cleaner
   devise (= 2.1.2)
+  google_drive
   haml (= 3.1.6)
   heroku
   hirb
@@ -327,6 +343,7 @@ DEPENDENCIES
   omniauth-tumblr (= 1.0)
   omniauth-twitter (= 0.0.12)
   pg (= 0.14.0)
+  premailer-rails3
   quiet_assets
   rabl (= 0.6.14)
   rack-mini-profiler
