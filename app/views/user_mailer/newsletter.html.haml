@@ -1,63 +1,175 @@
-= stylesheet_link_tag "application"
+=# stylesheet_link_tag "application"
 
 :css 
-	body {
-		background: #FCFCFC;
-		/ background: url('/assets/low_contrast_linen.png');
-	}
-	.weeks, .title {
-		color: ##{["4A15F1", "005500", "140053", "580000"].sample};
-	}
-	/ .title {
-	/ 	color: ##{["4A15F1", "005500", "140053", "580000"].sample};
-	/ }
-	.brand {
-		margin-left: 0px !important;
-	}
+  .navbar .brand {
+    font-weight: bold;
+    text-shadow: none;
+    color: transparent;
+    background: url(/assets/logo/small.png) no-repeat 10px 8px;
+    line-height: 1;
+    float: left;
+    display: block;
+    padding: 8px 20px 12px;
+    font-size: 20px;
+    text-decoration: none;
+  }
+
+  .navbar-inner {
+    margin-top:0;]
+    padding-left: 0;
+    padding-right: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+
+    min-height: 40px;
+    padding: 0px !important;
+    background-color: #f1f1f1;
+    background-image: -webkit-linear-gradient(top, #f1f1f1, #dadada);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .navbar {
+    position: absolute;
+    newslettermedia="screen"
+    top: 0;
+    newslettermedia="screen"
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    margin-bottom: 0;
+    newslettermedia="screen"
+    color: #999999;
+    newslettermedia="screen"
+    overflow: visible;
+    margin-bottom: 18px;
+  }
+
+  .navbar-fixed-top {
+    top: 0;
+  }
+
+  .well {
+    / background: url("/assets/light_toast.png");
+    / color: black;
+  }
+
+  .well {
+    position:relative;
+    min-height: 35px;
+    padding: 18px 19px;
+    padding-left:60px;
+    margin: 18px 10px;
+    background-color: #f5f5f5 !important;
+    border: 1px solid #eee;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  }
+
+  .well .icon {
+    position:absolute;
+    left:15px;
+    top:50%;
+    margin-top:-14px;
+  }
+
+  .newsletter_body {
+    padding-top:45px;
+  }
+
+  body {
+    background: #FCFCFC;
+    / background: url('/assets/low_contrast_linen.png');
+  }
+  .weeks, .title {
+    font-weight:bold;
+    / color: ##{["4A15F1", "005500", "140053", "580000"].sample};
+  }
+  / .title {
+  /   color: ##{["4A15F1", "005500", "140053", "580000"].sample};
+  / }
 
 #newsletter
-	.navbar.navbar-fixed-top
-		.navbar-inner
-			%a.brand{:href => "http://www.wisr.com", :target => "_blank"}
-				Wisr
-			/ .date
-			/ 	1/11/13
-	.newsletter_body
-		.hello
-			%p 
-				= ["Hey", "Hi", "Hello"].sample
-				= "#{@name},"
-			%br
-			%br
-			%p= ["Here's a quick update on a few things we've been working on recently:", "This past week has been pretty interesting:", "A quick update from the Wisr team:", "Here are some recent thoughts and experimental findings:"].sample
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      %a.brand{:href => "http://www.wisr.com", :target => "_blank"}
+        Wisr
+      / .date
+      /   1/11/13
+  .newsletter_body
+    .hello
+      %p 
+        = ["Hey", "Hi", "Hello"].sample
+        = "#{@name},"
+      %p= ["Here's a quick update on a few things we've been working on recently:", "This past week has been pretty interesting:", "A quick update from the Wisr team:", "Here are some recent thoughts and experimental findings:"].sample
 
-		.josh.well
-			%p.title= ["What's new.", "The bottom line.", "Recent thoughts.", "Josh's take.", "Status report."].sample
-			%p.text= @josh_text
-			%p.author= "- Josh"
-		.jason.well
-			%p.title Our latest experiment.
-			%p.text= @jason_text
-			%p.author= "- Jason"
-		.growth.well
-			%span.weeks
-				%span
-					%i.icon-signal
-						= @weeks
-			%span.week_description weeks of 7%+ week-over-week growth!
-		.signature
-			%p= ["Thanks for reading, please drop a line if you have any ideas for us to try.", "Any thoughts or reactions to what we're doing. Email us!", "Thank you so much for following along and please send us your ideas.", "Any ideas for experiments we should run next?" , "Do you agree with our assessment and direction?", "Is there anything we're missing? Please send any and all thoughts our way!", "We truly appreciate your feedback. Don't hold back.", "Do you agree with our choice in experiments lately? How else might we focus them?", "Is there anybody we should be talking to that we haven't thought of?", "Is there an angle on this that we're missing?", "Any general thoughts on our update?", "Where should we focus our energy next?", "Is there another market/sector where our technology could work well?", "Where do you think our greatest room for improvement lies?", "Any random thoughts or reactions?", "Anything off the wall you think we could try?", "Huge thanks for your support and we'd love to here your thoughts.", "As always, please chime in with suggestions.", "Thanks for having a look. Feedback?"].sample
-			%br
-			%br
-			Best, 
-			%br
-			%br
-			Josh and Jason
+    %br
+    .josh.well
+      .icon
+        %svg#Layer_1{"enable-background" => "new 0 0 100 85.71", :height => "30px", :version => "1.1", :viewBox => "0 0 100 85.71", :width => "30px", :x => "0px", "xml:space" => "preserve", :xmlns => "http://www.w3.org/2000/svg", "xmlns:xlink" => "http://www.w3.org/1999/xlink", :y => "0px"}
+          %path{:d => "M18.52,0C9.581,0.15,0,5.967,0,18.539v30.57c0.107,8.405,5.374,17.288,16.449,18.338c0,3.217,0,18.264,0,18.264  s26.046-17.342,27.168-18.062c1.365,0,37.845,0,37.845,0C90.419,67.533,100,61.677,100,49.109V18.515  C99.876,9.567,94.018,0,81.462,0H18.52z"}
+      %span.title
+        = ["What's new.", "The bottom line.", "Recent thoughts.", "Josh's take.", "Status report."].sample
+      = @josh_text
+      &nbsp;
+      %span.author= "- Josh"
 
-			%br
-			%br
-			\---
-			%br
-			%br
+    .jason.well
+      .icon
+        %svg#Layer_1{"enable-background" => "new 0 0 62.432 100", :height => "40px", :version => "1.1", :viewBox => "0 0 62.432 100", :width => "30px", :x => "0px", "xml:space" => "preserve", :xmlns => "http://www.w3.org/2000/svg", "xmlns:xlink" => "http://www.w3.org/1999/xlink", :y => "0px"}
+          %path{:d => "M57.724,31l-4.017,6.427V92c0,2.879-1.121,4-4,4H31.216H12.725c-2.879,0-4-1.121-4-4V37.427L4.708,31H0l4.725,7.573V92\r\n\tc0,5.084,2.916,8,8,8h18.491h18.491c5.084,0,8-2.916,8-8V38.573L62.432,31H57.724z"}
+          %circle{:cx => "39.216", :cy => "28.5", :r => "6.5"}
+          %circle{:cx => "41.216", :cy => "16.5", :r => "2.5"}
+          %circle{:cx => "27.216", :cy => "27.5", :r => "2.5"}
+          %circle{:cx => "24.216", :cy => "2.5", :r => "2.5"}
+          %circle{:cx => "22.716", :cy => "18", :r => "4"}
+          %circle{:cx => "31.716", :cy => "13", :r => "3"}
+          %circle{:cx => "17.216", :cy => "29.5", :r => "4.5"}
+          %rect{:height => "52", :width => "37", :x => "12.716", :y => "40"}
+      %span.title 
+        Our latest experiment.
+      = @jason_text
+      &nbsp;
+      %span.author= "- Jason"
+    .growth.well
+      .icon
+        %svg#Layer_1{"enable-background" => "new 0 0 100 100", :height => "30px", :version => "1.1", :viewBox => "0 0 100 100", :width => "30px", :x => "0px", "xml:space" => "preserve", :xmlns => "http://www.w3.org/2000/svg", "xmlns:xlink" => "http://www.w3.org/1999/xlink", :y => "0px"}
+          %rect{:height => "74.987", :width => "19.258", :x => "80.742", :y => "25.013"}
+          %rect{:height => "100", :width => "19.232", :x => "53.841"}
+          %rect{:height => "50", :width => "19.258", :x => "26.914", :y => "50"}
+          %rect{:height => "24.987", :width => "19.245", :y => "75.013"}
+      %br
+      %span.weeks
+        %span
+          %i.icon-signal
+            = @weeks
+      %span.week_description weeks of 7%+ week-over-week growth!
+    %br
+    .signature
+      %p= ["Thanks for reading, please drop a line if you have any ideas for us to try.", "Any thoughts or reactions to what we're doing. Email us!", "Thank you so much for following along and please send us your ideas.", "Any ideas for experiments we should run next?" , "Do you agree with our assessment and direction?", "Is there anything we're missing? Please send any and all thoughts our way!", "We truly appreciate your feedback. Don't hold back!", "Do you agree with our choice in experiments lately? How else might we focus them?", "Is there anybody we should be talking to that we haven't thought of?", "Is there an angle on this that we're missing? We'd love to hear your thoughts.", "Any general thoughts on our update?", "Where should we focus our energy next?", "Any advice for us? Is there another market/sector where our technology could work well?", "Where do you think our greatest room for improvement lies?", "Any random thoughts or reactions?", "Anything off the wall you think we could try?", "Huge thanks for your support and we'd love to here your thoughts.", "As always, please chime in with suggestions.", "Thanks for having a look. Feedback?"].sample
+      %p Best, 
+      %p Josh and Jason
+      \---
+      %p
+        %i
+          = link_to "Wisr.com", "http://wisr.com"
+          is a social learning website where people stay fresh on and learn more about the subjects their interested in.
 
-			= link_to "Wisr.com", "http://wisr.com"
+      %p
+        %i What is this email? The above message was automatically generated from our weekly meeting minutes. Send me a quick note if you're prefer not hear these updates. 
