@@ -196,7 +196,7 @@ class FeedsController < ApplicationController
 
     user_post = current_user.app_answer(@question_asker, post, answer, { :post_aggregate_activity => post_aggregate_activity })
     @conversation.posts << user_post
-    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_aggregate_activity => post_aggregate_activity }) if user_post
+    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_aggregate_activity => post_aggregate_activity, :link_to_parent => true }) if user_post
     @conversation.posts << asker_response
 
     render :partial => "conversation"
@@ -245,7 +245,8 @@ class FeedsController < ApplicationController
       if params[:correct]
         response_post = asker.app_response(user_post, correct, { 
           :post_aggregate_activity => false, 
-          :response_text => response_text
+          :response_text => response_text,
+          :link_to_parent => false
         })
         conversation.posts << response_post
       else         

@@ -342,7 +342,7 @@ class Asker < User
 
     answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
-      response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
+      response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
       resource_url = nil
     else
       response_text = (options[:response_text].present? ? options[:response_text] : self.generate_response(correct))
@@ -373,7 +373,7 @@ class Asker < User
         :link_type => correct ? "cor" : "inc", 
         :in_reply_to_post_id => user_post.id, 
         :in_reply_to_user_id => answerer.id,
-        :link_to_parent => true, 
+        :link_to_parent => options[:link_to_parent], 
         :resource_url => correct ? nil : resource_url,
         :wisr_question => publication.question.resource_url ? false : true,
         :intention => 'grade'
@@ -394,7 +394,7 @@ class Asker < User
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
-      asker_response = app_response(user_post, user_post.autocorrect)
+      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false})
       puts "autoresponse sent: post id #{asker_response.id}"
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
       conversation.posts << user_post
