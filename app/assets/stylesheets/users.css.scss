@@ -12,11 +12,6 @@
 	font-family: Verdana;
 	color: #1F1F1F;
 
-	p {
-		margin: 0px;
-		display: inline;
-	}
-
 	.hello, .josh, .jason, .growth, .signature {
 		margin: 10px;
 
@@ -26,8 +21,24 @@
 	}
 
 	.well {
-		background: url('/assets/light_toast.png');
+		// background: url('/assets/light_toast.png');
+		background:#f9f9f9;
+		box-shadow:none;
 		color: black;
+		position:relative;
+		margin:20px 15px;
+
+		.icon {
+			width:50px;
+			img {
+				height:35px;
+				width:35px;
+			}
+		}
+
+		.description{
+			font-size:13px !important;
+		}
 	}
 
 	.hello {
@@ -39,20 +50,13 @@
 	.signature {
 		margin: 0px 15px;
 		margin-top: 15px;
+
+		.footer {
+			padding-top: 10px;
+		}
 	}
 
 	.names {
 		margin-left: 20px;
-	}
-
-	.growth {
-		.weeks {
-			font-weight:bold;
-
-		}
-		.week_description {
-			position: relative;
-			top: 0px;
-		}
 	}
 }

@@ -38,7 +38,6 @@ gem 'haml', '3.1.6'
 gem 'devise', '2.1.2'
 gem 'twitter-bootstrap-rails', '2.1.1'
 gem 'jquery-rails', '1.0.19'
-gem 'premailer-rails3'
 
 gem 'omniauth', '1.1.0'
 gem 'omniauth-oauth2', '1.0.2'
@@ -54,6 +53,8 @@ gem 'tweetstream'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
+
+gem 'roadie'
 
 # gem 'tumblife', '1.2.0'
 gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'

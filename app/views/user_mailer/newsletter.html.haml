@@ -1,63 +1,64 @@
 = stylesheet_link_tag "application"
 
 :css 
-	body {
-		background: #FCFCFC;
-		/ background: url('/assets/low_contrast_linen.png');
-	}
-	.weeks, .title {
-		color: ##{["4A15F1", "005500", "140053", "580000"].sample};
-	}
-	/ .title {
-	/ 	color: ##{["4A15F1", "005500", "140053", "580000"].sample};
-	/ }
-	.brand {
-		margin-left: 0px !important;
-	}
+  body {
+    background: #FCFCFC;
+  }
+  .navbar .brand {
+    margin-left:0;
+  }
 
 #newsletter
-	.navbar.navbar-fixed-top
-		.navbar-inner
-			%a.brand{:href => "http://www.wisr.com", :target => "_blank"}
-				Wisr
-			/ .date
-			/ 	1/11/13
-	.newsletter_body
-		.hello
-			%p 
-				= ["Hey", "Hi", "Hello"].sample
-				= "#{@name},"
-			%br
-			%br
-			%p= ["Here's a quick update on a few things we've been working on recently:", "This past week has been pretty interesting:", "A quick update from the Wisr team:", "Here are some recent thoughts and experimental findings:"].sample
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      %a.brand{:href => "http://www.wisr.com", :target => "_blank"}
+        Wisr
+      / .date
+      /   1/11/13
+  .newsletter_body
+    .hello
+      %p 
+        = ["Hey", "Hi", "Hello"].sample
+        = "#{@name},"
+      %p= ["Here's a quick update on a few things we've been working on recently:", "This past week has been pretty interesting:", "A quick update from the Wisr team:", "Here are some recent thoughts and experimental findings:"].sample
 
-		.josh.well
-			%p.title= ["What's new.", "The bottom line.", "Recent thoughts.", "Josh's take.", "Status report."].sample
-			%p.text= @josh_text
-			%p.author= "- Josh"
-		.jason.well
-			%p.title Our latest experiment.
-			%p.text= @jason_text
-			%p.author= "- Jason"
-		.growth.well
-			%span.weeks
-				%span
-					%i.icon-signal
-						= @weeks
-			%span.week_description weeks of 7%+ week-over-week growth!
-		.signature
-			%p= ["Thanks for reading, please drop a line if you have any ideas for us to try.", "Any thoughts or reactions to what we're doing. Email us!", "Thank you so much for following along and please send us your ideas.", "Any ideas for experiments we should run next?" , "Do you agree with our assessment and direction?", "Is there anything we're missing? Please send any and all thoughts our way!", "We truly appreciate your feedback. Don't hold back.", "Do you agree with our choice in experiments lately? How else might we focus them?", "Is there anybody we should be talking to that we haven't thought of?", "Is there an angle on this that we're missing?", "Any general thoughts on our update?", "Where should we focus our energy next?", "Is there another market/sector where our technology could work well?", "Where do you think our greatest room for improvement lies?", "Any random thoughts or reactions?", "Anything off the wall you think we could try?", "Huge thanks for your support and we'd love to here your thoughts.", "As always, please chime in with suggestions.", "Thanks for having a look. Feedback?"].sample
-			%br
-			%br
-			Best, 
-			%br
-			%br
-			Josh and Jason
+    .josh.well
+      %table
+        %tr
+          %td.icon= image_tag "email/speech.png"
+          %td.description
+            %span.title= ["What's new.", "The bottom line.", "Recent thoughts.", "Josh's take.", "Status report."].sample
+            = @josh_text
+            &nbsp;
+            %span.author= "- Josh"
 
-			%br
-			%br
-			\---
-			%br
-			%br
+    .jason.well
+      %table
+        %tr
+          %td.icon= image_tag "email/beaker.png"
+          %td.description
+            %span.title Our latest experiment.
+            = @jason_text
+            &nbsp;
+            %span.author= "- Jason"
 
-			= link_to "Wisr.com", "http://wisr.com"
+    .growth.well
+      %table
+        %tr
+          %td.icon= image_tag "email/chart.png"
+          %td.description
+            %span.title
+              %span= @weeks
+            %span.week_description weeks of 7%+ week-over-week growth!
+    .signature
+      %p= ["Thanks for reading, please drop a line if you have any ideas for us to try.", "Any thoughts or reactions to what we're doing. Email us!", "Thank you so much for following along and please send us your ideas.", "Any ideas for experiments we should run next?" , "Do you agree with our assessment and direction?", "Is there anything we're missing? Please send any and all thoughts our way!", "We truly appreciate your feedback. Don't hold back!", "Do you agree with our choice in experiments lately? How else might we focus them?", "Is there anybody we should be talking to that we haven't thought of?", "Is there an angle on this that we're missing? We'd love to hear your thoughts.", "Any general thoughts on our update?", "Where should we focus our energy next?", "Any advice for us? Is there another market/sector where our technology could work well?", "Where do you think our greatest room for improvement lies?", "Any random thoughts or reactions?", "Anything off the wall you think we could try?", "Huge thanks for your support and we'd love to here your thoughts.", "As always, please chime in with suggestions.", "Thanks for having a look. Feedback?"].sample
+      %p Best, 
+      %p Josh and Jason
+
+      ___
+      %p.footer
+        %i
+          = link_to "Wisr.com", "http://wisr.com"
+          is a social learning tool where people ask and answer questions about the subjects they're interested in.
+      %p
+        %i What is this email? This email was automatically generated from our weekly meeting minutes and metics dashboard. Have ideas on how to make it better? Also, send me a quick note if you'd prefer not get these updates. 
