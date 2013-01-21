@@ -243,7 +243,7 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
 
-    in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s : nil)
+    in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) : nil)
     if in_reply_to_post
       if in_reply_to_post.is_question_post?
         conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
