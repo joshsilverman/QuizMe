@@ -54,6 +54,8 @@ gem 'tweetstream'
 gem 'kaminari'
 gem 'kaminari-bootstrap'
 
+gem 'roadie'
+
 # gem 'tumblife', '1.2.0'
 gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 # gem 'pusher'

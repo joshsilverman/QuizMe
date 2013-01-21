@@ -75,6 +75,9 @@ GEM
     commonjs (0.2.6)
     cookiejar (0.3.0)
     crack (0.3.2)
+    css_parser (1.2.6)
+      addressable
+      rdoc
     daemons (1.1.9)
     dalli (2.1.0)
     database_cleaner (0.9.1)
@@ -228,6 +231,11 @@ GEM
       redis (~> 3.0.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    roadie (2.3.4)
+      actionmailer (> 3.0.0, < 3.3.0)
+      css_parser
+      nokogiri (>= 1.4.4)
+      sprockets
     rspec (2.8.0)
       rspec-core (~> 2.8.0)
       rspec-expectations (~> 2.8.0)
@@ -337,6 +345,7 @@ DEPENDENCIES
   rabl (= 0.6.14)
   rack-mini-profiler
   rails (= 3.2.11)
+  roadie
   rspec-rails (= 2.8.1)
   sass-rails (~> 3.2.3)
   sitemap_generator
