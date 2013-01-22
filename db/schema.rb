@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130111223543) do
+ActiveRecord::Schema.define(:version => 20130122223659) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -134,6 +134,7 @@ ActiveRecord::Schema.define(:version => 20130111223543) do
     t.integer  "seeder_id"
     t.text     "resource_url"
     t.string   "slug"
+    t.string   "hint"
   end
 
   add_index "questions", ["created_for_asker_id"], :name => "index_questions_on_created_for_asker_id"

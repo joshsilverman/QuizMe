@@ -232,10 +232,14 @@ class QuestionsController < ApplicationController
     @asker = Asker.find params[:asker_id]
     questions = params[:questions].split "\n"
     questions.each do |q|
-      q_matchdata = /(.*)\s+(\([^\)]*\))/.match q
+      q_matchdata = /(.*)\s+(\([^\)]*\))(?:\s<<([^>]*)>>|)/.match q
+      puts q_matchdata[1]
+      puts q_matchdata[2]
+      puts q_matchdata[3]
 
       q_text = q_matchdata[1]
       q_ans = q_matchdata[2]
+      q_hint = q_matchdata[3]
 
       as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|;\s/
       correct_ans = as.shift
@@ -243,7 +247,7 @@ class QuestionsController < ApplicationController
       @question = Question.find_by_text q_text
       #next if @question
 
-      @question = @asker.questions.create :text => q_text, :user_id => current_user.id
+      @question = @asker.questions.create :text => q_text, :user_id => current_user.id, :hint => q_hint
       @question.answers.create :text => correct_ans, :correct => true
       as.each{|a| @question.answers.create :text => a, :correct => false}
     end
