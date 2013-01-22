@@ -291,9 +291,13 @@ class FeedsController < ApplicationController
       root_post = publication.posts.last
 
       post_to_link_to = publication.posts.where("in_reply_to_user_id is null").last
-      post_to_link.update_attribute(:in_reply_to_post_id, post_to_link_to.id)
-      conversation = Conversation.create(:post_id => root_post.id, :user_id => post_to_link.user_id ,:publication_id => publication.id)
       
+      conversation = Conversation.create(:post_id => root_post.id, :user_id => post_to_link.user_id ,:publication_id => publication.id)
+      post_to_link.update_attributes({
+        :in_reply_to_post_id => post_to_link_to.id,
+        :conversation_id => conversation.id
+      })
+
       Post.grader.grade post_to_link
 
       render :json => [post_to_link, post_to_link_to]

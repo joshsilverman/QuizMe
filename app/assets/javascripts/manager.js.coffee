@@ -319,7 +319,7 @@ class Post
 
 	link_post: (event) =>
 		window.post = event
-		if event.text() == "unlink"
+		if $.trim(event.text()) == "unlink"
 			window.current_post = @
 			$("#confirm").modal()
 		else
