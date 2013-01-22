@@ -237,15 +237,8 @@ class QuestionsController < ApplicationController
       q_text = q_matchdata[1]
       q_ans = q_matchdata[2]
 
-      as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|,\s/
-      randomized_answers = as.shuffle
-      last_answer = randomized_answers.pop
-      answer_string = randomized_answers.join(", ") + " or #{last_answer}"
+      as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|;\s/
       correct_ans = as.shift
-
-      if params[:hide_answers] != 'on'
-        q_text = "#{q_text} (#{answer_string})"
-      end
 
       @question = Question.find_by_text q_text
       #next if @question

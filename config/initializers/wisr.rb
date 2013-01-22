@@ -334,24 +334,32 @@ ACCOUNT_DATA = {
     :hashtags => ['spanish', 'espanol', 'learnspanish'],
     :category => "Language"    
   },
+
   #SAThabit_algbra
   14106 => {
-    :retweet => [12640, 19454],
+    :retweet => [12640, 19454, 24740],
     :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
     :category => "Math"
   },
   #SAThabit_numbrs
   19454 => {
-    :retweet => [12640, 14106],
+    :retweet => [12640, 14106, 24740],
     :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
     :category => "Math"
   },
   #SAThabit_math
   12640 => {
-    :retweet => [14106, 19454],
+    :retweet => [14106, 19454, 24740],
     :hashtags => ['math', 'SAT', "SATprep"],
     :category => "Math"
   },
+  #SAThabit_geomtr
+  24740 => {
+    :retweet => [14106, 19454, 12640],
+    :hashtags => ['math', 'SAT', "SATprep, geometry"],
+    :category => "Math"
+  },
+
   #quimetwilight
   10572 => {
     :retweet => [10573,10565,10567],
