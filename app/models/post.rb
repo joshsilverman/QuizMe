@@ -139,7 +139,7 @@ class Post < ActiveRecord::Base
 
     answers = nil
     if options[:publication_id].present? and (options[:include_answers].present? or INCLUDE_ANSWERS.include? sender.id)
-      answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('/')})"
+      answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})"
     end
 
     tweet = Post.format_tweet(text, {
@@ -235,7 +235,7 @@ class Post < ActiveRecord::Base
     true 
   end
 
-  def self.save_mention_data(m, asker)
+  def self.save_mention_data(m, asker, conversation_id = nil)
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
@@ -243,12 +243,14 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
 
-    conversation_id = nil
-    
-    in_reply_to_post = Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) if m.in_reply_to_status_id
+    in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) : nil)
     if in_reply_to_post
-      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
-      in_reply_to_post.update_attribute(:conversation_id, conversation_id)
+      if in_reply_to_post.is_question_post?
+        conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
+      else
+        conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
+        in_reply_to_post.update_attribute :conversation_id, conversation_id
+      end
     end
 
     post = Post.create( 
@@ -367,10 +369,6 @@ class Post < ActiveRecord::Base
       })
 
       u.segment
-
-      if retweeted_post.intention == 'post aggregate activity' or retweeted_post.intention == 'grade'
-        Post.trigger_split_test(u.id, 'post aggregate activity') 
-      end
 
       # puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
     end
@@ -493,12 +491,13 @@ class Post < ActiveRecord::Base
           dm_ids << dm.id
         end
       else
+        puts post.conversation.to_json
         if post.conversation.present?
           post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
             conversations[post.id][:posts] << conversation_post
             conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
-            parent_publication = conversation_post.publication unless conversation_post.publication.nil?          
           end
+          parent_publication = post.conversation.publication
         else
           conversations[post.id][:posts] << post
         end
@@ -569,6 +568,10 @@ class Post < ActiveRecord::Base
     end
 
     @_in_answer_to_question
+  end
+
+  def is_question_post?
+    interaction_type == 1 and publication_id.present?
   end
 
 end

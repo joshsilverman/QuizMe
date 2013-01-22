@@ -142,25 +142,18 @@ class Asker < User
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
-      # puts "checking user #{user.twi_screen_name} (#{user.id}) - #{test_option}"
       strategy = test_option.split("/").map { |e| e.to_i }
-      # last_interaction_at = user.posts.sort_by { |p| p.created_at }.last.created_at
-      # puts "last_interaction_at = #{user.last_interaction_at}"
-      # user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_interaction_at }.sort_by(&:created_at)
-      user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }
-      next_checkpoint = strategy[user_reengagments.size]
-      next if next_checkpoint.blank?
-      # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
-      # puts "user_reengagments: #{user_reengagments.to_json}"
-      # if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
-      if (user_reengagments.blank? and ((Time.now - user.last_interaction_at) > next_checkpoint.days)) or (user_reengagments.present? and ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days))
-        # unless user_reengagments.blank?
-        #   puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
-        # end
-        # puts "sending to #{user.twi_screen_name}"
+      user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
+      next unless next_checkpoint = strategy[user_reengagments.size]
+      time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
+      if time_since_last_touchpoint > next_checkpoint.days
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
+        # puts "sending to #{user.twi_screen_name}"
+        # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
+        # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+        # puts "strategy: #{strategy}"
       end
     end
     asker_recipients
@@ -338,22 +331,27 @@ class Asker < User
   end
 
   def app_response user_post, correct, options = {}
-    publication = user_post.conversation.publication || user_post.parent.publication
-
+    publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
-    if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
-      response_text = "#{['Sorry', 'Nope', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
-      resource_url = nil
-    else
-      response_text = (options[:response_text].present? ? options[:response_text] : self.generate_response(correct))
-      resource_url = (publication.question.resource_url ? "#{URL}/posts/#{publication.id}/refer" : "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}")
-    end
+
+    response_text = options[:response_text] || self.generate_response(correct)
+    resource_url = nil
+
+    if options[:response_text].blank?
+      if correct and options[:post_aggregate_activity].blank?
+        cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
+        cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
+        response_text += " RT '#{cleaned_user_post}'" 
+      elsif !correct
+        answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
+        answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
+        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
+        short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
+        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
+      end
+    end 
 
     if options[:post_aggregate_activity] == true
-      if resource_url and correct == false
-        short_resource_url = Post.shorten_url(resource_url, 'wisr', 'res', answerer.twi_screen_name, publication.question.resource_url ? false : true)
-        response_text += " Find the answer at #{short_resource_url}" if short_resource_url.present?
-      end
       app_post = Post.create({
         :user_id => self.id,
         :provider => 'wisr',
@@ -373,7 +371,7 @@ class Asker < User
         :link_type => correct ? "cor" : "inc", 
         :in_reply_to_post_id => user_post.id, 
         :in_reply_to_user_id => answerer.id,
-        :link_to_parent => true, 
+        :link_to_parent => options[:link_to_parent], 
         :resource_url => correct ? nil : resource_url,
         :wisr_question => publication.question.resource_url ? false : true,
         :intention => 'grade'
@@ -394,7 +392,8 @@ class Asker < User
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
-      asker_response = app_response(user_post, user_post.autocorrect)
+      puts "sending autoresponse: #{user_post.to_json}"
+      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false})
       puts "autoresponse sent: post id #{asker_response.id}"
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
       conversation.posts << user_post
@@ -431,7 +430,6 @@ class Asker < User
       unless in_reply_to
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication.id).order("created_at DESC").limit(1).first
         if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication.id).blank?
-          Post.trigger_split_test(answerer.id, 'include answer in response')
           in_reply_to = "incorrect answer follow up" 
         end
       end
@@ -467,7 +465,6 @@ class Asker < User
           end
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
-          Post.trigger_split_test(answerer.id, 'include answer in response')
           in_reply_to = "incorrect answer follow up" 
         when 'new user question mention'
           in_reply_to = "new follower question mention"

@@ -276,19 +276,19 @@ class Post
 		publication_id = null
 		publication_id = parent_post['publication_id'] unless parent_post == undefined
 
-		if correct == true
-			response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length)]
-			complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length)]
-			tweet = "#{response} #{complement}"
-		else
-			tweet = "#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}"
+		# if correct == true
+		# 	response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length)]
+		# 	complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length)]
+		# 	tweet = "#{response} #{complement}"
+		# else
+		# 	tweet = "#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}"
 
 		params =
 			"interaction_type" : post.attr "interaction_type"
 			"asker_id" : window.feed.id
 			"in_reply_to_post_id" : @id
 			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-			"message" : tweet
+			# "message" : tweet
 			"username" : post.find('h5').html()
 			"correct" : @correct
 			"publication_id" : publication_id

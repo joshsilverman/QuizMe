@@ -55,21 +55,10 @@ module FeedsHelper
 		return time
 	end	
 
-	def format_response(text)
-		if text.include? "Find the answer at" or text.include? "Find out why at"
-			resource_link = text.match(/Find the answer at http:\/\/wisr.co\/[^ ]*/)
-			if resource_link
-				resource_link = resource_link.to_s.gsub("Find the answer at ", "")
-			else
-				resource_link = text.match(/Find out why at http:\/\/wisr.co\/[^ ]*/).to_s.gsub("Find out why at ", "")
-			end
-			text.scan(/http:\/\/wisr.co\/[^ ]*/).each { |link| text.gsub!(link, "") }
-			text = text.gsub "Find the answer at", "Find the correct answer"
-			text = text.gsub "Find out why at", "Find out why"
-			text = text.gsub "  ", " "
-		else
-			text = text.split("http")[0]
-			resource_link = nil
+	def format_response(text, resource_link = nil)
+		if text.include? "Learn more at"
+			resource_link = text.match(/http:\/\/wisr.co\/[^ ]*/).to_s
+			text.gsub! resource_link, ""
 		end
 		return text, resource_link
 	end
