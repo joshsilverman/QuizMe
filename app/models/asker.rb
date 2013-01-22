@@ -212,7 +212,12 @@ class Asker < User
         sleep(1)
         user = User.find_or_create_by_twi_user_id(tid)
         next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-        Post.dm(asker, user, "Here's your first question! #{new_user_questions[asker.id][0].text}", {:intention => "initial question dm"})
+        question = new_user_questions[asker.id][0]
+
+        response_text = "Here's your first question! #{question.text}"
+        response_text += " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? asker.id
+
+        Post.dm(asker, user, response_text, {:intention => "initial question dm"})
         Mixpanel.track_event "DM question to new follower", {
           :distinct_id => user.id,
           :account => asker.twi_screen_name
