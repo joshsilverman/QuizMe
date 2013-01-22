@@ -192,11 +192,9 @@ class FeedsController < ApplicationController
       :publication_id => publication.id
     })
 
-    post_aggregate_activity = Post.create_split_test(current_user.id, "post aggregate activity", "false", "true") == "true" ? true : false
-
-    user_post = current_user.app_answer(@question_asker, post, answer, { :post_aggregate_activity => post_aggregate_activity })
+    user_post = current_user.app_answer(@question_asker, post, answer, { :post_aggregate_activity => true })
     @conversation.posts << user_post
-    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_aggregate_activity => post_aggregate_activity, :link_to_parent => true }) if user_post
+    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_aggregate_activity => true, :link_to_parent => true }) if user_post
     @conversation.posts << asker_response
 
     render :partial => "conversation"
@@ -247,7 +245,6 @@ class FeedsController < ApplicationController
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       if params[:correct]
         response_post = asker.app_response(user_post, correct, { 
-          :post_aggregate_activity => false, 
           :response_text => response_text,
           :link_to_parent => false
         })

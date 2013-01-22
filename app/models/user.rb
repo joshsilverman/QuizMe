@@ -148,33 +148,20 @@ class User < ActiveRecord::Base
 	end
 
 	def app_answer asker, post, answer, options = {}
-    if options[:post_aggregate_activity] == true
-      user_post = Post.create({
-        :user_id => self.id,
-        :provider => 'wisr',
-        :text => answer.text,
-        :in_reply_to_post_id => post.id, 
-        :in_reply_to_user_id => asker.id,
-        :posted_via_app => true, 
-        :requires_action => false,
-        :interaction_type => 2,
-        :correct => answer.correct,
-        :intention => 'respond to question'
-      })      
-      asker.update_aggregate_activity_cache(self, answer.correct)
-    else
-      user_post = Post.tweet(self, answer.text, {
-        :reply_to => asker.twi_screen_name,
-        :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
-        :interaction_type => 2, 
-        :link_type => answer.correct ? "cor" : "inc", 
-        :in_reply_to_post_id => post.id, 
-        :in_reply_to_user_id => asker.id,
-        :link_to_parent => false, 
-        :correct => answer.correct,
-        :intention => 'respond to question'
-      })
-    end
+    user_post = Post.create({
+      :user_id => self.id,
+      :provider => 'wisr',
+      :text => answer.text,
+      :in_reply_to_post_id => post.id, 
+      :in_reply_to_user_id => asker.id,
+      :posted_via_app => true, 
+      :requires_action => false,
+      :interaction_type => 2,
+      :correct => answer.correct,
+      :intention => 'respond to question'
+    })   
+       
+    asker.update_aggregate_activity_cache(self, answer.correct)
 
     self.update_user_interactions({
       :learner_level => "feed answer", 
