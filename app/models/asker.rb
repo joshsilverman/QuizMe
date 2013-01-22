@@ -347,7 +347,7 @@ class Asker < User
         answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
         response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
         short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
-        response_text += " Learn more at #{short_resource_url}" if short_resource_url.present?        
+        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
     end 
 
