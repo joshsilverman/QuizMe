@@ -341,7 +341,7 @@ class Asker < User
       resource_url = nil
     else
       response_text = options[:response_text] || self.generate_response(correct)
-      if correct and options[:response_text].blank?
+      if correct and options[:response_text].blank? and options[:post_aggregate_activity].blank?
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
