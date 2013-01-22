@@ -248,7 +248,7 @@ class Post < ActiveRecord::Base
       if in_reply_to_post.is_question_post?
         conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
       else
-        conversation_id = in_reply_to_post.conversation_id
+        conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
       end
     end
 

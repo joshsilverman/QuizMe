@@ -338,7 +338,7 @@ class Asker < User
   end
 
   def app_response user_post, correct, options = {}
-    publication = user_post.conversation.publication || user_post.parent.publication
+    publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
 
     answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
@@ -402,6 +402,7 @@ class Asker < User
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
+      puts "sending autoresponse: #{user_post.to_json}"
       asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false})
       puts "autoresponse sent: post id #{asker_response.id}"
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
