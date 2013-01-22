@@ -87,7 +87,7 @@ task :redis_garbage_collector => :environment do
 end
 
 task :email_supporters => :environment do
-  # return unless Date.today.wday == 4
+  return unless Date.today.wday == 4
 
   drive = GoogleDrive.login("jsilverman@studyegg.com", "GlJnb@n@n@")
   spreadsheet = drive.spreadsheet_by_key("0AliLeS3-noSidGJESjZoZy11bHo2ekNQS2I5TGN6eWc").worksheet_by_title('Sheet1')
