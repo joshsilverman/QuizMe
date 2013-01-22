@@ -342,10 +342,17 @@ class Asker < User
 
     answerer = user_post.user
     if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
-      response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text}'"
+      answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
+      # answer_text = "#{answer_text[0..47]}..." if answer_text.size > 50
+      response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
       resource_url = nil
     else
-      response_text = (options[:response_text].present? ? options[:response_text] : self.generate_response(correct))
+      response_text = options[:response_text] || self.generate_response(correct)
+      if correct and options[:response_text].blank?
+        cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
+        cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
+        response_text += " RT '#{cleaned_user_post}'" 
+      end
       resource_url = (publication.question.resource_url ? "#{URL}/posts/#{publication.id}/refer" : "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}")
     end
 
@@ -366,6 +373,7 @@ class Asker < User
         :intention => 'grade'
       })
     else
+
       app_post = Post.tweet(self, response_text, {
         :reply_to => answerer.twi_screen_name,
         :long_url => "#{URL}/feeds/#{self.id}/#{publication.id}", 

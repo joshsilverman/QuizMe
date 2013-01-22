@@ -241,7 +241,7 @@ class FeedsController < ApplicationController
         :last_answer_at => (correct.present? ? user_post.created_at : nil)
       })
     else
-      response_text = params[:message].gsub("@#{params[:username]}", "")
+      response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       if params[:correct]
         response_post = asker.app_response(user_post, correct, { 
           :post_aggregate_activity => false, 
