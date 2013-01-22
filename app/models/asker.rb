@@ -125,9 +125,7 @@ class Asker < User
 
   def self.get_disengaging_users_and_reengagements(begin_range, end_range)
     # Get disengaging users
-    disengaging_users = User.includes(:posts)\
-      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)\
-      .where("posts.created_at > ?", end_range)
+    disengaging_users = User.where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
@@ -142,28 +140,35 @@ class Asker < User
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
-      # puts "checking user #{user.twi_screen_name} (#{user.id}) - #{test_option}"
+      puts "checking user #{user.twi_screen_name} (#{user.id}) - #{test_option}"
       strategy = test_option.split("/").map { |e| e.to_i }
-      # last_interaction_at = user.posts.sort_by { |p| p.created_at }.last.created_at
+      # # last_interaction_at = user.posts.sort_by { |p| p.created_at }.last.created_at
       # puts "last_interaction_at = #{user.last_interaction_at}"
-      # user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_interaction_at }.sort_by(&:created_at)
-      user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }
+      # # user_reengagments = recent_reengagements.select { |p| p.in_reply_to_user_id == user.id and p.created_at > last_interaction_at }.sort_by(&:created_at)
+      user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)
+      time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
       next_checkpoint = strategy[user_reengagments.size]
-      next if next_checkpoint.blank?
-      # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+      # puts user_reengagments.last.to_json
+      # next if next_checkpoint.blank?
       # puts "user_reengagments: #{user_reengagments.to_json}"
-      # if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
-      if (user_reengagments.blank? and ((Time.now - user.last_interaction_at) > next_checkpoint.days)) or (user_reengagments.present? and ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days))
-        # unless user_reengagments.blank?
-        #   puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
-        # end
-        # puts "sending to #{user.twi_screen_name}"
-        sample_asker_id = user.posts.sample.in_reply_to_user_id
-        asker_recipients[sample_asker_id] ||= {:recipients => []}
-        asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
+      puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
+      puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+      puts time_since_last_touchpoint > next_checkpoint.days
+      if time_since_last_touchpoint > next_checkpoint.days
+      # # if user_reengagments.blank? or ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days)
+      # if (user_reengagments.blank? and ((Time.now - user.last_interaction_at) > next_checkpoint.days)) or (user_reengagments.present? and ((Time.now - user_reengagments.last.created_at) > next_checkpoint.days))
+      #   unless user_reengagments.blank?
+      #     puts "time since last reengagement = #{(Time.now - user_reengagments.last.created_at)}"
+      #   end
+        puts "sending to #{user.twi_screen_name}"
+      #   sample_asker_id = user.posts.sample.in_reply_to_user_id
+      #   asker_recipients[sample_asker_id] ||= {:recipients => []}
+      #   asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
       end
+      puts "\n\n"
     end
-    asker_recipients
+    # asker_recipients
+    {}
   end
 
   def self.send_reengagement_tweets(asker_recipients)
