@@ -207,6 +207,7 @@ class FeedsController < ApplicationController
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
 
+
     unless conversation = user_post.conversation
       conversation = Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => params[:publication_id])
       conversation.posts << user_post
@@ -214,9 +215,9 @@ class FeedsController < ApplicationController
 
     if params[:interaction_type] == "4"
       user = user_post.user
-      response_text = params[:message].gsub("@#{params[:username]}", "")
 
-      if correct.present?
+      unless correct.nil?
+        response_text = asker.generate_response(correct)
         response_text = asker.get_DM_answer_nudge_script(response_text, user.id)
 
         user_post.update_attribute(:correct, correct)
@@ -229,6 +230,8 @@ class FeedsController < ApplicationController
           :type => "twitter",
           :in_reply_to => "new follower question DM"
         }
+      else
+        response_text = params[:message].gsub("@#{params[:username]}", "")
       end
       
       response_post = Post.dm(asker, user, response_text, {
