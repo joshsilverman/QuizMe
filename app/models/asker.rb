@@ -332,28 +332,26 @@ class Asker < User
 
   def app_response user_post, correct, options = {}
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
-
     answerer = user_post.user
-    if correct == false and Post.create_split_test(answerer.id, "include answer in response", "false", "true") == "true"
-      answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
-      # answer_text = "#{answer_text[0..47]}..." if answer_text.size > 50
-      response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
-      resource_url = nil
-    else
-      response_text = options[:response_text] || self.generate_response(correct)
-      if correct and options[:response_text].blank? and options[:post_aggregate_activity].blank?
+
+    response_text = options[:response_text] || self.generate_response(correct)
+    resource_url = nil
+
+    if options[:response_text].blank?
+      if correct and options[:post_aggregate_activity].blank?
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
+      elsif !correct
+        answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
+        answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
+        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
+        short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
+        response_text += " Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
-      resource_url = (publication.question.resource_url ? "#{URL}/posts/#{publication.id}/refer" : "#{URL}/questions/#{publication.question_id}/#{publication.question.slug}")
-    end
+    end 
 
     if options[:post_aggregate_activity] == true
-      if resource_url and correct == false
-        short_resource_url = Post.shorten_url(resource_url, 'wisr', 'res', answerer.twi_screen_name, publication.question.resource_url ? false : true)
-        response_text += " Find the answer at #{short_resource_url}" if short_resource_url.present?
-      end
       app_post = Post.create({
         :user_id => self.id,
         :provider => 'wisr',
@@ -366,7 +364,6 @@ class Asker < User
         :intention => 'grade'
       })
     else
-
       app_post = Post.tweet(self, response_text, {
         :reply_to => answerer.twi_screen_name,
         :long_url => "#{URL}/feeds/#{self.id}/#{publication.id}", 
@@ -433,7 +430,6 @@ class Asker < User
       unless in_reply_to
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication.id).order("created_at DESC").limit(1).first
         if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication.id).blank?
-          Post.trigger_split_test(answerer.id, 'include answer in response')
           in_reply_to = "incorrect answer follow up" 
         end
       end
@@ -469,7 +465,6 @@ class Asker < User
           end
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
-          Post.trigger_split_test(answerer.id, 'include answer in response')
           in_reply_to = "incorrect answer follow up" 
         when 'new user question mention'
           in_reply_to = "new follower question mention"

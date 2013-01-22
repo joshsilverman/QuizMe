@@ -369,10 +369,6 @@ class Post < ActiveRecord::Base
 
       u.segment
 
-      if retweeted_post.intention == 'post aggregate activity' or retweeted_post.intention == 'grade'
-        Post.trigger_split_test(u.id, 'post aggregate activity') 
-      end
-
       # puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
     end
   end
