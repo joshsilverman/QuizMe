@@ -249,6 +249,7 @@ class Post < ActiveRecord::Base
         conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
       else
         conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
+        in_reply_to_post.update_attribute :conversation_id, conversation_id
       end
     end
 
@@ -490,12 +491,13 @@ class Post < ActiveRecord::Base
           dm_ids << dm.id
         end
       else
+        puts post.conversation.to_json
         if post.conversation.present?
           post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
             conversations[post.id][:posts] << conversation_post
             conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
-            parent_publication = conversation_post.publication unless conversation_post.publication.nil?          
           end
+          parent_publication = post.conversation.publication
         else
           conversations[post.id][:posts] << post
         end
