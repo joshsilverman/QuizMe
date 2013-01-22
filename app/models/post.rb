@@ -139,7 +139,7 @@ class Post < ActiveRecord::Base
 
     answers = nil
     if options[:publication_id].present? and (options[:include_answers].present? or INCLUDE_ANSWERS.include? sender.id)
-      answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('/')})"
+      answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})"
     end
 
     tweet = Post.format_tweet(text, {
