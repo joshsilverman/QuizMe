@@ -491,13 +491,16 @@ class Post < ActiveRecord::Base
           dm_ids << dm.id
         end
       else
-        puts post.conversation.to_json
         if post.conversation.present?
           post.conversation.posts.where("user_id = ? or user_id = ?", post.user_id, post.in_reply_to_user_id).order("created_at DESC").each do |conversation_post|
             conversations[post.id][:posts] << conversation_post
             conversations[post.id][:users][conversation_post.user.id] = conversation_post.user if conversations[post.id][:users][conversation_post.user.id].nil?
           end
           parent_publication = post.conversation.publication
+          if post.conversation.post.is_question_post?
+            conversations[post.id][:posts] << post.conversation.post
+            conversations[post.id][:users][post.conversation.post.user.id] = post.conversation.post.user if conversations[post.id][:users][post.conversation.post.user.id].nil?
+          end
         else
           conversations[post.id][:posts] << post
         end
