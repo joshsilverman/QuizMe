@@ -30,6 +30,9 @@
               %p
                 %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
                 = best_in_place answer, :text, :type => :input
+            %p
+              Hint:
+              = best_in_place question, :hint, :type => :textarea
           - handle = User.askers.where(:id => question.created_for_asker_id).first.try(:twi_screen_name)
           %td= handle
           %td= question.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%m/%d %H:%M")
