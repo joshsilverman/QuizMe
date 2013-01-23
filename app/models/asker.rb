@@ -47,17 +47,30 @@ class Asker < User
   def update_followers
   	# Get lists of user ids from twitter + wisr
   	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
-  	wisr_follower_ids = self.followers.collect(&:twi_user_id)
+  	wisr_follower_ids = followers.collect(&:twi_user_id)
 
   	# Add new followers in wisr
-  	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| self.followers << User.find_or_create_by_twi_user_id(new_user_twi_id) }
+  	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
 
 		# Remove unfollowers from asker follow association  	
   	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-  	unfollowed_users.each { |unfollowed_user| self.followers.delete(unfollowed_user) }
+  	unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
   	
   	return twi_follower_ids 
   end 
+
+  def add_follower user
+    unless followers.include? user
+      followers << user 
+      user.segment
+    end
+  end
+
+  def remove_follower user
+    followers.delete(user)
+    user.follows.delete(self)
+    user.segment
+  end
 
   def self.post_aggregate_activity
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
@@ -126,8 +139,9 @@ class Asker < User
   def self.get_disengaging_users_and_reengagements(begin_range, end_range)
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
-      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)\
-      .where("posts.created_at > ?", end_range)
+      .where("users.activity_segment <> 7")\
+      .where("users.last_answer_at is not null")\
+      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
@@ -144,12 +158,12 @@ class Asker < User
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
-      next unless next_checkpoint = strategy[user_reengagments.size]
+      asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
+      next unless next_checkpoint = strategy[user_reengagments.size] and asker_id
       time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
       if time_since_last_touchpoint > next_checkpoint.days
-        sample_asker_id = user.posts.sample.in_reply_to_user_id
-        asker_recipients[sample_asker_id] ||= {:recipients => []}
-        asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
+        asker_recipients[asker_id] ||= {:recipients => []}
+        asker_recipients[asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
         # puts "sending to #{user.twi_screen_name}"
         # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
         # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
@@ -170,7 +184,7 @@ class Asker < User
         user = user_hash[:user]
         next unless follower_ids.include? user.twi_user_id
         option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")       
-        puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
+        # puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
         Post.tweet(asker, "#{option_text} #{question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -211,6 +225,7 @@ class Asker < User
         stop = true if follow_response.blank?
         sleep(1)
         user = User.find_or_create_by_twi_user_id(tid)
+        asker.add_follower(user)
         next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
         question = new_user_questions[asker.id][0]
 
@@ -387,19 +402,17 @@ class Asker < User
     user_post.update_attributes(:requires_action => false, :correct => correct)
 
     # Trigger after answer actions
-    self.after_answer_filter(answerer, user_post)
+    after_answer_filter(answerer, user_post)
 
     # Trigger split tests, MP events
-    self.update_metrics(answerer, user_post, publication)
+    update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
 
     app_post
   end   
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
-      puts "sending autoresponse: #{user_post.to_json}"
-      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false})
-      puts "autoresponse sent: post id #{asker_response.id}"
+      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
       conversation.posts << user_post
       conversation.posts << asker_response
@@ -407,26 +420,22 @@ class Asker < User
   end
 
   def after_answer_filter answerer, user_post
-    self.request_ugc(answerer)
+    request_ugc(answerer)
     Client.nudge answerer, self, user_post
     Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
-  def update_metrics answerer, user_post, publication
+  def update_metrics answerer, user_post, publication, options = {}
     in_reply_to = nil
     strategy = nil
     if user_post.posted_via_app
       # Check if in response to re-engage message
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
-        puts "wisr reengagement!"
-        puts "enrolled check for #{answerer.id} => #{answerer.enrolled_in_experiment?('reengagement interval')}"
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
         if answerer.enrolled_in_experiment? "reengagement interval"
-          puts "user is enrolled!"
           strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
-          puts "strategy: #{strategy}"
         end
         in_reply_to = "reengage inactive"
       end
@@ -448,8 +457,6 @@ class Asker < User
       end
 
       Post.trigger_split_test(answerer.id, 'wisr posts propagate to twitter') if answerer.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
-
-      puts "strategy: #{strategy}"
 
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
@@ -483,7 +490,8 @@ class Asker < User
         :account => self.twi_screen_name,
         :type => "twitter",
         :in_reply_to => in_reply_to,
-        :strategy => strategy
+        :strategy => strategy,
+        :autoresponse => (options[:autoresponse].present? ? options[:autoresponse] : false)
       }        
     end  
   end

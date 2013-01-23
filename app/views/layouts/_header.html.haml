@@ -7,6 +7,9 @@
           - if current_user
             - if current_user.is_role? 'admin'
               %li
+                %a{:href => "http://wisr-experiments.herokuapp.com", :tabindex => "-1"} Experiments
+
+              %li
                 .dropdown.nav-link
                   %a.nav-link{:href => "/askers", 'data-target' => "#"} Askers
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
@@ -44,6 +47,7 @@
                       %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
                     %li
                       %a{:href => "/split", :tabindex => "-1"} A/B Tests
+              
 
             - elsif current_user.is_role? 'client'
               %li
