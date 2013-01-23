@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
   scope :superuser, where(:lifecycle_segment => 6)
 
   # Activity segmentation scopes
+  scope :unfollowed, where(:activity_segment => 7)
   scope :disengaged, where(:activity_segment => 1)
   scope :disengaging, where(:activity_segment => 2)
   scope :slipping, where(:activity_segment => 3)
@@ -304,7 +305,9 @@ class User < ActiveRecord::Base
 
 	# Activity checks
 	def update_activity_segment	
-		if is_disengaged?
+		if is_unfollowed?
+			level = 7
+		elsif is_disengaged?
 			level = 1
 		elsif is_disengaging?
 			level = 2
@@ -319,6 +322,10 @@ class User < ActiveRecord::Base
 		end
 
 		transition :activity, level
+	end
+
+	def is_unfollowed?
+		follows.blank?
 	end
 
 	def is_disengaged?

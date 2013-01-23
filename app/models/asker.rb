@@ -47,17 +47,30 @@ class Asker < User
   def update_followers
   	# Get lists of user ids from twitter + wisr
   	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
-  	wisr_follower_ids = self.followers.collect(&:twi_user_id)
+  	wisr_follower_ids = followers.collect(&:twi_user_id)
 
   	# Add new followers in wisr
-  	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| self.followers << User.find_or_create_by_twi_user_id(new_user_twi_id) }
+  	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
 
 		# Remove unfollowers from asker follow association  	
   	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-  	unfollowed_users.each { |unfollowed_user| self.followers.delete(unfollowed_user) }
+  	unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
   	
   	return twi_follower_ids 
   end 
+
+  def add_follower user
+    unless followers.include? user
+      followers << user 
+      user.segment
+    end
+  end
+
+  def remove_follower user
+    followers.delete(user)
+    user.follows.delete(self)
+    user.segment
+  end
 
   def self.post_aggregate_activity
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
@@ -126,8 +139,9 @@ class Asker < User
   def self.get_disengaging_users_and_reengagements(begin_range, end_range)
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
-      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)\
-      .where("posts.created_at > ?", end_range)
+      .where("users.activity_segment <> 7")\
+      .where("users.last_answer_at is not null")\
+      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
@@ -144,20 +158,20 @@ class Asker < User
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
-      next unless next_checkpoint = strategy[user_reengagments.size]
+      follows_asker_ids = user.follows.collect(&:id)
+      next unless next_checkpoint = strategy[user_reengagments.size] and follows_asker_ids.present?
       time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
       if time_since_last_touchpoint > next_checkpoint.days
-        sample_asker_id = user.posts.sample.in_reply_to_user_id
+        sample_asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", follows_asker_ids).sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
-        puts "sending to #{user.twi_screen_name}"
-        puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
-        puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
-        puts "strategy: #{strategy}"
+        # puts "sending to #{user.twi_screen_name}"
+        # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
+        # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+        # puts "strategy: #{strategy}"
       end
     end
-    # asker_recipients
-    {}
+    asker_recipients
   end
 
   def self.send_reengagement_tweets(asker_recipients)
@@ -171,7 +185,7 @@ class Asker < User
         user = user_hash[:user]
         next unless follower_ids.include? user.twi_user_id
         option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")       
-        puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
+        # puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
         Post.tweet(asker, "#{option_text} #{question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -212,6 +226,7 @@ class Asker < User
         stop = true if follow_response.blank?
         sleep(1)
         user = User.find_or_create_by_twi_user_id(tid)
+        asker.add_follower(user)
         next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
         question = new_user_questions[asker.id][0]
 
