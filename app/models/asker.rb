@@ -150,13 +150,14 @@ class Asker < User
         sample_asker_id = user.posts.sample.in_reply_to_user_id
         asker_recipients[sample_asker_id] ||= {:recipients => []}
         asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
-        # puts "sending to #{user.twi_screen_name}"
-        # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
-        # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
-        # puts "strategy: #{strategy}"
+        puts "sending to #{user.twi_screen_name}"
+        puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
+        puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
+        puts "strategy: #{strategy}"
       end
     end
-    asker_recipients
+    # asker_recipients
+    {}
   end
 
   def self.send_reengagement_tweets(asker_recipients)
@@ -397,7 +398,7 @@ class Asker < User
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
-      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => trueå})
+      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
       conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
       conversation.posts << user_post
       conversation.posts << asker_response
