@@ -158,13 +158,12 @@ class Asker < User
       test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
-      follows_asker_ids = user.follows.collect(&:id)
-      next unless next_checkpoint = strategy[user_reengagments.size] and follows_asker_ids.present?
+      asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
+      next unless next_checkpoint = strategy[user_reengagments.size] and asker_id
       time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
       if time_since_last_touchpoint > next_checkpoint.days
-        sample_asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", follows_asker_ids).sample.in_reply_to_user_id
-        asker_recipients[sample_asker_id] ||= {:recipients => []}
-        asker_recipients[sample_asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
+        asker_recipients[asker_id] ||= {:recipients => []}
+        asker_recipients[asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
         # puts "sending to #{user.twi_screen_name}"
         # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
         # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
