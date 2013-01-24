@@ -75,4 +75,10 @@ class PostsController < ApplicationController
       redirect_to "/feeds/#{publication.user_id}"
     end
   end	
+
+  def nudge
+    nudge = Nudge.find(params[:id])
+    puts nudge.to_json
+    redirect_to nudge.url
+  end
 end
