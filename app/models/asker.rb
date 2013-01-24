@@ -130,7 +130,7 @@ class Asker < User
 		# Get popular publications
 		Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 2.days.ago).group_by(&:user_id).each do |user_id, posts|
       asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
-    end		 
+    end
 
     # Send reengagement tweets
     Asker.send_reengagement_tweets(asker_recipients) 
