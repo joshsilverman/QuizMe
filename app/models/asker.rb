@@ -139,7 +139,7 @@ class Asker < User
   def self.get_disengaging_users_and_reengagements(begin_range, end_range)
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
-      .where("users.activity_segment <> 7")\
+      .where("users.activity_segment != 7")\
       .where("users.last_answer_at is not null")\
       .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
