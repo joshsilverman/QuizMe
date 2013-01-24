@@ -420,7 +420,6 @@ class Stat < ActiveRecord::Base
         .each{|k,r| r.replace r.map{|o| o.user_ids}.join(',').split(',') }
     end
     transitions_to_segment_by_day.each{|k,v|v.each{|kk,vv| transitions_to_segment_by_day[k][kk] = vv.count}}
-    ap transitions_to_segment_by_day
 
     data = {}
     transitions_to_segment_by_day.each do |to_seg, transitions_by_day|
