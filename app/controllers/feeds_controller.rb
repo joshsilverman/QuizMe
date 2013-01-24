@@ -7,36 +7,12 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
-    @publications, posts, replies = Publication.recently_published
-    post_pub_map = {}
-    posts.each { |post| post_pub_map[post.id] = post.publication_id }
+    @publications, posts, actions = Publication.recently_published
     
-    @actions = {}
-    replies.each do |post_id, post_activity|
-      @actions[post_pub_map[post_id]] ||= []
-      user_ids = []
-      post_activity.each do |action|
-        next if user_ids.include? action.user_id
-        user = action.user
-        user_ids << user.id        
-        @actions[post_pub_map[post_id]] << {
-          :user => {
-            :id => user.id,
-            :twi_screen_name => user.twi_screen_name,
-            :twi_profile_img_url => user.twi_profile_img_url
-          },
-          :interaction_type => action.interaction_type, 
-        } unless @actions[post_pub_map[post_id]].nil?
-      end
-      @actions[post_pub_map[post_id]].uniq!{|a| a[:user][:id]}
-    end
-    @pub_grouped_posts = posts.group_by(&:publication_id)
+    @actions = Post.recent_activity_on_posts(posts, actions)
 
-    if current_user      
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) 
-    else
-      @responses = []
-    end
+    @responses = current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : []
+    
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
