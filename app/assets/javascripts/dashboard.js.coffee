@@ -188,6 +188,11 @@ class Dashboard
     chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
     chart.draw graph_data, cohort_options 
 
+  draw_lifecycle: =>
+    graph_data = google.visualization.arrayToDataTable(@lifecycle)
+    chart = new google.visualization.AreaChart(document.getElementById("lifecycle_graph"))
+    chart.draw graph_data, cohort_options 
+
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
 pg_options = 

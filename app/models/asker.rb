@@ -607,14 +607,23 @@ class Asker < User
       .where("created_at > ?", Date.today - (domain + 31).days)\
       .select(["to_char(posts.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"]).group("to_char(posts.created_at, 'YY/MM/DD')").all\
       .map{|p| {:created_at => p.created_at, :user_ids => p.user_ids.split(",")}}
-    user_ids_by_day = _user_ids_by_day  
+    user_ids_by_day = _user_ids_by_day\
       .group_by{|p| p[:created_at]}\
       .each{|k,r| r.replace r.first[:user_ids].uniq }\
 
     _user_ids_by_week = _user_ids_by_day.group_by{|p| p[:created_at].beginning_of_week}
     user_ids_by_week = {}
     _user_ids_by_week.each{|date, ids_wrapped_in_posts| user_ids_by_week[date] = ids_wrapped_in_posts.map{|ids_wrapped_in_post|ids_wrapped_in_post[:user_ids]}.flatten.uniq}
-    user_ids_by_week
+
+    followers_count_by_week = Relationship.select(["to_char(relationships.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(follower_id),',') AS follower_ids"])\
+      .where("followed_id IN (?)", Asker.ids).group("to_char(relationships.created_at, 'YY/MM/DD')")\
+      .group_by{|p| p[:created_at].beginning_of_week}\
+      .each{|k,r| r.replace r.map{|o| o.follower_ids}.join(',').split(',') }
+
+    unfollowers = Transition.select(["to_char(transitions.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"])\
+      .where(:segment_type => 2, :to_segment => 7).group("to_char(transitions.created_at, 'YY/MM/DD')")\
+      .group_by{|p| p[:created_at].beginning_of_week}\
+      .each{|k,r| r.replace r.map{|o| o.user_ids}.join(',').split(',') }
 
     data = []
     user_ids_by_week.each do |date, user_ids|
@@ -623,9 +632,11 @@ class Asker < User
       row += [user_ids_by_day.reject{|ddate, user_ids| ddate > date + 6.days || ddate < date - 24.days}.values.flatten.uniq.count]
       row += [user_ids.count]
       row += [(user_ids_by_day.reject{|ddate, user_ids| ddate > date + 6.days || ddate < date }.values.flatten.count.to_f / 7.0).round]
+      row += [followers_count_by_week[date].to_a.count]
+      row += [unfollowers[date].to_a.count]
       data << row
     end
-    data = [['Date', 'Us', 'MAUs', 'WAUs', 'DAUs']] + data
+    data = [['Date', 'Us', 'MAUs', 'WAUs', 'DAUs', "Followers", "Unfollows"]] + data #Followers, Unfollowers
     #data.pop
     require 'csv'
     CSV.open("tmp/exports/asker_stats_#{askers.collect(&:id).join('-').hash}.csv", "wb") do |csv|

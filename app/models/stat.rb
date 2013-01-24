@@ -37,8 +37,8 @@ class Stat < ActiveRecord::Base
       start_day = Date.today - (domain + 1).days
 
       existing_before[start_day - 1] = new_on\
-        .reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}
-        .collect{|k,v| v}
+        .reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}\
+        .collect{|k,v| v}\
         .sum
 
 
@@ -289,12 +289,12 @@ class Stat < ActiveRecord::Base
     # revert active
     title_row = ['Handle']
     User.askers.select([:id, :twi_screen_name]).all.each { |asker| handle_activity[asker.id] = [asker.twi_screen_name] }
-    user_grouped_posts = Post.joins(:user).not_spam.not_us.social
-      .where("posts.in_reply_to_user_id IN (?)", User.askers.collect(&:id))
-      .where("posts.created_at > ?", 1.week.ago)
-      .where("interaction_type <> 4")
-      .select([:user_id, :in_reply_to_user_id])
-      .order("posts.created_at DESC")
+    user_grouped_posts = Post.joins(:user).not_spam.not_us.social\
+      .where("posts.in_reply_to_user_id IN (?)", User.askers.collect(&:id))\
+      .where("posts.created_at > ?", 1.week.ago)\
+      .where("interaction_type <> 4")\
+      .select([:user_id, :in_reply_to_user_id])\
+      .order("posts.created_at DESC")\
       .group_by(&:user_id)
     user_names = User.select([:id, :twi_screen_name]).find(user_grouped_posts.keys).group_by(&:id)
     user_grouped_posts.each do |user_id, users_posts|
@@ -407,6 +407,37 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
+  def self.lifecycle
+    transitions_to_segment_by_day = {}
+    [0, 1, 2, 3, 4, 5, 6].each do |to_segment|  
+      i = to_segment
+      to_segment = nil if to_segment == 0
+      transitions_to_segment_by_day[i] = Transition.where(:segment_type => 2, :to_segment => to_segment)\
+        .select(["to_char(transitions.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"])\
+        .group("to_char(transitions.created_at, 'YY/MM/DD')")\
+        .order('created_at ASC')\
+        .group_by{|p| p[:created_at]}\
+        .each{|k,r| r.replace r.map{|o| o.user_ids}.join(',').split(',') }
+    end
+    transitions_to_segment_by_day.each{|k,v|v.each{|kk,vv| transitions_to_segment_by_day[k][kk] = vv.count}}
+
+    data = {}
+    transitions_to_segment_by_day.each do |to_seg, transitions_by_day|
+      transitions_by_day.each do |date, count|
+        data[date - 1.day] ||= {0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0}
+        data[date] ||= {0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0}
+        data[date][to_seg] = data[date - 1.day][to_seg] + count
+      end
+    end
+    data_r = data.map do |date, seg_counts| 
+      denom = seg_counts.values.sum
+      puts denom
+      denom = 1 if denom == 0
+      [date.strftime("%m-%d")] + seg_counts.values.map{|c| c.to_i.to_f/denom}
+    end
+    data_r = [['Date', 0, 1, 2, 3, 4, 5, 6]] + data_r
+  end
+
   def self.learner_levels
     graph_data = [['learner level', 'users']]
     LEARNER_LEVELS.each do |level|
@@ -415,8 +446,6 @@ class Stat < ActiveRecord::Base
     end
     return graph_data
   end
-
-
 
   def self.experiment_summary experiment_name
     case experiment_name

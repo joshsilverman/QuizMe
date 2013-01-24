@@ -14,13 +14,13 @@ class Transition < ActiveRecord::Base
 	def segment
 		case self.segment_type
 		when 1
-			puts 'lifecycle'
+			return 'lifecycle'
 		when 2
-			puts 'activity'
+			return 'activity'
 		when 3
-			puts 'interaction'
+			return 'interaction'
 		when 4
-			puts 'author'
+			return 'author'
 		end
 	end
 
