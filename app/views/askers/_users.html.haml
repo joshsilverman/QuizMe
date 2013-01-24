@@ -16,6 +16,10 @@
       %a{:href => "#users-learner_levels"} 
         Learner level breakdown
         %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-lifecycle"} 
+        Lifecycle breakdown by day
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
     .cohort
@@ -41,3 +45,9 @@
         #answer_source.panel.rounded.span10
           #answer_source_graph.graph
       = hidden_field_tag :answer_source_data, @answer_source_data.to_json if @answer_source_data
+
+    .lifecycle
+      #data_row.row
+        #lifecycle.panel.rounded.span10
+          #lifecycle_graph.graph
+      = hidden_field_tag :lifecycle_data, @lifecycle_data.to_json if @lifecycle_data

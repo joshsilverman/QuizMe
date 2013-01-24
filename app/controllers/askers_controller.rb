@@ -123,6 +123,8 @@ class AskersController < ApplicationController
       @learner_levels_data = Stat.learner_levels
     elsif params[:graph] == 'answer_source'
       @answer_source_data = Stat.answer_source
+    elsif params[:graph] == 'lifecycle'
+      @lifecycle_data = Stat.lifecycle
 
     #asker graphs
     elsif params[:graph] == 'handle_activity'

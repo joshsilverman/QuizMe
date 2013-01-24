@@ -607,26 +607,18 @@ class Asker < User
       .where("created_at > ?", Date.today - (domain + 31).days)\
       .select(["to_char(posts.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"]).group("to_char(posts.created_at, 'YY/MM/DD')").all\
       .map{|p| {:created_at => p.created_at, :user_ids => p.user_ids.split(",")}}
-    user_ids_by_day = _user_ids_by_day  
+    user_ids_by_day = _user_ids_by_day\
       .group_by{|p| p[:created_at]}\
       .each{|k,r| r.replace r.first[:user_ids].uniq }\
 
     _user_ids_by_week = _user_ids_by_day.group_by{|p| p[:created_at].beginning_of_week}
     user_ids_by_week = {}
     _user_ids_by_week.each{|date, ids_wrapped_in_posts| user_ids_by_week[date] = ids_wrapped_in_posts.map{|ids_wrapped_in_post|ids_wrapped_in_post[:user_ids]}.flatten.uniq}
-    user_ids_by_week
 
     followers_count_by_week = Relationship.select(["to_char(relationships.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(follower_id),',') AS follower_ids"])\
       .where("followed_id IN (?)", Asker.ids).group("to_char(relationships.created_at, 'YY/MM/DD')")\
       .group_by{|p| p[:created_at].beginning_of_week}\
       .each{|k,r| r.replace r.map{|o| o.follower_ids}.join(',').split(',') }
-
-    tmp_unfollowers = Transition.select(["to_char(transitions.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"])\
-      .where(:segment_type => 2, :to_segment => 7).group("to_char(transitions.created_at, 'YY/MM/DD')")
-    tmp_unfollowers.each do |t|
-      puts t.created_at
-      puts t.user_ids.split(',').to_a.count
-    end
 
     unfollowers = Transition.select(["to_char(transitions.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(user_id),',') AS user_ids"])\
       .where(:segment_type => 2, :to_segment => 7).group("to_char(transitions.created_at, 'YY/MM/DD')")\
