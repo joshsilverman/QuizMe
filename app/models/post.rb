@@ -3,6 +3,7 @@ class Post < ActiveRecord::Base
 	belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
   belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
+  belongs_to :nudge
   # has_many :comments, :conditions => { :published => true }
   # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 

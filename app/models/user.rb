@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
 	has_many :transitions
 
+
 	has_many :topics, :through => :askertopics
 	has_many :askertopics, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
@@ -12,6 +13,8 @@ class User < ActiveRecord::Base
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
 
+	has_many :nudges, :through => :posts
+	
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
 

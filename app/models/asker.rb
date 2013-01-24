@@ -1,6 +1,8 @@
 class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
+  has_many :nudges, :foreign_key => :asker_id
+
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
   default_scope where(:role => 'asker')
