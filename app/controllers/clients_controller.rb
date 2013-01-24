@@ -28,7 +28,6 @@ class ClientsController < ApplicationController
 
     @posts_by_week.each{|w,posts| @posts_by_week_by_it[w] = posts.group_by{|p| p.interaction_type}}
     @posts_by_month.each{|m,posts| @posts_by_month_by_it[m] = posts.group_by{|p| p.interaction_type}}
-    ap @posts_by_month_by_it
 
     @posts_by_week.each{|w,posts| @posts_by_week_by_user[w] = posts.group_by{|p| p.user_id}}
     @posts_by_month.each{|m,posts| @posts_by_month_by_user[m] = posts.group_by{|p| p.user_id}}
