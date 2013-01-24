@@ -104,7 +104,6 @@ ActiveRecord::Schema.define(:version => 20130124142736) do
   end
 
   create_table "nudges", :force => true do |t|
-    t.integer  "asker_id"
     t.integer  "client_id"
     t.string   "url"
     t.text     "text"

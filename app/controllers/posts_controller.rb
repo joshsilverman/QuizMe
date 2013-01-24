@@ -78,7 +78,11 @@ class PostsController < ApplicationController
 
   def nudge
     nudge = Nudge.find(params[:id])
-    puts nudge.to_json
+    Mixpanel.track_event "nudge conversion", {
+      :distinct_id => params[:user_id],
+      :asker => nudge.asker.twi_screen_name,
+      :client => nudge.client.twi_screen_name
+    }  
     redirect_to nudge.url
   end
 end
