@@ -107,8 +107,9 @@ ActiveRecord::Schema.define(:version => 20130124142736) do
     t.integer  "client_id"
     t.string   "url"
     t.text     "text"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.boolean  "active",     :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
   end
 
   create_table "posts", :force => true do |t|

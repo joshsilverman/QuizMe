@@ -4,6 +4,7 @@ class CreateNudges < ActiveRecord::Migration
       t.integer :client_id
       t.string :url
       t.text :text
+      t.boolean :active, :default => false
 
       t.timestamps
     end

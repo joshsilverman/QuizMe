@@ -205,7 +205,8 @@ class Post < ActiveRecord::Base
         :posted_via_app => true,
         :requires_action => false,
         :interaction_type => 4,
-        :intention => options[:intention]
+        :intention => options[:intention],
+        :nudge_id => options[:nudge_id]
       )
     rescue Exception => exception
       puts "exception in DM user"
