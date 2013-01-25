@@ -643,12 +643,12 @@ class Asker < User
       .group_by{|p| p[:created_at]}\
       .each{|k,r| r.replace r.first[:user_ids].uniq }\
 
-    _user_ids_by_week = _user_ids_by_day.group_by{|p| p[:created_at].beginning_of_week}
+    _user_ids_by_week = _user_ids_by_day.group_by{|p| p[:created_at].end_of_week}
     user_ids_by_week = {}
-    _user_ids_by_week.each{|date, ids_wrapped_in_posts| user_ids_by_week[date] = ids_wrapped_in_posts.map{|ids_wrapped_in_post|ids_wrapped_in_post[:user_ids]}.flatten.uniq}
+    _user_ids_by_week.keys.sort_by{|k|k}.each{|date| user_ids_by_week[date] = _user_ids_by_week[date].map{|ids_wrapped_in_post|ids_wrapped_in_post[:user_ids]}.flatten.uniq}
 
     followers_count_by_week = Relationship.select(["to_char(relationships.created_at, 'YY/MM/DD') as created_at", "array_to_string(array_agg(follower_id),',') AS follower_ids"])\
-      .where("followed_id IN (?)", Asker.ids).group("to_char(relationships.created_at, 'YY/MM/DD')")\
+      .where("followed_id IN (?)", askers.collect(&:id)).group("to_char(relationships.created_at, 'YY/MM/DD')")\
       .group_by{|p| p[:created_at].beginning_of_week}\
       .each{|k,r| r.replace r.map{|o| o.follower_ids}.join(',').split(',') }
 
@@ -668,7 +668,7 @@ class Asker < User
       row += [unfollowers[date].to_a.count]
       data << row
     end
-    data = [['Date', 'Us', 'MAUs', 'WAUs', 'DAUs', "Followers", "Unfollows"]] + data #Followers, Unfollowers
+    data = [['Date', 'Us', 'MAUs', 'WAUs', 'DAUs', "Followers", "Unfollowers"]] + data #Followers, Unfollowers
     #data.pop
     require 'csv'
     CSV.open("tmp/exports/asker_stats_#{askers.collect(&:id).join('-').hash}.csv", "wb") do |csv|

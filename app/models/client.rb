@@ -70,6 +70,6 @@ class Client < User
   # end
 
   def export_stats_to_csv
-    Asker.export_stats_to_csv askers, 30
+    Asker.export_stats_to_csv askers
   end
 end

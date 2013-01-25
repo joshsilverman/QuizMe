@@ -239,11 +239,57 @@ class User < ActiveRecord::Base
 			:to_segment => to_segment
 		})	
 
+    lifecycle_transition_comment to_segment if segment_type == 1
+
 		Post.trigger_split_test(id, "include answers in reengagement tweet (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "reengagement interval") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
 	end
+
+  def lifecycle_transition_comment to_segment
+    #find asker
+    asker = Asker.find posts.order("created_at DESC").first.in_reply_to_user_id
+
+    case to_segment
+    when 2 #to noob
+      comment = Post.create_split_test(user_post.user_id, "lifecycle transition => noob comment ()", 
+        "No comment", 
+        "Thanks for tweeting me your answer. I'll tweet you interesting questions as I see them.",
+        "Nice work. Can I tweet you interesting questions as I come accross them?",
+        "Keep tweeting me your answers. I'll keep track and follow up on mistakes."
+      )
+      Post.dm(asker, self, comment, {:intention => "lifecycle+"})
+    when 3 #to regular
+      comment = Post.create_split_test(user_post.user_id, "lifecycle transition => regular comment ()", 
+        "No comment", 
+        "You're off to a strong start. How can I make this better?",
+        "Your doing quite well -- really looking forward to seeing what you can master.",
+        "Your're starting to progress at a strong pace -- very glad."
+      )
+    when 4 #to advanced
+      comment = Post.create_split_test(user_post.user_id, "lifecycle transition => advanced comment ()", 
+        "No comment", 
+        "If you keep up the strong commitment, you're going to get really good at this.",
+        "It's great to see your commitment so far.",
+        "Very strong start with this material."
+      )
+    when 5 #to pro
+      comment = Post.create_split_test(user_post.user_id, "lifecycle transition => pro comment ()", 
+        "No comment", 
+        "Fantastic dedication to this material.",
+        "Great to watch your dedication.",
+        "You are well on your way to mastery with this."
+      )
+    when 6 #to superuser
+      comment = Post.create_split_test(user_post.user_id, "lifecycle transition => superuser comment ()", 
+        "No comment", 
+        "I'm inspired by you're dedication. How can we take this to the next level.",
+        "So glad to be learning with you. Your contribution is awesome.",
+        "Your contribution to this community continues to be really helpful. Big thanks."
+      )
+    end
+  end
 
 	def self.update_segments
 		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
