@@ -7,6 +7,7 @@ PROVIDERS = ["twitter"]
 # @ugly, this should make use of Devise roles (wtf)
 ADMINS = [1, 3, 4, 11]
 
+
 URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")#"http://localhost:3000")
 
 TWI_DEV_SAFE_API_CALLS = [

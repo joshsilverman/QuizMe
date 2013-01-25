@@ -36,6 +36,7 @@ Quizmemanager::Application.routes.draw do
   match "/graph/:party/:graph" => 'askers#graph'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'
   match "/posts/:publication_id/refer" => "posts#refer"
+  match "/nudge/:id/:user_id/:asker_id" => "posts#nudge"
 
   post "posts/update"
   post "posts/respond_to_post"

@@ -75,4 +75,14 @@ class PostsController < ApplicationController
       redirect_to "/feeds/#{publication.user_id}"
     end
   end	
+
+  def nudge
+    nudge = Nudge.find(params[:id])
+    Mixpanel.track_event "nudge conversion", {
+      :distinct_id => params[:user_id],
+      :asker => Asker.find(params[:asker_id]).twi_screen_name,
+      :client => nudge.client.twi_screen_name
+    }  
+    redirect_to nudge.url
+  end
 end

@@ -1,6 +1,7 @@
 class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
+
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
   default_scope where(:role => 'asker')
@@ -421,9 +422,14 @@ class Asker < User
 
   def after_answer_filter answerer, user_post
     request_ugc(answerer)
-    Client.nudge answerer, self, user_post
+    nudge(answerer)
     Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
+
+  def nudge answerer
+    return unless client and nudge = client.nudges.active.sample and answerer.nudges.where(:client_id => client.id).blank? and answerer.posts.answers.where(:in_reply_to_user_id => id).size > 4
+    nudge.send_to(self, answerer)
+  end
 
   def update_metrics answerer, user_post, publication, options = {}
     in_reply_to = nil

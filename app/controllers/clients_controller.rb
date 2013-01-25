@@ -3,7 +3,6 @@ class ClientsController < ApplicationController
   before_filter :admin?, :except => :report
   
   def report
-
     @client = Client.find params[:id]
     redirect_to "/" unless @client
     @askers = @client.askers
@@ -62,18 +61,18 @@ class ClientsController < ApplicationController
       .group(:user_id).count
   end
 
-  def nudge
-    @user = User.find params[:user_id]
-    @asker = Asker.find params[:asker_id]
-    unless @asker and @user
-      render :text => 'no user or no asker', :status => 404
-      return
-    end
+  # def nudge
+  #   @user = User.find params[:user_id]
+  #   @asker = Asker.find params[:asker_id]
+  #   unless @asker and @user
+  #     render :text => 'no user or no asker', :status => 404
+  #     return
+  #   end
 
-    if Client.nudge @user, @asker
-      render :text => nil, :status => 200
-    else
-      render :text => 'user already nudged', :status => 400
-    end
-  end
+  #   if Client.nudge @user, @asker
+  #     render :text => nil, :status => 200
+  #   else
+  #     render :text => 'user already nudged', :status => 400
+  #   end
+  # end
 end

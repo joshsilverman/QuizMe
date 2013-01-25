@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
 
+	has_many :nudges, :through => :posts, :primary_key => :in_reply_to_user_id
+	
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
 
@@ -20,7 +22,7 @@ class User < ActiveRecord::Base
 
   has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :followers, :through => :reverse_relationships, :source => :follower
-  
+
   scope :supporters, where("users.role == 'supporter'")
   scope :not_asker_not_us, where("users.id not in (?) and users.role != 'asker'" , ADMINS)
 
@@ -173,6 +175,10 @@ class User < ActiveRecord::Base
     segment
 
     user_post
+	end
+
+	def nudges # sloppy workaround - cant get has_many through to use a custom foreign key...
+		Nudge.where("id in (?)", Post.where("in_reply_to_user_id = ? and nudge_id is not null", id).collect(&:nudge_id))
 	end
 
 	def update_user_interactions(params = {})
