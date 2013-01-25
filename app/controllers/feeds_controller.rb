@@ -21,6 +21,10 @@ class FeedsController < ApplicationController
       @directory[ACCOUNT_DATA[id][:category]] = [] unless @directory[ACCOUNT_DATA[id][:category]] 
       @directory[ACCOUNT_DATA[id][:category]] << data[0]
     end
+
+    @question_count = Publication.published.size
+    @questions_answered = Post.answers.size
+    @followers = Relationship.select("DISTINCT follower_id").size    
   end
 
   def show

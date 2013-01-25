@@ -32,13 +32,13 @@
 		%ul
 			%li{:style => "border-top: 0px solid #E8E8E8 !important;"}
 				%p
-					%b= Publication.published_count
+					%b= @question_count
 					questions
 			%li
 				%p
-					%b= Post.answers_count 
+					%b= @questions_answered
 					responses
 			%li
 				%p
-					%b= Stat.followers_count
+					%b= @followers
 					followers
