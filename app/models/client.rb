@@ -1,7 +1,7 @@
 class Client < User
   belongs_to :rate_sheet
   has_many :askers
-  has_many :nudges, :foreign_key => :client_id
+  has_many :nudge_types, :foreign_key => :client_id
 
   default_scope where(:role => 'client')
 

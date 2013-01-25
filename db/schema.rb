@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(:version => 20130124142736) do
     t.datetime "updated_at"
   end
 
-  create_table "nudges", :force => true do |t|
+  create_table "nudge_types", :force => true do |t|
     t.integer  "client_id"
     t.string   "url"
     t.text     "text"
@@ -132,7 +132,7 @@ ActiveRecord::Schema.define(:version => 20130124142736) do
     t.boolean  "correct"
     t.string   "intention"
     t.boolean  "autocorrect"
-    t.integer  "nudge_id"
+    t.integer  "nudge_type_id"
   end
 
   add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"

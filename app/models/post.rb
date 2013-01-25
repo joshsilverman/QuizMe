@@ -3,7 +3,7 @@ class Post < ActiveRecord::Base
 	belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
   belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
-  belongs_to :nudge
+  belongs_to :nudge_type
   # has_many :comments, :conditions => { :published => true }
   # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 
@@ -49,7 +49,7 @@ class Post < ActiveRecord::Base
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
 
-  scope :nudge, where("nudge_id is not null")
+  scope :nudge, where("nudge_type_id is not null")
 
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
@@ -208,7 +208,7 @@ class Post < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 4,
         :intention => options[:intention],
-        :nudge_id => options[:nudge_id]
+        :nudge_type_id => options[:nudge_type_id]
       )
     rescue Exception => exception
       puts "exception in DM user"

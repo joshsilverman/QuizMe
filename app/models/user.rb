@@ -177,8 +177,8 @@ class User < ActiveRecord::Base
     user_post
 	end
 
-	def nudges # sloppy workaround - cant get has_many through to use a custom foreign key...
-		Nudge.where("id in (?)", Post.where("in_reply_to_user_id = ? and nudge_id is not null", id).collect(&:nudge_id))
+	def nudge_types # sloppy workaround - cant get has_many through to use a custom foreign key...
+		NudgeType.where("id in (?)", Post.where("in_reply_to_user_id = ? and nudge_type_id is not null", id).collect(&:nudge_type_id))
 	end
 
 	def update_user_interactions(params = {})

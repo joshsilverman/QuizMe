@@ -422,13 +422,13 @@ class Asker < User
 
   def after_answer_filter answerer, user_post
     request_ugc(answerer)
-    # nudge(answerer)
+    nudge(answerer)
     Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
   def nudge answerer
-    return unless client and nudge = client.nudges.active.sample and answerer.nudges.where(:client_id => client.id).blank? and answerer.posts.answers.where(:in_reply_to_user_id => id).size > 4
-    nudge.send_to(self, answerer)
+    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:in_reply_to_user_id => id).size > 4
+    nudge_type.send_to(self, answerer)
   end
 
   def update_metrics answerer, user_post, publication, options = {}
