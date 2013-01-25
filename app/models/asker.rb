@@ -422,7 +422,7 @@ class Asker < User
 
   def after_answer_filter answerer, user_post
     request_ugc(answerer)
-    nudge(answerer)
+    # nudge(answerer)
     Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
