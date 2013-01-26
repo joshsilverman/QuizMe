@@ -427,7 +427,30 @@ class Asker < User
   end 
 
   def nudge answerer
-    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:in_reply_to_user_id => id).size > 4
+    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 4
+    
+    # if client.id == 14699
+    #   nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "SATHabit copy (click-through) < ? >", 
+    #     "You're doing really well! I offer a much more comprehensive (free) course here: {link}",
+    #     "Nice work so far! You can practice with customized questions at: {link}",
+    #     "Want to see how you would score on the SAT? Check it out: {link}",
+    #     "Hey, if you're interested, you can get a personalized SAT question of the day at {link}!",
+    #     "You've answered {X} questions, with just {25-X} more you could have gotten an SAT score! Get one here: {link}"
+    #     # "Great work so far! If you're interested, I have a more rigorous SAT prep course:",
+    #     # "Howdy, are you taking the SAT soon? I have a very helpful (free) course:",
+    #     # "If you're taking the SAT soon, I have a course you might find helpful :) Check it out:"
+    #   ))
+    # end
+
+    # elsif client.id == 23624
+    #   nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "InstaEDU copy (click-through) < ? >", 
+    #     "If you're interested, we work with a Biology tutor website. Could this be helpful?", 
+    #     "",
+    #     "",
+    #     ""
+    #   ))      
+    # end
+
     nudge_type.send_to(self, answerer)
   end
 
@@ -461,8 +484,6 @@ class Asker < User
           in_reply_to = "new follower question mention"
         end
       end
-
-      Post.trigger_split_test(answerer.id, 'wisr posts propagate to twitter') if answerer.posts.where("intention = ? and created_at < ?", 'twitter feed propagation experiment', 1.day.ago).present?
 
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
