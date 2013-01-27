@@ -131,6 +131,8 @@ class AskersController < ApplicationController
       @days_since_active_when_reengaged_v_response_rate_data = Stat.days_since_active_when_reengaged_v_response_rate
     elsif params[:graph] == 'days_since_active_v_number_of_reengagement_attempts'
       @days_since_active_v_number_of_reengagement_attempts_data = Stat.days_since_active_v_number_of_reengagement_attempts
+    elsif params[:graph] == 'age_v_days_since_active'
+      @age_v_days_since_active_data = Stat.age_v_days_since_active
 
     #asker graphs
     elsif params[:graph] == 'handle_activity'

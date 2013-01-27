@@ -207,6 +207,11 @@ class Dashboard
     graph_data = google.visualization.arrayToDataTable(@days_since_active_v_number_of_reengagement_attempts)
     chart = new google.visualization.ScatterChart(document.getElementById("days_since_active_v_number_of_reengagement_attempts_graph"))
     chart.draw graph_data, days_since_active_v_number_of_reengagement_attempts_graph_options 
+  
+  draw_age_v_days_since_active: =>
+    graph_data = google.visualization.arrayToDataTable(@age_v_days_since_active)
+    chart = new google.visualization.ScatterChart(document.getElementById("age_v_days_since_active_graph"))
+    chart.draw graph_data, age_v_days_since_active_graph_options 
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -494,6 +499,25 @@ days_since_active_v_number_of_reengagement_attempts_graph_options =
       targetAxisIndex:1
      2:
       targetAxisIndex:1
+
+age_v_days_since_active_graph_options = 
+  width: 860
+  height: 500
+  legend: "none"
+  pointSize: 0.1
+  colors: [
+    "#5E79C4",
+    "#1D3880"
+  ]
+  chartArea:  
+    width: 770
+    left: 55
+    height: 450
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+    direction:1
 
 options = 
   width: 425

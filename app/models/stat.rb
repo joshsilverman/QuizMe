@@ -548,6 +548,25 @@ class Stat < ActiveRecord::Base
     data
   end
 
+  def self.age_v_days_since_active
+    user_ids_to_last_active = Hash[*Post.not_us.not_spam\
+      .where("created_at > ?", Time.now - 180.days)\
+      .where("correct IS NOT NULL")\
+      .select(["user_id","max(created_at) AS most_recent_created_at"]).group('user_id').map{|p|[p.user_id, Time.parse(p.most_recent_created_at)]}.flatten]
+
+    user_ids_to_first_post_created_ats = Hash[*Post.not_spam.not_us\
+      .select(["user_id", "min(created_at) as first_active_at"])\
+      .group("user_id").map{|p| [p.user_id, Time.parse(p.first_active_at)]}.flatten]
+
+
+    data = [['Age', 'Days inactive']]
+    user_ids_to_first_post_created_ats.each do |user_id, first_active_at|
+      next if user_ids_to_last_active[user_id].nil?
+      data << [(Time.now - first_active_at)/1.day, (Time.now - user_ids_to_last_active[user_id])/1.day]
+    end
+    data
+  end
+
   def self.experiment_summary experiment_name
     case experiment_name
     when "post aggregate activity"
