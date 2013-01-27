@@ -79,6 +79,7 @@ class PostsController < ApplicationController
   def nudge
     nudge = NudgeType.find(params[:id])
     user = User.find(params[:user_id])
+    Post.trigger_split_test(user.id, "SATHabit copy (click-through) < 123 >")
     Mixpanel.track_event "nudge conversion", {
       :distinct_id => params[:user_id],
       :asker => Asker.find(params[:asker_id]).twi_screen_name,
