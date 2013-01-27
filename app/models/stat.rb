@@ -448,7 +448,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.age_v_reengagement_v_response_rate
-    #ost.where(intention: 'reengage inactive').select(['id']).collect &:id
+    #post.where(intention: 'reengage inactive').select(['id']).collect &:id
     reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
     reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
 
@@ -482,6 +482,50 @@ class Stat < ActiveRecord::Base
       h = reengagements_and_response_rate_by_age[date]
       response_rate = h[:answered].to_f / (h[:answered] + h[:unanswered])
       data << [date, h[:reengagements], response_rate]
+    end
+    data
+  end
+
+  def self.days_since_active_when_reengaged_v_response_rate
+    reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
+    reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
+    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+      .select(["in_reply_to_user_id", "array_to_string(array_agg(EXTRACT(EPOCH FROM created_at) :: bigint || '--' || id),',') AS created_ats"])\
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
+
+    user_ids_to_posts_as_str = Post.not_spam.not_us.select(['user_id', "array_to_string(array_agg(EXTRACT(EPOCH FROM created_at) :: bigint),',') AS created_ats"]).group('user_id')
+    users_with_posts_created_ats = {}
+    user_ids_to_posts_as_str.each{|obj| users_with_posts_created_ats[obj.user_id] = obj.created_ats.split(",")}
+
+    days_since_engaged_with_response_rate = {}
+    user_ids_to_reengagement_dates.each do |user_id, created_ats_with_ids|
+      next if users_with_posts_created_ats[user_id.to_i].nil? # no posts queried probably because the user is one of us
+      created_ats_with_ids.split(',').each do |created_at_with_id|
+        created_at, id = created_at_with_id.split('--')
+        created_at = created_at.to_f
+        id = id.to_i
+        most_recent_post_created_at = users_with_posts_created_ats[user_id.to_i].map{|x|x.to_i}.reject{|t| t.to_i >= created_at}.max
+        next if most_recent_post_created_at.nil? # no previous post
+
+        days_since_active_when_reengaged = ((created_at - most_recent_post_created_at)/86400).round
+
+        days_since_engaged_with_response_rate[days_since_active_when_reengaged] ||= {answered: 0, unanswered: 0, reengagements: 0}
+        days_since_engaged_with_response_rate[days_since_active_when_reengaged][:reengagements] += 1
+        if reengagement_ids_to_child_ids[id.to_i].nil?
+          days_since_engaged_with_response_rate[days_since_active_when_reengaged][:unanswered] += 1
+        else
+          days_since_engaged_with_response_rate[days_since_active_when_reengaged][:answered] += 1
+        end
+      end
+    end
+    days_since_engaged_with_response_rate
+
+    data = [['Date', 'Reengagements', 'Response rate']]
+    days_since_engaged_with_response_rate.keys.sort.each do |day_count|
+      next if day_count > 30
+      h = days_since_engaged_with_response_rate[day_count]
+      response_rate = h[:answered].to_f / (h[:answered] + h[:unanswered])
+      data << [day_count, h[:reengagements], response_rate]
     end
     data
   end

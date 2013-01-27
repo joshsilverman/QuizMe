@@ -30,6 +30,14 @@
 				.loading {
 					float:right;
 				}
+				background-color:#f9f9f9;
+				padding-left:20px;
+
+				&.heading {
+					background-color:white;
+					color:#555;
+					padding-left:12px;
+				}
 			}
 
 			.active a {

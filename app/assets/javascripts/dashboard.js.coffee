@@ -198,6 +198,11 @@ class Dashboard
     chart = new google.visualization.ColumnChart(document.getElementById("age_v_reengagement_v_response_rate_graph"))
     chart.draw graph_data, age_v_reengagement_v_response_rate_graph_options 
 
+  draw_days_since_active_when_reengaged_v_response_rate: =>
+    graph_data = google.visualization.arrayToDataTable(@days_since_active_when_reengaged_v_response_rate)
+    chart = new google.visualization.ColumnChart(document.getElementById("days_since_active_when_reengaged_v_response_rate_graph"))
+    chart.draw graph_data, days_since_active_when_reengaged_v_response_rate_graph_options 
+
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
 pg_options = 
@@ -407,15 +412,49 @@ age_v_reengagement_v_response_rate_graph_options =
     direction:1
   vAxis:
     0: 
-      logScale: false,
+      logScale: false
     1: 
-      logScale: false, 
+      logScale: false
       maxValue: 1
   series:
      0:
-      targetAxisIndex:0,
+      targetAxisIndex:0
      1:
-      targetAxisIndex:1,
+      targetAxisIndex:1
+     2:
+      targetAxisIndex:1
+
+days_since_active_when_reengaged_v_response_rate_graph_options = 
+  width: 860
+  height: 500
+  legend: "none"
+  pointSize: 0
+  lineWidth: 0.25
+  colors: [
+    "#B1C2F0", 
+    "#5E79C4",
+    "#1D3880"
+  ]
+  chartArea:  
+    width: 770
+    left: 55
+    height: 450
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+    direction:1
+  vAxis:
+    0: 
+      logScale: false
+    1: 
+      logScale: false
+      maxValue: 1
+  series:
+     0:
+      targetAxisIndex:0
+     1:
+      targetAxisIndex:1
      2:
       targetAxisIndex:1
 
