@@ -14,7 +14,7 @@
 
     %li
       %a.heading
-        Lifecycle
+        Lifecycle Progression
     %li 
       %a{:href => "#users-learner_levels"} 
         Learner level breakdown
@@ -43,7 +43,13 @@
       %a{:href => "#users-days_since_active_when_reengaged_v_response_rate"} 
         Days since active when reengaged 
         %br
-        v Repsone %
+        v Response %
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-days_since_active_v_number_of_reengagement_attempts"} 
+        Days since active 
+        %br
+        v reengagements since inactive
         %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
@@ -88,3 +94,8 @@
         #days_since_active_when_reengaged_v_response_rate.panel
           #days_since_active_when_reengaged_v_response_rate_graph.graph
       = hidden_field_tag :days_since_active_when_reengaged_v_response_rate_data, @days_since_active_when_reengaged_v_response_rate_data.to_json if @days_since_active_when_reengaged_v_response_rate_data      
+    .days_since_active_v_number_of_reengagement_attempts
+      #data_row.row
+        #days_since_active_v_number_of_reengagement_attempts.panel
+          #days_since_active_v_number_of_reengagement_attempts_graph.graph
+      = hidden_field_tag :days_since_active_v_number_of_reengagement_attempts_data, @days_since_active_v_number_of_reengagement_attempts_data.to_json if @days_since_active_v_number_of_reengagement_attempts_data

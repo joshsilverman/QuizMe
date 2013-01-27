@@ -518,7 +518,6 @@ class Stat < ActiveRecord::Base
         end
       end
     end
-    days_since_engaged_with_response_rate
 
     data = [['Date', 'Reengagements', 'Response rate']]
     days_since_engaged_with_response_rate.keys.sort.each do |day_count|
@@ -526,6 +525,25 @@ class Stat < ActiveRecord::Base
       h = days_since_engaged_with_response_rate[day_count]
       response_rate = h[:answered].to_f / (h[:answered] + h[:unanswered])
       data << [day_count, h[:reengagements], response_rate]
+    end
+    data
+  end
+
+  def self.days_since_active_v_number_of_reengagement_attempts
+    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+      .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at),',') AS created_ats"])\
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
+    user_ids_to_last_active = Hash[*Post.not_us.not_spam\
+      .where("created_at > ?", Time.now - 180.days)\
+      .where("correct IS NOT NULL")\
+      .select(["user_id","max(created_at) AS most_recent_created_at"]).group('user_id').map{|p|[p.user_id, Time.parse(p.most_recent_created_at)]}.flatten]
+
+    data = [['Days', 'Reengagements']]
+    user_ids_to_last_active.each do |user_id, last_active_time|
+      next if user_ids_to_reengagement_dates[user_id].nil?
+      reengagement_attempts = user_ids_to_reengagement_dates[user_id].split(',').map{|created_at|Time.parse(created_at)}
+      reengagement_attempts_count = reengagement_attempts.reject{|date| date < last_active_time}.count
+      data << [(Time.now - last_active_time)/1.day, reengagement_attempts_count]
     end
     data
   end

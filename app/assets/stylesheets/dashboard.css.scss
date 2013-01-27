@@ -30,11 +30,11 @@
 				.loading {
 					float:right;
 				}
-				background-color:#f9f9f9;
+				background-color:white;
 				padding-left:20px;
 
 				&.heading {
-					background-color:white;
+					background-color:#f9f9f9;
 					color:#555;
 					padding-left:12px;
 				}
@@ -58,7 +58,7 @@
 
 			margin-top:0px;
 			//padding-top:20px;
-			overflow:scroll;
+			//overflow:scroll;
 		}
 	}
 
