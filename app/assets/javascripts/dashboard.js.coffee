@@ -193,6 +193,11 @@ class Dashboard
     chart = new google.visualization.AreaChart(document.getElementById("lifecycle_graph"))
     chart.draw graph_data, cohort_options 
 
+  draw_age_v_reengagement_v_response_rate: =>
+    graph_data = google.visualization.arrayToDataTable(@age_v_reengagement_v_response_rate)
+    chart = new google.visualization.ColumnChart(document.getElementById("age_v_reengagement_v_response_rate_graph"))
+    chart.draw graph_data, age_v_reengagement_v_response_rate_graph_options 
+
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
 pg_options = 
@@ -221,7 +226,7 @@ pg_options =
   colors: ['orange', 'green', 'orange', "#1D3880"]
 
 learner_levels_options = 
-  width: 880
+  width: 850
   height: 450
   pointSize: 3
   lineWidth: 3
@@ -313,14 +318,14 @@ revenue_options =
       min: 0
 
 handle_activity_options = 
-  width: 880
-  height: 550
+  width: 850
+  height: 520
   legend: "none"
   pointSize: 3
   lineWidth: 2
   isStacked: true
   chartArea:  
-    width: 1170
+    width: 820
     left: 42
     height: 380
     top: 15
@@ -356,7 +361,7 @@ questions_options =
       min: 0
 
 cohort_options = 
-  width: 880
+  width: 850
   height: 450
   legend: "none"
   pointSize: 0
@@ -379,6 +384,40 @@ cohort_options =
     viewWindowMode: 'explicit'
     viewWindow:
       min: 0
+
+age_v_reengagement_v_response_rate_graph_options = 
+  width: 850
+  height: 500
+  legend: "none"
+  pointSize: 0
+  lineWidth: 0.25
+  colors: [
+    "#B1C2F0", 
+    "#5E79C4",
+    "#1D3880"
+  ]
+  chartArea:  
+    width: 780
+    left: 42
+    height: 450
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+    direction:1
+  vAxis:
+    0: 
+      logScale: false,
+    1: 
+      logScale: false, 
+      maxValue: 1
+  series:
+     0:
+      targetAxisIndex:0,
+     1:
+      targetAxisIndex:1,
+     2:
+      targetAxisIndex:1
 
 options = 
   width: 425

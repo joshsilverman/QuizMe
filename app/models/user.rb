@@ -431,15 +431,19 @@ class User < ActiveRecord::Base
 
   def number_of_weeks_with_answers options = {}
   	user_posts = options[:posts].present? ? options[:posts] : posts
-    user_posts.answers.group_by {|p| p.created_at.strftime('%W')}.size
+    user_posts.answers.group_by {|p| p.created_at.strftime('%W-%y')}.size
   end
 
   def number_of_days_with_answers options = {}
   	user_posts = options[:posts].present? ? options[:posts] : posts
-    user_posts.answers.group_by {|p| p.created_at.strftime('%D')}.size    
+    user_posts.answers.group_by {|p| p.created_at.strftime('%D-%y')}.size    
   end
 
   def interaction_type_grouped_posts
   	posts.group('interaction_type').count
+  end
+
+  def age
+    ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
 end

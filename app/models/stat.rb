@@ -447,6 +447,45 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
+  def self.age_v_reengagement_v_response_rate
+    #ost.where(intention: 'reengage inactive').select(['id']).collect &:id
+    reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
+    reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
+
+    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+      .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at || '--' || id),',') AS created_ats"])\
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
+
+    user_ids_to_first_post_created_ats = Hash[*Post.not_spam\
+      .select(["user_id", "min(created_at) as created_at"])\
+      .group("user_id").map{|p| [p.user_id, p.created_at]}.flatten]
+
+    reengagements_and_response_rate_by_age = {}
+    user_ids_to_reengagement_dates.each do |user_id, reengagement_dates_with_ids|
+      reengagement_dates_with_ids.split(',').each do |reengagement_date_with_id|
+        created_at, id = reengagement_date_with_id.split('--')
+        id = id.to_i
+        created_at = Time.parse(created_at)
+        age = ((Time.now - created_at)/1.day).round
+
+        reengagements_and_response_rate_by_age[age] ||= {answered: 0, unanswered: 0, reengagements: 0}
+        reengagements_and_response_rate_by_age[age][:reengagements] += 1
+        if reengagement_ids_to_child_ids[id].nil?
+          reengagements_and_response_rate_by_age[age][:unanswered] += 1
+        else
+          reengagements_and_response_rate_by_age[age][:answered] += 1
+        end
+      end
+    end
+    data = [['Date', 'Reengagements', 'Response rate']]
+    reengagements_and_response_rate_by_age.keys.sort.each do |date|
+      h = reengagements_and_response_rate_by_age[date]
+      response_rate = h[:answered].to_f / (h[:answered] + h[:unanswered])
+      data << [date, h[:reengagements], response_rate]
+    end
+    data
+  end
+
   def self.experiment_summary experiment_name
     case experiment_name
     when "post aggregate activity"

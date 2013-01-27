@@ -125,6 +125,8 @@ class AskersController < ApplicationController
       @answer_source_data = Stat.answer_source
     elsif params[:graph] == 'lifecycle'
       @lifecycle_data = Stat.lifecycle
+    elsif params[:graph] == 'age_v_reengagement_v_response_rate'
+      @age_v_reengagement_v_response_rate_data = Stat.age_v_reengagement_v_response_rate
 
     #asker graphs
     elsif params[:graph] == 'handle_activity'

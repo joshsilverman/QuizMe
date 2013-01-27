@@ -11,7 +11,7 @@
         %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
-    .handle_activity.panel.rounded.span10
+    .handle_activity.panel
       #data_row.row
         #handle_activity_graph.graph
       = hidden_field_tag :handle_activity_data, @handle_activity.to_json
