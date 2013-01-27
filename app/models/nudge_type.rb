@@ -6,12 +6,18 @@ class NudgeType < ActiveRecord::Base
 
   scope :active, where("active = ?", true)
 
-  def send_to asker, user, dm = nil
+  def send_to asker, user, dm = nil, short_url = nil
     text.split("\n").each do |message|
-      message.gsub!("{link}", Post.shorten_url("#{URL}/nudge/#{id}/#{user.id}/#{asker.id}", 'twi', 'wisr', asker.twi_screen_name)) if message.include? "{link}"
+      
+      if message.include? "{link}"
+        short_url = Post.shorten_url("#{URL}/nudge/#{id}/#{user.id}/#{asker.id}", 'twi', 'wisr', asker.twi_screen_name)
+        message.gsub!("{link}", short_url)
+      end
+
       dm = Post.dm(asker, user, message, {
     		:intention => 'nudge',
-        :nudge_type_id => id
+        :nudge_type_id => id,
+        :short_url => short_url
     	})
     end
     if dm
