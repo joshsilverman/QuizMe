@@ -232,6 +232,7 @@ class User < ActiveRecord::Base
 			segment_type = 4
 		end
 
+    comment = nil
     if segment_type == 1
       comment = lifecycle_transition_comment(to_segment)
     end
