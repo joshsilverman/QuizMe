@@ -1,11 +1,11 @@
 class Classifier
-  def initialize domain = 500, opts = {:interaction_type => true, :twi_screen_name => true, :previous_spam => true, :previous_real => true}
+  def initialize domain = 250, opts = {:interaction_type => true, :twi_screen_name => false, :previous_spam => false, :previous_real => false, :stem_links => true}
     @domain = domain
     @opts = opts
 
-    @store = StuffClassifier::FileStorage.new("#{Rails.root}/vendor/assets/classifiers/stuff-classifier")
+    @store = StuffClassifier::FileStorage.new("#{Rails.root}/lib/classifiers/stuff-classifier")
     StuffClassifier::Base.storage = @store
-    @stuff_classifier = StuffClassifier::Bayes.new("Spam or Real", :storage => @store)
+    @stuff_classifier = StuffClassifier::Bayes.new("Spam or Real", :storage => @store) #, :thresholds => {:spam => .1, :real => 5.0})
   end
 
   def classify_all
@@ -103,34 +103,23 @@ class Classifier
   def train
 
     puts <<-EOS
-
       Training classifier
-
-      This will purge the current classifier.
-      [Skip] Continue? (y/n) 
     EOS
-    # return false if STDIN.gets.chomp == "n"
     purge_classifier
 
-    puts <<-EOS
-
-      Training classifier on (random, half) subset of truthset.
-    EOS
-
-    posts_for_training.each_with_index do |post, i|
-      puts <<-EOS
-
-        #{i + 1}: Training post #{post.id} as spam.
-      EOS
-
-      if post.spam == true
-        @stuff_classifier.train(:spam, build_feature_vector(post))
-      else
-        @stuff_classifier.train(:real, build_feature_vector(post))
-      end
-
-      @stuff_classifier.save_state
+    spams = Post.where(:spam => true).where("text IS NOT NULL").order("random()")
+    spams.each_with_index do |post, i|
+      vector = build_feature_vector(post)
+      @stuff_classifier.train(:spam, vector)
     end
+
+    real = Post.where('id IN (?)', Post.select([:in_reply_to_post_id]).where("text IS NOT NULL").where('in_reply_to_post_id IS NOT NULL').collect(&:in_reply_to_post_id)).order("random()")
+    real.each_with_index do |post, i|
+      vector = build_feature_vector(post)
+      @stuff_classifier.train(:real, vector)
+    end
+
+    @stuff_classifier.save_state
   end
 
   #private
@@ -138,15 +127,42 @@ class Classifier
   def classify post
 
     #statisticalelse
-    klass = @stuff_classifier.classify(build_feature_vector(post))
+    vector = build_feature_vector(post)
+    klass = @stuff_classifier.classify(vector, :real)
     if klass == :spam
       post.update_attribute :autospam, true
     else
       post.update_attribute :autospam, false
     end
 
+
     truth_val = post.spam
     truth_val = false if truth_val == nil
+
+    # if klass == :spam and truth_val == false
+    #   puts <<-EOS
+
+    #     Classifier thought this was spam: #{vector}
+    #     Was it correct?
+    #   EOS
+    #   if STDIN.gets.chomp == "y"
+    #     post.update_attribute :spam, true
+    #     truth_val = true
+    #   end
+    # end
+
+    # if klass == :real and truth_val == true
+    #   puts <<-EOS
+
+    #     #{vector}
+        
+    #   EOS
+    #   # STDIN.gets.chomp
+    # end
+
+    # puts <<-EOS
+    #   #{klass}: #{vector}
+    # EOS
 
     grade = :correct if truth_val == post.autospam
     grade = :incorrect if truth_val != post.autospam
@@ -198,9 +214,14 @@ class Classifier
       interaction_type = 'atmention'
     end
 
-    vector = post.text
+    vector = post.text || ""
 
     vector = "#{interaction_type} " + vector if @opts[:interaction_type]
+
+    vector = "#{post.user_id} " + vector
+
+    vector = "#{"hasparent" unless post.in_reply_to_post_id.nil?} " + vector
+    vector = "#{"noparent" if post.in_reply_to_post_id.nil?} " + vector
 
     vector = "#{post.user.twi_screen_name} " + vector if @opts[:twi_screen_name]
 
@@ -214,6 +235,11 @@ class Classifier
       if Post.where(:user_id => post.user_id).where(:spam => nil).count > 0
         vector = "previous_real " + vector
       end
+    end
+
+    if @opts[:stem_links]
+      vector = vector.gsub(/http:\/\/[^\s]+/, 'link')
+      vector = "nolink " + vector if vector.index('link').nil?
     end
 
     vector

@@ -23,6 +23,7 @@ class Post < ActiveRecord::Base
   scope :spam, where('posts.spam = ? or posts.autospam = ?', true, true)
 
   scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
+  scope :us, where('posts.user_id IN (?)', Asker.ids + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('posts.correct is not null')
 
