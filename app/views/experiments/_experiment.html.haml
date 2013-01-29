@@ -37,11 +37,10 @@
           - else
             Loser
         - else
-          %form{:action => "/experiments/conclude", :method => "post", :onclick => "return window.experiment.confirmWinner()"}
-            %input{:name => "alternative", :type => "hidden", :value => alternative.name}
-            %input{:name => "experiment", :type => "hidden", :value => experiment.name}
-            %a
-              %input.green{:type => "submit", :value => "Use this"}
+          = form_tag "/experiments/conclude", :method => "post", :onclick => "return window.experiment.confirmWinner()" do
+            = hidden_field_tag "alternative", alternative.name
+            = hidden_field_tag "experiment", experiment.name
+            %a= submit_tag "Use this"
     - total_participants += alternative.participant_count
     - total_completed += alternative.completed_count
   %tr.totals

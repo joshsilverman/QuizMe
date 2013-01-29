@@ -1,5 +1,5 @@
 class ExperimentsController < ApplicationController
-  # before_filter :admin?
+  before_filter :admin?
 
   def index
     @experiments = Split::Experiment.all

@@ -20,7 +20,7 @@ module ExperimentsHelper
     if z == 0.0
       'No Change'
     elsif z < 1.645
-      'no confidence'
+      'No confidence'
     elsif z < 1.96
       '95% confidence'
     elsif z < 2.57
