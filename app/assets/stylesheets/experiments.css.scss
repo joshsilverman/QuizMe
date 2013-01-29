@@ -29,11 +29,21 @@
       cursor:pointer;
     }
 
+    &.completed{
+      .name {
+        font-style:italic;
+        color:#999;
+      }
+    }
+
     &.active {
-      font-weight:bold;
+      //font-weight:bold;
+      background-color:#eee;
+
 
       .quickview {
-        visibility:hidden;
+        //display:none;
+        color:#eee;
       }
     }
 
@@ -45,9 +55,10 @@
 
   .experiment-details {
     display:none;
+    background-color:#eee;
 
     > td {
-      padding:5px 8px !important;
+      padding:15px !important;
     }
 
     &.active {
@@ -58,7 +69,7 @@
       }
 
       .table {
-        background-color:#fcfcfc;
+        background-color:#fff;
         tr {
           padding:none;
         }
@@ -68,6 +79,12 @@
     .better, .worse {
       font-size:11px;
       color:#999;
+    }
+
+    span.control {
+      font-size:11px;
+      color:#777;
+      font-style:italic;
     }
   }
 
