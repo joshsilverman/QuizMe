@@ -165,10 +165,6 @@ class Asker < User
       if time_since_last_touchpoint > next_checkpoint.days
         asker_recipients[asker_id] ||= {:recipients => []}
         asker_recipients[asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
-        # puts "sending to #{user.twi_screen_name}"
-        # puts "time_since_last_touchpoint = #{time_since_last_touchpoint}"
-        # puts "next checkpoint = #{next_checkpoint.days.to_i} (#{strategy[user_reengagments.size]})"
-        # puts "strategy: #{strategy}"
       end
     end
     asker_recipients

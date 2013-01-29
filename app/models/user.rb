@@ -166,7 +166,7 @@ class User < ActiveRecord::Base
        
     asker.update_aggregate_activity_cache(self, answer.correct)
 
-    self.update_user_interactions({
+    update_user_interactions({
       :learner_level => "feed answer", 
       :last_interaction_at => user_post.created_at,
       :last_answer_at => user_post.created_at
