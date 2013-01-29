@@ -1,14 +1,12 @@
 # @ugly, none of this should not be in an initializer
 
 PROVIDERS = ["twitter"]
-## ADD studyeggtest back in (25)
-
 
 # @ugly, this should make use of Devise roles (wtf)
 ADMINS = [1, 3, 4, 11]
 
 
-URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")#"http://localhost:3000")
+URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")
 
 TWI_DEV_SAFE_API_CALLS = [
   'mentions',
@@ -166,6 +164,8 @@ SEGMENT_HIERARCHY = {
 
 # UGLY TEMP SOLUTION!
 INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
+
+UNDER_CONSTRUCTION_HANDLES = [22741]
 
 ACCOUNT_DATA = {
   ## QuizMeBio
@@ -359,6 +359,12 @@ ACCOUNT_DATA = {
     :retweet => [14106, 19454, 12640],
     :hashtags => ['math', 'SAT', "SATprep, geometry"],
     :category => "Math"
+  },
+  #QuizMeCalculus
+  22741 => {
+    :retweet => [24740, 14106, 19454, 12640],
+    :hashtags => ['math', 'SAT', "SATprep, geometry"],
+    :category => "Math"    
   },
 
   #quimetwilight
