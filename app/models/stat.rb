@@ -390,18 +390,36 @@ class Stat < ActiveRecord::Base
   end
 
   def self.answer_source(domain = 8)
-    graph_data = [["Date", "Wisr", "Twitter"]]
-    off_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, false)\
-      .group("to_char(created_at, 'MM-DD')")\
-      .count
+    graph_data = [["Date", "Wisr", "Twitter Status", "Twitter Reengagement"]]
+
     on_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, true)\
       .group("to_char(created_at, 'MM-DD')")\
       .count
+
+    status_ids = Post.where("created_at > ?", domain.weeks.ago)\
+      .where("interaction_type = 1 and publication_id is not null")\
+      .collect(&:id)
+    reengagement_ids = Post.where("created_at > ?", domain.weeks.ago)\
+      .where("intention = 'reengage inactive'")\
+      .collect(&:id)
+
+    status_answers = Post.answers\
+      .where("created_at > ?", domain.weeks.ago)\
+      .where("in_reply_to_post_id in (?)", status_ids)\
+      .group("to_char(created_at, 'MM-DD')")\
+      .count
+    reengagement_answers = Post.answers\
+      .where("created_at > ?", domain.weeks.ago)\
+      .where("in_reply_to_post_id in (?)", reengagement_ids)\
+      .group("to_char(created_at, 'MM-DD')")\
+      .count
+
     ((domain.weeks.ago.to_date)..Date.today.to_date).each do |date|
       formatted_date = date.strftime("%m-%d")
       data = [formatted_date]
       data << (on_site[formatted_date] || 0)
-      data << (off_site[formatted_date] || 0)
+      data << (status_answers[formatted_date] || 0)
+      data << (reengagement_answers[formatted_date] || 0)
       graph_data << data
     end
     return graph_data
