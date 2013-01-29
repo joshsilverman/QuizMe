@@ -1,0 +1,43 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+.experiments
+
+  .page-header
+    %h1= t '.title', :default => 'Experiments'
+
+  %table.table.table-disable-hover
+    %th Name
+    %th Participation 
+    //%th Completion 
+    %th Conversion 
+    %th
+
+    - @experiments.each do |experiment|
+      %tr.experiment-header
+        %td
+          #{experiment.name.capitalize}
+          - if experiment.version > 1
+            %span.version
+              v#{experiment.version}
+          / %small= experiment.start_time ? experiment.start_time.strftime('%m-%d') : 'Unknown'
+        %td.quickview= experiment.alternatives.map{|a| a.participant_count}.join "/"
+        //%td= experiment.alternatives.map{|a| a.completed_count}.join "/"
+        %td.quickview= experiment.alternatives.map{|a| number_to_percentage(a.conversion_rate)}.join "/"
+        %td.quickview
+          .inline-controls
+            %form{:action => "/experiments/reset", :method => "post", :onsubmit => "return window.experiment.confirmReset()"}
+              %input{:name => "experiment", :type => "hidden", :value => experiment.name}
+              %a
+                %input{:type => "submit", :value => "Reset"}
+            &nbsp;|&nbsp;
+            %form{:action => "/experiments/delete", :method => "post", :onsubmit => "return window.experiment.confirmDelete()"}
+              %input{:name => "experiment", :type => "hidden", :value => experiment.name}
+              %a
+                %input{:type => "submit", :value => "Delete"}
+      %tr.experiment-details
+        %td{colspan: 4}
+          =render :partial => 'experiment', :locals => {:experiment => experiment}

@@ -1,0 +1,74 @@
+.experiments {
+
+  form {
+    margin:0;
+
+    input {
+      border:none;
+      background-color:inherit;
+      color:inherit !important;
+      text-decoration:inherit;
+      padding:0;
+      margin:0;
+    }
+  }
+
+  .experiment-header {
+    small {
+      float:right;
+      font-size:11px;
+      color:#777;
+      font-style:italic;
+    }
+
+    form {
+      display:inline;
+    }
+
+    &:hover {
+      cursor:pointer;
+    }
+
+    &.active {
+      font-weight:bold;
+
+      .quickview {
+        visibility:hidden;
+      }
+    }
+
+    .inline-controls {
+      padding-right:2px;
+      float:right;
+    }
+  }
+
+  .experiment-details {
+    display:none;
+
+    > td {
+      padding:5px 8px !important;
+    }
+
+    &.active {
+      display:table-row;
+
+      > td {
+        border-top:none;
+      }
+
+      .table {
+        background-color:#fcfcfc;
+        tr {
+          padding:none;
+        }
+      }
+    }
+  }
+
+
+  .table-disable-hover.table tbody tr:hover td,
+  .table-disable-hover.table tbody tr:hover th {
+      background-color: inherit;
+  }
+}
