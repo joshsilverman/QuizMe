@@ -1,6 +1,8 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
-	belongs_to :user
+  belongs_to :in_reply_to_question, :foreign_key => 'in_reply_to_question_id'
+
+  belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
   belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
   belongs_to :nudge_type
@@ -9,8 +11,8 @@ class Post < ActiveRecord::Base
 
   belongs_to :publication
   belongs_to :conversation
-	belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
-
+  
+  belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
@@ -571,23 +573,25 @@ class Post < ActiveRecord::Base
     _text
   end
 
-  def in_answer_to_question
-    @_in_answer_to_question = nil
+  def link_to_question
+    return in_reply_to_question unless in_reply_to_question.nil?
 
-    if @_in_answer_to_question
+    if _in_reply_to_question
       # already have question in memory
     elsif interaction_type == 3
       # retweet
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      @_in_answer_to_question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
+      _in_reply_to_question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
     elsif conversation and conversation.publication and conversation.publication.question
-      @_in_answer_to_question = conversation.publication.question
+      _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question
-      @_in_answer_to_question = parent.publication.question
+      _in_reply_to_question = parent.publication.question
     end
 
-    @_in_answer_to_question
+    self.update_attribute :in_reply_to_question, _in_reply_to_question.id
+
+    in_reply_to_question
   end
 
   def is_question_post?

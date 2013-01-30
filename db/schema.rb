@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130128171054) do
+ActiveRecord::Schema.define(:version => 20130130051028) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -122,7 +122,7 @@ ActiveRecord::Schema.define(:version => 20130128171054) do
     t.integer  "in_reply_to_post_id"
     t.integer  "publication_id"
     t.integer  "conversation_id"
-    t.boolean  "requires_action",     :default => false
+    t.boolean  "requires_action",         :default => false
     t.integer  "in_reply_to_user_id"
     t.boolean  "posted_via_app"
     t.string   "url"
@@ -133,6 +133,7 @@ ActiveRecord::Schema.define(:version => 20130128171054) do
     t.string   "intention"
     t.boolean  "autocorrect"
     t.integer  "nudge_type_id"
+    t.integer  "in_reply_to_question_id"
   end
 
   add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"

@@ -356,10 +356,23 @@ class Asker < User
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
 
-    response_text = options[:response_text] || self.generate_response(correct)
-    resource_url = nil
+    resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
+    response_text = options[:response_text] if !options[:response_text].blank?
+    
+    # split test hints
+    if question = user_post.in_answer_to_question and !question.hint.blank?
+      test_name = "Hint when inccorect (answers question correctly later)"
+      if !correct
+        if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
+          response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
+        end
+      else
+        Post.trigger_split_test(answerer.id, test_name)
+      end
+    end
 
-    if options[:response_text].blank?
+    if response_text.nil?
+      response_text = correct ? "#{CORRECT.sample} #{COMPLEMENT.sample}" : "#{INCORRECT.sample}"
       if correct and options[:post_aggregate_activity].blank?
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
@@ -371,7 +384,7 @@ class Asker < User
         short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
         response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
-    end 
+    end
 
     if options[:post_aggregate_activity] == true
       app_post = Post.create({
@@ -410,7 +423,7 @@ class Asker < User
     update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
 
     app_post
-  end   
+  end
 
   def auto_respond user_post
     if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
@@ -542,10 +555,6 @@ class Asker < User
     data[:scores] = scores
     return data
   end  
-
-  def generate_response(correct)
-    correct ? "#{CORRECT.sample} #{COMPLEMENT.sample}" : "#{INCORRECT.sample}"
-  end
 
   def request_ugc user
     if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, self.id).size > 9
