@@ -240,8 +240,11 @@ class Post < ActiveRecord::Base
     dms.each { |d| Post.save_dm_data(d, current_acct) }
     
     # Get RTs and save
-    retweets = Post.twitter_request { client.retweets_of_me({:count => 50}) } || []
-    retweets.each { |r| Post.save_retweet_data(r, current_acct) }
+    retweets = Post.twitter_request { client.retweets_of_me({:count => 20}) } || []
+    retweets.each do |r| 
+      Post.save_retweet_data(r, current_acct)
+      sleep 1
+    end
 
     true 
   end
