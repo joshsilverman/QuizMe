@@ -150,6 +150,12 @@ class User < ActiveRecord::Base
 		client
 	end
 
+	def is_follower_of? asker
+		following = Twitter.friendship?(twi_user_id, asker.twi_user_id)
+		asker.followers << self if following and !asker.followers.include? self
+		return following
+	end
+
 	def app_answer asker, post, answer, options = {}
     user_post = Post.create({
       :user_id => self.id,

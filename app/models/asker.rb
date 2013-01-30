@@ -423,14 +423,14 @@ class Asker < User
   end 
 
   def nudge answerer
-    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2
-    
+    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
+
     if client.id == 14699
       nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "SATHabit copy (click-through) < 123 >", 
         "You're doing really well! I offer a much more comprehensive (free) course here: {link}",
         "Nice work so far! You can practice with customized questions at: {link}",
         "Want to see how you would score on the SAT? Check it out: {link}",
-        "Hey, if you're interested, you can get a personalized SAT question of the day at {link}!",
+        "Hey, if you're interested, you can get a personalized SAT question of the day at {link}",
         "You've answered {x} questions, with just {25-x} more you could have gotten an SAT score! Get one here: {link}"
         # "Great work so far! If you're interested, I have a more rigorous SAT prep course:",
         # "Howdy, are you taking the SAT soon? I have a very helpful (free) course:",
