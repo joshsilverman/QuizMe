@@ -224,6 +224,11 @@ class Post < ActiveRecord::Base
     return post
   end
 
+  def self.collect_retweets asker
+    retweets = Post.twitter_request { asker.twitter.retweets_of_me({:count => 10}) } || []
+    retweets.each { |r| Post.save_retweet_data(r, asker) }
+  end
+
   def self.check_for_posts(current_acct)
     client = current_acct.twitter
 
@@ -238,13 +243,6 @@ class Post < ActiveRecord::Base
     existing_dm_ids = Post.select(:provider_post_id).where(:provider_post_id => dms.collect { |dm| dm.id.to_s }).collect(&:provider_post_id)
     dms.reject! { |dm| existing_dm_ids.include? dm.id.to_s }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
-    
-    # Get RTs and save
-    retweets = Post.twitter_request { client.retweets_of_me({:count => 20}) } || []
-    retweets.each do |r| 
-      Post.save_retweet_data(r, current_acct)
-      sleep 1
-    end
 
     true 
   end

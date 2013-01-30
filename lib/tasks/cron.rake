@@ -8,6 +8,14 @@ task :check_for_posts => :environment do
   end
 end
 
+task :collect_retweets => :environment do
+  askers = Asker.where('twi_oauth_token is not null')
+  askers.each do |a| 
+    Post.collect_retweets(a)
+    sleep 1
+  end
+end
+
 task :post_question => :environment do
   Asker.where('twi_oauth_token is not null and published = ?', true).each do |a|
     puts "Posting question for #{a.twi_screen_name}"
