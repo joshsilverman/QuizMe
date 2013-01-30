@@ -1,7 +1,6 @@
 .feed_section
 	- now = Time.now
 	- @publications.each do |publication|
-		- puts publication.to_json if publication.asker_id == 24740
 		- @question_asker = publication.asker
 		- @conversation = nil
 		- responded = false
