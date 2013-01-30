@@ -35,6 +35,11 @@ Quizmemanager::Application.routes.draw do
   match "/get_detailed_metrics" => 'askers#get_detailed_metrics'
   match "/graph/:party/:graph" => 'askers#graph'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'
+  get "experiments" => 'experiments#index'
+  post "experiments/conclude" => 'experiments#conclude'
+  post "experiments/reset" => 'experiments#reset'
+  post "experiments/delete" => 'experiments#destroy'
+
   match "/posts/:publication_id/refer" => "posts#refer"
   match "/nudge/:id/:user_id/:asker_id" => "posts#nudge"
 
@@ -83,11 +88,11 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   
-  #Split Dashboard
-  mount Split::Dashboard, :at => 'split'
-  Split::Dashboard.use Rack::Auth::Basic do |username, password|
-    username == 'wisr' && password == 'WrWr@ppl3'
-  end  
+  # #Split Dashboard
+  # mount Split::Dashboard, :at => 'split'
+  # Split::Dashboard.use Rack::Auth::Basic do |username, password|
+  #   username == 'wisr' && password == 'WrWr@ppl3'
+  # end  
 
   root :to => 'feeds#index'
 

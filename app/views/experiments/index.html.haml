@@ -1,0 +1,44 @@
+:css
+  body {background:white;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .asker-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+= csrf_meta_tag
+
+.experiments
+
+  .page-header
+    %h1= t '.title', :default => 'Experiments'
+
+  %table.table.table-disable-hover
+    %td Date
+    %th Name
+    %th Participation 
+    //%th Completion 
+    %th Conversion 
+    %th
+
+    - @experiments.sort_by{|e|e.start_time}.reverse.each do |experiment|
+      %tr.experiment-header{:class => ('completed' if experiment.winner)}
+        %td= experiment.start_time ? experiment.start_time.strftime('%m-%d') : 'Unknown'
+        %td.name
+          #{experiment.name.capitalize}
+          - if experiment.version > 1
+            %span.version
+              v#{experiment.version}
+        %td.quickview= experiment.alternatives.map{|a| a.participant_count}.join "/"
+        //%td= experiment.alternatives.map{|a| a.completed_count}.join "/"
+        %td.quickview= experiment.alternatives.map{|a| number_to_percentage(a.conversion_rate).round}.join "/"
+        %td
+          .inline-controls
+            = form_tag "/experiments/reset", :method => "post", :onsubmit => "return window.experiment.confirmReset()" do
+              = hidden_field_tag "experiment", experiment.name
+              %a= submit_tag "Reset"
+            &nbsp;|&nbsp;
+            = form_tag "/experiments/delete", :method => "post", :onsubmit => "return window.experiment.confirmDelete()" do
+              = hidden_field_tag "experiment", experiment.name
+              %a= submit_tag "Delete"
+      %tr.experiment-details
+        %td{colspan: 5}
+          =render :partial => 'experiment', :locals => {:experiment => experiment}

@@ -232,18 +232,94 @@ class User < ActiveRecord::Base
 			segment_type = 4
 		end
 
-		transition = Transition.create({
-			:user_id => id,
-			:segment_type => segment_type,
-			:from_segment => from_segment,
-			:to_segment => to_segment
-		})	
+    comment = nil
+    if segment_type == 1
+      comment = lifecycle_transition_comment(to_segment)
+    end
+
+    transition = Transition.create({
+      :user_id => id,
+      :segment_type => segment_type,
+      :from_segment => from_segment,
+      :to_segment => to_segment,
+      :comment => comment
+    })  
 
 		Post.trigger_split_test(id, "include answers in reengagement tweet (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "reengagement interval") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
 	end
+
+  def lifecycle_transition_comment to_segment
+    #find asker
+    asker = Asker.find_by_id posts.order("created_at DESC").first.in_reply_to_user_id
+    return nil if asker.nil?
+
+    #default no comment
+    no_comment = "No comment"
+
+    to_seg_test_name = {
+      2 => "lifecycle smartransition to noob comment (=> regular)",
+      3 => "lifecycle smartransition to regular comment (=> advanced)",
+      4 => "lifecycle smartransition to advanced comment (=> pro)",
+      5 => "lifecycle smartransition to pro comment (=> superuser)"
+    }
+
+    case to_segment
+    when 2 #to noob
+      # I'll tweet you more questions // follow up
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        no_comment, 
+        "Thanks for tweeting me your answer. I'll tweet you interesting questions as I see them.",
+        "Can I tweet you interesting questions as I come accross them?",
+        "Keep tweeting me your answers. I'll keep track and follow up on mistakes."
+      )
+    when 3 #to regular
+      # start, how can i improve
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        "No comment", 
+        "You're off to a strong start. How can I make this better?",
+        "How can I make these quizzes better?",
+        "You're really improving. How can I improve what I do?"
+      )
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
+    when 4 #to advanced 
+      # good commitment
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        "No comment", 
+        "If you keep up the strong commitment, you'll really (re)master this.",
+        "It's great to see your commitment so far.",
+        "Very strong start with this material."
+      )
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
+    when 5 #to pro
+      # great commitment
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        "No comment", 
+        "Fantastic dedication to this material.",
+        "Great to see your dedication.",
+        "You are well on your way to (re)mastery with this."
+      )
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
+    when 6 #to superuser
+      # contribution and thank you
+      comment = [ 
+        "No comment", 
+        "You've added so much to this community - thank you.",
+        "So glad to be learning with you. Your contribution is so helpful.",
+        "Your contribution to this community continues to be really helpful. Big thanks."
+      ].sample
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
+    end
+
+    unless comment == no_comment or comment.nil?
+      Post.dm(asker, self, comment, {:intention => "lifecycle+"})
+      return comment
+    end
+
+    ""
+  end
 
 	def self.update_segments
 		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
