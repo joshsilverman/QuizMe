@@ -1,6 +1,7 @@
 .feed_section
 	- now = Time.now
 	- @publications.each do |publication|
+		- puts publication.to_json if publication.asker_id == 24740
 		- @question_asker = publication.asker
 		- @conversation = nil
 		- responded = false
@@ -10,11 +11,11 @@
 			- responded = true
 		.conversation.border-color{:asker_id => @question_asker.id}
 			.post.parent{:class => ("answered" if responded), :post_id => publication.id}
-				- if publication.posts.first
-					- if publication.posts.first.created_at < 1.day.ago
-						%p.time= time_formatter(publication.posts.first.created_at)
+				- if first = publication.posts.first
+					- if first.created_at < 1.day.ago
+						%p.time= time_formatter(first.created_at)
 					- else
-						%p.time.timeago{:title => publication.posts.first.created_at.to_time.iso8601}
+						%p.time.timeago{:title => first.created_at.to_time.iso8601}
 				- if correct.nil?
 					%i.answered_indicator{:style => "display: none;"}
 				- else
