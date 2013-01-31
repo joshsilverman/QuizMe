@@ -172,12 +172,6 @@ class User < ActiveRecord::Base
        
     asker.update_aggregate_activity_cache(self, answer.correct)
 
-    update_user_interactions({
-      :learner_level => "feed answer", 
-      :last_interaction_at => user_post.created_at,
-      :last_answer_at => user_post.created_at
-    })
-
     segment
 
     user_post
@@ -188,15 +182,9 @@ class User < ActiveRecord::Base
 	end
 
 	def update_user_interactions(params = {})
-		if params[:learner_level]
-			params.delete :learner_level unless LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(self.learner_level)
-		end
-		if params[:last_interaction_at]
-			params.delete :last_interaction_at unless self.last_interaction_at.blank? or params[:last_interaction_at] > self.last_interaction_at
-		end
-		if params[:last_answer_at]
-			params.delete :last_answer_at unless self.last_answer_at.blank? or params[:last_answer_at] > self.last_answer_at
-		end
+		params.delete :learner_level unless params[:learner_level] and (learner_level.blank? or LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(learner_level))
+		params.delete :last_interaction_at unless params[:last_interaction_at] and (last_interaction_at.blank? or params[:last_interaction_at] > last_interaction_at)
+		params.delete :last_answer_at unless params[:last_answer_at] and (last_answer_at.blank? or params[:last_answer_at] > last_answer_at)
 		self.update_attributes params	
 	end
 

@@ -399,7 +399,7 @@ class Asker < User
     user_post.update_attributes(:requires_action => false, :correct => correct)
 
     # Trigger after answer actions
-    after_answer_filter(answerer, user_post)
+    after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
 
     # Trigger split tests, MP events
     update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
@@ -416,7 +416,12 @@ class Asker < User
     end
   end
 
-  def after_answer_filter answerer, user_post
+  def after_answer_filter answerer, user_post, options = {}
+    answerer.update_user_interactions({
+      :learner_level => options[:learner_level], 
+      :last_interaction_at => user_post.created_at,
+      :last_answer_at => user_post.created_at
+    })
     request_ugc(answerer)
     nudge(answerer)
     Post.trigger_split_test(answerer.id, "DM answer response script")

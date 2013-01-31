@@ -183,6 +183,7 @@ class FeedsController < ApplicationController
   def manager_response
     asker = Asker.find(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
+    user = user_post.user
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
 
     unless conversation = user_post.conversation
@@ -191,7 +192,6 @@ class FeedsController < ApplicationController
     end
 
     if params[:interaction_type] == "4"
-      user = user_post.user
 
       unless correct.nil?
         response_text = asker.generate_response(correct)
@@ -207,6 +207,12 @@ class FeedsController < ApplicationController
           :type => "twitter",
           :in_reply_to => "new follower question DM"
         }
+
+        user.update_user_interactions({
+          :learner_level => "dm answer", 
+          :last_interaction_at => user_post.created_at,
+          :last_answer_at => user_post.created_at
+        })        
       else
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end
@@ -214,20 +220,14 @@ class FeedsController < ApplicationController
       response_post = Post.dm(asker, user, response_text, {
         :conversation_id => conversation.id
       })
-
-      user.update_user_interactions({
-        :learner_level => (correct.present? ? "dm answer" : "dm"), 
-        :last_interaction_at => user_post.created_at,
-        :last_answer_at => (correct.present? ? user_post.created_at : nil)
-      })
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
-      if params[:correct]
+      unless correct.nil?
         response_post = asker.app_response(user_post, correct, { 
           :response_text => response_text,
           :link_to_parent => false
         })
-        conversation.posts << response_post
+        conversation.posts << response_post      
       else         
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
