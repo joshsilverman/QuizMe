@@ -360,14 +360,19 @@ class Asker < User
     response_text = options[:response_text] if !options[:response_text].blank?
     
     # split test hints
-    if question = user_post.in_answer_to_question and !question.hint.blank?
+    if question = user_post.in_reply_to_question and !question.hint.blank?
       test_name = "Hint when inccorect (answers question correctly later)"
       if !correct
         if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
           response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
         end
-      else
-        Post.trigger_split_test(answerer.id, test_name)
+      else # attempt to trigger
+        previous_answers = question.in_reply_to_posts\
+          .where('posts.user_id = ?', answerer.id)\
+          .where('posts.created_at < ?', user_post.created_at)
+        if !previous_answers.empty?
+          Post.trigger_split_test(answerer.id, test_name)
+        end
       end
     end
 

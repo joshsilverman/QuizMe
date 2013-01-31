@@ -32,7 +32,6 @@ class Grader
 
       _autocorrect = autocorrect post
       post.update_attribute :autocorrect, _autocorrect if _autocorrect == true or _autocorrect == false
-      #adjust_autocorrect post, _autocorrect if _autocorrect != post.correct and !_autocorrect.nil?
       if _autocorrect == post.correct
         correct += 1
       elsif _autocorrect == -1
@@ -59,17 +58,8 @@ class Grader
   end
 
   def autocorrect post
-    question = get_question post
-    unless question
-      # puts <<-EOS
-
-
-      #   ==============================================
-      #   Answer post: #{post.text} (#{post.id})
-
-      # EOS
-      return -1
-    end
+    question = post.link_to_question
+    return -1 unless question
 
     answer_posts = get_answer_posts question
 
@@ -78,30 +68,6 @@ class Grader
     _autocorrect, decisive_feature  = vectors_to_autocorrect correct_vector, incorrect_vector
 
     _autocorrect
-  end
-
-  # the autocorrect didn't match, but would it have been acceptable if assigned?
-  def adjust_autocorrect post, _autocorrect
-    question = get_question post
-    return unless question
-    # puts <<-EOS
-
-
-    #   ==============================================
-
-    #   Answer post: #{post.text} (#{post.id})
-    #   Correct answer: #{question.correct_answer.text if question.correct_answer}
-
-    #   Provider: #{post.provider}
-
-    #   Autograde: #{_autocorrect}
-    #   Actual: #{post.correct}
-    #   Correctly autocorrected: #{_autocorrect == post.correct unless _autocorrect.nil?}
-
-    #   Would this have been acceptable? (y/n)
-    # EOS
-    input = gets.chomp
-    post.update_attribute :correct, _autocorrect if input == 'y'
   end
 
   private
@@ -124,22 +90,6 @@ class Grader
     end
 
     nil
-  end
-
-  #@note this methods is evidence of poor data integrity around parents/publications/question etc.
-  # or I'm drunk... but I don't think I am
-  def get_question post
-
-    if post.interaction_type == 4 and post.conversation and post.conversation.post and post.conversation.post.user and post.conversation.post.user.is_role? "asker"
-      asker = Asker.find(post.conversation.post.user_id)
-      question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
-    elsif post.conversation and post.conversation.publication and post.conversation.publication.question
-      question = post.conversation.publication.question
-    elsif post.parent and post.parent.publication and post.parent.publication.question
-      question = post.parent.publication.question
-    end
-
-    question
   end
 
   def get_answer_posts question

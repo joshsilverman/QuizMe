@@ -1,5 +1,7 @@
 class Question < ActiveRecord::Base
 	has_many :posts
+  has_many :in_reply_to_posts, :foreign_key => 'in_reply_to_question_id'
+
   has_many :answers
   has_many :publications
   belongs_to :topic

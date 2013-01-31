@@ -264,10 +264,13 @@ class FeedsController < ApplicationController
 
   def link_to_post
     if params[:link_to_pub_id] == "0"
-      render :json => Post.find(params[:post_id]).update_attribute(:in_reply_to_post_id, nil)
+      post = Post.find(params[:post_id])
+      post.update_attributes in_reply_to_question_id: nil, in_reply_to_post_id: nil
+      render :json => post
     else
       post_to_link = Post.find(params[:post_id])
       publication = Publication.find(params[:link_to_pub_id])
+      question = publication.question
       root_post = publication.posts.last
 
       post_to_link_to = publication.posts.where("in_reply_to_user_id is null").last
@@ -277,6 +280,7 @@ class FeedsController < ApplicationController
         :in_reply_to_post_id => post_to_link_to.id,
         :conversation_id => conversation.id
       })
+      post.in_reply_to_question = question
 
       Post.grader.grade post_to_link
 

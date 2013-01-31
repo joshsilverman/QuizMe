@@ -573,8 +573,9 @@ class Post < ActiveRecord::Base
     _text
   end
 
+  # formally in_answer_to_question
   def link_to_question
-    return in_reply_to_question unless in_reply_to_question.nil?
+    return _in_reply_to_question unless _in_reply_to_question.nil?
 
     if _in_reply_to_question
       # already have question in memory
