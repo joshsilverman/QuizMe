@@ -10,6 +10,7 @@ class Post < ActiveRecord::Base
   belongs_to :publication
   belongs_to :conversation
 	belongs_to :parent, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
+
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
@@ -21,7 +22,7 @@ class Post < ActiveRecord::Base
 
   scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
   scope :social, where('interaction_type IN (2,3)')
-  scope :answers, where('correct IS NOT NULL')
+  scope :answers, where('posts.correct is not null')
 
   scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')

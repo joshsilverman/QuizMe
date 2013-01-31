@@ -392,27 +392,19 @@ class Stat < ActiveRecord::Base
   def self.answer_source(domain = 8)
     graph_data = [["Date", "Wisr", "Twitter Status", "Twitter Reengagement"]]
 
-    on_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, true)\
+    on_site = Post.answers\
+      .where("created_at > ? and posted_via_app = ?", domain.weeks.ago, true)\
       .group("to_char(created_at, 'MM-DD')")\
       .count
+    is_reengagement_grouped_twitter_answers = Post.includes(:parent)\
+      .answers\
+      .where("created_at > ? and posted_via_app = ?", domain.weeks.ago, false)\
+      .group_by { |p| p.parent.present? and p.parent.intention == "reengage inactive" }
 
-    status_ids = Post.where("created_at > ?", domain.weeks.ago)\
-      .where("interaction_type = 1 and publication_id is not null")\
-      .collect(&:id)
-    reengagement_ids = Post.where("created_at > ?", domain.weeks.ago)\
-      .where("intention = 'reengage inactive'")\
-      .collect(&:id)
-
-    status_answers = Post.answers\
-      .where("created_at > ?", domain.weeks.ago)\
-      .where("in_reply_to_post_id in (?)", status_ids)\
-      .group("to_char(created_at, 'MM-DD')")\
-      .count
-    reengagement_answers = Post.answers\
-      .where("created_at > ?", domain.weeks.ago)\
-      .where("in_reply_to_post_id in (?)", reengagement_ids)\
-      .group("to_char(created_at, 'MM-DD')")\
-      .count
+    reengagement_answers = is_reengagement_grouped_twitter_answers[true].group_by{|p| p.created_at.strftime('%m-%d')}
+    reengagement_answers.each {|i, posts| reengagement_answers[i] = posts.size}
+    status_answers = is_reengagement_grouped_twitter_answers[false].group_by{|p| p.created_at.strftime('%m-%d')}
+    status_answers.each {|i, posts| status_answers[i] = posts.size}
 
     ((domain.weeks.ago.to_date)..Date.today.to_date).each do |date|
       formatted_date = date.strftime("%m-%d")
