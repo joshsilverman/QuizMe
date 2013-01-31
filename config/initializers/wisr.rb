@@ -362,7 +362,7 @@ ACCOUNT_DATA = {
   },
   #QuizMeCalculus
   22741 => {
-    :retweet => [24740, 14106, 19454, 12640],
+    :retweet => [24740, 14106, 19454, 12640, 18, 19, 31],
     :hashtags => ['math', 'SAT', "SATprep, geometry"],
     :category => "Math"    
   },
