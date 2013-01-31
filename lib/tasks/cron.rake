@@ -68,7 +68,7 @@ task :retweet_related => :environment do
       pub = Publication.where(:asker_id => v[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample
       begin
         p = Post.find_by_publication_id_and_provider(pub.id, 'twitter')
-        a.twitter.retweet(p.provider_post_id)
+        Post.twitter_request { a.twitter.retweet(p.provider_post_id) }
       rescue Exception => exception
         puts exception.message
         puts "exception while retweeting for #{a.twi_screen_name}"
@@ -85,12 +85,16 @@ task :retweet_related => :environment do
     UNDER_CONSTRUCTION_HANDLES.each do |new_handle_id|
       new_asker = Asker.find(new_handle_id)
       questions_remaining = (30 - new_asker.questions.size)
-      ACCOUNT_DATA[new_handle_id][:retweet].each do |asker_id|
-        a = Asker.find(asker_id)
-        Post.tweet(a, "We need #{questions_remaining} more questions to launch #{new_asker.twi_screen_name}! Help by writing one here: wisr.com/feeds/#{new_handle_id}?q=1", {
-          :intention => 'solicit ugc',
-          :interaction_type => 2
-        })
+      if questions_remaining > 0
+        ACCOUNT_DATA[new_handle_id][:retweet].each do |asker_id|
+          a = Asker.find(asker_id)
+          Post.tweet(a, "We need #{questions_remaining} more questions to launch #{new_asker.twi_screen_name}! Help by writing one here: wisr.com/feeds/#{new_handle_id}?q=1", {
+            :intention => 'solicit ugc',
+            :interaction_type => 2
+          })
+        end
+      else
+        puts "Enough questions for #{new_asker.twi_screen_name}!"
       end
     end
   end      
