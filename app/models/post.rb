@@ -466,12 +466,10 @@ class Post < ActiveRecord::Base
     rescue Twitter::Error::TooManyRequests => exception
       puts "rate limit exceeded:"
       puts exception.rate_limit.inspect
-    rescue Twitter::Error::ClientError => exception
+    rescue Exception => exception
       puts "twitter error (#{exception}), retrying"
       retry unless attempts >= max_attempts or exception.message == "Status is a duplicate."
       puts "Failed to run #{block} after #{attempts} attempts"
-    rescue Exception => exception
-      puts "Exception in twitter wrapper: #{exception.message}"
     end 
     return value   
   end
