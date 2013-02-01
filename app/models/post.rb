@@ -226,7 +226,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.collect_retweets asker
-    puts "collect RTs for #{asker.twi_screen_name} (rate limit status: #{asker.twitter.rate_limit_status.inspect})"
     retweets = Post.twitter_request { asker.twitter.retweets_of_me({:count => 10}) } || []
     retweets.each { |r| Post.save_retweet_data(r, asker) }
   end
