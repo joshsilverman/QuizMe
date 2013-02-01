@@ -457,7 +457,7 @@ class Post < ActiveRecord::Base
     return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     
     value = nil
-    MAX_ATTEMPTS = 3
+    max_attempts = 3
     attempts = 0
 
     begin
@@ -468,7 +468,7 @@ class Post < ActiveRecord::Base
       puts exception.rate_limit.inspect
     rescue Twitter::Error::ClientError => exception
       puts "twitter error (#{exception}), retrying"
-      retry unless attempts >= MAX_ATTEMPTS or exception.message == "Status is a duplicate."
+      retry unless attempts >= max_attempts or exception.message == "Status is a duplicate."
       puts "Failed to run #{block} after #{attempts} attempts"
     rescue Exception => exception
       puts "Exception in twitter wrapper: #{exception.message}"
