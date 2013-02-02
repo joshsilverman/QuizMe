@@ -390,28 +390,18 @@ class Stat < ActiveRecord::Base
   end
 
   def self.answer_source(domain = 8)
-    graph_data = [["Date", "Wisr", "Twitter Status", "Twitter Reengagement"]]
-
-    on_site = Post.answers\
-      .where("created_at > ? and posted_via_app = ?", domain.weeks.ago, true)\
+    graph_data = [["Date", "Wisr", "Twitter"]]
+    off_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, false)\
       .group("to_char(created_at, 'MM-DD')")\
       .count
-    is_reengagement_grouped_twitter_answers = Post.includes(:parent)\
-      .answers\
-      .where("created_at > ? and posted_via_app = ?", domain.weeks.ago, false)\
-      .group_by { |p| p.parent.present? and p.parent.intention == "reengage inactive" }
-
-    reengagement_answers = is_reengagement_grouped_twitter_answers[true].group_by{|p| p.created_at.strftime('%m-%d')}
-    reengagement_answers.each {|i, posts| reengagement_answers[i] = posts.size}
-    status_answers = is_reengagement_grouped_twitter_answers[false].group_by{|p| p.created_at.strftime('%m-%d')}
-    status_answers.each {|i, posts| status_answers[i] = posts.size}
-
+    on_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, true)\
+      .group("to_char(created_at, 'MM-DD')")\
+      .count
     ((domain.weeks.ago.to_date)..Date.today.to_date).each do |date|
       formatted_date = date.strftime("%m-%d")
       data = [formatted_date]
       data << (on_site[formatted_date] || 0)
-      data << (status_answers[formatted_date] || 0)
-      data << (reengagement_answers[formatted_date] || 0)
+      data << (off_site[formatted_date] || 0)
       graph_data << data
     end
     return graph_data
@@ -543,17 +533,26 @@ class Stat < ActiveRecord::Base
     user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
       .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at),',') AS created_ats"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
-    user_ids_to_last_active = Hash[*Post.not_us.not_spam\
-      .where("created_at > ?", Time.now - 180.days)\
-      .where("correct IS NOT NULL")\
+
+    user_ids_to_last_active = Hash[*Post.not_us.not_spam.social\
+      .where('correct IS NOT NULL OR autocorrect IS NOT NULL')\
       .select(["user_id","max(created_at) AS most_recent_created_at"]).group('user_id').map{|p|[p.user_id, Time.parse(p.most_recent_created_at)]}.flatten]
 
-    data = [['Days', 'Reengagements']]
-    user_ids_to_last_active.each do |user_id, last_active_time|
+    inactive_users = User.select(["array_to_string(array_agg(id),',') AS ids"]).where("users.activity_segment = 7").first.ids.split(",").map{|id| id.to_i}
+
+    data = [] # add series with tooltips in js
+    user_ids_to_last_active.each do |user_id, last_interaction_at|
       next if user_ids_to_reengagement_dates[user_id].nil?
       reengagement_attempts = user_ids_to_reengagement_dates[user_id].split(',').map{|created_at|Time.parse(created_at)}
-      reengagement_attempts_count = reengagement_attempts.reject{|date| date < last_active_time}.count
-      data << [(Time.now - last_active_time)/1.day, reengagement_attempts_count]
+      reengagement_attempts_count = reengagement_attempts.reject{|date| date < last_interaction_at}.count
+
+      next if (Time.now - last_interaction_at) <= 0
+      if inactive_users.index(user_id).nil?
+        data << [(Time.now - last_interaction_at)/1.day, reengagement_attempts_count, user_id, nil, nil]
+      else
+        data << [(Time.now - last_interaction_at)/1.day, nil, nil, reengagement_attempts_count, user_id]
+      end
+
     end
     data
   end
@@ -567,7 +566,6 @@ class Stat < ActiveRecord::Base
     user_ids_to_first_post_created_ats = Hash[*Post.not_spam.not_us\
       .select(["user_id", "min(created_at) as first_active_at"])\
       .group("user_id").map{|p| [p.user_id, Time.parse(p.first_active_at)]}.flatten]
-
 
     data = [['Age', 'Days inactive']]
     user_ids_to_first_post_created_ats.each do |user_id, first_active_at|

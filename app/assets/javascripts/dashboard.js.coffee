@@ -204,7 +204,13 @@ class Dashboard
     chart.draw graph_data, days_since_active_when_reengaged_v_response_rate_graph_options 
 
   draw_days_since_active_v_number_of_reengagement_attempts: =>
-    graph_data = google.visualization.arrayToDataTable(@days_since_active_v_number_of_reengagement_attempts)
+    graph_data = new google.visualization.DataTable()
+    graph_data.addColumn 'number', 'Days'
+    graph_data.addColumn 'number', 'Reengagements'
+    graph_data.addColumn type: 'number', role: 'tooltip'
+    graph_data.addColumn 'number', 'Reengagements (inactive user)'
+    graph_data.addColumn type: 'number', role: 'tooltip'
+    graph_data.addRows @days_since_active_v_number_of_reengagement_attempts
     chart = new google.visualization.ScatterChart(document.getElementById("days_since_active_v_number_of_reengagement_attempts_graph"))
     chart.draw graph_data, days_since_active_v_number_of_reengagement_attempts_graph_options 
   
@@ -474,8 +480,8 @@ days_since_active_v_number_of_reengagement_attempts_graph_options =
   legend: "none"
   pointSize: 0.5
   colors: [
-    "#5E79C4",
-    "#1D3880"
+    "blue",
+    "red"
   ]
   chartArea:  
     width: 770
@@ -486,19 +492,14 @@ days_since_active_v_number_of_reengagement_attempts_graph_options =
       fontSize: 9
     slantedText: true
     direction:1
-  vAxis:
-    0: 
-      logScale: false
-    1: 
-      logScale: false
-      maxValue: 1
-  series:
-     0:
-      targetAxisIndex:0
-     1:
-      targetAxisIndex:1
-     2:
-      targetAxisIndex:1
+    minorGridlines:
+      count: 7
+      color: "#eee"
+  #  viewWindow:
+  #    max: 120
+  #vAxis:
+  #  viewWindow:
+  #    max: 4
 
 age_v_days_since_active_graph_options = 
   width: 860
