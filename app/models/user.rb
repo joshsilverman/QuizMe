@@ -151,7 +151,7 @@ class User < ActiveRecord::Base
 	end
 
 	def is_follower_of? asker
-		following = Twitter.friendship?(twi_user_id, asker.twi_user_id)
+		following = Post.twitter_request { asker.twitter.friendship?(twi_user_id, asker.twi_user_id) }
 		asker.followers << self if following and !asker.followers.include? self
 		return following
 	end

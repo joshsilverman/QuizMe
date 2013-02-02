@@ -230,7 +230,7 @@ class Post < ActiveRecord::Base
     retweets.each { |r| Post.save_retweet_data(r, asker) }
   end
 
-  def self.check_for_posts(current_acct)
+  def self.check_for_posts current_acct
     client = current_acct.twitter
 
     # Get mentions, de-dupe, and save
@@ -248,7 +248,7 @@ class Post < ActiveRecord::Base
     true 
   end
 
-  def self.save_mention_data(m, asker, conversation_id = nil)
+  def self.save_mention_data m, asker, conversation_id = nil
     u = User.find_or_create_by_twi_user_id(m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
@@ -454,17 +454,21 @@ class Post < ActiveRecord::Base
 
   def self.twitter_request(&block)
     return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
+    
     value = nil
+    max_attempts = 3
     attempts = 0
+
     begin
+      attempts += 1
       value = block.call()
-    rescue Twitter::Error::ClientError => exception
-      puts "twitter error (#{exception}), retrying"
-      attempts += 1 
-      retry unless attempts > 2 or exception.message == "Status is a duplicate."
-      puts "Failed to run #{block} after #{attempts} attempts"
+    rescue Twitter::Error::TooManyRequests => exception
+      puts "rate limit exceeded:"
+      puts exception.rate_limit.inspect
     rescue Exception => exception
-      puts "Exception in twitter wrapper: #{exception.message}"
+      puts "twitter error (#{exception}), retrying"
+      retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate"
+      puts "Failed to run #{block} after #{attempts} attempts"
     end 
     return value   
   end

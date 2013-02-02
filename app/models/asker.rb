@@ -49,14 +49,18 @@ class Asker < User
   	# Get lists of user ids from twitter + wisr
   	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
 
-  	wisr_follower_ids = followers.collect(&:twi_user_id)
+    if twi_follower_ids
+    	wisr_follower_ids = followers.collect(&:twi_user_id)
 
-  	# Add new followers in wisr
-  	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
+    	# Add new followers in wisr
+    	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
 
-		# Remove unfollowers from asker follow association  	
-  	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-  	unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
+  		# Remove unfollowers from asker follow association  	
+    	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
+    	unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
+    else
+      twi_follower_ids = followers.collect(&:id)
+    end
   	
   	return twi_follower_ids 
   end 

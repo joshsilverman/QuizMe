@@ -54,7 +54,7 @@ task :update_users_with_last_answer_and_interaction => :environment do
 		last_answer = nil
 		last_interaction = nil
 		next unless posts.present?
-		answers = posts.where("correct is not null")
+		answers = posts.where("correct is not null and autocorrect is not null")
 		last_answer = answers.first.created_at if answers.present?
 		last_interaction = posts.first.created_at
 		user.update_attributes({

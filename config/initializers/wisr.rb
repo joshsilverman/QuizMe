@@ -13,7 +13,8 @@ TWI_DEV_SAFE_API_CALLS = [
   'direct_messages',
   'retweets_of_me',
   'follower_ids',
-  'user'
+  'user',
+  'friendship?'
 ]
 
 LEARNER_LEVELS = [
