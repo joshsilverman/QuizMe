@@ -233,9 +233,12 @@ class QuestionsController < ApplicationController
     questions = params[:questions].split "\n"
     questions.each do |q|
       q_matchdata = /(.*)\s+(\([^\)]*\))(?:\s<<([^>]*)>>|)/.match q
-      puts q_matchdata[1]
-      puts q_matchdata[2]
-      puts q_matchdata[3]
+
+      if q_matchdata.nil?
+        puts "couldn't process:"
+        puts q
+        next
+      end
 
       q_text = q_matchdata[1]
       q_ans = q_matchdata[2]
