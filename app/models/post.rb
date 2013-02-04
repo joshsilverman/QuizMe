@@ -1,6 +1,6 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
-  belongs_to :in_reply_to_question, :foreign_key => 'in_reply_to_question_id'
+  belongs_to :in_reply_to_question, :class_name => 'Question', :foreign_key => 'in_reply_to_question_id'
 
   belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
@@ -41,8 +41,8 @@ class Post < ActiveRecord::Base
   scope :reengage_inactive, where("posts.intention = 'reengage inactive'")
   scope :followup, where("posts.intention = 'incorrect answer followup'")
 
-  scope :linked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NOT NULL")
-  scope :unlinked, includes(:conversation => {:publication => :question, :post => {:asker => :new_user_question}}).where("questions.id IS NULL")
+  scope :linked, where('posts.in_reply_to_question_id IS NOT NULL')
+  scope :unlinked, where('posts.in_reply_to_question_id IS NULL')
 
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, requires_action.spam.not_ugc
@@ -575,13 +575,14 @@ class Post < ActiveRecord::Base
 
   # formally in_answer_to_question
   def link_to_question
+    puts in_reply_to_question
     return in_reply_to_question unless in_reply_to_question.nil?
 
     if interaction_type == 3
       # retweet
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      _in_reply_to_question = Question.find(asker.new_user_q_id)
+      _in_reply_to_question = Question.find_by_id(asker.new_user_q_id)
     elsif conversation and conversation.publication and conversation.publication.question
       _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question

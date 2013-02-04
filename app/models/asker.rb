@@ -377,7 +377,7 @@ class Asker < User
     end
 
     if response_text.nil?
-      response_text = correct ? "#{CORRECT.sample} #{COMPLEMENT.sample}" : "#{INCORRECT.sample}"
+      response_text = generate_response(correct)
       if correct and options[:post_aggregate_activity].blank?
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
@@ -390,8 +390,6 @@ class Asker < User
         response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
     end
-
-    puts "App response: #{response_text}"
 
     if options[:post_aggregate_activity] == true
       app_post = Post.create({
@@ -430,6 +428,10 @@ class Asker < User
     update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
 
     app_post
+  end
+
+  def generate_response(correct)
+   correct ? "#{CORRECT.sample} #{COMPLEMENT.sample}" : "#{INCORRECT.sample}"
   end
 
   def auto_respond user_post

@@ -278,9 +278,9 @@ class FeedsController < ApplicationController
       conversation = Conversation.create(:post_id => root_post.id, :user_id => post_to_link.user_id ,:publication_id => publication.id)
       post_to_link.update_attributes({
         :in_reply_to_post_id => post_to_link_to.id,
+        :in_reply_to_question_id => question.id,
         :conversation_id => conversation.id
       })
-      post.in_reply_to_question = question
 
       Post.grader.grade post_to_link
 
