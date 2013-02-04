@@ -161,7 +161,7 @@ class Asker < User
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
-      test_option = Post.create_split_test(user.id, "reengagement interval", "3/6/12/15", "2/4/8/15", "1/2/4/8/15")
+      test_option = Post.create_split_test(user.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
@@ -474,8 +474,8 @@ class Asker < User
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         # Hackity, just being used to get current user's test option for now
-        if answerer.enrolled_in_experiment? "reengagement interval"
-          strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+        if answerer.enrolled_in_experiment? "reengagement tight intervals"
+          strategy = Post.create_split_test(answerer.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15") 
         end
         in_reply_to = "reengage inactive"
       end
@@ -510,8 +510,8 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-          if answerer.enrolled_in_experiment? "reengagement interval"
-            strategy = Post.create_split_test(answerer.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7") 
+          if answerer.enrolled_in_experiment? "reengagement tight intervals"
+            strategy = Post.create_split_test(answerer.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15") 
           end
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
