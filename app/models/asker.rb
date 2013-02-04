@@ -359,8 +359,8 @@ class Asker < User
     resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
     response_text = options[:response_text] if !options[:response_text].blank?
     
-    # split test hints
-    if question = user_post.in_reply_to_question and !question.hint.blank?
+    # split test hints for questions with hints that aren't posted through the app
+    if question = user_post.in_reply_to_question and !question.hint.blank? and !user_post.posted_via_app and response_text.nil?
       test_name = "Hint when inccorect (answers question correctly later)"
       if !correct
         if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
@@ -390,6 +390,8 @@ class Asker < User
         response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
     end
+
+    puts "App response: #{response_text}"
 
     if options[:post_aggregate_activity] == true
       app_post = Post.create({

@@ -575,22 +575,20 @@ class Post < ActiveRecord::Base
 
   # formally in_answer_to_question
   def link_to_question
-    return _in_reply_to_question unless _in_reply_to_question.nil?
+    return in_reply_to_question unless in_reply_to_question.nil?
 
-    if _in_reply_to_question
-      # already have question in memory
-    elsif interaction_type == 3
+    if interaction_type == 3
       # retweet
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      _in_reply_to_question = Question.includes(:answers => nil, :publications => {:conversations => :posts}).find(asker.new_user_q_id)
+      _in_reply_to_question = Question.find(asker.new_user_q_id)
     elsif conversation and conversation.publication and conversation.publication.question
       _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question
       _in_reply_to_question = parent.publication.question
     end
 
-    self.update_attribute :in_reply_to_question, _in_reply_to_question.id
+    self.update_attribute :in_reply_to_question_id, _in_reply_to_question.id if _in_reply_to_question
 
     in_reply_to_question
   end
