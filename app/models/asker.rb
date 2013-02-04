@@ -161,7 +161,7 @@ class Asker < User
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
-      test_option = Post.create_split_test(user.id, "reengagement interval", "3/7/10", "2/5/7", "5/7/7")
+      test_option = Post.create_split_test(user.id, "reengagement interval", "3/6/12/15", "2/4/8/15", "1/2/4/8/15")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
@@ -675,7 +675,6 @@ class Asker < User
       data << row
     end
     data = [['Date', 'Us', 'MAUs', 'WAUs', 'DAUs', "Followers", "Unfollowers"]] + data #Followers, Unfollowers
-    #data.pop
     require 'csv'
     CSV.open("tmp/exports/asker_stats_#{askers.collect(&:id).join('-').hash}.csv", "wb") do |csv|
       data.transpose.each do |row|
