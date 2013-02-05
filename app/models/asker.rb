@@ -654,7 +654,9 @@ class Asker < User
   end
 
   def self.reengage_authors
-    test = "yotein"
+    recent_questions = Question.recently_published_ugc.select { |q| (q.in_reply_to_posts.to_a.count {|p| p.correct != nil}) > 2 }
+    recent_updates_sent = Post.author_updates.where()
+    
   end
 
   def self.export_stats_to_csv askers = nil, domain = 9999

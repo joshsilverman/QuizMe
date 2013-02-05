@@ -525,4 +525,5 @@ class User < ActiveRecord::Base
   def age
     ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
+
 end
