@@ -1,13 +1,8 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  helper_method :current_user
   before_filter :referrer_data
   before_filter :split_user
   before_filter :preload_models
-
-  # def authenticate_user
-  #   redirect_to '/' unless current_user 
-  # end
 
   def after_sign_in_path_for resource, redirect_to = nil
     omniauth_redirect_params = request.env["omniauth.params"]

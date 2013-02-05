@@ -19,12 +19,13 @@ class AuthorizationsController < ApplicationController
   	end
 
 	  def find_for_ouath provider, auth_hash, resource
-	    user, email, name, uid, auth_attr = nil, nil, nil, {}
+	    user, email, name, uid, auth_attr, user_attr = nil, nil, nil, {}, {}
 	    case provider
 	    when "twitter"
 	      uid = auth_hash["uid"]
 	      name = auth_hash["info"]["name"]
 	      auth_attr = { :uid => uid, :token => auth_hash['credentials']['token'], :secret => auth_hash['credentials']['secret'], :name => name, :link => "http://twitter.com/#{name}" }
+	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :twi_name => auth_hash["info"]["name"], :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"] }
 	    when "facebook"
 	      uid = access_token['uid']
 	      email = access_token['extra']['user_hash']['email']
@@ -40,7 +41,7 @@ class AuthorizationsController < ApplicationController
 	    else
 				if email # check if we have the email
 					user = find_or_create_oauth_by_email(email)
-				elsif uid && name # twitter doesn't provide email address, use uid/name
+				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
 					user = find_or_create_oauth_by_uid(uid) || find_or_create_oauth_by_name(name)
 				else
 					puts 'Provider #{provider} not handled'
@@ -53,6 +54,7 @@ class AuthorizationsController < ApplicationController
 		    user.authorizations << auth
 		  end
 		  auth.update_attributes auth_attr
+		  user.update_attributes user_attr
 	
 	    user
 	  end  	
@@ -72,7 +74,7 @@ class AuthorizationsController < ApplicationController
 	  def find_or_create_oauth_by_name name
 	    unless user = User.find_by_name(name)
 	      user = User.new(:name => name, :password => Devise.friendly_token[0,20])
-	      user.save false
+	      user.save :validate => false
 	    end
 	    user
 	  end

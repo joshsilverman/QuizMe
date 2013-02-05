@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user, :except => [:index, :show, :activity_stream, :more]
+  before_filter :authenticate_user!, :except => [:index, :show, :activity_stream, :more]
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
