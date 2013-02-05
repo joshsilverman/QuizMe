@@ -74,8 +74,10 @@ class Question < ActiveRecord::Base
     answers.select{|a| a.correct != true} || []
   end
 
-  def self.recently_published_ugc domain = 3
-    Question.includes(:user, :in_reply_to_posts).ugc.where("questions.created_at > ?", domain.days.ago)
+  def self.recently_published_ugc domain_start = 7, domain_end = 3
+    Question.includes(:user, :in_reply_to_posts)\
+      .where("questions.created_at > ? and questions.created_at < ?", domain_start.days.ago, domain_end.days.ago)\
+      .ugc
   end
 
   ###THIS IS FOR IMPORTING FROM QB###

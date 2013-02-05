@@ -653,10 +653,15 @@ class Asker < User
     return primary_asker, script
   end
 
-  def self.reengage_authors
-    recent_questions = Question.recently_published_ugc.select { |q| (q.in_reply_to_posts.to_a.count {|p| p.correct != nil}) > 2 }
-    recent_updates_sent = Post.author_updates.where()
-    
+  def self.send_author_followups
+    # get recently created questions with enough responses
+    # get recently sent followups
+    # filter out authors who don't have a question submitted after their last followup
+
+    # recent_questions = Question.recently_published_ugc.group_by(&:user_id).each do |user_id, questions|
+      # { |q| (q.in_reply_to_posts.to_a.count {|p| p.correct != nil}) > 2 }
+    # end
+    recent_updates_sent = Post.author_followup.where("user_id in (?) and created_at > ?", recent_questions.collect(&:user_id), 1.week.ago)
   end
 
   def self.export_stats_to_csv askers = nil, domain = 9999
