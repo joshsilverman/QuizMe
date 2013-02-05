@@ -100,9 +100,10 @@ class FeedsController < ApplicationController
     end
     if @stream.size < 5
       users = User.where("users.last_answer_at is not null and users.id not in (?)", (asker_ids))\
-        .order("users.last_answer_at DESC").limit(10)\
-        .reject{|u| user_followers.include? u.id}
+        .order("users.last_answer_at DESC").limit(10)
         
+      users = users.reject{|u| user_followers.include? u.id} if user_followers.present?
+
       users.each do |user| 
         post = user.posts.not_spam.includes(:conversation => :publication).where("posts.interaction_type = 2").order("created_at DESC").limit(1).first
         next unless post and post.conversation and post.conversation.publication
