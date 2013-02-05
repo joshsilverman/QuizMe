@@ -33,9 +33,10 @@ class AuthorizationsController < ApplicationController
 	      raise 'Unknown provider (#{provider})'
 	    end
 
-	    if user = resource # user is already signed in
+	    if user = resource # user is already signed in	    	
 	    	if resource.is_role?('admin') and request.env["omniauth.params"]['update_asker_id'] # use proper devise roles!
-	    		user = update_twi_asker_attributes(request.env["omniauth.auth"], request.env["omniauth.params"])
+	    		update_twi_asker_attributes(request.env["omniauth.auth"], request.env["omniauth.params"])
+	    		return
 	    	end
 	    else
 				if email # check if we have the email
@@ -79,16 +80,17 @@ class AuthorizationsController < ApplicationController
 	  end
 
 	  def update_twi_asker_attributes auth, omni_params
-      user = User.asker(omni_params['update_asker_id'])
-      user ||= User.find_by_twi_user_id auth["uid"]
-      user ||= User.new
-      user.role = 'asker'
-      user.twi_user_id = auth["uid"]
-      user.twi_screen_name = auth["info"]["nickname"]
-      user.twi_name = auth["info"]["name"]
-      user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
-      user.twi_oauth_token = auth['credentials']['token']
-      user.twi_oauth_secret = auth['credentials']['secret']
-      user.save
+	  	# user = omni_params['update_asker_id'].present? ? Asker.find(omni_params['update_asker_id'].to_i) : User.new
+    #   # # user ||= User.find_by_twi_user_id auth["uid"]
+      
+    #   user.role = 'asker'
+    #   user.twi_user_id = auth["uid"]
+    #   user.twi_screen_name = auth["info"]["nickname"]
+    #   user.twi_name = auth["info"]["name"]
+    #   user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
+    #   user.twi_oauth_token = auth['credentials']['token']
+    #   user.twi_oauth_secret = auth['credentials']['secret']
+    #   user.save
+    #   redirect_to "/askers/#{user.id}/edit"
 	  end
 end
