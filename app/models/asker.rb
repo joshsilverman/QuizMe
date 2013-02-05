@@ -685,6 +685,7 @@ class Asker < User
         Post.dm(asker, user, script, {:intention => "author followup"})
         script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
         Post.dm(asker, user, script, {:intention => "author followup"})
+        Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
       end
     end
   end
