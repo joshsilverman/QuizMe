@@ -80,6 +80,15 @@ class User < ActiveRecord::Base
   scope :handle_author, where(:author_segment => 4)
 
 
+  def self.devise_find_or_create_by_twi_user_id twi_user_id
+		user = User.find_by_twi_user_id(new_user_twi_id)
+    unless user
+      user = User.new(:twi_user_id => new_user_twi_id, :password => Devise.friendly_token[0,20])
+      user.save :validate => false
+    end
+    user
+  end
+
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']
