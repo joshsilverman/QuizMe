@@ -14,8 +14,12 @@ class Stat < ActiveRecord::Base
       Post.not_spam.not_us.social\
         .select(["user_id", "to_char(min(created_at), 'YYYY-MM-DD') as first_active_at"])\
         .group("user_id").group_by{|p|p.first_active_at}.each{|k,v| new_on[k] = v.count}
-      last_24_hours_new = User.social_not_spam_with_posts.where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
-      last_7_days_new = User.social_not_spam_with_posts.where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
+
+      created_at_to_user_id = Hash[*Post.not_spam.not_us.social\
+        .select(["user_id", "min(created_at) as first_active_at"])\
+        .group("user_id").map{|p|[Time.parse(p.first_active_at), p.user_id]}.flatten]
+      last_24_hours_new = created_at_to_user_id.keys.reject{|t|t < Time.now - 1.day}.count
+      last_7_days_new = created_at_to_user_id.keys.reject{|t|t < Time.now - 7.days}.count
 
       existing_before = {}
       new_to_existing_before_on = {}
