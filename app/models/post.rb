@@ -252,6 +252,7 @@ class Post < ActiveRecord::Base
 
   def self.save_mention_data m, asker, conversation_id = nil
     u = User.find_or_create_by_twi_user_id(m.user.id)
+
     u.update_attributes(
       :twi_name => m.user.name,
       :twi_screen_name => m.user.screen_name,
@@ -454,7 +455,7 @@ class Post < ActiveRecord::Base
     Post.grader.grade post
   end
 
-  def self.twitter_request(&block)
+  def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str
     return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     
     value = nil
