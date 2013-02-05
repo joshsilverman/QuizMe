@@ -279,7 +279,6 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
     t.integer  "interaction_segment"
     t.integer  "author_segment"
     t.string   "email"
-    t.string   "phone"
     t.string   "encrypted_password",     :default => "",          :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"

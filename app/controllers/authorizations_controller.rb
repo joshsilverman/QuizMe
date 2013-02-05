@@ -25,7 +25,7 @@ class AuthorizationsController < ApplicationController
 	      uid = auth_hash["uid"]
 	      name = auth_hash["info"]["name"]
 	      auth_attr = { :uid => uid, :token => auth_hash['credentials']['token'], :secret => auth_hash['credentials']['secret'], :name => name, :link => "http://twitter.com/#{name}" }
-	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :twi_name => auth_hash["info"]["name"], :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"] }
+	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :twi_name => auth_hash["info"]["name"], :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"], :twi_user_id => uid }
 	    when "facebook"
 	      uid = access_token['uid']
 	      email = access_token['extra']['user_hash']['email']
@@ -42,7 +42,7 @@ class AuthorizationsController < ApplicationController
 				if email # check if we have the email
 					user = find_or_create_oauth_by_email(email)
 				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
-					user = find_or_create_oauth_by_uid(uid) || find_or_create_oauth_by_name(name)
+					user = find_or_create_oauth_by_uid(uid) || find_or_create_oauth_by_provider_and_name(provider, name)
 				else
 					puts 'Provider #{provider} not handled'
 				end
@@ -71,8 +71,8 @@ class AuthorizationsController < ApplicationController
 	  	Authorization.find_by_uid(uid.to_s).try(:user)
 	  end
 	 
-	  def find_or_create_oauth_by_name name
-	    unless user = User.find_by_name(name)
+	  def find_or_create_oauth_by_provider_and_name provider, name
+	  	unless user = Authorization.find_by_provider_and_name(provider, name).try(:user)
 	      user = User.new(:name => name, :password => Devise.friendly_token[0,20])
 	      user.save :validate => false
 	    end
