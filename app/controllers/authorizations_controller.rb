@@ -1,5 +1,4 @@
 class AuthorizationsController < ApplicationController
-  # before_filter :authenticate_user!, :except => [:create]
 
   def twitter
   	oauthorize "twitter"
@@ -91,6 +90,5 @@ class AuthorizationsController < ApplicationController
       user.twi_oauth_token = auth['credentials']['token']
       user.twi_oauth_secret = auth['credentials']['secret']
       user.save
-      # redirect_to "/askers/#{user.id}/edit"
 	  end
 end
