@@ -1,6 +1,9 @@
 Quizmemanager::Application.routes.draw do
   
-  # devise_for :users  
+  # temporarily disallow basic auth
+  match "/users/sign_up" => redirect("/")
+  match "/users/sign_in" => redirect("/")
+  
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
   get "answer/new"
