@@ -31,7 +31,7 @@ Quizmemanager::Application.routes.draw do
   match "/trigger_split_test" => "feeds#trigger_split_test"
 
   match "/dashboard" => "askers#dashboard"
-  match "/dashboard/core_by_handle/:asker_id" => "askers#get_core_by_handle"
+  match "/dashboard/core" => "askers#get_core_metrics"
   match "/get_detailed_metrics" => 'askers#get_detailed_metrics'
   match "/graph/:party/:graph" => 'askers#graph'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'

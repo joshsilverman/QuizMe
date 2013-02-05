@@ -82,22 +82,24 @@ class AskersController < ApplicationController
     @askers = User.askers
   end 
 
-  def get_core_by_handle
+  def get_core_metrics
     @askers = User.askers
     @core_display_data = {0 => {}}
+    @domain = params[:domain] || 30
+    @domain = @domain.to_i
 
     params.delete 'asker_id' if params[:asker_id] == '-1'
 
-    @dau_mau, dau_mau_display_data = Stat.dau_mau params[:asker_id]
+    @dau_mau, dau_mau_display_data = Stat.dau_mau @domain
     @core_display_data[0][:dau_mau] = dau_mau_display_data
 
-    @econ_engine, econ_engine_display_data = Stat.econ_engine params[:asker_id]
+    @econ_engine, econ_engine_display_data = Stat.econ_engine @domain
     @core_display_data[0][:econ_engine] = econ_engine_display_data 
 
-    @paulgraham, pg_display_data = Stat.paulgraham params[:asker_id]
+    @paulgraham, pg_display_data = Stat.paulgraham @domain
     @core_display_data[0][:paulgraham] = pg_display_data
 
-    @revenue, revenue_display_data = Stat.revenue
+    @revenue, revenue_display_data = Stat.revenue @domain
     @core_display_data[0][:revenue] = revenue_display_data
 
     render :json => {
@@ -107,7 +109,7 @@ class AskersController < ApplicationController
       :revenue => @revenue, 
       :econ_engine => @econ_engine,
       :core_display_data => @core_display_data
-    }
+    }, :locals => {domain: @domain}
   end
 
   def graph

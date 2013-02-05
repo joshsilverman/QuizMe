@@ -1,187 +1,203 @@
 .core, .dashboard {
 
-	.handle_name {
-		margin:0px 1px;
-		padding-bottom:10px;
-		color:#666;
+  .handle_name {
+    margin:0px 1px;
+    padding-bottom:10px;
+    color:#666;
 
-		.loading {
-			position:relative;
-			top:-3px;
-		} 
-	}
+    .loading {
+      position:relative;
+      top:-3px;
+    } 
 
-	.handles {
-		.badge {
-			padding: 1px 1px 2px 1px;
-		}
-	}
+    .domains {
+      float:right;
+      font-size: 12px;
+      padding-right: 10px;
+      cursor: pointer;
 
-	margin-left: 0px;
+      a {
+        font-weight: normal;
 
-	.row {
-		margin: 10px 0px;
+        &.active {
+          font-weight: bold;
+          color:#777;
+        }
+      }
+    }
+  }
 
-		.nav {
-			margin-left: 0px;
-			margin-top:0px;
+  .handles {
+    .badge {
+      padding: 1px 1px 2px 1px;
+    }
+  }
 
-			a {
-				.loading {
-					float:right;
-				}
-				background-color:white;
-				padding-left:20px;
+  margin-left: 0px;
 
-				&.heading {
-					background-color:#f9f9f9;
-					color:#555;
-					padding-left:12px;
-				}
-			}
+  .row {
+    margin: 10px 0px;
 
-			.active a {
-				color: #ffffff;
-				background-color: #0088cc;
-			}
-		}
+    .nav {
+      margin-left: 0px;
+      margin-top:0px;
 
-		.graphs {
-			//background-color:#eee;
-			border-left:1px solid #ddd;
-			margin-left:5px;
-			float:right;
+      a {
+        .loading {
+          float:right;
+        }
+        background-color:white;
+        padding-left:20px;
 
-			//min-height:540px;
-			width:870px;
-			padding:0px 5px;
+        &.heading {
+          background-color:#f9f9f9;
+          color:#555;
+          padding-left:12px;
+        }
+      }
 
-			margin-top:0px;
-			//padding-top:20px;
-			//overflow:scroll;
-		}
-	}
+      .active a {
+        color: #ffffff;
+        background-color: #0088cc;
+      }
+    }
 
-	.select_option {
-		display: inline;
-		padding-right: 10px;
+    .graphs {
+      //background-color:#eee;
+      border-left:1px solid #ddd;
+      margin-left:5px;
+      float:right;
 
-		label {
-			display: inline;
-			position: relative;
-			top: 1px;
-			font-weight: bold;
-    	padding: 10px 0px;
-		}
-	}
+      //min-height:540px;
+      width:870px;
+      padding:0px 5px;
 
-	#handle_activity, #cohort, #questions, #ugc, #answer_source, #learner_levels {
-		margin-left:0px !important;
-	}
+      margin-top:0px;
+      //padding-top:20px;
+      //overflow:scroll;
+    }
+  }
 
-	.data_row {
-		height: 225px;
-		margin: 10px 0px;
-		
-		.panel {
-			box-shadow: 0 0 8px -3px #888;
-			background: white;
-			margin: 0 0 25px 0;
-			height: 275px;
-			border: 1px rgba(0, 0, 0, 0.207031) solid;
+  .select_option {
+    display: inline;
+    padding-right: 10px;
 
-			.stats {
-				height: 275px;
-				width: 125px;
-				float: left;
-				border-right: 1px rgba(0, 0, 0, 0.207) solid;
-				
-				.header {
-					height: 49px;
-					/*background-color: whiteSmoke;*/
-					background: url("/assets/light_toast.png");
-					border-bottom: 1px dotted #ccc;
-					-webkit-border-top-left-radius: 5px;
-					-moz-border-top-left-radius: 5px;
-					border-top-left-radius: 5px;	
+    label {
+      display: inline;
+      position: relative;
+      top: 1px;
+      font-weight: bold;
+      padding: 10px 0px;
+    }
+  }
 
-					h3 {
-						text-align: center;
-						position: relative;
-						top: 12px;						
-					}				
-				}
+  #handle_activity, #cohort, #questions, #ugc, #answer_source, #learner_levels {
+    margin-left:0px !important;
+  }
 
-				.container {
-					width: inherit;
-					text-align: center;
-					padding-top: 34px;
+  .data_row {
+    height: 225px;
+    margin: 10px 0px;
+    
+    .panel {
+      box-shadow: 0 0 8px -3px #888;
+      background: white;
+      margin: 0 0 25px 0;
+      height: 275px;
+      border: 1px rgba(0, 0, 0, 0.207031) solid;
 
-					.number {
-						font-size: 34px;
-    				margin-bottom: 14px;
-					}
+      .stats {
+        height: 275px;
+        width: 125px;
+        float: left;
+        border-right: 1px rgba(0, 0, 0, 0.207) solid;
+        
+        .header {
+          height: 49px;
+          /*background-color: whiteSmoke;*/
+          background: url("/assets/light_toast.png");
+          border-bottom: 1px dotted #ccc;
+          -webkit-border-top-left-radius: 5px;
+          -moz-border-top-left-radius: 5px;
+          border-top-left-radius: 5px;  
 
-					.period {
-						font-size: 17px;
-						color: gray;
-					}
+          h3 {
+            text-align: center;
+            position: relative;
+            top: 12px;            
+          }       
+        }
 
-					.number, .period {
-						/*margin-top: 14px;*/
-						/*display: inline;*/
-					}					
-				}
+        .container {
+          width: inherit;
+          text-align: center;
+          padding-top: 34px;
 
-				.new {
-					border-top: 1px #F0F0F0 solid;
-					height: 110px;
-					/*background: url("/assets/light_toast.png");*/
-				}
+          .number {
+            font-size: 34px;
+            margin-bottom: 14px;
+          }
 
-				.total {
-					/*background: url("/assets/light_toast.png");*/
-					border-top: 1px #ddd dotted;
-					height: 88px;
-				}
-			}
+          .period {
+            font-size: 17px;
+            color: gray;
+          }
 
-			.graph {
-				height: 225px;
-				width: 66%;
-				float: left;
-			}
-		}
+          .number, .period {
+            /*margin-top: 14px;*/
+            /*display: inline;*/
+          }         
+        }
 
-		.panel.right{
-			float: right;
-		}
-	}
+        .new {
+          border-top: 1px #F0F0F0 solid;
+          height: 110px;
+          /*background: url("/assets/light_toast.png");*/
+        }
+
+        .total {
+          /*background: url("/assets/light_toast.png");*/
+          border-top: 1px #ddd dotted;
+          height: 88px;
+        }
+      }
+
+      .graph {
+        height: 225px;
+        width: 66%;
+        float: left;
+      }
+    }
+
+    .panel.right{
+      float: right;
+    }
+  }
 }
 
 .core {
-	overflow:hidden;
-	//margin-top:10px;
+  overflow:hidden;
+  //margin-top:10px;
 }
 
 #core_by_handle {
-	.revenue {
-		display:none;
-	}
+  .revenue {
+    display:none;
+  }
 }
 
 #core {
-	.daus {
-		display:none;
-	}
+  .daus {
+    display:none;
+  }
 }
 
 #handle_activity, #cohort, #questions {
-	border: 0px !important;
+  border: 0px !important;
 }
 
 .handles {
-	.badge {
-		padding: 1px 1px 2px 1px;
-	}
+  .badge {
+    padding: 1px 1px 2px 1px;
+  }
 }

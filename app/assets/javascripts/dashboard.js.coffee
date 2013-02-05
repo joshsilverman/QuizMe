@@ -21,6 +21,9 @@ class Dashboard
         hash = '#core'
       @update_tabs null, hash
 
+    #domains selectable
+    $('.domains a').click -> dashboard.core $(this).attr 'domain'
+
   update_tabs: (e, target) =>
     target ||= $(e.target).tab().attr 'href'
     target = "#users-answer_source" if target == '#users'
@@ -56,7 +59,7 @@ class Dashboard
     $('a[href=#' + party + ']').tab('show')
     window.location.hash = target
 
-  core: -> 
+  core: (domain = 30) -> 
     #tabs
     $('.nav-tabs > li').removeClass 'active'
     $('.core-metrics').addClass 'active'
@@ -66,7 +69,7 @@ class Dashboard
     $('.tab-content #core').addClass 'active'
 
     $(".loading").show()
-    $.get ("/dashboard/core_by_handle/-1"), (data) =>
+    $.get ("/dashboard/core?domain=#{domain}"), (data) =>
       data = $.parseJSON(data) if ($.type(data) == 'string')
 
       dashboard.draw_paulgraham('', data['paulgraham'])
@@ -87,6 +90,8 @@ class Dashboard
       $('.revenue .total .number').html data['core_display_data'][0]['revenue']['month']
       
       $(".loading").hide()
+      $(".domains a").removeClass "active"
+      $(".domains a[domain=#{domain}]").addClass "active"
 
   update_dashboard: =>
     @draw_graphs()

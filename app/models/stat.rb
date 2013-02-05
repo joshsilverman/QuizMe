@@ -7,30 +7,15 @@ class Stat < ActiveRecord::Base
     end
   end
 
-  def self.paulgraham asker_id = nil, domain = 30
-    new_to_existing_before_on, display_data = Rails.cache.fetch "stat_paulgraham_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 17.minutes do
-      asker_ids = User.askers.collect(&:id)
-      
-      if asker_id
-        new_on = User.social_not_spam_with_posts\
-          .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .group("to_char(users.created_at, 'YYYY-MM-DD')")\
-          .count('users.id', :distinct => true)
+  def self.paulgraham domain = 30
+    new_to_existing_before_on, display_data = Rails.cache.fetch "stat_paulgraham_domain_#{domain}", :expires_in => 17.minutes do
 
-        last_24_hours_new = User.social_not_spam_with_posts\
-          .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
-        last_7_days_new = User.social_not_spam_with_posts\
-          .where('posts.in_reply_to_user_id = ?', asker_id)\
-          .where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
-      else
-        new_on = User.social_not_spam_with_posts\
-          .group("to_char(users.created_at, 'YYYY-MM-DD')")\
-          .count('users.id', :distinct => true)
-
-        last_24_hours_new = User.social_not_spam_with_posts.where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
-        last_7_days_new = User.social_not_spam_with_posts.where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
-      end
+      new_on = {}
+      Post.not_spam.not_us.social\
+        .select(["user_id", "to_char(min(created_at), 'YYYY-MM-DD') as first_active_at"])\
+        .group("user_id").group_by{|p|p.first_active_at}.each{|k,v| new_on[k] = v.count}
+      last_24_hours_new = User.social_not_spam_with_posts.where("users.created_at > ?", 24.hours.ago).count('users.id', :distinct => true)
+      last_7_days_new = User.social_not_spam_with_posts.where("users.created_at > ?", (7 * 24).hours.ago).count('users.id', :distinct => true)
 
       existing_before = {}
       new_to_existing_before_on = {}
@@ -40,7 +25,6 @@ class Stat < ActiveRecord::Base
         .reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}\
         .collect{|k,v| v}\
         .sum
-
 
       ((start_day)..(Date.today - 1)).to_a.each do |n|
         existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
@@ -74,30 +58,16 @@ class Stat < ActiveRecord::Base
     return new_to_existing_before_on, display_data
   end
 
-  def self.dau_mau asker_id = nil
-    graph_data, display_data = Rails.cache.fetch "stat_dau_mau_asker_id_#{asker_id}", :expires_in => 13.minutes do
-      domain = 30
-      asker_ids = User.askers.collect(&:id)
+  def self.dau_mau domain = 30
+    graph_data, display_data = Rails.cache.fetch "stat_dau_mau_domain_#{domain}", :expires_in => 13.minutes do
 
-      if asker_id
-        user_ids_by_date_raw = Post.social.not_us.not_spam\
-          .where('in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ?", Date.today - (domain + 31).days)\
-          .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all    
+      user_ids_by_date_raw = Post.social.not_us.not_spam\
+        .where("created_at > ?", Date.today - (domain + 31).days)\
+        .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all
 
-        user_ids_last_24_raw = Post.social.not_us.not_spam\
-          .where('in_reply_to_user_id = ?', asker_id)\
-          .where("created_at > ?", 24.hour.ago)\
-          .select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
-      else
-        user_ids_by_date_raw = Post.social.not_us.not_spam\
-          .where("created_at > ?", Date.today - (domain + 31).days)\
-          .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all
-
-        user_ids_last_24_raw = Post.social.not_us.not_spam\
-          .where("created_at > ?", 24.hour.ago)\
-          .select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
-      end
+      user_ids_last_24_raw = Post.social.not_us.not_spam\
+        .where("created_at > ?", 24.hour.ago)\
+        .select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
 
       user_ids_by_date = {}
       user_ids_by_date_raw.each do |post|
@@ -184,24 +154,15 @@ class Stat < ActiveRecord::Base
     return graph_data, display_data
   end
 
-  def self.econ_engine asker_id = nil, domain = 30
-    econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 19.minutes do
-      if asker_id
-        @posts_by_date = Post.joins(:user).not_us.not_spam.social\
-            .where('posts.in_reply_to_user_id = ?', asker_id)\
-            .where("posts.created_at > ?", Date.today - domain)\
-            .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-            .group("to_char(posts.created_at, 'YY/MM/DD')")\
-            .count('posts.id')
+  def self.econ_engine domain = 30
+    econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_domain_#{domain}", :expires_in => 19.minutes do
 
-      else
-        @posts_by_date = Post.joins(:user).not_spam.not_us.social\
-            .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
-            .where("posts.created_at > ?", Date.today - domain)\
-            .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-            .group("to_char(posts.created_at, 'YY/MM/DD')")\
-            .count('posts.id')
-      end
+      @posts_by_date = Post.joins(:user).not_spam.not_us.social\
+          .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
+          .where("posts.created_at > ?", Date.today - domain)\
+          .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
+          .group("to_char(posts.created_at, 'YY/MM/DD')")\
+          .count('posts.id')
 
       @econ_engine = []
       @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count] unless date == Date.today.strftime('%y/%m/%d')}
@@ -211,16 +172,16 @@ class Stat < ActiveRecord::Base
       @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
 
       display_data = {}
-      display_data[:today] = @econ_engine.last[1]
-      display_data[:month] = @econ_engine.collect{|r| r[1]}[1..-1].sum
+      display_data[:today] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 24.hours).count
+      display_data[:month] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 30.days).count
 
       [@econ_engine, display_data]
     end
     return econ_engine, display_data
   end
 
-  def self.revenue(client_id = nil, domain = 30)
-    revenue, display_data = Rails.cache.fetch "stat_revenue_client_id_#{client_id}_domain_#{domain}", :expires_in => 23.minutes do
+  def self.revenue domain = 30
+    revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
       @rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
       return if @rate_sheets.empty?
       @clients = @rate_sheets.collect{|rs| rs.clients}.flatten.uniq
@@ -232,7 +193,7 @@ class Stat < ActiveRecord::Base
       @askers_by_rate_sheet.each do |rate_sheet, askers|
         posts_by_date = Post.not_spam.social.not_us\
             .where("in_reply_to_user_id IN (?)", askers.collect(&:id))\
-            .where("created_at > ?", 30.days.ago)\
+            .where("created_at > ?", domain.days.ago)\
             .select([:text, "posts.created_at", :in_reply_to_user_id, :interaction_type, :correct, :user_id, :spam, :autospam])\
             .order("posts.created_at ASC")\
             .group_by{|p| p.created_at.strftime('%y/%m/%d')}

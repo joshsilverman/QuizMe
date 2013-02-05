@@ -4,6 +4,12 @@
 		%span.text All handles
 		%span.loading.hide= image_tag "ajax-loader.gif"
 
+		%span.domains
+			- domains = {30 => '1 month', 60 => '2 months', 90 => '3 months', 180 => '6 months', 360 => '1 year'}
+			- domains.each do |k,v|
+				%a{domain: k}= v
+				= "|" unless domains.keys.last == k
+
 	.data_row.row
 		.paulgraham_users.panel.left.rounded.span6
 			.paulgraham_stats.stats
@@ -41,7 +47,7 @@
 				.new
 					.container
 						%p.number
-						%p.period today
+						%p.period last 24 hours
 				.month.total
 					.container
 						%p.number
