@@ -53,7 +53,14 @@ class Asker < User
     	wisr_follower_ids = followers.collect(&:twi_user_id)
 
     	# Add new followers in wisr
-    	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
+    	(twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id| 
+        user = User.find_by_twi_user_id(new_user_twi_id)
+        unless user
+          user = User.new(:twi_user_id => new_user_twi_id, :password => Devise.friendly_token[0,20])
+          user.save :validate => false
+        end
+        add_follower(user) 
+      end
 
   		# Remove unfollowers from asker follow association  	
     	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
