@@ -233,9 +233,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.check_for_posts current_acct
-    puts "check for posts: #{current_acct.twi_screen_name}"
     client = current_acct.twitter
-    puts client.inspect
 
     # Get mentions, de-dupe, and save
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
@@ -254,7 +252,7 @@ class Post < ActiveRecord::Base
 
   def self.save_mention_data m, asker, conversation_id = nil
     u = User.find_or_create_by_twi_user_id(m.user.id)
-    
+
     u.update_attributes(
       :twi_name => m.user.name,
       :twi_screen_name => m.user.screen_name,
