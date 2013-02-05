@@ -37,7 +37,7 @@
         %td
           %a{:href => "/questions/asker/#{asker.id}#not_tweeting"}
             .td_container= @unmoderated_counts[asker.id]
-        %td= @question_counts[asker.id]
+        %td= link_to @question_counts[asker.id], "questions/asker/#{asker.id}"
         %td
           %a{:href => "/askers/#{asker.id}/edit"} Edit
           &nbsp;|&nbsp;
