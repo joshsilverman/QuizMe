@@ -654,7 +654,7 @@ class Asker < User
   end
 
   def self.reengage_authors
-    test = "yo"
+    test = "yotein"
   end
 
   def self.export_stats_to_csv askers = nil, domain = 9999
