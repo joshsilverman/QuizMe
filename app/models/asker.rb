@@ -676,13 +676,16 @@ class Asker < User
 
   def self.dm_author_followups recipient_hash
     recipient_hash.each do |user_id, question_data|
-      script = "So far, #{question_data[:answered_count]} people have answered your question "
-      script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
       asker = Asker.find(question_data[:asker_id])
       user = User.find(user_id)
-      Post.dm(asker, user, script, {:intention => "author followup"})
-      script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
-      Post.dm(asker, user, script, {:intention => "author followup"})
+      next unless asker.update_followers().include? user.twi_user_id
+      if Post.create_split_test(user.id, "author question followup (return ugc submission)", "false", "true") == "true"
+        script = "So far, #{question_data[:answered_count]} people have answered your question "
+        script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
+        Post.dm(asker, user, script, {:intention => "author followup"})
+        script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
+        Post.dm(asker, user, script, {:intention => "author followup"})
+      end
     end
   end
 

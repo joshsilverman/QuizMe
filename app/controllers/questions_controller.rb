@@ -145,15 +145,19 @@ class QuestionsController < ApplicationController
         :status => 0
       })
 
+      author = @question.user
+
       ## Trigger UGC events
       Post.trigger_split_test(user_id, 'ugc request type')
       Post.trigger_split_test(user_id, 'ugc script')
+      Post.trigger_split_test(user_id, "author question followup (return ugc submission)") if author.questions.size > 1
 
       Mixpanel.track_event "submitted question", {
         :distinct_id => user_id,
         :time => question_created_at ? question_created_at.to_i : @question.created_at.to_i,
         :type => params[:post_id].present? ? "post" : "form",
-        :asker => Asker.find(params[:asker_id]).twi_screen_name
+        :asker => Asker.find(params[:asker_id]).twi_screen_name,
+        :lifecycle_segment => author.lifecycle_segment
       }
     end
 
