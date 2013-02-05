@@ -35,34 +35,34 @@ end
 gem 'rails', '3.2.11'
 gem 'jquery-ui-rails'
 gem 'haml', '3.1.6'
-gem 'devise', '2.1.2'
 gem 'twitter-bootstrap-rails', '2.1.1'
 gem 'jquery-rails', '1.0.19'
 
-gem 'omniauth', '1.1.0'
-gem 'omniauth-oauth2', '1.0.2'
-gem 'omniauth-twitter', '0.0.12'
-gem 'omniauth-facebook', '1.4.0'
-gem 'omniauth-tumblr', '1.0'
+gem 'devise'
+gem 'omniauth'
+gem 'omniauth-twitter'
+
+# gem 'omniauth', '1.1.0'
+# gem 'omniauth-oauth2', '1.0.2'
+# gem 'omniauth-twitter', '0.0.12'
+# gem 'omniauth-facebook', '1.4.0'
+# gem 'omniauth-tumblr', '1.0'
+
 gem 'rabl', '0.6.14'
 gem 'hirb'
-# gem 'twitter', '3.0.2'
+
 gem 'twitter', '4.5.0'
-# gem 'twitter'
 # gem 'tweetstream'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
-
 gem 'roadie'
-
-# gem 'tumblife', '1.2.0'
-gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'newrelic_rpm'
-# gem 'mixpanel_client', :git => 'git://github.com/bderusha/mixpanel_client.git'
 gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
 gem 'best_in_place'
+
+gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
 

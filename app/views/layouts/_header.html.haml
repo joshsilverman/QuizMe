@@ -59,7 +59,6 @@
               %li.hidden-phone
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"
 
-            %li= link_to "Sign Out", signout_path, :class => "nav-link"
-            =# image_tag(current_user.twi_profile_img_url, :style => 'float:right;') 
+            %li= link_to "Sign Out", destroy_user_session_path, :method => :delete, :class => "nav-link"
           - else
-            %li= link_to "Sign in with Twitter", "/auth/twitter", :class => "nav-link"
+            %li= link_to "Sign In", user_omniauth_authorize_path(:twitter), :class => "nav-link"

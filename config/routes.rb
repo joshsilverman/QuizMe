@@ -1,5 +1,8 @@
 Quizmemanager::Application.routes.draw do
   
+  # devise_for :users  
+  devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
+
   get "answer/new"
   get "answer/create"
   get "answer/update"
@@ -69,9 +72,10 @@ Quizmemanager::Application.routes.draw do
   resources :questions
   resources :answers
 
+  # match 'auth/:provider/callback' => 'services#create'
+  # resources :services, :only => [:index, :create, :destroy]
 
-  match 'auth/:provider/callback' => 'sessions#create'
-  match "/signout" => "sessions#destroy", :as => :signout
+  # match "/signout" => "sessions#destroy", :as => :signout
   match "/confirm_js" => "sessions#confirm_js"
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'

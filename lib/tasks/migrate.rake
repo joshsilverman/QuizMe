@@ -88,3 +88,17 @@ task :add_learner_level_to_users => :environment do
   	user.update_attribute(:learner_level, level)
   end
 end
+
+task :extract_authorizations => :environment do
+	User.where("twi_oauth_token is not null").each do |user|
+		a = Authorization.new
+		a.user_id = user.id
+		a.provider = "twitter"
+		a.uid = user.twi_user_id
+		a.name = user.twi_screen_name
+		a.token = user.twi_oauth_token
+		a.secret = user.twi_oauth_secret
+		a.link = "twitter.com/#{user.twi_screen_name}"
+		a.save
+	end
+end
