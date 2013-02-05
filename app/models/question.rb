@@ -12,6 +12,7 @@ class Question < ActiveRecord::Base
   has_many :requirements
 
   scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
+  scope :ugc, where('questions.user_id not in (?)', Asker.all.collect(&:id) + ADMINS)
 
   scope :priority, where('priority = ?', true)
   scope :not_priority, where('priority = ?', false)
@@ -71,6 +72,13 @@ class Question < ActiveRecord::Base
 
   def incorrect_answers
     answers.select{|a| a.correct != true} || []
+  end
+
+  def self.recently_published_ugc domain_start = 7, domain_end = 3
+    Question.includes(:user, :in_reply_to_posts)\
+      .approved\
+      .where("questions.created_at > ? and questions.created_at < ?", domain_start.days.ago, domain_end.days.ago)\
+      .ugc
   end
 
   ###THIS IS FOR IMPORTING FROM QB###

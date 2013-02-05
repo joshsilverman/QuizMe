@@ -7,9 +7,7 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for resource, redirect_to = nil
     omniauth_redirect_params = request.env["omniauth.params"]
     if omniauth_redirect_params
-      if omniauth_redirect_params["question_id"]
-        redirect_to = "/questions/#{omniauth_redirect_params['question_id']}/#{omniauth_redirect_params['answer_id']}"
-      elsif omniauth_redirect_params["feed_id"]
+      if omniauth_redirect_params["feed_id"]
         if omniauth_redirect_params['feed_id'] == "1"
           redirect_to = "/feeds/index/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
         else

@@ -119,41 +119,45 @@ class QuestionsController < ApplicationController
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
 
-    user_id = current_user.id
-    question_created_at = Time.now
-
-    # For questions generated from user posts
-    if params[:post_id]
-      ugc_post = Post.find(params[:post_id]) 
-      ugc_post.tags.delete(Tag.find_by_name("ugc"))
-      user_id = ugc_post.user_id
-      question_created_at = ugc_post.created_at
-    end
-
-    if params[:question_id]
+    if params[:question_id] # updating question
       @question = Question.find params[:question_id]
       return if current_user.id != @question.user_id and !current_user.is_role? "admin"
-      user_id = @question.user_id
-    end
+      @question.text = params[:question]
+      @question.priority = true
+      @question.status = 1
+      @question.save      
+    else # new question
+      user_id = current_user.id
+      question_created_at = nil  
 
-    @question ||= Question.new
+      if params[:post_id] # For questions generated from user posts
+        ugc_post = Post.find(params[:post_id]) 
+        ugc_post.tags.delete(Tag.find_by_name("ugc"))
+        user_id = ugc_post.user_id
+        question_created_at = ugc_post.created_at
+      end  
 
-    @question.text = params[:question]
-    @question.user_id = user_id
-    @question.priority = true
-    @question.created_for_asker_id = params[:asker_id]
-    @question.status = 0
-    @question.save
+      @question = Question.create({
+        :text => params[:question],
+        :user_id => user_id, 
+        :priority => true, 
+        :created_for_asker_id => params[:asker_id],
+        :status => 0
+      })
 
-    Post.trigger_split_test(current_user.id, 'ugc request type')
-    Post.trigger_split_test(current_user.id, 'ugc script')
+      author = @question.user
 
-    if current_user.is_role? "user" or params[:post_id].present?
+      ## Trigger UGC events
+      Post.trigger_split_test(user_id, 'ugc request type')
+      Post.trigger_split_test(user_id, 'ugc script')
+      Post.trigger_split_test(user_id, "author question followup (return ugc submission)") if author.questions.size > 1
+
       Mixpanel.track_event "submitted question", {
         :distinct_id => user_id,
-        :time => question_created_at.to_i,
+        :time => question_created_at ? question_created_at.to_i : @question.created_at.to_i,
         :type => params[:post_id].present? ? "post" : "form",
-        :asker => Asker.find(params[:asker_id]).twi_screen_name
+        :asker => Asker.find(params[:asker_id]).twi_screen_name,
+        :lifecycle_segment => author.lifecycle_segment
       }
     end
 

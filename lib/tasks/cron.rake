@@ -38,6 +38,7 @@ end
 
 task :reengage_inactive_users => :environment do
   Asker.reengage_inactive_users()
+  Asker.send_author_followups()
 end
 
 task :engage_new_users => :environment do 

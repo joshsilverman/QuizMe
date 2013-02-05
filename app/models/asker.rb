@@ -454,6 +454,7 @@ class Asker < User
     Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
+
   def nudge answerer
     return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
 
@@ -486,6 +487,9 @@ class Asker < User
 
     nudge_type.send_to(self, answerer)
   end
+
+
+  ## Update metrics
 
   def update_metrics answerer, user_post, publication, options = {}
     in_reply_to = nil
@@ -556,14 +560,8 @@ class Asker < User
     end  
   end
 
-  #here is an example of a function that cannot scale
-  def self.leaderboard(id, data = {}, scores = [])
-    posts = Post.select(:user_id).where(:in_reply_to_user_id => id, :correct => true).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..4]
-    users = User.select([:twi_screen_name, :twi_profile_img_url, :id]).find(posts.collect {|post| post[0]}).group_by(&:id)
-    posts.each { |post| scores << {:user => users[post[0]].first, :correct => post[1].length} }
-    data[:scores] = scores
-    return data
-  end  
+
+  ## Solicit UGC
 
   def request_ugc user
     if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, self.id).size > 9
@@ -596,6 +594,9 @@ class Asker < User
     script = script.gsub "{asker_name}", self.twi_screen_name
     return script
   end
+
+
+  ## Weekly progress reports
 
   def self.send_weekly_progress_dms
     recipients = Asker.select_progress_report_recipients()
@@ -654,6 +655,44 @@ class Asker < User
   end
 
 
+  ## Author followup
+
+  def self.send_author_followups
+    Asker.dm_author_followups(Asker.compile_author_followup_recipients)
+  end
+
+  def self.compile_author_followup_recipients recipient_hash = {}
+    recent_questions = Question.recently_published_ugc.group_by(&:user_id)
+    recent_followups = Post.author_followup.where("in_reply_to_user_id in (?) and created_at > ?", recent_questions.keys, 1.week.ago).order("created_at DESC").group_by(&:in_reply_to_user_id)
+
+    recent_questions.each do |user_id, questions|
+      questions = questions.select { |q| q.created_at > recent_followups[user_id].first.created_at } if recent_followups[user_id].present?
+      questions = questions.select { |q| (q.in_reply_to_posts.to_a.count {|p| p.correct != nil}) > 2 }
+      question = questions.sort_by { |q| q.in_reply_to_posts.size }.last
+      recipient_hash[user_id] = {:text => question.text, :asker_id => question.created_for_asker_id, :answered_count => question.in_reply_to_posts.size} if question
+    end
+    recipient_hash
+  end
+
+  def self.dm_author_followups recipient_hash
+    recipient_hash.each do |user_id, question_data|
+      asker = Asker.find(question_data[:asker_id])
+      user = User.find(user_id)
+      next unless asker.update_followers().include? user.twi_user_id
+      if Post.create_split_test(user.id, "author question followup (return ugc submission)", "false", "true") == "true"
+        script = "So far, #{question_data[:answered_count]} people have answered your question "
+        script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
+        Post.dm(asker, user, script, {:intention => "author followup"})
+        script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
+        Post.dm(asker, user, script, {:intention => "author followup"})
+        Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
+      end
+    end
+  end
+
+
+  ## Stat export
+
   def self.export_stats_to_csv askers = nil, domain = 9999
 
     askers = Asker.all unless askers
@@ -700,4 +739,15 @@ class Asker < User
       end
     end
   end
+
+
+  ## Unused?
+
+  def self.leaderboard(id, data = {}, scores = [])
+    posts = Post.select(:user_id).where(:in_reply_to_user_id => id, :correct => true).group_by(&:user_id).to_a.sort! {|a, b| b[1].length <=> a[1].length}[0..4]
+    users = User.select([:twi_screen_name, :twi_profile_img_url, :id]).find(posts.collect {|post| post[0]}).group_by(&:id)
+    posts.each { |post| scores << {:user => users[post[0]].first, :correct => post[1].length} }
+    data[:scores] = scores
+    return data
+  end    
 end

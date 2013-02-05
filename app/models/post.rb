@@ -55,6 +55,8 @@ class Post < ActiveRecord::Base
 
   scope :nudge, where("nudge_type_id is not null")
 
+  scope :author_followup, where("posts.intention = 'author followup'")
+
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
       Post.where("correct is not null").count
