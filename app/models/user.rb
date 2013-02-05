@@ -138,13 +138,14 @@ class User < ActiveRecord::Base
 	end
 
 	def twitter
-		auth = authorizations.where(:provider => "twitter").first
-		Twitter::Client.new(
-			:consumer_key => SERVICES['twitter']['key'],
-			:consumer_secret => SERVICES['twitter']['secret'],
-			:oauth_token => auth.token,
-			:oauth_token_secret => auth.secret
-		)		
+		if auth = authorizations.where(:provider => "twitter").first
+			return Twitter::Client.new(
+				:consumer_key => SERVICES['twitter']['key'],
+				:consumer_secret => SERVICES['twitter']['secret'],
+				:oauth_token => auth.token,
+				:oauth_token_secret => auth.secret
+			)		
+		end
 	end
 
 	def tumblr

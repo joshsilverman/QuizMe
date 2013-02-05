@@ -233,7 +233,9 @@ class Post < ActiveRecord::Base
   end
 
   def self.check_for_posts current_acct
+    puts "check for posts: #{current_acct.twi_screen_name}"
     client = current_acct.twitter
+    puts client.inspect
 
     # Get mentions, de-dupe, and save
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
