@@ -1,4 +1,15 @@
 class User < ActiveRecord::Base
+  # Include default devise modules. Others available are:
+  # :token_authenticatable, :confirmable,
+  # :lockable, :timeoutable and 
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable, :omniauthable
+
+  # Setup accessible (or protected) attributes for your model
+  # attr_accessible :email, :password, :password_confirmation, :remember_me
+  
+  has_many :authorizations, :dependent => :destroy
+
 	has_many :reps
 	has_many :questions
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
@@ -127,15 +138,13 @@ class User < ActiveRecord::Base
 	end
 
 	def twitter
-		if self.twitter_enabled?
-			client = Twitter::Client.new(
-				:consumer_key => SERVICES['twitter']['key'],
-				:consumer_secret => SERVICES['twitter']['secret'],
-				:oauth_token => self.twi_oauth_token,
-				:oauth_token_secret => self.twi_oauth_secret
-			)
-		end
-		client
+		auth = authorizations.where(:provider => "twitter").first
+		Twitter::Client.new(
+			:consumer_key => SERVICES['twitter']['key'],
+			:consumer_secret => SERVICES['twitter']['secret'],
+			:oauth_token => auth.token,
+			:oauth_token_secret => auth.secret
+		)		
 	end
 
 	def tumblr

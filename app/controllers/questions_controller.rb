@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user, :except => [:new, :refer, :show, :display_answers]
+  before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers]
   before_filter :admin?, :only => [:moderate, :moderate_update, :import, :enqueue, :dequeue]
   before_filter :author?, :only => [:index, :enqueue, :dequeue]
 

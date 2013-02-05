@@ -34,6 +34,19 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
   add_index "askertopics", ["asker_id"], :name => "index_askertopics_on_asker_id"
   add_index "askertopics", ["topic_id"], :name => "index_askertopics_on_topic_id"
 
+  create_table "authorizations", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "name"
+    t.string   "email"
+    t.string   "token"
+    t.string   "secret"
+    t.string   "link"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "badges", :force => true do |t|
     t.integer  "asker_id"
     t.string   "title"
@@ -240,7 +253,7 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
     t.string   "twi_oauth_secret"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "role",                :default => "user"
+    t.string   "role",                   :default => "user"
     t.string   "name"
     t.integer  "fb_user_id"
     t.string   "fb_oauth_token"
@@ -255,7 +268,7 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
     t.string   "bg_image"
     t.boolean  "published"
     t.integer  "author_id"
-    t.string   "learner_level",       :default => "unengaged"
+    t.string   "learner_level",          :default => "unengaged"
     t.datetime "last_interaction_at"
     t.datetime "last_answer_at"
     t.integer  "client_id"
@@ -266,6 +279,15 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
     t.integer  "interaction_segment"
     t.integer  "author_segment"
     t.string   "email"
+    t.string   "encrypted_password",     :default => "",          :null => false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
   end
 
   add_index "users", ["author_id"], :name => "index_users_on_author_id"
@@ -274,5 +296,6 @@ ActiveRecord::Schema.define(:version => 20130130051028) do
   add_index "users", ["new_user_q_id"], :name => "index_users_on_new_user_q_id"
   add_index "users", ["published"], :name => "index_users_on_published"
   add_index "users", ["rate_sheet_id"], :name => "index_users_on_rate_sheet_id"
+  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
 end
