@@ -21,7 +21,7 @@ class QuestionsController < ApplicationController
 
     @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
     @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL and questions.status <> ?", -1).order("status ASC, questions.id DESC").page(params[:page]).per(25)
+    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("status ASC, questions.id DESC").page(params[:page]).per(25)
 
     @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
     @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}

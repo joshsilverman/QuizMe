@@ -44,6 +44,9 @@ class Question
 		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')	
 
 		$(".contributor").tooltip()
+
+		$("#question.index .status .label").click -> question.change_status $(this)
+
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
 	respond_to_question: (text, answer_id, correct) =>
@@ -140,10 +143,10 @@ class Question
 			e.preventDefault()
 			question.post_edit_question_submit(q.id)
 
-		$('.accept').off "click"
-		$('.reject').off "click"
-		$('.accept').on "click", (e) => @respond(true, question_id)
-		$('.reject').on "click", (e) => @respond(false, question_id)				
+		# $('.accept').off "click"
+		# $('.reject').off "click"
+		# $('.accept').on "click", (e) => @respond(true, question_id)
+		# $('.reject').on "click", (e) => @respond(false, question_id)				
 
 	post_edit_question_submit: (question_id) ->
 		if question.post_question_validate_form()
@@ -187,9 +190,15 @@ class Question
 		else
 			return true
 
-	respond: (accepted, id) ->
+	change_status: (label) ->
+		window.label = label
+		question_id = label.closest('.question-row').attr('question_id')
+		accepted = false if label.hasClass 'approved'
+		accepted = true if label.hasClass 'rejected'
+		accepted = true if label.hasClass 'pending'
+
 		q = {}
-		q['question_id'] = parseInt id
+		q['question_id'] = question_id
 		q['accepted'] = accepted
 		$.ajax '/moderate/update',
 			type: 'POST'
@@ -198,17 +207,13 @@ class Question
 			error: (jqXHR, textStatus, errorThrown) ->
 				console.log "AJAX Error: #{errorThrown}"
 			success: (data, textStatus, jqXHR) ->
+				label.removeClass('approved rejected pending label-success label-important')
 				if data == "true"
-					label_style = "label-success" 
-					text = "Approved"
-				else 
-					label_style = "label-important"
-					text = "Denied"
-					
-				label = $(".question-row[question_id=#{id}] .label")
-				label.addClass label_style
-				label.text text
-				$("#post_question_modal").modal('hide')
+					label.addClass 'approved label-success'
+					label.text 'Accepted'
+				else
+					label.addClass 'rejected label-important'
+					label.text 'Rejected'
 
 class Moderator
 
