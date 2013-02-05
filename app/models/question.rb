@@ -76,6 +76,7 @@ class Question < ActiveRecord::Base
 
   def self.recently_published_ugc domain_start = 7, domain_end = 3
     Question.includes(:user, :in_reply_to_posts)\
+      .approved\
       .where("questions.created_at > ? and questions.created_at < ?", domain_start.days.ago, domain_end.days.ago)\
       .ugc
   end
