@@ -1,9 +1,9 @@
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
-  # :lockable, :timeoutable and 
+  # :lockable, :timeoutable and :validatable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :omniauthable
+         :recoverable, :rememberable, :trackable, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :password_confirmation, :remember_me
@@ -78,16 +78,6 @@ class User < ActiveRecord::Base
   scope :message_author, where(:author_segment => 2)
   scope :wisr_author, where(:author_segment => 3)
   scope :handle_author, where(:author_segment => 4)
-
-
-  def self.devise_find_or_create_by_twi_user_id twi_user_id
-		user = User.find_by_twi_user_id(new_user_twi_id)
-    unless user
-      user = User.new(:twi_user_id => new_user_twi_id, :password => Devise.friendly_token[0,20])
-      user.save :validate => false
-    end
-    user
-  end
 
 	def self.create_with_omniauth(auth)
 	  create! do |user|

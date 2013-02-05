@@ -253,7 +253,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data m, asker, conversation_id = nil
-    u = User.devise_find_or_create_by_twi_user_id(m.user.id)
+    u = User.find_or_create_by_twi_user_id(m.user.id)
     
     u.update_attributes(
       :twi_name => m.user.name,
@@ -301,7 +301,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data(d, current_acct)
-    u = User.devise_find_or_create_by_twi_user_id(d.sender.id)
+    u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
       :twi_name => d.sender.name,
       :twi_screen_name => d.sender.screen_name,
@@ -356,7 +356,7 @@ class Post < ActiveRecord::Base
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
     users.each do |user|
-      u = User.devise_find_or_create_by_twi_user_id(user.id)
+      u = User.find_or_create_by_twi_user_id(user.id)
 
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
       
@@ -401,7 +401,7 @@ class Post < ActiveRecord::Base
 
     if interaction_type == 4
       twi_user = tweet.sender
-      user = User.devise_find_or_create_by_twi_user_id(tweet.sender.id.to_s)
+      user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
       in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', asker_id, user.id, user.id, asker_id)\
         .order("created_at DESC")\
         .limit(1)\
@@ -409,7 +409,7 @@ class Post < ActiveRecord::Base
       learner_level = "dm"
     else
       twi_user = tweet.user
-      user = User.devise_find_or_create_by_twi_user_id(tweet.user.id.to_s)
+      user = User.find_or_create_by_twi_user_id(tweet.user.id.to_s)
       if interaction_type == 2 
         in_reply_to_post = Post.find_by_provider_post_id(tweet.in_reply_to_status_id.to_s)
         learner_level = "mention"

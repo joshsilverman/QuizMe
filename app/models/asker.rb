@@ -53,7 +53,7 @@ class Asker < User
     	wisr_follower_ids = followers.collect(&:twi_user_id)
 
     	# Add new followers in wisr
-    	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.devise_find_or_create_by_twi_user_id(new_user_twi_id)) }
+    	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
 
   		# Remove unfollowers from asker follow association  	
     	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
@@ -226,7 +226,7 @@ class Asker < User
         follow_response = Post.twitter_request { asker.twitter.follow(tid) }
         stop = true if follow_response.blank?
         sleep(1)
-        user = User.devise_find_or_create_by_twi_user_id(tid)
+        user = User.find_or_create_by_twi_user_id(tid)
         asker.add_follower(user)
         next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
         question = new_user_questions[asker.id][0]
