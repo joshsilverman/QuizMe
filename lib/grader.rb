@@ -20,11 +20,13 @@ class Grader
   def grade id_or_posts_or_post
     id = id_or_posts_or_post if id_or_posts_or_post.is_a? Integer
     posts = id_or_posts_or_post.where("autocorrect IS NULL").includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}) if id_or_posts_or_post.is_a? ActiveRecord::Relation
-    posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id_or_posts_or_post.id)] if id_or_posts_or_post.is_a? Post
+    posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find_by_id(id_or_posts_or_post.id)] if id_or_posts_or_post.is_a? Post
 
-    posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id)] if id
-    posts = Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id or posts
+    posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find_by_id(id)] if id
+    # posts = Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id or posts
     
+    return if posts.blank?
+
     correct = incorrect = missed = error = 0
     posts.each do |post|
       next if post.provider == 'wisr' # exclude where posted through app
