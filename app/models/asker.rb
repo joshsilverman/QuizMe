@@ -653,6 +653,9 @@ class Asker < User
     return primary_asker, script
   end
 
+  def self.reengage_authors
+    
+  end
 
   def self.export_stats_to_csv askers = nil, domain = 9999
 

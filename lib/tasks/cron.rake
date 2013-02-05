@@ -56,6 +56,10 @@ task :send_weekly_progress_dms => :environment do
   Asker.send_weekly_progress_dms() if Time.now.wday == 0
 end
 
+task :reengage_authors => :environment do
+  Asker.reengage_authors()
+end
+
 # task :update_followers => :environment do
   # Asker.all.each { |asker| asker.update_followers() }
 # end
