@@ -35,7 +35,10 @@ class Dashboard
     graph = party_graph[1]
 
     if target == "#core"
-      @core()
+      match = window.location.href.match(/\?domain=([0-9]+)/)
+      domain = match[1] if match and match.length >= 1
+      domain ||= 30
+      @core(domain)
     else
       $("a[href=#{ target }] .loading").show()
       url = "/graph/#{ party }/#{ graph }"
@@ -57,9 +60,13 @@ class Dashboard
         complete: -> $(".dashboard .nav a .loading").hide()
 
     $('a[href=#' + party + ']').tab('show')
-    window.location.hash = target
+    match = window.location.href.match(/\?[\w\W]+/)
+    qs = match[0] if match
+    qs ||= ''
+    window.location.hash = target + qs
 
   core: (domain = 30) -> 
+    puts domain
     #tabs
     $('.nav-tabs > li').removeClass 'active'
     $('.core-metrics').addClass 'active'
@@ -92,6 +99,8 @@ class Dashboard
       $(".loading").hide()
       $(".domains a").removeClass "active"
       $(".domains a[domain=#{domain}]").addClass "active"
+
+      window.location.hash = "#core?domain=#{domain}"
 
   update_dashboard: =>
     @draw_graphs()
