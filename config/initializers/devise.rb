@@ -218,7 +218,8 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
-  config.omniauth :twitter, SERVICES['twitter']['key'], SERVICES['twitter']['secret']#, client_options: {authorize_path: '/oauth/authorize'}#, :strategy_class => OmniAuth::Strategies::Twitter # if SERVICES['twitter']
+  config.omniauth :twitter, SERVICES['twitter']['key'], SERVICES['twitter']['secret'],
+    {scope: 'email, offline_access', :client_options => {:ssl => {ca_file: '/usr/lib/ssl/certs/ca-certificates.crt', authorize_path: '/oauth/authorize'}}}
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
