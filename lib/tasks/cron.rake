@@ -38,6 +38,7 @@ end
 
 task :reengage_inactive_users => :environment do
   Asker.reengage_inactive_users()
+  Asker.send_author_followups()
 end
 
 task :engage_new_users => :environment do 
@@ -54,10 +55,6 @@ end
 
 task :send_weekly_progress_dms => :environment do
   Asker.send_weekly_progress_dms() if Time.now.wday == 0
-end
-
-task :send_author_followups => :environment do
-  Asker.send_author_followups()
 end
 
 # task :update_followers => :environment do

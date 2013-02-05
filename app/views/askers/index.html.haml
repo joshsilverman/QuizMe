@@ -8,8 +8,9 @@
   %h1= t '.title', :default => 'Askers'
 
 .form-actions
-  .btn-group
-    = link_to t('.new', :default => t("helpers.links.new")), "/auth/twitter?update_asker_id=", :class => 'btn btn-primary'
+  / %a.btn.btn-primary{:href => user_omniauth_authorize_path(:twitter, :update_asker_id => '')} New SON
+  / / .btn-group
+  / /   = link_to t('.new', :default => t("helpers.links.new")), "/auth/twitter?update_asker_id=", :class => 'btn btn-primary'
 
 #askers_table
   %table.table
