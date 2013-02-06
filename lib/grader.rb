@@ -23,8 +23,10 @@ class Grader
     if id_or_posts_or_post.is_a? ActiveRecord::Relation
       posts = id_or_posts_or_post.where("autocorrect IS NULL").includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}) 
     elsif id_or_posts_or_post.is_a? Post
+      return if id_or_posts_or_post.is_spam?
       posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id_or_posts_or_post.id)]
     elsif id_or_posts_or_post.is_a? Integer
+      return if Post.find(id_or_posts_or_post).is_spam?
       posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find(id_or_posts_or_post)]
     end
 

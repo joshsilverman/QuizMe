@@ -75,6 +75,10 @@ class Post < ActiveRecord::Base
     @@_grader ||= Grader.new
   end
 
+  def is_spam?
+    spam == true or autospam == true
+  end
+
 
   def self.shorten_url(url, source, lt, campaign, show_answer=nil)
     if Rails.env.production?
