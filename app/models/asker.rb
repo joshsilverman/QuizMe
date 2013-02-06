@@ -355,6 +355,7 @@ class Asker < User
   def app_response user_post, correct, options = {}
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
+    tell = options[:tell]
 
     resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
     response_text = options[:response_text] if !options[:response_text].blank?
@@ -377,15 +378,19 @@ class Asker < User
     end
 
     if response_text.nil?
-      response_text = generate_response(correct)
       if correct and options[:post_aggregate_activity].blank?
+        response_text = generate_response(correct)
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
       elsif !correct
-        answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
+        answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first().text
         answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
-        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, I was looking for '#{answer_text}'"
+
+        response_text = ''
+        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, " unless tell
+
+        response_text +=  "I was looking for '#{answer_text}'"
         short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
         response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
       end
