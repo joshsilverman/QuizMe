@@ -27,7 +27,7 @@
                   %i.icon-edit
                   = best_in_place @asker, :posts_per_day, :type => :input, :nil => "0"
                   times per day.
-                = link_to 'Update Twitter', user_omniauth_authorize_path(:twitter, :update_asker_id => @asker.id)
+                = link_to 'Update Twitter', user_omniauth_authorize_path(:twitter, :update_asker_id => @asker.id, :use_authorize => true)
                 &nbsp;|&nbsp;
                 %a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
                 &nbsp;|&nbsp;

@@ -12,7 +12,7 @@ class AuthorizationsController < ApplicationController
 
   	def oauthorize provider
 	    if @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
-	      session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
+	      # session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
 	      sign_in_and_redirect @user, :event => :authentication
 	    end   
   	end
@@ -80,16 +80,15 @@ class AuthorizationsController < ApplicationController
 	  end
 
 	  def update_twi_asker_attributes auth, asker_id
-	  	# puts "update asker"
-	  	# asker = asker_id.to_i.zero? ? Asker.new : Asker.find(asker_id.to_i)
-	  	# asker.update_attributes({
-				# :twi_user_id => auth["uid"],
-				# :twi_screen_name => auth["info"]["nickname"],
-				# :twi_name => auth["info"]["name"],
-				# :twi_profile_img_url => auth["extra"]["raw_info"]["profile_image_url"],
-				# :twi_oauth_token => auth['credentials']['token'],
-				# :twi_oauth_secret => auth['credentials']['secret']
-	  	# })
-    #   redirect_to "/askers/#{asker.id}/edit"
+	  	asker = asker_id.to_i.zero? ? Asker.new : Asker.find(asker_id.to_i)
+	  	asker.update_attributes({
+				:twi_user_id => auth["uid"],
+				:twi_screen_name => auth["info"]["nickname"],
+				:twi_name => auth["info"]["name"],
+				:twi_profile_img_url => auth["extra"]["raw_info"]["profile_image_url"],
+				:twi_oauth_token => auth['credentials']['token'],
+				:twi_oauth_secret => auth['credentials']['secret']
+	  	})
+      redirect_to "/askers/#{asker.id}/edit"
 	  end
 end
