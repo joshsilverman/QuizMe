@@ -250,7 +250,7 @@ class FeedsController < ApplicationController
       end
     end
 
-    puts "Response: #{response_post.text}"
+    # puts "Response: #{response_post.text}"
 
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
     render :json => response_post.present?

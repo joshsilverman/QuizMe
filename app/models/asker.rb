@@ -384,7 +384,7 @@ class Asker < User
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
       elsif !correct
-        answer_text = Answer.where("question_id = ? and correct = ?", publication.question_id, true).first().text
+        answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first().text
         answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
 
         response_text = ''
