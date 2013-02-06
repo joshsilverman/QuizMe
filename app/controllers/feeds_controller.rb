@@ -296,6 +296,10 @@ class FeedsController < ApplicationController
 
       Post.grader.grade post_to_link
 
+      #add manually linked label to have training data for auto-linking
+      tag = Tag.find_or_create_by_name "manually-linked"
+      tag.posts << post_to_link
+
       render :json => [post_to_link, post_to_link_to]
     end
   end
