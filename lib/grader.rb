@@ -25,7 +25,7 @@ class Grader
     posts = [Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).find_by_id(id)] if id
     # posts = Post.not_spam.includes(:conversation => {:post => :user, :publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}, :parent => {:publication => {:question => {:answers => nil, :publications => {:conversations => :posts}}}}).order('created_at DESC').limit 2000 unless id or posts
     
-    return if posts.blank?
+    return if posts.reject{|e| e.nil?}.blank?
 
     correct = incorrect = missed = error = 0
     posts.each do |post|
