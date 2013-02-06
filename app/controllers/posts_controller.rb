@@ -81,16 +81,20 @@ class PostsController < ApplicationController
   end	
 
   def nudge
-    nudge = NudgeType.find(params[:id])
+    nudge_type = NudgeType.find(params[:id])
     user = User.find(params[:user_id])
-    Post.trigger_split_test(user.id, "SATHabit copy (click-through) < 123 >")
-    Mixpanel.track_event "nudge conversion", {
-      :distinct_id => params[:user_id],
-      :asker => Asker.find(params[:asker_id]).twi_screen_name,
-      :client => nudge.client.twi_screen_name,
-      :lifecycle_segment => user.lifecycle_segment
-    }  
-    url = nudge.url.gsub "{user_twi_screen_name}", user.twi_screen_name
+    nudges_received = user.nudges_received(nudge_type.id)
+    if nudges_received.present? and nudges_received.select { |n| n.converted }.blank?
+      Post.trigger_split_test(user.id, "SATHabit copy (click-through) < 123 >")
+      Mixpanel.track_event "nudge conversion", {
+        :distinct_id => params[:user_id],
+        :asker => Asker.find(params[:asker_id]).twi_screen_name,
+        :client => nudge_type.client.twi_screen_name,
+        :lifecycle_segment => user.lifecycle_segment
+      }  
+      nudges_received.each { |n| n.update_attribute :converted, true }
+    end
+    url = nudge_type.url.gsub "{user_twi_screen_name}", user.twi_screen_name
     redirect_to url
   end
 end
