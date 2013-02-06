@@ -18,7 +18,7 @@
 %a.mark_ugc
 	%i.icon-question-sign
 	mark ugc
-
-/ %a.show_move move
-/ %a.move{:style => "display: none;"}
-/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
+|
+%a.show_move move
+%a.move{:style => "display: none;"}
+	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
