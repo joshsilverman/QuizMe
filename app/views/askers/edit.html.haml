@@ -21,16 +21,13 @@
                 %i.icon-edit
                 = best_in_place @asker, :description, :type => :input, :nil => "No description"
               - if current_user and (@asker.id == current_user.id or current_user.is_role?('admin') or current_user.twi_screen_name == 'StudyEgg')
-
                 %br
                 %p{:class => "text-decoration:italics;"}
                   This account will post
                   %i.icon-edit
                   = best_in_place @asker, :posts_per_day, :type => :input, :nil => "0"
                   times per day.
-                  
-                /%br
-                = link_to 'Update Twitter', "/auth/twitter?update_asker_id=#{@asker.id}"
+                = link_to 'Update Twitter', user_omniauth_authorize_path(:twitter, :update_asker_id => @asker.id)
                 &nbsp;|&nbsp;
                 %a{:href => "/feeds/#{@asker.id}/manage"} Moderate Account
                 &nbsp;|&nbsp;
