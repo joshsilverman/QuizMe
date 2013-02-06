@@ -147,6 +147,7 @@ class Post
 
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
+		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
 
 		answers = @element.find(".answers")
 		answers.accordion({
@@ -265,7 +266,7 @@ class Post
 				$('.modal_conversation_history').find(".conversation").append(html)
 		textarea.focus()
 
-	quick_reply: (correct) =>
+	quick_reply: (correct, tell = false) =>
 		event.stopPropagation()
 		@correct = correct
 		post = $(event.target)
@@ -276,13 +277,6 @@ class Post
 		publication_id = null
 		publication_id = parent_post['publication_id'] unless parent_post == undefined
 
-		# if correct == true
-		# 	response = window.feed.correct_responses[Math.floor (Math.random() * window.feed.correct_responses.length)]
-		# 	complement = window.feed.correct_complements[Math.floor (Math.random() * window.feed.correct_complements.length)]
-		# 	tweet = "#{response} #{complement}"
-		# else
-		# 	tweet = "#{window.feed.incorrect_responses[Math.floor (Math.random() * window.feed.incorrect_responses.length )]}"
-
 		params =
 			"interaction_type" : post.attr "interaction_type"
 			"asker_id" : window.feed.id
@@ -291,6 +285,7 @@ class Post
 			# "message" : tweet
 			"username" : post.find('h5').html()
 			"correct" : @correct
+			"tell" : tell #just tell the correct answer
 			"publication_id" : publication_id
 
 		$.ajax '/manager_response',

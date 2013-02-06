@@ -187,6 +187,7 @@ class FeedsController < ApplicationController
     user_post = Post.find(params[:in_reply_to_post_id])
     user = user_post.user
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
+    tell = (params[:tell].nil? ? nil : params[:tell].match(/(true|t|yes|y|1)$/i) != nil)
 
     unless conversation = user_post.conversation
       conversation = Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => params[:publication_id])
@@ -196,8 +197,14 @@ class FeedsController < ApplicationController
     if params[:interaction_type] == "4"
 
       unless correct.nil?
-        response_text = asker.generate_response(correct)
-        response_text = asker.get_DM_answer_nudge_script(response_text, user.id)
+        if tell
+          answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first.text
+          answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
+          response_text = "I was looking for '#{answer_text}'"
+        else
+          response_text = asker.generate_response(correct) 
+          response_text = asker.get_DM_answer_nudge_script(response_text, user.id) unless tell
+        end
 
         user_post.update_attribute(:correct, correct)
 
@@ -218,7 +225,7 @@ class FeedsController < ApplicationController
       else
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end
-      
+
       response_post = Post.dm(asker, user, response_text, {
         :conversation_id => conversation.id
       })
@@ -227,10 +234,11 @@ class FeedsController < ApplicationController
       unless correct.nil?
         response_post = asker.app_response(user_post, correct, { 
           :response_text => response_text,
-          :link_to_parent => false
+          :link_to_parent => false,
+          :tell => tell
         })
-        conversation.posts << response_post      
-      else         
+        conversation.posts << response_post
+      else
         response_post = Post.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
@@ -238,9 +246,11 @@ class FeedsController < ApplicationController
           :in_reply_to_post_id => params[:in_reply_to_post_id], 
           :in_reply_to_user_id => params[:in_reply_to_user_id], 
           :link_to_parent => true
-        })    
+        })
       end
     end
+
+    puts "Response: #{response_post.text}"
 
     user_post.update_attributes({:requires_action => false, :conversation_id => conversation.id}) if response_post
     render :json => response_post.present?
