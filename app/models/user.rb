@@ -22,8 +22,6 @@ class User < ActiveRecord::Base
 	has_many :publications, :foreign_key => 'asker_id'
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
-
-	has_many :nudges, :through => :posts, :primary_key => :in_reply_to_user_id
 	
   has_many :badges, :through => :issuances, :uniq => true
   has_many :issuances
@@ -188,6 +186,12 @@ class User < ActiveRecord::Base
 
 	def nudge_types # sloppy workaround - cant get has_many through to use a custom foreign key...
 		NudgeType.where("id in (?)", Post.where("in_reply_to_user_id = ? and nudge_type_id is not null", id).collect(&:nudge_type_id))
+	end
+
+	def nudges_received nudge_type_id = nil
+		nudges = Post.where("in_reply_to_user_id = ? and nudge_type_id is not null", id)
+		nudges = nudges.where("nudge_type_id = ?", nudge_type_id) if nudge_type_id
+		nudges
 	end
 
 	def update_user_interactions(params = {})

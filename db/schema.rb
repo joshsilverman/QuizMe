@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130203205644) do
+ActiveRecord::Schema.define(:version => 20130206185152) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -56,6 +56,23 @@ ActiveRecord::Schema.define(:version => 20130203205644) do
     t.datetime "updated_at"
   end
 
+  create_table "cards", :force => true do |t|
+    t.text     "front"
+    t.text     "back"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "deck_id"
+    t.integer  "quizlet_id"
+    t.boolean  "publish"
+  end
+
+  create_table "cards_groups", :force => true do |t|
+    t.integer  "card_id"
+    t.integer  "group_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "conversations", :force => true do |t|
     t.integer  "publication_id"
     t.integer  "post_id"
@@ -67,6 +84,30 @@ ActiveRecord::Schema.define(:version => 20130203205644) do
   add_index "conversations", ["post_id"], :name => "index_conversations_on_post_id"
   add_index "conversations", ["publication_id"], :name => "index_conversations_on_publication_id"
   add_index "conversations", ["user_id"], :name => "index_conversations_on_user_id"
+
+  create_table "decks", :force => true do |t|
+    t.integer  "handle_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "quizlet_id"
+    t.string   "title"
+  end
+
+  create_table "groups", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "question_format"
+    t.text     "answer_format"
+    t.integer  "deck_id"
+    t.boolean  "default"
+  end
+
+  create_table "handles", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "issuances", :force => true do |t|
     t.integer  "user_id"
@@ -106,6 +147,7 @@ ActiveRecord::Schema.define(:version => 20130203205644) do
     t.boolean  "autocorrect"
     t.integer  "nudge_type_id"
     t.integer  "in_reply_to_question_id"
+    t.boolean  "converted"
   end
 
   add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"

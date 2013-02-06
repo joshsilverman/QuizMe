@@ -73,9 +73,6 @@
 										/ quick reply
 										- if question
 											%p
-												%a.quick-reply-tell
-													tell
-												|
 												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} 
 													= "&nbsp;".html_safe if post.autocorrect
 													yes
@@ -84,6 +81,9 @@
 													= "&nbsp;".html_safe if post.autocorrect == false
 													no
 													&nbsp;
+												|
+												%a.quick-reply-tell
+													tell
 												%span.quick-reply
 													= "(answer: #{correct.text})" if correct
 										.post_actions
