@@ -356,6 +356,7 @@ class Asker < User
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
     tell = options[:tell]
+    question = user_post.link_to_question
 
     resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
     response_text = options[:response_text] if !options[:response_text].blank?
