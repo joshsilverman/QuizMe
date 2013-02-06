@@ -12,7 +12,7 @@ class AuthorizationsController < ApplicationController
 
   	def oauthorize provider
 	    if @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
-	      session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
+	      # session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
 	      sign_in_and_redirect @user, :event => :authentication
 	    end   
   	end
@@ -35,7 +35,7 @@ class AuthorizationsController < ApplicationController
 
 	    if user = resource # user is already signed in	    	
 	    	if resource.is_role?('admin') and request.env["omniauth.params"]['update_asker_id'] # use proper devise roles!
-	    		update_twi_asker_attributes(request.env["omniauth.auth"], request.env["omniauth.params"])
+	    		update_twi_asker_attributes(request.env["omniauth.auth"], request.env["omniauth.params"]['update_asker_id'])
 	    		return
 	    	end
 	    else
@@ -79,18 +79,16 @@ class AuthorizationsController < ApplicationController
 	    user
 	  end
 
-	  def update_twi_asker_attributes auth, omni_params
-	  	# user = omni_params['update_asker_id'].present? ? Asker.find(omni_params['update_asker_id'].to_i) : User.new
-    #   # # user ||= User.find_by_twi_user_id auth["uid"]
-      
-    #   user.role = 'asker'
-    #   user.twi_user_id = auth["uid"]
-    #   user.twi_screen_name = auth["info"]["nickname"]
-    #   user.twi_name = auth["info"]["name"]
-    #   user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
-    #   user.twi_oauth_token = auth['credentials']['token']
-    #   user.twi_oauth_secret = auth['credentials']['secret']
-    #   user.save
-    #   redirect_to "/askers/#{user.id}/edit"
+	  def update_twi_asker_attributes auth, asker_id
+	  	asker = asker_id.to_i.zero? ? Asker.new : Asker.find(asker_id.to_i)
+	  	asker.update_attributes({
+				:twi_user_id => auth["uid"],
+				:twi_screen_name => auth["info"]["nickname"],
+				:twi_name => auth["info"]["name"],
+				:twi_profile_img_url => auth["extra"]["raw_info"]["profile_image_url"],
+				:twi_oauth_token => auth['credentials']['token'],
+				:twi_oauth_secret => auth['credentials']['secret']
+	  	})
+      redirect_to "/askers/#{asker.id}/edit"
 	  end
 end
