@@ -7,19 +7,7 @@
           - if current_user
             - if current_user.is_role? 'admin'
               %li
-                %a{:href => "http://wisr-experiments.herokuapp.com", :tabindex => "-1"} Experiments
-
-              %li
-                .dropdown.nav-link
-                  %a.nav-link{:href => "/askers", 'data-target' => "#"} Askers
-                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-                    %li
-                      %a{:href => "/askers", :tabindex => "-1"} All Askers
-                    %li.divider
-                    - Asker.by_twi_screen_name.each do |a|
-                      %li
-                        %a{:href => "/feeds/#{a.id}", :tabindex => "-1"}= a.twi_screen_name 
-
+                %a.nav-link{:href => "/askers"} Askers
               %li
                 .dropdown.nav-link
                   %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients

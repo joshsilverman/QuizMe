@@ -583,7 +583,6 @@ class Post < ActiveRecord::Base
 
   # formally in_answer_to_question
   def link_to_question
-    puts in_reply_to_question
     return in_reply_to_question unless in_reply_to_question.nil?
 
     if interaction_type == 3
