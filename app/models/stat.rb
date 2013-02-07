@@ -178,8 +178,8 @@ class Stat < ActiveRecord::Base
       @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
 
       display_data = {}
-      display_data[:today] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 24.hours).count
-      display_data[:month] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 30.days).count
+      display_data[:today] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 24.hours).count
+      display_data[:month] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 30.days).count
 
       [@econ_engine, display_data]
     end
