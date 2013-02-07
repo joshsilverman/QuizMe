@@ -46,6 +46,8 @@
   %tr.totals
     %td Totals
     %td= total_participants
-    %td= total_participants - total_completed
     %td= total_completed
+    %td
+      = number_to_percentage(total_completed.to_f/total_participants)
+      \%
     %td{colspan: 2}
