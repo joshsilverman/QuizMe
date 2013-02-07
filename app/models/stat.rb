@@ -88,7 +88,7 @@ class Stat < ActiveRecord::Base
         dau = 0
         dau = user_ids_by_date[datef].count if user_ids_by_date[datef]
         mau = []
-        ((date - domain)..date).each do |ddate|
+        ((date - 30)..date).each do |ddate|
           ddatef = ddate.strftime("%y/%m/%d")
           mau += user_ids_by_date[ddatef] unless user_ids_by_date[ddatef].blank?
         end
@@ -106,6 +106,7 @@ class Stat < ActiveRecord::Base
         display_data[:total] = 0
       end
 
+      graph_data = Hash[*graph_data.map{|k,v| [Time.parse(k).strftime('%m/%d'), v]}.flatten]
       display_data[:today] = sprintf "%.1f%", display_data[:today] * 100
       display_data[:total] = sprintf "%.1f%", display_data[:total] * 100
 
@@ -162,6 +163,7 @@ class Stat < ActiveRecord::Base
     econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_domain_#{domain}", :expires_in => 19.minutes do
 
       @posts_by_date = Post.joins(:user).not_spam.not_us.social\
+          .where('provider_post_id IS NOT NULL')\
           .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
@@ -176,8 +178,8 @@ class Stat < ActiveRecord::Base
       @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
 
       display_data = {}
-      display_data[:today] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 24.hours).count
-      display_data[:month] = Post.not_spam.not_us.social.where("posts.created_at > ?", Time.now - 30.days).count
+      display_data[:today] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 24.hours).count
+      display_data[:month] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 30.days).count
 
       [@econ_engine, display_data]
     end
@@ -219,8 +221,13 @@ class Stat < ActiveRecord::Base
 
           revenues_by_rate_sheet[rate_sheet] = tweet_revenue + rt_revenue
         end
-        @revenue << [date.gsub(/^[0-9]+\//, "")] + @rate_sheets.map{|rs| revenues_by_rate_sheet[rs] || 0 }
+        @revenue << [date] + @rate_sheets.map{|rs| revenues_by_rate_sheet[rs] || 0 }
       end
+
+      #sort
+      title_row = @revenue.shift
+      @revenue = [title_row] + @revenue.sort_by{|r|r[0]}.map{|r| [Time.parse(r[0]).strftime('%m/%d')] + r[1..-1]}
+
       [@revenue, Stat.revenue_display_data(@askers_by_rate_sheet)]
     end
     return revenue, display_data
