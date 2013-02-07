@@ -56,7 +56,10 @@ module FeedsHelper
 	end	
 
 	def format_response(text, resource_link = nil)
+		# puts text
+		# puts text.nil?
 		return '', nil if text.nil?
+		# puts "go on"
 		if text.include? "Learn more at"
 			resource_link = text.match(/http:\/\/wisr.co\/[^ ]*/).to_s
 			text.gsub! resource_link, ""

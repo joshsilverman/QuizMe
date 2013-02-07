@@ -202,8 +202,7 @@ class FeedsController < ApplicationController
           answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
           response_text = "I was looking for '#{answer_text}'"
         else
-          response_text = asker.generate_response(correct) 
-          response_text = asker.get_DM_answer_nudge_script(response_text, user.id) unless tell
+          response_text = asker.generate_response(correct, user_post.question, tell)
         end
 
         user_post.update_attribute(:correct, correct)

@@ -281,25 +281,6 @@ class Asker < User
     end
   end
 
-  def get_DM_answer_nudge_script feedback, user_id
-    script = Post.create_split_test(user_id, "DM answer response script", 
-      "{feedback}",
-      "{feedback} I tweet new questions frequently, check them out at {twitter feed link}.",
-      "{feedback} Try out some more questions at {wisr feed link}",
-      "{feedback} I'll tweet you another question shortly, hold on...",
-      "{feedback} Check my tweets for more Qs, you can respond on Twitter or follow the links to answer on our website!",
-      "{feedback} Here's your next question: {wisr question link}"
-    )  
-    script.gsub! "{feedback}", feedback
-    script.gsub! "{twitter feed link}", "twitter.com/#{twi_screen_name}"
-    script.gsub! "{wisr feed link}", "wisr.com/feeds/#{id}"
-    
-    if script.include? "{wisr question link}"
-      script.gsub! "{wisr question link}", "wisr.com/feeds/#{id}/#{publications.published.order('created_at DESC').first.id}"
-    end
-    script
-  end
-
   def self.reengage_incorrect_answerers
     askers = User.askers
     current_time = Time.now
@@ -357,18 +338,19 @@ class Asker < User
     answerer = user_post.user
     tell = options[:tell]
     question = user_post.link_to_question
-
     resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
     response_text = options[:response_text] if !options[:response_text].blank?
+    feed_response = options[:post_aggregate_activity] == true ? true : false
     
     # split test hints for questions with hints that aren't posted through the app
     if question = user_post.in_reply_to_question and !question.hint.blank? and !user_post.posted_via_app and response_text.nil?
-      test_name = "Hint when inccorect (answers question correctly later)"
+      test_name = "Hint when incorrect (answers question correctly later)"
       if !correct
         if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
           response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
         end
-      else # attempt to trigger
+      else 
+        # attempt to trigger
         previous_answers = question.in_reply_to_posts\
           .where('posts.user_id = ?', answerer.id)\
           .where('posts.created_at < ?', user_post.created_at)
@@ -378,26 +360,22 @@ class Asker < User
       end
     end
 
-    if response_text.nil?
-      if correct and options[:post_aggregate_activity].blank?
-        response_text = generate_response(correct)
+    # fill in response text if not already done by manager or question hint override
+    response_text ||= self.generate_response(correct, question, tell)
+
+    # augment manager responses with links and RTs
+    if !feed_response
+      if correct 
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
       elsif !correct
-        answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first().text
-        answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
-
-        response_text = ''
-        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, " unless tell
-
-        response_text +=  "I was looking for '#{answer_text}'"
         short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
-        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?        
+        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?
       end
     end
 
-    if options[:post_aggregate_activity] == true
+    if feed_response
       app_post = Post.create({
         :user_id => self.id,
         :provider => 'wisr',
@@ -436,8 +414,22 @@ class Asker < User
     app_post
   end
 
-  def generate_response(correct)
-   correct ? "#{CORRECT.sample} #{COMPLEMENT.sample}" : "#{INCORRECT.sample}"
+  def generate_response(correct, question, tell = false)
+    response_text = ''
+    if correct 
+      response_text = "#{CORRECT.sample} #{COMPLEMENT.sample}"
+    else
+      if question
+        response_text = ''
+        response_text = "#{['Sorry', 'Not quite', 'No'].sample}, " unless tell
+        answer_text = Answer.where("question_id = ? and correct = ?", question.id, true).first().text
+        answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
+        response_text +=  "I was looking for '#{answer_text}'"
+      else
+        response_text = INCORRECT.sample
+      end
+    end
+    response_text
   end
 
   def auto_respond user_post
@@ -457,7 +449,6 @@ class Asker < User
     })
     request_ugc(answerer)
     nudge(answerer)
-    Post.trigger_split_test(answerer.id, "DM answer response script")
   end 
 
 
