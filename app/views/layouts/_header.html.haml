@@ -7,8 +7,6 @@
           - if current_user
             - if current_user.is_role? 'admin'
               %li
-                %a{:href => "http://wisr-experiments.herokuapp.com", :tabindex => "-1"} Experiments
-              %li
                 %a.nav-link{:href => "/askers"} Askers
               %li
                 .dropdown.nav-link
