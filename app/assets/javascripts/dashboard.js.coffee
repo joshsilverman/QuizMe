@@ -291,8 +291,8 @@ dau_mau_options =
   width: 425
   height: 275
   legend: "none"
-  pointSize: 5
-  lineWidth: 3
+  pointSize: 3
+  lineWidth: 2
   chartArea:  
     width: 420
     left: 30
@@ -310,8 +310,8 @@ dau_mau_options =
 econ_engine_options =
   width: 425
   height: 275
-  pointSize: 5
-  lineWidth: 3
+  pointSize: 3
+  lineWidth: 2
   chartArea:  
     width: 420
     left: 30
@@ -333,7 +333,7 @@ revenue_options =
   height: 275
   legend: "none"
   pointSize: 0
-  lineWidth: 3
+  lineWidth: 2
   isStacked: true
   colors: [
     "#B1C2F0", 
