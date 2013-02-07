@@ -163,6 +163,7 @@ class Stat < ActiveRecord::Base
     econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_domain_#{domain}", :expires_in => 19.minutes do
 
       @posts_by_date = Post.joins(:user).not_spam.not_us.social\
+          .where('provider_post_id IS NOT NULL')\
           .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
           .where("posts.created_at > ?", Date.today - domain)\
           .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
