@@ -207,7 +207,7 @@ class FeedsController < ApplicationController
 
         user_post.update_attribute(:correct, correct)
 
-        # Double counting if we grade people again via DM
+        # Will double count if we grade people again via DM
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -220,7 +220,9 @@ class FeedsController < ApplicationController
           :learner_level => "dm answer", 
           :last_interaction_at => user_post.created_at,
           :last_answer_at => user_post.created_at
-        })        
+        }) 
+
+        user.segment      
       else
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end

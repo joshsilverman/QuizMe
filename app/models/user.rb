@@ -46,6 +46,7 @@ class User < ActiveRecord::Base
 
   # Lifecycle segmentation scopes
   scope :unengaged, where("lifecycle_segment is null")
+  scope :interested, where(:lifecycle_segment => 7)
   scope :edger, where(:lifecycle_segment => 1)
   scope :noob, where(:lifecycle_segment => 2)
   scope :regular, where(:lifecycle_segment => 3)
@@ -320,7 +321,7 @@ class User < ActiveRecord::Base
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 
-    unless comment == no_comment or comment.nil?
+    unless comment == no_comment or comment.nil? or (to_segment == 2 and transitions.to_noob.present?) # legacy to prevent dupes, can be removed after a while
       Post.dm(asker, self, comment, {:intention => "lifecycle+"})
       return comment
     end
@@ -353,19 +354,25 @@ class User < ActiveRecord::Base
 			level = 2		
 		elsif is_edger?
 			level = 1	
+		elsif is_interested?
+			level = 7
 		else
 			level = nil
 		end
 
 		transition :lifecycle, level if level
 	end
-
-	def is_edger?
+	
+	def is_interested? # has shared or commented
 		posts.not_spam.size > 0
 	end
 
-	def is_noob?
-		posts.answers.size > 0
+	def is_edger? # has answered a new user private message
+		posts.not_spam.answers.dms.size > 0
+	end
+
+	def is_noob? # has answered socially (wisr or twi mention)
+		posts.social.answers.size > 0
 	end
 
 	def is_regular?
