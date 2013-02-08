@@ -113,6 +113,7 @@ class AskersController < ApplicationController
   end
 
   def graph
+    @domain = params[:domain].to_i || 30
 
     #user
     if params[:graph] == 'cohort'
@@ -121,6 +122,8 @@ class AskersController < ApplicationController
       @ugc_data = Stat.ugc
     elsif params[:graph] == 'questions_answered'
       @questions_answered_data = Stat.questions
+    elsif params[:graph] == 'viral_actions_v_new_users'
+      @viral_actions_v_new_users_data = Stat.viral_actions_v_new_users @domain
     elsif params[:graph] == 'learner_levels'
       @learner_levels_data = Stat.learner_levels
     elsif params[:graph] == 'answer_source'
