@@ -171,31 +171,31 @@ UNDER_CONSTRUCTION_HANDLES = [22741]
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 326, 14106], 
+    :retweet => [19, 326, 14106, 26522], 
     :hashtags => ["science", "biology", "premed", "medschool"],
     :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 326, 7362, 19454], 
+    :retweet => [18, 31, 326, 7362, 19454, 26522], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326, 14106], 
+    :retweet => [18, 19, 108, 326, 14106, 26522], 
     :hashtags => ["science", "premed", "orgo"],
     :category => "Life Sciences"
   }, 
   ## QuizMePsych
   108 => {
-    :retweet => [18, 19, 31, 326, 191], 
+    :retweet => [18, 19, 31, 326, 191, 26522], 
     :hashtags => ["science", "psych"],
     :category => "Life Sciences"
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108, 14106], 
+    :retweet => [18, 19, 31, 108, 14106, 26522], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
     :category => "Life Sciences"
   },  
@@ -211,6 +211,12 @@ ACCOUNT_DATA = {
     :hashtags => ["geo", "geography", "worldgeo"],
     :category => "Life Sciences"
   },  
+  ## QuizMeVetMed
+  26522 => {
+    :retweet => [326, 31, 18, 19],
+    :hashtags => ["vetmed", "#veterinarian"],
+    :category => "Misc"
+  },
 
   ## SATvocabQuiz
   227 => {
