@@ -260,6 +260,8 @@ class User < ActiveRecord::Base
 	end
 
   def lifecycle_transition_comment to_segment
+    return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition
+    
     #find asker
     asker = Asker.find_by_id posts.order("created_at DESC").first.in_reply_to_user_id
     return nil if asker.nil?
@@ -321,7 +323,7 @@ class User < ActiveRecord::Base
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 
-    unless comment == no_comment or comment.nil? or (to_segment == 2 and transitions.to_noob.present?) # legacy to prevent dupes, can be removed after a while
+    unless comment == no_comment or comment.nil?
       Post.dm(asker, self, comment, {:intention => "lifecycle+"})
       return comment
     end
@@ -331,6 +333,10 @@ class User < ActiveRecord::Base
 
 	def self.update_segments
 		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
+	end
+
+	def has_received_transition_to_comment? segment_type, to_segment
+		transitions.where("segment_type = ? and to_segment = ? and comment is not null and comment != ''", segment_type, to_segment).size > 0
 	end
 
 	def segment
