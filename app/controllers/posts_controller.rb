@@ -51,6 +51,19 @@ class PostsController < ApplicationController
     end		
 	end
 
+  def toggle_tag
+    post = Post.find(params[:post_id])
+    tag = Tag.find_or_create_by_name(params[:tag_name])
+
+    if post.tags.include? tag
+      post.tags.delete(tag)
+      render :json => false
+    else
+      post.tags << tag
+      render :json => true
+    end
+  end
+
   def mark_ugc
     tag = Tag.find_or_create_by_name "ugc"
     post = Post.includes(:tags).find(params[:post_id])

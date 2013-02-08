@@ -1,3 +1,4 @@
+- tags = post.tags.collect(&:name)
 %a
 	%i.icon-eye-close
 	= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
@@ -18,6 +19,16 @@
 %a.mark_ugc
 	%i.icon-question-sign
 	mark ugc
+|
+.dropdown{:style => "display: inline;"}
+	%a.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} 
+		%i.icon-bullhorn
+		feedback
+	%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+		%li
+			%a.tag_post{:tag_name => "suggestion", :style => ("font-weight: bold;" if tags.include?("suggestion"))} Suggestion
+			%a.tag_post{:tag_name => "negative", :style => ("font-weight: bold;" if tags.include?("negative"))} Negative
+			%a.tag_post{:tag_name => "praise", :style => ("font-weight: bold;" if tags.include?("praise"))} Positive
 |
 %a.show_move move
 %a.move{:style => "display: none;"}

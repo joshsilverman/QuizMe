@@ -47,7 +47,9 @@ class @Manager extends @Feed
 			$.grep(@posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
 		$(".mark_ugc").on "click", (e) => 
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
-			
+		$(".tag_post").on "click", (e) => 
+			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].toggle_tag($(e.target).attr("tag_name"), $(e.target))
+
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
 
 	initialize_ask: => 
@@ -339,6 +341,18 @@ class Post
 						window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
 						$("#link_post_modal").modal('hide')
 						window.post.text("unlink")
+
+	toggle_tag: (name, element = null) =>
+		$.ajax "/posts/toggle_tag",
+			type: 'POST',
+			data: 
+				"post_id" : @id,
+				"tag_name" : name
+			success: (status) =>
+				@update_feedback_tag_status(element, status) if element
+
+	update_feedback_tag_status: (element, status) => if status == true then element.css("font-weight", "bold") else element.css("font-weight", "normal")
+		
 
 	mark_ugc: =>
 		$.ajax "/posts/mark_ugc",

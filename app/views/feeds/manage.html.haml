@@ -18,6 +18,7 @@
 						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
 						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
 						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+						%li{:class => "#{'active' if params[:filter] == 'feedback'}"}= link_to "Feedback", '?filter=feedback'
 						//%li= link_to "Starred", '?filter=starred'
 
 					#send_tweet.rounded.border-color

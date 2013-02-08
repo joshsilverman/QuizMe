@@ -53,6 +53,7 @@ Quizmemanager::Application.routes.draw do
   post "posts/respond_to_post"
   post "posts/retweet"
   match "/posts/mark_ugc" => "posts#mark_ugc"
+  match "/posts/toggle_tag" => "posts#toggle_tag"
 
   match "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
   match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
