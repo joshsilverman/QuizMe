@@ -8,7 +8,7 @@ class Dashboard
   handle_activity: null
   constructor: -> 
     # @active.push("0") 
-    $('#tabs a').click (e) =>
+    $('#tabs li a').click (e) =>
       e.preventDefault()
       @update_tabs(e)
 
@@ -22,9 +22,12 @@ class Dashboard
       @update_tabs null, hash
 
     #domains selectable
-    $('.domains a').click -> dashboard.core $(this).attr 'domain'
+    $('.domains a').click -> 
+      hash_exp = /#[^?]*$|#.*(?=\?)/
+      target = window.location.hash.match(hash_exp)[0]
+      dashboard.update_tabs null, target, $(this).attr 'domain'
 
-  update_tabs: (e, target) =>
+  update_tabs: (e, target, domain) =>
     target ||= $(e.target).tab().attr 'href'
     target = "#users-answer_source" if target == '#users'
     target = "#askers-handle_activity" if target == '#askers'
@@ -34,14 +37,17 @@ class Dashboard
     party = party_graph[0].replace /#/, ''
     graph = party_graph[1]
 
-    if target == "#core"
+    #domain
+    if domain == undefined
       match = window.location.href.match(/\?domain=([0-9]+)/)
       domain = match[1] if match and match.length >= 1
       domain ||= 30
+
+    if target == "#core"
       @core(domain)
     else
       $("a[href=#{ target }] .loading").show()
-      url = "/graph/#{ party }/#{ graph }"
+      url = "/graph/#{ party }/#{ graph }?domain=#{domain}"
       $.ajax url,
         type: "GET"
         success: (e) => 
@@ -57,7 +63,9 @@ class Dashboard
           $('.dashboard .nav a').click (e) =>
             e.preventDefault()
             @update_tabs(e)
-        complete: -> $(".dashboard .nav a .loading").hide()
+        complete: -> 
+          $(".dashboard .nav a .loading").hide()
+          dashboard.after_update(domain)
 
     $('a[href=#' + party + ']').tab('show')
     match = window.location.href.match(/\?[\w\W]+/)
@@ -65,8 +73,7 @@ class Dashboard
     qs ||= ''
     window.location.hash = target + qs
 
-  core: (domain = 30) -> 
-    puts domain
+  core: (domain = 30) ->
     #tabs
     $('.nav-tabs > li').removeClass 'active'
     $('.core-metrics').addClass 'active'
@@ -97,14 +104,20 @@ class Dashboard
       $('.revenue .total .number').html data['core_display_data'][0]['revenue']['month']
       
       $(".loading").hide()
-      $(".domains a").removeClass "active"
-      $(".domains a[domain=#{domain}]").addClass "active"
 
-      window.location.hash = "#core?domain=#{domain}"
+      dashboard.after_update(domain)
 
   update_dashboard: =>
     @draw_graphs()
     @update_metrics()
+
+  after_update: (domain) ->
+    hash_exp = /#[^?]*$|#.*(?=\?)/
+    target = window.location.hash.match(hash_exp)[0]
+
+    $(".domains a").removeClass "active"
+    $(".domains a[domain=#{domain}]").addClass "active"
+    window.location.hash = "#{target}?domain=#{domain}"
 
   draw_paulgraham: (container, data) =>
     data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
@@ -232,6 +245,11 @@ class Dashboard
     graph_data = google.visualization.arrayToDataTable(@age_v_days_since_active)
     chart = new google.visualization.ScatterChart(document.getElementById("age_v_days_since_active_graph"))
     chart.draw graph_data, age_v_days_since_active_graph_options 
+
+  draw_viral_actions_v_new_users: =>
+    graph_data = google.visualization.arrayToDataTable(@viral_actions_v_new_users)
+    chart = new google.visualization.LineChart(document.getElementById("viral_actions_v_new_users_graph"))
+    chart.draw graph_data, age_v_days_since_active_graph_options
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 

@@ -17,24 +17,32 @@
   .nav-tabs {margin-top:10px;}
   .tab-content {min-height: 618px; margin-left: 30px !important;}
 
+.dashboards
+  %ul#tabs.nav.nav-tabs
+    %li.core-metrics
+      %a{:href => "#core"} Core 
+    %li
+      %a{:href => "#users"} Users   
+    %li
+      %a{:href => "#askers"} Askers
+    %li
+      %a{:href => "#authors"} Authors
 
-%ul#tabs.nav.nav-tabs
-  %li.core-metrics
-    %a{:href => "#core"} Core 
-  %li
-    %a{:href => "#users"} Users   
-  %li
-    %a{:href => "#askers"} Askers
-  %li
-    %a{:href => "#authors"} Authors
+    %span.domains
+      %span.loading.hide= image_tag "ajax-loader.gif"
+      - domains = {30 => '1 month', 60 => '2 months', 90 => '3 months', 180 => '6 months', 360 => '1 year'}
+      - domains.each do |k,v|
+        %a{domain: k}= v
+        = "|" unless domains.keys.last == k
 
-.row
-  .tab-content
-    #core.dashboard.span12.tab-pane
-      = render :partial => "core"
-    #users.dashboard.span12.tab-pane
-      = render :partial => "users"
-    #askers.dashboard.span12.tab-pane
-      = render :partial => "askers"
-    #authors.dashboard.span12.tab-pane
-      = render :partial => "authors"
+  .row
+    .tab-content
+      #core.dashboard.span12.tab-pane
+        = render :partial => "core"
+      #users.dashboard.span12.tab-pane
+        = render :partial => "users"
+      #askers.dashboard.span12.tab-pane
+        = render :partial => "askers"
+      #authors.dashboard.span12.tab-pane
+        = render :partial => "authors"
+

@@ -13,7 +13,11 @@
     %li 
       %a{:href => "#users-questions_answered"} 
         Median answers / user / day
-        %span.loading.hide= image_tag "ajax-loader.gif"        
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#users-viral_actions_v_new_users"} 
+        Viral actions v New users
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
     %li
       %a.heading
@@ -56,7 +60,7 @@
       %a{:href => "#users-days_since_active_v_number_of_reengagement_attempts"} 
         Days since active 
         %br
-        v reengagements since inactive
+        v Reengagements since inactive
         %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
@@ -71,6 +75,12 @@
         #questions.panel
           #questions_graph.graph
       = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json if @questions_answered_data
+
+    .viral_actions_v_new_users
+      #data_row.row
+        #viral_actions_v_new_users.panel
+          #viral_actions_v_new_users_graph.graph
+      = hidden_field_tag :viral_actions_v_new_users_data, @viral_actions_v_new_users_data.to_json if @viral_actions_v_new_users_data
 
     .learner_levels{:style => "height: 600px;"}
       #data_row.row

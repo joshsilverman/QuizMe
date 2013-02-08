@@ -1,203 +1,210 @@
-.core, .dashboard {
+.dashboards {
 
-  .handle_name {
-    margin:0px 1px;
-    padding-bottom:10px;
-    color:#666;
+  .domains {
+    float:right;
+    font-size: 12px;
+    padding-right: 10px;
+    cursor: pointer;
+    margin-top: 10px;
 
-    .loading {
-      position:relative;
-      top:-3px;
-    } 
+    a {
+      font-weight: normal;
 
-    .domains {
-      float:right;
-      font-size: 12px;
-      padding-right: 10px;
-      cursor: pointer;
-
-      a {
-        font-weight: normal;
-
-        &.active {
-          font-weight: bold;
-          color:#777;
-        }
+      &.active {
+        font-weight: bold;
+        color:#777;
+        text-decoration: none;
+        cursor: default;
       }
     }
+  }
+
+  .core, .dashboard {
+
+    .handle_name {
+      margin:0px 1px;
+      padding-bottom:10px;
+      color:#666;
+
+      .loading {
+        position:relative;
+        top:-3px;
+      } 
+
+    }
+
+    .handles {
+      .badge {
+        padding: 1px 1px 2px 1px;
+      }
+    }
+
+    margin-left: 0px;
+
+    .row {
+      margin: 10px 0px;
+
+      .nav {
+        margin-left: 0px;
+        margin-top:0px;
+
+        a {
+          .loading {
+            float:right;
+          }
+          background-color:white;
+          padding-left:20px;
+
+          &.heading {
+            background-color:#f9f9f9;
+            color:#555;
+            padding-left:12px;
+          }
+        }
+
+        .active a {
+          color: #ffffff;
+          background-color: #0088cc;
+        }
+      }
+
+      .graphs {
+        //background-color:#eee;
+        border-left:1px solid #ddd;
+        margin-left:5px;
+        float:right;
+
+        //min-height:540px;
+        width:870px;
+        padding:0px 5px;
+
+        margin-top:0px;
+        //padding-top:20px;
+        //overflow:scroll;
+      }
+    }
+
+    .select_option {
+      display: inline;
+      padding-right: 10px;
+
+      label {
+        display: inline;
+        position: relative;
+        top: 1px;
+        font-weight: bold;
+        padding: 10px 0px;
+      }
+    }
+
+    #handle_activity, #cohort, #questions, #ugc, #answer_source, #learner_levels {
+      margin-left:0px !important;
+    }
+
+    .data_row {
+      height: 225px;
+      margin: 10px 0px;
+      
+      .panel {
+        box-shadow: 0 0 8px -3px #888;
+        background: white;
+        margin: 0 0 25px 0;
+        height: 275px;
+        border: 1px rgba(0, 0, 0, 0.207031) solid;
+
+        .stats {
+          height: 275px;
+          width: 125px;
+          float: left;
+          border-right: 1px rgba(0, 0, 0, 0.207) solid;
+          
+          .header {
+            height: 49px;
+            /*background-color: whiteSmoke;*/
+            background: url("/assets/light_toast.png");
+            border-bottom: 1px dotted #ccc;
+            -webkit-border-top-left-radius: 5px;
+            -moz-border-top-left-radius: 5px;
+            border-top-left-radius: 5px;  
+
+            h3 {
+              text-align: center;
+              position: relative;
+              top: 12px;            
+            }       
+          }
+
+          .container {
+            width: inherit;
+            text-align: center;
+            padding-top: 34px;
+
+            .number {
+              font-size: 34px;
+              margin-bottom: 14px;
+            }
+
+            .period {
+              font-size: 17px;
+              color: gray;
+            }
+
+            .number, .period {
+              /*margin-top: 14px;*/
+              /*display: inline;*/
+            }         
+          }
+
+          .new {
+            border-top: 1px #F0F0F0 solid;
+            height: 110px;
+            /*background: url("/assets/light_toast.png");*/
+          }
+
+          .total {
+            /*background: url("/assets/light_toast.png");*/
+            border-top: 1px #ddd dotted;
+            height: 88px;
+          }
+        }
+
+        .graph {
+          height: 225px;
+          width: 66%;
+          float: left;
+        }
+      }
+
+      .panel.right{
+        float: right;
+      }
+    }
+  }
+
+  .core {
+    overflow:hidden;
+    //margin-top:10px;
+  }
+
+  #core_by_handle {
+    .revenue {
+      display:none;
+    }
+  }
+
+  #core {
+    .daus {
+      display:none;
+    }
+  }
+
+  #handle_activity, #cohort, #questions {
+    border: 0px !important;
   }
 
   .handles {
     .badge {
       padding: 1px 1px 2px 1px;
     }
-  }
-
-  margin-left: 0px;
-
-  .row {
-    margin: 10px 0px;
-
-    .nav {
-      margin-left: 0px;
-      margin-top:0px;
-
-      a {
-        .loading {
-          float:right;
-        }
-        background-color:white;
-        padding-left:20px;
-
-        &.heading {
-          background-color:#f9f9f9;
-          color:#555;
-          padding-left:12px;
-        }
-      }
-
-      .active a {
-        color: #ffffff;
-        background-color: #0088cc;
-      }
-    }
-
-    .graphs {
-      //background-color:#eee;
-      border-left:1px solid #ddd;
-      margin-left:5px;
-      float:right;
-
-      //min-height:540px;
-      width:870px;
-      padding:0px 5px;
-
-      margin-top:0px;
-      //padding-top:20px;
-      //overflow:scroll;
-    }
-  }
-
-  .select_option {
-    display: inline;
-    padding-right: 10px;
-
-    label {
-      display: inline;
-      position: relative;
-      top: 1px;
-      font-weight: bold;
-      padding: 10px 0px;
-    }
-  }
-
-  #handle_activity, #cohort, #questions, #ugc, #answer_source, #learner_levels {
-    margin-left:0px !important;
-  }
-
-  .data_row {
-    height: 225px;
-    margin: 10px 0px;
-    
-    .panel {
-      box-shadow: 0 0 8px -3px #888;
-      background: white;
-      margin: 0 0 25px 0;
-      height: 275px;
-      border: 1px rgba(0, 0, 0, 0.207031) solid;
-
-      .stats {
-        height: 275px;
-        width: 125px;
-        float: left;
-        border-right: 1px rgba(0, 0, 0, 0.207) solid;
-        
-        .header {
-          height: 49px;
-          /*background-color: whiteSmoke;*/
-          background: url("/assets/light_toast.png");
-          border-bottom: 1px dotted #ccc;
-          -webkit-border-top-left-radius: 5px;
-          -moz-border-top-left-radius: 5px;
-          border-top-left-radius: 5px;  
-
-          h3 {
-            text-align: center;
-            position: relative;
-            top: 12px;            
-          }       
-        }
-
-        .container {
-          width: inherit;
-          text-align: center;
-          padding-top: 34px;
-
-          .number {
-            font-size: 34px;
-            margin-bottom: 14px;
-          }
-
-          .period {
-            font-size: 17px;
-            color: gray;
-          }
-
-          .number, .period {
-            /*margin-top: 14px;*/
-            /*display: inline;*/
-          }         
-        }
-
-        .new {
-          border-top: 1px #F0F0F0 solid;
-          height: 110px;
-          /*background: url("/assets/light_toast.png");*/
-        }
-
-        .total {
-          /*background: url("/assets/light_toast.png");*/
-          border-top: 1px #ddd dotted;
-          height: 88px;
-        }
-      }
-
-      .graph {
-        height: 225px;
-        width: 66%;
-        float: left;
-      }
-    }
-
-    .panel.right{
-      float: right;
-    }
-  }
-}
-
-.core {
-  overflow:hidden;
-  //margin-top:10px;
-}
-
-#core_by_handle {
-  .revenue {
-    display:none;
-  }
-}
-
-#core {
-  .daus {
-    display:none;
-  }
-}
-
-#handle_activity, #cohort, #questions {
-  border: 0px !important;
-}
-
-.handles {
-  .badge {
-    padding: 1px 1px 2px 1px;
   }
 }
