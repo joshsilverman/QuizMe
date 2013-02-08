@@ -37,10 +37,6 @@
 					%p.question_text= publication.question.text.html_safe
 					.post_actions
 						%a.expand Answer
-						- unless retweeted
-							%a.retweet.rollover 
-								%i.icon-retweet
-								Retweet
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = publication.question.answers.shuffle
