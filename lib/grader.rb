@@ -76,9 +76,7 @@ class Grader
 
     _autocorrect
   end
-
-  private
-
+  
   def vectors_to_autocorrect correct_vector, incorrect_vector
     @feature_names.each do |feature_name|
       correct_score = correct_vector[feature_name][:max] || 0

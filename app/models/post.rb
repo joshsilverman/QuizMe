@@ -586,8 +586,8 @@ class Post < ActiveRecord::Base
   end
 
   # formally in_answer_to_question
-  def link_to_question
-    return in_reply_to_question unless in_reply_to_question.nil?
+  def link_to_question amatch = false
+    return in_reply_to_question unless in_reply_to_question.nil? or amatch == true
 
     if interaction_type == 3
       # retweet
@@ -598,6 +598,26 @@ class Post < ActiveRecord::Base
       _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question
       _in_reply_to_question = parent.publication.question
+    end
+
+    if _in_reply_to_question.nil? or amatch == true
+      #attempt approximate match linking
+      askers = askers=Asker.select([:twi_screen_name]).collect(&:twi_screen_name).join('|')
+      reengagement = "@[^\s]+ (?:Next question!|A question for you:|Do you know the answer\?|Quick quiz:|)\s?"
+      re = /@(?:#{askers})[\w|:]*\s(?:#{reengagement})?([\w\W]+)http:/
+      match = text.match re
+      if match
+        stripped_text = match[1]
+
+        @asker = Asker.find_by_id in_reply_to_user_id
+        if @asker
+          scores = {}
+          @asker.questions.each do |q|
+            scores[Post.grader.longest_substring q.text, stripped_text] = q
+          end
+          _in_reply_to_question = scores[scores.keys.max] if scores.keys.count > 0
+        end
+      end
     end
 
     self.update_attribute :in_reply_to_question_id, _in_reply_to_question.id if _in_reply_to_question
