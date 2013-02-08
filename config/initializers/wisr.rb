@@ -214,7 +214,7 @@ ACCOUNT_DATA = {
   ## QuizMeVetMed
   26522 => {
     :retweet => [326, 31, 18, 19],
-    :hashtags => ["vetmed", "#veterinarian"],
+    :hashtags => ["vetmed", "veterinarian"],
     :category => "Misc"
   },
 
