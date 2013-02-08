@@ -270,6 +270,7 @@ class User < ActiveRecord::Base
     no_comment = "No comment"
 
     to_seg_test_name = {
+      1 => "lifecycle smartransition to edger comment (=> noob)",
       2 => "lifecycle smartransition to noob comment (=> regular)",
       3 => "lifecycle smartransition to regular comment (=> advanced)",
       4 => "lifecycle smartransition to advanced comment (=> pro)",
@@ -277,6 +278,14 @@ class User < ActiveRecord::Base
     }
 
     case to_segment
+    when 1 #to edger
+      # Next step, what to expect
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        no_comment, 
+        "Let's get started! I'll send you another question soon.",
+        "Check out my tweets, I post new questions frequently!",
+        "Hold tight, I'll send you another shortly..."
+      )
     when 2 #to noob
       # I'll tweet you more questions // follow up
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
@@ -285,6 +294,7 @@ class User < ActiveRecord::Base
         "Can I tweet you interesting questions as I come accross them?",
         "Keep tweeting me your answers. I'll keep track and follow up on mistakes."
       )
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 3 #to regular
       # start, how can i improve
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 

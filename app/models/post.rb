@@ -227,6 +227,7 @@ class Post < ActiveRecord::Base
         :intention => options[:intention],
         :nudge_type_id => options[:nudge_type_id]
       )
+      recipient.segment
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message

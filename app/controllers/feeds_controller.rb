@@ -222,7 +222,6 @@ class FeedsController < ApplicationController
           :last_answer_at => user_post.created_at
         }) 
 
-        user.segment      
       else
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end
