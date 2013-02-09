@@ -346,7 +346,7 @@ class User < ActiveRecord::Base
 	end
 
 	def has_received_transition_to_comment? segment_type, to_segment
-		transitions.where("segment_type = ? and to_segment = ? and comment is not null and comment != ''", segment_type, to_segment).size > 0
+		transitions.where("segment_type = ? and to_segment >= ? and comment is not null and comment != ''", segment_type, to_segment).size > 0
 	end
 
 	def segment
