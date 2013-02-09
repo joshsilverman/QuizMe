@@ -260,7 +260,7 @@ class User < ActiveRecord::Base
 	end
 
   def lifecycle_transition_comment to_segment
-    return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition
+    return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition or one above
     
     #find asker
     asker = Asker.find_by_id posts.order("created_at DESC").first.in_reply_to_user_id
