@@ -1,0 +1,99 @@
+= javascript_include_tag "https://www.google.com/jsapi"
+#tags
+	#feed_container.span10
+		#wrapper.span9
+			#feed.row
+				#left_column.span3.hidden-phone
+					%ul.nav.nav-tabs.nav-stacked.tag_select
+						%li
+							.box.top Filter
+						- @tags.each do |tag|
+							%li
+								%a
+									%label.checkbox
+										%input{:type => "checkbox"}= tag.name
+					/ #add_tag.rounded.border-color
+					/ 	.header
+					/ 		%h4 Add a Tag		
+					/ 	.add_tag_container
+					/ 		%textarea
+					/ 		.btn.btn-primary Add						
+				#right_column.span6
+					.header.border-color{:style => "border-style: solid; border-width: 1px;"}
+						%h3
+							All Feedback
+							.btn-group.domain_select{"data-toggle" => "buttons-radio"}
+								%a.btn{:type => "button", :href => '?filter=week', :class => "#{'active' if params[:filter] == 'week'}"} Week
+								%a.btn{:type => "button", :href => '?filter=month', :class => "#{'active' if params[:filter] == 'month'}"} Month
+								%a.btn{:type => "button", :href => '?filter=all', :class => "#{'active' if params[:filter] == 'all'}"} All
+					#posts.rounded
+						- @posts.each do |post|
+							.conversation.border-color.feedback{:class => (post.tags.collect(&:name).join(' '))}
+								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
+									%p.time= time_formatter(post.created_at)
+									#classify{:style => "visibility: visible;"}
+										- post.tags.each do |tag|
+											%span.label= tag.name
+									.content
+										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
+										%i{:class => interaction_icon(post.interaction_type)}
+										%h5= post.user.twi_screen_name	
+										%p= post.text
+										/ .post_actions
+										/ 	= render :partial => "feeds/default_actions", :locals => {:post => post}
+
+
+/ = render :partial => "feeds/respond_modal"
+/ = render :partial => "link_post_modal"
+/ = render :partial => "retweet_modal"
+/ = render :partial => "question_modal"
+
+/ #confirm.modal.hide
+/ 	.modal-header
+/ 		%button.close{:type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"} &times;
+/ 		%h3 Confirm
+/ 	.modal-body
+/ 		Are you sure you want to unlink this post?							
+/ 	.modal-footer
+/ 		%a.btn{:type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"} Close
+/ 		%a#unlink_post.btn.btn-primary Unlink Post
+
+/ #post_template.conversation.border-color{:style => "display: none;"}
+/ 	.post.parent
+/ 		%i.icon-share-alt{:style => "display: none;"}
+/ 		.content
+/ 			= image_tag(@asker.twi_profile_img_url, :class => "rounded")
+/ 			%h5= @asker.twi_screen_name
+/ 			%p Post content
+/ 		.answers.rounded.border{:style => "display: none;"}
+/ 	.subsidiaries{:style => "display: none;"}
+/ 	.loading{:style => "display: none;"}
+/ 		Loading...
+
+/ #answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+/ 	.shadow-top
+/ 	.tweet
+/ 		%span#account= "@#{@asker.twi_screen_name}"
+/ 		%span#answer= " Answer text"
+/ 		%span#url= " URL"
+/ 		/ %span#additional{:contenteditable => true}
+/ 	.answer_controls
+/ 		.tweet_button.btn.btn-primary Tweet!
+/ 	.shadow-bottom
+
+/ #subsidiary_template.post{:style => "display: none;"}
+/ 	.content
+/ 		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
+/ 		%h5= "User Name"
+/ 		%p= "Post content"
+
+/ = hidden_field_tag :feed_id, @asker.id
+/ = hidden_field_tag :feed_name, @asker.twi_screen_name
+/ = hidden_field_tag :conversations, @conversations.to_json
+/ = hidden_field_tag :engagements, @engagements.to_json
+/ = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
+/ = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
+
+/ = hidden_field_tag :correct_responses, CORRECT.to_json
+/ = hidden_field_tag :correct_complements, COMPLEMENT.to_json
+= hidden_field_tag :tags, @tags.to_json

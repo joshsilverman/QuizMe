@@ -12,6 +12,7 @@ class @Manager extends @Feed
 	correct_complements: []
 	# incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
+	active_tags: []
 	
 	constructor: ->
 		@correct_complements = $.parseJSON($("#correct_complements").val())
@@ -27,6 +28,8 @@ class @Manager extends @Feed
 		@initialize_posts($(".conversation"))
 		# @initialize_character_count()
 		@initialize_ask()
+		# @tags.push(tag.name) for tag in $.parseJSON($("#tags").val())
+
 		$('.best_in_place').on "ajax:success", ->
 			if $(this).data("type") == "checkbox"
 				conversation = $(this).parents(".conversation")
@@ -49,6 +52,14 @@ class @Manager extends @Feed
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
 		$(".tag_post").on "click", (e) => 
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].toggle_tag($(e.target).attr("tag_name"), $(e.target))
+		$(".tag_select input").on "change", (e) => 
+			if $(e.target).is(":checked") then @active_tags.push $(e.target).parent().text().trim() else @active_tags.remove $(e.target).parent().text().trim()
+			if @active_tags.length == 0
+				$.each @posts, (i, p) => p.element.fadeIn()
+			else
+				$.each @posts, (i, p) => p.element.fadeOut()
+				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
+		$("#add_tag .btn").on "click", (e) => @add_tag(e)
 
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
 
@@ -123,6 +134,17 @@ class @Manager extends @Feed
 				count.css "font-weight", "normal"
 				count.css "color", "#333"
 				button.removeClass("disabled")
+
+	add_tag: (e) =>
+		console.log $(e.target).parent().find("textarea").val()
+		$.ajax "/posts/add_tag",
+			type: 'POST',
+			data: 
+				"post_id" : @id,
+				"tag_name" : name
+			success: (status) =>
+				@update_feedback_tag_status(element, status) if element		
+
 
 class Post
 	id: null
@@ -352,7 +374,6 @@ class Post
 				@update_feedback_tag_status(element, status) if element
 
 	update_feedback_tag_status: (element, status) => if status == true then element.css("font-weight", "bold") else element.css("font-weight", "normal")
-		
 
 	mark_ugc: =>
 		$.ajax "/posts/mark_ugc",
@@ -371,4 +392,4 @@ class Post
 				$("#retweet_question_modal").modal('hide')	
 				$('#retweet_question').button('reset')
 
-$ -> window.feed = new Manager if $("#manager").length > 0
+$ -> window.feed = new Manager if $("#manager").length > 0 or $("#tags").length > 0

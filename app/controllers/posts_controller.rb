@@ -84,6 +84,20 @@ class PostsController < ApplicationController
     render :nothing => true
   end
 
+  def tags
+    @posts = Post.tagged.order("posts.created_at DESC")
+    params[:filter] = "week" unless params[:filter].present?
+
+    if params[:filter] == "week"
+      @posts = @posts.where("posts.created_at > ?", 1.week.ago)
+    elsif params[:filter] == "month"
+      @posts = @posts.where("posts.created_at > ?", 1.month.ago)
+    end
+        
+    @tags = Tag.all
+    render 'feeds/tags'
+  end
+
   def refer
   	publication = Publication.includes(:question).find(params[:publication_id])
     if publication.question.resource_url

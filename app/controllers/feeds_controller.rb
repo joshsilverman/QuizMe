@@ -332,6 +332,7 @@ class FeedsController < ApplicationController
       @posts = @posts.autocorrected_box
     end
 
+    @tags = Tag.all
     @posts = @posts.order("posts.created_at DESC")
     @questions = @asker.publications.where(:published => true)\
       .order("created_at DESC").includes(:question => :answers).limit(100)
