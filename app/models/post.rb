@@ -54,7 +54,6 @@ class Post < ActiveRecord::Base
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
-  scope :feedback_box, includes(:tags).where("tags.name = 'suggestion' or tags.name = 'negative' or tags.name = 'praise'")
 
   scope :nudge, where("nudge_type_id is not null")
 
