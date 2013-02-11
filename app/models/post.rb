@@ -621,6 +621,16 @@ class Post < ActiveRecord::Base
           if scores.keys.count > 0 and scores.keys.max > 0.7
             _in_reply_to_question = scores[scores.keys.max] 
             Tag.find_or_create_by_name('auto-linked').posts << self
+
+            #mimic normal conversation
+            publication = publication || _in_reply_to_question.publications.order('created_at DESC').limit(1).first
+            post = publication.posts.where('posts.created_at < ?', created_at).order("posts.created_at DESC").first
+            self.publication_id = publication.id
+            self.in_reply_to_post_id = post.id
+            self.in_reply_to_user_id = post.user_id
+            conversation = Conversation.create(:publication_id => publication_id, :post_id => post.id, :user_id => user_id)
+            self.conversation_id = conversation.id
+            save!
           end
         end
       end
