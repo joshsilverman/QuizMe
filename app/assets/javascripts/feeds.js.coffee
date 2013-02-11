@@ -200,7 +200,7 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0
+		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
@@ -234,8 +234,7 @@ class Post
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
 				$(e.target).find("h3").removeClass("active_next")
-	expand: (e) =>
-		return if $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
+	expand: =>
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
@@ -289,31 +288,18 @@ class Post
 						loading = @element.find(".loading").text("Thinking...")
 						loading.fadeIn(500, => 
 							loading.delay(1000).fadeOut(500, => 
-								conversation.find(".post").last().fadeIn(500, => @show_activity())
+								first_post.next().fadeIn(500, => 
+									@show_activity()
+									$(".next_question").on "click", (e) => @jump_to_next_question(e)
+									conversation.find(".after_answer").fadeIn(500)
+								)
 								icon.fadeIn(250)
+								
 							)
 						)
 					)
 				)
-				# window.feed.answered += 1
-				# mixpanel.track("answered", {"count" : window.feed.answered, "account" : window.feed.name, "source": source, "user_name": window.feed.user_name, "type": "feed"})				
-			error: => 
-				loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
-	# populate_response: (message_hash) =>
-	# 	response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-	# 	response.find(".content p").text(message_hash.app_message.split("http")[0]) 
-	# 	response.find("h5").text(@asker_name)
-	# 	response.find(".rounded").attr("src", @image_url) 
-	# 	loading = @element.find(".loading").text("Thinking...")
-	# 	if @element.find(".subsidiaries:visible").length > 0
-	# 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-	# 				@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-	# 				@element.find(".icon-share-alt").show()
-	# 			)
-	# 		)
-	# 	else
-	# 		@element.find(".subsidiary").after(response.fadeIn(500, => @show_activity()))
-	# 		@element.find("i").show()
+			error: => loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 	show_activity: =>
 		if @element.find(".activity_container:visible").length > 0
 			@element.find(".user_answered").fadeIn(500)
@@ -322,7 +308,12 @@ class Post
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
 		@element.find(".quiz_container").fadeIn(500)
-
+	jump_to_next_question: (e) =>
+		posts = window.feed.posts
+		@expand()
+		next_post = posts[posts.indexOf(@) + 1]
+		next_post.expand() unless next_post.expanded == true
+		$('html,body').animate({scrollTop: next_post.element.offset().top - 10}, 1000);
 
 $ -> 
 	if $("#post_feed").length > 0
@@ -331,4 +322,4 @@ $ ->
 		if target.length > 0
 			target.click()
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-			$.scrollTo(target, 500)
+			$('html,body').animate({scrollTop: target.offset().top - 10}, 1000);

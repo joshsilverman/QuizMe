@@ -1,3 +1,4 @@
+- tags = post.tags.collect(&:name)
 %a
 	%i.icon-eye-close
 	= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
@@ -15,9 +16,14 @@
 	%i.icon-retweet
 	retweet
 |
-%a.mark_ugc
-	%i.icon-question-sign
-	mark ugc
+.dropdown{:style => "display: inline;"}
+	%a.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} 
+		%i.icon-tag
+		tag
+	%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+		%li
+			- @tags.each do |tag|
+				%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
 |
 %a.show_move move
 %a.move{:style => "display: none;"}

@@ -69,3 +69,4 @@ gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/d
 gem 'amatch'
 gem 'sourcify'
 gem 'google_drive'
+gem 'redis'

@@ -51,6 +51,19 @@ class PostsController < ApplicationController
     end		
 	end
 
+  def toggle_tag
+    post = Post.find(params[:post_id])
+    tag = Tag.find_or_create_by_name(params[:tag_name])
+
+    if post.tags.include? tag
+      post.tags.delete(tag)
+      render :json => false
+    else
+      post.tags << tag
+      render :json => true
+    end
+  end
+
   def mark_ugc
     tag = Tag.find_or_create_by_name "ugc"
     post = Post.includes(:tags).find(params[:post_id])
@@ -69,6 +82,20 @@ class PostsController < ApplicationController
     end
 
     render :nothing => true
+  end
+
+  def tags
+    @posts = Post.tagged.order("posts.created_at DESC")
+    params[:filter] = "week" unless params[:filter].present?
+
+    if params[:filter] == "week"
+      @posts = @posts.where("posts.created_at > ?", 1.week.ago)
+    elsif params[:filter] == "month"
+      @posts = @posts.where("posts.created_at > ?", 1.month.ago)
+    end
+        
+    @tags = Tag.all
+    render 'feeds/tags'
   end
 
   def refer

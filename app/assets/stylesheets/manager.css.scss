@@ -71,3 +71,22 @@
 		}		
 	}	
 }
+
+#tags {
+	#add_tag {
+		background: white;
+
+		.add_tag_container {
+			padding: 10px;
+
+			textarea {
+				height: 18px;
+				display: inline;
+				width: 198px;
+				margin-bottom: 0px;
+				margin-right: 7px;
+				resize: none;
+			}
+		}
+	}
+}

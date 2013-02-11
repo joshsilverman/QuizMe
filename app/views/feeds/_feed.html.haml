@@ -37,10 +37,6 @@
 					%p.question_text= publication.question.text.html_safe
 					.post_actions
 						%a.expand Answer
-						- unless retweeted
-							%a.retweet.rollover 
-								%i.icon-retweet
-								Retweet
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = publication.question.answers.shuffle
@@ -53,7 +49,7 @@
 									%span#account= "@#{@question_asker.twi_screen_name}"
 									%span#answer= answer.tweetable(@question_asker.twi_screen_name).html_safe
 								.answer_controls
-									%a.tweet_button.btn.btn-primary{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id) unless current_user)} Answer
+									%a.tweet_button.btn.btn-primary{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => true) unless current_user)} Answer
 								.shadow-bottom
 			.subsidiaries{:style => "display: none;"}
 				- if @conversation

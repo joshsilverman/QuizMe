@@ -29,12 +29,14 @@
 
               %li
                 .dropdown.nav-link
-                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Stats
+                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Metrics
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
                     %li
                       %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
+                    %li
+                      %a{:href => "/tags", :tabindex => "-1"} Tags                      
               
 
             - elsif current_user.is_role? 'client'
@@ -49,4 +51,4 @@
 
             %li= link_to "Sign Out", destroy_user_session_path, :method => :delete, :class => "nav-link"
           - else
-            %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter), :class => "nav-link"
+            %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => true), :class => "nav-link"

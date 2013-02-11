@@ -207,7 +207,7 @@ class FeedsController < ApplicationController
 
         user_post.update_attribute(:correct, correct)
 
-        # Double counting if we grade people again via DM
+        # Will double count if we grade people again via DM
         Mixpanel.track_event "answered", {
           :distinct_id => params[:in_reply_to_user_id],
           :time => user_post.created_at.to_i,
@@ -220,7 +220,8 @@ class FeedsController < ApplicationController
           :learner_level => "dm answer", 
           :last_interaction_at => user_post.created_at,
           :last_answer_at => user_post.created_at
-        })        
+        }) 
+
       else
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end
@@ -306,7 +307,7 @@ class FeedsController < ApplicationController
   def manage
     #base selection
     @asker = Asker.find params[:id]
-    @posts = Post.includes(:user, :conversation => :posts).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
+    @posts = Post.includes(:tags, :user, :conversation => :posts).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
 
     @linked_box_count = @posts.linked_box.count
     @unlinked_box_count = @posts.unlinked_box.count
@@ -319,16 +320,19 @@ class FeedsController < ApplicationController
       @posts = @posts.spam_box
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc_box
+    elsif params[:filter] == 'feedback'
+      @posts = @posts.feedback_box
     elsif params[:filter] == 'linked'
       @posts = @posts.linked_box
     elsif params[:filter] == 'unlinked'
       @posts = @posts.unlinked_box
     elsif params[:filter] == 'all'
-      @posts = @posts.all_box
+      @posts = @posts.all_box  
     else
       @posts = @posts.autocorrected_box
     end
 
+    @tags = Tag.all
     @posts = @posts.order("posts.created_at DESC")
     @questions = @asker.publications.where(:published => true)\
       .order("created_at DESC").includes(:question => :answers).limit(100)

@@ -46,6 +46,7 @@ class User < ActiveRecord::Base
 
   # Lifecycle segmentation scopes
   scope :unengaged, where("lifecycle_segment is null")
+  scope :interested, where(:lifecycle_segment => 7)
   scope :edger, where(:lifecycle_segment => 1)
   scope :noob, where(:lifecycle_segment => 2)
   scope :regular, where(:lifecycle_segment => 3)
@@ -259,6 +260,8 @@ class User < ActiveRecord::Base
 	end
 
   def lifecycle_transition_comment to_segment
+    return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition or one above
+    
     #find asker
     asker = Asker.find_by_id posts.order("created_at DESC").first.in_reply_to_user_id
     return nil if asker.nil?
@@ -267,6 +270,7 @@ class User < ActiveRecord::Base
     no_comment = "No comment"
 
     to_seg_test_name = {
+      1 => "lifecycle smartransition to edger comment (=> noob)",
       2 => "lifecycle smartransition to noob comment (=> regular)",
       3 => "lifecycle smartransition to regular comment (=> advanced)",
       4 => "lifecycle smartransition to advanced comment (=> pro)",
@@ -274,6 +278,14 @@ class User < ActiveRecord::Base
     }
 
     case to_segment
+    when 1 #to edger
+      # Next step, what to expect
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        no_comment, 
+        "Let's get started! I'll send you another question soon.",
+        "Check out my tweets, I post new questions frequently!",
+        "Hold tight, I'll send you another shortly..."
+      )
     when 2 #to noob
       # I'll tweet you more questions // follow up
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
@@ -282,6 +294,7 @@ class User < ActiveRecord::Base
         "Can I tweet you interesting questions as I come accross them?",
         "Keep tweeting me your answers. I'll keep track and follow up on mistakes."
       )
+      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 3 #to regular
       # start, how can i improve
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
@@ -332,6 +345,10 @@ class User < ActiveRecord::Base
 		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
 	end
 
+	def has_received_transition_to_comment? segment_type, to_segment
+		transitions.where("segment_type = ? and to_segment >= ? and comment is not null and comment != ''", segment_type, to_segment).size > 0
+	end
+
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
@@ -353,19 +370,25 @@ class User < ActiveRecord::Base
 			level = 2		
 		elsif is_edger?
 			level = 1	
+		elsif is_interested?
+			level = 7
 		else
 			level = nil
 		end
 
 		transition :lifecycle, level if level
 	end
-
-	def is_edger?
+	
+	def is_interested? # has shared or commented
 		posts.not_spam.size > 0
 	end
 
-	def is_noob?
-		posts.answers.size > 0
+	def is_edger? # has answered a new user private message
+		posts.not_spam.answers.dms.size > 0
+	end
+
+	def is_noob? # has answered socially (wisr or twi mention)
+		posts.social.answers.size > 0
 	end
 
 	def is_regular?
