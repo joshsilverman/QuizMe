@@ -538,6 +538,21 @@ body {
 
 	.after_answer {
 		height: 27px;
+		/*background: #FDFDFD !important;*/
+
+		.cta_message {
+			display: inline;
+			position: relative;
+			top: 1px;
+			/*left: 8px;*/
+			/*font-style: italic;*/
+			/*font-size: 11px;*/
+			margin-right: 5px !important;
+		}
+
+		.next_question {
+			/*background: purple;*/
+		}	
 	}
 
 	.subsidiaries {
@@ -1005,7 +1020,6 @@ body {
 						visibility: visible;
 					}						
 				}
-
 			}
 		}	
 

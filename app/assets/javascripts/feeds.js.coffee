@@ -313,7 +313,7 @@ class Post
 		@expand()
 		next_post = posts[posts.indexOf(@) + 1]
 		next_post.expand() unless next_post.expanded == true
-		$('html,body').animate({scrollTop: next_post.element.offset().top - 10}, 1000);
+		$('html,body').animate({scrollTop: next_post.element.offset().top - 20}, 1000);
 
 $ -> 
 	if $("#post_feed").length > 0
