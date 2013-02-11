@@ -603,25 +603,31 @@ class Post < ActiveRecord::Base
     if _in_reply_to_question.nil? or amatch == true
       #attempt approximate match linking
       askers = askers=Asker.select([:twi_screen_name]).collect(&:twi_screen_name).join('|')
-      reengagement = "@[^\s]+ (?:Next question!|A question for you:|Do you know the answer\?|Quick quiz:|)\s?"
-      re = /@(?:#{askers})[\w|:]*\s(?:#{reengagement})?([\w\W]+)http:/
-      match = text.match re
+      reengagement = "@[^\\s]+ (?:Next question!|A question for you:|Pop quiz:|Do you know the answer\\?|Quick quiz:|)\\s?"
+      re_with_url = /@(?:#{askers})[\s:]*\s(?:#{reengagement})?([\w\W]+?)(?:http:)[\w\W]*$/
+      re_without_url = /@(?:#{askers})[\w|:]*\s(?:#{reengagement})?([\w\W]+?)$/
+      match = []
+      match[0] = text.match re_with_url
+      match[1] = text.match re_without_url
+      match = match[0] || match[1]
+
       if match
         stripped_text = match[1]
-
         @asker = Asker.find_by_id in_reply_to_user_id
         if @asker
           scores = {}
           @asker.questions.each do |q|
             scores[Post.grader.longest_substring q.text, stripped_text] = q
           end
-          _in_reply_to_question = scores[scores.keys.max] if scores.keys.count > 0
+          if scores.keys.count > 0 and scores.keys.max > 0.7
+            _in_reply_to_question = scores[scores.keys.max] 
+            Tag.find_or_create_by_name('auto-linked').posts << self
+          end
         end
       end
     end
 
     self.update_attribute :in_reply_to_question_id, _in_reply_to_question.id if _in_reply_to_question
-
     in_reply_to_question
   end
 
