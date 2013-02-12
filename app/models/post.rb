@@ -92,7 +92,7 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     return unless publication and question = publication.question
-    via = (question.user_id == 1 ? nil : question.user.twi_screen_name)
+    via = (question.user_id == 1 or question.user_id == asker.author_id ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
