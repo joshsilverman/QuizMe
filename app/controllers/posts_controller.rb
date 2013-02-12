@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :admin?, :except => [:nudge, :refer]
+  before_filter :admin?, :except => [:nudge, :refer, :retweet]
 
 	def retweet
 		if params[:publication_id]
