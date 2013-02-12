@@ -1,6 +1,7 @@
 class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
+  has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
 
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
@@ -45,29 +46,34 @@ class Asker < User
     end
   end
 
+
   def update_followers
-  	# Get lists of user ids from twitter + wisr
-  	twi_follower_ids = Post.twitter_request { self.twitter.follower_ids.ids }
+    # Get lists of user ids from twitter + wisr
+    twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
 
     if twi_follower_ids
-    	wisr_follower_ids = followers.collect(&:twi_user_id)
+      wisr_follower_ids = followers.collect(&:twi_user_id)
 
-    	# Add new followers in wisr
-    	(twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) }
+      # Add new followers in wisr
+      (twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| 
+        Post.twitter_request { twitter.follow(new_user_twi_id) }
+        add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) 
+      }
 
-  		# Remove unfollowers from asker follow association  	
-    	unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-    	unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
+      # Remove unfollowers from asker follow association    
+      unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
+      unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
     else
       twi_follower_ids = followers.collect(&:id)
     end
-  	
-  	return twi_follower_ids 
+    
+    return twi_follower_ids 
   end 
 
   def add_follower user
     unless followers.include? user
       followers << user 
+      send_new_user_question(user)
       user.segment
     end
   end
@@ -77,6 +83,20 @@ class Asker < User
     user.follows.delete(self)
     user.segment
   end
+
+  def send_new_user_question user
+    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).present? or new_user_question.blank?
+
+    response_text = "Here's your first question! #{new_user_question.text}"
+    response_text += " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? id
+
+    Post.dm(self, user, response_text, {:intention => "initial question dm"})
+    Mixpanel.track_event "DM question to new follower", {
+      :distinct_id => user.id,
+      :account => twi_screen_name
+    }
+  end
+
 
   def self.post_aggregate_activity
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
@@ -208,40 +228,11 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    Asker.dm_new_followers
+    # Asker.dm_new_followers
+    Asker.all.each { |asker| asker.update_followers() }
 
     # Send mentions to new users
     Asker.mention_new_users
-  end
-
-  def self.dm_new_followers
-    askers = Asker.all
-    # new_user_questions = Question.find(askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
-    new_user_questions = Question.where(:id => askers.collect(&:new_user_q_id)).group_by(&:created_for_asker_id)
-    askers.each do |asker|
-      stop = false
-      new_followers = Post.twitter_request { asker.twitter.follower_ids.ids.first(50) } || []
-      new_followers.each do |tid|
-        break if stop
-        follow_response = Post.twitter_request { asker.twitter.follow(tid) }
-        stop = true if follow_response.blank?
-        sleep(1)
-        user = User.find_or_create_by_twi_user_id(tid)
-        asker.add_follower(user)
-        next if new_user_questions[asker.id].blank? or asker.posts.where(:provider => 'twitter', :interaction_type => 4, :in_reply_to_user_id => user.id).count > 0
-        question = new_user_questions[asker.id][0]
-
-        response_text = "Here's your first question! #{question.text}"
-        response_text += " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? asker.id
-
-        Post.dm(asker, user, response_text, {:intention => "initial question dm"})
-        Mixpanel.track_event "DM question to new follower", {
-          :distinct_id => user.id,
-          :account => asker.twi_screen_name
-        }
-        sleep(1)   
-      end
-    end    
   end
 
   def self.mention_new_users
