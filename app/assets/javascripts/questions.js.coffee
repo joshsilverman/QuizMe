@@ -38,6 +38,7 @@ class Question
 
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "question"})
 		mixpanel.track_links(".answer_more", "answer_more", {"account" : @name, "source": source, "user_name": @user_name})
+		mixpanel.track_links(".auth_link", "redirected to authorize", {"account" : @name, "source": source})
 
 		#allow questions index to filter and make sure selector set right
 		$('#askers_select select').change -> window.location = "/questions/asker/" + $(this).children(":selected").attr('value')

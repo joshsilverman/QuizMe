@@ -13,6 +13,7 @@ class AuthorizationsController < ApplicationController
   	def oauthorize provider
 	    if @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
 	      # session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
+	      Mixpanel.track_event "authorized app", {:distinct_id => @user.id, :service => provider}
 	      sign_in_and_redirect @user, :event => :authentication
 	    end   
   	end
