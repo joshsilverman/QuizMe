@@ -58,7 +58,7 @@ class Question
 		params =
 			"asker_id" : @asker_id
 			"answer_id" : answer_id
-			"post_id" : @publication_id
+			"publication_id" : @publication_id
 		$.ajax '/respond_to_question',
 			type: 'POST'
 			data: params
@@ -73,11 +73,12 @@ class Question
 					conversation = @element.find(".subsidiaries")
 					conversation.show()
 					conversation.prepend($(e).hide())
+					first_post = conversation.find(".post").first()
 					loading.fadeOut(500, => 
-						conversation.find(".post").first().fadeIn(500, =>
+						first_post.fadeIn(500, =>
 							loading = @element.find(".loading").text("Thinking...")
 							loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-									conversation.find(".post").last().fadeIn(500, => @show_activity())
+									first_post.next().fadeIn(500, => @show_activity())
 									icon.fadeIn(250)
 								)
 							)						
