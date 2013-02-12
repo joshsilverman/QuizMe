@@ -88,7 +88,7 @@ class Asker < User
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).present? or new_user_question.blank?
 
     response_text = "Here's your first question! #{new_user_question.text}"
-    response_text += " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? id
+    response_text += " (#{new_user_question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? id
 
     Post.dm(self, user, response_text, {:intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
