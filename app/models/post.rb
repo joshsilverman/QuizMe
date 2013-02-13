@@ -27,7 +27,8 @@ class Post < ActiveRecord::Base
   scope :social, where('interaction_type IN (2,3)')
   scope :answers, where('posts.correct is not null')
 
-  scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
+  # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
+  scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")

@@ -1,7 +1,10 @@
-%a.mark_ugc.toggle_ugc
+/ %a.mark_ugc.toggle_ugc
+/ 	%i.icon-eye-close
+/ 	hide
+/ 	/ = best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+%a
 	%i.icon-eye-close
-	hide
-	/ = best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+	= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
 |
 %a.add_question
 	%i.icon-plus-sign

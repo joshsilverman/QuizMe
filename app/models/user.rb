@@ -343,7 +343,10 @@ class User < ActiveRecord::Base
   end
 
 	def self.update_segments
-		User.not_asker_not_us.where("twi_screen_name is not null").each { |user| user.segment }
+		User.find_in_batches(:conditions => ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS]) do |group| 
+			puts group.size
+			group.each { |user| user.segment }
+		end
 	end
 
 	def has_received_transition_to_comment? segment_type, to_segment
