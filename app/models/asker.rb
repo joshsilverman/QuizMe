@@ -394,6 +394,7 @@ class Asker < User
     end
 
     # Mark user's post as responded to
+    
     user_post.update_attributes(:requires_action => false, :correct => correct)
 
     # Trigger after answer actions

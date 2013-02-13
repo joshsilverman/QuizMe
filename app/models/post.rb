@@ -82,6 +82,9 @@ class Post < ActiveRecord::Base
     spam == true or autospam == true
   end
 
+  def is_ugc?
+    tags.include? Tag.find_by_name("ugc")
+  end
 
   def self.shorten_url(url, source, lt, campaign, show_answer=nil)
     if Rails.env.production?

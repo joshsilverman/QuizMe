@@ -78,7 +78,6 @@ body {
 	body {
 		padding-left: 0px !important;
 		padding-right: 0px !important;
-		/*background: blue;*/
 	}
 	.navbar-fixed-top {
 		margin-left: 0px !important;
@@ -87,15 +86,22 @@ body {
 	.answers {
 		margin-left: 0px !important;
 	}
+
 	#wrapper {
+    .account_text {
+      margin: -6px 0px 0px 75px !important;
+    } 		
+    .account_image {
+			img {
+				height: 64px !important;
+			}
+    }	
 	}
 }
 
 /* Landscape phone to portrait tablet */
 @media (max-width: 767px) {
-	body {
-		/*background: green;*/
-	}	
+
 	#wrapper {
 		margin-top: -36px;
 
@@ -106,12 +112,12 @@ body {
 				min-height: 116px !important;
 
         .account_text {
-          margin: 0px 0px 0px 105px !important;
+          margin: -6px 0px 0px 105px;
         } 
 
         .account_image{
     			img {
-    				height: 96px !important;
+    				height: 96px;
     			}
         }
 			}
@@ -146,6 +152,16 @@ body {
 			width: 186px;
 		}
 	}	
+	#wrapper {
+    .account_text {
+      margin: -6px 0px 0px 138px;
+    } 		
+    .account_image {
+			img {
+				height: 128px;
+			}
+    }	
+	}	
 }
 
 @media (min-width: 978px) and (max-width: 1199px) {
@@ -174,6 +190,9 @@ body {
 			width: 248px;
 		}
 	}
+  .account_text {
+    margin: -6px 0px 0px 138px;
+  } 		
 }
 
 /* Large desktop */
@@ -187,6 +206,9 @@ body {
 			width: 253px;
 		}
 	}
+  .account_text {
+    margin: -6px 0px 0px 138px;
+  } 		
 }
 
 @import "twitter/bootstrap/responsive";
