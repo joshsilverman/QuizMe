@@ -254,7 +254,7 @@ class User < ActiveRecord::Base
     })  
 
 		Post.trigger_split_test(id, "include answers in reengagement tweet (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
-		Post.trigger_split_test(id, "after answer cta") if transition.segment_type == 2 and transition.is_positive?
+		Post.trigger_split_test(id, "after answer cta (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "reengagement tight intervals") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
