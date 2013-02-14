@@ -226,20 +226,20 @@ class FeedsController < ApplicationController
         response_text = params[:message].gsub("@#{params[:username]}", "")
       end
 
-      response_post = Post.dm(asker, user, response_text, {
+      response_post = Post.delay.dm(asker, user, response_text, {
         :conversation_id => conversation.id
       })
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       unless correct.nil?
-        response_post = asker.app_response(user_post, correct, { 
+        response_post = asker.delay.app_response(user_post, correct, { 
           :response_text => response_text,
           :link_to_parent => false,
           :tell => tell
         })
         conversation.posts << response_post
       else
-        response_post = Post.tweet(asker, response_text, {
+        response_post = Post.delay.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
           :conversation_id => conversation.id,
@@ -263,7 +263,7 @@ class FeedsController < ApplicationController
 
     if params[:text].include? "@"
       user = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9-_]*/).to_s.gsub("@", ""))
-      response_post = Post.tweet(asker, response_text, {
+      response_post = Post.delay.tweet(asker, response_text, {
         :interaction_type => 2, 
         :in_reply_to_user_id => user.id
       }) 
