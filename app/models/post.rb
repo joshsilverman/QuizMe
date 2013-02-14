@@ -86,6 +86,23 @@ class Post < ActiveRecord::Base
     tags.include? Tag.find_by_name("ugc")
   end
 
+  def is_status?
+    interaction_type == 1
+  end
+
+  def is_mention?
+    interaction_type == 2
+  end
+
+  def is_retweet?
+    interaction_type == 3
+  end
+
+  def is_dm?
+    interaction_type == 4
+  end
+
+
   def self.shorten_url(url, source, lt, campaign, show_answer=nil)
     if Rails.env.production?
       return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
@@ -205,7 +222,7 @@ class Post < ActiveRecord::Base
     end
     return post        
   end
-
+  
   def self.dm(sender, recipient, text, options = {})    
     
     short_url = nil
@@ -362,6 +379,8 @@ class Post < ActiveRecord::Base
 
     Post.classifier.classify post
     Post.grader.grade post
+
+    # asker.auto_respond(post.reload)
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)

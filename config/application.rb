@@ -19,6 +19,7 @@ module Quizmemanager
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/lib/classifiers)
+    config.autoload_paths += %W(#{config.root}/lib/adapters/twitter)
 
     config.assets.initialize_on_precompile = false
     

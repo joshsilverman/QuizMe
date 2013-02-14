@@ -258,6 +258,7 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "reengagement tight intervals") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
+		# Post.trigger_split_test(id, "DM autoresponse interval (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 	end
 
   def lifecycle_transition_comment to_segment

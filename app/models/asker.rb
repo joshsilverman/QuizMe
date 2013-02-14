@@ -425,12 +425,23 @@ class Asker < User
   end
 
   def auto_respond user_post
-    if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true" and user_post.autocorrect.present?
-      asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
-      conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
-      conversation.posts << user_post
-      conversation.posts << asker_response
-    end
+    return unless user_post.autocorrect.present? and user_post.requires_action
+
+    # if user_post.is_dm?
+    #   return unless (question = user_post.in_reply_to_question) == new_user_question
+    #   interval = Post.create_split_test(user_post.user_id, "DM autoresponse interval (activity segment +)", "0", "30", "60", "120", "240")
+    #   Delayed::Job.enqueue(
+    #     TwitterPrivateMessage.new(self, user_post.user, generate_response(user_post.autocorrect, user_post.question)),
+    #     :run_at => interval.to_i.minutes.from_now.utc
+    #   )
+    # else
+      if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true"
+        asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
+        conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
+        conversation.posts << user_post
+        conversation.posts << asker_response
+      end
+    # end
   end
 
   def after_answer_filter answerer, user_post, options = {}
