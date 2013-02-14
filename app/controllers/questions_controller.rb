@@ -132,7 +132,7 @@ class QuestionsController < ApplicationController
 
       if params[:post_id] # For questions generated from user posts
         ugc_post = Post.find(params[:post_id]) 
-        ugc_post.tags.delete(Tag.find_by_name("ugc"))
+        # ugc_post.tags.delete(Tag.find_by_name("ugc"))
         user_id = ugc_post.user_id
         question_created_at = ugc_post.created_at
       end  
