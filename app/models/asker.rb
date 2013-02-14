@@ -447,6 +447,9 @@ class Asker < User
   def nudge answerer
     return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
 
+    puts "in nudge:"
+    puts self.twi_screen_name, client.to_json
+
     if client.id == 14699
       nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "SATHabit copy (click-through) < 123 >", 
         "You're doing really well! I offer a much more comprehensive (free) course here: {link}",
