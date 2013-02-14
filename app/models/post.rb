@@ -96,7 +96,7 @@ class Post < ActiveRecord::Base
 
   def self.publish(provider, asker, publication)
     return unless publication and question = publication.question
-    via = (question.user_id == 1 or question.user_id == asker.author_id ? nil : question.user.twi_screen_name)
+    via = ((question.user_id == 1 or question.user_id == asker.author_id) ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
@@ -140,7 +140,7 @@ class Post < ActiveRecord::Base
     formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}"}
 
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
-    tweet_format.map! { |entity| entity == :text ? entity : formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity] }
+    tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
     if options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1)
       if INCLUDE_ANSWERS.include? options[:sender_id]
