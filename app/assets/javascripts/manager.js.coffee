@@ -263,6 +263,7 @@ class Post
 					$("#respond_modal").find(".correct").removeClass("active")
 					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
+					post.parents(".conversation").css("opacity", 0.8)
 					if e == false
 						message = $(".response_message")
 						message.text("Failed to send message!")
@@ -317,6 +318,7 @@ class Post
 			data: params
 			error: (e) => console.log "ajax error tweeting response"
 			success: (e) =>
+				post.parents(".conversation").css("opacity", 0.8)
 				if e == false
 					console.log "twitter failed to send message"
 				else

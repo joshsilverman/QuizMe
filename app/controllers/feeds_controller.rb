@@ -235,9 +235,9 @@ class FeedsController < ApplicationController
         response_post = asker.delay.app_response(user_post, correct, { 
           :response_text => response_text,
           :link_to_parent => false,
-          :tell => tell
+          :tell => tell,
+          :conversation_id => conversation.id
         })
-        conversation.posts << response_post
       else
         response_post = Post.delay.tweet(asker, response_text, {
           :reply_to => params[:username], 

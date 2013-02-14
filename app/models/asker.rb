@@ -376,7 +376,8 @@ class Asker < User
         :posted_via_app => true, 
         :requires_action => false,
         :interaction_type => 2,
-        :intention => 'grade'
+        :intention => 'grade',
+        :conversation_id => options[:conversation_id]
       })
     else
       app_post = Post.tweet(self, response_text, {
@@ -389,7 +390,8 @@ class Asker < User
         :link_to_parent => options[:link_to_parent], 
         :resource_url => correct ? nil : resource_url,
         :wisr_question => publication.question.resource_url ? false : true,
-        :intention => 'grade'
+        :intention => 'grade',
+        :conversation_id => options[:conversation_id]
       })        
     end
 
