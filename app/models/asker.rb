@@ -435,9 +435,10 @@ class Asker < User
       return unless [1, 2].sample == 1 # only autograde half of eligible DMs
       interval = Post.create_split_test(answerer.id, "DM autoresponse interval (activity segment +)", "0", "30", "60", "120", "240")
       Delayed::Job.enqueue(
-        TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id}),
+        TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
         :run_at => interval.to_i.minutes.from_now.utc
       )
+      user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
       puts "autograde DM for #{answerer.twi_screen_name} on post #{user_post.text} (#{user_post.id}). Interval = #{interval}, current time = #{Time.now}"
     else
