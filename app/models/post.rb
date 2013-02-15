@@ -329,7 +329,7 @@ class Post < ActiveRecord::Base
     asker.auto_respond(post.reload)
   end
 
-  def self.save_dm_data(d, current_acct)
+  def self.save_dm_data d, asker
     u = User.find_or_create_by_twi_user_id(d.sender.id)
     u.update_attributes(
       :twi_name => d.sender.name,
@@ -337,7 +337,7 @@ class Post < ActiveRecord::Base
       :twi_profile_img_url => d.sender.profile_image_url
     )
 
-    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, current_acct.id, current_acct.id, u.id)\
+    in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, asker.id, asker.id, u.id)\
       .order("created_at DESC")\
       .limit(1)\
       .first
@@ -360,7 +360,7 @@ class Post < ActiveRecord::Base
       :provider => 'twitter',
       :user_id => u.id,
       :in_reply_to_post_id => in_reply_to_post.try(:id),
-      :in_reply_to_user_id => current_acct.id,
+      :in_reply_to_user_id => asker.id,
       :created_at => d.created_at,
       :conversation_id => conversation_id,
       :posted_via_app => false,
@@ -375,7 +375,7 @@ class Post < ActiveRecord::Base
 
     u.segment
 
-    # puts "missed item in stream! DM: #{post.to_json}" if current_acct.id == 18
+    # puts "missed item in stream! DM: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
     Post.grader.grade post
