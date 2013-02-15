@@ -46,7 +46,6 @@ class TwitterPrivateMessage
       puts exception.message
     end
     
-
     return post  	
   end
 end
