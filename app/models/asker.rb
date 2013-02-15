@@ -429,21 +429,27 @@ class Asker < User
   def auto_respond user_post
     return unless user_post.autocorrect.present? and user_post.requires_action
 
-    # if user_post.is_dm?
-    #   return unless (question = user_post.in_reply_to_question) == new_user_question
-    #   interval = Post.create_split_test(user_post.user_id, "DM autoresponse interval (activity segment +)", "0", "30", "60", "120", "240")
-    #   Delayed::Job.enqueue(
-    #     TwitterPrivateMessage.new(self, user_post.user, generate_response(user_post.autocorrect, user_post.question)),
-    #     :run_at => interval.to_i.minutes.from_now.utc
-    #   )
-    # else
-      if Post.create_split_test(user_post.user_id, "auto respond", "true", "false") == "true"
+    answerer = user_post.user
+    if user_post.is_dm?
+      return unless (question = user_post.in_reply_to_question) == new_user_question
+      return unless [1, 2].sample == 1 # only autograde half of eligible DMs
+      interval = Post.create_split_test(answerer.id, "DM autoresponse interval (activity segment +)", "0", "30", "60", "120", "240")
+      Delayed::Job.enqueue(
+        TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id}),
+        :run_at => interval.to_i.minutes.from_now.utc
+      )
+      learner_level = "dm answer"
+      puts "autograde DM for #{answerer.twi_screen_name} on post #{user_post.text} (#{user_post.id}). Interval = #{interval}, current time = #{Time.now}"
+    else
+      if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
         asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
         conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
         conversation.posts << user_post
         conversation.posts << asker_response
+        learner_level = "twitter answer"
       end
-    # end
+    end
+    after_answer_filter(answerer, user_post, :learner_level => learner_level)
   end
 
   def after_answer_filter answerer, user_post, options = {}
@@ -569,7 +575,7 @@ class Asker < User
   ## Solicit UGC
 
   def request_ugc user
-    if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, self.id).size > 9
+    if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size > 9
       puts "attempting to send ugc request to #{user.twi_screen_name} on handle #{self.twi_screen_name}"
       script = self.get_ugc_script(user)
       if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'

@@ -380,7 +380,7 @@ class Post < ActiveRecord::Base
     Post.classifier.classify post
     Post.grader.grade post
 
-    # asker.auto_respond(post.reload)
+    asker.auto_respond(post.reload)
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)

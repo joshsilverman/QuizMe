@@ -33,11 +33,20 @@ class TwitterPrivateMessage
         :intention => @options[:intention],
         :nudge_type_id => @options[:nudge_type_id]
       )
+
+      if parent = post.parent 
+        parent.update_attribute :requires_action, false
+      end
+
       @recipient.segment
+
+      puts "autograde DM SENT for #{@recipient.twi_screen_name}. Current time = #{Time.now}"
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message
     end
+    
+
     return post  	
   end
 end
