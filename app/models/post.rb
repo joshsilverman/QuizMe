@@ -282,9 +282,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data m, asker, conversation_id = nil
-    u = User.find_or_create_by_twi_user_id(m.user.id)
-
-    u.update_attributes(
+    u = User.find_or_create_by_twi_user_id(m.user.id, 
       :twi_name => m.user.name,
       :twi_screen_name => m.user.screen_name,
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
@@ -330,8 +328,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data d, asker
-    u = User.find_or_create_by_twi_user_id(d.sender.id)
-    u.update_attributes(
+    u = User.find_or_create_by_twi_user_id(d.sender.id,
       :twi_name => d.sender.name,
       :twi_screen_name => d.sender.screen_name,
       :twi_profile_img_url => d.sender.profile_image_url
@@ -387,13 +384,11 @@ class Post < ActiveRecord::Base
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
     users.each do |user|
-      u = User.find_or_create_by_twi_user_id(user.id)
 
-      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).first
-      
+      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", user.id, retweeted_post.id).first
       return if post
 
-      u.update_attributes(
+      u = User.find_or_create_by_twi_user_id(user.id, 
         :twi_name => user.name,
         :twi_screen_name => user.screen_name,
         :twi_profile_img_url => user.profile_image_url

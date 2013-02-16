@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
   has_many :followers, :through => :reverse_relationships, :source => :follower
 
   scope :supporters, where("users.role == 'supporter'")
+  scope :not_asker, where("users.role != 'asker'")
   scope :not_asker_not_us, where("users.id not in (?) and users.role != 'asker'" , ADMINS)
 
   scope :not_spam_with_posts, joins(:posts)\
@@ -222,6 +223,20 @@ class User < ActiveRecord::Base
 		experiments.include? experiment_name
 	end
 
+	def after_new_user_filter
+		authorized_user = User.find_by_twi_screen_name("Wisr")
+		followed_twi_user_ids = authorized_user.twitter.friend_ids(twi_user_id)
+		User.not_asker.find_by_twi_user_id(followed_twi_user_ids).each do |referrer|
+			Post.trigger_split_test(referrer.id, "Post aggregate activity (follower joins)")
+      Mixpanel.track_event "referral joined", {
+        :distinct_id => referrer.id,
+        :type => "twitter",
+        :lifecycle_segment => referrer.lifecycle_segment
+      }     
+		end
+		Post.create_split_test(id, "Post aggregate activity (follower joins)", "true", "false")
+	end
+
 
 	# Segmentation methods
 	def transition segment_name, to_segment
@@ -252,6 +267,8 @@ class User < ActiveRecord::Base
       :to_segment => to_segment,
       :comment => comment
     })  
+
+    after_new_user_filter if transition.segment_type == 1 and transition.from_segment.blank? and transition.to_segment.present?
 
 		Post.trigger_split_test(id, "include answers in reengagement tweet (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 		Post.trigger_split_test(id, "after answer cta (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
