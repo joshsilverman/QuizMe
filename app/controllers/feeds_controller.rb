@@ -159,7 +159,7 @@ class FeedsController < ApplicationController
     @scores = User.get_top_scorers(params[:id])
   end
 
-  def respond_to_question
+  def respond_to_question post_to_twitter = false
     publication = Publication.find(params[:publication_id])
     @question_asker = Asker.find(params[:asker_id])
     answer = Answer.find(params[:answer_id])
@@ -174,9 +174,13 @@ class FeedsController < ApplicationController
       :publication_id => publication.id
     })
 
-    user_post = current_user.app_answer(@question_asker, post, answer, { :post_aggregate_activity => true })
+    post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
+    # post_to_twitter = true
+
+    user_post = current_user.app_answer(@question_asker, post, answer, { :post_to_twitter => post_to_twitter })
     @conversation.posts << user_post
-    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_aggregate_activity => true, :link_to_parent => true }) if user_post
+
+    asker_response = @question_asker.app_response(user_post, answer.correct, { :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
     @conversation.posts << asker_response
 
     render :partial => "conversation"
@@ -232,11 +236,13 @@ class FeedsController < ApplicationController
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       unless correct.nil?
-        response_post = asker.delay.app_response(user_post, correct, { 
+        response_post = asker.app_response(user_post, correct, { 
           :response_text => response_text,
           :link_to_parent => false,
           :tell => tell,
-          :conversation_id => conversation.id
+          :conversation_id => conversation.id,
+          :post_to_twitter => true,
+          :manager_response => true
         })
       else
         response_post = Post.delay.tweet(asker, response_text, {

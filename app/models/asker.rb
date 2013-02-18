@@ -324,51 +324,40 @@ class Asker < User
     Rails.cache.write("aggregate activity", current_cache)
   end
 
+
   def app_response user_post, correct, options = {}
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
-    tell = options[:tell]
     question = user_post.link_to_question
     resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
-    response_text = options[:response_text] if !options[:response_text].blank?
-    feed_response = options[:post_aggregate_activity] == true ? true : false
-    
-    # split test hints for questions with hints that aren't posted through the app
-    if question = user_post.in_reply_to_question and !question.hint.blank? and !user_post.posted_via_app and response_text.nil?
-      test_name = "Hint when incorrect (answers question correctly later)"
-      if !correct
-        if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
-          response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
-        end
-      else 
-        # attempt to trigger
-        previous_answers = question.in_reply_to_posts\
-          .where('posts.user_id = ?', answerer.id)\
-          .where('posts.created_at < ?', user_post.created_at)
-        if !previous_answers.empty?
-          Post.trigger_split_test(answerer.id, test_name)
-        end
-      end
+
+    if options[:response_text].present?
+      response_text = options[:response_text]
+    elsif options[:tell]
+      response_text = generate_response(correct, question, true)
+    elsif options[:manager_response]
+      response_text = format_manager_response(user_post, correct, answerer, publication, question)
+    else
+      response_text = generate_response(correct, question)
     end
 
-    # fill in response text if not already done by manager or question hint override
-    response_text ||= self.generate_response(correct, question, tell)
-
-    # augment manager responses with links and RTs
-    if !feed_response
-      if correct 
-        cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
-        cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
-        response_text += " RT '#{cleaned_user_post}'" 
-      elsif !correct
-        short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
-        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?
-      end
-    end
-
-    if feed_response
+    if options[:post_to_twitter]
+      app_post = Post.tweet(self, response_text, {
+        :reply_to => answerer.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{id}/#{publication.id}", 
+        :interaction_type => 2, 
+        :link_type => correct ? "cor" : "inc", 
+        :link_to_parent => options[:link_to_parent], 
+        :in_reply_to_post_id => user_post.id, 
+        :in_reply_to_user_id => answerer.id,
+        :resource_url => correct ? nil : resource_url,
+        :wisr_question => publication.question.resource_url ? false : true,
+        :intention => 'grade',
+        :conversation_id => options[:conversation_id]
+      })        
+    else
       app_post = Post.create({
-        :user_id => self.id,
+        :user_id => id,
         :provider => 'wisr',
         :text => response_text,
         :in_reply_to_post_id => user_post.id,
@@ -379,20 +368,6 @@ class Asker < User
         :intention => 'grade',
         :conversation_id => options[:conversation_id]
       })
-    else
-      app_post = Post.tweet(self, response_text, {
-        :reply_to => answerer.twi_screen_name,
-        :long_url => "#{URL}/feeds/#{self.id}/#{publication.id}", 
-        :interaction_type => 2, 
-        :link_type => correct ? "cor" : "inc", 
-        :in_reply_to_post_id => user_post.id, 
-        :in_reply_to_user_id => answerer.id,
-        :link_to_parent => options[:link_to_parent], 
-        :resource_url => correct ? nil : resource_url,
-        :wisr_question => publication.question.resource_url ? false : true,
-        :intention => 'grade',
-        :conversation_id => options[:conversation_id]
-      })        
     end
 
     # Mark user's post as responded to
@@ -405,6 +380,40 @@ class Asker < User
     update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
 
     app_post
+  end
+
+  def format_manager_response user_post, correct, answerer, publication, question, response_text = "" # augment manager responses with links, RTs, hints
+    
+    # split test hints for questions with hints that aren't posted through the app
+    if question = user_post.in_reply_to_question and question.hint.present? and !user_post.posted_via_app
+      test_name = "Hint when incorrect (answers question correctly later)"
+      if correct # attempt to trigger
+        previous_answers = question.in_reply_to_posts\
+          .where('posts.user_id = ?', answerer.id)\
+          .where('posts.created_at < ?', user_post.created_at)
+        if previous_answers.present?
+          Post.trigger_split_test(answerer.id, test_name)
+        end
+      else 
+        if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
+          response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
+        end
+      end
+    end 
+
+    if response_text.blank?  
+      response_text = generate_response(correct, question)
+      if correct 
+        cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
+        cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
+        response_text += " RT '#{cleaned_user_post}'" 
+      elsif !correct
+        short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
+        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?
+      end
+    end
+
+    response_text
   end
 
   def generate_response(correct, question, tell = false)
@@ -424,6 +433,7 @@ class Asker < User
     end
     response_text
   end
+
 
   def auto_respond user_post
     return unless user_post.autocorrect.present? and user_post.requires_action
@@ -445,7 +455,11 @@ class Asker < User
       puts Delayed::Job.last.to_json
     else
       if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
-        asker_response = app_response(user_post, user_post.autocorrect, {:link_to_parent => false, :autoresponse => true})
+        asker_response = app_response(user_post, user_post.autocorrect, {
+          :link_to_parent => false, 
+          :autoresponse => true,
+          :post_to_twitter => true
+        })
         conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
         conversation.posts << user_post
         conversation.posts << asker_response
@@ -513,10 +527,7 @@ class Asker < User
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-        # Hackity, just being used to get current user's test option for now
-        if answerer.enrolled_in_experiment? "reengagement tight intervals"
-          strategy = Post.create_split_test(answerer.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15") 
-        end
+        strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
         in_reply_to = "reengage inactive"
       end
 

@@ -166,20 +166,33 @@ class User < ActiveRecord::Base
 	end
 
 	def app_answer asker, post, answer, options = {}
-    user_post = Post.create({
-      :user_id => self.id,
-      :provider => 'wisr',
-      :text => answer.text,
-      :in_reply_to_post_id => post.id, 
-      :in_reply_to_user_id => asker.id,
-      :posted_via_app => true, 
-      :requires_action => false,
-      :interaction_type => 2,
-      :correct => answer.correct,
-      :intention => 'respond to question'
-    })   
-       
-    asker.update_aggregate_activity_cache(self, answer.correct)
+		if options[:post_to_twitter]
+      user_post = Post.tweet(self, answer.text, {
+        :reply_to => asker.twi_screen_name,
+        :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
+        :interaction_type => 2, 
+        :link_type => answer.correct ? "cor" : "inc", 
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => asker.id,
+        :link_to_parent => false, 
+        :correct => answer.correct,
+        :intention => 'respond to question'
+      })     
+    else
+	    user_post = Post.create({
+	      :user_id => self.id,
+	      :provider => 'wisr',
+	      :text => answer.text,
+	      :in_reply_to_post_id => post.id, 
+	      :in_reply_to_user_id => asker.id,
+	      :posted_via_app => true, 
+	      :requires_action => false,
+	      :interaction_type => 2,
+	      :correct => answer.correct,
+	      :intention => 'respond to question'
+	    })  
+			asker.update_aggregate_activity_cache(self, answer.correct)
+		end    
 
     segment
 
@@ -223,18 +236,36 @@ class User < ActiveRecord::Base
 		experiments.include? experiment_name
 	end
 
+	def get_experiment_option experiment_name
+		experiments = Split.redis.hkeys("user_store:#{self.id}").map { |e| e.split(":")[0] }
+		if experiments.include? experiment_name
+			experiment = Split::Experiment.find(experiment_name)
+			ab_user = Split::RedisStore.new(Split.redis) 
+			ab_user.set_id(id)
+			return ab_user.get_key(experiment.key)
+		else
+			return false
+		end
+	end
+
 	def after_new_user_filter
-		authorized_user = User.find_by_twi_screen_name("Wisr")
-		followed_twi_user_ids = authorized_user.twitter.friend_ids(twi_user_id)
-		User.not_asker.find_by_twi_user_id(followed_twi_user_ids).each do |referrer|
-			Post.trigger_split_test(referrer.id, "Post aggregate activity (follower joins)")
+    Mixpanel.track_event "new user joined", {
+      :distinct_id => id,
+      :type => "twitter"
+    }  		
+		register_referrals
+	end
+
+	def register_referrals 
+		followed_twi_user_ids = User.find_by_twi_screen_name("Wisr").twitter.friend_ids(twi_user_id).ids
+		referrers = User.not_asker.where("twi_user_id in (?)", followed_twi_user_ids)
+		if referrers.present?
+			referrers.each { |referrer| Post.trigger_split_test(referrer.id, "Post to twitter on app answer (follower joins)") }
       Mixpanel.track_event "referral joined", {
-        :distinct_id => referrer.id,
-        :type => "twitter",
-        :lifecycle_segment => referrer.lifecycle_segment
+        distinct_id: id,
+        type: "twitter"
       }     
 		end
-		Post.create_split_test(id, "Post aggregate activity (follower joins)", "true", "false")
 	end
 
 
@@ -275,7 +306,6 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "reengagement tight intervals") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
-		# Post.trigger_split_test(id, "DM autoresponse interval (activity segment +)") if transition.segment_type == 2 and transition.is_positive?
 		Post.trigger_split_test(id, "DM autoresponse interval (activity segment +)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
 	end
 
