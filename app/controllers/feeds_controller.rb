@@ -175,7 +175,6 @@ class FeedsController < ApplicationController
     })
 
     post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
-    # post_to_twitter = true
 
     user_post = current_user.app_answer(@question_asker, post, answer, { :post_to_twitter => post_to_twitter })
     @conversation.posts << user_post
@@ -236,7 +235,7 @@ class FeedsController < ApplicationController
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       unless correct.nil?
-        response_post = asker.app_response(user_post, correct, { 
+        response_post = asker.delay.app_response(user_post, correct, { 
           :response_text => response_text,
           :link_to_parent => false,
           :tell => tell,
