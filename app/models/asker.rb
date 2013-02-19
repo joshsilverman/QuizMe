@@ -450,10 +450,6 @@ class Asker < User
       )
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
-      puts "autograde DM for #{answerer.twi_screen_name} on post #{user_post.text} (#{user_post.id}). Interval = #{interval}, current time = #{Time.now}"
-      puts "Interval: #{interval.to_i.minutes.from_now}"
-      puts "Interval (UTC): #{interval.to_i.minutes.from_now.utc}"
-      puts Delayed::Job.last.to_json
     else
       if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
         asker_response = app_response(user_post, user_post.autocorrect, {

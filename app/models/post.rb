@@ -193,7 +193,6 @@ class Post < ActiveRecord::Base
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = Post.twitter_request { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
-      puts "in tweet, sender = #{sender.to_json}"
       twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
     end
     if twitter_response
@@ -336,6 +335,9 @@ class Post < ActiveRecord::Base
       :twi_screen_name => d.sender.screen_name,
       :twi_profile_img_url => d.sender.profile_image_url
     )
+
+    puts "in save dm data user = #{u.to_json}"
+    puts "dm = #{d.to_json}"
 
     in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, asker.id, asker.id, u.id)\
       .order("created_at DESC")\
