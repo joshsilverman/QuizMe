@@ -3,12 +3,16 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #post_question_modal {
-
-	#question_input {
-		resize: none;
+	
+	#question_container {
+		padding-right: 20px;
 		margin-left: 20px;
-		width: 480px;		
-		height: 38px;
+
+		#question_input {
+			resize: none;
+			width: 100%;		
+			height: 38px;
+		}
 	}
 
 	#handle_input, .dropdown-menu {
