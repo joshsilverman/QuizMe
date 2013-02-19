@@ -328,7 +328,7 @@ class Asker < User
     elsif options[:tell]
       response_text = generate_response(correct, question, true)
     elsif options[:manager_response]
-      response_text = format_manager_response(user_post, correct, answerer, publication, question)
+      response_text = format_manager_response(user_post, correct, answerer, publication, question, options)
     else
       response_text = generate_response(correct, question)
     end
@@ -375,8 +375,8 @@ class Asker < User
     app_post
   end
 
-  def format_manager_response user_post, correct, answerer, publication, question, response_text = "" # augment manager responses with links, RTs, hints
-    
+  def format_manager_response user_post, correct, answerer, publication, question, options = {} # augment manager responses with links, RTs, hints
+    response_text = ""
     # split test hints for questions with hints that aren't posted through the app
     if question = user_post.in_reply_to_question and question.hint.present? and !user_post.posted_via_app
       test_name = "Hint when incorrect (answers question correctly later)"
@@ -396,7 +396,7 @@ class Asker < User
 
     if response_text.blank?  
       response_text = generate_response(correct, question)
-      if correct 
+      if correct and options[:quote_user_answer]
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 

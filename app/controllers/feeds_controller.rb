@@ -241,7 +241,8 @@ class FeedsController < ApplicationController
           :tell => tell,
           :conversation_id => conversation.id,
           :post_to_twitter => true,
-          :manager_response => true
+          :manager_response => true,
+          :quote_user_answer => root_post.is_question_post? ? true : false
         })
       else
         response_post = Post.delay.tweet(asker, response_text, {
