@@ -327,7 +327,7 @@ class Asker < User
       response_text = options[:response_text]
     elsif options[:tell]
       response_text = generate_response(correct, question, true)
-    elsif options[:manager_response]
+    elsif options[:manager_response] or options[:autoresponse]
       response_text = format_manager_response(user_post, correct, answerer, publication, question, options)
     else
       response_text = generate_response(correct, question)
@@ -444,10 +444,14 @@ class Asker < User
       learner_level = "dm answer"
     else
       if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
+        root_post = user_post.conversation.post
+
         asker_response = app_response(user_post, user_post.autocorrect, {
           :link_to_parent => false, 
           :autoresponse => true,
-          :post_to_twitter => true
+          :post_to_twitter => true,
+          :quote_user_answer => root_post.is_question_post? ? true : false,
+          :link_to_parent => root_post.is_question_post? ? false : true
         })
         conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
         conversation.posts << user_post
