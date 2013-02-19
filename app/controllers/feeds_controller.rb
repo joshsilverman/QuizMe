@@ -108,7 +108,7 @@ class FeedsController < ApplicationController
         break if @stream.size >= 5
       end
     end
-    @stream.sort { |a, b| b.created_at <=> a.created_at }
+    @stream.sort! { |a, b| b.created_at <=> a.created_at }
     render :partial => "stream"
   end
 
