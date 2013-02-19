@@ -3,7 +3,6 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
-    puts "yo bro"
     @index = true
     @asker = User.find(1)
     @post_id = params[:post_id]
@@ -19,10 +18,7 @@ class FeedsController < ApplicationController
     @answer_id = params[:answer_id]
 
     @directory = {}
-    User.askers.select([:id, :twi_screen_name, :twi_profile_img_url]).find(ACCOUNT_DATA.keys).group_by(&:id).each do |id, data| 
-      @directory[ACCOUNT_DATA[id][:category]] = [] unless @directory[ACCOUNT_DATA[id][:category]] 
-      @directory[ACCOUNT_DATA[id][:category]] << data[0]
-    end
+    Asker.where("published = ?", true).each { |asker| (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker }
 
     @question_count = Publication.published.size
     @questions_answered = Post.answers.size
