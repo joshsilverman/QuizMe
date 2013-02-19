@@ -191,7 +191,6 @@ class User < ActiveRecord::Base
 	      :correct => answer.correct,
 	      :intention => 'respond to question'
 	    })  
-			asker.update_aggregate_activity_cache(self, answer.correct)
 		end    
 
     segment

@@ -368,6 +368,7 @@ class Asker < User
         :intention => 'grade',
         :conversation_id => options[:conversation_id]
       })
+      update_aggregate_activity_cache(answerer, correct)
     end
 
     # Mark user's post as responded to

@@ -75,7 +75,9 @@ class AuthorizationsController < ApplicationController
 	  end
 	 
 	  def find_or_create_oauth_by_provider_and_name provider, name
-	  	unless user = Authorization.find_by_provider_and_name(provider, name).try(:user)
+	  	user = Authorization.find_by_provider_and_name(provider, name).try(:user)
+	  	user = User.where("twi_user_id is not null").find_by_name(name) if user.blank? and provider == "twitter"
+	  	unless user
 	      user = User.new(:name => name, :password => Devise.friendly_token[0,20])
 	      user.save :validate => false
 	    end
