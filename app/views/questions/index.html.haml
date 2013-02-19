@@ -68,7 +68,7 @@
             %td
               - asker = question.user
               - if question.created_for_asker_id
-                %a{:href => "/feeds/#{asker.id}"}
+                %a{:href => "/feeds/#{question.created_for_asker_id}"}
                   = image_tag(asker.twi_profile_img_url, :class => "contributor rounded", :rel => "tooltip", :title => asker.twi_screen_name, "data-placement" => "left")
             %td.status
               - if question.status == 0

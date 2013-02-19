@@ -278,9 +278,6 @@ class Asker < User
     range_begin = 24.hours.ago
     range_end = 23.hours.ago
     
-    puts "Current time: #{current_time}"
-    puts "range = #{range_begin} - #{range_end}"
-    
     recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or ((intention = ? or intention = ?) and created_at > ?))", false, range_begin, range_end, 'reengage', 'incorrect answer follow up', range_end).includes(:user)
     user_grouped_posts = recent_posts.group_by(&:user_id)
     asker_ids = askers.collect(&:id)
@@ -288,17 +285,14 @@ class Asker < User
       # should ensure only one tweet per user as well here?
       next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
       incorrect_post = posts.sample
-      # eww, think we need a cleaner way to access the question associated w/ a post
       question = incorrect_post.conversation.publication.question
       asker = User.askers.find(incorrect_post.in_reply_to_user_id)
-      # always link? another A/B test?
-      # existing re-engages should be changed to follow-up!!!
       Post.tweet(asker, "Try this one again: #{question.text}", {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
-        :in_reply_to_post_id => incorrect_post.id,
+        # :in_reply_to_post_id => incorrect_post.id,
         :in_reply_to_user_id => user_id,
-        :conversation_id => incorrect_post.conversation_id,
+        # :conversation_id => incorrect_post.conversation_id,
         :posted_via_app => true, 
         :requires_action => false,
         :interaction_type => 2,
@@ -307,10 +301,8 @@ class Asker < User
         :intention => "incorrect answer follow up"
       })  
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
-      puts "sending follow-up message to: #{user_id}"
       sleep(1)
     end
-    puts "\n"       
   end 
 
   def update_aggregate_activity_cache user, correct

@@ -191,9 +191,11 @@ class FeedsController < ApplicationController
     tell = (params[:tell].nil? ? nil : params[:tell].match(/(true|t|yes|y|1)$/i) != nil)
 
     unless conversation = user_post.conversation
-      conversation = Conversation.create(:post_id => user_post.id, :user_id => asker.id, :publication_id => params[:publication_id])
+      post_id = user_post.parent.try(:id) || user_post.id
+      conversation = Conversation.create(:post_id => post_id, :user_id => asker.id, :publication_id => params[:publication_id])
       conversation.posts << user_post
     end
+    root_post = conversation.post
 
     if params[:interaction_type] == "4"
 
@@ -235,7 +237,7 @@ class FeedsController < ApplicationController
       unless correct.nil?
         response_post = asker.delay.app_response(user_post, correct, { 
           :response_text => response_text,
-          :link_to_parent => false,
+          :link_to_parent => root_post.is_question_post? ? false : true,
           :tell => tell,
           :conversation_id => conversation.id,
           :post_to_twitter => true,
@@ -252,8 +254,6 @@ class FeedsController < ApplicationController
         })
       end
     end
-
-    # puts "Response: #{response_post.text}"
 
     user_post.update_attributes({:requires_action => (user_post.is_ugc? ? true : false), :conversation_id => conversation.id}) if response_post
     render :json => response_post.present?
