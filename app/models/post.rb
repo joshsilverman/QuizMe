@@ -282,7 +282,8 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data m, asker, conversation_id = nil
-    u = User.find_or_create_by_twi_user_id(m.user.id, 
+    u = User.find_or_initialize_by_twi_user_id(m.user.id)
+    u.update_attributes(
       :twi_name => m.user.name,
       :name => m.user.name,
       :twi_screen_name => m.user.screen_name,
@@ -329,15 +330,13 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data d, asker
-    u = User.find_or_create_by_twi_user_id(d.sender.id,
-      :twi_name => d.sender.name,
-      :name => d.sender.name,
-      :twi_screen_name => d.sender.screen_name,
-      :twi_profile_img_url => d.sender.profile_image_url
+    u = User.find_or_initialize_by_twi_user_id(d.sender.id)
+    u.update_attributes(
+      twi_name: d.sender.name,
+      name: d.sender.name,
+      twi_screen_name: d.sender.screen_name,
+      twi_profile_img_url: d.sender.profile_image_url
     )
-
-    puts "in save dm data user = #{u.to_json}"
-    puts "dm = #{d.to_json}"
 
     in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, asker.id, asker.id, u.id)\
       .order("created_at DESC")\
@@ -393,7 +392,8 @@ class Post < ActiveRecord::Base
       post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", user.id, retweeted_post.id).first
       return if post
 
-      u = User.find_or_create_by_twi_user_id(user.id, 
+      u = User.find_or_initialize_by_twi_user_id(user.id)
+      u.update_attributes( 
         :twi_name => user.name,
         :name => user.name,
         :twi_screen_name => user.screen_name,
