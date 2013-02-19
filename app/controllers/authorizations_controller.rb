@@ -43,7 +43,7 @@ class AuthorizationsController < ApplicationController
 				if email # check if we have the email
 					user = find_or_create_oauth_by_email(email)
 				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
-					user = find_or_create_oauth_by_uid(uid) || find_or_create_oauth_by_provider_and_name(provider, name)
+					user = find_oauth_by_provider_and_uid(provider, uid) || find_or_create_oauth_by_provider_and_name(provider, name)
 				else
 					puts 'Provider #{provider} not handled'
 				end
@@ -56,7 +56,7 @@ class AuthorizationsController < ApplicationController
 		  end
 		  auth.update_attributes auth_attr
 		  user.update_attributes user_attr
-	
+
 	    user
 	  end  	
 
@@ -68,8 +68,10 @@ class AuthorizationsController < ApplicationController
 	    user
 	  end
 
-	  def find_or_create_oauth_by_uid uid
-	  	Authorization.find_by_uid(uid.to_s).try(:user)
+	  def find_oauth_by_provider_and_uid provider, uid
+	  	user = Authorization.find_by_uid(uid.to_s).try(:user)
+	  	user = User.find_by_twi_user_id(uid) if user.blank? and provider == "twitter" # legacy support for uid on user
+	  	user
 	  end
 	 
 	  def find_or_create_oauth_by_provider_and_name provider, name

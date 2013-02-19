@@ -193,6 +193,7 @@ class Post < ActiveRecord::Base
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = Post.twitter_request { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
+      puts "in tweet, sender = #{sender.to_json}"
       twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
     end
     if twitter_response
