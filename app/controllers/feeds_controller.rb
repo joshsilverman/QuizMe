@@ -3,6 +3,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
+    puts "yo bro"
     @index = true
     @asker = User.find(1)
     @post_id = params[:post_id]
@@ -111,6 +112,7 @@ class FeedsController < ApplicationController
         break if @stream.size >= 5
       end
     end
+    @stream.sort { |a, b| b.created_at <=> a.created_at }
     render :partial => "stream"
   end
 
