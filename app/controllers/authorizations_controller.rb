@@ -25,7 +25,7 @@ class AuthorizationsController < ApplicationController
 	      uid = auth_hash["uid"]
 	      name = auth_hash["info"]["name"]
 	      auth_attr = { :uid => uid, :token => auth_hash['credentials']['token'], :secret => auth_hash['credentials']['secret'], :name => name, :link => "http://twitter.com/#{name}" }
-	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :twi_name => auth_hash["info"]["name"], :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"], :twi_user_id => uid }
+	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :name => name, :twi_name => name, :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"], :twi_user_id => uid }
 	    when "facebook"
 	      uid = access_token['uid']
 	      email = access_token['extra']['user_hash']['email']
@@ -68,6 +68,8 @@ class AuthorizationsController < ApplicationController
 	    user
 	  end
 
+	  # In the future, should new users w/out tokens create an authorization?
+	  # Otherwise, we end up storing the uid on the User
 	  def find_oauth_by_provider_and_uid provider, uid
 	  	user = Authorization.find_by_uid(uid.to_s).try(:user)
 	  	user = User.find_by_twi_user_id(uid) if user.blank? and provider == "twitter" # legacy support for uid on user

@@ -285,6 +285,7 @@ class Post < ActiveRecord::Base
   def self.save_mention_data m, asker, conversation_id = nil
     u = User.find_or_create_by_twi_user_id(m.user.id, 
       :twi_name => m.user.name,
+      :name => m.user.name,
       :twi_screen_name => m.user.screen_name,
       :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
     )
@@ -331,6 +332,7 @@ class Post < ActiveRecord::Base
   def self.save_dm_data d, asker
     u = User.find_or_create_by_twi_user_id(d.sender.id,
       :twi_name => d.sender.name,
+      :name => d.sender.name,
       :twi_screen_name => d.sender.screen_name,
       :twi_profile_img_url => d.sender.profile_image_url
     )
@@ -391,6 +393,7 @@ class Post < ActiveRecord::Base
 
       u = User.find_or_create_by_twi_user_id(user.id, 
         :twi_name => user.name,
+        :name => user.name,
         :twi_screen_name => user.screen_name,
         :twi_profile_img_url => user.profile_image_url
       )
