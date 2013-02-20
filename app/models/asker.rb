@@ -679,7 +679,9 @@ class Asker < User
     ACCOUNT_DATA.each do |asker_id, asker_hash|
       asker = Asker.find(asker_id)
       next unless asker.published
-      post = Publication.where(:asker_id => asker_hash[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample.posts.statuses.sample
+      publication = Publication.where(:asker_id => asker_hash[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample
+      next unless publication
+      post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
       if Time.now.hour % 12 == 0
         Post.tweet(asker, "Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
