@@ -166,7 +166,7 @@ SEGMENT_HIERARCHY = {
 # UGLY TEMP SOLUTION!
 INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
 
-UNDER_CONSTRUCTION_HANDLES = []
+UNDER_CONSTRUCTION_HANDLES = [27857]
 
 ACCOUNT_DATA = {
   ## QuizMeBio
@@ -218,7 +218,7 @@ ACCOUNT_DATA = {
     :category => "Misc"
   },
   #QuizMePhysics
-  22741 => {
+  27857 => {
     :retweet => [26522, 8367, 7362, 326, 18, 19, 31, 108],
     :hashtags => ['physics'],
     :category => "Life Sciences"    
