@@ -24,7 +24,7 @@ class AuthorizationsController < ApplicationController
 	    when "twitter"
 	      uid = auth_hash["uid"]
 	      name = auth_hash["info"]["name"]
-	      auth_attr = { :uid => uid, :token => auth_hash['credentials']['token'], :secret => auth_hash['credentials']['secret'], :name => name, :link => "http://twitter.com/#{name}" }
+	      auth_attr = { :uid => uid, :token => auth_hash['credentials']['token'], :secret => auth_hash['credentials']['secret'], :name => name, :link => "http://twitter.com/#{auth_hash['info']['nickname']}" }
 	      user_attr = { :twi_screen_name => auth_hash["info"]["nickname"], :name => name, :twi_name => name, :twi_profile_img_url => auth_hash["extra"]["raw_info"]["profile_image_url"], :twi_oauth_token => auth_hash["credentials"]["token"], :twi_oauth_secret => auth_hash["credentials"]["secret"], :twi_user_id => uid }
 	    when "facebook"
 	      uid = access_token['uid']
@@ -36,7 +36,7 @@ class AuthorizationsController < ApplicationController
 
 	    if user = resource # user is already signed in	    	
 	    	if resource.is_role?('admin') and request.env["omniauth.params"]['update_asker_id'] # use proper devise roles!
-	    		update_twi_asker_attributes(request.env["omniauth.auth"], request.env["omniauth.params"]['update_asker_id'])
+	    		update_twi_asker_attributes(provider, request.env["omniauth.params"]['update_asker_id'], user_attr, auth_attr)
 	    		return
 	    	end
 	    else
@@ -86,16 +86,16 @@ class AuthorizationsController < ApplicationController
 	    user
 	  end
 
-	  def update_twi_asker_attributes auth, asker_id
+	  def update_twi_asker_attributes provider, asker_id, user_attr, auth_attr
 	  	asker = asker_id.to_i.zero? ? Asker.new : Asker.find(asker_id.to_i)
-	  	asker.update_attributes({
-				:twi_user_id => auth["uid"],
-				:twi_screen_name => auth["info"]["nickname"],
-				:twi_name => auth["info"]["name"],
-				:twi_profile_img_url => auth["extra"]["raw_info"]["profile_image_url"],
-				:twi_oauth_token => auth['credentials']['token'],
-				:twi_oauth_secret => auth['credentials']['secret']
-	  	})
+		  auth = asker.authorizations.find_by_provider(provider)
+		  if auth.nil?
+		    auth = asker.authorizations.build(:provider => provider)
+		    asker.authorizations << auth
+		  end
+		  auth.update_attributes auth_attr
+		  asker.update_attributes user_attr	  	
+
       redirect_to "/askers/#{asker.id}/edit"
 	  end
 end

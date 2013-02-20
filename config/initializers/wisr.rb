@@ -166,7 +166,7 @@ SEGMENT_HIERARCHY = {
 # UGLY TEMP SOLUTION!
 INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
 
-UNDER_CONSTRUCTION_HANDLES = [22741]
+UNDER_CONSTRUCTION_HANDLES = []
 
 ACCOUNT_DATA = {
   ## QuizMeBio
@@ -217,6 +217,12 @@ ACCOUNT_DATA = {
     :hashtags => ["vetmed", "veterinarian"],
     :category => "Misc"
   },
+  #QuizMePhysics
+  22741 => {
+    :retweet => [26522, 8367, 7362, 326, 18, 19, 31, 108],
+    :hashtags => ['physics'],
+    :category => "Life Sciences"    
+  },  
 
   ## SATvocabQuiz
   227 => {
@@ -368,11 +374,11 @@ ACCOUNT_DATA = {
     :category => "Math"
   },
   #QuizMeCalculus
-  22741 => {
-    :retweet => [24740, 14106, 19454, 12640, 18, 19, 31],
-    :hashtags => ['math', 'SAT', "SATprep, geometry"],
-    :category => "Math"    
-  },
+  # 22741 => {
+  #   :retweet => [24740, 14106, 19454, 12640, 18, 19, 31],
+  #   :hashtags => ['math', 'SAT', "SATprep, geometry"],
+  #   :category => "Math"    
+  # },
 
   #quimetwilight
   10572 => {
