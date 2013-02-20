@@ -48,7 +48,7 @@ class @Feed
 		modal.find(".modal-body").slideToggle(250, =>
 			modal.find(".message").hide()
 			modal.find(".question_form").show()
-		).delay(250).slideToggle(250)
+		).delay(250).slideToggle(250, => $("#question_input").focus())
 	activity_stream: =>
 		return unless $("#activity_stream_content").length > 0
 		$.ajax '/activity_stream',
@@ -103,6 +103,7 @@ class @Feed
 		# return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#question_input").val(text) if text
 		$("#post_question_modal").modal()
+		$("#question_input").focus()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
 		$("#submit_question").on "click", (e) => 
