@@ -675,6 +675,22 @@ class Asker < User
   end
 
 
+  def self.retweet_related
+    ACCOUNT_DATA.each do |asker_id, asker_hash|
+      asker = Asker.find(asker_id)
+      next unless asker.published
+      post = Publication.where(:asker_id => asker_hash[:retweet].sample, :published => true).order('updated_at DESC').limit(5).sample.posts.statuses.sample
+      Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
+      if Time.now.hour % 12 == 0
+        Post.tweet(asker, "Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
+          :intention => 'solicit ugc',
+          :interaction_type => 2
+        })
+      end        
+    end
+  end
+
+
   ## Author followup
 
   def self.send_author_followups
