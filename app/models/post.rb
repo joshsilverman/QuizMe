@@ -388,10 +388,6 @@ class Post < ActiveRecord::Base
     retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
     users.each do |user|
-
-      post = Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", user.id, retweeted_post.id).first
-      return if post
-
       u = User.find_or_initialize_by_twi_user_id(user.id)
       u.update_attributes( 
         :twi_name => user.name,
@@ -399,6 +395,8 @@ class Post < ActiveRecord::Base
         :twi_screen_name => user.screen_name,
         :twi_profile_img_url => user.profile_image_url
       )
+
+      return if Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).size > 0
 
       post = Post.create(
         :provider => 'twitter',
