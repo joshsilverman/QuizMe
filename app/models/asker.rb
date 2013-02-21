@@ -554,9 +554,7 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-          if answerer.enrolled_in_experiment? "reengagement tight intervals"
-            strategy = Post.create_split_test(answerer.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15") 
-          end
+          strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
           in_reply_to = "incorrect answer follow up" 
