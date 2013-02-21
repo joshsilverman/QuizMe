@@ -107,7 +107,7 @@ class PostsController < ApplicationController
     if publication.question.resource_url
       redirect_to publication.question.resource_url
     else
-      redirect_to "/feeds/#{publication.user_id}"
+      redirect_to "/feeds/#{publication.asker_id}"
     end
   end	
 
