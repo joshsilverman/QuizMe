@@ -256,7 +256,7 @@ class User < ActiveRecord::Base
 	end
 
 	def register_referrals 
-		followed_twi_user_ids = User.find_by_twi_screen_name("Wisr").twitter.friend_ids(twi_user_id).ids
+		followed_twi_user_ids = Post.twitter_request { User.find_by_twi_screen_name("Wisr").twitter.friend_ids(twi_user_id).ids } || [0]
 		referrers = User.not_asker.where("twi_user_id in (?)", followed_twi_user_ids)
 		if referrers.present?
 			referrers.each { |referrer| Post.trigger_split_test(referrer.id, "Post to twitter on app answer (follower joins)") }
@@ -392,7 +392,6 @@ class User < ActiveRecord::Base
 
 	def self.update_segments
 		User.find_in_batches(:conditions => ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS]) do |group| 
-			puts group.size
 			group.each { |user| user.segment }
 		end
 	end
