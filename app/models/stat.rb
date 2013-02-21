@@ -557,22 +557,18 @@ class Stat < ActiveRecord::Base
 
     # viral actions by day
     @viral_actions_by_date = Post.joins(:user).not_spam.not_us.social\
-          .where('provider_post_id IS NOT NULL')\
-          .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
-          .where("posts.created_at > ?", Date.today - domain)\
-          .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-          .group("to_char(posts.created_at, 'YY/MM/DD')")\
-          .count('posts.id')
+      .where('provider_post_id IS NOT NULL')\
+      .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
+      .where("posts.created_at > ?", Date.today - domain)\
+      .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
+      .group("to_char(posts.created_at, 'YY/MM/DD')")\
+      .count('posts.id')
 
     data = [['Date', 'Ratio']]
     @viral_actions_by_date.keys.sort.each do |date|
       viral_actions = @viral_actions_by_date[date] || 1
-      puts ""
-      puts "ratio: "
-      puts @user_ids_to_first_active[date].count.to_f
-      puts viral_actions
-      ratio = @user_ids_to_first_active[date].count.to_f / viral_actions
-      data << [Time.parse(date).strftime('%m/%d'), ratio]
+      new_users = @user_ids_to_first_active[date].count || 0
+      data << [Time.parse(date).strftime('%m/%d'), (new_users.to_f / viral_actions)]
     end
     data
   end
