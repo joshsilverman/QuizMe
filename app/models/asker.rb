@@ -205,9 +205,13 @@ class Asker < User
       recipient_data[:recipients].each do |user_hash|
         user = user_hash[:user]
         next unless follower_ids.include? user.twi_user_id
-        option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")       
-        # puts "sending reengagement to #{user.twi_screen_name} (interval = #{user_hash[:interval]})"
-        Post.tweet(asker, "#{option_text} #{question.text}", {
+        if Post.create_split_test(user.id, "Just question in reengagement tweet (answers)", "false", "true") == "false"
+          option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")
+          text = "#{option_text} #{question.text}"
+        else
+          text = question.text
+        end
+        Post.tweet(asker, text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
           :in_reply_to_user_id => user.id,
@@ -520,6 +524,7 @@ class Asker < User
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
+        Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
         strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
         in_reply_to = "reengage inactive"
       end
@@ -554,6 +559,7 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
+          Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
           strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
