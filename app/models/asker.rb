@@ -88,7 +88,7 @@ class Asker < User
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).present? or new_user_question.blank?
 
     response_text = "Here's your first question! #{new_user_question.text}"
-    response_text += " (#{new_user_question.answers.shuffle.collect {|a| a.text}.join('; ')})" if INCLUDE_ANSWERS.include? id
+    response_text += " (#{new_user_question.answers.shuffle.collect {|a| a.text}.join('; ')})" if (INCLUDE_ANSWERS.include?(id) and ((response_text + answers).size < 141))
 
     Post.dm(self, user, response_text, {:intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
@@ -266,7 +266,7 @@ class Asker < User
           :intention => "new user question mention",
           :posted_via_app => true,
           :requires_action => false,
-          :link_to_parent => false        
+          :link_to_parent => false     
         })
         Mixpanel.track_event "new user question mention", {
           :distinct_id => user.id, 
@@ -302,7 +302,8 @@ class Asker < User
         :interaction_type => 2,
         :link_to_parent => false,
         :link_type => "follow_up",
-        :intention => "incorrect answer follow up"
+        :intention => "incorrect answer follow up",
+        :include_answers => true
       })  
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
       sleep(1)

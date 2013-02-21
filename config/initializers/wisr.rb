@@ -163,7 +163,6 @@ SEGMENT_HIERARCHY = {
 #   "Do you have any of your own questions for the community? Share them here: {link}"
 # ]
 
-# UGLY TEMP SOLUTION!
 INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
 
 UNDER_CONSTRUCTION_HANDLES = [27857]

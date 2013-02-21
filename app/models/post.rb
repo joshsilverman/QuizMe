@@ -159,24 +159,14 @@ class Post < ActiveRecord::Base
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
     tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
-    if options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1)
-      if INCLUDE_ANSWERS.include? options[:sender_id]
-        text += " #{options[:answers]}"
-      elsif Post.create_split_test(options[:recipient_id], "include answers in reengagement tweet (activity segment +)", "false", "true") == "true"
-        text += " #{options[:answers]}"
-      end
-    end
+    text += " #{options[:answers]}" if (options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1))
     tweet_format.map! { |entity| entity != :text ? entity : text.size > max_text_length ? "#{text[0..(max_text_length - 3)]}..." : text }.join " "
   end
 
-  def self.tweet(sender, text, options = {}, post = nil)
+  def self.tweet sender, text, options = {}, post = nil, answers = nil
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name) if options[:long_url]
     short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", sender.twi_screen_name, options[:wisr_question]) if options[:resource_url]
-
-    answers = nil
-    if options[:publication_id].present? and (options[:include_answers].present? or INCLUDE_ANSWERS.include? sender.id)
-      answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})"
-    end
+    answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})" if (options[:publication_id].present? and options[:include_answers])
 
     tweet = Post.format_tweet(text, {
       :in_reply_to_user => options[:reply_to],
@@ -189,6 +179,7 @@ class Post < ActiveRecord::Base
       :recipient_id => options[:in_reply_to_user_id],
       :sender_id => sender.id
     })
+
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
       twitter_response = Post.twitter_request { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
@@ -233,6 +224,7 @@ class Post < ActiveRecord::Base
     end
 
     text = "#{text} #{short_url}" if options[:include_url] and short_url
+
     begin
       res = Post.twitter_request { sender.twitter.direct_message_create(recipient.twi_user_id, text) }
       post = Post.create(
