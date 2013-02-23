@@ -159,6 +159,14 @@ class Post < ActiveRecord::Base
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
     tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
+
+    #adjust max text length for backlinks which will be wrapped with t.co
+    short_url_length = 22 # variable occasionally increased by twitter: https://api.twitter.com/1/help/configuration.json
+    [:question_backlink, :resource_backlink, :url].each do |key|
+      next unless options[key].present?
+      max_text_length = max_text_length + options[key].length - short_url_length
+    end
+
     text += " #{options[:answers]}" if (options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1))
     tweet_format.map! { |entity| entity != :text ? entity : text.size > max_text_length ? "#{text[0..(max_text_length - 3)]}..." : text }.join " "
   end
