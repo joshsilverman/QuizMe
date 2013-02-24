@@ -52,10 +52,12 @@ class Dashboard
         type: "GET"
         success: (e) => 
           $(".tab-content ##{party}").html(e)
-          this[graph] = $.parseJSON($("##{graph}_data").val())
-          this["draw_#{graph}"]()
-          $(".graphs > div").hide()
-          $("##{ party }, .graphs .#{graph}").show()
+          this[graph] = $.parseJSON($("#data").val())
+          draw_func = this["draw_#{graph}"]
+          if draw_func
+            draw_func()
+          else
+            this.draw_generic this[graph], 'ColumnChart'
 
           $(".dashboard .nav a").parent().removeClass "active"
           $(".dashboard .nav a[href=#{ target }]").parent().addClass "active"
@@ -187,48 +189,48 @@ class Dashboard
 
   draw_handle_activity: =>
     graph_data = google.visualization.arrayToDataTable(@handle_activity)
-    chart = new google.visualization.ColumnChart(document.getElementById("handle_activity_graph"))
+    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
     chart.draw graph_data, handle_activity_options  
 
   draw_cohort: =>
     graph_data = google.visualization.arrayToDataTable(@cohort)
-    chart = new google.visualization.AreaChart(document.getElementById("cohort_graph"))
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
     chart.draw graph_data, cohort_options      
 
   draw_ugc: => 
     graph_data = google.visualization.arrayToDataTable(@ugc)
-    chart = new google.visualization.LineChart(document.getElementById("ugc_graph"))
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options 
 
   draw_questions_answered: =>
     graph_data = google.visualization.arrayToDataTable(@questions_answered)
-    chart = new google.visualization.LineChart(document.getElementById("questions_graph"))
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options          
 
   draw_learner_levels: =>
     graph_data = google.visualization.arrayToDataTable(@learner_levels)
-    chart = new google.visualization.PieChart(document.getElementById("learner_levels_graph"))
+    chart = new google.visualization.PieChart(document.getElementById("graph"))
     chart.draw graph_data, learner_levels_options 
 
   draw_answer_source: =>
     graph_data = google.visualization.arrayToDataTable(@answer_source)
-    chart = new google.visualization.AreaChart(document.getElementById("answer_source_graph"))
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
     chart.draw graph_data, cohort_options 
 
   draw_lifecycle: =>
     graph_data = google.visualization.arrayToDataTable(@lifecycle)
-    chart = new google.visualization.AreaChart(document.getElementById("lifecycle_graph"))
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
     chart.draw graph_data, cohort_options 
 
   draw_age_v_reengagement_v_response_rate: =>
     graph_data = google.visualization.arrayToDataTable(@age_v_reengagement_v_response_rate)
-    chart = new google.visualization.ColumnChart(document.getElementById("age_v_reengagement_v_response_rate_graph"))
+    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
     chart.draw graph_data, age_v_reengagement_v_response_rate_graph_options
 
   draw_days_since_active_when_reengaged_v_response_rate: =>
     graph_data = google.visualization.arrayToDataTable(@days_since_active_when_reengaged_v_response_rate)
-    chart = new google.visualization.ColumnChart(document.getElementById("days_since_active_when_reengaged_v_response_rate_graph"))
-    chart.draw graph_data, days_since_active_when_reengaged_v_response_rate_graph_options 
+    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
+    chart.draw graph_data, generic_ColumnChart_options 
 
   draw_days_since_active_v_number_of_reengagement_attempts: =>
     graph_data = new google.visualization.DataTable()
@@ -238,18 +240,25 @@ class Dashboard
     graph_data.addColumn 'number', 'Reengagements (inactive user)'
     graph_data.addColumn type: 'number', role: 'tooltip'
     graph_data.addRows @days_since_active_v_number_of_reengagement_attempts
-    chart = new google.visualization.ScatterChart(document.getElementById("days_since_active_v_number_of_reengagement_attempts_graph"))
+    chart = new google.visualization.ScatterChart(document.getElementById("graph"))
     chart.draw graph_data, days_since_active_v_number_of_reengagement_attempts_graph_options 
   
   draw_age_v_days_since_active: =>
     graph_data = google.visualization.arrayToDataTable(@age_v_days_since_active)
-    chart = new google.visualization.ScatterChart(document.getElementById("age_v_days_since_active_graph"))
+    chart = new google.visualization.ScatterChart(document.getElementById("graph"))
     chart.draw graph_data, age_v_days_since_active_graph_options 
 
   draw_viral_actions_v_new_users: =>
     graph_data = google.visualization.arrayToDataTable(@viral_actions_v_new_users)
-    chart = new google.visualization.LineChart(document.getElementById("viral_actions_v_new_users_graph"))
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, age_v_days_since_active_graph_options
+
+  draw_generic: (data, type) =>
+    data = google.visualization.arrayToDataTable(data)
+    chart = new google.visualization[type](document.getElementById("graph"))
+    chart.draw data, window["generic_#{type}_options"]
+    puts window["generic_#{type}_options"]
+    puts "generic_#{type}_options"
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -472,7 +481,7 @@ age_v_reengagement_v_response_rate_graph_options =
      2:
       targetAxisIndex:1
 
-days_since_active_when_reengaged_v_response_rate_graph_options = 
+window.generic_ColumnChart_options =
   width: 860
   height: 500
   legend: "none"

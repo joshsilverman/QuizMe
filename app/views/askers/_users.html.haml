@@ -42,6 +42,10 @@
       %a{:href => "#users-age_v_days_since_active"} 
         Age v Days since active
         %span.loading.hide= image_tag "ajax-loader.gif"
+    %li
+      %a{:href => "#users-avg_lifecycle"} 
+        Average Lifecycle
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
     %li
       %a.heading
@@ -64,61 +68,7 @@
         %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
-    .cohort
-      #data_row.row
-        #cohort.panel
-          #cohort_graph.graph
-      = hidden_field_tag :cohort_data, @cohort.to_json if @cohort
-
-    .questions_answered
-      #data_row.row
-        #questions.panel
-          #questions_graph.graph
-      = hidden_field_tag :questions_answered_data, @questions_answered_data.to_json if @questions_answered_data
-
-    .viral_actions_v_new_users
-      #data_row.row
-        #viral_actions_v_new_users.panel
-          #viral_actions_v_new_users_graph.graph
-      = hidden_field_tag :viral_actions_v_new_users_data, @viral_actions_v_new_users_data.to_json if @viral_actions_v_new_users_data
-
-    .learner_levels{:style => "height: 600px;"}
-      #data_row.row
-        #learner_levels.panel
-          #learner_levels_graph.graph
-      = hidden_field_tag :learner_levels_data, @learner_levels_data.to_json if @learner_levels_data
-
-    .answer_source
-      #data_row.row
-        #answer_source.panel
-          #answer_source_graph.graph
-      = hidden_field_tag :answer_source_data, @answer_source_data.to_json if @answer_source_data
-
-    .lifecycle
-      #data_row.row
-        #lifecycle.panel
-          #lifecycle_graph.graph
-      = hidden_field_tag :lifecycle_data, @lifecycle_data.to_json if @lifecycle_data
-
-    .age_v_reengagement_v_response_rate
-      #data_row.row
-        #age_v_reengagement_v_response_rate.panel
-          #age_v_reengagement_v_response_rate_graph.graph
-      = hidden_field_tag :age_v_reengagement_v_response_rate_data, @age_v_reengagement_v_response_rate_data.to_json if @age_v_reengagement_v_response_rate_data
-
-    .days_since_active_when_reengaged_v_response_rate
-      #data_row.row
-        #days_since_active_when_reengaged_v_response_rate.panel
-          #days_since_active_when_reengaged_v_response_rate_graph.graph
-      = hidden_field_tag :days_since_active_when_reengaged_v_response_rate_data, @days_since_active_when_reengaged_v_response_rate_data.to_json if @days_since_active_when_reengaged_v_response_rate_data      
-    .days_since_active_v_number_of_reengagement_attempts
-      #data_row.row
-        #days_since_active_v_number_of_reengagement_attempts.panel
-          #days_since_active_v_number_of_reengagement_attempts_graph.graph
-      = hidden_field_tag :days_since_active_v_number_of_reengagement_attempts_data, @days_since_active_v_number_of_reengagement_attempts_data.to_json if @days_since_active_v_number_of_reengagement_attempts_data
-
-    .age_v_days_since_active
-      #data_row.row
-        #age_v_days_since_active.panel
-          #age_v_days_since_active_graph.graph
-      = hidden_field_tag :age_v_days_since_active_data, @age_v_days_since_active_data.to_json if @age_v_days_since_active_data
+    #data_row.row
+      .panel
+        #graph.graph
+    = hidden_field_tag :data, @data.to_json if @data

@@ -115,34 +115,12 @@ class AskersController < ApplicationController
   def graph
     @domain = params[:domain].to_i || 30
 
-    #user
-    if params[:graph] == 'cohort'
-      @cohort = Stat.cohort_analysis
-    elsif params[:graph] == 'ugc'
-      @ugc_data = Stat.ugc
-    elsif params[:graph] == 'questions_answered'
-      @questions_answered_data = Stat.questions
-    elsif params[:graph] == 'viral_actions_v_new_users'
-      @viral_actions_v_new_users_data = Stat.viral_actions_v_new_users @domain
-    elsif params[:graph] == 'learner_levels'
-      @learner_levels_data = Stat.learner_levels
-    elsif params[:graph] == 'answer_source'
-      @answer_source_data = Stat.answer_source
-    elsif params[:graph] == 'lifecycle'
-      @lifecycle_data = Stat.lifecycle
-    elsif params[:graph] == 'age_v_reengagement_v_response_rate'
-      @age_v_reengagement_v_response_rate_data = Stat.age_v_reengagement_v_response_rate
-    elsif params[:graph] == 'days_since_active_when_reengaged_v_response_rate'
-      @days_since_active_when_reengaged_v_response_rate_data = Stat.days_since_active_when_reengaged_v_response_rate
-    elsif params[:graph] == 'days_since_active_v_number_of_reengagement_attempts'
-      @days_since_active_v_number_of_reengagement_attempts_data = Stat.days_since_active_v_number_of_reengagement_attempts
-    elsif params[:graph] == 'age_v_days_since_active'
-      @age_v_days_since_active_data = Stat.age_v_days_since_active
-
-    #asker graphs
-    elsif params[:graph] == 'handle_activity'
-      @handle_activity = Stat.handle_activity
+    begin
+      name = "graph_#{params[:graph]}"
+      @data = Stat.send name, @domain
+    rescue
     end
+    
     render :partial => params[:party]
   end
 end

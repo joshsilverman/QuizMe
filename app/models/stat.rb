@@ -256,7 +256,7 @@ class Stat < ActiveRecord::Base
     display_data
   end
 
-  def self.handle_activity(handle_activity = {}, graph_data = [])
+  def self.graph_handle_activity domain = 30, handle_activity = {}, graph_data = []
     # y axis label
     # revert active
     title_row = ['Handle']
@@ -281,7 +281,7 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-	def self.cohort_analysis(grouped_posts = {}, graph_data = [])
+	def self.graph_cohort domain = 30, grouped_posts = {}, graph_data = []
     title_row = ["Week"]
     start_day = 8.weeks.ago.to_date
     domain = 4.weeks.ago.to_date
@@ -305,7 +305,7 @@ class Stat < ActiveRecord::Base
     return graph_data
 	end
 
-  def self.questions(domain = 60)
+  def self.graph_questions_answered(domain = 60)
     # Median
     graph_data = [["Date", "Wisr answers", "Twitter answers"]]
     wisr_day_grouped_answers = Post.social.not_us.not_spam\
@@ -346,7 +346,7 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-  def self.ugc(domain = 30)
+  def self.graph_ugc domain = 30
     graph_data = [["Date", "# Created"]]
     day_grouped_questions = Question.where("created_at > ?", domain.days.ago)\
       .not_us\
@@ -361,7 +361,7 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-  def self.answer_source(domain = 8)
+  def self.graph_answer_source domain = 8
     graph_data = [["Date", "Wisr", "Twitter"]]
     off_site = Post.where("created_at > ? and correct is not null and posted_via_app = ?", domain.weeks.ago, false)\
       .group("to_char(created_at, 'MM-DD')")\
@@ -379,7 +379,7 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-  def self.lifecycle
+  def self.graph_lifecycle domain = 30
     transitions_to_segment_by_day = {}
     [0, 1, 2, 3, 4, 5, 6].each do |to_segment|  
       i = to_segment
@@ -410,7 +410,7 @@ class Stat < ActiveRecord::Base
     data_r = [['Date', 0, 1, 2, 3, 4, 5, 6]] + data_r
   end
 
-  def self.learner_levels
+  def self.graph_learner_levels domain = 30
     graph_data = [['learner level', 'users']]
     LEARNER_LEVELS.each do |level|
       next if level == "unengaged"
@@ -419,7 +419,7 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-  def self.age_v_reengagement_v_response_rate
+  def self.graph_age_v_reengagement_v_response_rate domain = 30
     #post.where(intention: 'reengage inactive').select(['id']).collect &:id
     reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
     reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
@@ -458,7 +458,7 @@ class Stat < ActiveRecord::Base
     data
   end
 
-  def self.days_since_active_when_reengaged_v_response_rate
+  def self.graph_days_since_active_when_reengaged_v_response_rate domain = 30
     reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
     reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
     user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
@@ -501,7 +501,7 @@ class Stat < ActiveRecord::Base
     data
   end
 
-  def self.days_since_active_v_number_of_reengagement_attempts
+  def self.graph_days_since_active_v_number_of_reengagement_attempts domain = 30
     user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
       .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at),',') AS created_ats"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
@@ -529,7 +529,7 @@ class Stat < ActiveRecord::Base
     data
   end
 
-  def self.age_v_days_since_active
+  def self.graph_age_v_days_since_active domain = 30
     user_ids_to_last_active = Hash[*Post.not_us.not_spam\
       .where("created_at > ?", Time.now - 180.days)\
       .where("correct IS NOT NULL")\
@@ -547,7 +547,7 @@ class Stat < ActiveRecord::Base
     data
   end
 
-  def self.viral_actions_v_new_users domain = 30
+  def self.graph_viral_actions_v_new_users domain = 30
 
     # new users by day
     @user_ids_to_first_active = Post.not_us.not_spam\
@@ -569,6 +569,44 @@ class Stat < ActiveRecord::Base
       viral_actions = @viral_actions_by_date[date] || 1
       new_users = @user_ids_to_first_active[date].count || 0
       data << [Time.parse(date).strftime('%m/%d'), (new_users.to_f / viral_actions)]
+    end
+    data
+  end
+
+  def self.graph_avg_lifecycle domain = 30
+    user_ids_to_last_active = Hash[*Post.not_us.not_spam\
+      .select(["user_id","max(created_at) AS most_recent_created_at"]).group('user_id').map{|p|[p.user_id, Time.parse(p.most_recent_created_at)]}.flatten]
+      # .where("correct IS NOT NULL")\
+      # .where("created_at > ?", Time.now - 180.days)\
+
+    user_ids_to_first_post_created_ats = Hash[*Post.not_spam.not_us\
+      .select(["user_id", "min(created_at) as first_active_at"])\
+      .group("user_id").map{|p| [p.user_id, Time.parse(p.first_active_at)]}.flatten]
+
+    avg_lifecycle_by_birth = {}
+    med_lifecycle_by_birth = {}
+    lifecycles_by_birth = {}
+    user_ids_to_first_post_created_ats.each do |user_id, birth|
+      next if birth < Date.today - domain.days
+
+      birth_date = Time.at((birth.to_f / 1.day).round * 1.day)
+      lifecycles_by_birth[birth_date] ||= []
+      diff = user_ids_to_last_active[user_id] - birth
+      lifecycles_by_birth[birth_date] << diff / 1.day
+    end
+    lifecycles_by_birth.each do |birth, lifecycles| 
+      avg_lifecycle_by_birth[birth] =  lifecycles.sum / lifecycles.count.to_f
+
+      arr = lifecycles
+      len = arr.length
+      sorted = arr.sort
+      median = len % 2 == 1 ? sorted[len/2] : (sorted[len/2 - 1] + sorted[len/2]).to_f / 2
+      med_lifecycle_by_birth[birth] =  median
+    end
+
+    data = [['Date', 'Avg', 'Med']]
+    avg_lifecycle_by_birth.keys.sort.each do |birth|
+      data << [birth.strftime("%m-%d"), avg_lifecycle_by_birth[birth], med_lifecycle_by_birth[birth]]
     end
     data
   end
