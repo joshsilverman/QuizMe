@@ -487,7 +487,7 @@ class Post < ActiveRecord::Base
     Post.grader.grade post
   end
 
-  def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str
+  def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
     return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     
     value = nil
