@@ -310,8 +310,11 @@ class FeedsController < ApplicationController
 
   def manage
     #base selection
-    @asker = Asker.find params[:id]
-    @posts = Post.includes(:tags, :user, :conversation => :posts).not_spam.not_us.where("posts.in_reply_to_user_id = ?", params[:id])
+    @posts = Post.includes(:tags, :user, :conversation => :posts).not_spam.not_us
+    if params[:id]
+      @asker = Asker.find params[:id]
+      @posts = @posts.where("posts.in_reply_to_user_id = ?", params[:id])
+    end
 
     @linked_box_count = @posts.linked_box.count
     @unlinked_box_count = @posts.unlinked_box.count
@@ -338,9 +341,18 @@ class FeedsController < ApplicationController
 
     @tags = Tag.all
     @posts = @posts.order("posts.created_at DESC")
-    @questions = @asker.publications.where(:published => true)\
-      .order("created_at DESC").includes(:question => :answers).limit(100)
-    @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
+
+    if @asker
+      @questions = @asker.publications.where(:published => true)\
+        .order("created_at DESC").includes(:question => :answers).limit(100)
+      @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
+    else
+      @questions = []
+      @engagements, @conversations = Post.grouped_as_conversations @posts
+      @asker = User.find 8765
+      @oneinbox = true
+      @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+    end
   end
 
   def create_split_test

@@ -24,7 +24,7 @@ class @Manager extends @Feed
 		@id = $("#feed_id").val()
 		@correct = $("#correct").val()
 		@conversations = $.parseJSON($("#conversations").val())
-		@engagements = $.parseJSON($("#engagements").val())
+		@engagements = window.engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
 		# @initialize_character_count()
 		@initialize_ask()
@@ -165,6 +165,9 @@ class Post
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"))
 
+		if window.engagements[@id]
+			@asker_id = window.engagements[@id]['in_reply_to_user_id']
+
 		@element.find(".show_move").on "click", =>
 			@element.find(".show_move").hide()
 			@element.find(".move").show()
@@ -248,7 +251,7 @@ class Post
 			$("#tweet").button("loading")
 			params =
 				"interaction_type" : post.attr "interaction_type"
-				"asker_id" : window.feed.id
+				"asker_id" : @asker_id
 				"in_reply_to_post_id" : @id
 				"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
 				"message" : tweet
@@ -301,10 +304,9 @@ class Post
 
 		publication_id = null
 		publication_id = parent_post['publication_id'] unless parent_post == undefined
-
 		params =
 			"interaction_type" : post.attr "interaction_type"
-			"asker_id" : window.feed.id
+			"asker_id" : @asker_id
 			"in_reply_to_post_id" : @id
 			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
 			# "message" : tweet
@@ -389,7 +391,7 @@ class Post
 			type: 'POST',
 			data:
 				"post_id" : @id
-				"asker_id" : asker_id
+				"asker_id" : @asker_id
 			complete: => 
 				$("#retweet_question_modal").modal('hide')	
 				$('#retweet_question').button('reset')
