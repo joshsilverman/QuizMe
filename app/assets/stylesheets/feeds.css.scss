@@ -1246,6 +1246,28 @@ body {
 			}
 
 			.conversation {
+				.content {
+					p {
+						padding:2px 0px;
+					}
+				}
+
+				.actions {
+					/*float:none;*/
+					/*background: #eee;*/
+					padding-top:4px;
+					padding-bottom:20px;
+					padding-left: 48px;
+
+					div:first-child {
+						margin-left:10px;
+					}
+
+
+					.linked {
+						float:left;
+					}
+				}
 				.post_actions {
 					visibility:hidden;
 				}

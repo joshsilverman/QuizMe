@@ -50,6 +50,7 @@
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
 						- @engagements.each do |id, post|
+
 							/ quick reply vars
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
@@ -57,14 +58,6 @@
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
-									#classify
-										- if post.autospam
-											%i.icon-warning-sign
-										%a.label= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
-										/ %a.label love
-										/ %a.label ugc
-										/ %a.label negative
-										/ %a.label idea
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
@@ -73,29 +66,57 @@
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 
-										%p= post.text
+										%p= "Text: #{post.text})"
+										%p.quick-reply= "Correct: #{correct.text})" if correct
 										
-										/ quick reply
+									/ common actions
+									.actions
 										- if question
-											%p
-												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} 
-													= "&nbsp;".html_safe if post.autocorrect
-													yes
-												|
-												%a.quick-reply-no{:class => "#{'icon-arrow-right' if post.autocorrect == false}"} 
-													= "&nbsp;".html_safe if post.autocorrect == false
-													no
-													&nbsp;
-												|
-												%a.quick-reply-tell
-													tell
-												%span.quick-reply
-													= "(answer: #{correct.text})" if correct
-										.post_actions
-											- if params[:filter] == 'ugc'
-												= render :partial => "ugc_actions", :locals => {:post => post}
-											- else
-												= render :partial => "default_actions", :locals => {:post => post}
+											.btn-group.linked
+												%a.btn.btn-mini.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"} yes
+												%a.btn.btn-mini.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"} no
+												%a.btn.btn-mini.quick-reply-tell tell
+													
+										.btn-group
+											%a.btn.btn-mini= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
+
+											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
+												%a.link_post.btn.btn-mini
+													/ %i.icon-wrench
+													unlink
+											- else 
+												%a.link_post.btn.btn-mini
+													/ %i.icon-wrench
+													link
+
+											%a.btn.btn-mini.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} 
+												/ %i.icon-tag
+												tag
+											%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+												%li
+													- tags = post.tags.collect(&:name)
+													- @tags.each do |tag|
+														%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
+
+											/ %a.btn.btn-mini.dropdown-toggle
+											/	 %i.icon-tag
+											/ 	move
+											/ %a.move{:style => "display: none;"}
+											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
+
+										.btn-group
+											%a.btn.btn-mini
+												/ %i.icon-eye-close
+												= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+											%a.btn.btn-mini.retweet{:style => "margin-left: 0px;"}
+												/ %i.icon-retweet
+												retweet
+
+									.post_actions
+										- if params[:filter] == 'ugc'
+											= render :partial => "ugc_actions", :locals => {:post => post}
+										- else
+											= render :partial => "default_actions", :locals => {:post => post}
 
 
 = render :partial => "respond_modal"
