@@ -527,7 +527,7 @@ class Post < ActiveRecord::Base
     ab_test(test_name, *alternatives)
   end
 
-  def self.grouped_as_conversations posts, asker, engagements = {}, conversations = {}, dm_ids = []
+  def self.grouped_as_conversations posts, asker = nil, engagements = {}, conversations = {}, dm_ids = []
     return {}, {} if posts.blank?
 
     posts.each do |post|
@@ -536,7 +536,13 @@ class Post < ActiveRecord::Base
       conversations[post.id][:users][post.user.id] = post.user      
       parent_publication = nil
       if post.interaction_type == 4
-        dm_history = Post.where("interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker.id, post.user_id, post.user_id, asker.id).order("created_at DESC")
+        if asker.nil?
+          asker_id = post.in_reply_to_user_id
+        else
+          asker_id = asker.id
+        end
+
+        dm_history = Post.where("interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, post.user_id, post.user_id, asker_id).order("created_at DESC")
         dm_history.each do |dm|
           conversations[post.id][:posts] << dm
           conversations[post.id][:users][dm.user.id] = dm.user if conversations[post.id][:users][dm.user.id].nil?

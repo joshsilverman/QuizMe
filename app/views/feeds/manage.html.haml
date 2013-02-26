@@ -70,6 +70,9 @@
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
 										%h5= post.user.twi_screen_name	
+										- if @oneinbox
+											→ #{@askers_by_id[post.in_reply_to_user_id]}
+
 										%p= post.text
 										
 										/ quick reply
