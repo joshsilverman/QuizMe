@@ -290,7 +290,8 @@ class Asker < User
       # should ensure only one tweet per user as well here?
       next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
       incorrect_post = posts.sample
-      question = incorrect_post.conversation.publication.question
+      publication = incorrect_post.conversation.publication
+      question = publication.question
       asker = User.askers.find(incorrect_post.in_reply_to_user_id)
       Post.tweet(asker, "Try this one again: #{question.text}", {
         :reply_to => incorrect_post.user.twi_screen_name,
@@ -298,6 +299,7 @@ class Asker < User
         # :in_reply_to_post_id => incorrect_post.id,
         :in_reply_to_user_id => user_id,
         # :conversation_id => incorrect_post.conversation_id,
+        :publication_id => publication.id,
         :posted_via_app => true, 
         :requires_action => false,
         :interaction_type => 2,
