@@ -26,8 +26,9 @@ class @Feed
 		$(".timeago").timeago()
 
 		$(".post_question").on "click", (e) =>
-			e.preventDefault()
-			@post_question()
+			if $("#user_name").val() != undefined
+				e.preventDefault()
+				@post_question()
 
 		@post_question() if $("#question_form").val() == "true"
 

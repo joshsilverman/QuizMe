@@ -11,7 +11,11 @@ class ApplicationController < ActionController::Base
         if omniauth_redirect_params['feed_id'] == "1"
           redirect_to = "/feeds/index/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
         else
-          redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
+          if omniauth_redirect_params["q"] == "1"
+            redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}?q=1"
+          else
+            redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
+          end
         end      
       else
         redirect_to = request.env['omniauth.origin']

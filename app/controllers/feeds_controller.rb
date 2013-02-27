@@ -26,48 +26,52 @@ class FeedsController < ApplicationController
   end
 
   def show
-    if @asker = Asker.find(params[:id])
-
-      # publications, posts and user responses
-      @publications, posts, actions = Publication.recently_published_by_asker(@asker)
-
-      # user specific responses
-      @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
-
-      # question activity
-      @actions = Post.recent_activity_on_posts(posts, actions)
-
-      # inject requested publication from params, render twi card
-      if params[:post_id]
-        @requested_publication = @asker.publications.find(params[:post_id])
-        @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
-        @render_twitter_card = true
-      else
-        @render_twitter_card = false     
-      end
-
-      # stats
-      @question_count = @asker.publications.select(:id).where(:published => true).size
-      @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-      @followers = @asker.followers.size
-      
-      # misc
-      @post_id = params[:post_id]
-      @answer_id = params[:answer_id]
-      @author = User.find @asker.author_id if @asker.author_id
-
-      # related
-      @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-        .where(:id => ACCOUNT_DATA.keys.sample(3))
-
-      @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
-
-      respond_to do |format|
-        format.html # show.html.erb
-        format.json { render json: @posts }
-      end
+    if !current_user and params[:q] == "1" and params[:id]
+      redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => true)
     else
-      redirect_to "/"
+      if @asker = Asker.find(params[:id])
+
+        # publications, posts and user responses
+        @publications, posts, actions = Publication.recently_published_by_asker(@asker)
+
+        # user specific responses
+        @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+
+        # question activity
+        @actions = Post.recent_activity_on_posts(posts, actions)
+
+        # inject requested publication from params, render twi card
+        if params[:post_id]
+          @requested_publication = @asker.publications.find(params[:post_id])
+          @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
+          @render_twitter_card = true
+        else
+          @render_twitter_card = false     
+        end
+
+        # stats
+        @question_count = @asker.publications.select(:id).where(:published => true).size
+        @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
+        @followers = @asker.followers.size
+        
+        # misc
+        @post_id = params[:post_id]
+        @answer_id = params[:answer_id]
+        @author = User.find @asker.author_id if @asker.author_id
+
+        # related
+        @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+          .where(:id => ACCOUNT_DATA.keys.sample(3))
+
+        @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
+
+        respond_to do |format|
+          format.html # show.html.erb
+          format.json { render json: @posts }
+        end
+      else
+        redirect_to "/"
+      end
     end
   end
 
