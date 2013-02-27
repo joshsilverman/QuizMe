@@ -99,6 +99,21 @@ class PostsController < ApplicationController
     end
         
     @tags = Tag.all
+
+    # if @asker
+    #   @questions = @asker.publications.where(:published => true)\
+    #     .order("created_at DESC").includes(:question => :answers).limit(100)
+    #   @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
+    # else
+    #   @questions = []
+      @engagements, @conversations = Post.grouped_as_conversations @posts
+      # puts @engagements.to_json
+      # puts @conversations.to_json
+    #   @asker = User.find 8765
+    #   @oneinbox = true
+    #   @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+    # end
+
     render 'feeds/tags'
   end
 

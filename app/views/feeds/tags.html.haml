@@ -43,10 +43,7 @@
 										/ 	= render :partial => "feeds/default_actions", :locals => {:post => post}
 
 
-/ = render :partial => "feeds/respond_modal"
-/ = render :partial => "link_post_modal"
-/ = render :partial => "retweet_modal"
-/ = render :partial => "question_modal"
+= render :partial => "feeds/respond_modal"
 
 / #confirm.modal.hide
 / 	.modal-header
@@ -81,16 +78,16 @@
 / 		.tweet_button.btn.btn-primary Tweet!
 / 	.shadow-bottom
 
-/ #subsidiary_template.post{:style => "display: none;"}
-/ 	.content
-/ 		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
-/ 		%h5= "User Name"
-/ 		%p= "Post content"
+#subsidiary_template.post{:style => "display: none;"}
+	.content
+		= image_tag(current_user.twi_profile_img_url, :class => "rounded")							
+		%h5= "User Name"
+		%p= "Post content"
 
 / = hidden_field_tag :feed_id, @asker.id
 / = hidden_field_tag :feed_name, @asker.twi_screen_name
-/ = hidden_field_tag :conversations, @conversations.to_json
-/ = hidden_field_tag :engagements, @engagements.to_json
+= hidden_field_tag :conversations, @conversations.to_json
+= hidden_field_tag :engagements, @engagements.to_json
 / = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 / = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
 
