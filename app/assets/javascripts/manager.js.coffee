@@ -39,6 +39,8 @@ class @Manager extends @Feed
 			$("#respond_modal #tweet").removeClass("disabled")
 			$(".response_container .character_count").text(140)
 			$(".response_container .character_count").css "color", "#333"
+			document.activeElement.blur()
+			
 		$("#unlink_post").on "click", => 
 			$("#unlink_post").button("loading")
 			window.current_post.unlink_post()
