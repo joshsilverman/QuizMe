@@ -26,14 +26,11 @@ class @Manager extends @Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = window.engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
-		# @initialize_character_count()
 		@initialize_ask()
-		# @tags.push(tag.name) for tag in $.parseJSON($("#tags").val())
 
 		$('.best_in_place').on "ajax:success", ->
-			if $(this).data("type") == "checkbox"
-				conversation = $(this).parents(".conversation")
-				if conversation.css("opacity") == "1" then conversation.css("opacity", 0.8) else conversation.css("opacity", 1)
+			alert('broken success callback - this does not fire')
+
 		$("#respond_modal").on "hidden", => 
 			$("#respond_modal").find("textarea").val("")
 			$("#respond_modal").find(".correct").removeClass("active")
@@ -47,7 +44,7 @@ class @Manager extends @Feed
 			window.current_post.unlink_post()
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
-			$.grep(@posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet(@id)
+			$.grep(@posts, (p) -> return p.id == $(e.target).attr('post_id'))[0].retweet()
 		$(".mark_ugc").on "click", (e) => 
 			$.grep(@posts, (p) -> return p.id == $(e.target).parents(".post").first().attr 'post_id')[0].mark_ugc()
 		$(".tag_post").on "click", (e) => 
@@ -61,7 +58,13 @@ class @Manager extends @Feed
 				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
 		$("#add_tag .btn").on "click", (e) => @add_tag(e)
 
-	initialize_posts: (posts) => @posts.push(new Post post) for post in posts		
+		@hotkeys = new Hotkeys
+
+	initialize_posts: (posts) => 
+		$.each posts, (i, post) =>
+			id = parseInt $(post).children('.post').attr('post_id')
+			active_record = window.engagements[id]
+			@posts.push(new Post post, active_record)
 
 	initialize_ask: => 
 		ask_element = $("#send_tweet .question_container")
@@ -147,19 +150,20 @@ class @Manager extends @Feed
 
 
 class Post
-	id: null
-	element: null
-	question: null
-	correct: null
-	answers: []
-
-	constructor: (element) ->
+	constructor: (element, active_record) ->
 		@answers = []
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
+		@active_record = active_record
+
 		@question = @element.find(".question").text()
 		@answers.push(new Answer answer, @) for answer in @element.find(".answer")
-		@element.on "click", (e) => @expand(e) unless $(e.target).parents("#respond_modal").length > 0
+
+		@element.on "click", (e) => 
+			unless $(e.target).parents("#respond_modal").length > 0
+				$('.conversation').removeClass 'active'
+				$(e.target).closest('.conversation').addClass 'active'
+
 		@element.find(".tweet_button").on "click", (e) => 
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
@@ -172,6 +176,8 @@ class Post
 			@element.find(".show_move").hide()
 			@element.find(".move").show()
 
+		@element.find(".link_post, .open").on "click", @expand
+
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
@@ -183,7 +189,11 @@ class Post
 			active: false, 
 			icons: false, 
 			disabled: true
-		})	
+		})
+
+		# @element.find('.btn-hide, .btn-flag').on "ajax:success", -> 
+		# 	puts $(this)
+		# 	$(this).parents(".conversation").toggleClass "dim"
 
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
@@ -207,11 +217,9 @@ class Post
 			@open_reply_modal(e) 
 			return		
 
-	open_reply_modal: (event) =>
-		post = $(event.target)
-		post = post.parents(".post") unless post.hasClass "post"
-		window.post = post
-		username = post.find('h5').html()
+	open_reply_modal: (event = nil) =>
+		post = @element.find('.post')
+		username = post.find('h5 span').html()
 		correct = null
 		tweet = ''
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
@@ -225,11 +233,11 @@ class Post
 			$("#respond_modal").find(".correct").show()		
 			$("#respond_modal").find(".incorrect").show()			
 
+		$("#respond_modal").modal()
 		if post.attr("interaction_type") != "4"
 			text = "@#{username} "
-			textarea.val(text) 
 			textarea.focus()
-		$("#respond_modal").modal()
+			textarea.val(text)
 		$("button.btn.correct, button.btn.incorrect, #tweet").off()
 		$("button.btn.correct").on 'click', () =>
 			correct = true
@@ -297,8 +305,7 @@ class Post
 	quick_reply: (correct, tell = false) =>
 		event.stopPropagation()
 		@correct = correct
-		post = $(event.target)
-		post = post.parents(".post") unless post.hasClass "post"
+		post = @element
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
 
@@ -320,12 +327,12 @@ class Post
 			data: params
 			error: (e) => console.log "ajax error tweeting response"
 			success: (e) =>
-				post.parents(".conversation").css("opacity", 0.8)
 				if e == false
 					console.log "twitter failed to send message"
 				else
+					post.closest(".conversation").toggleClass "dim"
 					console.log "succeeded in sending message"
-					$(".post[post_id=#{@id}]").children('.icon-share-alt').show()
+					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()
 
 	unlink_post: =>
 		params =
@@ -384,7 +391,7 @@ class Post
 			type: 'POST',
 			data: "post_id" : @id
 
-	retweet: (asker_id) =>
+	retweet: =>
 		$("#retweet_question").button("loading")
 
 		$.ajax "/posts/retweet",
@@ -395,5 +402,89 @@ class Post
 			complete: => 
 				$("#retweet_question_modal").modal('hide')	
 				$('#retweet_question').button('reset')
+			success: => @element.toggleClass "dim"
+
+class Hotkeys
+	constructor: ->
+		$('.conversation').first().addClass 'active'
+		$(window).keypress (e) =>
+			puts e.keyCode
+			active_post = @_active_post()
+			switch e.keyCode
+				when 106 then @prev()
+				when 107 then @next()
+				when 111 then @open(e)
+
+				when 32 then @accept_autocorrect(e, active_post)
+				when 110 then active_post.quick_reply false if active_post #no
+				when 116 then active_post.quick_reply false, true if active_post #yes
+				when 121 then active_post.quick_reply true if active_post #yes
+
+				when 102 then $("#best_in_place_post_#{active_post.id}_spam").trigger('click') if active_post
+				when 104 then @toggle_hide active_post
+				when 114 then active_post.retweet() if active_post
+
+	accept_autocorrect: (e, active_post) ->
+		e.preventDefault()
+		if active_post
+			autocorrect = active_post.active_record.autocorrect
+			puts autocorrect
+			return if autocorrect == null
+
+			active_post.quick_reply autocorrect
+			# @prev()
+
+	toggle_hide: (post_obj) ->
+		$("#best_in_place_post_#{post_obj.id}_requires_action").trigger('click') if post_obj
+		# post = $('.conversation.active .post')
+		# post.parents(".conversation").toggleClass "dim"
+
+	open: (e) ->
+		post_obj = @_active_post()
+
+		# mimic event in calling expand
+		e.preventDefault()
+		post = $('.conversation.active .post')
+		post_obj.expand({target: post}) if post_obj
+
+	prev: ->
+		current_conv = $('.conversation.active')
+		prev_conv = current_conv.next('.conversation') #confusing because next in time is reverse in sequence
+		prev_conv = $('#posts .conversation').first() if prev_conv.length == 0
+
+		current_conv.removeClass 'active'
+		prev_conv.addClass 'active'
+		@_isScrolledIntoView prev_conv
+
+	next: ->
+		current_conv = $('.conversation.active')
+		next_conv = current_conv.prev('.conversation') #confusing because next in time is reverse in sequence
+		next_conv = $('#posts .conversation').last() if next_conv.length == 0
+
+		current_conv.removeClass 'active'
+		next_conv.addClass 'active'
+		@_isScrolledIntoView next_conv
+
+	_isScrolledIntoView: (elem) ->
+		docViewTop = $(window).scrollTop()
+		docViewBottom = docViewTop + $(window).height()
+
+		elemTop = $(elem).offset().top
+		elemBottom = elemTop + $(elem).height()
+
+		visible = ((elemBottom >= docViewTop) && (elemTop <= docViewBottom) && (elemBottom <= docViewBottom) &&  (elemTop >= docViewTop))
+		unless visible
+			$('html, body').animate({
+				scrollTop: elem.offset().top - 150
+			}, 1);
+
+	_active_post: (e) ->
+		post = $('.conversation.active .post')
+		return if post.length == 0
+
+		post_id = post.attr "post_id"
+		post_obj = null
+		$.each feed.posts, (i, p) -> post_obj = p if p.id == post_id
+		post_obj
 
 $ -> window.feed = new Manager if $("#manager").length > 0 or $("#tags").length > 0

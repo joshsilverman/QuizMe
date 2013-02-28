@@ -44,8 +44,8 @@
 						.header.border-color
 							%h3
 								= @asker.twi_screen_name
-								.btn-group
-									%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
+								/ .btn-group
+								/ 	%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
@@ -62,36 +62,40 @@
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
-										%h5= post.user.twi_screen_name	
+										%h5
+											%span= post.user.twi_screen_name	
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 
-										%p= "Text: #{post.text})"
-										%p.quick-reply= "Correct: #{correct.text})" if correct
+										%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9]+ /, '').html_safe
+										- if correct
+											%p.quick-reply
+												%span{style: 'opacity:0.6;'}
+													= correct.text
 										
 									/ common actions
 									.actions
-										- if question
-											.btn-group.linked
-												%a.btn.btn-mini.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"} yes
-												%a.btn.btn-mini.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"} no
-												%a.btn.btn-mini.quick-reply-tell tell
+										.btn-group.linked
+											- if question
+												%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
+												%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
+												%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
+											- else
+												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
 													
 										.btn-group
-											%a.btn.btn-mini= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
-
+											%a.btn.open= "<u>o</u>pen".html_safe
 											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
-												%a.link_post.btn.btn-mini
-													/ %i.icon-wrench
-													unlink
+												%a.link_post.btn unlink
 											- else 
-												%a.link_post.btn.btn-mini
-													/ %i.icon-wrench
-													link
+												%a.link_post.btn link
 
-											%a.btn.btn-mini.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} 
-												/ %i.icon-tag
-												tag
+											%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
 											%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
 												%li
 													- tags = post.tags.collect(&:name)
@@ -103,14 +107,6 @@
 											/ 	move
 											/ %a.move{:style => "display: none;"}
 											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
-
-										.btn-group
-											%a.btn.btn-mini
-												/ %i.icon-eye-close
-												= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
-											%a.btn.btn-mini.retweet{:style => "margin-left: 0px;"}
-												/ %i.icon-retweet
-												retweet
 
 									.post_actions
 										- if params[:filter] == 'ugc'
