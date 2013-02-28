@@ -99,6 +99,8 @@ class PostsController < ApplicationController
     end
         
     @tags = Tag.all
+    @engagements, @conversations = Post.grouped_as_conversations @posts
+
     render 'feeds/tags'
   end
 
