@@ -322,6 +322,8 @@ class Post
 			"tell" : tell #just tell the correct answer
 			"publication_id" : publication_id
 
+		if post.closest(".conversation").hasClass "dim"
+			return unless confirm("Reply again to this conversaion?")
 		$.ajax '/manager_response',
 			type: 'POST'
 			data: params
@@ -330,7 +332,7 @@ class Post
 				if e == false
 					console.log "twitter failed to send message"
 				else
-					post.closest(".conversation").toggleClass "dim"
+					post.closest(".conversation").addClass "dim"
 					console.log "succeeded in sending message"
 					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()
 
