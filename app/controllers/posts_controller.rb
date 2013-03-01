@@ -64,6 +64,7 @@ class PostsController < ApplicationController
       render :json => false
     else
       post.tags << tag
+      Mixpanel.track_event(tag.name, { :distinct_id => post.user_id }) if tag.name.include?("tutor")
       render :json => true
     end
   end
