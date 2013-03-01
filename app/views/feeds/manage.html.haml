@@ -44,12 +44,13 @@
 						.header.border-color
 							%h3
 								= @asker.twi_screen_name
-								.btn-group
-									%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
+								/ .btn-group
+								/ 	%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
 						- @engagements.each do |id, post|
+
 							/ quick reply vars
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
@@ -57,45 +58,61 @@
 							.conversation.border-color
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
-									#classify
-										- if post.autospam
-											%i.icon-warning-sign
-										%a.label= best_in_place post, :spam, :type => :checkbox, :collection => ["flag", "unflag"]
-										/ %a.label love
-										/ %a.label ugc
-										/ %a.label negative
-										/ %a.label idea
 									%i.icon-share-alt{:style => "display: none;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
-										%h5= post.user.twi_screen_name	
+										%h5
+											%span= post.user.twi_screen_name	
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 
-										%p= post.text
+										%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+										- if correct
+											%p.quick-reply
+												%span{style: 'opacity:0.6;'}
+													= correct.text
 										
-										/ quick reply
-										- if question
-											%p
-												%a.quick-reply-yes{:class => "#{'icon-arrow-right' if post.autocorrect}"} 
-													= "&nbsp;".html_safe if post.autocorrect
-													yes
-												|
-												%a.quick-reply-no{:class => "#{'icon-arrow-right' if post.autocorrect == false}"} 
-													= "&nbsp;".html_safe if post.autocorrect == false
-													no
-													&nbsp;
-												|
-												%a.quick-reply-tell
-													tell
-												%span.quick-reply
-													= "(answer: #{correct.text})" if correct
-										.post_actions
-											- if params[:filter] == 'ugc'
-												= render :partial => "ugc_actions", :locals => {:post => post}
+									/ common actions
+									.actions
+										.btn-group.linked
+											- if question
+												%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
+												%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
+												%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
 											- else
-												= render :partial => "default_actions", :locals => {:post => post}
+												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
+													
+										.btn-group
+											%a.btn.open= "<u>o</u>pen".html_safe
+											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
+												%a.link_post.btn unlink
+											- else 
+												%a.link_post.btn link
+
+											%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
+											%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+												%li
+													- tags = post.tags.collect(&:name)
+													- @tags.each do |tag|
+														%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
+
+											/ %a.btn.btn-mini.dropdown-toggle
+											/	 %i.icon-tag
+											/ 	move
+											/ %a.move{:style => "display: none;"}
+											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
+
+									.post_actions
+										- if params[:filter] == 'ugc'
+											= render :partial => "ugc_actions", :locals => {:post => post}
+										- else
+											= render :partial => "default_actions", :locals => {:post => post}
 
 
 = render :partial => "respond_modal"

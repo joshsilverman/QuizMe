@@ -37,6 +37,7 @@ class PostsController < ApplicationController
 				:interaction_type => 3
 			})
       retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
+      post.update_attribute :requires_action, false if retweet
 			render :json => retweet
 		end
 	end
