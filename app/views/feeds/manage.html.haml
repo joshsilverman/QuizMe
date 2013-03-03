@@ -72,47 +72,11 @@
 											%p.quick-reply
 												%span{style: 'opacity:0.6;'}
 													= correct.text
-										
-									/ common actions
-									.actions
-										.btn-group.linked
-											- if question
-												%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
-												%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
-												%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
-												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
-												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
-												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
-											- else
-												%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
-												%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
-												%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
-													
-										.btn-group
-											%a.btn.open= "<u>o</u>pen".html_safe
-											- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
-												%a.link_post.btn unlink
-											- else 
-												%a.link_post.btn link
 
-											%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
-											%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
-												%li
-													- tags = post.tags.collect(&:name)
-													- @tags.each do |tag|
-														%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
-
-											/ %a.btn.btn-mini.dropdown-toggle
-											/	 %i.icon-tag
-											/ 	move
-											/ %a.move{:style => "display: none;"}
-											/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
-
-									.post_actions
-										- if params[:filter] == 'ugc'
-											= render :partial => "ugc_actions", :locals => {:post => post}
-										- else
-											= render :partial => "default_actions", :locals => {:post => post}
+									- if params[:filter] == 'ugc'
+										= render :partial => "ugc_actions", :locals => {:post => post}
+									- else
+										= render :partial => "default_actions", :locals => {:post => post, :question => question}
 
 
 = render :partial => "respond_modal"

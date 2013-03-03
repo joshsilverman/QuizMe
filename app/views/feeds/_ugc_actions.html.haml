@@ -1,11 +1,17 @@
-/ %a.mark_ugc.toggle_ugc
-/ 	%i.icon-eye-close
-/ 	hide
-/ 	/ = best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
-%a
-	%i.icon-eye-close
-	= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
-|
-%a.add_question
-	%i.icon-plus-sign
-	add question
+/ .post_actions
+/ 	/ %a.mark_ugc.toggle_ugc
+/ 	/ 	%i.icon-eye-close
+/ 	/ 	hide
+/ 	/ 	/ = best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+/ 	%a
+/ 		%i.icon-eye-close
+/ 		= best_in_place post, :requires_action, :type => :checkbox, :collection => ["show", "hide"]
+/ 	|
+/ 	%a.add_question
+/ 		%i.icon-plus-sign
+/ 		add question
+.actions
+	.btn-group
+		%a.btn.open= "<u>o</u>pen".html_safe
+		%a.btn.add_question= "add <u>q</u>uestion".html_safe
+		%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}		

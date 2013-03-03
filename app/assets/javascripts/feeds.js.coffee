@@ -104,7 +104,7 @@ class @Feed
 		# return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#question_input").val(text) if text
 		$("#post_question_modal").modal()
-		$("#question_input").focus()
+		$("#question_input").focus() unless $("#manager").length > 0
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => add_answer()
 		$("#submit_question").on "click", (e) => 
