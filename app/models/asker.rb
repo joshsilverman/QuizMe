@@ -632,7 +632,7 @@ class Asker < User
   end
 
   def self.select_progress_report_recipients
-    User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ?", 1.week.ago).reject { |user| user.posts.size < 3 }
+    User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ? and posts.in_reply_to_user_id in (?)", 1.week.ago, Asker.ids).reject { |user| user.posts.size < 3 }
   end
 
   def self.send_progress_report_dms recipients, asker_followers = {}
