@@ -148,6 +148,12 @@ AGGREGATE_POST_RESPONSES = {
   ]
 }
 
+SCRIPTS = {
+  tutor_test: "Do you have any tests or quizzes coming up I can help with?",
+  tutor_content: "What subjects is it on?",
+  tutor_date: "... and what's the date of your "
+}
+
 SEGMENT_HIERARCHY = {
   1 => [7, 1, 2, 3, 4, 5, 6], 
   2 => [7, 1, 2, 3, 4, 5, 6],
