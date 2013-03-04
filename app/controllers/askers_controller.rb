@@ -123,4 +123,14 @@ class AskersController < ApplicationController
     
     render :partial => params[:party]
   end
+
+  def nudge
+    asker = Asker.find(params[:asker_id])
+    user = User.find(params[:user_id])
+    nudge_type = NudgeType.find(params[:nudge_type_id])
+
+    nudge_type.send_to(asker, user)
+
+    render :nothing => true
+  end
 end
