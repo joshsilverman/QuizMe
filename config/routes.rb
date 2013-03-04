@@ -94,6 +94,8 @@ Quizmemanager::Application.routes.draw do
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
 
+  post '/askers/nudge' => 'asker#nudge'
+
   resources :rate_sheets
   resources :users
   resources :posts
