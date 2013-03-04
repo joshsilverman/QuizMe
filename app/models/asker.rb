@@ -503,6 +503,9 @@ class Asker < User
         nudge_type.text = nudge_type.text.gsub "{x}", question_count.to_s
         nudge_type.text = nudge_type.text.gsub "{25-x}", (25 - question_count).to_s
       end
+
+    elsif client.id == 29210
+      nudge_type = client.nudge_types.sample
     end
 
     # elsif client.id == 23624
