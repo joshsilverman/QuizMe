@@ -408,6 +408,51 @@ class Post
 				$('#retweet_question').button('reset')
 			success: => @element.toggleClass "dim"
 
+	scripted_response: =>
+		event.stopPropagation()
+		post = @element.find('.post')
+		parent_index = window.feed.conversations[@id]['posts'].length - 1
+		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+
+		publication_id = null
+		publication_id = parent_post['publication_id'] unless parent_post == undefined
+
+		script_text = post.attr "script_text"
+
+		params =
+			"interaction_type" : post.attr "interaction_type"
+			"asker_id" : @asker_id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+			"message" : script_text
+			"username" : post.find('h5 span').html()
+
+		if post.closest(".conversation").hasClass "dim"
+			return unless confirm("Reply again to this conversaion?")
+		$.ajax '/manager_response',
+			type: 'POST'
+			data: params
+			error: (e) => console.log "ajax error tweeting response"
+			success: (e) =>
+				if e == false
+					console.log "twitter failed to send message"
+				else
+					post.closest(".conversation").addClass "dim"
+					console.log "succeeded in sending message"
+					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()		
+
+	nudge: (nudge_type_id) => 
+		$.ajax "/askers/nudge",
+			type: 'POST',
+			data:
+				"user_id": window.feed.engagements[@id]['user_id']
+				"nudge_type_id": nudge_type_id
+				"asker_id" : @asker_id
+			# complete: => 
+				# $("#retweet_question_modal").modal('hide')	
+				# $('#retweet_question').button('reset')
+			success: => @element.toggleClass "dim"	
+
 class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
