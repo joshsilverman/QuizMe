@@ -141,7 +141,6 @@ class @Manager extends @Feed
 				button.removeClass("disabled")
 
 	add_tag: (e) =>
-		console.log $(e.target).parent().find("textarea").val()
 		$.ajax "/posts/add_tag",
 			type: 'POST',
 			data: 
@@ -183,6 +182,10 @@ class Post
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
+
+		@element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
+
+		@element.find(".nudge").on "click", (e) => @nudge($(e.target).attr("nudge_id"))
 
 		answers = @element.find(".answers")
 		answers.accordion({
@@ -408,11 +411,54 @@ class Post
 				$('#retweet_question').button('reset')
 			success: => @element.toggleClass "dim"
 
+	scripted_response: (script) =>
+		# event.stopPropagation()
+		post = @element.find('.post')
+		parent_index = window.feed.conversations[@id]['posts'].length - 1
+		parent_post = window.feed.conversations[@id]['posts'][parent_index]
+
+		publication_id = null
+		publication_id = parent_post['publication_id'] unless parent_post == undefined
+
+		params =
+			"interaction_type" : post.attr "interaction_type"
+			"asker_id" : @asker_id
+			"in_reply_to_post_id" : @id
+			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
+			"message" : script
+			"username" : post.find('h5 span').html()
+
+		if post.closest(".conversation").hasClass "dim"
+			return unless confirm("Reply again to this conversaion?")
+		$.ajax '/manager_response',
+			type: 'POST'
+			data: params
+			error: (e) => console.log "ajax error tweeting response"
+			success: (e) =>
+				if e == false
+					console.log "twitter failed to send message"
+				else
+					post.closest(".conversation").addClass "dim"
+					console.log "succeeded in sending message"
+					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()		
+
+	nudge: (nudge_type_id) => 
+		$.ajax "/askers/nudge",
+			type: 'POST',
+			data:
+				"user_id": window.feed.engagements[@id]['user_id']
+				"nudge_type_id": nudge_type_id
+				"asker_id" : @asker_id
+			# complete: => 
+				# $("#retweet_question_modal").modal('hide')	
+				# $('#retweet_question').button('reset')
+			success: => @element.toggleClass "dim"	
+
 class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
 		$(window).keypress (e) =>
-			return if e.target and e.target.tagName == "TEXTAREA"
+			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
 			active_post = @_active_post()
 			switch e.keyCode
 				when 106 then @prev()

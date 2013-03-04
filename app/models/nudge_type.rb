@@ -5,6 +5,7 @@ class NudgeType < ActiveRecord::Base
   has_many :users, :through => :posts
 
   scope :active, where("active = ?", true)
+  scope :automatic, where("automatic = ?", true)
 
   def send_to asker, user, dm = nil, short_url = nil
     text.split("\n").each do |message|
