@@ -141,7 +141,6 @@ class @Manager extends @Feed
 				button.removeClass("disabled")
 
 	add_tag: (e) =>
-		console.log $(e.target).parent().find("textarea").val()
 		$.ajax "/posts/add_tag",
 			type: 'POST',
 			data: 
@@ -183,6 +182,10 @@ class Post
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
+
+		@element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
+
+		@element.find(".nudge").on "click", (e) => @nudge($(e.target).attr("nudge_id"))
 
 		answers = @element.find(".answers")
 		answers.accordion({
@@ -408,8 +411,8 @@ class Post
 				$('#retweet_question').button('reset')
 			success: => @element.toggleClass "dim"
 
-	scripted_response: =>
-		event.stopPropagation()
+	scripted_response: (script) =>
+		# event.stopPropagation()
 		post = @element.find('.post')
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
@@ -417,14 +420,12 @@ class Post
 		publication_id = null
 		publication_id = parent_post['publication_id'] unless parent_post == undefined
 
-		script_text = post.attr "script_text"
-
 		params =
 			"interaction_type" : post.attr "interaction_type"
 			"asker_id" : @asker_id
 			"in_reply_to_post_id" : @id
 			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-			"message" : script_text
+			"message" : script
 			"username" : post.find('h5 span').html()
 
 		if post.closest(".conversation").hasClass "dim"
