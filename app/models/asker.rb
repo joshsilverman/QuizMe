@@ -482,7 +482,7 @@ class Asker < User
 
 
   def nudge answerer
-    return unless client and nudge_type = client.nudge_types.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
+    return unless client and nudge_type = client.nudge_types.automatic.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
 
     puts "in nudge:"
     puts self.twi_screen_name, client.to_json
