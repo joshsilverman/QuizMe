@@ -458,7 +458,7 @@ class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
 		$(window).keypress (e) =>
-			return if e.target and e.target.tagName == "TEXTAREA"
+			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
 			active_post = @_active_post()
 			switch e.keyCode
 				when 106 then @prev()
