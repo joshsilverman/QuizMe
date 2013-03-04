@@ -745,7 +745,7 @@ class Asker < User
   end
 
   def most_popular_question options = {}
-    options.reverse_merge!(:since => 1.year.ago, :character_limit => 9999)
+    options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
     Question.find(
       Post.joins(:in_reply_to_question)\
         .answers\

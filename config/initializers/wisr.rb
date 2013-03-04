@@ -169,7 +169,9 @@ SEGMENT_HIERARCHY = {
 #   "Do you have any of your own questions for the community? Share them here: {link}"
 # ]
 
-INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
+INCLUDE_ANSWERS = [12982, 14106, 19454, 12640, 227, 9217]
+# 227 - vocab
+# 9217 - lsat
 
 UNDER_CONSTRUCTION_HANDLES = [27857]
 
