@@ -29,6 +29,8 @@ class NudgeType < ActiveRecord::Base
         :lifecycle_segment => user.lifecycle_segment
       }        
     end
+
+    dm
   end
 
   def register_conversion user, asker

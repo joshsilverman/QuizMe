@@ -503,10 +503,14 @@ class Asker < User
         nudge_type.text = nudge_type.text.gsub "{x}", question_count.to_s
         nudge_type.text = nudge_type.text.gsub "{25-x}", (25 - question_count).to_s
       end
+      nudge_type.send_to(self, answerer)
 
     elsif client.id == 29210
-      nudge_type = client.nudge_types.sample
-      Mixpanel.track_event("tutor-solicit-test", { :distinct_id => answerer.id })
+      nudge_type = client.nudge_types.automatic.sample
+      post = nudge_type.send_to(self, answerer)
+      
+      tag = Tag.find_or_create_by_name("tutor-solicit-test")
+      tag.posts << post
     end
 
     # elsif client.id == 23624
@@ -517,8 +521,6 @@ class Asker < User
     #     ""
     #   ))      
     # end
-
-    nudge_type.send_to(self, answerer)
   end
 
 
