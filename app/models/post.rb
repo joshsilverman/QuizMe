@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
   scope :requires_action, where('posts.requires_action = ?', true)
 
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
-  scope :spam, where('posts.spam = ? or posts.autospam = ?', true, true)
+  scope :spam, where('posts.spam = ? or (posts.autospam = ? and posts.spam IS NULL)', true, true)
 
   scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
   scope :us, where('posts.user_id IN (?)', Asker.ids + ADMINS)
@@ -29,6 +29,7 @@ class Post < ActiveRecord::Base
 
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
+  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
@@ -48,11 +49,12 @@ class Post < ActiveRecord::Base
   scope :linked, where('posts.in_reply_to_question_id IS NOT NULL')
   scope :unlinked, where('posts.in_reply_to_question_id IS NULL')
 
+  scope :tutor_box, tutor
   scope :retweet_box, requires_action.retweet.not_ugc
-  scope :spam_box, requires_action.spam.not_ugc
+  scope :spam_box, spam.not_ugc
   scope :ugc_box, ugc
   scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
-  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet
+  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
 

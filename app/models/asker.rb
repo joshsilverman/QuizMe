@@ -506,11 +506,13 @@ class Asker < User
       nudge_type.send_to(self, answerer)
 
     elsif client.id == 29210
-      nudge_type = client.nudge_types.automatic.sample
+      nudge_type = client.nudge_types.active.automatic.sample
       post = nudge_type.send_to(self, answerer)
       
       tag = Tag.find_or_create_by_name("tutor-solicit-test")
       tag.posts << post
+    else
+      nudge_type.send_to(self, answerer)
     end
 
     # elsif client.id == 23624

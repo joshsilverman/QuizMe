@@ -14,10 +14,12 @@
 						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
 
 						%li
-							.box Labels
+							.box Tags
 						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
 						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
 						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+						- if @oneinbox
+							%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 						/ - @tags.each do |tag|
 						/ 	%li{:class => "#{'active' if params[:filter] == tag.name}"}= link_to tag.name, "?filter=#{tag.name}"
 						//%li= link_to "Starred", '?filter=starred'
@@ -55,7 +57,7 @@
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
 								- correct = question.answers.reject{|a| a.correct != true}[0]
-							.conversation.border-color
+							.conversation.border-color{class: ('dim' if params[:filter] == 'tutor' and Asker.ids.include?(post.user_id))}
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
 									%i.icon-share-alt{:style => "display: none;"}
@@ -77,6 +79,10 @@
 										= render :partial => "ugc_actions", :locals => {:post => post}
 									- else
 										= render :partial => "default_actions", :locals => {:post => post, :question => question}
+
+					- if ['spam', 'tutor'].include? params[:filter]
+						.pagination-wrapper
+							= paginate @posts
 
 
 = render :partial => "respond_modal"

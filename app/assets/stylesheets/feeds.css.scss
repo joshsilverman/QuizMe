@@ -1329,6 +1329,12 @@ body {
 					visibility:visible;
 				}
 			}
+
+			.pagination-wrapper {
+				.pagination ul {
+					background-color: white;
+				}
+			}
 		}
 	}
 }

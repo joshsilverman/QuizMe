@@ -314,7 +314,7 @@ class FeedsController < ApplicationController
 
   def manage
     #base selection
-    @posts = Post.includes(:tags, :user, :conversation => :posts).not_spam.not_us
+    @posts = Post.includes(:tags, :user, :conversation => :posts) #.not_spam #.not_us
     if params[:id]
       @asker = Asker.find params[:id]
       @posts = @posts.where("posts.in_reply_to_user_id = ?", params[:id])
@@ -326,21 +326,23 @@ class FeedsController < ApplicationController
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.retweet_box
+      @posts = @posts.retweet_box.not_spam
     elsif params[:filter] == 'spam'
-      @posts = @posts.spam_box
+      @posts = @posts.spam_box.page(params[:page]).per(50)
     elsif params[:filter] == 'ugc'
-      @posts = @posts.ugc_box
+      @posts = @posts.ugc_box.not_spam
     elsif params[:filter] == 'feedback'
-      @posts = @posts.feedback_box
+      @posts = @posts.feedback_box.not_spam
+    elsif params[:filter] == 'tutor'
+      @posts = @posts.tutor_box.not_spam.page(params[:page]).per(50)
     elsif params[:filter] == 'linked'
-      @posts = @posts.linked_box
+      @posts = @posts.linked_box.not_spam
     elsif params[:filter] == 'unlinked'
-      @posts = @posts.unlinked_box
+      @posts = @posts.unlinked_box.not_spam
     elsif params[:filter] == 'all'
-      @posts = @posts.all_box  
+      @posts = @posts.all_box.not_spam
     else
-      @posts = @posts.autocorrected_box
+      @posts = @posts.autocorrected_box.not_spam
     end
 
     @tags = Tag.all

@@ -26,8 +26,9 @@ class NudgeType < ActiveRecord::Base
         :distinct_id => user.id,
         :asker => asker.twi_screen_name,
         :client => client.twi_screen_name,
-        :lifecycle_segment => user.lifecycle_segment
-      }        
+        :lifecycle_segment => user.lifecycle_segment,
+        :nudge_type_id => id
+      }
     end
 
     dm
