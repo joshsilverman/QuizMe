@@ -129,19 +129,24 @@ class QuestionsController < ApplicationController
     else # new question
       user_id = current_user.id
       question_created_at = nil  
+      asker_id = nil
 
       if params[:post_id] # For questions generated from user posts
         ugc_post = Post.find(params[:post_id]) 
         # ugc_post.tags.delete(Tag.find_by_name("ugc"))
         user_id = ugc_post.user_id
         question_created_at = ugc_post.created_at
-      end  
+        asker_id = ugc_post.in_reply_to_user_id
+      else
+        asker_id = params[:asker_id]
+      end 
+      asker = Asker.find(asker_id) 
 
       @question = Question.create({
         :text => params[:question],
         :user_id => user_id, 
         :priority => true, 
-        :created_for_asker_id => params[:asker_id],
+        :created_for_asker_id => asker.id,
         :status => 0
       })
 
@@ -156,7 +161,7 @@ class QuestionsController < ApplicationController
         :distinct_id => user_id,
         :time => question_created_at ? question_created_at.to_i : @question.created_at.to_i,
         :type => params[:post_id].present? ? "post" : "form",
-        :asker => Asker.find(params[:asker_id]).twi_screen_name,
+        :asker => asker.twi_screen_name,
         :lifecycle_segment => author.lifecycle_segment
       }
     end

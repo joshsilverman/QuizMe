@@ -154,6 +154,12 @@ SCRIPTS = {
   tutor_date: "... and what's the date of your "
 }
 
+UGC_SCRIPTS = {
+  submitted: "Thanks, just submitted your question and will post it soon!",
+  provide_answers: "Great, could you provide me with the correct answer and a couple of good incorrects?",
+  which_correct: "Thanks, and which is the correct answer?"
+}
+
 SEGMENT_HIERARCHY = {
   1 => [7, 1, 2, 3, 4, 5, 6], 
   2 => [7, 1, 2, 3, 4, 5, 6],
@@ -169,7 +175,9 @@ SEGMENT_HIERARCHY = {
 #   "Do you have any of your own questions for the community? Share them here: {link}"
 # ]
 
-INCLUDE_ANSWERS = [12982, 14106, 19454, 12640]
+INCLUDE_ANSWERS = [12982, 14106, 19454, 12640, 227, 9217]
+# 227 - vocab
+# 9217 - lsat
 
 UNDER_CONSTRUCTION_HANDLES = [27857]
 

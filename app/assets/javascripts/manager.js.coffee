@@ -475,6 +475,7 @@ class Hotkeys
 				when 114 then active_post.retweet() if active_post
 
 				when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
+				when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle')
 	accept_autocorrect: (e, active_post) ->
 		e.preventDefault()
 		if active_post
