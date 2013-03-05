@@ -1,5 +1,5 @@
 class AskersController < ApplicationController
-  before_filter :admin?
+  before_filter :admin?, :except => [:tutor]
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
   

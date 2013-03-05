@@ -96,6 +96,8 @@ Quizmemanager::Application.routes.draw do
 
   post '/askers/nudge' => 'askers#nudge'
 
+  match '/tutor' => 'askers#tutor'
+
   resources :rate_sheets
   resources :users
   resources :posts
