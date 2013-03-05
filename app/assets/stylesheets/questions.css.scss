@@ -85,6 +85,17 @@
 			border:none !important;
 		}
 	}
+
+	.modal_conversation_history {
+		height: 200px;
+		overflow: scroll;
+		margin-top: 10px;
+		border-top: 1px #ccc solid;
+	}
+
+	.modal-body {
+		max-height: 600px;
+	}
 }
 
 #question {

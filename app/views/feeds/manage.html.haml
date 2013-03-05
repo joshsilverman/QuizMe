@@ -59,6 +59,8 @@
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
 									%i.icon-share-alt{:style => "display: none;"}
+									- if params[:filter] == 'ugc' and Asker.ids.include? @conversations[id][:posts].select{|p| p.intention.blank?}.first.in_reply_to_user_id
+										%i.icon-comment{:style => "color: #4d90f0;"}
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
