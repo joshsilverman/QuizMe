@@ -89,7 +89,7 @@ class Asker < User
   def send_new_user_question user, dm_text = "Here's your first question! "
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
     
-    if Post.create_split_test(user.id, "New user DM question == most popular question ()", "false", "true") == "true"
+    if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
       question = most_popular_question :character_limit => (140 - dm_text.size)
     else
       question = new_user_question
@@ -97,8 +97,8 @@ class Asker < User
 
     dm_text += question.text
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
-    dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F"))
-    
+    dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
+
     Post.dm(self, user, dm_text, {:intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
