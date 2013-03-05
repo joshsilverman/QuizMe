@@ -7,6 +7,8 @@ class Asker < User
 
   default_scope where(:role => 'asker')
 
+  scope :published, where("published = ?", true)
+
   # cached queries
 
   def self.by_twi_screen_name
@@ -84,14 +86,20 @@ class Asker < User
     user.segment
   end
 
-  def send_new_user_question user
-    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).present? or new_user_question.blank?
-
-    response_text = "Here's your first question! #{new_user_question.text}"
-    answers = " (#{new_user_question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
-    response_text += answers if (INCLUDE_ANSWERS.include?(id) and ((response_text + answers).size < 141))
+  def send_new_user_question user, dm_text = "Here's your first question! "
+    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
     
-    Post.dm(self, user, response_text, {:intention => "initial question dm"})
+    if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+      question = most_popular_question :character_limit => (140 - dm_text.size)
+    else
+      question = new_user_question
+    end
+
+    dm_text += question.text
+    answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
+    dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
+
+    Post.dm(self, user, dm_text, {:intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name
@@ -737,6 +745,20 @@ class Asker < User
         Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
       end
     end
+  end
+
+  def most_popular_question options = {}
+    options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
+    Question.find(
+      Post.joins(:in_reply_to_question)\
+        .answers\
+        .mentions\
+        .where("posts.in_reply_to_user_id = ? and posts.created_at > ?", id, options[:since])\
+        .where("length(questions.text) < ?", options[:character_limit])\
+        .group("posts.in_reply_to_question_id")\
+        .count\
+        .max{|a,b| a[1] <=> b[1]}[0]
+    )
   end
 
 
