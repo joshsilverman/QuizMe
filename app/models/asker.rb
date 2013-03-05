@@ -99,7 +99,7 @@ class Asker < User
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
     dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
 
-    Post.dm(self, user, dm_text, {:intention => "initial question dm"})
+    Post.dm(self, user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name

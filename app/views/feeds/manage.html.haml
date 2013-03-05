@@ -55,8 +55,10 @@
 
 							/ quick reply vars
 							- correct = nil
-							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
-								- correct = question.answers.reject{|a| a.correct != true}[0]
+							- if params[:filter] != 'ugc'
+								- question = (post.is_dm? ? post.parent.question : post.in_reply_to_question)
+								- if question
+									- correct = question.answers.reject{|a| a.correct != true}[0]
 							.conversation.border-color{class: ('dim' if params[:filter] == 'tutor' and Asker.ids.include?(post.user_id))}
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)

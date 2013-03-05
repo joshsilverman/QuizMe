@@ -1,7 +1,8 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
   belongs_to :in_reply_to_question, :class_name => 'Question', :foreign_key => 'in_reply_to_question_id'
-
+  # has_one :question
+  
   belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
   belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
@@ -16,6 +17,7 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
+
 
   scope :requires_action, where('posts.requires_action = ?', true)
 
@@ -250,7 +252,8 @@ class Post < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 4,
         :intention => options[:intention],
-        :nudge_type_id => options[:nudge_type_id]
+        :nudge_type_id => options[:nudge_type_id],
+        :question_id => options[:question_id]
       )
       recipient.segment
     rescue Exception => exception
