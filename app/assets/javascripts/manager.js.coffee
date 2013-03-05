@@ -279,7 +279,8 @@ class Post
 					$("#respond_modal").find(".correct").removeClass("active")
 					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
-					post.parents(".conversation").css("opacity", 0.8)
+					# post.parents(".conversation").css("opacity", 0.8)
+					post.closest(".conversation").addClass "dim"
 					if e == false
 						message = $(".response_message")
 						message.text("Failed to send message!")
