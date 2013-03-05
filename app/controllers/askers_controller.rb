@@ -133,4 +133,10 @@ class AskersController < ApplicationController
 
     render :nothing => true
   end
+
+  def tutor
+    # Query to create NudgeType in db:
+    # NudgeType.create({:client_id => 29210, :url => "http://www.wisr.com/tutor?user_id={user_id}", :text => "We provide a tutoring service, check it out: {link}", :active => true, :automatic => false})
+    @exams = User.find(params[:user_id]).exams
+  end
 end
