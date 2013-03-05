@@ -506,6 +506,7 @@ class Asker < User
 
     elsif client.id == 29210
       nudge_type = client.nudge_types.sample
+      Mixpanel.track_event("tutor-solicit-test", { :distinct_id => answerer.id })
     end
 
     # elsif client.id == 23624

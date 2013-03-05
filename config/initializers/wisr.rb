@@ -149,7 +149,7 @@ AGGREGATE_POST_RESPONSES = {
 }
 
 SCRIPTS = {
-  tutor_test: "Do you have any tests or quizzes coming up I can help with?",
+  tutor_test: "Do you have any upcoming tests or quizzes I can help with?",
   tutor_content: "What subjects is it on?",
   tutor_date: "... and what's the date of your "
 }
