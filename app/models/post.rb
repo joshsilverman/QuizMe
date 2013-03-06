@@ -156,7 +156,7 @@ class Post < ActiveRecord::Base
 
   def self.format_tweet(text, options = {})
     entity_order = [:in_reply_to_user, :text, :question_backlink, :hashtag, :resource_backlink, :via_user]
-    formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}"}
+    formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}", :resource_backlink => "Learn more at {content}"}
 
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
     tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
