@@ -7,6 +7,8 @@
 
 #tutor {
 	#wrapper {
+		background-color: #fafafa;
+		min-height: 100%;
 
 		.call-to-action {
 			margin: 0px 0px 20px 20px; 
@@ -29,6 +31,11 @@
 			text-align: center;
 			padding: 30px 20px 20px 20px;
 
+			@media (min-width: 768px) {
+				& {
+					margin-left:20px;
+				}
+			}
 			@media (min-width: 1200px) {
 				& {
 					margin-left:30px;
