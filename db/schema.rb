@@ -60,23 +60,6 @@ ActiveRecord::Schema.define(:version => 20130305213149) do
     t.datetime "updated_at"
   end
 
-  create_table "cards", :force => true do |t|
-    t.text     "front"
-    t.text     "back"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "deck_id"
-    t.integer  "quizlet_id"
-    t.boolean  "publish"
-  end
-
-  create_table "cards_groups", :force => true do |t|
-    t.integer  "card_id"
-    t.integer  "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "conversations", :force => true do |t|
     t.integer  "publication_id"
     t.integer  "post_id"
@@ -88,14 +71,6 @@ ActiveRecord::Schema.define(:version => 20130305213149) do
   add_index "conversations", ["post_id"], :name => "index_conversations_on_post_id"
   add_index "conversations", ["publication_id"], :name => "index_conversations_on_publication_id"
   add_index "conversations", ["user_id"], :name => "index_conversations_on_user_id"
-
-  create_table "decks", :force => true do |t|
-    t.integer  "handle_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "quizlet_id"
-    t.string   "title"
-  end
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -119,22 +94,6 @@ ActiveRecord::Schema.define(:version => 20130305213149) do
     t.datetime "date"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-  end
-
-  create_table "groups", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "question_format"
-    t.text     "answer_format"
-    t.integer  "deck_id"
-    t.boolean  "default"
-  end
-
-  create_table "handles", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "issuances", :force => true do |t|
@@ -276,22 +235,6 @@ ActiveRecord::Schema.define(:version => 20130305213149) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "services", :force => true do |t|
-    t.string   "name"
-    t.boolean  "active"
-    t.boolean  "preferred"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  create_table "services_users", :id => false, :force => true do |t|
-    t.integer "service_id"
-    t.integer "user_id"
-  end
-
-  add_index "services_users", ["service_id", "user_id"], :name => "index_services_users_on_service_id_and_user_id"
-  add_index "services_users", ["user_id", "service_id"], :name => "index_services_users_on_user_id_and_service_id"
 
   create_table "stats", :force => true do |t|
     t.date     "date"
