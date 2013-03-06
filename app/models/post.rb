@@ -624,6 +624,8 @@ class Post < ActiveRecord::Base
 
     if interaction_type == 3
       # retweet
+    # elsif parent and parent.question
+        # 
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
       _in_reply_to_question = Question.find_by_id(asker.new_user_q_id)
