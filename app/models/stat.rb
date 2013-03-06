@@ -281,19 +281,19 @@ class Stat < ActiveRecord::Base
     return graph_data
   end
 
-	def self.graph_cohort domain = 30, grouped_posts = {}, graph_data = []
+	def self.graph_cohort grouped_posts = {}, graph_data = []
+    domain = 8.weeks.ago
     title_row = ["Week"]
-    start_day = 8.weeks.ago.to_date
-    domain = 4.weeks.ago.to_date
     domain_posts = Post.joins(:user)\
       .not_spam\
       .not_us\
       .social\
+      .where("posts.created_at > ?", domain)\
       .select("to_char(users.created_at, 'MM/W') as week, posts.created_at, posts.user_id")
     weeks = domain_posts.order("users.created_at ASC").uniq_by(&:week).collect {|p| p.week}
     graph_data << (title_row += weeks)
     date_grouped_posts = domain_posts.order("posts.created_at ASC").group_by { |p| p.created_at.to_date.to_s }
-    (domain..Date.today.to_date).each do |date|
+    (domain.to_date..Date.today.to_date).each do |date|
       data = [date]
       date_posts = date_grouped_posts[date.to_s] || []
       week_grouped_posts = date_posts.group_by { |p| p.week }
