@@ -122,6 +122,7 @@ class PostsController < ApplicationController
     nudge_type.register_conversion(user, Asker.find(params[:asker_id]))
     
     url = nudge_type.url.gsub "{user_twi_screen_name}", user.twi_screen_name
+    url = nudge_type.url.gsub "{user_id}", user.id
     redirect_to url
   end
 end

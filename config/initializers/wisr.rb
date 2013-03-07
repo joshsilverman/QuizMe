@@ -149,9 +149,14 @@ AGGREGATE_POST_RESPONSES = {
 }
 
 SCRIPTS = {
-  tutor_test: "Do you have any upcoming tests or quizzes I can help with?",
-  tutor_content: "What subjects is it on?",
-  tutor_date: "... and what's the date of your "
+  # tutor_test: "Do you have any upcoming tests or quizzes I can help with?",
+  # tutor_content: "What subjects is it on?",
+  # tutor_date: "... and what's the date of your ",
+  next_time: "You'll get it next time!",
+  smile: ":)",
+  awesome: "Awesome!",
+  gotcha: "Gotcha",
+  tweet_not_dm: "Can you hit reply directly to my question tweet next time? It's hard for me to link it if you DM the answer..."
 }
 
 UGC_SCRIPTS = {

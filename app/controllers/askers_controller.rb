@@ -1,5 +1,5 @@
 class AskersController < ApplicationController
-  before_filter :admin?
+  before_filter :admin?, :except => [:tutor]
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
   
@@ -132,5 +132,12 @@ class AskersController < ApplicationController
     nudge_type.send_to(asker, user)
 
     render :nothing => true
+  end
+
+  def tutor
+    # Query to create NudgeType in db:
+    # NudgeType.create({:client_id => 29210, :url => "http://www.wisr.com/tutor?user_id={user_id}", :text => "We provide a tutoring service, check it out: {link}", :active => true, :automatic => false})
+    @exams = User.find(params[:user_id]).exams
+    @exam = @exams.first || Exam.new
   end
 end
