@@ -104,7 +104,7 @@
     .data_row {
       height: 225px;
       margin: 10px 0px;
-      
+
       .panel {
         box-shadow: 0 0 8px -3px #888;
         background: white;
@@ -112,12 +112,41 @@
         height: 275px;
         border: 1px rgba(0, 0, 0, 0.207031) solid;
 
+        @media (max-width: 1199px) {
+
+          & {
+            height:420px;
+          }
+
+          .stats {
+            width:100% !important;
+            height:125px !important;
+            border-right: 0 !important;
+            border-bottom: 1px rgba(0, 0, 0, 0.207) solid;
+
+            .number {
+              font-size: 22px !important;
+            }
+
+            .new, .total {
+              width:50%;
+              float:left;
+              height:20px !important;
+
+              .container {
+                height:20px !important;
+                padding-top: 15px;
+              }
+            }
+          }
+        }
+
         .stats {
           height: 275px;
-          width: 125px;
+          width:125px;
           float: left;
           border-right: 1px rgba(0, 0, 0, 0.207) solid;
-          
+
           .header {
             height: 49px;
             /*background-color: whiteSmoke;*/
