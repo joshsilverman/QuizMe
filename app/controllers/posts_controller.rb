@@ -115,7 +115,7 @@ class PostsController < ApplicationController
     end
   end	
 
-  def nudge
+  def nudge_redirect
     nudge_type = NudgeType.find(params[:id])
     user = User.find(params[:user_id])
 

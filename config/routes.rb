@@ -48,7 +48,7 @@ Quizmemanager::Application.routes.draw do
   post "experiments/delete" => 'experiments#destroy'
 
   match "/posts/:publication_id/refer" => "posts#refer"
-  match "/nudge/:id/:user_id/:asker_id" => "posts#nudge"
+  match "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
 
   post "posts/update"
   post "posts/respond_to_post"
@@ -94,7 +94,7 @@ Quizmemanager::Application.routes.draw do
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
 
-  post '/askers/nudge' => 'askers#nudge'
+  post '/askers/nudge' => 'askers#send_nudge'
 
   match '/tutor' => 'askers#tutor'
 
