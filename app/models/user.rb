@@ -178,7 +178,9 @@ class User < ActiveRecord::Base
         :in_reply_to_user_id => asker.id,
         :link_to_parent => false, 
         :correct => answer.correct,
-        :intention => 'respond to question'
+        :intention => 'respond to question',
+        :conversation_id => options[:conversation_id],
+        :in_reply_to_question_id => options[:in_reply_to_question_id]
       })     
     else
 	    user_post = Post.create({
@@ -191,11 +193,11 @@ class User < ActiveRecord::Base
 	      :requires_action => false,
 	      :interaction_type => 2,
 	      :correct => answer.correct,
-	      :intention => 'respond to question'
+	      :intention => 'respond to question',
+	      :conversation_id => options[:conversation_id],
+	      :in_reply_to_question_id => options[:in_reply_to_question_id]
 	    })  
-		end    
-
-    segment
+		end
 
     user_post
 	end
@@ -402,11 +404,11 @@ class User < ActiveRecord::Base
 		transitions.where("segment_type = ? and to_segment >= ? and comment is not null and comment != ''", segment_type, to_segment).size > 0
 	end
 
+
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
-		# update_interaction_segment
-		# update_author_segment
+		# Post.trigger_split_test(id, "<test>") if age_greater_than 15.days
 	end
 
 	# Lifecycle checks - include UGC reqs?
@@ -468,6 +470,7 @@ class User < ActiveRecord::Base
 		enough_posts and enough_frequency
 	end
 
+
 	# Activity checks
 	def update_activity_segment	
 		if is_unfollowed?
@@ -513,78 +516,10 @@ class User < ActiveRecord::Base
 		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 2
 	end
 
-	# Interaction checks
-	def update_interaction_segment
-		if is_PMer?
-			level = 1
-		elsif is_sharer?
-			level = 2
-		elsif is_commenter?
-			level = 3
-		elsif is_twitter_answerer?
-			level = 4
-		elsif is_wisr_answerer?
-			level = 5
-		end
-		transition :interaction, level
-	end
 
-	def is_PMer?
-		user_posts = interaction_type_grouped_posts
-		user_posts[4] == interaction_type_grouped_posts.values.max
-	end
-
-	def is_sharer?
-		user_posts = interaction_type_grouped_posts
-		user_posts[3] == interaction_type_grouped_posts.values.max
-	end
-
-	def is_commenter?
-
-	end
-
-	def is_twitter_answerer?
-
-	end
-
-	def is_wisr_answerer?
-
-	end
-
-	# Author checks
-	def update_author_segment
-		if is_not_author?
-			level = nil
-		elsif is_unapproved_author?
-			level = 1
-		elsif is_DM_mention_author?
-			level = 2
-		elsif is_form_author?
-			level = 3
-		elsif is_handle_author?
-			level = 4
-		end
-		transition :author, level
-	end
-
-	def is_not_author?
-
-	end
-
-	def is_unapproved_author?
-
-	end
-
-	def is_DM_mention_author?
-
-	end
-
-	def is_form_author?
-
-	end
-
-	def is_handle_author?
-
+	def age_greater_than age = 15.days
+		return false if posts.blank?
+		(posts.order("created_at DESC").first.created_at.to_i - created_at.to_i) > age.to_i
 	end
 
 

@@ -383,7 +383,7 @@ class Asker < User
     end
 
     # Mark user's post as responded to
-    user_post.update_attributes(:requires_action => false, :correct => correct)
+    user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
 
     # Trigger after answer actions
     after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
