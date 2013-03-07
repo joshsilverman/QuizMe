@@ -130,12 +130,13 @@ class Post < ActiveRecord::Base
           :publication_id => publication.id, 
           :link_to_parent => false, 
           :via => via,
-          :requires_action => false
+          :requires_action => false,
+          :question_id => question.id
         })
         publication.update_attribute(:published, true)
         question.update_attribute(:priority, false) if question.priority
         if via.present? and question.priority
-          Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", {
+          Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
             :reply_to => via, 
             :long_url => long_url, 
             :interaction_type => 2, 
@@ -215,7 +216,8 @@ class Post < ActiveRecord::Base
           :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
           :interaction_type => options[:interaction_type],
           :correct => options[:correct],
-          :intention => options[:intention]
+          :intention => options[:intention],
+          :question_id => options[:question_id]
         )
         if options[:publication_id]
           publication = Publication.find(options[:publication_id])
@@ -624,8 +626,8 @@ class Post < ActiveRecord::Base
 
     if interaction_type == 3
       # retweet
-    # elsif parent and parent.question
-        # 
+    elsif parent and parent.question
+      _in_reply_to_question = parent.question
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
       _in_reply_to_question = Question.find_by_id(asker.new_user_q_id)

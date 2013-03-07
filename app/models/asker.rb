@@ -231,7 +231,8 @@ class Asker < User
           :link_to_parent => false,
           :link_type => "reengage",
           :intention => "reengage inactive",
-          :include_answers => true
+          :include_answers => true,
+          :question_id => question.id
         })
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :strategy => user_hash[:strategy]}
         sleep(1)
@@ -275,7 +276,8 @@ class Asker < User
           :intention => "new user question mention",
           :posted_via_app => true,
           :requires_action => false,
-          :link_to_parent => false     
+          :link_to_parent => false,
+          :question_id => publication.question.id    
         })
         Mixpanel.track_event "new user question mention", {
           :distinct_id => user.id, 
@@ -314,7 +316,8 @@ class Asker < User
         :link_to_parent => false,
         :link_type => "follow_up",
         :intention => "incorrect answer follow up",
-        :include_answers => true
+        :include_answers => true,
+        :question_id => question.id
       })  
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
       sleep(1)
