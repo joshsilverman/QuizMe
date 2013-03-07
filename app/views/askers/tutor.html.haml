@@ -1,12 +1,12 @@
-/ %p= @exam.subject
-/ %p= @exam.date
-
 #tutor
 	#feed_container.span10
 		#wrapper.span9
 			#feed.row				
 				.call-to-action
-					%h1 Prep for your Cardiovascular System quiz
+					%h1 
+						Prep for your 
+						%u= @exam.subject
+						quiz
 				.payment-container
 					/ .free-trial-header{:style => "font-size: 13px; height: 17px;  margin: 0px 0px 0px 1px; padding: 0px 0px 3px;"}
 					/ 	.radio-button{:style => "float: left; font-size: 10px; height: 17px;  margin: 0px; padding: 0px; text-align: center; text-decoration: initial; width: 50px;"}  
@@ -28,10 +28,10 @@
 								%span.date 
 									%label Date
 
-							%span.content Cardiovascular System
-							%span.cost $4
-							%span.details 53 Questions
-							%span.date March 9th
+							%span.content= @exam.subject
+							%span.cost= number_to_currency(@exam.price, :unit => "$")
+							%span.details= @exam.question_count
+							%span.date= @exam.date.strftime("%B #{ActiveSupport::Inflector.ordinalize(@exam.date.day)}")
 
 						.center.subsection
 
@@ -39,22 +39,25 @@
 								This covers daily quizzing
 								%span.highlight over Twitter
 								of your handle 
-								= "@<span class='highlight'>#{'DrDoomsDay'}</span>".html_safe
+								= "@<span class='highlight'>#{@exam.user.twi_screen_name}</span>".html_safe
 								on your upcoming
-								%span.highlight Cardiovascular System
-								quiz on March 9th, 2013.
+								%span.highlight= @exam.subject
+								quiz on 
+								%span.highlight= @exam.date.strftime("%B #{ActiveSupport::Inflector.ordinalize(@exam.date.day)}")
 
 						%form.row.payment-form-container
 							.payment-form
 								.guarantee
 									%img{src: 'http://openclipart.org/image/250px/svg_to_png/167577/satisfaction-guaranteed-Kliponius-Font-as-paths.png'}
-								.payment-errors.alert.alert-error Error code #12
+
+								.form-row
+									.payment-errors.alert.alert-error Error #406 - Please try again later
 								.form-row
 									%input#id_card_number.card_number{:autocomplete => "off", :placeholder => "Full name"}
 								.form-row
 									%input#id_card_number.card_number{:autocomplete => "off", :placeholder => "Credit Card Number"}
 								.form-row
-									%img#cc{:src => "https://instaedu.com/publish/static/img/cc.png", :style => "display: inline-block; font-size: 13px; height: 18px;  margin: 0px; max-height: none; max-width: 100%; min-height: 0px; min-width: 0px; padding: 0px; text-align: left; text-decoration: initial; text-indent: 0px; text-rendering: auto; text-shadow: none; text-overflow: clip; text-transform: none; top: auto; vertical-align: middle; visibility: visible; white-space: normal; widows: 2; width: 110px;"}/
+									%img#cc{:src => "https://instaedu.com/publish/static/img/cc.png", :style => "height: 18px; width: 110px;"}/
 								.form-row
 									%select#id_expiration_date_month.expiration_date_month{:style => "font-size: 15px; width: 70px; margin: 9px 0px 10px; height: 33px;"}
 										%option{:value => "01"} 01
@@ -82,7 +85,7 @@
 									%input#id_cvv.card_cvv{:autocomplete => "off", :placeholder => "CVV"}
 								.form-row
 									.btn-container
-										%button.btn.btn-primary.btn-large
+										%button.pay.btn.btn-primary.btn-large
 											GET STARTED
 				
 				/ .span4.payments-right-nav{:style => "float: right;"}
@@ -90,3 +93,7 @@
 				/ 	.right-nav-box.satisfaction-guaranteed{:style => "border: 1px solid rgb(204, 204, 204); border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; font-size: 13px; margin: 22px 0px 20px; padding: 15px; text-align: center; text-decoration: initial; width: 196px; background-color: rgb(247, 247, 247);"}
 				/ 		%img{:src => "https://instaedu.com/publish/static/img/satisfaction-guaranteed.png", :style => "height: 104px; margin: 0px 0px 15px; text-align: center; width: 110px;"}/
 				/ 		%p{:style => "text-align: center;"} If you don't feel more prepared for your quiz, we'll refund your money in full.
+
+		.clr
+	.clr
+%input#user_id{type: 'hidden', value: @exam.user.id}

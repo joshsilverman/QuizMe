@@ -11,11 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(:version => 20130305222736) do
-=======
-ActiveRecord::Schema.define(:version => 20130305213149) do
->>>>>>> exam model
+ActiveRecord::Schema.define(:version => 20130307161145) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -92,8 +88,10 @@ ActiveRecord::Schema.define(:version => 20130305213149) do
     t.integer  "user_id"
     t.string   "subject"
     t.datetime "date"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
+    t.integer  "question_count"
+    t.decimal  "price",          :precision => 8, :scale => 2
   end
 
   create_table "issuances", :force => true do |t|
