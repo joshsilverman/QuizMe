@@ -217,7 +217,8 @@ class Post < ActiveRecord::Base
           :interaction_type => options[:interaction_type],
           :correct => options[:correct],
           :intention => options[:intention],
-          :question_id => options[:question_id]
+          :question_id => options[:question_id],
+          :in_reply_to_question_id => options[:in_reply_to_question_id]
         )
         if options[:publication_id]
           publication = Publication.find(options[:publication_id])
@@ -257,7 +258,7 @@ class Post < ActiveRecord::Base
         :nudge_type_id => options[:nudge_type_id],
         :question_id => options[:question_id]
       )
-      recipient.segment
+      # recipient.segment
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message
@@ -326,8 +327,6 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    u.segment
-
     # puts "missed item in stream! mention: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
@@ -381,8 +380,6 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    u.segment
-
     # puts "missed item in stream! DM: #{post.to_json}" if asker.id == 18
 
     Post.classifier.classify post
@@ -422,8 +419,6 @@ class Post < ActiveRecord::Base
         :learner_level => "share", 
         :last_interaction_at => post.created_at
       })
-
-      u.segment
 
       # puts "missed item in stream! RT: #{post.to_json}" if current_acct.id == 18
     end
@@ -487,8 +482,6 @@ class Post < ActiveRecord::Base
       :learner_level => learner_level, 
       :last_interaction_at => post.created_at
     })
-
-    user.segment
 
     Post.classifier.classify post
     Post.grader.grade post

@@ -16,7 +16,6 @@ class PostsController < ApplicationController
           :interaction_type => 3
         })
 
-        current_user.segment
         current_user.update_user_interactions({
           :learner_level => "share", 
           :last_interaction_at => retweet_post.created_at
