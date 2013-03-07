@@ -1,7 +1,8 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
   belongs_to :in_reply_to_question, :class_name => 'Question', :foreign_key => 'in_reply_to_question_id'
-
+  # has_one :question
+  
   belongs_to :user
   has_and_belongs_to_many :tags, :uniq => true
   belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
@@ -16,6 +17,7 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
+
 
   scope :requires_action, where('posts.requires_action = ?', true)
 
@@ -128,12 +130,13 @@ class Post < ActiveRecord::Base
           :publication_id => publication.id, 
           :link_to_parent => false, 
           :via => via,
-          :requires_action => false
+          :requires_action => false,
+          :question_id => question.id
         })
         publication.update_attribute(:published, true)
         question.update_attribute(:priority, false) if question.priority
         if via.present? and question.priority
-          Post.tweet(asker, "We thought you might like to know that your question was just published on #{asker.twi_screen_name}", {
+          Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
             :reply_to => via, 
             :long_url => long_url, 
             :interaction_type => 2, 
@@ -156,7 +159,7 @@ class Post < ActiveRecord::Base
 
   def self.format_tweet(text, options = {})
     entity_order = [:in_reply_to_user, :text, :question_backlink, :hashtag, :resource_backlink, :via_user]
-    formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}"}
+    formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}", :resource_backlink => "Learn more at {content}"}
 
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
     tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
@@ -213,7 +216,8 @@ class Post < ActiveRecord::Base
           :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
           :interaction_type => options[:interaction_type],
           :correct => options[:correct],
-          :intention => options[:intention]
+          :intention => options[:intention],
+          :question_id => options[:question_id]
         )
         if options[:publication_id]
           publication = Publication.find(options[:publication_id])
@@ -250,7 +254,8 @@ class Post < ActiveRecord::Base
         :requires_action => false,
         :interaction_type => 4,
         :intention => options[:intention],
-        :nudge_type_id => options[:nudge_type_id]
+        :nudge_type_id => options[:nudge_type_id],
+        :question_id => options[:question_id]
       )
       recipient.segment
     rescue Exception => exception
@@ -621,6 +626,8 @@ class Post < ActiveRecord::Base
 
     if interaction_type == 3
       # retweet
+    elsif parent and parent.question
+      _in_reply_to_question = parent.question
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
       _in_reply_to_question = Question.find_by_id(asker.new_user_q_id)

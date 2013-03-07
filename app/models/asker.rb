@@ -99,7 +99,7 @@ class Asker < User
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
     dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
 
-    Post.dm(self, user, dm_text, {:intention => "initial question dm"})
+    Post.dm(self, user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name
@@ -231,7 +231,8 @@ class Asker < User
           :link_to_parent => false,
           :link_type => "reengage",
           :intention => "reengage inactive",
-          :include_answers => true
+          :include_answers => true,
+          :question_id => question.id
         })
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :strategy => user_hash[:strategy]}
         sleep(1)
@@ -275,7 +276,8 @@ class Asker < User
           :intention => "new user question mention",
           :posted_via_app => true,
           :requires_action => false,
-          :link_to_parent => false     
+          :link_to_parent => false,
+          :question_id => publication.question.id    
         })
         Mixpanel.track_event "new user question mention", {
           :distinct_id => user.id, 
@@ -314,7 +316,8 @@ class Asker < User
         :link_to_parent => false,
         :link_type => "follow_up",
         :intention => "incorrect answer follow up",
-        :include_answers => true
+        :include_answers => true,
+        :question_id => question.id
       })  
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
       sleep(1)
@@ -337,14 +340,14 @@ class Asker < User
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
     question = user_post.link_to_question
-    resource_url = nil # this isn't being set anywhere else... it just always holds nil... ???
+    resource_url = nil
 
     if options[:response_text].present?
       response_text = options[:response_text]
     elsif options[:tell]
       response_text = generate_response(correct, question, true)
     elsif options[:manager_response] or options[:autoresponse]
-      response_text = format_manager_response(user_post, correct, answerer, publication, question, options)
+      response_text, resource_url = format_manager_response(user_post, correct, answerer, publication, question, options)
     else
       response_text = generate_response(correct, question)
     end
@@ -358,7 +361,7 @@ class Asker < User
         :link_to_parent => options[:link_to_parent], 
         :in_reply_to_post_id => user_post.id, 
         :in_reply_to_user_id => answerer.id,
-        :resource_url => correct ? nil : resource_url,
+        :resource_url => resource_url,
         :wisr_question => publication.question.resource_url ? false : true,
         :intention => 'grade',
         :conversation_id => options[:conversation_id]
@@ -393,6 +396,7 @@ class Asker < User
 
   def format_manager_response user_post, correct, answerer, publication, question, options = {} # augment manager responses with links, RTs, hints
     response_text = ""
+    resource_url = nil
     # split test hints for questions with hints that aren't posted through the app
     if question = user_post.in_reply_to_question and question.hint.present? and !user_post.posted_via_app
       test_name = "Hint when incorrect (answers question correctly later)"
@@ -417,12 +421,11 @@ class Asker < User
         cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
         response_text += " RT '#{cleaned_user_post}'" 
       elsif !correct
-        short_resource_url = Post.shorten_url("#{URL}/posts/#{publication.id}/refer", 'wisr', 'res', answerer.twi_screen_name) if publication.question.resource_url
-        response_text += ". Learn more at #{short_resource_url}" if short_resource_url.present?
+        resource_url = publication.question.resource_url if publication.question.resource_url
       end
     end
 
-    response_text
+    [response_text, resource_url]
   end
 
   def generate_response(correct, question, tell = false)

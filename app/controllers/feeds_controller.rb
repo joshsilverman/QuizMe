@@ -8,9 +8,9 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
-    @publications, posts, actions = Publication.recently_published
-    
-    @actions = Post.recent_activity_on_posts(posts, actions)
+    @publications, posts = Publication.recently_published
+
+    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
 
     @responses = current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : []
     
@@ -32,7 +32,8 @@ class FeedsController < ApplicationController
       if @asker = Asker.find(params[:id])
 
         # publications, posts and user responses
-        @publications, posts, actions = Publication.recently_published_by_asker(@asker)
+        @publications, posts = Publication.recently_published_by_asker(@asker)
+        actions = Publication.recent_responses_by_asker(@asker, posts)
 
         # user specific responses
         @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
@@ -183,6 +184,8 @@ class FeedsController < ApplicationController
 
     asker_response = @question_asker.app_response(user_post, answer.correct, { :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
     @conversation.posts << asker_response
+
+    Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
 
     render :partial => "conversation"
   end
