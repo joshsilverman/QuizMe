@@ -89,11 +89,11 @@ class Asker < User
   def send_new_user_question user, dm_text = "Here's your first question! "
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
     
-    # if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
-    #   question = most_popular_question :character_limit => (140 - dm_text.size)
-    # else
+    if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+      question = most_popular_question :character_limit => (140 - dm_text.size)
+    else
       question = new_user_question
-    # end
+    end
 
     dm_text += question.text
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
