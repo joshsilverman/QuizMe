@@ -3,7 +3,6 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
 
   def index
-    puts "BROTASTIC"
     @index = true
     @asker = User.find(1)
     @post_id = params[:post_id]
