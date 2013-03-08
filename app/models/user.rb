@@ -541,4 +541,16 @@ class User < ActiveRecord::Base
     ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
 
+  def select_reengagement_question asker_id
+  	
+  end
+
+  def questions_answered_ids_by_asker asker_id, question_ids = []
+  	posts.where("in_reply_to_user_id = ?", asker_id).includes(:conversation => {:publication => :question}).answers.each do |answer_post|
+  		question = answer_post.question || answer_post.conversation.try(:publication).try(:question)
+  		question_ids << question.id if question
+  	end
+  	question_ids.uniq
+  end
+
 end

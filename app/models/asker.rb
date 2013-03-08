@@ -195,6 +195,7 @@ class Asker < User
       if time_since_last_touchpoint > next_checkpoint.days
         asker_recipients[asker_id] ||= {:recipients => []}
         asker_recipients[asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
+        asker_recipients[asker_id][:recipients] << {:question => user.select_reengagement_question(asker_id)}
       end
     end
     asker_recipients
