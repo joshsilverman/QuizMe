@@ -24,7 +24,7 @@
 						/ 	%li{:class => "#{'active' if params[:filter] == tag.name}"}= link_to tag.name, "?filter=#{tag.name}"
 						//%li= link_to "Starred", '?filter=starred'
 
-					#send_tweet.rounded.border-color
+					#send_tweet.rounded.border-color{style: ("display:none;" if @oneinbox)}
 						.header
 							%h4 Post as Asker			
 							/ .message_type.btn-group{"data-toggle" => "buttons-radio"}
@@ -130,6 +130,7 @@
 	.shadow-bottom
 
 #subsidiary_template.post{:style => "display: none;"}
+	%time.timeago
 	.content
 		= image_tag(@asker.twi_profile_img_url, :class => "rounded")							
 		%h5= "User Name"

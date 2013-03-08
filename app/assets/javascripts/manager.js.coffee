@@ -295,7 +295,8 @@ class Post
 		user_post = window.feed.engagements[@id]
 		$.each convo['posts'], (i, p) ->
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-			subsidiary.find("p").text("#{p['text']}") 
+			subsidiary.find(".content p").text("#{p['text']}") 
+			subsidiary.find("time.timeago").attr 'datetime', p['created_at']
 			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
 			image = convo['users'][p['user_id']]['twi_profile_img_url']
 			subsidiary.find("img").attr("src", image) unless image == null
@@ -306,6 +307,8 @@ class Post
 					html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
 				html += "</div>"
 				$('.modal_conversation_history').find(".conversation").append(html)
+
+		$("time.timeago").timeago()
 		textarea.focus()
 
 	quick_reply: (correct, tell = false) =>

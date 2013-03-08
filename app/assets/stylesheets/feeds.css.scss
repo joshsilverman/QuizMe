@@ -750,6 +750,11 @@ body {
 			.conversation {
 				border: none;
 				border-top: solid 1px #DDD;
+
+				time {
+					float: right;
+					color: #555;
+				}
 			}	
 		}	
 		
