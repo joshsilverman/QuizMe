@@ -81,6 +81,54 @@ class Question < ActiveRecord::Base
       .ugc
   end
 
+  def self.score_questions_by_asker asker_id, popularity_index = {}, scores = {}
+    questions_with_publication_count = Asker.find(asker_id)\
+      .questions\
+      .select("questions.*, count(publications.id) as publication_count")\
+      .joins(:publications)\
+      .includes(:answers)\
+      .group("questions.id")
+
+    question_answered_counts = Post.joins("LEFT OUTER JOIN posts AS parents on parents.id = posts.in_reply_to_post_id")\
+      .where("parents.interaction_type = 1")\
+      .where("posts.in_reply_to_user_id = ?", asker_id)\
+      .where("posts.in_reply_to_question_id is not null")\
+      .answers\
+      .social\
+      .group("posts.in_reply_to_question_id")\
+      .count    
+    
+    # build question popularity index - status answers per publication
+    questions_with_publication_count.map { |q| popularity_index[q.id] = question_answered_counts[q.id].to_f / q.publication_count.to_f }
+
+    # extract top 25% most popular questions
+    popular_question_ids = popularity_index.sort_by {|k,v| v}.reverse[0..(popularity_index.size * 0.25).ceil].collect { |e| e[0] }
+
+    # score questions / build score hash
+    questions_with_publication_count.each { |q| scores[q.id] = q.score(popular_question_ids.include? q.id) }
+
+    scores
+  end
+
+  def score is_popular, score = 0
+    score += 2 if is_popular #is popular
+    score += 1 if !Asker.ids.include? user_id # is ugc
+    score += 1 if resource_url.present? # has resource
+    score += 1 if hint.present? # has hint
+    score += 1 if created_at > 2.weeks.ago # is recent
+    
+    message_length = TWI_MAX_SCREEN_NAME_LENGTH + 1 + text.size + 1 + TWI_SHORT_URL_LENGTH
+    message_length_with_answers = TWI_MAX_SCREEN_NAME_LENGTH + 1 + text_with_answers.size + 1 + TWI_SHORT_URL_LENGTH
+    score += 1 if message_length < 140 # fits into tweet
+    score += 1 if message_length < 80 # is short
+    score += 1 unless INCLUDE_ANSWERS.include?(id) and message_length_with_answers > 140 # handle should include answers, but doesn't fit
+    score
+  end
+
+  def text_with_answers
+    "#{text} (#{answers.shuffle.collect {|a| a.text}.join('; ')})"
+  end
+
   ###THIS IS FOR IMPORTING FROM QB###
 	require 'net/http'
   require 'uri'

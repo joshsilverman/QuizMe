@@ -26,7 +26,7 @@ class Post < ActiveRecord::Base
 
   scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
   scope :us, where('posts.user_id IN (?)', Asker.ids + ADMINS)
-  scope :social, where('interaction_type IN (2,3)')
+  scope :social, where('posts.interaction_type IN (2,3)')
   scope :answers, where('posts.correct is not null')
 
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
@@ -166,10 +166,9 @@ class Post < ActiveRecord::Base
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
 
     #adjust max text length for backlinks which will be wrapped with t.co
-    short_url_length = 22 # variable occasionally increased by twitter: https://api.twitter.com/1/help/configuration.json
     [:question_backlink, :resource_backlink, :url].each do |key|
       next unless options[key].present?
-      max_text_length = max_text_length + options[key].length - short_url_length
+      max_text_length = max_text_length + options[key].length - TWI_SHORT_URL_LENGTH
     end
 
     text += " #{options[:answers]}" if (options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1))

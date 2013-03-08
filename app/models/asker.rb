@@ -167,14 +167,13 @@ class Asker < User
   end 
 
   def self.get_disengaging_users_and_reengagements end_range = 20
-    # Get disengaging users
+  # def self.get_disengaging_users_and_reengagements(begin_range, end_range)
     disengaging_users = User.includes(:posts)\
       .where("users.activity_segment != 7")\
       .where("users.last_answer_at is not null")\
       .where("users.last_interaction_at > ?", Time.now - end_range.days)
       # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
-    # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
       .where("created_at > ?", Time.now -  end_range.days)\
@@ -185,17 +184,22 @@ class Asker < User
   end
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
+    published_askers = Asker.published.collect(&:id)
     disengaging_users.each do |user|
       test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
-      asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
+      asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).select{ |id| published_askers.include? id }.sample
       next unless next_checkpoint = strategy[user_reengagments.size] and asker_id
       time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
       if time_since_last_touchpoint > next_checkpoint.days
-        asker_recipients[asker_id] ||= {:recipients => []}
-        asker_recipients[asker_id][:recipients] << {:user => user, :interval => strategy[user_reengagments.size], :strategy => test_option}
-        asker_recipients[asker_id][:recipients] << {:question => user.select_reengagement_question(asker_id)}
+        asker_recipients[asker_id] ||= {:recipients => [], :question_scores => Question.score_questions_by_asker(asker_id)}
+        asker_recipients[asker_id][:recipients] << {
+          :user => user, 
+          :interval => strategy[user_reengagments.size], 
+          :strategy => test_option,
+          :question => user.select_reengagement_question(asker_id, asker_recipients[asker_id][:question_scores])
+        }
       end
     end
     asker_recipients
@@ -207,21 +211,30 @@ class Asker < User
     asker_recipients.each do |asker_id, recipient_data|
       asker = Asker.find(asker_id)
       follower_ids = asker.update_followers()
-      publication = recipient_data[:publication]
-      next unless asker and publication
-      question = publication.question
+
       recipient_data[:recipients].each do |user_hash|
         user = user_hash[:user]
-        next unless follower_ids.include? user.twi_user_id
-        if Post.create_split_test(user.id, "Just question in reengagement tweet (answers)", "false", "true") == "false"
-          option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")
-          text = "#{option_text} #{question.text}"
-        else
-          text = question.text
-        end
-        count += 1
 
-        puts "temp: send reengage inactive #{count}"
+        if Post.create_split_test(user.id, "Personalized reengagement question (age > 15 days)", "false", "true") == "true"
+          question = user_hash[:question]
+          publication = question.publications.order("created_at DESC").first
+        else
+          publication = recipient_data[:publication]
+          question = publication.question
+        end
+
+        # count += 1
+        # puts "temp: send reengage inactive #{count}"
+        
+        next unless asker and publication and follower_ids.include? user.twi_user_id
+
+        # if Post.create_split_test(user.id, "Just question in reengagement tweet (answers)", "false", "true") == "false"
+        #   option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")
+        #   text = "#{option_text} #{question.text}"
+        # else
+        #   text = question.text
+        # end
+
         Post.tweet(asker, text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -241,6 +254,7 @@ class Asker < User
       end
     end
   end
+
 
   def self.engage_new_users
     # Send DMs to new users

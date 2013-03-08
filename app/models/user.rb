@@ -408,6 +408,7 @@ class User < ActiveRecord::Base
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
+		Post.trigger_split_test(id, "Personalized reengagement question (age > 15 days)") if age_greater_than 15.days
 		# Post.trigger_split_test(id, "<test>") if age_greater_than 15.days
 	end
 
@@ -541,15 +542,26 @@ class User < ActiveRecord::Base
     ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
 
-  def select_reengagement_question asker_id
+  def select_reengagement_question asker_id, question_scores
+  	# get ids of question unanswered and answered by user
+  	answered_question_ids = questions_answered_ids_by_asker(asker_id) 
+  	answered_question_ids = [0] if answered_question_ids.blank?
+  	unanswered_question_ids = question_scores.keys - answered_question_ids
+
+  	# group user's unanswered questions by score, degrade to answered
+  	score_grouped_questions = unanswered_question_ids.group_by { |question_id| question_scores[question_id] }
+  	score_grouped_questions = answered_question_ids.group_by { |question_id| question_scores[question_id] } if score_grouped_questions.blank?
   	
+  	# select question from highest scoring question group
+  	Question.includes(:publications).find(score_grouped_questions.max[1].sample)
   end
 
   def questions_answered_ids_by_asker asker_id, question_ids = []
   	posts.where("in_reply_to_user_id = ?", asker_id).includes(:conversation => {:publication => :question}).answers.each do |answer_post|
-  		question = answer_post.question || answer_post.conversation.try(:publication).try(:question)
+  		question = answer_post.in_reply_to_question || answer_post.conversation.try(:publication).try(:question)
   		question_ids << question.id if question
   	end
+  	questions.each { |q| question_ids << q.id } # don't ask users questions that they wrote
   	question_ids.uniq
   end
 
