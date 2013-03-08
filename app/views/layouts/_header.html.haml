@@ -7,7 +7,14 @@
           - if current_user
             - if current_user.is_role? 'admin'
               %li
-                %a.nav-link{:href => "/askers"} Askers
+                .dropdown.nav-link
+                  %a.nav-link{:href => "/feeds/manage", 'data-target' => "#"} Users
+                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+                    %li
+                      %a{:href => "/feeds/manage", :tabindex => "-1"} Manage
+                    %li
+                      %a{:href => "/askers", :tabindex => "-1"} Askers
+
               %li
                 .dropdown.nav-link
                   %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
@@ -29,14 +36,17 @@
 
               %li
                 .dropdown.nav-link
-                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Metrics
+                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Founders
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
                     %li
                       %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
                     %li
-                      %a{:href => "/tags", :tabindex => "-1"} Tags                      
+                      %a{:href => "/tags", :tabindex => "-1"} Tags
+
+              %li
+                %a.nav-link{:href => "/users/supporters"} Supporters
               
 
             - elsif current_user.is_role? 'client'
