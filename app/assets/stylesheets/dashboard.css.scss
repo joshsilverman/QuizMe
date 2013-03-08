@@ -19,6 +19,22 @@
     }
   }
 
+  @media (max-width: 1199px) {
+    .tab-content {
+      margin-left: 14px !important;
+    }
+  }
+  @media (max-width: 979px) {
+    .tab-content {
+      margin-left: 30px !important;
+    }
+  }
+  @media (max-width: 767px) {
+    .tab-content {
+      margin-left: 2px !important;
+    }
+  }
+
   .core, .dashboard {
 
     .handle_name {
@@ -106,38 +122,159 @@
       margin: 10px 0px;
 
       .panel {
-        box-shadow: 0 0 8px -3px #888;
+        /*box-shadow: 0 0 8px -3px #888;*/
         background: white;
         margin: 0 0 25px 0;
         height: 275px;
         border: 1px rgba(0, 0, 0, 0.207031) solid;
 
-        @media (max-width: 1199px) {
+        @media (max-width: 1199px) and (min-width: 980px) {
 
           & {
-            height:420px;
+            height:380px;
           }
 
           .stats {
             width:100% !important;
-            height:125px !important;
+            height:100px !important;
             border-right: 0 !important;
             border-bottom: 1px rgba(0, 0, 0, 0.207) solid;
 
-            .number {
-              font-size: 22px !important;
+            .new {
+              border-right: 1px #f0f0f0 solid;
             }
 
             .new, .total {
-              width:50%;
+              border-top: none !important;
+              width:49%;
               float:left;
-              height:20px !important;
+              height:inherit !important;
 
               .container {
                 height:20px !important;
                 padding-top: 15px;
+                width:100%;
+                text-align: center;
+
+                .number {
+                  /*font-size: 18px !important;*/
+                  padding-right: 4px;
+                  font-weight: bold;
+                  /*color:#333;*/
+                }
+
+                .number, .period {
+                  /*float:left;*/
+                  display: inline;
+                  font-size: 18px !important;
+                }
               }
             }
+          }
+        }
+
+        @media (max-width: 979px) and (min-width: 768px) {
+          & {
+            clear:both;
+            width:702px;
+            float:left !important;
+          }
+
+          .stats {
+            width:220px !important;
+
+            .new {
+            }
+
+            .new, .total {
+
+              .container {
+
+                .number {
+                }
+
+                .number, .period {
+                }
+              }
+            }
+          }
+
+          .graph {
+            width:400px !important;
+            padding-left: 25px;
+          }
+        }
+
+        @media (max-width: 767px) {
+          & {
+            clear:both;
+            width:99%;
+            float:left !important;
+            height: 400px;
+          }
+
+          .stats {
+            width:100% !important;
+            height:100px !important;
+            border-right: 0 !important;
+            border-bottom: 1px rgba(0, 0, 0, 0.207) solid;
+
+            .new {
+              border-right: 1px #f0f0f0 solid;
+            }
+
+            .new, .total {
+              border-top: none !important;
+              width:49%;
+              float:left;
+              height:inherit !important;
+
+              .container {
+                height:20px !important;
+                padding-top: 15px;
+                width:100%;
+                text-align: center;
+
+                .number {
+                  /*font-size: 18px !important;*/
+                  padding-right: 4px;
+                  font-weight: bold;
+                  /*color:#333;*/
+                }
+
+                .number, .period {
+                  /*float:left;*/
+                  display: inline;
+                  font-size: 18px !important;
+                }
+              }
+            }
+          }
+
+          /*.stats {
+            / width:23% !important;
+
+            .new {
+            }
+
+            .new, .total {
+
+              .container {
+
+                .number {
+                }
+
+                .number, .period {
+                }
+              }
+            }
+          }*/
+
+          .graph {
+            width:200px !important;
+            padding-left: 50%;
+            /*position: relative;*/
+            margin-left:-212px;
           }
         }
 
