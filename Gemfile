@@ -23,6 +23,10 @@ group :development do
   # gem 'oink'
   # gem 'ruby-prof'
   gem 'heroku'
+
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'meta_request'
 end
 
 group :assets do
