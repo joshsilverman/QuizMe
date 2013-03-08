@@ -314,7 +314,7 @@ class FeedsController < ApplicationController
 
   def manage
     #base selection
-    @posts = Post.includes(:tags, :user, :conversation => :posts) #.not_spam #.not_us
+    @posts = Post.includes(:tags, :user, :conversation => [:posts, :publication => {:question => :answers}], :in_reply_to_question => :answers) #.not_spam #.not_us
     if params[:id]
       @asker = Asker.find params[:id]
       @posts = @posts.where("posts.in_reply_to_user_id = ?", params[:id])
@@ -346,6 +346,7 @@ class FeedsController < ApplicationController
     end
 
     @tags = Tag.all
+    @nudge_types = NudgeType.all
     @posts = @posts.order("posts.created_at DESC")
 
     if @asker

@@ -56,7 +56,7 @@
 							/ quick reply vars
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
-								- correct = question.answers.reject{|a| a.correct != true}[0]							
+								- correct = question.answers.reject{|a| a.correct != true}[0]
 							/ - if params[:filter] != 'ugc'
 							/ 	- question = (post.is_dm? ? post.parent.question : post.in_reply_to_question)
 							/ 	- if question

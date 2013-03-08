@@ -20,7 +20,7 @@
 						%a.script{script_name: name, script_text: text}= name.to_s.humanize
 				- if post.is_dm?
 					%li.divider
-					- NudgeType.all.each do |nudge_type|
+					- @nudge_types.each do |nudge_type|
 						%li
 							%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
 				
