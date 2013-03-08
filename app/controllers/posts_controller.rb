@@ -48,6 +48,12 @@ class PostsController < ApplicationController
       if @post.update_attributes(params[:post])
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { head :ok }
+
+        #tag manually hidden posts
+        if params['post']['requires_action'].nil? == false and params['post']['requires_action'] == "false"
+          @tag = Tag.find_or_create_by_name('hide-manual')
+          @post.tags << @tag unless @post.tags.include? @tag
+        end
       else
         format.html { render action: "edit" }
         format.json { render json: @post.errors, status: :unprocessable_entity }
