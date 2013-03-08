@@ -225,6 +225,7 @@ class Asker < User
 
         # count += 1
         # puts "temp: send reengage inactive #{count}"
+        text = question.text
         
         next unless asker and publication and follower_ids.include? user.twi_user_id
 
