@@ -6,14 +6,11 @@
 			%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
 			%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
 			%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
-			%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
 		- else
 			%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
 			%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
-			%a.btn.retweet{:style => "margin-left: 0px;"}= "<u>r</u>etweet".html_safe
-			%a.btn.dropdown-toggle.script{"data-toggle" => "dropdown", :href => "#"}= "<u>r</u>etweet".html_safe
 
-		/ %a.btn.script{:style => "margin-left: 0px;"}= "<u>s</u>cript".html_safe
+		%a.btn.retweet= "<u>r</u>etweet".html_safe
 
 		.btn.scripts
 			%span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
