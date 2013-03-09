@@ -4,6 +4,9 @@ class User
       $('.modal.hide.fade.in').removeClass('in')
       $('.modal-backdrop').fadeOut()
 
+    $('abbr.timeago').timeago()
+
+
 
 $ ->
-  window.user = new User if $('.users').length > 0
+  window.user = new User if $('.users, .supporters').length > 0

@@ -90,6 +90,9 @@ Quizmemanager::Application.routes.draw do
 
   resources :askers
   get "users/supporters" => "users#supporters"
+  post "users/supporters" => "users#create_supporter"
+  delete "users/:id" => "users#destroy_supporter"
+  get "/user/supporters/:id/touch" => "users#touch_supporter"
 
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
