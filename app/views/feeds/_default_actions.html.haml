@@ -14,17 +14,19 @@
 
 				%a.btn.retweet= "<u>r</u>etweet".html_safe
 
-				.btn.scripts{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
-				/ %span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
-				/ %ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
-				/ 	- SCRIPTS.each do |name, text|
-				/ 		%li
-				/ 			%a.script{script_name: name, script_text: text}= name.to_s.humanize
-				/ 	- if post.is_dm?
-				/ 		%li.divider
-				/ 		- @nudge_types.each do |nudge_type|
-				/ 			%li
-				/ 				%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
+				/ .btn.scripts{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+
+				.dropdown.btn
+					%span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+					%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+						- SCRIPTS.each do |name, text|
+							%li
+								%a.script{script_name: name, script_text: text}= name.to_s.humanize
+						- if post.is_dm?
+							%li.divider
+							- @nudge_types.each do |nudge_type|
+								%li
+									%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
 						
 			.btn-group
 				%a.btn.open= "<u>o</u>pen".html_safe
@@ -47,13 +49,13 @@
 				/ %a.move{:style => "display: none;"}
 				/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
 
-		.sub.scripts
-			.ios-arrow-left.back{title: "Back"}
+		/ .sub.scripts
+		/ 	.ios-arrow-left.back{title: "Back"}
 
-			.btn-group
-				- SCRIPTS.each do |name, text|
-					%a.btn.script{script_name: name, script_text: text}= name.to_s.humanize
-					/ %a.script{script_name: name, script_text: text}= name.to_s.humanize
+		/ 	.btn-group
+		/ 		- SCRIPTS.each do |name, text|
+		/ 			%a.btn.script{script_name: name, script_text: text}= name.to_s.humanize
+		/ 			/ %a.script{script_name: name, script_text: text}= name.to_s.humanize
 
 		.sub.new-exam
 			.ios-arrow-left.back{title: "Back"}
