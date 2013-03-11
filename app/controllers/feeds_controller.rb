@@ -347,7 +347,7 @@ class FeedsController < ApplicationController
 
     @tags = Tag.all
     @nudge_types = NudgeType.all
-    @posts = @posts.order("posts.created_at DESC")
+    @posts = @posts.order("posts.created_at DESC").limit 3
 
     if @asker
       @questions = @asker.publications.where(:published => true)\

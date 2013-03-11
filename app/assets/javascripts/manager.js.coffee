@@ -463,7 +463,7 @@ class Post
 class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
-		$('.back').on "click", -> $('.actions .container').removeClass "more", 400 
+		$('.active .back').on "click", -> @hide_panel()
 
 		$(window).keypress (e) =>
 			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
@@ -487,21 +487,29 @@ class Hotkeys
 				when 115 then @toggle_scripts_panel() #active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle')
 
 				when 101 then @toggle_exam_panel()
-				when 98 then $('.actions .container').removeClass "more", 400 
+				when 98 then @hide_panel()
+
+	_before_toggle_panel: ->
+		$('.active .sub').hide()
+		$('.active .dropdown-menu').parent().removeClass('open')
+		$('.active .actions').css overflow: 'hidden'
+		$('.active .actions .container').addClass "more", 400
+
+	hide_panel: =>
+		$('.active .actions .container').removeClass "more", 400, ->
+			$('.active .sub').hide()
+			$('.active .actions').css overflow: 'inherit'
 
 	toggle_scripts_panel: ->
-		$('.sub').hide()
-		$('.scripts').show()
-		$('.actions .container').addClass "more", 400
+		@_before_toggle_panel()
+		$('.active .scripts').show()
 
 	toggle_exam_panel: ->
-		$('.sub').hide()
-		$('.new-exam').show()
-
-		$('.actions .container').addClass "more", 400
+		@_before_toggle_panel()
+		$('.active .new-exam').show()
 
 		$('.new-exam form').unbind 'ajax:success'
-		$('.new-exam form').bind 'ajax:success', -> 
+		$('.active .new-exam form').bind 'ajax:success', -> 
 			user_id = $(this).find('input[name="exam[user_id]"]').attr("value")
 			$(this).html("Success: <a href='/tutor?user_id=#{user_id}'>see tutor nudge</a>.").addClass("alert alert-success")
 
