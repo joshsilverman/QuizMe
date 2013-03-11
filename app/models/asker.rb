@@ -462,7 +462,9 @@ class Asker < User
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
-      if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
+      # make sure >= 20 autocorrected posts are checked each day
+      if Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20     #Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
+
         root_post = user_post.conversation.post
 
         asker_response = app_response(user_post, user_post.autocorrect, {
@@ -476,6 +478,7 @@ class Asker < User
         conversation.posts << user_post
         conversation.posts << asker_response
         learner_level = "twitter answer"
+
       end
     end
     after_answer_filter(answerer, user_post, :learner_level => learner_level)
