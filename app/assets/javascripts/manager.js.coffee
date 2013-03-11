@@ -182,8 +182,10 @@ class Post
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
+		@element.find(".create-exam").on "click", => feed.hotkeys.toggle_exam_panel false
+		@element.find(".btn.scripts").on "click", => feed.hotkeys.toggle_scripts_panel false
 
-		@element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
+		# @element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
 
 		@element.find(".nudge").on "click", (e) => @nudge($(e.target).attr("nudge_id"))
 
@@ -461,9 +463,12 @@ class Post
 class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
+		$('.back').on "click", -> $('.actions .container').removeClass "more", 400 
+
 		$(window).keypress (e) =>
 			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
 			active_post = @_active_post()
+			puts e.keyCode
 			switch e.keyCode
 				when 106 then @prev()
 				when 107 then @next()
@@ -479,7 +484,27 @@ class Hotkeys
 				when 114 then active_post.retweet() if active_post
 
 				when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
-				when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle')
+				when 115 then @toggle_scripts_panel() #active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle')
+
+				when 101 then @toggle_exam_panel()
+				when 98 then $('.actions .container').removeClass "more", 400 
+
+	toggle_scripts_panel: ->
+		$('.sub').hide()
+		$('.scripts').show()
+		$('.actions .container').addClass "more", 400
+
+	toggle_exam_panel: ->
+		$('.sub').hide()
+		$('.new-exam').show()
+
+		$('.actions .container').addClass "more", 400
+
+		$('.new-exam form').unbind 'ajax:success'
+		$('.new-exam form').bind 'ajax:success', -> 
+			user_id = $(this).find('input[name="exam[user_id]"]').attr("value")
+			$(this).html("Success: <a href='/tutor?user_id=#{user_id}'>see tutor nudge</a>.").addClass("alert alert-success")
+
 	accept_autocorrect: (e, active_post) ->
 		e.preventDefault()
 		if active_post
@@ -509,6 +534,7 @@ class Hotkeys
 		prev_conv = $('#posts .conversation').first() if prev_conv.length == 0
 
 		current_conv.removeClass 'active'
+		$('.actions .container').removeClass "more"
 		prev_conv.addClass 'active'
 		@_isScrolledIntoView prev_conv
 
@@ -518,6 +544,7 @@ class Hotkeys
 		next_conv = $('#posts .conversation').last() if next_conv.length == 0
 
 		current_conv.removeClass 'active'
+		$('.actions .container').removeClass "more"
 		next_conv.addClass 'active'
 		@_isScrolledIntoView next_conv
 

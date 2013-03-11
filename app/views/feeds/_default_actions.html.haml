@@ -1,45 +1,70 @@
 .actions
-	.btn-group.linked
-		- if question
-			%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
-			%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
-			%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
-			%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
-			%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
-		- else
-			%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
-			%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+	.container
+		.main
+			.btn-group.linked
+				- if question
+					%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
+					%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
+					%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+					%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+					%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+				- else
+					%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+					%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
 
-		%a.btn.retweet= "<u>r</u>etweet".html_safe
+				%a.btn.retweet= "<u>r</u>etweet".html_safe
 
-		.btn.scripts
-			%span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
-			%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
-				- SCRIPTS.each do |name, text|
+				.btn.scripts{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+				/ %span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+				/ %ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+				/ 	- SCRIPTS.each do |name, text|
+				/ 		%li
+				/ 			%a.script{script_name: name, script_text: text}= name.to_s.humanize
+				/ 	- if post.is_dm?
+				/ 		%li.divider
+				/ 		- @nudge_types.each do |nudge_type|
+				/ 			%li
+				/ 				%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
+						
+			.btn-group
+				%a.btn.open= "<u>o</u>pen".html_safe
+				/ - if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
+				/ 	%a.link_post.btn unlink
+				/ - else 
+				/ 	%a.link_post.btn link
+				%a.btn.create-exam= "<u>e</u>xam".html_safe
+
+				%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
+				%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
 					%li
-						%a.script{script_name: name, script_text: text}= name.to_s.humanize
-				- if post.is_dm?
-					%li.divider
-					- @nudge_types.each do |nudge_type|
-						%li
-							%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
-				
-	.btn-group
-		%a.btn.open= "<u>o</u>pen".html_safe
-		- if post.in_reply_to_post_id and post.in_reply_to_user_id == @asker.id	
-			%a.link_post.btn unlink
-		- else 
-			%a.link_post.btn link
+						- tags = post.tags.collect(&:name)
+						- @tags.each do |tag|
+							%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
 
-		%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
-		%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
-			%li
-				- tags = post.tags.collect(&:name)
-				- @tags.each do |tag|
-					%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
+				/ %a.btn.btn-mini.dropdown-toggle
+				/	 %i.icon-tag
+				/ 	move
+				/ %a.move{:style => "display: none;"}
+				/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
 
-		/ %a.btn.btn-mini.dropdown-toggle
-		/	 %i.icon-tag
-		/ 	move
-		/ %a.move{:style => "display: none;"}
-		/ 	= best_in_place post, :in_reply_to_user_id, :type => :select, :collection => User.askers.collect {|a| [a.id, a.twi_screen_name]}, :display_as => :requires_action
+		.sub.scripts
+			.ios-arrow-left.back{title: "Back"}
+
+			.btn-group
+				- SCRIPTS.each do |name, text|
+					%a.btn.script{script_name: name, script_text: text}= name.to_s.humanize
+					/ %a.script{script_name: name, script_text: text}= name.to_s.humanize
+
+		.sub.new-exam
+			.ios-arrow-left.back{title: "Back"}
+
+			.form-inline
+				= form_for(Exam.new, remote: true) do |f|
+					= f.text_field "subject", :class => "input-small", :placeholder => "Name", :type => "text"
+					= f.text_field "date", :class => "input-small", :placeholder => "Datetime", :type => "datetime"
+
+					= f.text_field "question_count", :class => "input-small", :placeholder => "Question Count", :type => "text"
+					= f.text_field "price", :class => "input-small", :placeholder => "Price", :type => "text"
+					= f.hidden_field "user_id", :type => "hidden", :value => post.user_id
+					
+					= f.button "Add", :class => "btn btn-primary", :type => "submit"

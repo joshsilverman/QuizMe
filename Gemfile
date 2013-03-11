@@ -24,9 +24,9 @@ group :development do
   # gem 'ruby-prof'
   gem 'heroku'
 
-  gem 'better_errors'
-  gem 'binding_of_caller'
-  gem 'meta_request'
+  # gem 'better_errors'
+  # gem 'binding_of_caller'
+  # gem 'meta_request'
 end
 
 group :assets do
