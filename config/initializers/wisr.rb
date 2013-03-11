@@ -155,6 +155,7 @@ SCRIPTS = {
   next_time: "You'll get it next time!",
   smile: ":)",
   awesome: "Awesome!",
+  thanks: "Thank you",
   gotcha: "Gotcha",
   tweet_not_dm: "Can you hit reply directly to my question tweet next time? It's hard for me to link it if you DM the answer..."
 }

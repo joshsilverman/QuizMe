@@ -185,7 +185,7 @@ class Post
 		@element.find(".create-exam").on "click", => feed.hotkeys.toggle_exam_panel false
 		@element.find(".btn.scripts").on "click", => feed.hotkeys.toggle_scripts_panel false
 
-		# @element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
+		@element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
 
 		@element.find(".nudge").on "click", (e) => @nudge($(e.target).attr("nudge_id"))
 
@@ -463,7 +463,7 @@ class Post
 class Hotkeys
 	constructor: ->
 		$('.conversation').first().addClass 'active'
-		$('.active .back').on "click", -> @hide_panel()
+		$('.active .back').on "click", => @hide_panel()
 
 		$(window).keypress (e) =>
 			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
