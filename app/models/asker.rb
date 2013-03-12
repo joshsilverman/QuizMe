@@ -152,12 +152,12 @@ class Asker < User
   	strategy = [3, 7, 10]
 
 		# Set time ranges
-    buffer = 3.days
-    begin_range = (Time.now - 2.days)
-    end_range = (Time.now - (20.days + buffer))
+    # buffer = 3.days
+    # begin_range = (Time.now - 2.days)
+    # end_range = (Time.now - (20.days + buffer))
 
     # Get disengaging users, recent reengagement attempts
-    disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements(begin_range, end_range)
+    disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements
 
 		# Compile recipients by asker, filter out recently engaged, pick asker to send from
     asker_recipients = Asker.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements)
@@ -171,19 +171,19 @@ class Asker < User
     Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
-  def self.get_disengaging_users_and_reengagements(begin_range, end_range)
+  def self.get_disengaging_users_and_reengagements
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
       .where("users.activity_segment != 7")\
       .where("users.last_answer_at is not null")\
-      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
+      # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
-      .where("created_at > ?", end_range)\
       .order("created_at DESC")\
       .group_by(&:in_reply_to_user_id)
+      # .where("created_at > ?", end_range)\
 
     return disengaging_users, recent_reengagements
   end
