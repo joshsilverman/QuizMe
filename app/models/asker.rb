@@ -151,11 +151,6 @@ class Asker < User
   	# Strategy definition, currently overriden in compile_recipients_by_asker
   	strategy = [3, 7, 10]
 
-		# Set time ranges
-    # buffer = 3.days
-    # begin_range = (Time.now - 2.days)
-    # end_range = (Time.now - (20.days + buffer))
-
     # Get disengaging users, recent reengagement attempts
     disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements
 
@@ -171,26 +166,27 @@ class Asker < User
     Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
-  def self.get_disengaging_users_and_reengagements
+  def self.get_disengaging_users_and_reengagements end_range = 61
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
       .where("users.activity_segment != 7")\
       .where("users.last_answer_at is not null")\
+      .where("users.last_interaction_at > ?", Time.now - end_range.days)
       # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
+      .where("created_at > ?", Time.now -  end_range.days)\
       .order("created_at DESC")\
       .group_by(&:in_reply_to_user_id)
-      # .where("created_at > ?", end_range)\
 
     return disengaging_users, recent_reengagements
   end
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
-      test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8/15", "1/2/4/8/15/30/30", "2/4/8/15/30/30")
+      test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
