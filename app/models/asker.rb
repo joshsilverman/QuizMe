@@ -466,7 +466,6 @@ class Asker < User
       if Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20     #Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
 
         root_post = user_post.conversation.post
-
         asker_response = app_response(user_post, user_post.autocorrect, {
           :link_to_parent => false, 
           :autoresponse => true,
@@ -478,7 +477,6 @@ class Asker < User
         conversation.posts << user_post
         conversation.posts << asker_response
         learner_level = "twitter answer"
-
       end
     end
     after_answer_filter(answerer, user_post, :learner_level => learner_level)
