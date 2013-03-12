@@ -245,7 +245,7 @@ class User < ActiveRecord::Base
 			experiment = Split::Experiment.find(experiment_name)
 			ab_user = Split::RedisStore.new(Split.redis) 
 			ab_user.set_id(id)
-			return ab_user.get_key(experiment.key)
+			return ab_user.get_key(experiment.key) if experiment.key
 		else
 			return false
 		end
