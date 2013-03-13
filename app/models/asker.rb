@@ -211,14 +211,16 @@ class Asker < User
     asker_recipients.each do |asker_id, recipient_data|
       asker = Asker.find(asker_id)
       follower_ids = asker.update_followers()
-
+      puts recipient_data.to_json
       recipient_data[:recipients].each do |user_hash|
         user = user_hash[:user]
 
         if Post.create_split_test(user.id, "Personalized reengagement question (age > 15 days)", "false", "true") == "true"
+          puts 'using personalized'
           question = user_hash[:question]
           publication = question.publications.order("created_at DESC").first
         else
+          puts 'using control'
           publication = recipient_data[:publication]
           question = publication.question
         end
@@ -226,6 +228,7 @@ class Asker < User
         # count += 1
         # puts "temp: send reengage inactive #{count}"
         text = question.text
+        puts text
         
         next unless asker and publication and follower_ids.include? user.twi_user_id
 
