@@ -201,6 +201,8 @@ class Asker < User
   end
 
   def self.send_reengagement_tweets(asker_recipients)
+    count = 0
+
     asker_recipients.each do |asker_id, recipient_data|
       asker = Asker.find(asker_id)
       follower_ids = asker.update_followers()
@@ -216,6 +218,9 @@ class Asker < User
         else
           text = question.text
         end
+        count += 1
+
+        puts "temp: send reengage inactive #{count}"
         Post.tweet(asker, text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -233,7 +238,7 @@ class Asker < User
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :strategy => user_hash[:strategy]}
         sleep(1)
       end
-    end  
+    end
   end
 
   def self.engage_new_users
