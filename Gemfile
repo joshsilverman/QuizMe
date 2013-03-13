@@ -1,12 +1,14 @@
 source :rubygems
 
-gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 
 group :test do
   #gem 'sqlite3'
   gem 'turn', :require => false
   gem "database_cleaner"
+  gem 'minitest'
+  gem 'capybara'
+  gem 'factory_girl_rails'
 end
 
 group :production do

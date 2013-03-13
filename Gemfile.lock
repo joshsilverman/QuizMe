@@ -68,6 +68,15 @@ GEM
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
     builder (3.0.4)
+    capybara (2.0.2)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      selenium-webdriver (~> 2.0)
+      xpath (~> 1.0.0)
+    childprocess (0.3.9)
+      ffi (~> 1.0, >= 1.0.11)
     coderay (1.0.9)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -93,14 +102,19 @@ GEM
       orm_adapter (~> 0.1)
       railties (~> 3.1)
       warden (~> 1.2.1)
-    diff-lcs (1.1.3)
     erubis (2.7.0)
     escape (0.0.4)
     excon (0.16.10)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    factory_girl (4.2.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.2.1)
+      factory_girl (~> 4.2.0)
+      railties (>= 3.0.0)
     faraday (0.8.5)
       multipart-post (~> 1.1)
+    ffi (1.4.0)
     file-tail (1.0.12)
       tins (~> 0.5)
     google_drive (0.3.3)
@@ -153,6 +167,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.20.1)
+    minitest (4.6.2)
     mixpanel (1.1.3)
       escape
       json
@@ -226,19 +241,6 @@ GEM
       css_parser
       nokogiri (>= 1.4.4)
       sprockets
-    rspec (2.8.0)
-      rspec-core (~> 2.8.0)
-      rspec-expectations (~> 2.8.0)
-      rspec-mocks (~> 2.8.0)
-    rspec-core (2.8.0)
-    rspec-expectations (2.8.0)
-      diff-lcs (~> 1.1.2)
-    rspec-mocks (2.8.0)
-    rspec-rails (2.8.1)
-      actionpack (>= 3.0)
-      activesupport (>= 3.0)
-      railties (>= 3.0)
-      rspec (~> 2.8.0)
     ruby-stemmer (0.9.3)
     ruby2ruby (2.0.2)
       ruby_parser (~> 3.1)
@@ -251,6 +253,11 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
+    selenium-webdriver (2.31.0)
+      childprocess (>= 0.2.5)
+      multi_json (~> 1.0)
+      rubyzip
+      websocket (~> 1.0.4)
     sequel (3.44.0)
     sexp_processor (4.1.4)
     simple_oauth (0.2.0)
@@ -295,6 +302,9 @@ GEM
       multi_json (~> 1.3)
     warden (1.2.1)
       rack (>= 1.0)
+    websocket (1.0.7)
+    xpath (1.0.0)
+      nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
@@ -306,11 +316,13 @@ DEPENDENCIES
   best_in_place
   better_errors
   bitly!
+  capybara
   coffee-rails (~> 3.2.1)
   dalli (= 2.1.0)
   database_cleaner
   delayed_job_active_record
   devise
+  factory_girl_rails
   google_drive
   haml (= 3.1.6)
   heroku
@@ -319,6 +331,7 @@ DEPENDENCIES
   jquery-ui-rails
   kaminari
   kaminari-bootstrap
+  minitest
   mixpanel (= 1.1.3)
   newrelic_rpm
   omniauth
@@ -330,7 +343,6 @@ DEPENDENCIES
   rails (= 3.2.11)
   redis
   roadie
-  rspec-rails (= 2.8.1)
   sass-rails (~> 3.2.3)
   sitemap_generator
   sourcify

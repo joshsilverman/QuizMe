@@ -169,7 +169,6 @@ class Asker < User
       strategy = strategy_str.split("/").map { |e| e.to_i }
 
       last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || Time.now - 1000.years
-      # last_active_at_to_present_in_days = (Time.now - last_active_at)/60/60/24
       
       #find ideal time when user reengaged last/next
       aggregate_intervals = 0

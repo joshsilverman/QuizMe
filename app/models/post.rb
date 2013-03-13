@@ -522,6 +522,8 @@ class Post < ActiveRecord::Base
   end
   
   def self.create_split_test(user_id, test_name, *alternatives)
+    return alternatives[0] if Rails.env == 'test'
+
     ab_user.set_id(user_id, true)
     ab_user.confirm_js("WISR app", '')
     ab_test(test_name, *alternatives)
