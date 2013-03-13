@@ -166,7 +166,7 @@ class Asker < User
     Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
-  def self.get_disengaging_users_and_reengagements end_range = 61
+  def self.get_disengaging_users_and_reengagements end_range = 20
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
       .where("users.activity_segment != 7")\
