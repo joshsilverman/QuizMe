@@ -131,6 +131,11 @@ class Classifier
     klass = @stuff_classifier.classify(vector, :real)
     if klass == :spam
       post.update_attribute :autospam, true
+
+      # verify 20 pieces of spam every 24 hours
+      if Post.spam.requires_action.where("created_at > ?", Time.now - 1.day).count >= 20
+        post.update_attribute :requires_action, false
+      end
     else
       post.update_attribute :autospam, false
     end

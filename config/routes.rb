@@ -105,6 +105,7 @@ Quizmemanager::Application.routes.draw do
   resources :users
   resources :posts
   resources :mentions
+  resources :exams
   
   # #Split Dashboard
   # mount Split::Dashboard, :at => 'split'

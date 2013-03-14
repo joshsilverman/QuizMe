@@ -151,13 +151,8 @@ class Asker < User
   	# Strategy definition, currently overriden in compile_recipients_by_asker
   	strategy = [3, 7, 10]
 
-		# Set time ranges
-    buffer = 3.days
-    begin_range = (Time.now - 2.days)
-    end_range = (Time.now - (20.days + buffer))
-
     # Get disengaging users, recent reengagement attempts
-    disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements(begin_range, end_range)
+    disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements
 
 		# Compile recipients by asker, filter out recently engaged, pick asker to send from
     asker_recipients = Asker.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements)
@@ -171,17 +166,18 @@ class Asker < User
     Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
-  def self.get_disengaging_users_and_reengagements(begin_range, end_range)
+  def self.get_disengaging_users_and_reengagements end_range = 20
     # Get disengaging users
     disengaging_users = User.includes(:posts)\
       .where("users.activity_segment != 7")\
       .where("users.last_answer_at is not null")\
-      .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
+      .where("users.last_interaction_at > ?", Time.now - end_range.days)
+      # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
 
     # Get recently sent re-engagements
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
-      .where("created_at > ?", end_range)\
+      .where("created_at > ?", Time.now -  end_range.days)\
       .order("created_at DESC")\
       .group_by(&:in_reply_to_user_id)
 
@@ -190,7 +186,7 @@ class Asker < User
 
   def self.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements, asker_recipients = {})
     disengaging_users.each do |user|
-      test_option = Post.create_split_test(user.id, "reengagement tight intervals", "3/6/12/15", "2/4/8/15", "1/2/4/8/15")
+      test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
       strategy = test_option.split("/").map { |e| e.to_i }
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).sample
@@ -205,6 +201,8 @@ class Asker < User
   end
 
   def self.send_reengagement_tweets(asker_recipients)
+    count = 0
+
     asker_recipients.each do |asker_id, recipient_data|
       asker = Asker.find(asker_id)
       follower_ids = asker.update_followers()
@@ -220,6 +218,9 @@ class Asker < User
         else
           text = question.text
         end
+        count += 1
+
+        puts "temp: send reengage inactive #{count}"
         Post.tweet(asker, text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -237,7 +238,7 @@ class Asker < User
         Mixpanel.track_event "reengage inactive", {:distinct_id => user.id, :interval => user_hash[:interval], :strategy => user_hash[:strategy]}
         sleep(1)
       end
-    end  
+    end
   end
 
   def self.engage_new_users
@@ -462,9 +463,10 @@ class Asker < User
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
-      if Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
-        root_post = user_post.conversation.post
+      # make sure >= 20 autocorrected posts are checked each day
+      if Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20     #Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
 
+        root_post = user_post.conversation.post
         asker_response = app_response(user_post, user_post.autocorrect, {
           :link_to_parent => false, 
           :autoresponse => true,
@@ -548,7 +550,7 @@ class Asker < User
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
         Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
-        strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
+        strategy = answerer.get_experiment_option("reengagement intervals (age > 15 days)") if answerer.enrolled_in_experiment?("reengagement intervals (age > 15 days)")
         in_reply_to = "reengage inactive"
       end
 
@@ -583,7 +585,7 @@ class Asker < User
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
           Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
-          strategy = answerer.get_experiment_option("reengagement tight intervals") if answerer.enrolled_in_experiment?("reengagement tight intervals")
+          strategy = answerer.get_experiment_option("reengagement intervals (age > 15 days)") if answerer.enrolled_in_experiment?("reengagement intervals (age > 15 days)")
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
           in_reply_to = "incorrect answer follow up" 
@@ -602,7 +604,10 @@ class Asker < User
         :strategy => strategy,
         :autoresponse => (options[:autoresponse].present? ? options[:autoresponse] : false)
       }        
-    end  
+    end
+
+    # Events/triggers where posted_via_app doesn't matter
+    Post.trigger_split_test(answerer.id, "reengagement intervals (age > 15 days)") if  answerer.age_greater_than 15.days 
   end
 
 
