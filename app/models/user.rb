@@ -542,18 +542,18 @@ class User < ActiveRecord::Base
     ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
 
-  def select_reengagement_question asker_id, question_scores
-  	# get ids of question unanswered and answered by user
-  	answered_question_ids = questions_answered_ids_by_asker(asker_id) 
-  	answered_question_ids = [0] if answered_question_ids.blank?
-  	unanswered_question_ids = question_scores.keys - answered_question_ids
+  def select_reengagement_question asker_id, question_scores, recent_reengagements
+  	recent_reengagement_question_ids = (recent_reengagements ? recent_reengagements.collect { |p| p.question_id } : [])
 
-  	# group user's unanswered questions by score, degrade to answered
-  	score_grouped_questions = unanswered_question_ids.group_by { |question_id| question_scores[question_id] }
-  	score_grouped_questions = answered_question_ids.group_by { |question_id| question_scores[question_id] } if score_grouped_questions.blank?
-  	
+  	# filter out answered and recently sent question ids if possible
+  	question_ids = question_scores.keys - questions_answered_ids_by_asker(asker_id) # get unanswered questions
+  	question_ids = question_scores.keys if question_ids.blank? # degrade to using answered questions
+  	question_ids = question_ids.reject { |id| recent_reengagement_question_ids.include? id } if (question_ids - recent_reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
+
+  	score_grouped_question_ids = question_ids.group_by { |question_id| question_scores[question_id] }
+
   	# select question from highest scoring question group
-  	Question.includes(:publications).find(score_grouped_questions.max[1].sample)
+  	Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
   end
 
   def questions_answered_ids_by_asker asker_id, question_ids = []

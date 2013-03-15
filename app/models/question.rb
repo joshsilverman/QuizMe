@@ -99,9 +99,9 @@ class Question < ActiveRecord::Base
       .count    
     
     # build question popularity index - status answers per publication
-    questions_with_publication_count.map { |q| popularity_index[q.id] = question_answered_counts[q.id].to_f / q.publication_count.to_f }
+    questions_with_publication_count.each { |q| popularity_index[q.id] = question_answered_counts[q.id].to_f / q.publication_count.to_f }
 
-    # extract top 25% most popular questions
+    # mark most popular 25% of questions
     popular_question_ids = popularity_index.sort_by {|k,v| v}.reverse[0..(popularity_index.size * 0.25).ceil].collect { |e| e[0] }
 
     # score questions / build score hash
@@ -121,7 +121,7 @@ class Question < ActiveRecord::Base
     message_length_with_answers = TWI_MAX_SCREEN_NAME_LENGTH + 1 + text_with_answers.size + 1 + TWI_SHORT_URL_LENGTH
     score += 1 if message_length < 140 # fits into tweet
     score += 1 if message_length < 80 # is short
-    score += 1 unless INCLUDE_ANSWERS.include?(id) and message_length_with_answers > 140 # handle should include answers, but doesn't fit
+    score += 1 unless INCLUDE_ANSWERS.include?(id) and message_length_with_answers > 140 # unless handle should include answers, but doesn't fit
     score
   end
 
