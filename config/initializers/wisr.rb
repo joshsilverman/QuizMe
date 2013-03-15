@@ -3,7 +3,7 @@
 PROVIDERS = ["twitter"]
 
 # @ugly, this should make use of Devise roles (wtf)
-ADMINS = [1, 3, 4, 11]
+ADMINS = (Rails.env.test? ? [] : [1, 3, 4, 11])
 
 
 URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")

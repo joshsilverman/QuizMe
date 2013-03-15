@@ -199,7 +199,7 @@ class Post < ActiveRecord::Base
     else
       twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
     end
-    if twitter_response
+    if twitter_response or Rails.env.test? # passthrough for tests
       options[:in_reply_to_user_id] = [options[:in_reply_to_user_id]] unless options[:in_reply_to_user_id].is_a?(Array)
       options[:in_reply_to_user_id].each do |user_id|
         post = Post.create(
