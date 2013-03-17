@@ -113,7 +113,7 @@ class AskersController < ApplicationController
   end
 
   def graph
-    @domain = params[:domain].to_i || 30
+    @domain = params[:domain] || 30
 
     begin
       name = "graph_#{params[:graph]}"

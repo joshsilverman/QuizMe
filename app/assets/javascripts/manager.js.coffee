@@ -10,7 +10,6 @@ class @Manager extends @Feed
 	correct: null
 	correct_responses: []
 	correct_complements: []
-	# incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	active_tags: []
 	
@@ -61,6 +60,7 @@ class @Manager extends @Feed
 		$("#add_tag .btn").on "click", (e) => @add_tag(e)
 
 		@hotkeys = new Hotkeys
+		@load_stats()
 
 	initialize_posts: (posts) => 
 		$.each posts, (i, post) =>
@@ -149,6 +149,30 @@ class @Manager extends @Feed
 			success: (status) =>
 				@update_feedback_tag_status(element, status) if element		
 
+	load_stats: ->
+		graph_options =
+			isStacked: true
+			backgroundColor: 'transparent'
+			legend: 'none'
+			chartArea:
+				height:120
+				width:210
+				left:45
+				top:30
+
+		$.ajax "/graph/moderators/mangrades_to_autogrades",
+			success: (data) ->
+				data = data.replace(/&quot;/g, '"')
+				data = google.visualization.arrayToDataTable($.parseJSON(data))
+				chart = new google.visualization.AreaChart(document.getElementById("autograder-auto-stats"))
+				chart.draw data, graph_options
+
+		$.ajax "/graph/moderators/incorrect_vs_correct_autogrades",
+			success: (data) ->
+				data = data.replace(/&quot;/g, '"')
+				data = google.visualization.arrayToDataTable($.parseJSON(data))
+				chart = new google.visualization.AreaChart(document.getElementById("autograder-correct-stats"))
+				chart.draw data, graph_options
 
 class Post
 	constructor: (element, active_record) ->

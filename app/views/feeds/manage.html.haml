@@ -28,10 +28,17 @@
 						/ 	%li{:class => "#{'active' if params[:filter] == tag.name}"}= link_to tag.name, "?filter=#{tag.name}"
 						//%li= link_to "Starred", '?filter=starred'
 
-					/ %ul.nav.nav-tabs.nav-stacked
-					/ 	%li
-					/ 		.box.top Inbox Stats
-					/		
+					%ul.nav.nav-tabs.nav-stacked.stats
+						%li
+							.box.top Auto vs App vs Manual grade
+						%li
+							#autograder-auto-stats.graph
+
+					%ul.nav.nav-tabs.nav-stacked.stats
+						%li
+							.box.top Incorrect vs Correct grade
+						%li
+							#autograder-correct-stats.graph
 
 					#send_tweet.rounded.border-color{style: ("display:none;" if @oneinbox)}
 						.header
