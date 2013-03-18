@@ -11,7 +11,8 @@ describe Asker do
 
 			@asker = FactoryGirl.create(:asker)
 			@question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
-			FactoryGirl.create(:publication, question_id: @question.id)
+			@publication = FactoryGirl.create(:publication, question_id: @question.id)
+			@question_status = FactoryGirl.create(:post, user_id: @asker.id, created_at: (@strategy.first - 2).days.ago, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)
 
 			@user = FactoryGirl.create(:user, twi_user_id: 1)
 			@asker.followers << @user
@@ -52,24 +53,23 @@ describe Asker do
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
 			end
 
-			describe "that hasn't been" do
-				before :each do
-					@new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
-					FactoryGirl.create(:publication, question_id: @new_question.id)
-				end
+			# describe "that hasn't been" do
+			# 	before :each do
+			# 		@new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
+			# 	end
 
-				it "that hasn't been answered before" do
-					@answer.update_attribute :in_reply_to_question_id, @question.id
-					Asker.reengage_inactive_users @strategy
-					Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id
-				end
+			# 	it "that hasn't been answered before" do
+			# 		@answer.update_attribute :in_reply_to_question_id, @question.id
+			# 		Asker.reengage_inactive_users @strategy
+			# 		Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id
+			# 	end
 
-				it "that hasn't been asked before" do
-					@reengagement_post = FactoryGirl.create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
-					Asker.reengage_inactive_users @strategy
-					Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
-				end		
-			end	
+			# 	it "that hasn't been asked before" do
+			# 		@reengagement_post = FactoryGirl.create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
+			# 		Asker.reengage_inactive_users @strategy
+			# 		Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
+			# 	end		
+			# end	
 		end				
 	end
 end
