@@ -487,6 +487,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
+    return [] if Rails.env.test?
     return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
     
     value = nil

@@ -53,7 +53,7 @@ class Asker < User
     # Get lists of user ids from twitter + wisr
     twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
 
-    if twi_follower_ids
+    if twi_follower_ids.present?
       wisr_follower_ids = followers.collect(&:twi_user_id)
 
       # Add new followers in wisr
@@ -66,7 +66,7 @@ class Asker < User
       unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
       unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
     else
-      twi_follower_ids = followers.collect(&:id)
+      twi_follower_ids = followers.collect(&:twi_user_id)
     end
     
     return twi_follower_ids 
@@ -147,10 +147,7 @@ class Asker < User
     script 
   end
 
-  def self.reengage_inactive_users
-  	# Strategy definition, currently overriden in compile_recipients_by_asker
-  	strategy = [3, 7, 10]
-
+  def self.reengage_inactive_users strategy = nil
     # Get disengaging users, recent reengagement attempts
     disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements
 
@@ -163,11 +160,14 @@ class Asker < User
 
   def self.get_disengaging_users_and_reengagements end_range = 20
   # def self.get_disengaging_users_and_reengagements(begin_range, end_range)
+    # disengaging_users = User.includes(:posts)\
+    #   .where("users.activity_segment != 7 or users.activity_segment is null")\
+    #   .where("users.last_answer_at is not null")\
+    #   .where("users.last_interaction_at > ?", Time.now - end_range.days)
+    #   # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
+
     disengaging_users = User.includes(:posts)\
-      .where("users.activity_segment != 7")\
-      .where("users.last_answer_at is not null")\
-      .where("users.last_interaction_at > ?", Time.now - end_range.days)
-      # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
+      .where("(users.activity_segment != 7 or users.activity_segment is null) and users.last_answer_at is not null and users.last_interaction_at > ?", Time.now - end_range.days)
 
     recent_reengagements = Post.where("in_reply_to_user_id in (?)", disengaging_users.collect(&:id))\
       .where("intention = 'reengage inactive'")\
@@ -181,13 +181,19 @@ class Asker < User
   def self.compile_recipients_by_asker strategy, disengaging_users, recent_reengagements, asker_recipients = {}
     published_askers = Asker.published.collect(&:id)
     disengaging_users.each do |user|
-      test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
-      strategy = test_option.split("/").map { |e| e.to_i }
+      if strategy
+        test_option = strategy.join "/"
+      else
+        test_option = Post.create_split_test(user.id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
+        strategy = test_option.split("/").map { |e| e.to_i }
+      end
+
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
       # this could be made smarter - incorporate recency maybe
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).select{ |id| published_askers.include? id }.sample
       next unless next_checkpoint = strategy[user_reengagments.size] and asker_id
       time_since_last_touchpoint = (Time.now - (user_reengagments.present? ? user_reengagments.last.created_at : user.last_interaction_at))
+
       if time_since_last_touchpoint > next_checkpoint.days
         asker_recipients[asker_id] ||= {:recipients => [], :question_scores => Question.score_questions_by_asker(asker_id)}
         asker_recipients[asker_id][:recipients] << {
@@ -212,8 +218,6 @@ class Asker < User
         publication = question.publications.order("created_at DESC").first
 
         next unless asker and publication and follower_ids.include? user.twi_user_id
-
-        puts question.text
 
         Post.tweet(asker, question.text, {
           :reply_to => user.twi_screen_name,

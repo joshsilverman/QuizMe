@@ -84,6 +84,7 @@ class Question < ActiveRecord::Base
   def self.score_questions_by_asker asker_id, popularity_index = {}, scores = {}
     questions_with_publication_count = Asker.find(asker_id)\
       .questions\
+      .where("questions.status = 1")\
       .select("questions.*, count(publications.id) as publication_count")\
       .joins(:publications)\
       .includes(:answers)\

@@ -4,7 +4,9 @@ gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 
 group :test do
-  #gem 'sqlite3'
+  gem 'minitest'
+  gem 'factory_girl_rails'
+  gem 'capybara'
   gem 'turn', :require => false
   gem "database_cleaner"
 end
@@ -16,17 +18,17 @@ end
 
 group :development do
   gem 'rack-mini-profiler'
-  # gem "guard"
-  # gem "guard-livereload"
   gem 'awesome_print'
   gem 'quiet_assets'
+  gem 'heroku'
+  gem 'better_errors'
+  gem 'meta_request'
+
+  # gem "guard"
+  # gem "guard-livereload"
+  # gem 'binding_of_caller'
   # gem 'oink'
   # gem 'ruby-prof'
-  gem 'heroku'
-
-  gem 'better_errors'
-  # gem 'binding_of_caller'
-  gem 'meta_request'
 end
 
 group :assets do
@@ -45,12 +47,6 @@ gem 'jquery-rails', '1.0.19'
 gem 'devise'
 gem 'omniauth'
 gem 'omniauth-twitter'
-
-# gem 'omniauth', '1.1.0'
-# gem 'omniauth-oauth2', '1.0.2'
-# gem 'omniauth-twitter', '0.0.12'
-# gem 'omniauth-facebook', '1.4.0'
-# gem 'omniauth-tumblr', '1.0'
 
 gem 'rabl', '0.6.14'
 gem 'hirb'

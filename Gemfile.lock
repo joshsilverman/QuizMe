@@ -68,6 +68,15 @@ GEM
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
     builder (3.0.4)
+    capybara (1.1.2)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      selenium-webdriver (~> 2.0)
+      xpath (~> 0.1.4)
+    childprocess (0.3.4)
+      ffi (~> 1.0, >= 1.0.6)
     coderay (1.0.9)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -99,8 +108,14 @@ GEM
     excon (0.16.10)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    factory_girl (3.6.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (3.6.0)
+      factory_girl (~> 3.6.0)
+      railties (>= 3.0.0)
     faraday (0.8.6)
       multipart-post (~> 1.1)
+    ffi (1.1.3)
     file-tail (1.0.12)
       tins (~> 0.5)
     google_drive (0.3.4)
@@ -148,6 +163,8 @@ GEM
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
+    libwebsocket (0.1.5)
+      addressable
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -156,6 +173,7 @@ GEM
       rack-contrib
       railties
     mime-types (1.20.1)
+    minitest (4.6.2)
     mixpanel (1.1.3)
       escape
       json
@@ -256,6 +274,11 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
+    selenium-webdriver (2.25.0)
+      childprocess (>= 0.2.5)
+      libwebsocket (~> 0.1.3)
+      multi_json (~> 1.0)
+      rubyzip
     sequel (3.45.0)
     sexp_processor (4.1.5)
     simple_oauth (0.2.0)
@@ -300,6 +323,8 @@ GEM
       multi_json (~> 1.3)
     warden (1.2.1)
       rack (>= 1.0)
+    xpath (0.1.4)
+      nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
@@ -311,11 +336,13 @@ DEPENDENCIES
   best_in_place
   better_errors
   bitly!
+  capybara
   coffee-rails (~> 3.2.1)
   dalli (= 2.1.0)
   database_cleaner
   delayed_job_active_record
   devise
+  factory_girl_rails
   google_drive
   haml (= 3.1.6)
   heroku
@@ -325,6 +352,7 @@ DEPENDENCIES
   kaminari
   kaminari-bootstrap
   meta_request
+  minitest
   mixpanel (= 1.1.3)
   newrelic_rpm
   omniauth
