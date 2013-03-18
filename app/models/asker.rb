@@ -222,7 +222,7 @@ class Asker < User
         end
 
         next unless asker and publication and follower_ids.include? user.twi_user_id
-        puts question.text
+
         Post.tweet(asker, question.text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
