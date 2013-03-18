@@ -277,12 +277,14 @@ class Post < ActiveRecord::Base
     mentions = Post.twitter_request { client.mentions({:count => 200}) } || []
     existing_mention_ids = Post.select(:provider_post_id).where(:provider_post_id => mentions.collect { |m| m.id.to_s }).collect(&:provider_post_id)
     mentions.reject! { |m| existing_mention_ids.include? m.id.to_s }
+    mentions.sort_by! { |m| m.created_at }
     mentions.each { |m| Post.save_mention_data(m, current_acct) }
 
     # Get DMs, de-dupe, and save
     dms = Post.twitter_request { client.direct_messages({:count => 200}) } || []
     existing_dm_ids = Post.select(:provider_post_id).where(:provider_post_id => dms.collect { |dm| dm.id.to_s }).collect(&:provider_post_id)
-    dms.reject! { |dm| existing_dm_ids.include? dm.id.to_s }
+    dms.reject! { |d| existing_dm_ids.include? d.id.to_s }
+    dms.sort_by! { |d| d.created_at }
     dms.each { |d| Post.save_dm_data(d, current_acct) }
 
     true 
