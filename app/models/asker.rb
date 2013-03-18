@@ -154,18 +154,15 @@ class Asker < User
 		# Compile recipients by asker, filter out recently engaged, pick asker to send from
     asker_recipients = Asker.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements)
 
+    Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 2.days.ago).group_by(&:user_id).each do |user_id, posts|
+      asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
+    end
+
     # Send reengagement tweets
     Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
   def self.get_disengaging_users_and_reengagements end_range = 20
-  # def self.get_disengaging_users_and_reengagements(begin_range, end_range)
-    # disengaging_users = User.includes(:posts)\
-    #   .where("users.activity_segment != 7 or users.activity_segment is null")\
-    #   .where("users.last_answer_at is not null")\
-    #   .where("users.last_interaction_at > ?", Time.now - end_range.days)
-    #   # .where("users.last_interaction_at > ? and users.last_interaction_at < ?", end_range, begin_range)
-
     disengaging_users = User.includes(:posts)\
       .where("(users.activity_segment != 7 or users.activity_segment is null) and users.last_answer_at is not null and users.last_interaction_at > ?", Time.now - end_range.days)
 
@@ -189,6 +186,7 @@ class Asker < User
       end
 
       user_reengagments = (recent_reengagements[user.id] || []).select { |p| p.created_at > user.last_interaction_at }.sort_by(&:created_at)      
+
       # this could be made smarter - incorporate recency maybe
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).select{ |id| published_askers.include? id }.sample
       next unless next_checkpoint = strategy[user_reengagments.size] and asker_id
@@ -214,11 +212,17 @@ class Asker < User
 
       recipient_data[:recipients].each do |user_hash|
         user = user_hash[:user]
-        question = user_hash[:question]
-        publication = question.publications.order("created_at DESC").first
+
+        if Post.create_split_test(user.id, "Personalized reengagement question (age > 15 days)", "false", "true") == "false"
+          publication = recipient_data[:publication]
+          question = publication.question
+        else
+          question = user_hash[:question]
+          publication = question.publications.order("created_at DESC").first
+        end
 
         next unless asker and publication and follower_ids.include? user.twi_user_id
-
+        puts question.text
         Post.tweet(asker, question.text, {
           :reply_to => user.twi_screen_name,
           :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
@@ -242,7 +246,6 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    # Asker.dm_new_followers
     Asker.all.each { |asker| asker.update_followers() }
 
     # Send mentions to new users
