@@ -28,7 +28,7 @@ class @Manager extends @Feed
 		@initialize_ask()
 
 		$('.best_in_place').on "ajax:success", ->
-			alert('broken success callback - this does not fire')
+			# alert('broken success callback - this does not fire')
 
 		$("#respond_modal").on "hidden", => 
 			$("#respond_modal").find("textarea").val("")
