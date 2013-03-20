@@ -81,6 +81,11 @@ class Question < ActiveRecord::Base
       .ugc
   end
 
+  def self.score_questions question_scores = {}
+    Asker.published.each { |asker| question_scores[asker.id] = Question.score_questions_by_asker(asker.id) }
+    question_scores
+  end
+
   def self.score_questions_by_asker asker_id, popularity_index = {}, scores = {}
     questions_with_publication_count = Asker.find(asker_id)\
       .questions\
