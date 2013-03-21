@@ -152,88 +152,59 @@ class Asker < User
   end
 
   def self.reengage_inactive_users strategy = nil
-    user_ids_to_last_active_at = Hash[*Post.not_spam.not_us\
+    user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
+      .where("created_at > ?", 20.days.ago)\
       .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
       .where('posts.intention' => 'reengage inactive')\
+      .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
 
-    scored_questions = Question.score_questions
+    @scored_questions = Question.score_questions
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       if strategy
-        test_option = strategy.join "/"
+        strategy_string = strategy.join "/"
       else
-        test_option = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
-        strategy = test_option.split("/").map { |e| e.to_i }
+        strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
+        strategy = strategy_string.split("/").map { |e| e.to_i }
       end      
 
       last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || Time.now - 1000.years
 
       aggregate_intervals = 0
-      ideal_last_reengage_at = ideal_next_reengage_at = nil
+      ideal_last_reengage_at = nil
       strategy.each do |interval|
         aggregate_intervals += interval
-        if (last_active_at + (aggregate_intervals + interval).days) < Time.now 
-          ideal_last_reengage_at = last_active_at + aggregate_intervals.days
-        elsif (last_active_at + (aggregate_intervals + interval).days) > Time.now 
-          ideal_next_reengage_at = last_active_at + aggregate_intervals.days
-          break
-        end
+        (last_active_at + (aggregate_intervals).days) < Time.now ? ideal_last_reengage_at = (last_active_at + aggregate_intervals.days) : break
       end
 
-
-
-      # puts "aggregate intervals: #{aggregate_intervals}"
-      # puts "current time: #{Time.now}"
-      # puts "last reengaged at: #{last_reengaged_at}"
-      # puts "ideal last reengage at: #{ideal_last_reengage_at}"
-      # puts "ideal next reengage at: #{ideal_next_reengage_at}"
-
-      if ideal_last_reengage_at and ideal_next_reengage_at and last_reengaged_at < ideal_last_reengage_at
-        # puts "reengage"
-      #   results[:reengage] += 1
-        Asker.send_reengagement_tweet user_id, scored_questions
-      elsif ideal_last_reengage_at and ideal_next_reengage_at and last_reengaged_at >= ideal_last_reengage_at
-        # puts "already reengaged"
-      #   results[:already_reengaged] += 1
-      #   send_reengagement_tweet user_id
-      elsif ideal_last_reengage_at and ideal_next_reengage_at.nil? and last_reengaged_at < ideal_last_reengage_at
-        # puts "last reengage"
-      #   results[:last_reengage] += 1
-      #   send_reengagement_tweet user_id
-        Asker.send_reengagement_tweet user_id, scored_questions
-      else
-        # puts "last reengage already sent"
-      #   results[:last_reengage_already_sent] += 1
-      #   send_reengagement_tweet user_id
-      end
-      # puts "\n\n"
+      Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
     end
-
-  #   # Get disengaging users, recent reengagement attempts
-  #   disengaging_users, recent_reengagements = Asker.get_disengaging_users_and_reengagements
-
-		# # Compile recipients by asker, filter out recently engaged, pick asker to send from
-  #   asker_recipients = Asker.compile_recipients_by_asker(strategy, disengaging_users, recent_reengagements)
-
-  #   Post.includes(:conversations).where("posts.user_id in (?) and posts.created_at > ? and posts.interaction_type = 1", asker_recipients.keys, 2.days.ago).group_by(&:user_id).each do |user_id, posts|
-  #     asker_recipients[user_id][:publication] = posts.sort_by{|p| p.conversations.size}.last.publication
-  #   end
-
-  #   # Send reengagement tweets
-  #   Asker.send_reengagement_tweets(asker_recipients) 
   end 
 
-  def self.send_reengagement_tweet user_id, scored_questions
+  def self.send_reengagement_tweet user_id, options = {}
     user = User.find user_id
-    asker, question = user.select_reengagement_asker_and_question scored_questions
+    return unless (Asker.published_ids & user.follows.collect(&:id)).present?
+
+    if Post.create_split_test(user.id, "Personalized reengagement question (age > 15 days)", "false", "true") == "false"
+      asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).select{ |id| Asker.published_ids.include? id }.sample
+      return unless asker_id
+
+      asker = Asker.find asker_id
+      question = asker.most_popular_question since: 2.days.ago
+    else
+      asker, question = user.select_reengagement_asker_and_question @scored_questions  
+    end
 
     return unless asker and question
-    
+
+    publication = question.publications.order("created_at DESC").last
+    return unless publication
+
     puts "send question: '#{question.text}' to #{user.twi_screen_name}"
 
 
@@ -252,21 +223,21 @@ class Asker < User
     #   text = question.text
     # end
 
-    # Post.tweet(asker, text, {
-    #   :reply_to => user.twi_screen_name,
-    #   :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
-    #   :in_reply_to_user_id => user.id,
-    #   :posted_via_app => true,
-    #   :publication_id => publication.id,  
-    #   :requires_action => false,
-    #   :interaction_type => 2,
-    #   :link_to_parent => false,
-    #   :link_type => "reengage",
-    #   :intention => "reengage inactive",
-    #   :include_answers => true,
-    #   :question_id => question.id
-    # })
-    # Mixpanel.track_event "reengage inactive"
+    Post.tweet(asker, question.text, {
+      :reply_to => user.twi_screen_name,
+      :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
+      :in_reply_to_user_id => user.id,
+      :posted_via_app => true,
+      :publication_id => publication.id,  
+      :requires_action => false,
+      :interaction_type => 2,
+      :link_to_parent => false,
+      :link_type => "reengage",
+      :intention => "reengage inactive",
+      :include_answers => true,
+      :question_id => question.id
+    })
+    Mixpanel.track_event "reengage inactive", {distinct_id: user.id, interval: options[:interval], strategy: options[:strategy]}
   end
 
 

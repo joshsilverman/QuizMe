@@ -81,29 +81,22 @@ class Question < ActiveRecord::Base
       .ugc
   end
 
-  def self.score_questions question_scores = {}
-    Asker.published.each { |asker| question_scores[asker.id] = Question.score_questions_by_asker(asker.id) }
-    question_scores
-  end
-
-  def self.score_questions_by_asker asker_id, popularity_index = {}, scores = {}
-    questions_with_publication_count = Asker.find(asker_id)\
-      .questions\
-      .where("questions.status = 1")\
-      .select("questions.*, count(publications.id) as publication_count")\
+  def self.score_questions popularity_index = {}, scores = {}
+    questions_with_publication_count = Question.approved\
+      .select(["questions.*", "count(publications.id) as publication_count"])\
       .joins(:publications)\
       .includes(:answers)\
       .group("questions.id")
 
+
     question_answered_counts = Post.joins("LEFT OUTER JOIN posts AS parents on parents.id = posts.in_reply_to_post_id")\
       .where("parents.interaction_type = 1")\
-      .where("posts.in_reply_to_user_id = ?", asker_id)\
       .where("posts.in_reply_to_question_id is not null")\
       .answers\
       .social\
       .group("posts.in_reply_to_question_id")\
-      .count    
-    
+      .count 
+
     # build question popularity index - status answers per publication
     questions_with_publication_count.each { |q| popularity_index[q.id] = question_answered_counts[q.id].to_f / q.publication_count.to_f }
 
@@ -111,7 +104,10 @@ class Question < ActiveRecord::Base
     popular_question_ids = popularity_index.sort_by {|k,v| v}.reverse[0..(popularity_index.size * 0.25).ceil].collect { |e| e[0] }
 
     # score questions / build score hash
-    questions_with_publication_count.each { |q| scores[q.id] = q.score(popular_question_ids.include? q.id) }
+    questions_with_publication_count.each do |q| 
+      scores[q.created_for_asker_id] ||= {}
+      scores[q.created_for_asker_id][q.id] = q.score(popular_question_ids.include? q.id)
+    end
 
     scores
   end
