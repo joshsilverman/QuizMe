@@ -102,15 +102,14 @@
 									- else
 										= render :partial => "default_actions", :locals => {:post => post, :question => question}
 
-					- if ['spam', 'tutor'].include? params[:filter]
-						.pagination-wrapper
-							= paginate @posts
+					/ - if ['spam', 'tutor'].include? params[:filter]
+					.pagination-wrapper
+						= paginate @posts
 
-
-= render :partial => "respond_modal"
-= render :partial => "link_post_modal"
 = render :partial => "retweet_modal"
+= render :partial => "respond_modal"
 = render :partial => "question_modal"
+/ = render :partial => "link_post_modal"
 
 #confirm.modal.hide
 	.modal-header

@@ -328,13 +328,13 @@ class FeedsController < ApplicationController
     if params[:filter] == 'retweets'
       @posts = @posts.retweet_box.not_spam
     elsif params[:filter] == 'spam'
-      @posts = @posts.spam_box.page(params[:page]).per(50)
+      @posts = @posts.spam_box
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc_box.not_spam
     elsif params[:filter] == 'feedback'
       @posts = @posts.feedback_box.not_spam
     elsif params[:filter] == 'tutor'
-      @posts = @posts.tutor_box.not_spam.page(params[:page]).per(50)
+      @posts = @posts.tutor_box.not_spam
     elsif params[:filter] == 'linked'
       @posts = @posts.linked_box.not_spam
     elsif params[:filter] == 'unlinked'
@@ -347,7 +347,7 @@ class FeedsController < ApplicationController
 
     @tags = Tag.all
     @nudge_types = NudgeType.all
-    @posts = @posts.order("posts.created_at DESC") #.limit 3
+    @posts = @posts.order("posts.created_at DESC").page(params[:page]).per(50)
 
     if @asker
       @questions = @asker.publications.where(:published => true)\

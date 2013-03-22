@@ -64,7 +64,7 @@ GEM
     best_in_place (2.1.0)
       jquery-rails
       rails (~> 3.1)
-    better_errors (0.7.0)
+    better_errors (0.7.2)
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
     builder (3.0.4)
