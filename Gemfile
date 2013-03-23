@@ -9,6 +9,7 @@ group :test do
   gem 'capybara'
   gem 'turn', :require => false
   gem "database_cleaner"
+  gem 'timecop'
 end
 
 group :production do

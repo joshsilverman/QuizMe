@@ -151,10 +151,17 @@ class Asker < User
     script 
   end
 
-  def self.reengage_inactive_users strategy = nil
+  def self.reengage_inactive_users options = {}
+    start_time = Time.find_zone('UTC').parse('2013-03-23 8am')
+    days_since_start_time = ((Time.now - start_time) / 1.day.to_i).to_i
+    period = 20 + (days_since_start_time * 3)
+
+    strategy = options[:strategy]
+    strategy_string = options[:strategy].join "/" if strategy
+
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
-      .where("created_at > ?", 20.days.ago)\
+      .where("created_at > ?", period.days.ago)\
       .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
@@ -166,62 +173,52 @@ class Asker < User
     @scored_questions = Question.score_questions
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
-      if strategy
-        strategy_string = strategy.join "/"
-      else
+      unless options[:strategy]
         strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
         strategy = strategy_string.split("/").map { |e| e.to_i }
-      end      
+      end 
 
-      last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || Time.now - 1000.years
+      last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || 1000.years.ago
 
       aggregate_intervals = 0
       ideal_last_reengage_at = nil
       strategy.each do |interval|
-        aggregate_intervals += interval
-        (last_active_at + (aggregate_intervals).days) < Time.now ? ideal_last_reengage_at = (last_active_at + aggregate_intervals.days) : break
+        if (last_active_at + (aggregate_intervals + interval).days) < Time.now
+          aggregate_intervals += interval
+          ideal_last_reengage_at = (last_active_at + aggregate_intervals.days)
+        else
+          break
+        end
       end
 
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
     end
   end 
 
+  # def self.send_reengagement_tweet user_id, options = {}
   def self.send_reengagement_tweet user_id, options = {}
     user = User.find user_id
-    return unless (Asker.published_ids & user.follows.collect(&:id)).present?
+    return false unless (Asker.published_ids & user.follows.collect(&:id)).present?
 
+    is_personalized = nil
     if Post.create_split_test(user.id, "Personalized reengagement question (age > 15 days)", "false", "true") == "false"
       asker_id = user.posts.answers.where("in_reply_to_user_id in (?)", user.follows.collect(&:id)).collect(&:in_reply_to_user_id).select{ |id| Asker.published_ids.include? id }.sample
-      return unless asker_id
+      return false unless asker_id
 
       asker = Asker.find asker_id
       question = asker.most_popular_question since: 2.days.ago
+      is_personalized = false
     else
       asker, question = user.select_reengagement_asker_and_question @scored_questions  
+      is_personalized = true
     end
 
-    return unless asker and question
+    return false unless asker and question
 
     publication = question.publications.order("created_at DESC").last
-    return unless publication
+    return false unless publication
 
-    puts "send question: '#{question.text}' to #{user.twi_screen_name}"
-
-
-    # last_post = user.posts.order('created_at DESC').first
-    # asker = Asker.find last_post.in_reply_to_user_id
-    # follower_ids = asker.update_followers()
-
-    # publication, question = Asker.reengage_user_question(user_id)
-
-    # return false unless follower_ids.include? user.twi_user_id
-
-    # if Post.create_split_test(user.id, "Just question in reengagement tweet (answers)", "false", "true") == "false"
-    #   option_text = Post.create_split_test(user.id, "reengage last week inactive", "Pop quiz:", "A question for you:", "Do you know the answer?", "Quick quiz:", "We've missed you!")
-    #   text = "#{option_text} #{question.text}"
-    # else
-    #   text = question.text
-    # end
+    # puts "send question: '#{question.text}' to #{user.twi_screen_name}"
 
     Post.tweet(asker, question.text, {
       :reply_to => user.twi_screen_name,
@@ -237,7 +234,8 @@ class Asker < User
       :include_answers => true,
       :question_id => question.id
     })
-    Mixpanel.track_event "reengage inactive", {distinct_id: user.id, interval: options[:interval], strategy: options[:strategy]}
+    Mixpanel.track_event "reengage inactive", {distinct_id: user.id, interval: options[:interval], strategy: options[:strategy], personalized: is_personalized}
+    return true
   end
 
 
@@ -842,6 +840,7 @@ class Asker < User
   end
 
   def most_popular_question options = {}
+    puts twi_screen_name
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
     Question.find(
       Post.joins(:in_reply_to_question)\
