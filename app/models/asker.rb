@@ -195,7 +195,6 @@ class Asker < User
     end
   end 
 
-  # def self.send_reengagement_tweet user_id, options = {}
   def self.send_reengagement_tweet user_id, options = {}
     user = User.find user_id
     return false unless (Asker.published_ids & user.follows.collect(&:id)).present?
@@ -757,7 +756,6 @@ class Asker < User
   end
 
   def most_popular_question options = {}
-    puts twi_screen_name
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
     Question.find(
       Post.joins(:in_reply_to_question)\
