@@ -767,16 +767,14 @@ class Asker < User
 
   def most_popular_question options = {}
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
-    Question.find(
-      Post.joins(:in_reply_to_question)\
-        .answers\
-        .mentions\
-        .where("posts.in_reply_to_user_id = ? and posts.created_at > ?", id, options[:since])\
-        .where("length(questions.text) < ?", options[:character_limit])\
-        .group("posts.in_reply_to_question_id")\
-        .count\
-        .max{|a,b| a[1] <=> b[1]}[0]
-    )
+    posts = Post.joins(:in_reply_to_question)\
+      .answers\
+      .mentions\
+      .where("posts.in_reply_to_user_id = ?", id)\
+      .where("length(questions.text) < ?", options[:character_limit])
+    period_posts = posts.where("posts.created_at > ?", options[:since])
+    posts = period_posts unless period_posts.empty?
+    Question.find(posts.group("posts.in_reply_to_question_id").count.max{|a,b| a[1] <=> b[1]}[0])
   end
 
 
