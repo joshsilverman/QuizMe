@@ -24,7 +24,7 @@ class Post < ActiveRecord::Base
   scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
   scope :spam, where('posts.spam = ? or (posts.autospam = ? and posts.spam IS NULL)', true, true)
 
-  scope :not_us, where('posts.user_id NOT IN (?)', Asker.ids + ADMINS)
+  scope :not_us, lambda { where('posts.user_id NOT IN (?)', Asker.ids + ADMINS) }
   scope :us, where('posts.user_id IN (?)', Asker.ids + ADMINS)
   scope :social, where('posts.interaction_type IN (2,3)')
   scope :answers, where('posts.correct is not null')
