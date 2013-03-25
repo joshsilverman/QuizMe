@@ -94,7 +94,7 @@ class Asker < User
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
     
     if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
-      question = most_popular_question :character_limit => (140 - dm_text.size)
+      question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["which of", "the following"]
     else
       question = new_user_question
     end
@@ -769,10 +769,20 @@ class Asker < User
       .answers\
       .mentions\
       .where("posts.in_reply_to_user_id = ?", id)\
-      .where("length(questions.text) < ?", options[:character_limit])
-    period_posts = posts.where("posts.created_at > ?", options[:since])
-    posts = period_posts unless period_posts.empty?
-    Question.find(posts.group("posts.in_reply_to_question_id").count.max{|a,b| a[1] <=> b[1]}[0])
+      .where("posts.created_at > ?", options[:since])\
+      .where("length(questions.text) < ?", options[:character_limit])\
+      .group("posts.in_reply_to_question_id")\
+      .count
+    if posts.blank?
+      posts = Post.joins(:in_reply_to_question)\
+        .answers\
+        .mentions\
+        .where("posts.in_reply_to_user_id = ?", id)\
+        .where("length(questions.text) < ?", options[:character_limit])\
+        .group("posts.in_reply_to_question_id")\
+        .count
+    end
+    Question.find(posts.max{|a,b| a[1] <=> b[1]}[0])
   end
 
 
