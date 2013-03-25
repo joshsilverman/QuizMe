@@ -12,8 +12,3 @@
 					%a.answer_link{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
 			- else
 				%p= formatted_response[0].html_safe
-- if current_user and Post.create_split_test(current_user.id, "after answer cta (activity segment +)", "false", "true") == "true"
-	.subsidiary.post.answered.after_answer.hide
-		.content
-			%p.cta_message.hidden-phone Ready for another?
-			%a.btn.next_question Next Question

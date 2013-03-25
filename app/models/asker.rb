@@ -554,7 +554,6 @@ class Asker < User
       last_inactive_reengagement = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'reengage inactive', answerer.id, publication.id).order("created_at DESC").limit(1).first
       if last_inactive_reengagement.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id, answerer.id, last_inactive_reengagement.created_at, publication.id).blank?
         Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-        Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
         strategy = answerer.get_experiment_option("reengagement intervals (age > 15 days)") if answerer.enrolled_in_experiment?("reengagement intervals (age > 15 days)")
         in_reply_to = "reengage inactive"
       end
@@ -589,7 +588,6 @@ class Asker < User
         case parent_post.intention
         when 'reengage inactive'
           Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
-          Post.trigger_split_test(answerer.id, 'Just question in reengagement tweet (answers)') 
           strategy = answerer.get_experiment_option("reengagement intervals (age > 15 days)") if answerer.enrolled_in_experiment?("reengagement intervals (age > 15 days)")
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
