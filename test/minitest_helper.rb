@@ -18,5 +18,6 @@ class MiniTest::Spec
     # DatabaseCleaner.start
   end
   after :each do
+  	Rails.cache.clear
   end
 end

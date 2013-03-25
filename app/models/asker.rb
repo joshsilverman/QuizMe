@@ -152,7 +152,7 @@ class Asker < User
   end
 
   def self.reengage_inactive_users options = {}
-    start_time = Time.find_zone('UTC').parse('2013-03-23 8am')
+    start_time = Time.find_zone('UTC').parse('2013-03-25 10am')
     days_since_start_time = ((Time.now - start_time) / 1.day.to_i).to_i
     period = 20 + (days_since_start_time * 3)
 
@@ -172,6 +172,8 @@ class Asker < User
 
     @scored_questions = Question.score_questions
 
+    count = 0
+
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
         strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
@@ -185,18 +187,24 @@ class Asker < User
       strategy.each do |interval|
         if (last_active_at + (aggregate_intervals + interval).days) < Time.now
           aggregate_intervals += interval
-          ideal_last_reengage_at = (last_active_at + aggregate_intervals.days)
+          ideal_last_reengage_at = last_active_at + aggregate_intervals.days
         else
           break
         end
       end
 
-      Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+      is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
+      Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+      if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+        count += 1 if Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) 
+      end
     end
+    puts count
   end 
 
   def self.send_reengagement_tweet user_id, options = {}
     user = User.find user_id
+
     return false unless (Asker.published_ids & user.follows.collect(&:id)).present?
 
     is_personalized = nil
@@ -217,7 +225,7 @@ class Asker < User
     publication = question.publications.order("created_at DESC").last
     return false unless publication
 
-    # puts "send question: '#{question.text}' to #{user.twi_screen_name}"
+    # puts "send question: '#{question.text}' to #{user.twi_screen_name}" 
 
     Post.tweet(asker, question.text, {
       :reply_to => user.twi_screen_name,
@@ -233,7 +241,15 @@ class Asker < User
       :include_answers => true,
       :question_id => question.id
     })
-    Mixpanel.track_event "reengage inactive", {distinct_id: user.id, interval: options[:interval], strategy: options[:strategy], personalized: is_personalized}
+
+    Mixpanel.track_event "reengage inactive", {
+      distinct_id: user.id, 
+      interval: options[:interval], 
+      strategy: options[:strategy], 
+      personalized: is_personalized,
+      backlog: options[:is_backlog],
+      asker: asker.twi_screen_name
+    }
     return true
   end
 
