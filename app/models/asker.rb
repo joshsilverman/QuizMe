@@ -152,7 +152,7 @@ class Asker < User
   end
 
   def self.reengage_inactive_users options = {}
-    start_time = Time.find_zone('UTC').parse('2013-03-25 10am')
+    start_time = Time.find_zone('UTC').parse('2013-03-25 9am')
     days_since_start_time = ((Time.now - start_time) / 1.day.to_i).to_i
     period = 20 + (days_since_start_time * 3)
 
@@ -171,8 +171,6 @@ class Asker < User
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
 
     @scored_questions = Question.score_questions
-
-    count = 0
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
@@ -195,11 +193,7 @@ class Asker < User
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
-      if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
-        count += 1 if Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) 
-      end
     end
-    puts count
   end 
 
   def self.send_reengagement_tweet user_id, options = {}
