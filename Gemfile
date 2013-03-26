@@ -72,4 +72,5 @@ gem 'sourcify'
 gem 'google_drive'
 gem 'redis'
 
+gem 'unicorn'
 gem 'delayed_job_active_record'
