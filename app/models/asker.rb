@@ -94,7 +94,7 @@ class Asker < User
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
     
     if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
-      question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["which of", "the following"]
+      question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
     else
       question = new_user_question
     end
@@ -765,9 +765,11 @@ class Asker < User
 
   def most_popular_question options = {}
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
+    exclude_strings = options[:exclude_strings] ? options[:exclude_strings].join('|') : ''
     posts = Post.joins(:in_reply_to_question)\
       .answers\
       .mentions\
+      .where("questions.text not similar to ?", "%(#{exclude_strings})%")\
       .where("posts.in_reply_to_user_id = ?", id)\
       .where("posts.created_at > ?", options[:since])\
       .where("length(questions.text) < ?", options[:character_limit])\
@@ -777,6 +779,7 @@ class Asker < User
       posts = Post.joins(:in_reply_to_question)\
         .answers\
         .mentions\
+        .where("questions.text not similar to ?", "%(#{exclude_strings})%")\
         .where("posts.in_reply_to_user_id = ?", id)\
         .where("length(questions.text) < ?", options[:character_limit])\
         .group("posts.in_reply_to_question_id")\
