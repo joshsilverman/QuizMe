@@ -18,6 +18,9 @@ FactoryGirl.define do
 		text 'Whats up?'
 	end
 
+	factory :answer do
+	end	
+
 	factory :publication do
 	end
 end
