@@ -455,12 +455,11 @@ class Asker < User
 
   def auto_respond user_post
     return unless user_post.autocorrect.present? and user_post.requires_action
-
-    answerer = user_post.user
+    return unless Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20
+    
+    answerer = user_post.user  
     if user_post.is_dm?
-      return unless (question = user_post.in_reply_to_question) == new_user_question
-      return unless [1, 2].sample == 1 # only autograde half of eligible DMs
-      interval = Post.create_split_test(answerer.id, "DM autoresponse interval (activity segment +)", "0", "30", "60", "120", "240")
+      interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210",)
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
         :run_at => interval.to_i.minutes.from_now
@@ -468,25 +467,22 @@ class Asker < User
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
-      # make sure >= 20 autocorrected posts are checked each day
-      if Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20     #Post.create_split_test(answerer.id, "auto respond", "true", "false") == "true"
-
-        root_post = user_post.conversation.post
-        asker_response = app_response(user_post, user_post.autocorrect, {
-          :link_to_parent => false, 
-          :autoresponse => true,
-          :post_to_twitter => true,
-          :quote_user_answer => root_post.is_question_post? ? true : false,
-          :link_to_parent => root_post.is_question_post? ? false : true
-        })
-        conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
-        conversation.posts << user_post
-        conversation.posts << asker_response
-        learner_level = "twitter answer"
-      end
+      root_post = user_post.conversation.post
+      asker_response = app_response(user_post, user_post.autocorrect, {
+        :link_to_parent => false, 
+        :autoresponse => true,
+        :post_to_twitter => true,
+        :quote_user_answer => root_post.is_question_post? ? true : false,
+        :link_to_parent => root_post.is_question_post? ? false : true
+      })
+      conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
+      conversation.posts << user_post
+      conversation.posts << asker_response
+      learner_level = "twitter answer"
     end
     after_answer_filter(answerer, user_post, :learner_level => learner_level)
   end
+
 
   def after_answer_filter answerer, user_post, options = {}
     answerer.update_user_interactions({
