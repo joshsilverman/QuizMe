@@ -765,25 +765,44 @@ class Asker < User
 
   def most_popular_question options = {}
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
-    exclude_strings = options[:exclude_strings] ? options[:exclude_strings].join('|') : ''
-    posts = Post.joins(:in_reply_to_question)\
-      .answers\
-      .mentions\
-      .where("questions.text not similar to ?", "%(#{exclude_strings})%")\
-      .where("posts.in_reply_to_user_id = ?", id)\
-      .where("posts.created_at > ?", options[:since])\
-      .where("length(questions.text) < ?", options[:character_limit])\
-      .group("posts.in_reply_to_question_id")\
-      .count
-    if posts.blank?
+    if options[:exclude_strings]
       posts = Post.joins(:in_reply_to_question)\
         .answers\
         .mentions\
-        .where("questions.text not similar to ?", "%(#{exclude_strings})%")\
+        .where("questions.text not similar to ?", "%(#{options[:exclude_strings].join('|')})%")\
         .where("posts.in_reply_to_user_id = ?", id)\
+        .where("posts.created_at > ?", options[:since])\
         .where("length(questions.text) < ?", options[:character_limit])\
         .group("posts.in_reply_to_question_id")\
         .count
+      if posts.blank?
+        posts = Post.joins(:in_reply_to_question)\
+          .answers\
+          .mentions\
+          .where("questions.text not similar to ?", "%(#{options[:exclude_strings].join('|')})%")\
+          .where("posts.in_reply_to_user_id = ?", id)\
+          .where("length(questions.text) < ?", options[:character_limit])\
+          .group("posts.in_reply_to_question_id")\
+          .count
+      end
+    else
+      posts = Post.joins(:in_reply_to_question)\
+        .answers\
+        .mentions\
+        .where("posts.in_reply_to_user_id = ?", id)\
+        .where("posts.created_at > ?", options[:since])\
+        .where("length(questions.text) < ?", options[:character_limit])\
+        .group("posts.in_reply_to_question_id")\
+        .count
+      if posts.blank?
+        posts = Post.joins(:in_reply_to_question)\
+          .answers\
+          .mentions\
+          .where("posts.in_reply_to_user_id = ?", id)\
+          .where("length(questions.text) < ?", options[:character_limit])\
+          .group("posts.in_reply_to_question_id")\
+          .count
+      end
     end
     Question.find(posts.max{|a,b| a[1] <=> b[1]}[0])
   end
