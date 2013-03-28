@@ -123,11 +123,11 @@ class PostsController < ApplicationController
   def nudge_redirect
     nudge_type = NudgeType.find(params[:id])
     user = User.find(params[:user_id])
-
     nudge_type.register_conversion(user, Asker.find(params[:asker_id]))
-    
-    url = nudge_type.url.gsub "{user_twi_screen_name}", user.twi_screen_name
-    url = nudge_type.url.gsub "{user_id}", user.id.to_s
-    redirect_to url
+
+    redirect_url = nudge_type.url
+    redirect_url = redirect_url.gsub "{user_twi_screen_name}", user.twi_screen_name
+    redirect_url = redirect_url.gsub "{user_id}", user.id.to_s
+    redirect_to redirect_url
   end
 end
