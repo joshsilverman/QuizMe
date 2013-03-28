@@ -1,8 +1,10 @@
 class AskersController < ApplicationController
-  before_filter :admin?, :except => [:tutor]
+  before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph]
+  before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
+
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
-  
+
   def index
     @new_posts = {}
     @submitted_questions = {}
@@ -114,6 +116,7 @@ class AskersController < ApplicationController
 
   def graph
     @domain = params[:domain] || 30
+    @domain = @domain.to_i
 
     begin
       name = "graph_#{params[:graph]}"

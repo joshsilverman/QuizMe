@@ -13,5 +13,5 @@
   .graphs
     .handle_activity.panel
       #data_row.row
-        #handle_activity_graph.graph
-      = hidden_field_tag :handle_activity_data, @handle_activity.to_json
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data
