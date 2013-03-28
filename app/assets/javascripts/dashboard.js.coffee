@@ -47,13 +47,22 @@ class Dashboard
       @core(domain)
     else
       $("a[href=#{ target }] .loading").show()
-      url = "/graph/#{ party }/#{ graph }?domain=#{domain}"
+
+      match = window.location.href.match(/\?[^#]+|\?[\w\W]+/)
+      qs = match[0] if match
+      qs ||= '?'
+      qs += "&domain=#{domain}"
+
+      url = "/graph/#{ party }/#{ graph }#{qs}"
       $.ajax url,
         type: "GET"
         success: (e) => 
+          $('.reloadable .graph').remove()
           $(".tab-content ##{party}").html(e)
+
           this[graph] = $.parseJSON($("#data").val())
           draw_func = this["draw_#{graph}"]
+
           if draw_func
             draw_func()
           else
@@ -70,10 +79,12 @@ class Dashboard
           dashboard.after_update(domain)
 
     $('a[href=#' + party + ']').tab('show')
-    match = window.location.href.match(/\?[\w\W]+/)
+
+    #edit hash - does not work for yc_admin?
+    match = window.location.href.match(/\?[^#]+|\?[\w\W]+/)
     qs = match[0] if match
     qs ||= ''
-    window.location.hash = target + qs
+    window.location.hash = qs + target
 
   core: (domain = 30) ->
     #tabs
@@ -85,7 +96,13 @@ class Dashboard
     $('.tab-content #core').addClass 'active'
 
     $(".loading").show()
-    $.get ("/dashboard/core?domain=#{domain}"), (data) =>
+
+    match = window.location.href.match(/\?[^#]+|\?[\w\W]+/)
+    qs = match[0] if match
+    qs ||= '?'
+    qs += "&domain=#{domain}"
+
+    $.get ("/dashboard/core#{qs}"), (data) =>
       data = $.parseJSON(data) if ($.type(data) == 'string')
 
       dashboard.draw_paulgraham('', data['paulgraham'])
@@ -257,8 +274,6 @@ class Dashboard
     data = google.visualization.arrayToDataTable(data)
     chart = new google.visualization[type](document.getElementById("graph"))
     chart.draw data, window["generic_#{type}_options"]
-    puts window["generic_#{type}_options"]
-    puts "generic_#{type}_options"
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 

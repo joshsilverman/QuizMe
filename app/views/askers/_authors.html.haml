@@ -11,8 +11,7 @@
         %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
-    .ugc
+    .ugc.panel
       #data_row.row
-        #ugc.panel.rounded.span10
-          #ugc_graph.graph
-      = hidden_field_tag :ugc_data, @ugc_data.to_json if @ugc_data
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data
