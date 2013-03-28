@@ -1,6 +1,6 @@
 class AskersController < ApplicationController
   before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph]
-  before_filter :yc_admin?, [:dashboard, :get_core_metrics, :graph]
+  before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
@@ -118,11 +118,9 @@ class AskersController < ApplicationController
     @domain = params[:domain] || 30
     @domain = @domain.to_i
 
-    puts @domain
-
-    name = "graph_#{params[:graph]}"
-    @data = Stat.send name, @domain
     begin
+      name = "graph_#{params[:graph]}"
+      @data = Stat.send name, @domain
     rescue
     end
     
