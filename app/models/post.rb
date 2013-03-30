@@ -519,14 +519,14 @@ class Post < ActiveRecord::Base
   end
 
   def self.trigger_split_test(user_id, test_name, reset=false)
-    # ab_user.set_id(user_id, true)
-    # finished(test_name, {:reset => reset})
+    ab_user.set_id(user_id, true)
+    finished(test_name, {:reset => reset})
   end
   
   def self.create_split_test(user_id, test_name, *alternatives)
-    # ab_user.set_id(user_id, true)
-    # ab_user.confirm_js("WISR app", '')
-    # ab_test(test_name, *alternatives)
+    ab_user.set_id(user_id, true)
+    ab_user.confirm_js("WISR app", '')
+    ab_test(test_name, *alternatives)
   end
 
   def self.grouped_as_conversations posts, asker = nil, engagements = {}, conversations = {}, dm_ids = []
