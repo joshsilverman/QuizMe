@@ -168,7 +168,8 @@ class FeedsController < ApplicationController
     answer = Answer.find(params[:answer_id])
     
     # Set parent post for wisr response - is this necessary?
-    post = publication.posts.statuses.order("created_at DESC").limit(1).first
+    # post = publication.posts.statuses.order("created_at DESC").limit(1).first
+    post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
 
     # Create conversation for posts
     @conversation = Conversation.create({
