@@ -327,28 +327,28 @@ class FeedsController < ApplicationController
 
     #filter for retweet, spam, starred
     if params[:filter] == 'retweets'
-      @posts = @posts.retweet_box.not_spam
+      @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'spam'
-      @posts = @posts.spam_box
+      @posts = @posts.spam_box.order("posts.created_at DESC")
     elsif params[:filter] == 'ugc'
-      @posts = @posts.ugc_box.not_spam
+      @posts = @posts.ugc_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'feedback'
-      @posts = @posts.feedback_box.not_spam
+      @posts = @posts.feedback_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'tutor'
-      @posts = @posts.tutor_box.not_spam
+      @posts = @posts.tutor_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'linked'
-      @posts = @posts.linked_box.not_spam
+      @posts = @posts.linked_box.not_spam.order("posts.created_at ASC")
     elsif params[:filter] == 'unlinked'
-      @posts = @posts.unlinked_box.not_spam
+      @posts = @posts.unlinked_box.not_spam.order("posts.created_at ASC")
     elsif params[:filter] == 'all'
-      @posts = @posts.all_box.not_spam
+      @posts = @posts.all_box.not_spam.order("posts.created_at DESC")
     else
-      @posts = @posts.autocorrected_box.not_spam
+      @posts = @posts.autocorrected_box.not_spam.order("posts.created_at ASC")
     end
 
     @tags = Tag.all
     @nudge_types = NudgeType.all
-    @posts = @posts.order("posts.created_at DESC").page(params[:page]).per(50)
+    @posts = @posts.page(params[:page]).per(50)
 
     if @asker
       @questions = @asker.publications.where(:published => true)\
