@@ -331,57 +331,30 @@ class User < ActiveRecord::Base
 
     case to_segment
     when 1 #to edger
-      # Next step, what to expect
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        no_comment, 
-        "Let's get started! I'll send you another question soon.",
-        "Check out my tweets, I post new questions frequently!",
-        "Hold tight, I'll send you another shortly..."
-      )
+      comment = no_comment
     when 2 #to noob
-      # I'll tweet you more questions // follow up
+      comment = no_comment
+    when 3 #to regular
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
         no_comment, 
-        "Thanks for tweeting me your answer. I'll tweet you interesting questions as I see them.",
-        "Can I tweet you interesting questions as I come accross them?",
-        "Keep tweeting me your answers. I'll keep track and follow up on mistakes."
+        "Is there anything specific I can quiz you on?"
       )
-      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
-    when 3 #to regular
-      # start, how can i improve
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        "No comment", 
-        "You're off to a strong start. How can I make this better?",
-        "How can I make these quizzes better?",
-        "You're really improving. How can I improve what I do?"
-      )
-      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 4 #to advanced 
-      # good commitment
+      # suggestions?
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        "No comment", 
-        "If you keep up the strong commitment, you'll really (re)master this.",
-        "It's great to see your commitment so far.",
-        "Very strong start with this material."
+        no_comment, 
+        "You're off to a strong start. How can I make this better?"
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 5 #to pro
       # great commitment
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        "No comment", 
-        "Fantastic dedication to this material.",
-        "Great to see your dedication.",
-        "You are well on your way to (re)mastery with this."
+        no_comment, 
+        "Fantastic dedication to this material."
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
-      # contribution and thank you
-      comment = [ 
-        "No comment", 
-        "You've added so much to this community - thank you.",
-        "So glad to be learning with you. Your contribution is so helpful.",
-        "Your contribution to this community continues to be really helpful. Big thanks."
-      ].sample
+      comment = nil
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 
