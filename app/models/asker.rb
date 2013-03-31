@@ -217,7 +217,7 @@ class Asker < User
 
     return false unless asker and question
 
-    publication = question.publications.order("created_at DESC").last
+    publication = question.publications.order("created_at DESC").first
     return false unless publication
 
     # puts "send question: '#{question.text}' to #{user.twi_screen_name}" 

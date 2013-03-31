@@ -25,7 +25,7 @@ class Publication < ActiveRecord::Base
       puts "refreshing recent publications cache for #{asker.twi_screen_name}"
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
-        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+        .where("publications.published = ? and posts.created_at > ? and posts.interaction_type = 1", true, 2.days.ago)\
         .order("posts.created_at DESC").all
       posts = publications.collect {|p| p.posts}.flatten 
       [publications, posts]
