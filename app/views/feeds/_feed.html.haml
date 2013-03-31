@@ -1,5 +1,4 @@
 .feed_section
-	- now = Time.now
 	- @publications.each do |publication|
 		- @question_asker = publication.asker
 		- @conversation = nil
@@ -15,10 +14,7 @@
 						%p.time= time_formatter(first.created_at)
 					- else
 						%p.time.timeago{:title => first.created_at.to_time.iso8601}
-				- if correct.nil?
-					%i.answered_indicator{:style => "display: none;"}
-				- else
-					%i.answered_indicator{:class => (correct ? "icon-ok-sign" : "icon-remove-sign"), :style => ("display: none;" unless responded)}
+				%i.answered_indicator{:class => (correct.nil? ? "" : correct ? "icon-ok-sign" : "icon-remove-sign"), :style => ("display: none;" unless responded)}
 				- retweeted = (current_user and @actions[publication.id] and @actions[publication.id].select { |a| a[:interaction_type] == 3 and a[:user][:id] == current_user.id}.present?) ? true : false
 				%i.icon-retweet{:style => ("display: none;" unless retweeted)}
 				.content
