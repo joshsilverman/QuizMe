@@ -8,23 +8,24 @@ class Publication < ActiveRecord::Base
   scope :published, where("publications.published = ?", true)
 
   def self.recently_published
-    publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes do
+    publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes, :race_condition_ttl => 15 do
       publications = Publication.includes(:asker, :posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
-        .order("posts.created_at DESC").limit(15).includes(:question => :answers)
+        .order("posts.created_at DESC").limit(15).includes(:question => :answers).all
       posts = Post.select([:id, :created_at, :publication_id])\
           .where(:provider => "twitter", :publication_id => publications.collect(&:id))\
-          .order("created_at DESC")
+          .order("created_at DESC").all
       [publications, posts]
     end
     return publications, posts
   end
 
   def self.recently_published_by_asker asker
-    publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
+    publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do
+      puts "refreshing recent publications cache for #{asker.twi_screen_name}"
       publications = asker.publications\
         .includes([:asker, :posts, :question => [:answers, :user]])\
-        .where("publications.published = ? and posts.created_at > ?", true, 2.day.ago)\
+        .where("publications.published = ? and posts.created_at > ? and posts.interaction_type = 1", true, 2.days.ago)\
         .order("posts.created_at DESC").all
       posts = publications.collect {|p| p.posts}.flatten 
       [publications, posts]
@@ -33,16 +34,17 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_responses posts
-    replies = Rails.cache.fetch 'publications_recent_responses', :expires_in => 10.minutes do
+    replies = Rails.cache.fetch 'publications_recent_responses', :expires_in => 10.minutes, :race_condition_ttl => 15 do
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
           .where(:in_reply_to_post_id => posts.collect(&:id))\
-          .order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id)      
+          .order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id)
     end
     return replies
   end
 
   def self.recent_responses_by_asker asker, posts
-    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes do    
+    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do    
+      puts "refreshing recent responses cache for #{asker.twi_screen_name}"
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
         .order("created_at ASC")\

@@ -39,8 +39,6 @@ class TwitterPrivateMessage
       end
 
       @recipient.segment
-
-      puts "autograde DM SENT for #{@recipient.twi_screen_name}. Current time = #{Time.now}"
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message
