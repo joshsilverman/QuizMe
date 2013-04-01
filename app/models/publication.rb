@@ -8,7 +8,7 @@ class Publication < ActiveRecord::Base
   scope :published, where("publications.published = ?", true)
 
   def self.recently_published
-    publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes do
+    publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes, :race_condition_ttl => 15 do
       publications = Publication.includes(:asker, :posts)\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
         .order("posts.created_at DESC").limit(15).includes(:question => :answers).all
@@ -21,7 +21,7 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recently_published_by_asker asker
-    publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes do
+    publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do
       puts "refreshing recent publications cache for #{asker.twi_screen_name}"
       publications = asker.publications\
         .includes([:asker, :posts, :question => :answers])\
@@ -34,7 +34,7 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_responses posts
-    replies = Rails.cache.fetch 'publications_recent_responses', :expires_in => 10.minutes do
+    replies = Rails.cache.fetch 'publications_recent_responses', :expires_in => 10.minutes, :race_condition_ttl => 15 do
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
           .where(:in_reply_to_post_id => posts.collect(&:id))\
           .order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id)
@@ -43,7 +43,7 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_responses_by_asker asker, posts
-    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes do    
+    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do    
       puts "refreshing recent responses cache for #{asker.twi_screen_name}"
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
