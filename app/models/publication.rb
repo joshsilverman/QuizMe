@@ -24,7 +24,7 @@ class Publication < ActiveRecord::Base
     publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do
       puts "refreshing recent publications cache for #{asker.twi_screen_name}"
       publications = asker.publications\
-        .includes([:asker, :posts, :question => :answers])\
+        .includes([:asker, :posts, :question => [:answers, :user]])\
         .where("publications.published = ? and posts.created_at > ? and posts.interaction_type = 1", true, 2.days.ago)\
         .order("posts.created_at DESC").all
       posts = publications.collect {|p| p.posts}.flatten 

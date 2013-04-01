@@ -30,13 +30,15 @@
 					- else
 						%a.asker_link{:href => "/feeds/#{@question_asker.id}"}
 							%h5= @question_asker.twi_screen_name
+
 					%p.question_text= publication.question.text.html_safe
 					.post_actions
 						%a.expand Answer
 						- unless retweeted
 							%a.retweet.rollover 
 								%i.icon-retweet
-								Retweet						
+								Retweet			
+
 				- unless responded
 					.answers.rounded.border{:style => "display: none;"}
 						- answers = publication.question.answers.shuffle
@@ -51,9 +53,35 @@
 								.answer_controls
 									%a.tweet_button.btn.btn-primary{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => true) unless current_user), :class => ("auth_link" unless current_user)} Tweet
 								.shadow-bottom
+
 			.subsidiaries{:style => "display: none;"}
 				- if @conversation
-					= render :partial => "conversation"
+					- count = @conversation.posts.size
+					- @conversation.posts.order("created_at ASC").each_with_index do |response, i|
+						.subsidiary.post{:class => ("answered" if i < (count - 1))}
+							.content
+								- user = (response["user_id"] == @question_asker.id ? @question_asker : current_user)
+								= image_tag(user.twi_profile_img_url, :class => "rounded")
+								%h5= user.twi_screen_name
+								- formatted_response = format_response(response['text'])
+								- if formatted_response[1]
+									%p 
+										= formatted_response[0].html_safe
+										%a.answer_link{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
+								- else
+									%p= formatted_response[0].html_safe
+
 				.loading{:style => "display: none;"}
 					Loading...	
-			= render :partial => "activity", :locals => {:post => publication}
+
+			/###
+			/ = render :partial => "activity", :locals => {:post => publication}
+			.activity_container{:style => ("display: none;" unless @actions[publication.id].present?)}
+				.interactions
+					- if @actions[publication.id]
+						- @actions[publication.id].each do |interaction|
+							= image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction profile", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
+
+					- if current_user
+						= image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")
+						
