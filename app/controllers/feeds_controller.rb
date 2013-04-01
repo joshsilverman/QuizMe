@@ -51,9 +51,7 @@ class FeedsController < ApplicationController
         end
 
         # stats
-        @question_count = @asker.publications.select(:id).where(:published => true).size
-        @questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", params[:id]).count
-        @followers = @asker.followers.size
+        @question_count, @questions_answered, @followers = @asker.get_stats
         
         # misc
         @post_id = params[:post_id]
@@ -62,7 +60,7 @@ class FeedsController < ApplicationController
 
         # related
         @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-          .where(:id => ACCOUNT_DATA.keys.sample(3))
+          .where(:id => ACCOUNT_DATA.keys.sample(3)).all
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 

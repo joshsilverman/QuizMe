@@ -11,6 +11,16 @@ class Asker < User
 
   # cached queries
 
+  def get_stats
+    question_count, questions_answered, follower_count = Rails.cache.fetch "stats_by_asker_#{id}", :expires_in => 1.day, :race_condition_ttl => 15 do
+      question_count = publications.select(:id).where(:published => true).size
+      questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", id).count
+      follower_count = followers.size
+      [question_count, questions_answered, follower_count]
+    end
+    return [question_count, questions_answered, follower_count]
+  end
+
   def self.by_twi_screen_name
     Rails.cache.fetch('askers_by_twi_screen_name', :expires_in => 5.minutes){Asker.order("twi_screen_name ASC").all}
   end
