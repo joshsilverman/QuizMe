@@ -466,7 +466,7 @@ class Asker < User
 
 
   def auto_respond user_post
-    return unless user_post.autocorrect.present? and user_post.requires_action
+    return unless !user_post.autocorrect.nil? and user_post.requires_action
     return unless Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20
     
     answerer = user_post.user  
