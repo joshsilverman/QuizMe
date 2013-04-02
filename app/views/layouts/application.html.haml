@@ -2,8 +2,10 @@
 %html
 	%head
 		%title= "#{h yield(:title)} | Wisr"
-		- cache("_application_css", :expires_in => 1.hour) do
+		- cache("_application_css_js", :expires_in => 1.hour) do
 			= stylesheet_link_tag "application"
+			= javascript_include_tag "application"
+			= javascript_include_tag "https://www.google.com/jsapi"
 		= csrf_meta_tags
 		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
 	%body{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
@@ -11,7 +13,3 @@
 		.container.row{:style => "margin: auto;"}
 			= yield
 		= render :partial => "layouts/scripts"
-
-	- cache("_application_js", :expires_in => 1.hour) do
-		= javascript_include_tag "application"
-		= javascript_include_tag "https://www.google.com/jsapi"
