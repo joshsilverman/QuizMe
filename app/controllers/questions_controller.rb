@@ -14,6 +14,7 @@ class QuestionsController < ApplicationController
     end
 
     if params[:asker_id]
+      @asker = Asker.find params[:asker_id]
       @questions = @questions.where(:created_for_asker_id => params[:asker_id])
     else
       @questions = @questions
