@@ -322,11 +322,12 @@ class User < ActiveRecord::Base
     no_comment = "No comment"
 
     to_seg_test_name = {
-      1 => "lifecycle smartransition to edger comment (=> noob)",
-      2 => "lifecycle smartransition to noob comment (=> regular)",
-      3 => "lifecycle smartransition to regular comment (=> advanced)",
-      4 => "lifecycle smartransition to advanced comment (=> pro)",
-      5 => "lifecycle smartransition to pro comment (=> superuser)"
+      1 => "to edger lifecycle transition comment (=> noob)",
+      2 => "to noob lifecycle transition comment (=> regular)",
+      # 3 => "to regular lifecycle transition comment (=> advanced)",
+      3 => "to regular growth comment (=> advanced)",
+      4 => "to advanced lifecycle transition comment (=> pro)",
+      5 => "to pro lifecycle transition comment (=> superuser)"
     }
 
     case to_segment
@@ -336,8 +337,9 @@ class User < ActiveRecord::Base
       comment = no_comment
     when 3 #to regular
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        no_comment, 
-        "Is there anything specific I can quiz you on?"
+        "Is there anything specific I can quiz you on?",
+        "Any other topics you would be interested in learning about?",
+        "Do you have any friends that I could quiz?"
       )
     when 4 #to advanced 
       # suggestions?
