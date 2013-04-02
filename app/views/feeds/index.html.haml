@@ -9,12 +9,18 @@
 							%h3
 								All Activity						
 						#feed_content
-							= render :partial => "feed"
+							- if current_user
+								= render :partial => "feed"
+							- else
+								- cache("_feed_unauthenticated", :expires_in => 20.minutes) do
+									= render :partial => "feed"
+
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
 					#left_column_container
-						= render :partial => "directory"
+						- cache("_directory", :expires_in => 30.hour) do
+							= render :partial => "directory"
 
 %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
 	%img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}

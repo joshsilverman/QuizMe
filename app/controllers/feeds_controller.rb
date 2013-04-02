@@ -17,12 +17,17 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
 
+
     @directory = {}
     Asker.where("published = ?", true).each { |asker| (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker }
 
-    @question_count = Publication.published.size
-    @questions_answered = Post.answers.size
-    @followers = Relationship.select("DISTINCT follower_id").size    
+    @wisr = User.find(8765)   
+    @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+      question_count = Publication.published.size
+      questions_answered = Post.answers.size
+      followers = Relationship.select("DISTINCT follower_id").size 
+      [question_count, questions_answered, followers]
+    end
   end
 
   def show

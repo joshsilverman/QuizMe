@@ -9,8 +9,9 @@ class Publication < ActiveRecord::Base
 
   def self.recently_published
     publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes, :race_condition_ttl => 15 do
-      publications = Publication.includes(:asker, :posts)\
+      publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
         .where("publications.published = ? and posts.interaction_type = 1", true)\
+        .where("posts.created_at > ?", 1.days.ago)\
         .order("posts.created_at DESC").limit(15).includes(:question => :answers).all
       posts = Post.select([:id, :created_at, :publication_id])\
           .where(:provider => "twitter", :publication_id => publications.collect(&:id))\
