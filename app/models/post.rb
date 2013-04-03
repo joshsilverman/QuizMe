@@ -32,6 +32,8 @@ class Post < ActiveRecord::Base
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
   scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
+  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
+  scope :content, includes(:tags).where("tags.name = 'new content'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
@@ -59,6 +61,8 @@ class Post < ActiveRecord::Base
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
+  scope :content_box, content
+  scope :friend_box, friend
 
   scope :nudge, where("nudge_type_id is not null")
 
@@ -116,7 +120,8 @@ class Post < ActiveRecord::Base
   end
 
   def self.publish(provider, asker, publication)
-    return unless publication and question = publication.question
+    interval = asker.posts_per_day > 5 ? 1 : 2
+    return unless (Time.now.hour % interval == 0) and publication and question = publication.question
     via = ((question.user_id == 1 or question.user_id == asker.author_id) ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
@@ -134,7 +139,6 @@ class Post < ActiveRecord::Base
           :question_id => question.id
         })
         publication.update_attribute(:published, true)
-        question.update_attribute(:priority, false) if question.priority
         if via.present? and question.priority
           Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
             :reply_to => via, 
@@ -144,6 +148,7 @@ class Post < ActiveRecord::Base
             :link_to_parent => false
           })        
         end
+        question.update_attribute(:priority, false) if question.priority
       rescue Exception => exception
         puts "exception while publishing tweet"
         puts exception.message
@@ -490,7 +495,9 @@ class Post < ActiveRecord::Base
 
   def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
     return [] if Rails.env.test?
-    return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
+
+    source_line = block.to_source(:strip_enclosure => true)
+    return [] unless Post.is_safe_api_call?(source_line)
     
     value = nil
     max_attempts = 3
@@ -500,12 +507,13 @@ class Post < ActiveRecord::Base
       attempts += 1
       value = block.call()
     rescue Twitter::Error::TooManyRequests => exception
-      puts "rate limit exceeded:"
+      puts "rate limit exceeded on line '#{source_line}':"
       puts exception.rate_limit.inspect
+      raise "Rate limit exceeded"
     rescue Exception => exception
       puts "twitter error (#{exception}), retrying"
       retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate" or exception.message.include? "Bad Authentication data"
-      puts "Failed to run #{block} after #{attempts} attempts"
+      puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts"
     end 
     return value   
   end

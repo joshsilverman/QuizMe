@@ -22,6 +22,8 @@
 						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
 						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
 						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+						%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
+						%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
 						- if @oneinbox
 							%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 						/ - @tags.each do |tag|

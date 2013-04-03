@@ -97,13 +97,14 @@ class PostsController < ApplicationController
 
   def tags
     @posts = Post.tagged.order("posts.created_at DESC")
-    params[:filter] = "week" unless params[:filter].present?
+    @posts = @posts.page(params[:page]).per(50)
+    # params[:filter] = "week" unless params[:filter].present?
 
-    if params[:filter] == "week"
-      @posts = @posts.where("posts.created_at > ?", 1.week.ago)
-    elsif params[:filter] == "month"
-      @posts = @posts.where("posts.created_at > ?", 1.month.ago)
-    end
+    # if params[:filter] == "week"
+    #   @posts = @posts.where("posts.created_at > ?", 1.week.ago)
+    # elsif params[:filter] == "month"
+    #   @posts = @posts.where("posts.created_at > ?", 1.month.ago)
+    # end
         
     @tags = Tag.all
     @engagements, @conversations = Post.grouped_as_conversations @posts

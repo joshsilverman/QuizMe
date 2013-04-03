@@ -193,58 +193,70 @@ UNDER_CONSTRUCTION_HANDLES = [27857]
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 326, 14106, 26522], 
+    :retweet => [19, 326, 14106, 26522, 32588, 32575], 
     :hashtags => ["science", "biology", "premed", "medschool"],
     :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 326, 7362, 19454, 26522], 
+    :retweet => [18, 31, 326, 7362, 19454, 26522, 32588, 32575], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326, 14106, 26522], 
+    :retweet => [18, 19, 108, 326, 14106, 26522, 32588, 32575], 
     :hashtags => ["science", "premed", "orgo"],
     :category => "Life Sciences"
   }, 
   ## QuizMePsych
   108 => {
-    :retweet => [18, 19, 31, 326, 191, 26522], 
+    :retweet => [18, 19, 31, 326, 191, 26522, 32588], 
     :hashtags => ["science", "psych"],
     :category => "Life Sciences"
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108, 14106, 26522], 
+    :retweet => [18, 19, 31, 108, 14106, 26522, 32588], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
     :category => "Life Sciences"
   },  
   ## QuizMeWeather
   7362 => {
-    :retweet => [18, 19, 14106, 19454], 
+    :retweet => [18, 19, 14106, 19454, 32575], 
     :hashtags => ["trivia", "weather", "meteorology", "meteo"],
-    :category => "Life Sciences"
+    :category => "Trivia"
   },  
   ## QuizMeGeo
   8367 => {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
-    :category => "Life Sciences"
+    :category => "Trivia"
   },  
   ## QuizMeVetMed
   26522 => {
-    :retweet => [326, 31, 18, 19],
+    :retweet => [326, 31, 18, 19, 32588],
     :hashtags => ["vetmed", "veterinarian"],
     :category => "Misc"
+  },
+  ## QuizMeNeuro
+  32588 => {
+    :retweet => [18, 19, 31, 108, 14106, 26522, 326],
+    :hashtags => ["neuro", "neuroscience", "brain"],
+    :category => "Life Sciences"
   },
   #QuizMePhysics
   27857 => {
     :retweet => [26522, 8367, 7362, 326, 18, 19, 31, 108],
     :hashtags => ['physics'],
     :category => "Life Sciences"    
-  },  
+  },
+  ## PhotosynthQuiz
+  32575 => {
+    :retweet => [18, 31, 19, 7362],
+    :hashtags => ['biology', 'photosynthesis'],
+    :category => "Life Sciences"  
+  },
 
   ## SATvocabQuiz
   227 => {
@@ -272,13 +284,13 @@ ACCOUNT_DATA = {
   }, 
   ## PhilosophyQuiz
   191 => {
-    :retweet => [2, 66, 231, 322, 325, 108, 9217], 
+    :retweet => [2, 66, 231, 322, 325, 108, 9217, 32588, 32584], 
     :hashtags => ["philosophy", "philosopher"],
     :category => "Social Sciences"
   }, 
   ## HistoryHabit
   231 => {
-    :retweet => [2, 66, 191, 322, 325, 9217], 
+    :retweet => [2, 66, 191, 322, 325, 9217, 32584], 
     :hashtags => ["history", "trivia", "historybuff"],
     :category => "Social Sciences"
   }, 
@@ -299,7 +311,13 @@ ACCOUNT_DATA = {
     :retweet => [2, 66, 191, 231, 322, 325], 
     :hashtags => ["lsat", "lawschool", "law"],
     :category => "Social Sciences"
-  },     
+  },
+  ## QuizMeArtHist
+  32584 => {
+    :retweet => [191, 231], 
+    :hashtags => ["art", "artist", "arthistory"],
+    :category => "Art"
+  },
 
   ## Marketing_Quiz
   223 => {
