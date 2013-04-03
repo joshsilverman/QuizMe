@@ -644,14 +644,15 @@ class Asker < User
   end
 
   def get_ugc_script user
-    script = Post.create_split_test(user.id, "ugc script v2.0", 
-      "You know this material pretty well, how about writing a question or two? DM one to me or enter it at wisr.com/feeds/{asker_id}?q=1", 
-      "Great work so far! Would you write a question or two for others to answer? DM me or enter it at wisr.com/feeds/{asker_id}?q=1",
-      "Spread the knowledge and write a question or two! DM me or enter it at wisr.com/feeds/{asker_id}?q=1",
-      "I'd love to have you write a question or two for this handle... if you would, DM me or enter it at wisr.com/feeds/{asker_id}?q=1",
-      "Hey, would you mind writing a question for me to post? Enter it at wisr.com/feeds/{asker_id}?q=1",
-      "Hey, would you mind writing a question for me to post? DM me back if you have one!"
-      # "You're pretty good at this stuff, try writing a question for others to answer! DM me or enter it at wisr.com/feeds/{asker_id}?q=1" # second best from v1.0
+    # "You know this material pretty well, how about writing a question or two? DM one to me or enter it at wisr.com/feeds/{asker_id}?q=1", # winner from v1.0
+    # "You're pretty good at this stuff, try writing a question for others to answer! DM me or enter it at wisr.com/feeds/{asker_id}?q=1" # second best from v1.0
+    # "I'd love to have you write a question or two for this handle... if you would, DM me or enter it at wisr.com/feeds/{asker_id}?q=1", # winner from v2.0
+    # "Hey, would you mind writing a question for me to post? Enter it at wisr.com/feeds/{asker_id}?q=1", # second best from v2.0
+    
+    script = Post.create_split_test(user.id, "ugc script v3.0", 
+      "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
+      "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1",
+      "Want to post a question of your own? You can enter it here: wisr.com/feeds/{asker_id}?q=1"
     )
     script = script.gsub "{asker_id}", self.id.to_s
     script = script.gsub "{asker_name}", self.twi_screen_name
