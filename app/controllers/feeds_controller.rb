@@ -1,6 +1,9 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :show, :activity_stream, :more]
+  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more]
+  before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
+
+  caches_action :unauth_show, :expires_in => 10.minutes
 
   def index
     @index = true
@@ -33,9 +36,17 @@ class FeedsController < ApplicationController
     end
   end
 
-  def show
+  def unauth_show
+    show true
+  end
+
+  def show force = false
     if !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => true)
+
+    elsif current_user.nil? and force == false
+      redirect_to "/u#{request.fullpath}", params
+    
     else
       if @asker = Asker.find(params[:id])
 
@@ -73,7 +84,7 @@ class FeedsController < ApplicationController
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 
         respond_to do |format|
-          format.html # show.html.erb
+          format.html { render :show }
           format.json { render json: @posts }
         end
       else

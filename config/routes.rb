@@ -26,8 +26,11 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/manage" => "feeds#manage"
   match "feeds/manage" => "feeds#manage"
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
-  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
   match "/activity_stream" => "feeds#activity_stream"
+
+  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  match "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
+
 
   match "/ask" => "feeds#ask"
   match "/respond_to_question" => "feeds#respond_to_question"

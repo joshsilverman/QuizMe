@@ -4,6 +4,12 @@ class ApplicationController < ActionController::Base
   before_filter :split_user
   before_filter :preload_models
 
+  def unauthenticated_user!
+    if current_user
+      redirect_to request.fullpath.gsub(/^\/u/, ""), params
+    end
+  end
+
   def after_sign_in_path_for resource, redirect_to = nil
     omniauth_redirect_params = request.env["omniauth.params"]
     if omniauth_redirect_params
