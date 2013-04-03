@@ -193,34 +193,41 @@ UNDER_CONSTRUCTION_HANDLES = [27857]
 ACCOUNT_DATA = {
   ## QuizMeBio
   18 => {
-    :retweet => [19, 326, 14106, 26522, 32588, 32575], 
+    :retweet => [19, 326, 14106, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "biology", "premed", "medschool"],
     :category => "Life Sciences"
   }, 
   ## QuizMeChem
   19 => {
-    :retweet => [18, 31, 326, 7362, 19454, 26522, 32588, 32575], 
+    :retweet => [18, 31, 326, 7362, 19454, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "chemistry"],
     :category => "Life Sciences"
   },  
   ## QuizMeOrgo
   31 => {
-    :retweet => [18, 19, 108, 326, 14106, 26522, 32588, 32575], 
+    :retweet => [18, 19, 108, 326, 14106, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "premed", "orgo"],
     :category => "Life Sciences"
   }, 
   ## QuizMePsych
   108 => {
-    :retweet => [18, 19, 31, 326, 191, 26522, 32588], 
+    :retweet => [18, 19, 31, 326, 191, 26522, 32588, 26070], 
     :hashtags => ["science", "psych"],
     :category => "Life Sciences"
   },  
   ## QuizMeAnat  
   326 => {
-    :retweet => [18, 19, 31, 108, 14106, 26522, 32588], 
+    :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
     :category => "Life Sciences"
   },  
+  ## Hematology_101
+  28064 => {
+    :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
+    :hashtags => ["hematology"],
+    :category => "Life Sciences"
+  },  
+
   ## QuizMeWeather
   7362 => {
     :retweet => [18, 19, 14106, 19454, 32575], 
@@ -235,14 +242,20 @@ ACCOUNT_DATA = {
   },  
   ## QuizMeVetMed
   26522 => {
-    :retweet => [326, 31, 18, 19, 32588],
+    :retweet => [326, 31, 18, 19, 32588, 28064],
     :hashtags => ["vetmed", "veterinarian"],
     :category => "Misc"
   },
   ## QuizMeNeuro
   32588 => {
-    :retweet => [18, 19, 31, 108, 14106, 26522, 326],
+    :retweet => [18, 19, 31, 108, 14106, 26522, 326, 28064],
     :hashtags => ["neuro", "neuroscience", "brain"],
+    :category => "Life Sciences"
+  },
+  ## PrepMeNREMT
+  26070 => {
+    :retweet => [18, 19, 31, 108, 14106, 26522, 326],
+    :hashtags => ["emt", "NREMT"],
     :category => "Life Sciences"
   },
   #QuizMePhysics
