@@ -490,7 +490,9 @@ class Post < ActiveRecord::Base
 
   def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
     return [] if Rails.env.test?
-    return [] unless Post.is_safe_api_call?(block.to_source(:strip_enclosure => true))
+
+    source_line = block.to_source(:strip_enclosure => true)
+    return [] unless Post.is_safe_api_call?(source_line)
     
     value = nil
     max_attempts = 3
@@ -500,12 +502,13 @@ class Post < ActiveRecord::Base
       attempts += 1
       value = block.call()
     rescue Twitter::Error::TooManyRequests => exception
-      puts "rate limit exceeded:"
+      puts "rate limit exceeded on line '#{source_line}':"
       puts exception.rate_limit.inspect
+      raise "Rate limit exceeded"
     rescue Exception => exception
       puts "twitter error (#{exception}), retrying"
       retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate" or exception.message.include? "Bad Authentication data"
-      puts "Failed to run #{block} after #{attempts} attempts"
+      puts "Failed to run '#{source_line}' after #{attempts} attempts"
     end 
     return value   
   end
