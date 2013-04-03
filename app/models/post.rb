@@ -138,7 +138,6 @@ class Post < ActiveRecord::Base
           :question_id => question.id
         })
         publication.update_attribute(:published, true)
-        question.update_attribute(:priority, false) if question.priority
         if via.present? and question.priority
           Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
             :reply_to => via, 
@@ -148,6 +147,7 @@ class Post < ActiveRecord::Base
             :link_to_parent => false
           })        
         end
+        question.update_attribute(:priority, false) if question.priority
       rescue Exception => exception
         puts "exception while publishing tweet"
         puts exception.message
@@ -512,7 +512,7 @@ class Post < ActiveRecord::Base
     rescue Exception => exception
       puts "twitter error (#{exception}), retrying"
       retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate" or exception.message.include? "Bad Authentication data"
-      puts "Failed to run '#{source_line}' after #{attempts} attempts"
+      puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts"
     end 
     return value   
   end

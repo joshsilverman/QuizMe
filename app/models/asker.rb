@@ -55,10 +55,10 @@ class Asker < User
   def publish_question
     queue = self.publication_queue
     unless queue.blank?
-      publication = queue.publications.order(:id)[queue.index]
+      publication = queue.publications.order("id ASC")[queue.index]
       PROVIDERS.each { |provider| Post.publish(provider, self, publication) }
       queue.increment_index(self.posts_per_day)
-      Rails.cache.delete("askers:#{self.id}:show")
+      # Rails.cache.delete("askers:#{self.id}:show")
     end
   end
 
