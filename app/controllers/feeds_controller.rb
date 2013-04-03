@@ -346,6 +346,10 @@ class FeedsController < ApplicationController
       @posts = @posts.linked_box.not_spam.order("posts.created_at ASC")
     elsif params[:filter] == 'unlinked'
       @posts = @posts.unlinked_box.not_spam.order("posts.created_at ASC")
+    elsif params[:filter] == 'content'
+      @posts = @posts.content_box.not_spam.order("posts.created_at ASC")
+    elsif params[:filter] == 'friend'
+      @posts = @posts.friend_box.not_spam.order("posts.created_at ASC")            
     elsif params[:filter] == 'all'
       @posts = @posts.all_box.not_spam.order("posts.created_at DESC")
     else

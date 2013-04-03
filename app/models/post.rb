@@ -32,6 +32,8 @@ class Post < ActiveRecord::Base
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
   scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
+  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
+  scope :content, includes(:tags).where("tags.name = 'new content'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
@@ -59,6 +61,8 @@ class Post < ActiveRecord::Base
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
+  scope :content_box, content
+  scope :friend_box, friend
 
   scope :nudge, where("nudge_type_id is not null")
 
