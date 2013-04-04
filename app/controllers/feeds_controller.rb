@@ -41,12 +41,11 @@ class FeedsController < ApplicationController
   end
 
   def show force = false
+    session[:reengagement] = true if params["lt"] == "reengage"
     if !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => true)
-
     elsif current_user.nil? and force == false
       redirect_to "/u#{request.fullpath}", params
-    
     else
       if @asker = Asker.find(params[:id])
 
@@ -180,29 +179,30 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question post_to_twitter = false
-    publication = Publication.find(params[:publication_id])
-    @question_asker = Asker.find(params[:asker_id])
-    answer = Answer.find(params[:answer_id])
+    puts session[:reengagement].to_json
+    # publication = Publication.find(params[:publication_id])
+    # @question_asker = Asker.find(params[:asker_id])
+    # answer = Answer.find(params[:answer_id])
     
-    # Set parent post for wisr response - is this necessary?
-    # post = publication.posts.statuses.order("created_at DESC").limit(1).first
-    post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
+    # # Set parent post for wisr response - is this necessary?
+    # # post = publication.posts.statuses.order("created_at DESC").limit(1).first
+    # post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
 
-    # Create conversation for posts
-    @conversation = Conversation.create({
-      :user_id => current_user.id,
-      :post_id => post.id,
-      :publication_id => publication.id
-    })
+    # # Create conversation for posts
+    # @conversation = Conversation.create({
+    #   :user_id => current_user.id,
+    #   :post_id => post.id,
+    #   :publication_id => publication.id
+    # })
 
-    post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
+    # post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
 
-    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
-    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
+    # user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
+    # @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
 
-    # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
+    # # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
 
-    render :partial => "conversation"
+    # render :partial => "conversation"
   end
 
   def manager_response
