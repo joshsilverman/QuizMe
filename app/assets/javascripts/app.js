@@ -1,4 +1,5 @@
 window.onload = function(e) {
+  var askers_json = JSON.parse($("#askers").val());
   var askers = {};
 
   // set up SVG for D3
@@ -16,25 +17,23 @@ window.onload = function(e) {
   //  - reflexive edges are indicated on the node (as a bold black circle).
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
   var nodes = [];
-  // var nodes = [
-  //     {id: 0, reflexive: false},
-  //     {id: 1, reflexive: true },
-  //     {id: 2, reflexive: false}
-  // ];
-  lastNodeId = 2;
-  // links = [
-  //     {source: nodes[0], target: nodes[1], left: false, right: true },
-  //     {source: nodes[1], target: nodes[2], left: false, right: true }
-  // ];
+  var links = [];
+  lastNodeId = null;
 
-  $.each(JSON.parse($("#askers").val()), function(index, value) {
-    nodes.push({id: value.id, reflexive: false});
-    askers[value.id] = value.twi_screen_name;
-    lastNodeId = value.id;
+  $.each(askers_json, function(index, value) {
+    node = {id: index, reflexive: false};
+    nodes.push(node);
+    askers[index] = {twi_screen_name: value.twi_screen_name, node: node};
+    lastNodeId = index;
   });
-  links = [];
 
-  console.log(asker);
+  $.each(askers_json, function(i, value) {
+    if (value["related_asker_ids"]) {
+      $.each(value["related_asker_ids"], function(j, value) {
+        links.push({source: askers[i]["node"], target: askers[value]["node"], left: false, right: true });
+      });
+    }  
+  });  
 
   // init D3 force layout
   var force = d3.layout.force()
@@ -208,6 +207,7 @@ window.onload = function(e) {
         // add link to graph (update if exists)
         // NB: links are strictly source < target; arrows separately specified by booleans
         var source, target, direction;
+
         if(mousedown_node.id < mouseup_node.id) {
           source = mousedown_node;
           target = mouseup_node;
@@ -234,6 +234,13 @@ window.onload = function(e) {
         // select new link
         selected_link = link;
         selected_node = null;
+
+        // $.ajax({
+        //   type: "post"
+        //   url: ""
+        //   data: { asker_id: source.id, related_asker_id: target.id }
+        // });
+
         restart();
       });
 
@@ -242,7 +249,7 @@ window.onload = function(e) {
         .attr('x', 0)
         .attr('y', 4)
         .attr('class', 'id')
-        .text(function(d) { return askers[d.id]; });
+        .text(function(d) { return askers[d.id]["twi_screen_name"]; });
 
     // remove old nodes
     circle.exit().remove();

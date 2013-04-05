@@ -144,7 +144,21 @@ class AskersController < ApplicationController
     @exam = @exams.last || Exam.new
   end
 
-  def graph
-    @askers = Asker.all
+  def graph 
+    @askers = {}
+    Asker.includes(:related_askers).each do |asker|
+      @askers[asker.id] ||= { twi_screen_name: asker.twi_screen_name }
+      asker.related_askers.each do |related_asker|
+        (@askers[asker.id][:related_asker_ids] ||= []) << related_asker.id
+      end
+    end
+  end
+
+  def add_related
+
+  end
+
+  def remove_related
+
   end
 end
