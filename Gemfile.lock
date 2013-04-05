@@ -89,6 +89,8 @@ GEM
     crack (0.3.2)
     css_parser (1.3.4)
       addressable
+    d3_rails (3.1.4)
+      railties (>= 3.1.0)
     dalli (2.1.0)
     database_cleaner (0.9.1)
     delayed_job (3.0.5)
@@ -344,6 +346,7 @@ DEPENDENCIES
   bitly!
   capybara
   coffee-rails (~> 3.2.1)
+  d3_rails
   dalli (= 2.1.0)
   database_cleaner
   delayed_job_active_record

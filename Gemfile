@@ -74,3 +74,5 @@ gem 'redis'
 
 gem 'unicorn'
 gem 'delayed_job_active_record'
+
+gem 'd3_rails'

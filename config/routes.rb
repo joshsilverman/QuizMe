@@ -90,6 +90,8 @@ Quizmemanager::Application.routes.draw do
 
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
+  
+  match '/askers/graph' => 'askers#graph'
 
   resources :askers
   get "users/supporters" => "users#supporters"

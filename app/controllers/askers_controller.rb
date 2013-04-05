@@ -143,4 +143,8 @@ class AskersController < ApplicationController
     @exams = User.find(params[:user_id]).exams
     @exam = @exams.last || Exam.new
   end
+
+  def graph
+    @askers = Asker.all
+  end
 end
