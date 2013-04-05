@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130307161145) do
+ActiveRecord::Schema.define(:version => 20130405213038) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -205,6 +205,22 @@ ActiveRecord::Schema.define(:version => 20130307161145) do
     t.string   "logo_image"
     t.float    "monthly_cap"
   end
+
+  create_table "related_askers", :id => false, :force => true do |t|
+    t.integer "asker_id"
+    t.integer "related_asker_id"
+  end
+
+  add_index "related_askers", ["asker_id", "related_asker_id"], :name => "index_related_askers_on_asker_id_and_related_asker_id", :unique => true
+  add_index "related_askers", ["related_asker_id", "asker_id"], :name => "index_related_askers_on_related_asker_id_and_asker_id", :unique => true
+
+  create_table "related_users", :id => false, :force => true do |t|
+    t.integer "user_id"
+    t.integer "related_user_id"
+  end
+
+  add_index "related_users", ["related_user_id", "user_id"], :name => "index_related_users_on_related_user_id_and_user_id", :unique => true
+  add_index "related_users", ["user_id", "related_user_id"], :name => "index_related_users_on_user_id_and_related_user_id", :unique => true
 
   create_table "relationships", :force => true do |t|
     t.integer  "follower_id"

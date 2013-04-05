@@ -2,6 +2,13 @@ class Asker < User
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
   has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
+  
+  has_and_belongs_to_many :related_askers,
+    class_name: 'Asker',
+    join_table: :related_askers,
+    foreign_key: :asker_id,
+    association_foreign_key: :related_asker_id,
+    uniq: true
 
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
