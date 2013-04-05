@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_session_variables
-    if params["lt"] == "reengage"
+    if params["lt"] == "reengage" and params[:post_id].present?
       session[:reengagement_publication_id] = params[:post_id] 
       session[:referring_user] = params["t"]
     end
