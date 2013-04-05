@@ -1,16 +1,14 @@
 #lib/tasks/cron.rake
 
 task :check_for_posts => :environment do
-  askers = Asker.where('twi_oauth_token is not null')
-  askers.each do |a|
+  Asker.published.each do |a|
     Post.check_for_posts(a)
     sleep(1)
   end
 end
 
 task :collect_retweets => :environment do
-  askers = Asker.where('twi_oauth_token is not null')
-  askers.each do |a| 
+  Asker.published.each do |a|
     Post.collect_retweets(a)
     sleep 1
   end
