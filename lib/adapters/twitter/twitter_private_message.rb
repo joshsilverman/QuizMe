@@ -11,7 +11,7 @@ class TwitterPrivateMessage
     if @options[:short_url]
       short_url = @options[:short_url]
     elsif @options[:long_url]
-      short_url = Post.shorten_url(@options[:long_url], 'twi', @options[:link_type], @sender.twi_screen_name) 
+      short_url = Post.shorten_url(@options[:long_url], 'twi', @options[:link_type], @sender.twi_screen_name, @recipient.twi_screen_name) 
     end
 
     @text = "#{@text} #{short_url}" if @options[:include_url] and short_url

@@ -79,6 +79,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def set_session_variables
+    if params["lt"] == "reengage"
+      session[:reengagement_publication_id] = params[:post_id] 
+      session[:referring_user] = params["t"]
+    end
+  end
+
   private
   
   # def current_user

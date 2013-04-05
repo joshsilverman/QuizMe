@@ -2,6 +2,7 @@ class FeedsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
+  before_filter :set_session_variables, :only => [:show]
 
   caches_action :unauth_show, :expires_in => 10.minutes
 
@@ -41,7 +42,6 @@ class FeedsController < ApplicationController
   end
 
   def show force = false
-    session[:reengagement] = true if params["lt"] == "reengage"
     if !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => true)
     elsif current_user.nil? and force == false
@@ -179,30 +179,32 @@ class FeedsController < ApplicationController
   end
 
   def respond_to_question post_to_twitter = false
-    puts session[:reengagement].to_json
-    # publication = Publication.find(params[:publication_id])
-    # @question_asker = Asker.find(params[:asker_id])
-    # answer = Answer.find(params[:answer_id])
-    
-    # # Set parent post for wisr response - is this necessary?
-    # # post = publication.posts.statuses.order("created_at DESC").limit(1).first
-    # post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
+    publication = Publication.find(params[:publication_id])
+    @question_asker = Asker.find(params[:asker_id])
+    answer = Answer.find(params[:answer_id])
 
-    # # Create conversation for posts
-    # @conversation = Conversation.create({
-    #   :user_id => current_user.id,
-    #   :post_id => post.id,
-    #   :publication_id => publication.id
-    # })
+    if params[:publication_id] == session[:reengagement_publication_id] and session[:referring_user] and referring_user = User.find_by_twi_screen_name(session[:referring_user])
+      post = @question_asker.posts.reengage_inactive.where("publication_id = ? and in_reply_to_user_id = ?", params[:publication_id], referring_user.id).order("created_at DESC").limit(1).first
+    else
+      post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
+    end
+    post = Post.statuses.where(:publication_id => publication.id).order("created_at DESC").limit(1).first unless post
 
-    # post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
+    # Create conversation for posts
+    @conversation = Conversation.create({
+      :user_id => current_user.id,
+      :post_id => post.id,
+      :publication_id => publication.id
+    })
 
-    # user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
-    # @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
+    post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
 
-    # # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
+    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
+    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
 
-    # render :partial => "conversation"
+    # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
+
+    render :partial => "conversation"
   end
 
   def manager_response

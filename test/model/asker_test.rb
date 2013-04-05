@@ -6,6 +6,7 @@ describe Asker do
 
 		@asker = FactoryGirl.create(:asker)
 		@user = FactoryGirl.create(:user, twi_user_id: 1)
+
 		@asker.followers << @user		
 
 		@question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		

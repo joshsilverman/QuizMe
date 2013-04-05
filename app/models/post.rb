@@ -111,9 +111,9 @@ class Post < ActiveRecord::Base
   end
 
 
-  def self.shorten_url(url, source, lt, campaign, show_answer=nil)
+  def self.shorten_url(url, source, lt, campaign, target, show_answer = nil)
     if Rails.env.production?
-      return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{'&ans=true' if show_answer}").short_url
+      return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}").short_url
     else
       return "http://wisr.co/devurl"
     end
@@ -181,8 +181,8 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet sender, text, options = {}, post = nil, answers = nil
-    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name) if options[:long_url]
-    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", sender.twi_screen_name, options[:wisr_question]) if options[:resource_url]
+    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, options[:reply_to]) if options[:long_url]
+    short_resource_url = Post.shorten_url(options[:resource_url], 'twi', "res", sender.twi_screen_name, options[:reply_to], options[:wisr_question]) if options[:resource_url]
     answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})" if (options[:publication_id].present? and options[:include_answers])
 
     tweet = Post.format_tweet(text, {
@@ -239,7 +239,7 @@ class Post < ActiveRecord::Base
     if options[:short_url]
       short_url = options[:short_url]
     elsif options[:long_url]
-      short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name) 
+      short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, recipient.twi_screen_name) 
     end
 
     text = "#{text} #{short_url}" if options[:include_url] and short_url

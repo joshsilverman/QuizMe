@@ -30,6 +30,11 @@ Quizmemanager::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
   config.action_mailer.default_url_options = { :host => 'localhost:5000' }
+
+  config.logger = Logger.new(STDOUT)
+  config.logger.level = Logger.const_get(
+    ENV['LOG_LEVEL'] ? ENV['LOG_LEVEL'].upcase : 'DEBUG'
+  )  
 end
 
 ENV['REDISTOGO_URL'] = 'redis://localhost:6379'
