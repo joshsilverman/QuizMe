@@ -728,7 +728,7 @@ class Asker < User
 
   def self.retweet_related
     Asker.published.each do |asker|
-      next unless related_asker = asker.related_askers.sample
+      next unless related_asker = asker.related_askers.published.sample
       next unless publication = related_asker.publications.includes(:posts).published.order('updated_at DESC').limit(5).sample
       next unless post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
