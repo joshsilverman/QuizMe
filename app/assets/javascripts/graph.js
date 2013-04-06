@@ -240,9 +240,6 @@ window.onload = function(e) {
           links.push(link);
         }
 
-        console.log(source.id);
-        console.log(target.id);
-
         $.ajax({
           type: "post",
           url: "/askers/add_related",
