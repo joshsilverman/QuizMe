@@ -4,7 +4,7 @@ window.onload = function(e) {
 
   // set up SVG for D3
   var width  = 1200;
-  var height = 600;
+  var height = 700;
   var colors = d3.scale.category10();
 
   var svg = d3.select('#graph')
@@ -40,8 +40,8 @@ window.onload = function(e) {
       .nodes(nodes)
       .links(links)
       .size([width, height])
-      .linkDistance(150)
-      .charge(-500)
+      .linkDistance(100)
+      .charge(-300)
       .on('tick', tick)
 
   // define arrow markers for graph links
@@ -54,7 +54,7 @@ window.onload = function(e) {
       .attr('orient', 'auto')
     .append('svg:path')
       .attr('d', 'M0,-5L10,0L0,5')
-      .attr('fill', '#000');
+      .attr('fill', '#999');
 
   svg.append('svg:defs').append('svg:marker')
       .attr('id', 'start-arrow')
@@ -65,7 +65,7 @@ window.onload = function(e) {
       .attr('orient', 'auto')
     .append('svg:path')
       .attr('d', 'M10,-5L0,0L10,5')
-      .attr('fill', '#000');
+      .attr('fill', '#999');
 
   // line displayed when dragging new nodes
   var drag_line = svg.append('svg:path')
@@ -151,6 +151,7 @@ window.onload = function(e) {
     // update existing nodes (reflexive & selected visual states)
     circle.selectAll('circle')
       .style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
+      // .style('fill', 'white')
       .classed('reflexive', function(d) { return d.reflexive; });
 
     // add new nodes
@@ -160,7 +161,9 @@ window.onload = function(e) {
       .attr('class', 'node')
       .attr('r', 10)
       .style('fill', function(d) { return (d === selected_node) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id); })
+      // .style('fill', 'white')
       .style('stroke', function(d) { return d3.rgb(colors(d.id)).darker().toString(); })
+      // .style('stroke', 'pink')
       .classed('reflexive', function(d) { return d.reflexive; })
       .on('mouseover', function(d) {
         if(!mousedown_node || d === mousedown_node) return;
@@ -207,16 +210,18 @@ window.onload = function(e) {
         // add link to graph (update if exists)
         // NB: links are strictly source < target; arrows separately specified by booleans
         var source, target, direction;
-
-        if(mousedown_node.id < mouseup_node.id) {
-          source = mousedown_node;
-          target = mouseup_node;
-          direction = 'right';
-        } else {
-          source = mouseup_node;
-          target = mousedown_node;
-          direction = 'left';
-        }
+        // if(mousedown_node.id < mouseup_node.id) {
+        //   source = mousedown_node;
+        //   target = mouseup_node;
+        //   direction = 'right';
+        // } else {
+        //   source = mouseup_node;
+        //   target = mousedown_node;
+        //   direction = 'left';
+        // }
+        source = mousedown_node;
+        target = mouseup_node;
+        direction = 'right';
 
         var link;
         link = links.filter(function(l) {
@@ -231,15 +236,18 @@ window.onload = function(e) {
           links.push(link);
         }
 
+        console.log(source.id);
+        console.log(target.id);
+
+        $.ajax({
+          type: "post",
+          url: "/askers/add_related",
+          data: { asker_id: source.id, related_asker_id: target.id }
+        });
         // select new link
         selected_link = link;
         selected_node = null;
 
-        // $.ajax({
-        //   type: "post"
-        //   url: ""
-        //   data: { asker_id: source.id, related_asker_id: target.id }
-        // });
 
         restart();
       });
@@ -335,6 +343,11 @@ window.onload = function(e) {
         } else if(selected_link) {
           links.splice(links.indexOf(selected_link), 1);
         }
+        $.ajax({
+          type: "post",
+          url: "/askers/remove_related",
+          data: { asker_id: selected_link.source.id, related_asker_id: selected_link.target.id }
+        });        
         selected_link = null;
         selected_node = null;
         restart();

@@ -92,8 +92,8 @@ Quizmemanager::Application.routes.draw do
   match '/stats' => 'accounts#stats'
   
   match '/askers/graph' => 'askers#graph'
-  match '/askers/add_related' => 'askers#add_related'
-  match '/askers/remove_related' => 'askers#remove_related'
+  post '/askers/add_related' => 'askers#add_related'
+  post '/askers/remove_related' => 'askers#remove_related'
 
   resources :askers
   get "users/supporters" => "users#supporters"

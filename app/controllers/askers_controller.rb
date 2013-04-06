@@ -155,10 +155,14 @@ class AskersController < ApplicationController
   end
 
   def add_related
-
+    asker = Asker.find(params[:asker_id])
+    related_asker = Asker.find(params[:related_asker_id])
+    asker.related_askers << related_asker unless asker.related_askers.include? related_asker
+    render :nothing => true
   end
 
   def remove_related
-
+    Asker.find(params[:asker_id]).related_askers.delete Asker.find(params[:related_asker_id])
+    render :nothing => true
   end
 end
