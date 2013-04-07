@@ -44,8 +44,12 @@ window.onload = function(e) {
       .nodes(nodes)
       .links(links)
       .size([width, height])
-      .linkDistance(100)
+      .linkDistance(130)
+      .linkStrength(1)
+      // .friction(0.3)
+      // .charge(-300)
       .charge(-300)
+      .gravity(0.1)
       .on('tick', tick)
 
   // define arrow markers for graph links
@@ -170,11 +174,14 @@ window.onload = function(e) {
       // .style('stroke', 'pink')
       .classed('reflexive', function(d) { return d.reflexive; })
       .on('mouseover', function(d) {
+        highlight(d, 0.1);
         if(!mousedown_node || d === mousedown_node) return;
         // enlarge target node
         d3.select(this).attr('transform', 'scale(1.6)');
       })
       .on('mouseout', function(d) {
+        svg.selectAll("circle").style("opacity", 0.4);
+        svg.selectAll("path").style("opacity", 0.3);
         if(!mousedown_node || d === mousedown_node) return;
         // unenlarge target node
         d3.select(this).attr('transform', '');
@@ -252,6 +259,7 @@ window.onload = function(e) {
 
         restart();
       });
+      // .call(force.drag);
 
     // show node IDs
     g.append('svg:text')
@@ -395,6 +403,19 @@ window.onload = function(e) {
     }
   }
 
+  function highlight(d, opacity) {
+    var nodes = svg.selectAll("circle");
+    var edges = svg.selectAll("path");
+    nodes.style("opacity", opacity);
+    edges.style("opacity", opacity);
+    selected = $.grep(nodes[0], function(n) { return d.id == n.__data__.id; })[0];
+    d3.select(selected).style("opacity", 0.4);
+    selected_edges = $.grep(edges[0], function(n) { 
+      if (n.__data__ != undefined && !(d.__data__ instanceof Array)) { return d.id == n.__data__.source.id; }
+    });
+    $.each(selected_edges, function(i, n) { d3.select(n).style("opacity", 1) });
+  }
+
   // app starts here
   svg.on('mousedown', mousedown)
     .on('mousemove', mousemove)
@@ -403,4 +424,5 @@ window.onload = function(e) {
     .on('keydown', keydown)
     .on('keyup', keyup);
   restart();
+
 }

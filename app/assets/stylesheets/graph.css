@@ -18,6 +18,7 @@ path.link {
   stroke: #ccc;
   stroke-width: 4px;
   cursor: default;
+  opacity: 0.3;
 }
 
 svg:not(.active):not(.ctrl) path.link {
@@ -39,7 +40,7 @@ path.link.hidden {
 circle.node {
   stroke-width: 1.5px;
   cursor: pointer;
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 circle.node.reflexive {
