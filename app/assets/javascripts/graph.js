@@ -22,6 +22,7 @@ window.onload = function(e) {
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
   var nodes = [];
   var links = [];
+  var node_hash = {};
   lastNodeId = null;
 
   $.each(askers_json, function(index, value) {
@@ -182,6 +183,7 @@ window.onload = function(e) {
       .on('mouseout', function(d) {
         svg.selectAll("circle").style("opacity", 0.4);
         svg.selectAll("path").style("opacity", 0.3);
+        svg.selectAll("text").style("opacity", 1);
         if(!mousedown_node || d === mousedown_node) return;
         // unenlarge target node
         d3.select(this).attr('transform', '');
@@ -270,6 +272,11 @@ window.onload = function(e) {
 
     // remove old nodes
     circle.exit().remove();
+
+    // console.log(svg.selectAll("circle"));
+    $.each(svg.selectAll("circle")[0], function(i, n) {
+      node_hash[n.__data__.id] = n;
+    });
 
     // set the graph in motion
     force.start();
@@ -406,14 +413,23 @@ window.onload = function(e) {
   function highlight(d, opacity) {
     var nodes = svg.selectAll("circle");
     var edges = svg.selectAll("path");
+
     nodes.style("opacity", opacity);
     edges.style("opacity", opacity);
-    selected = $.grep(nodes[0], function(n) { return d.id == n.__data__.id; })[0];
-    d3.select(selected).style("opacity", 0.4);
-    selected_edges = $.grep(edges[0], function(n) { 
+    svg.selectAll("text").style("opacity", opacity);
+
+    target_node = node_hash[d.id];
+    d3.select(target_node).style("opacity", 0.4);
+    $(target_node).next().css('opacity', 1);
+
+    var highlighted_edges = $.grep(edges[0], function(n) { 
       if (n.__data__ != undefined && !(d.__data__ instanceof Array)) { return d.id == n.__data__.source.id; }
     });
-    $.each(selected_edges, function(i, n) { d3.select(n).style("opacity", 1) });
+    $.each(highlighted_edges, function(i, n) { 
+      d3.select(n).style("opacity", 1);
+      d3.select(node_hash[n.__data__.target.id]).style("opacity", 0.4);
+      $(node_hash[n.__data__.target.id]).next().css('opacity', 1);
+    });
   }
 
   // app starts here
@@ -424,5 +440,4 @@ window.onload = function(e) {
     .on('keydown', keydown)
     .on('keyup', keyup);
   restart();
-
 }
