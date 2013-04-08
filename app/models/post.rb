@@ -64,7 +64,7 @@ class Post < ActiveRecord::Base
   scope :content_box, content
   scope :friend_box, friend
 
-  scope :nudge, where("nudge_type_id is not null")
+  scope :nudge, where("posts.nudge_type_id is not null")
 
   scope :author_followup, where("posts.intention = 'author followup'")
 
