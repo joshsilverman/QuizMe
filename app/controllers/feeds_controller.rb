@@ -250,11 +250,20 @@ class FeedsController < ApplicationController
         }) 
 
       else
-        response_text = params[:message].gsub("@#{params[:username]}", "")
+        response_text = params[:message]
+        if response_text == "Refer a friend?"
+          response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
+            "Do you have any friends/classmates that would also be interested?",
+            "Could you share with a couple of friends/classmates please?"
+          )
+        else
+          response_text = params[:message].gsub("@#{params[:username]}", "")
+        end
       end
 
       response_post = Post.delay.dm(asker, user, response_text, {
-        :conversation_id => conversation.id
+        :conversation_id => conversation.id,
+        :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil
       })
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)

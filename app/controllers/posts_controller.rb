@@ -87,7 +87,7 @@ class PostsController < ApplicationController
     else
       user = post.user
       Post.trigger_split_test(user.id, 'ugc request type')
-      Post.trigger_split_test(user.id, 'ugc script v2.0')
+      # Post.trigger_split_test(user.id, 'ugc script v3.0')
 
       tag.posts << post
     end
