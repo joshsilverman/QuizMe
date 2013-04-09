@@ -11,7 +11,10 @@ class AuthorizationsController < ApplicationController
   private
 
   	def oauthorize provider
+  		puts "in oauthorize"
 	    if @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
+	    	puts "found user"
+	    	puts @user.to_json
 	      # session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
 	      Mixpanel.track_event "authorized app", {:distinct_id => @user.id, :service => provider}
 	      sign_in_and_redirect @user, :event => :authentication
@@ -43,7 +46,7 @@ class AuthorizationsController < ApplicationController
 				if email # check if we have the email
 					user = find_or_create_oauth_by_email(email)
 				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
-					user = find_oauth_by_provider_and_uid(provider, uid) || find_or_create_oauth_by_provider_and_name(provider, name)
+					user = find_or_create_oauth_by_provider_and_uid(provider, uid)# || find_or_create_oauth_by_provider_and_name(provider, name)
 				else
 					puts 'Provider #{provider} not handled'
 				end
@@ -70,9 +73,13 @@ class AuthorizationsController < ApplicationController
 
 	  # In the future, should new users w/out tokens create an authorization?
 	  # Otherwise, we end up storing the uid on the User
-	  def find_oauth_by_provider_and_uid provider, uid
+	  def find_or_create_oauth_by_provider_and_uid provider, uid
 	  	user = Authorization.find_by_uid(uid.to_s).try(:user)
 	  	user = User.find_by_twi_user_id(uid) if user.blank? and provider == "twitter" # legacy support for uid on user
+	    unless user
+	      user = User.new(:twi_user_id => uid, :password => Devise.friendly_token[0,20])
+	      user.save :validate => false
+	    end
 	  	user
 	  end
 	 

@@ -63,5 +63,4 @@
 
             %li= link_to "Sign Out", destroy_user_session_path, :method => :delete, :class => "nav-link"
           - else
-            %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => true), :class => (current_user ? "nav-link" : "auth_link nav-link")
-            / # %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter), :class => (current_user ? "nav-link" : "auth_link nav-link")
+            %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
