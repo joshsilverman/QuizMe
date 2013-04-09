@@ -26,7 +26,7 @@
                 %i.icon-user
                 Sign in
                 %span#sign_in_container
-                  %a{:href => user_omniauth_authorize_path(:twitter, :topic_tag => @topic_tag, :new_question_asker_id => @asker_id, :use_authorize => true)}
+                  %a{:href => user_omniauth_authorize_path(:twitter, :topic_tag => @topic_tag, :new_question_asker_id => @asker_id, :use_authorize => false)}
                     = image_tag "twitter-sign-in.png", :id => "sign_in"
         .page-header
           %h3
