@@ -312,7 +312,7 @@ class Asker < User
   end
 
   def self.reengage_incorrect_answerers
-    askers = User.askers
+    askers = Asker.published
     current_time = Time.now
     range_begin = 24.hours.ago
     range_end = 23.hours.ago
