@@ -33,6 +33,8 @@
                 &nbsp;|&nbsp;
                 %a{:style => 'cursor:pointer;'}= best_in_place @asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
                 &nbsp;|&nbsp;
+                %a#import{:style => 'cursor:pointer;'} Import  
+                &nbsp;|&nbsp;
                 = link_to 'Destroy', asker_path(@asker), confirm: 'Are you sure?', method: :delete
 
     - if @linked
@@ -52,8 +54,4 @@
                 %dt Twitter oauth secret
                 %dd= @asker.twi_oauth_secret
 
-  =# link_to 'Add/Update Facebook', '/auth/facebook'
-  =# link_to 'Add/Update Tumblr', '/auth/tumblr'
-
-=# render :partial => 'form'
-=# link_to t('.destroy', :default => t("helpers.links.destroy")), asker_path(@asker), :method => 'delete', :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')), :class => 'btn btn-danger'                                                                      
+%input#asker_id{type: 'hidden', value: @asker.id}                                                                      

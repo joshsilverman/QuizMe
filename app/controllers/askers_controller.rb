@@ -16,7 +16,7 @@ class AskersController < ApplicationController
     @question_counts = Question.counts
     
     @askers = Asker.all
-    @askers = @askers.sort{|a,b| @unresponded_counts[a.id] <=> @unresponded_counts[b.id]}.reverse
+    @askers = @askers.sort{|a,b| (@unresponded_counts[a.id] or 0) <=> (@unresponded_counts[b.id] or 0)}.reverse
     @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 
@@ -164,5 +164,11 @@ class AskersController < ApplicationController
   def remove_related
     Asker.find(params[:asker_id]).related_askers.delete Asker.find(params[:related_asker_id])
     render :nothing => true
+  end
+
+  def import
+    @asker = Asker.find params[:id]
+    @asker.seeder_import params[:seeder_id]
+    redirect_to :back
   end
 end

@@ -905,6 +905,46 @@ class Asker < User
     end
   end
 
+  def seeder_import seeder_id = nil
+    return unless seeder_id
+
+    #get cards from seeder
+    url = URI.parse("http://seeder.herokuapp.com/handles/#{seeder_id}/export.json")
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    begin
+      cards = JSON.parse(res.body)
+    rescue
+      cards=[]
+    end
+
+    cards.each_with_index do |card, i|
+      q = Question.find_or_create_by_seeder_id(card['card_id'])
+      answers = q.answers
+      f_answers = []
+      t_answer = nil
+      answers.each do |a|
+        t_answer = a.text if a.correct
+        f_answers << a.text unless a.correct        
+      end 
+      card_f_answers = card['false_answers']
+      unless q.text == card['text'] &&
+              q.created_for_asker_id == id &&
+              t_answer == card['answer']
+        q.update_attributes(:text => card['text'],
+                            :user_id => 1,
+                            :status => 1,
+                            :created_for_asker_id => id)
+        q.answers.destroy_all unless q.answers.blank?
+        q.answers << Answer.create(:text => card['answer'], :correct => true)
+        card['false_answers'].each do |fa|
+          q.answers << Answer.create(:text => fa, :correct => false)
+        end
+      end
+    end
+  end
 
   ## Unused?
 
