@@ -49,6 +49,10 @@ class AskersController < ApplicationController
       profile = {:description => params[:asker][:description]}
       @asker.twitter.update_profile profile
     end
+    
+    if params[:asker][:published] == "true"
+      PublicationQueue.enqueue_questions @asker
+    end
 
     if @asker.update_attributes(params[:asker])
       render :status => 200, :text => ''
