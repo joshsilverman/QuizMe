@@ -512,7 +512,7 @@ class Post < ActiveRecord::Base
       raise "Rate limit exceeded"
     rescue Exception => exception
       puts "twitter error (#{exception}), retrying"
-      retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate" or exception.message.include? "Bad Authentication data"
+      retry unless attempts >= max_attempts or exception.message.include? "Status is a duplicate" or exception.message.include? "Bad Authentication data" or exception.message.include? "Could not authenticate you"
       puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts"
     end 
     return value   
