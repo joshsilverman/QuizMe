@@ -301,7 +301,8 @@ class Post < ActiveRecord::Base
       :twi_name => m.user.name,
       :name => m.user.name,
       :twi_screen_name => m.user.screen_name,
-      :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url
+      :twi_profile_img_url => m.user.status.nil? ? nil : m.user.status.user.profile_image_url,
+      :description => m.user.description
     )
 
     in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) : nil)
@@ -347,7 +348,8 @@ class Post < ActiveRecord::Base
       twi_name: d.sender.name,
       name: d.sender.name,
       twi_screen_name: d.sender.screen_name,
-      twi_profile_img_url: d.sender.profile_image_url
+      twi_profile_img_url: d.sender.profile_image_url,
+      description: d.sender.description
     )
 
     in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', u.id, asker.id, asker.id, u.id)\
@@ -403,7 +405,8 @@ class Post < ActiveRecord::Base
         :twi_name => user.name,
         :name => user.name,
         :twi_screen_name => user.screen_name,
-        :twi_profile_img_url => user.profile_image_url
+        :twi_profile_img_url => user.profile_image_url,
+        :description => user.description
       )
 
       return if Post.where("user_id = ? and in_reply_to_post_id = ? and interaction_type = 3", u.id, retweeted_post.id).size > 0
