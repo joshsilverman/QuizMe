@@ -787,10 +787,12 @@ class Asker < User
 
   def self.get_nudge_followup_recipients recipient_hash = {}
     # no_reply_nudges = Post.includes(:child).where("posts.id not in (select distinct(children_posts.in_reply_to_post_id))")
-    nudges = Post.includes(:child).nudge.where("created_at > ? and created_at < ?", 1.week.ago, 1.day.ago)
-    already_followed_up_user_ids = Post.where("intention = ? and in_reply_to_user_id in (?)", 'nudge followup', nudges.collect(&:in_reply_to_user_id)).collect(&:in_reply_to_user_id).uniq
+    nudges = Post.nudge.where("created_at > ? and created_at < ?", 1.week.ago, 1.day.ago)
+    nudge_recipient_ids = nudges.collect(&:in_reply_to_user_id).uniq
+    nudge_response_user_ids = Post.where("user_id in (?) and in_reply_to_post_id in (?)", nudge_recipient_ids, nudges.collect(&:id)).collect(&:user_id).uniq
+    already_followed_up_user_ids = Post.where("intention = ? and in_reply_to_user_id in (?)", 'nudge followup', nudge_recipient_ids).collect(&:in_reply_to_user_id).uniq
     nudges.each do |nudge| 
-      next if nudge.child or already_followed_up_user_ids.include? nudge.in_reply_to_user_id # filter out users who have responded to our nudge or who have already been followed up with
+      next if (nudge_response_user_ids + already_followed_up_user_ids).include? nudge.in_reply_to_user_id # filter out users who have responded to our nudge or who have already been followed up with
       recipient_hash[nudge.in_reply_to_user_id] = {converted: nudge.converted, asker_id: nudge.user_id, post_id: nudge.id}
     end
     recipient_hash
