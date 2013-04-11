@@ -196,11 +196,9 @@ class FeedsController < ApplicationController
       :post_id => post.id,
       :publication_id => publication.id
     })
-
-    post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
-
-    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
-    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
+    
+    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
+    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
 
     # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
 
