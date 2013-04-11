@@ -64,6 +64,8 @@ class Asker < User
   end
 
   def publish_question
+    interval = posts_per_day > 5 ? 1 : 2
+    return unless (Time.now.hour % interval == 0)
     queue = self.publication_queue
     unless queue.blank?
       publication = queue.publications.order("id ASC")[queue.index]
