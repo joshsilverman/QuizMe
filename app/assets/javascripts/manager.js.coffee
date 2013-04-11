@@ -353,8 +353,9 @@ class Post
 				success: => 
 					button.css('background', '#DEFFDE')
 
-	highlight_user_names: (text, re = /@[A-Za-z_]*/g, asker_list = "") =>
+	highlight_user_names: (text, re = /@[A-Za-z_0-9]*/g, asker_list = "") =>
 		user_names = text.match(re) || []
+		user_names = user_names.filter (e) -> $.inArray(e.replace('@', ''), window.feed.asker_twi_screen_names) < 0
 		asker_list += "<li class='asker_name'><a>#{name}</a></li>" for name in window.feed.asker_twi_screen_names
 		text = text.replace name, "<div class='btn-group asker_list'><a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#''>#{name}<span class='caret'></span></a><ul class='dropdown-menu'>#{asker_list}</ul></div>" for name in user_names
 		# text = text.replace name, "<div class='btn btn-mini user_name'>#{name}</div>" for name in user_names

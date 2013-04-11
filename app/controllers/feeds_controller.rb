@@ -420,6 +420,10 @@ class FeedsController < ApplicationController
         :publication_id => publication.id,
         :question_id => question.id
       })
+      Mixpanel.track_event "quiz a friend", {
+        :distinct_id => user.id,
+        :asker => asker.twi_screen_name
+      }
       render :json => response_post
     else
       render :nothing => true, :status => 403
