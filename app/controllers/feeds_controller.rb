@@ -379,6 +379,7 @@ class FeedsController < ApplicationController
     end
 
     @tags = Tag.all
+    @asker_twi_screen_names = Asker.twi_screen_names.sort_by! { |a| a[0].downcase }
     @nudge_types = NudgeType.all
     @posts = @posts.page(params[:page]).per(50)
 
@@ -392,6 +393,36 @@ class FeedsController < ApplicationController
       @asker = User.find 8765
       @oneinbox = true
       @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+    end
+  end
+
+  def refer_a_friend
+    asker = Asker.find_by_twi_screen_name(params[:asker_twi_screen_name])
+    twitter_user = Post.twitter_request { asker.twitter.user(params[:user_twi_screen_name]) }
+    user = User.find_or_initialize_by_twi_user_id(twitter_user.id)
+    user.update_attributes( 
+      :twi_name => twitter_user.name,
+      :name => twitter_user.name,
+      :twi_screen_name => twitter_user.screen_name,
+      :twi_profile_img_url => twitter_user.profile_image_url,
+      :description => twitter_user.description
+    )
+    if Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
+      question = asker.most_popular_question
+      publication = question.publications.order("created_at DESC").first
+      response_post = Post.tweet(asker, question.text, {
+        :reply_to => params[:user_twi_screen_name], 
+        :interaction_type => 2,
+        :intention => 'quiz a friend',
+        :via => params[:via],
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}",
+        :in_reply_to_user_id => user.id,
+        :publication_id => publication.id,
+        :question_id => question.id
+      })
+      render :json => response_post
+    else
+      render :nothing => true, :status => 403
     end
   end
 

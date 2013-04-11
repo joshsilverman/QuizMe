@@ -40,6 +40,10 @@ class Asker < User
     Rails.cache.fetch('published_asker_ids', :expires_in => 5.minutes){Asker.published.collect(&:id)}
   end
 
+  def self.twi_screen_names
+    Rails.cache.fetch('asker_twi_screen_names', :expires_in => 5.minutes){Asker.published.collect(&:twi_screen_name)}
+  end
+
   def unresponded_count
     posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id = ? AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
