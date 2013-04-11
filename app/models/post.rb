@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
 	belongs_to :question
   belongs_to :in_reply_to_question, :class_name => 'Question', :foreign_key => 'in_reply_to_question_id'
+  belongs_to :in_reply_to_user, :class_name => 'User', :foreign_key => 'in_reply_to_user_id'
   # has_one :question
   
   belongs_to :user
@@ -36,6 +37,9 @@ class Post < ActiveRecord::Base
   scope :content, includes(:tags).where("tags.name = 'new content'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
 
+  #published asker
+  scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
+
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
   scope :not_autocorrected, where("posts.autocorrect IS NULL")
 
@@ -57,8 +61,8 @@ class Post < ActiveRecord::Base
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
   scope :ugc_box, ugc
-  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet
-  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us
+  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published
+  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
   scope :content_box, content
