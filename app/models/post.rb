@@ -640,7 +640,7 @@ class Post < ActiveRecord::Base
       _in_reply_to_question = parent.question
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      _in_reply_to_question = asker.posts.includes(:question).dms.where("in_reply_to_user_id = ? and intention = 'initial question dm'", user_id).first.question
+      _in_reply_to_question = asker.posts.includes(:question).dms.where("in_reply_to_user_id = ? and intention = 'initial question dm'", user_id).first.try(:question)
     elsif conversation and conversation.publication and conversation.publication.question
       _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question
