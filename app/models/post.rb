@@ -32,10 +32,15 @@ class Post < ActiveRecord::Base
 
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
-  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
-  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
-  scope :content, includes(:tags).where("tags.name = 'new content'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
+
+  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
+
+  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
+  scope :not_friend, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ask a friend')
+
+  scope :content, includes(:tags).where("tags.name = 'new content'")
+  scope :not_content, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'new content')
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
@@ -61,7 +66,7 @@ class Post < ActiveRecord::Base
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
   scope :ugc_box, ugc
-  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published
+  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected

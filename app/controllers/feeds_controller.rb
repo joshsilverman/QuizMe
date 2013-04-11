@@ -379,7 +379,7 @@ class FeedsController < ApplicationController
     end
 
     @tags = Tag.all
-    @asker_twi_screen_names = Asker.twi_screen_names.sort_by! { |a| a[0].downcase }
+    @asker_twi_screen_names = Asker.twi_screen_names.sort_by! { |a| a[0].downcase }.map { |a| a.downcase }
     @nudge_types = NudgeType.all
     @posts = @posts.page(params[:page]).per(50)
 
