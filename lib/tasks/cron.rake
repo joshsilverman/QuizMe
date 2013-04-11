@@ -16,6 +16,8 @@ end
 
 task :post_question => :environment do
   Asker.where('twi_oauth_token is not null and published = ?', true).each do |a|
+    interval = a.posts_per_day > 5 ? 1 : 2
+    next unless (Time.now.hour % interval == 0)    
     puts "Posting question for #{a.twi_screen_name}"
     a.publish_question()
     sleep(3)
