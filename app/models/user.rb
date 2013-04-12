@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :password_confirmation, :remember_me
+  has_and_belongs_to_many :tags, :uniq => true
   
   has_many :authorizations, :dependent => :destroy
 
@@ -46,6 +47,9 @@ class User < ActiveRecord::Base
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
     .where('interaction_type IN (2,3)')\
+
+  scope :teacher, joins(:tags).where('tags.name = ?', 'teacher')
+  scope :student, joins(:tags).where('tags.name = ?', 'student')
 
   # Lifecycle segmentation scopes
   scope :unengaged, where("lifecycle_segment is null")
@@ -121,6 +125,10 @@ class User < ActiveRecord::Base
 
 	def is_role?(role)
 		self.role.include? role.downcase
+	end
+
+	def is_a? name
+		tags.where('name = ?', name).size > 0
 	end
 
 	def twitter_enabled?
@@ -255,8 +263,19 @@ class User < ActiveRecord::Base
     Mixpanel.track_event "new user joined", {
       :distinct_id => id,
       :type => "twitter"
-    }  		
+    }
+    classify
 		register_referrals
+	end
+
+	def classify matched_tags = []
+		USER_TAG_SEARCH_TERMS.each do |tag_name, terms|
+			terms.each do |term| 
+				matched_tags << tag_name if twi_screen_name and twi_screen_name.include? term
+				matched_tags << tag_name if description and description.include? term 
+			end
+		end
+		Tag.where('name in (?)', matched_tags).each { |matched_tag| tags << matched_tag } if matched_tags.present?
 	end
 
 	def register_referrals 
@@ -336,11 +355,15 @@ class User < ActiveRecord::Base
     when 2 #to noob
       comment = no_comment
     when 3 #to regular
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        "Is there anything specific I can quiz you on?",
-        "Any other topics you would be interested in learning about?",
-        "Do you have any friends that I could quiz?"
-      )
+    	if self.is_a? 'teacher'
+    		comment = 'Are you a teacher? Would this tool be useful in any of your classes?'
+    	else
+	      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+	        "Is there anything specific I can quiz you on?",
+	        "Any other topics you would be interested in learning about?",
+	        "Do you have any friends that I could quiz?"
+	      )
+	    end
     when 4 #to advanced 
       # suggestions?
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 

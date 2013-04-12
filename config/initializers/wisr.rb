@@ -170,6 +170,11 @@ UGC_SCRIPTS = {
   which_correct: "Thanks, and which is the correct answer?"
 }
 
+USER_TAG_SEARCH_TERMS = {
+  teacher: ['teacher', 'teach', 'professor'],
+  student: ['student']
+}
+
 SEGMENT_HIERARCHY = {
   1 => [7, 1, 2, 3, 4, 5, 6], 
   2 => [7, 1, 2, 3, 4, 5, 6],

@@ -403,7 +403,7 @@ class FeedsController < ApplicationController
       :name => twitter_user.name,
       :twi_screen_name => twitter_user.screen_name,
       :twi_profile_img_url => twitter_user.profile_image_url,
-      :description => twitter_user.description
+      :description => twitter_user.description.present? ? twitter_user.description : nil
     )
     if Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
       question = asker.most_popular_question
