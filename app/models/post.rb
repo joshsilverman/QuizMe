@@ -36,10 +36,10 @@ class Post < ActiveRecord::Base
 
   scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
 
-  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
+  scope :friend, includes(:tags).where("tags.name = 'ask a friend' and posts.requires_action = ?", true)
   scope :not_friend, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ask a friend')
 
-  scope :content, includes(:tags).where("tags.name = 'new content'")
+  scope :content, includes(:tags).where("tags.name = 'new content' and posts.requires_action = ?", true)
   scope :not_content, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'new content')
 
   #published asker
