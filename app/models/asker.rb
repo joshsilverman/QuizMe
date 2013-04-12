@@ -914,10 +914,20 @@ class Asker < User
     res = Net::HTTP.start(url.host, url.port) {|http|
       http.request(req)
     }
+    
     begin
-      cards = JSON.parse(res.body)
+      data = JSON.parse(res.body)
+      cards = data["questions"]
+      topic = data["topic"]
     rescue
       cards=[]
+    end
+
+    if topic and !topic.empty? and (description.nil? or description.empty?)
+      _description = "Daily quiz questions on ##{topic}. Tweet me your answers!"
+      profile = {:description => _description}
+      update_attribute :description, _description
+      twitter.update_profile profile
     end
 
     cards.each_with_index do |card, i|
