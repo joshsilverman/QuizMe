@@ -271,6 +271,18 @@ ACCOUNT_DATA = {
     :hashtags => ['biology', 'photosynthesis'],
     :category => "Life Sciences"  
   },
+  ## ImmuneSystmQuiz
+  35127 => {
+    :hashtags => ['immune', 'immunology']
+  },
+  ## RespiratoryQuiz
+  35106 => {
+    :hashtags => ['respiratory', 'respiratorysystem']
+  },
+  ## PrepMeMCATBio
+  34530 => {
+    :hashtags => ['mcat', 'biology']
+  },  
 
   ## SATvocabQuiz
   227 => {
@@ -283,6 +295,10 @@ ACCOUNT_DATA = {
     :retweet => [227, 308, 66, 2], 
     :hashtags => ["trivia"],
     :category => "Trivia"
+  },
+  ## QuizMeCapitals
+  34534 => {
+    :hashtags => ['trivia', 'geography']
   },
 
   # ## Govt101
