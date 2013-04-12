@@ -283,6 +283,10 @@ ACCOUNT_DATA = {
   34530 => {
     :hashtags => ['mcat', 'biology']
   },  
+  ## PlantGrowthQuiz
+  34905 => {
+    :hashtags => ['botany', 'plants', 'plantgrowth']
+  },
 
   ## SATvocabQuiz
   227 => {
