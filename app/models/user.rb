@@ -127,8 +127,8 @@ class User < ActiveRecord::Base
 		self.role.include? role.downcase
 	end
 
-	def is_a? name
-		tags.where('name = ?', name).size > 0
+	def is_teacher?
+		tags.where("name = 'teacher'").size > 0
 	end
 
 	def twitter_enabled?
@@ -355,7 +355,7 @@ class User < ActiveRecord::Base
     when 2 #to noob
       comment = no_comment
     when 3 #to regular
-    	if self.is_a? 'teacher'
+    	if self.is_teacher?
     		comment = 'Are you a teacher? Would this tool be useful in any of your classes?'
     	else
 	      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
