@@ -1,5 +1,4 @@
 #manager {
-
 	.actions {
 		/*float:none;*/
 		background: #efefef;
@@ -160,4 +159,16 @@
 			}
 		}
 	}
+}
+
+/*.user_name {
+	border: 1px dotted gray;
+	border-radius: 5px;
+	cursor: pointer;
+	background: #FFFEE6;
+}*/
+.asker_list {
+	display: inline-block;
+	position: relative;
+	top: 5px;	
 }

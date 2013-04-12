@@ -196,11 +196,9 @@ class FeedsController < ApplicationController
       :post_id => post.id,
       :publication_id => publication.id
     })
-
-    post_to_twitter = true if (Post.create_split_test(current_user.id, "Post to twitter on app answer (follower joins)", "false", "true") == "true")
-
-    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => post_to_twitter })
-    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => post_to_twitter, :link_to_parent => true }) if user_post
+    
+    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
+    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
 
     # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
 
@@ -379,6 +377,7 @@ class FeedsController < ApplicationController
     end
 
     @tags = Tag.all
+    @asker_twi_screen_names = Asker.twi_screen_names.sort_by! { |a| a[0].downcase }.map { |a| a.downcase }
     @nudge_types = NudgeType.all
     @posts = @posts.page(params[:page]).per(50)
 
@@ -392,6 +391,40 @@ class FeedsController < ApplicationController
       @asker = User.find 8765
       @oneinbox = true
       @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+    end
+  end
+
+  def refer_a_friend
+    asker = Asker.find_by_twi_screen_name(params[:asker_twi_screen_name])
+    twitter_user = Post.twitter_request { asker.twitter.user(params[:user_twi_screen_name]) }
+    user = User.find_or_initialize_by_twi_user_id(twitter_user.id)
+    user.update_attributes( 
+      :twi_name => twitter_user.name,
+      :name => twitter_user.name,
+      :twi_screen_name => twitter_user.screen_name,
+      :twi_profile_img_url => twitter_user.profile_image_url,
+      :description => twitter_user.description
+    )
+    if Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
+      question = asker.most_popular_question
+      publication = question.publications.order("created_at DESC").first
+      response_post = Post.tweet(asker, question.text, {
+        :reply_to => params[:user_twi_screen_name], 
+        :interaction_type => 2,
+        :intention => 'quiz a friend',
+        :via => params[:via],
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}",
+        :in_reply_to_user_id => user.id,
+        :publication_id => publication.id,
+        :question_id => question.id
+      })
+      Mixpanel.track_event "quiz a friend", {
+        :distinct_id => user.id,
+        :asker => asker.twi_screen_name
+      }
+      render :json => response_post
+    else
+      render :nothing => true, :status => 403
     end
   end
 

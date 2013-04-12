@@ -32,10 +32,15 @@ class Post < ActiveRecord::Base
 
   # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
   scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
-  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
-  scope :friend, includes(:tags).where("tags.name = 'ask a friend'")
-  scope :content, includes(:tags).where("tags.name = 'new content'")
   scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
+
+  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
+
+  scope :friend, includes(:tags).where("tags.name = 'ask a friend' and posts.requires_action = ?", true)
+  scope :not_friend, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ask a friend')
+
+  scope :content, includes(:tags).where("tags.name = 'new content' and posts.requires_action = ?", true)
+  scope :not_content, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'new content')
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
@@ -61,7 +66,7 @@ class Post < ActiveRecord::Base
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
   scope :ugc_box, ugc
-  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published
+  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
@@ -124,15 +129,15 @@ class Post < ActiveRecord::Base
   end
 
   def self.publish(provider, asker, publication)
-    interval = asker.posts_per_day > 5 ? 1 : 2
-    return unless (Time.now.hour % interval == 0) and publication and question = publication.question
+    return unless publication and question = publication.question
     via = ((question.user_id == 1 or question.user_id == asker.author_id) ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
-      begin         
+      begin
+        hashtag = ACCOUNT_DATA[asker.id] ? ACCOUNT_DATA[asker.id][:hashtags].sample : nil
         Post.tweet(asker, question.text, {
-          :hashtag => (ACCOUNT_DATA[asker.id] ? ACCOUNT_DATA[asker.id][:hashtags].sample : nil), 
+          :hashtag => hashtag, 
           :long_url => long_url, 
           :interaction_type => 1, 
           :link_type => 'initial', 
@@ -640,7 +645,7 @@ class Post < ActiveRecord::Base
       _in_reply_to_question = parent.question
     elsif interaction_type == 4 and conversation and conversation.post and conversation.post.user and conversation.post.user.is_role? "asker"
       asker = Asker.find(conversation.post.user_id)
-      _in_reply_to_question = asker.posts.includes(:question).dms.where("in_reply_to_user_id = ? and intention = 'initial question dm'", user_id).first.question
+      _in_reply_to_question = asker.posts.includes(:question).dms.where("in_reply_to_user_id = ? and intention = 'initial question dm'", user_id).first.try(:question)
     elsif conversation and conversation.publication and conversation.publication.question
       _in_reply_to_question = conversation.publication.question
     elsif parent and parent.publication and parent.publication.question

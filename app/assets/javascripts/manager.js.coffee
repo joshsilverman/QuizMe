@@ -12,6 +12,7 @@ class @Manager extends @Feed
 	correct_complements: []
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	active_tags: []
+	asker_twi_screen_names: []
 	
 	constructor: ->
 		@correct_complements = $.parseJSON($("#correct_complements").val())
@@ -26,6 +27,7 @@ class @Manager extends @Feed
 		@engagements = window.engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
 		@initialize_ask()
+		@asker_twi_screen_names = $.parseJSON($("#asker_twi_screen_names").val())
 
 		$('.best_in_place').on "ajax:success", ->
 			# alert('broken success callback - this does not fire')
@@ -222,9 +224,9 @@ class Post
 			disabled: true
 		})
 
-		# @element.find('.btn-hide, .btn-flag').on "ajax:success", -> 
-		# 	puts $(this)
-		# 	$(this).parents(".conversation").toggleClass "dim"
+		@element.find('.btn-hide, .btn-flag').on "ajax:success", -> 
+			puts $(this)
+			$(this).parents(".conversation").toggleClass "dim"
 
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
@@ -319,9 +321,10 @@ class Post
 		convo =  window.feed.conversations[post.attr('post_id')]
 		$('.modal_conversation_history > .conversation').html('')
 		user_post = window.feed.engagements[@id]
-		$.each convo['posts'], (i, p) ->
+		$.each convo['posts'], (i, p) =>
 			subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-			subsidiary.find(".content p").text("#{p['text']}") 
+			text = @highlight_user_names(p['text'])
+			subsidiary.find(".content p").html(text) 
 			subsidiary.find("time.timeago").attr 'datetime', p['created_at']
 			subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
 			image = convo['users'][p['user_id']]['twi_profile_img_url']
@@ -336,6 +339,27 @@ class Post
 
 		$("time.timeago").timeago()
 		textarea.focus()
+		$(".asker_name").on "click", (e) => 
+			button = $(e.target).parents(".asker_list").first().find(".btn").first()
+			params =
+				'asker_twi_screen_name': $(e.target).text(),
+				'user_twi_screen_name': button.text().replace("@", ""),
+				'via': username
+			$.ajax '/refer_a_friend',
+				type: 'post',
+				data: params,
+				error: =>
+					button.css('background', '#FFDEDE')
+				success: => 
+					button.css('background', '#DEFFDE')
+
+	highlight_user_names: (text, re = /@[A-Za-z_0-9]*/g, asker_list = "") =>
+		user_names = text.match(re) || []
+		user_names = user_names.filter (e) -> $.inArray(e.replace('@', '').toLowerCase(), window.feed.asker_twi_screen_names) < 0
+		asker_list += "<li class='asker_name'><a>#{name}</a></li>" for name in window.feed.asker_twi_screen_names
+		text = text.replace name, "<div class='btn-group asker_list'><a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#''>#{name}<span class='caret'></span></a><ul class='dropdown-menu'>#{asker_list}</ul></div>" for name in user_names
+		# text = text.replace name, "<div class='btn btn-mini user_name'>#{name}</div>" for name in user_names
+		text
 
 	quick_reply: (correct, tell = false) =>
 		event.stopPropagation()
