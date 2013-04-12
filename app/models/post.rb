@@ -42,8 +42,6 @@ class Post < ActiveRecord::Base
   scope :not_content, lambda { where("posts.id NOT IN (?)", Tag.find_by_name('new content').posts.collect(&:id)) }
 
 
-  scope :not_ugc_not_content_not_friend, includes(:tags).where("tags.name not in (?) or tags.name is null", ['ugc', 'new content', 'ask a friend'])
-
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
 
