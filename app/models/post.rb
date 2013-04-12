@@ -30,17 +30,19 @@ class Post < ActiveRecord::Base
   scope :social, where('posts.interaction_type IN (2,3)')
   scope :answers, where('posts.correct is not null')
 
-  # scope :ugc, includes(:tags).where(:tags => {:name => 'ugc'})
-  scope :ugc, includes(:tags).where("tags.name = 'ugc' and posts.requires_action = ?", true)
-  scope :not_ugc, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ugc')
+  scope :ugc, lambda { where("posts.id in (?)", Tag.find_by_name('ugc').posts.collect(&:id)) }
+  scope :not_ugc, lambda { where("posts.id NOT IN (?)", Tag.find_by_name('ugc').posts.collect(&:id)) }
 
   scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
 
-  scope :friend, includes(:tags).where("tags.name = 'ask a friend' and posts.requires_action = ?", true)
-  scope :not_friend, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'ask a friend')
+  scope :friend, lambda { where("posts.id in (?)", Tag.find_by_name('ask a friend').posts.collect(&:id)) }
+  scope :not_friend, lambda { where("posts.id NOT IN (?)", Tag.find_by_name('ask a friend').posts.collect(&:id)) }
 
-  scope :content, includes(:tags).where("tags.name = 'new content' and posts.requires_action = ?", true)
-  scope :not_content, includes(:tags).where('tags.name <> ? or tags.name IS NULL', 'new content')
+  scope :content, lambda { where("posts.id in (?)", Tag.find_by_name('new content').posts.collect(&:id)) }
+  scope :not_content, lambda { where("posts.id NOT IN (?)", Tag.find_by_name('new content').posts.collect(&:id)) }
+
+
+  scope :not_ugc_not_content_not_friend, includes(:tags).where("tags.name not in (?) or tags.name is null", ['ugc', 'new content', 'ask a friend'])
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
@@ -66,7 +68,7 @@ class Post < ActiveRecord::Base
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
   scope :ugc_box, ugc
-  scope :linked_box, requires_action.not_autocorrected.linked.not_ugc.not_spam.not_retweet.published.not_content.not_friend
+  scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend#.not_content.not_friend.
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
