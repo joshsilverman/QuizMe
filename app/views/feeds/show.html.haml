@@ -10,12 +10,16 @@
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
-							%h3
-								Questions
-								.ugc
-									%a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
-										%i.icon-pencil
-										Post a Question
+							- if @query
+								%h3
+									Search results for: #{@query}
+							- else
+								%h3
+									Questions
+									.ugc
+										%a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
+											%i.icon-pencil
+											Post a Question
 						#feed_content
 							- if current_user
 								= render :partial => "feed"
@@ -38,7 +42,7 @@
 									/ = render :partial => "stream" 
 						.clr					
 						/ = render :partial => "related"
-						- unless @related.blank?
+						- unless @related.blank? or @query
 							#related.rounded.border-color
 								.header
 									%h4

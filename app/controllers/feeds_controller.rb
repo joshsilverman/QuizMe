@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :mod_manage]
+  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :mod_manage, :search]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :moderator?, :only => [:mod_manage, :moderator_response]
   before_filter :admin?, :only => [:manage, :manager_response]
@@ -10,33 +10,109 @@ class FeedsController < ApplicationController
   def index
     @index = true
     @asker = User.find(1)
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-
-    @publications, posts = Publication.recently_published
-
-    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-    @responses = current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : []
-    
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-
-
     @directory = {}
+    @wisr = User.find(8765)
     Asker.where("published = ?", true).each do |asker| 
       next unless ACCOUNT_DATA[asker.id]
       (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
     end
 
-    @wisr = User.find(8765)   
-    @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-      question_count = Publication.published.size
-      questions_answered = Post.answers.size
-      followers = Relationship.select("DISTINCT follower_id").size 
-      [question_count, questions_answered, followers]
+    @askers = Asker.where(published: true).limit 12
+  end
+
+  def search
+    questions_by_asker_id = Question.where("text ilike ?", "%#{params['query']}%")\
+      .where("status = 1")\
+      .group_by{|q|q.created_for_asker_id}
+    asker_id = nil
+    questions = []
+    questions_by_asker_id.each do |k,v|
+      if v.count > questions.count
+        asker_id = k
+        questions = v
+      end
+    end
+    # Post.where("in_reply_to_question_id IN (?)", questions.collect(&:id)).group('in_reply_to_question_id').count
+
+    @query = params['query']
+    @asker = Asker.find asker_id
+    @question_count, @questions_answered, @followers = @asker.get_stats
+
+    _publications = Publication.select(["question_id", "max(id) AS id"])\
+      .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC').limit 25
+    @publications = Publication.where('id in (?)', _publications.collect(&:id)).order('created_at DESC')
+
+    _posts = Post.select(["publication_id", "max(id) AS id"])\
+      .where("publication_id IN (?)", @publications.collect(&:id)).group('publication_id')
+    posts = Post.where('id in (?)', _posts.collect(&:id)).order('created_at DESC')
+
+    actions = Publication.recent_responses_by_asker(@asker, posts)
+    @actions = Post.recent_activity_on_posts(posts, actions)
+    @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+
+    # misc
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
+    @author = User.find @asker.author_id if @asker.author_id
+
+    # related
+    @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+      .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+
+    @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
+
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @posts }
     end
   end
+
+  # def search
+  #   questions_by_asker_id = Question.where("text ilike ?", "%#{params['query']}%")\
+  #     .where("status = 1")\
+  #     .group_by{|q|q.created_for_asker_id}
+  #   asker_id = nil
+  #   questions = []
+  #   questions_by_asker_id.each do |k,v|
+  #     if v.count > questions.count
+  #       asker_id = k
+  #       questions = v
+  #     end
+  #   end
+  #   # Post.where("in_reply_to_question_id IN (?)", questions.collect(&:id)).group('in_reply_to_question_id').count
+
+  #   @query = params['query']
+  #   @asker = Asker.find asker_id
+  #   @question_count, @questions_answered, @followers = @asker.get_stats
+
+  #   _publications = Publication.select(["question_id", "max(id) AS id"])\
+  #     .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC').limit 25
+  #   @publications = Publication.where('id in (?)', _publications.collect(&:id)).order('created_at DESC')
+
+  #   _posts = Post.select(["publication_id", "max(id) AS id"])\
+  #     .where("publication_id IN (?)", @publications.collect(&:id)).group('publication_id')
+  #   posts = Post.where('id in (?)', _posts.collect(&:id)).order('created_at DESC')
+
+  #   actions = Publication.recent_responses_by_asker(@asker, posts)
+  #   @actions = Post.recent_activity_on_posts(posts, actions)
+  #   @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+
+  #   # misc
+  #   @post_id = params[:post_id]
+  #   @answer_id = params[:answer_id]
+  #   @author = User.find @asker.author_id if @asker.author_id
+
+  #   # related
+  #   @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+  #     .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+
+  #   @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
+
+  #   respond_to do |format|
+  #     format.html { render :show }
+  #     format.json { render json: @posts }
+  #   end
+  # end
 
   def unauth_show
     show true

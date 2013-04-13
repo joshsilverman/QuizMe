@@ -43,6 +43,8 @@ class @Feed
 		mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
+
+		$("#new_user_cta").on "click", => @new_user()
 	post_another: =>
 		modal = $("#post_question_modal")
 		$('#submit_question').button('reset')
@@ -205,8 +207,22 @@ class @Feed
 			[arr[i], arr[j]] = [arr[j], arr[i]]
 		$.each arr, (i) ->
 			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
-				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]						
+				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]		
 
+	new_user: ->
+		query = $('#query').attr("value")
+		handle = $('#handle').attr("value")
+
+		newForm = $("<form>",
+		  action: "/feeds/#{query}/search"
+		  method: "post"
+		  target: "_top"
+		).append($("<input>",
+		  name: "handle"
+		  value: handle
+		  type: "hidden"
+		))
+		newForm.submit()
 
 class Post
 	id: null

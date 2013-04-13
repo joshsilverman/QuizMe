@@ -56,7 +56,7 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_responses_by_asker asker, posts
-    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do    
+    replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
         .order("created_at ASC")\

@@ -87,6 +87,10 @@ class User < ActiveRecord::Base
   scope :wisr_author, where(:author_segment => 3)
   scope :handle_author, where(:author_segment => 4)
 
+  def twi_profile_img_med_url
+  	twi_profile_img_url.sub("_normal.", "_reasonably_small.")
+  end
+
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']
