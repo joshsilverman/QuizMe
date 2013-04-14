@@ -65,13 +65,13 @@ class Post < ActiveRecord::Base
   scope :tutor_box, tutor
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
-  scope :ugc_box, ugc
+  scope :ugc_box, requires_action.ugc
   scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend#.not_content.not_friend.
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
-  scope :content_box, content
-  scope :friend_box, friend
+  scope :content_box, requires_action.content
+  scope :friend_box, requires_action.friend
 
   scope :nudge, where("posts.nudge_type_id is not null")
 
