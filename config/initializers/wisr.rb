@@ -161,7 +161,8 @@ SCRIPTS = {
   thanks: "Thank you",
   gotcha: "Gotcha",
   tweet_not_dm: "Can you hit reply directly to my question tweet next time? It's hard for me to link it if you DM the answer...",
-  refer_friend: "Refer a friend?"
+  refer_friend: "Refer a friend?",
+  reply_to_question: "Hmm, could you reply directly to the question you are answering?"
 }
 
 UGC_SCRIPTS = {
