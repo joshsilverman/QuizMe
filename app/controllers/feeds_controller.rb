@@ -220,8 +220,22 @@ class FeedsController < ApplicationController
     root_post = conversation.post
 
     if params[:interaction_type] == "4"
+      if correct.nil?
+       response_text = params[:message]
+        if response_text == "Refer a friend?"
+          response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
+            "Do you have any friends/classmates that would also be interested?",
+            "Could you share with a couple of friends/classmates please?"
+          )
+        else
+          response_text = params[:message].gsub("@#{params[:username]}", "")
+        end
 
-      unless correct.nil?
+        response_post = Post.delay.dm(asker, user, response_text, {
+          :conversation_id => conversation.id,
+          :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil
+        })
+      else
         if tell
           answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first.text
           answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
@@ -247,35 +261,15 @@ class FeedsController < ApplicationController
           :last_answer_at => user_post.created_at
         }) 
 
-      else
-        response_text = params[:message]
-        if response_text == "Refer a friend?"
-          response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
-            "Do you have any friends/classmates that would also be interested?",
-            "Could you share with a couple of friends/classmates please?"
-          )
-        else
-          response_text = params[:message].gsub("@#{params[:username]}", "")
-        end
+        response_post = Post.delay.dm(asker, user, response_text, {
+          :conversation_id => conversation.id,
+          :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil,
+          :intention => 'grade'
+        })
       end
-
-      response_post = Post.delay.dm(asker, user, response_text, {
-        :conversation_id => conversation.id,
-        :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil
-      })
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
-      unless correct.nil?
-        response_post = asker.delay.app_response(user_post, correct, { 
-          :response_text => response_text,
-          :link_to_parent => root_post.is_question_post? ? false : true,
-          :tell => tell,
-          :conversation_id => conversation.id,
-          :post_to_twitter => true,
-          :manager_response => true,
-          :quote_user_answer => root_post.is_question_post? ? true : false
-        })
-      else
+      if correct.nil?
         response_post = Post.delay.tweet(asker, response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
@@ -283,6 +277,17 @@ class FeedsController < ApplicationController
           :in_reply_to_post_id => params[:in_reply_to_post_id], 
           :in_reply_to_user_id => params[:in_reply_to_user_id], 
           :link_to_parent => true
+        })
+      else
+        response_post = asker.delay.app_response(user_post, correct, { 
+          :response_text => response_text,
+          :link_to_parent => root_post.is_question_post? ? false : true,
+          :tell => tell,
+          :conversation_id => conversation.id,
+          :post_to_twitter => true,
+          :manager_response => true,
+          :quote_user_answer => root_post.is_question_post? ? true : false,
+          :intention => 'grade'
         })
       end
     end

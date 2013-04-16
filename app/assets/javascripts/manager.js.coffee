@@ -383,6 +383,8 @@ class Post
 
 		if post.closest(".conversation").hasClass "dim"
 			return unless confirm("Reply again to this conversaion?")
+		if $.grep(window.feed.conversations[@id].posts, (p) -> return p.intention == 'grade' or p.intention == 'dm autoresponse').length > 0
+			return unless confirm("Grade this conversaion again?")			
 		$.ajax '/manager_response',
 			type: 'POST'
 			data: params
@@ -483,7 +485,7 @@ class Post
 			"username" : post.find('h5 span').html()
 
 		if post.closest(".conversation").hasClass "dim"
-			return unless confirm("Reply again to this conversaion?")
+			return unless confirm("Reply again to this conversation?")
 		$.ajax '/manager_response',
 			type: 'POST'
 			data: params

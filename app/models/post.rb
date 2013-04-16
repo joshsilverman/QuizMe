@@ -50,6 +50,8 @@ class Post < ActiveRecord::Base
 
   scope :tagged, joins(:tags).uniq
 
+  scope :grade, where("posts.intention = ? or posts.intention = ?", 'grade', 'dm autoresponse')
+
   scope :statuses, where("posts.interaction_type = 1")
   scope :mentions, where("posts.interaction_type = 2")
   scope :retweet, where("posts.interaction_type = 3")
