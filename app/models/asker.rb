@@ -192,6 +192,7 @@ class Asker < User
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
 
     @scored_questions = Question.score_questions
+    @question_sent_by_asker_counts = {}
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
@@ -214,6 +215,7 @@ class Asker < User
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+      
       sleep 1
     end
   end 
@@ -237,6 +239,10 @@ class Asker < User
     end
 
     return false unless asker and question
+
+    @question_sent_by_asker_counts[asker.id] ||= 0
+    return false unless @question_sent_by_asker_counts[asker.id] < 25
+    @question_sent_by_asker_counts[asker.id] += 1
 
     publication = question.publications.order("created_at DESC").first
     return false unless publication
@@ -266,6 +272,7 @@ class Asker < User
       backlog: options[:is_backlog],
       asker: asker.twi_screen_name
     }
+    
     return true
   end
 
