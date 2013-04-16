@@ -411,16 +411,14 @@ class Asker < User
       update_aggregate_activity_cache(answerer, correct)
     end
 
-    # Mark user's post as responded to
-    user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
-
-    # Trigger after answer actions
-    after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
-
-    # Trigger split tests, MP events
-    update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
-
-    app_post
+    if app_post
+      user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
+      after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
+      return app_post
+    else
+      return false
+    end
   end
 
   def format_manager_response user_post, correct, answerer, publication, question, options = {} # augment manager responses with links, RTs, hints
