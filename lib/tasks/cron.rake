@@ -112,3 +112,7 @@ task :email_supporters => :environment do
     end
   end
 end
+
+task :send_targeted_mentions => :environment do
+  Asker.send_targeted_mentions()
+end

@@ -17,7 +17,8 @@ TWI_DEV_SAFE_API_CALLS = [
   'retweets_of_me',
   'follower_ids',
   'user',
-  'friendship?'
+  'friendship?',
+  'search'
 ]
 
 LEARNER_LEVELS = [
@@ -195,7 +196,7 @@ INCLUDE_ANSWERS = [12982, 14106, 19454, 12640, 227, 9217]
 # 227 - vocab
 # 9217 - lsat
 
-UNDER_CONSTRUCTION_HANDLES = [27857]
+UNDER_CONSTRUCTION_HANDLES = []
 
 ACCOUNT_DATA = {
   ## QuizMeBio
@@ -245,7 +246,8 @@ ACCOUNT_DATA = {
   8367 => {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
-    :category => "Trivia"
+    :category => "Trivia",
+    :search_terms => ["geography test"]
   },  
   ## QuizMeVetMed
   26522 => {
@@ -257,13 +259,15 @@ ACCOUNT_DATA = {
   32588 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326, 28064],
     :hashtags => ["neuro", "neuroscience", "brain"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ["studying neuro exam", "neuro exam"]
   },
   ## PrepMeNREMT
   26070 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326],
     :hashtags => ["emt", "NREMT"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ["NREMT test"]
   },
   #QuizMePhysics
   27857 => {

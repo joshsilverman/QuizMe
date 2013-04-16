@@ -515,6 +515,7 @@ class Asker < User
     })
     request_ugc(answerer)
     nudge(answerer)
+    Post.trigger_split_test(answerer.id, "targeted mention type (answers)")
   end 
 
 
@@ -812,6 +813,53 @@ class Asker < User
         Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
       end 
     end
+  end
+
+
+  def self.send_targeted_mentions
+    Asker.published.where("id in (?)", ACCOUNT_DATA.keys).each do |asker|
+      next if ACCOUNT_DATA[asker.id][:search_terms].blank?
+      users = Post.twitter_request { asker.twitter.search(ACCOUNT_DATA[asker.id][:search_terms].sample, :count => 20).statuses.collect { |s| s.user }.uniq }
+      existing_user_ids = User.select(:twi_user_id).where(:twi_user_id => users.collect { |s| s.id.to_s }).collect(&:twi_user_id)
+      users_grouped_by_id = users.reject { |u| existing_user_ids.include? u.id }.group_by { |u| u.id }
+      users_grouped_by_id.keys.sample(4).each do |target_user_id|
+        target_user = users_grouped_by_id[target_user_id].first
+        user = User.find_or_initialize_by_twi_user_id(target_user.id)
+        user.update_attributes(
+          :twi_name => target_user.name,
+          :name => target_user.name,
+          :twi_screen_name => target_user.screen_name,
+          :description => target_user.description.present? ? target_user.description : nil
+        )
+        asker.send_targeted_mention(user)
+        sleep 1
+      end
+    end
+  end
+
+  def send_targeted_mention user
+    if Post.create_split_test(user.id, "targeted mention type (answers)", "most popular question", "check out my feed") == "check out my feed"
+      text = "I quiz people on #{topics.first.name}, check out my feed!"
+      Post.tweet(self, text, { 
+        reply_to: user.twi_screen_name, 
+        intention: 'targeted mention',
+        in_reply_to_user_id: user.id,
+        interaction_type: 2
+      })
+    else
+      question = most_popular_question
+      publication = question.publications.order("created_at DESC").first
+      Post.tweet(self, "Pop quiz: #{question.text}", { 
+        reply_to: user.twi_screen_name, 
+        intention: 'targeted mention', 
+        question_id: question.id,
+        in_reply_to_user_id: user.id,
+        publication_id: publication.id,
+        long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+        interaction_type: 2
+      })
+    end
+    Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
   end
 
 
