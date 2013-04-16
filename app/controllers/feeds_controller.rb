@@ -400,7 +400,7 @@ class FeedsController < ApplicationController
   end
 
   def refer_a_friend
-    asker = Asker.find_by_twi_screen_name(params[:asker_twi_screen_name])
+    asker = Asker.where("lower(twi_screen_name) = ?", params[:asker_twi_screen_name]).first
     twitter_user = Post.twitter_request { asker.twitter.user(params[:user_twi_screen_name]) }
     user = User.find_or_initialize_by_twi_user_id(twitter_user.id)
     user.update_attributes( 
