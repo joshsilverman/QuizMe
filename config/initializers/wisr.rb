@@ -234,7 +234,7 @@ ACCOUNT_DATA = {
     :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["hematology"],
     :category => "Life Sciences"
-  },  
+  },
 
   ## QuizMeWeather
   7362 => {
@@ -296,6 +296,24 @@ ACCOUNT_DATA = {
   ## PlantGrowthQuiz
   34905 => {
     :hashtags => ['botany', 'plants', 'plantgrowth']
+  },
+  ## StereochemQuiz
+  35448 => {
+    :hashtags => ['stereochem', 'stereochemistry']
+  },
+  ## PhysiologyQuiz
+  35590 => {
+    :hashtags => ['physio', 'physiology']
+  },
+
+  ## SpanSubjunctive
+  35459 => {
+    :hashtags => ['spanish', 'espanol', 'subjunctive']
+  },
+
+  ## QuizMeFrenchRev
+  35685 => {
+    :hashtags => ['frenchrev', 'frenchrevolution']
   },
 
   ## SATvocabQuiz
