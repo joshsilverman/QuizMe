@@ -31,15 +31,15 @@ class Post < ActiveRecord::Base
   scope :answers, where('posts.correct is not null')
 
   scope :ugc, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
-  scope :not_ugc, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
+  scope :not_ugc, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
 
   scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
 
   scope :friend, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
-  scope :not_friend, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
+  scope :not_friend, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
 
   scope :content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
-  scope :not_content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
+  scope :not_content, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
 
   #published asker
