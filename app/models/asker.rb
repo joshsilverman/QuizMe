@@ -328,9 +328,10 @@ class Asker < User
       # should ensure only one tweet per user as well here?
       next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
       incorrect_post = posts.sample
+      next unless incorrect_post and incorrect_post.conversation
       publication = incorrect_post.conversation.publication
       question = publication.question
-      asker = User.askers.find(incorrect_post.in_reply_to_user_id)
+      asker = Asker.find(incorrect_post.in_reply_to_user_id)
       Post.tweet(asker, "Try this one again: #{question.text}", {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
