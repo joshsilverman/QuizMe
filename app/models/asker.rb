@@ -484,11 +484,11 @@ class Asker < User
 
   def auto_respond user_post
     return unless !user_post.autocorrect.nil? and user_post.requires_action
-    return unless user_post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
     return unless Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?)", true).where("created_at > ?", Time.now - 1.day).count >= 20
     
     answerer = user_post.user  
     if user_post.is_dm?
+      return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
       interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210",)
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
@@ -497,6 +497,7 @@ class Asker < User
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
+      return unless user_post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
       root_post = user_post.conversation.post
       asker_response = app_response(user_post, user_post.autocorrect, {
         :link_to_parent => false, 

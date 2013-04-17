@@ -169,6 +169,10 @@ class User < ActiveRecord::Base
 		client
 	end
 
+	def dm_conversation_history_with_asker asker_id
+		Post.dms.where("(user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?)", id, asker_id, asker_id, id).order("created_at ASC")
+	end
+
 	def is_follower_of? asker
 		following = Post.twitter_request { asker.twitter.friendship?(twi_user_id, asker.twi_user_id) }
 		asker.followers << self if following and !asker.followers.include? self
