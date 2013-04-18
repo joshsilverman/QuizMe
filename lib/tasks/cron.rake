@@ -15,17 +15,23 @@ task :collect_retweets => :environment do
 end
 
 task :post_question => :environment do
-  Asker.where('twi_oauth_token is not null and published = ?', true).each do |a|
-    interval = a.posts_per_day > 5 ? 1 : 2
+  Asker.published.each do |asker|
+    if asker.posts_per_day > 5
+      interval = 1
+    elsif asker.posts_per_day > 4
+      interval = 2
+    else
+      interval = 3
+    end
     next unless (Time.now.hour % interval == 0)    
-    puts "Posting question for #{a.twi_screen_name}"
-    a.publish_question()
-    sleep(3)
+    puts "Posting question for #{asker.twi_screen_name}"
+    asker.publish_question()
+    sleep 3
   end
 end
 
 task :fill_queue => :environment do
-  Asker.all.each do |asker|
+  Asker.published.each do |asker|
     next unless asker.posts_per_day.present?
     PublicationQueue.clear_queue(asker)
     PublicationQueue.enqueue_questions(asker)
@@ -111,4 +117,8 @@ task :email_supporters => :environment do
       UserMailer.newsletter(user, jason, josh).deliver
     end
   end
+end
+
+task :send_targeted_mentions => :environment do
+  Asker.send_targeted_mentions()
 end

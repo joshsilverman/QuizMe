@@ -1,4 +1,4 @@
-window.onload = function(e) {
+  window.onload = function(e) {
   if ($("#graph").length < 1) {
     return;
   }
@@ -47,9 +47,7 @@ window.onload = function(e) {
       .size([width, height])
       .linkDistance(130)
       .linkStrength(1)
-      // .friction(0.3)
-      // .charge(-300)
-      .charge(-300)
+      .charge(-250)
       .gravity(0.1)
       .on('tick', tick)
 

@@ -17,7 +17,8 @@ TWI_DEV_SAFE_API_CALLS = [
   'retweets_of_me',
   'follower_ids',
   'user',
-  'friendship?'
+  'friendship?',
+  'search'
 ]
 
 LEARNER_LEVELS = [
@@ -161,13 +162,19 @@ SCRIPTS = {
   thanks: "Thank you",
   gotcha: "Gotcha",
   tweet_not_dm: "Can you hit reply directly to my question tweet next time? It's hard for me to link it if you DM the answer...",
-  refer_friend: "Refer a friend?"
+  refer_friend: "Refer a friend?",
+  reply_to_question: "Hmm, could you reply directly to the question you are answering?"
 }
 
 UGC_SCRIPTS = {
   submitted: "Thanks, just submitted your question and will post it soon!",
   provide_answers: "Great, could you provide me with the correct answer and a couple of good incorrects?",
   which_correct: "Thanks, and which is the correct answer?"
+}
+
+USER_TAG_SEARCH_TERMS = {
+  teacher: ['teacher', 'teach', 'professor'],
+  student: ['student']
 }
 
 SEGMENT_HIERARCHY = {
@@ -189,7 +196,7 @@ INCLUDE_ANSWERS = [12982, 14106, 19454, 12640, 227, 9217]
 # 227 - vocab
 # 9217 - lsat
 
-UNDER_CONSTRUCTION_HANDLES = [27857]
+UNDER_CONSTRUCTION_HANDLES = []
 
 ACCOUNT_DATA = {
   ## QuizMeBio
@@ -227,7 +234,7 @@ ACCOUNT_DATA = {
     :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["hematology"],
     :category => "Life Sciences"
-  },  
+  },
 
   ## QuizMeWeather
   7362 => {
@@ -239,7 +246,8 @@ ACCOUNT_DATA = {
   8367 => {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
-    :category => "Trivia"
+    :category => "Trivia",
+    :search_terms => ["geography test"]
   },  
   ## QuizMeVetMed
   26522 => {
@@ -251,13 +259,15 @@ ACCOUNT_DATA = {
   32588 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326, 28064],
     :hashtags => ["neuro", "neuroscience", "brain"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ["studying neuro exam", "neuro exam"]
   },
   ## PrepMeNREMT
   26070 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326],
     :hashtags => ["emt", "NREMT"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ["NREMT test"]
   },
   #QuizMePhysics
   27857 => {
@@ -286,6 +296,24 @@ ACCOUNT_DATA = {
   ## PlantGrowthQuiz
   34905 => {
     :hashtags => ['botany', 'plants', 'plantgrowth']
+  },
+  ## StereochemQuiz
+  35448 => {
+    :hashtags => ['stereochem', 'stereochemistry']
+  },
+  ## PhysiologyQuiz
+  35590 => {
+    :hashtags => ['physio', 'physiology']
+  },
+
+  ## SpanSubjunctive
+  35459 => {
+    :hashtags => ['spanish', 'espanol', 'subjunctive']
+  },
+
+  ## QuizMeFrenchRev
+  35685 => {
+    :hashtags => ['frenchrev', 'frenchrevolution']
   },
 
   ## SATvocabQuiz

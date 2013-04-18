@@ -192,6 +192,7 @@ class Asker < User
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
 
     @scored_questions = Question.score_questions
+    @question_sent_by_asker_counts = {}
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
@@ -214,6 +215,7 @@ class Asker < User
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+      
       sleep 1
     end
   end 
@@ -237,6 +239,10 @@ class Asker < User
     end
 
     return false unless asker and question
+
+    @question_sent_by_asker_counts[asker.id] ||= 0
+    return false unless @question_sent_by_asker_counts[asker.id] < 25
+    @question_sent_by_asker_counts[asker.id] += 1
 
     publication = question.publications.order("created_at DESC").first
     return false unless publication
@@ -266,6 +272,7 @@ class Asker < User
       backlog: options[:is_backlog],
       asker: asker.twi_screen_name
     }
+    
     return true
   end
 
@@ -328,9 +335,10 @@ class Asker < User
       # should ensure only one tweet per user as well here?
       next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
       incorrect_post = posts.sample
+      next unless incorrect_post and incorrect_post.conversation
       publication = incorrect_post.conversation.publication
       question = publication.question
-      asker = User.askers.find(incorrect_post.in_reply_to_user_id)
+      asker = Asker.find(incorrect_post.in_reply_to_user_id)
       Post.tweet(asker, "Try this one again: #{question.text}", {
         :reply_to => incorrect_post.user.twi_screen_name,
         :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
@@ -410,16 +418,14 @@ class Asker < User
       update_aggregate_activity_cache(answerer, correct)
     end
 
-    # Mark user's post as responded to
-    user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
-
-    # Trigger after answer actions
-    after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
-
-    # Trigger split tests, MP events
-    update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
-
-    app_post
+    if app_post
+      user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
+      after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
+      return app_post
+    else
+      return false
+    end
   end
 
   def format_manager_response user_post, correct, answerer, publication, question, options = {} # augment manager responses with links, RTs, hints
@@ -482,6 +488,7 @@ class Asker < User
     
     answerer = user_post.user  
     if user_post.is_dm?
+      return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
       interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210",)
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
@@ -490,6 +497,7 @@ class Asker < User
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
+      return unless user_post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
       root_post = user_post.conversation.post
       asker_response = app_response(user_post, user_post.autocorrect, {
         :link_to_parent => false, 
@@ -515,6 +523,7 @@ class Asker < User
     })
     request_ugc(answerer)
     nudge(answerer)
+    Post.trigger_split_test(answerer.id, "targeted mention type (answers)")
   end 
 
 
@@ -812,6 +821,53 @@ class Asker < User
         Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
       end 
     end
+  end
+
+
+  def self.send_targeted_mentions
+    Asker.published.where("id in (?)", ACCOUNT_DATA.keys).each do |asker|
+      next if ACCOUNT_DATA[asker.id][:search_terms].blank?
+      users = Post.twitter_request { asker.twitter.search(ACCOUNT_DATA[asker.id][:search_terms].sample, :count => 20).statuses.collect { |s| s.user }.uniq }
+      existing_user_ids = User.select(:twi_user_id).where(:twi_user_id => users.collect { |s| s.id.to_s }).collect(&:twi_user_id)
+      users_grouped_by_id = users.reject { |u| existing_user_ids.include? u.id }.group_by { |u| u.id }
+      users_grouped_by_id.keys.sample(4).each do |target_user_id|
+        target_user = users_grouped_by_id[target_user_id].first
+        user = User.find_or_initialize_by_twi_user_id(target_user.id)
+        user.update_attributes(
+          :twi_name => target_user.name,
+          :name => target_user.name,
+          :twi_screen_name => target_user.screen_name,
+          :description => target_user.description.present? ? target_user.description : nil
+        )
+        asker.send_targeted_mention(user)
+        sleep 1
+      end
+    end
+  end
+
+  def send_targeted_mention user
+    if Post.create_split_test(user.id, "targeted mention type (answers)", "most popular question", "check out my feed") == "check out my feed"
+      text = "I quiz people on #{topics.first.name}, check out my feed!"
+      Post.tweet(self, text, { 
+        reply_to: user.twi_screen_name, 
+        intention: 'targeted mention',
+        in_reply_to_user_id: user.id,
+        interaction_type: 2
+      })
+    else
+      question = most_popular_question
+      publication = question.publications.order("created_at DESC").first
+      Post.tweet(self, "Pop quiz: #{question.text}", { 
+        reply_to: user.twi_screen_name, 
+        intention: 'targeted mention', 
+        question_id: question.id,
+        in_reply_to_user_id: user.id,
+        publication_id: publication.id,
+        long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+        interaction_type: 2
+      })
+    end
+    Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
   end
 
 
