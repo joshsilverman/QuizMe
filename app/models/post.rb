@@ -156,7 +156,8 @@ class Post < ActiveRecord::Base
             :long_url => long_url, 
             :interaction_type => 2, 
             :link_type => "ugc", 
-            :link_to_parent => false
+            :link_to_parent => false,
+            :in_reply_to_user_id => question.user_id
           })        
         end
         question.update_attribute(:priority, false) if question.priority
