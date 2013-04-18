@@ -93,7 +93,7 @@ Quizmemanager::Application.routes.draw do
   match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   match '/stats' => 'accounts#stats'
   
-  match '/askers/graph' => 'askers#graph'
+  get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
   post '/askers/remove_related' => 'askers#remove_related'
 
