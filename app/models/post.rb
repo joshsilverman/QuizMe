@@ -151,9 +151,26 @@ class Post < ActiveRecord::Base
         })
         publication.update_attribute(:published, true)
         if via.present? and question.priority
-          Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
+          option = Post.create_split_test(question.user_id, 'UGC published notification type (follower joins)', 
+            'Simple notification',
+            'Retweet web intent',
+            'Any friends I can send it to?'
+          )
+          case option
+          when 'Simple notification'
+            text = "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!"
+            include_url = true
+          when 'Retweet web intent',
+            text = ""
+            include_url = false
+          when 'Any friends I can send it to?'
+            text = ''
+            include_url = false
+          end
+
+          Post.tweet(asker, text, {
             :reply_to => via, 
-            :long_url => long_url, 
+            :long_url => include_url ? long_url : nil, 
             :interaction_type => 2, 
             :link_type => "ugc", 
             :link_to_parent => false,
