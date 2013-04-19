@@ -216,7 +216,7 @@ class Asker < User
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
       
-      sleep 1
+      sleep(1)
     end
   end 
 
