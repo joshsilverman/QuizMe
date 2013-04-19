@@ -410,41 +410,34 @@ class FeedsController < ApplicationController
       :twi_profile_img_url => twitter_user.profile_image_url,
       :description => twitter_user.description.present? ? twitter_user.description : nil
     )
-    puts params[:type]
-    if params[:type] == 'popular'
-      if Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
-        question = asker.most_popular_question
-        publication = question.publications.order("created_at DESC").first
-        response_post = Post.tweet(asker, question.text, {
-          :reply_to => params[:user_twi_screen_name], 
-          :interaction_type => 2,
-          :intention => 'quiz a friend',
-          :via => params[:via],
-          :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}",
-          :in_reply_to_user_id => user.id,
-          :publication_id => publication.id,
-          :question_id => question.id
-        })
-        Mixpanel.track_event "quiz a friend", {
-          :distinct_id => user.id,
-          :asker => asker.twi_screen_name,
-          :type => params[:type]
-        }         
-        render :json => response_post
-      else
-        render :nothing => true, :status => 403
-      end
+
+    if params[:type] == 'popular' and Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
+      question = asker.most_popular_question
+      publication = question.publications.order("created_at DESC").first
     elsif params[:type] == 'ugc'
-      referrer = User.find_by_twi_screen_name(params[:via])
-      question = referrer.questions.where("created_for_asker_id = ?", params[:asker_id]).last
+      question = User.find_by_twi_screen_name(params[:via]).questions.where("created_for_asker_id = ?", params[:asker_id]).last
+      publication = question.publications.order("created_at DESC").first
+    end    
+
+    if question and publication
+      response_post = Post.tweet(asker, question.text, {
+        :reply_to => params[:user_twi_screen_name], 
+        :interaction_type => 2,
+        :intention => 'quiz a friend',
+        :via => params[:via],
+        :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}",
+        :in_reply_to_user_id => user.id,
+        :publication_id => publication.id,
+        :question_id => question.id
+      })  
       Mixpanel.track_event "quiz a friend", {
         :distinct_id => user.id,
         :asker => asker.twi_screen_name,
         :type => params[:type]
-      } 
-      puts question.to_json
-      # render :json => response_post
-      render :json => referrer
+      }      
+      render :json => response_post
+    else
+      render :nothing => true, :status => 403
     end
   end
 
