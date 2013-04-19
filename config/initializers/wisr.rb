@@ -233,7 +233,8 @@ ACCOUNT_DATA = {
   28064 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["hematology"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['studying hematology']
   },
 
   ## QuizMeWeather
@@ -273,37 +274,45 @@ ACCOUNT_DATA = {
   27857 => {
     :retweet => [26522, 8367, 7362, 326, 18, 19, 31, 108],
     :hashtags => ['physics'],
-    :category => "Life Sciences"    
+    :category => "Life Sciences",
+    :search_terms => ['studying for physics']   
   },
   ## PhotosynthQuiz
   32575 => {
     :retweet => [18, 31, 19, 7362],
     :hashtags => ['biology', 'photosynthesis'],
-    :category => "Life Sciences"  
+    :category => "Life Sciences",
+    :search_terms => ['studying photosynthesis'] 
   },
   ## ImmuneSystmQuiz
   35127 => {
-    :hashtags => ['immune', 'immunology']
+    :hashtags => ['immune', 'immunology'],
+    :search_terms => ['studying immunology']
   },
   ## RespiratoryQuiz
   35106 => {
-    :hashtags => ['respiratory', 'respiratorysystem']
+    :hashtags => ['respiratory', 'respiratorysystem'],
+    :search_terms => ['studying respiratory']
   },
   ## PrepMeMCATBio
   34530 => {
-    :hashtags => ['mcat', 'biology']
+    :hashtags => ['mcat', 'biology'],
+    :search_terms => ['mcat bio']
   },  
   ## PlantGrowthQuiz
   34905 => {
-    :hashtags => ['botany', 'plants', 'plantgrowth']
+    :hashtags => ['botany', 'plants', 'plantgrowth'],
+    :search_terms => ['studying botany']
   },
   ## StereochemQuiz
   35448 => {
-    :hashtags => ['stereochem', 'stereochemistry']
+    :hashtags => ['stereochem', 'stereochemistry'],
+    :search_terms => ['stereochemistry']
   },
   ## PhysiologyQuiz
   35590 => {
-    :hashtags => ['physio', 'physiology']
+    :hashtags => ['physio', 'physiology'],
+    :search_terms => ['studying physiology']
   },
 
   ## SpanSubjunctive
@@ -313,7 +322,8 @@ ACCOUNT_DATA = {
 
   ## QuizMeFrenchRev
   35685 => {
-    :hashtags => ['frenchrev', 'frenchrevolution']
+    :hashtags => ['frenchrev', 'frenchrevolution'],
+    :search_terms => ['studying french revolution']
   },
 
   ## SATvocabQuiz
@@ -378,7 +388,8 @@ ACCOUNT_DATA = {
   32584 => {
     :retweet => [191, 231], 
     :hashtags => ["art", "artist", "arthistory"],
-    :category => "Art"
+    :category => "Art",
+    :search_terms => ['studying art history']
   },
 
   ## Marketing_Quiz
