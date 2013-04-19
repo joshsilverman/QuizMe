@@ -138,7 +138,7 @@ class Post < ActiveRecord::Base
     when "twitter"
       begin
         hashtag = ACCOUNT_DATA[asker.id] ? ACCOUNT_DATA[asker.id][:hashtags].sample : nil
-        Post.tweet(asker, question.text, {
+        question_post = Post.tweet(asker, question.text, {
           :hashtag => hashtag, 
           :long_url => long_url, 
           :interaction_type => 1, 
@@ -151,13 +151,32 @@ class Post < ActiveRecord::Base
         })
         publication.update_attribute(:published, true)
         if via.present? and question.priority
-          Post.tweet(asker, "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!", {
+          option = Post.create_split_test(question.user_id, 'UGC published notification type (follower joins)', 
+            'Simple notification',
+            'Retweet web intent',
+            'Any friends I can send it to?'
+          )
+          case option
+          when 'Simple notification'
+            text = "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!"
+            include_url = true
+          when 'Retweet web intent'
+            text = "I just published a question you wrote! Retweet it here:"
+            long_url = "https://twitter.com/intent/retweet?tweet_id=#{question_post.provider_post_id}"
+            include_url = true
+          when 'Any friends I can send it to?'
+            text = "I just published a question you wrote! Do you have any friends I could send it to?"
+            include_url = false
+          end
+
+          Post.tweet(asker, text, {
             :reply_to => via, 
-            :long_url => long_url, 
+            :long_url => include_url ? long_url : nil, 
             :interaction_type => 2, 
             :link_type => "ugc", 
             :link_to_parent => false,
-            :in_reply_to_user_id => question.user_id
+            :in_reply_to_user_id => question.user_id,
+            :intention => 'notify ugc'
           })        
         end
         question.update_attribute(:priority, false) if question.priority
