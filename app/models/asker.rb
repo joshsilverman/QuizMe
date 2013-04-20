@@ -784,14 +784,18 @@ class Asker < User
       asker = Asker.find(question_data[:asker_id])
       user = User.find(user_id)
       next unless asker.update_followers().include? user.twi_user_id
-      if Post.create_split_test(user.id, "author question followup (return ugc submission)", "false", "true") == "true"
-        script = "So far, #{question_data[:answered_count]} people have answered your question "
-        script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
-        Post.dm(asker, user, script, {:intention => "author followup"})
+      script = "So far, #{question_data[:answered_count]} people have answered your question "
+      script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
+      Post.dm(asker, user, script, {:intention => "author followup"})
+      
+      if Post.create_split_test(user.id, 'author followup type (return ugc submission)', 'write another here', 'direct to dashboard') == 'write another here'
         script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
-        Post.dm(asker, user, script, {:intention => "author followup"})
-        Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
+      else
+        script = "Check out your dashboard here: #{URL}/users/#{user_id}/questions/#{asker.id}"
       end
+
+      Post.dm(asker, user, script, {:intention => "author followup"})
+      Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
     end
   end
 

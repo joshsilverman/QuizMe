@@ -17,32 +17,29 @@ class UsersController < ApplicationController
   end
 
   def questions
-    @user = User.find(params[:id])
-    redirect_to '/' unless current_user == @user
-    params[:asker_id] = nil if params[:asker_id] == '0'
-
-    @questions = @user.questions
-
-    if params[:asker_id]
-      @asker = Asker.find params[:asker_id]
-      @questions = @questions.where(:created_for_asker_id => params[:asker_id])
+    if !current_user
+      redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :user_id => params[:id], :asker_id => params[:asker_id]) unless current_user
     else
-      @questions = @questions
+      @user = User.find(params[:id])
+      redirect_to '/' unless current_user == @user
+      
+      @asker = Asker.find(params[:asker_id])
+      @questions = @user.questions.where(:created_for_asker_id => params[:asker_id])
+
+      @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
+      @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
+      @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
+
+      @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
+      @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
+      @approved_count = @all_questions.where(:status => 1).count
+      @pending_count = @all_questions.where(:status => 0).count
+
+      @questions_answered_count = Post.answers\
+        .where("in_reply_to_question_id in (?)", @questions.collect(&:id))\
+        .group("posts.in_reply_to_question_id")\
+        .count
     end
-
-    @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
-    @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
-
-    @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
-    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
-    @approved_count = @all_questions.where(:status => 1).count
-    @pending_count = @all_questions.where(:status => 0).count
-
-    @questions_answered_count = Post.answers\
-      .where("in_reply_to_question_id in (?)", @questions.collect(&:id))\
-      .group("posts.in_reply_to_question_id")\
-      .count
   end
 
   def badges

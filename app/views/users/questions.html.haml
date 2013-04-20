@@ -9,7 +9,7 @@
     .header.form-actions
       %h2
         My questions:
-        %span#askers_select=select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name)
+        %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name, @asker.id)
       .stats
         %ul.breadcrumb
           %li
@@ -31,8 +31,8 @@
       %tr
         %th Created
         %th Status
-        %th # Answers
-        %th{:style => 'width:70%;'} Text
+        %th.has-tooltip{:rel => "tooltip", "data-original-title" => 'Number of times this question has been answered.', "data-placement" => "left"} Answered
+        %th{:style => 'width:70%;'} Question/Answers
     - @questions.each do |question|
       %tbody
         - queued_pubs = question.publications.reject{|p| !p.publication_queue_id}
@@ -45,26 +45,27 @@
           - style_class = 'info'
           
         %tr.question-row{:question_id => question.id, :class => style_class}
-          %td.has-tooltip{:rel => "tooltip", "data-original-title" => question.created_at, "data-placement" => "bottom"}
+          %td
             = question.created_at.strftime "%m/%d"
           %td.status
             - if question.status == 0
-              %span.label.pending Pending
+              %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'We will review this question shortly.', "data-placement" => "left"} Pending
             - elsif question.status == 1
               %span.label.label-success.approved Approved
             - elsif question.status == -1
-              %span.label.label-important.rejected Rejected
+              %span.label.label-important.rejected.has-tooltip{:rel => "tooltip", "data-original-title" => 'Something was wrong with this question.', "data-placement" => "left"} Rejected
           %td
-            = @questions_answered_count[question.id] || 0
+            %p= "#{@questions_answered_count[question.id] || 0} times"
           %td
             %p{:style => "font-weight: bold;"}
               = best_in_place question, :text, :type => :textarea
-            - question.answers.each_with_index do |answer, i|
-              %p
+            - question.answers.order("correct DESC").each_with_index do |answer, i|
+              %p.answer
+                / %a.delete_answer X
                 %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
                 = best_in_place answer, :text, :type => :input
             %p
-              Hint:
+              %span.has-tooltip{:rel => "tooltip", "data-original-title" => 'This will be sent if someone gets your question wrong.', "data-placement" => "left"} Hint:
               = best_in_place question, :hint, :type => :textarea
 
   .pagination-wrapper

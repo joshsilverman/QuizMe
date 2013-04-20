@@ -434,6 +434,18 @@
 		.faded {
 			color:grey;
 		}
+		.answer {
+			.delete_answer {
+				cursor: pointer;
+				visibility: hidden;
+			}
+		}
+
+		.answer:hover {
+			.delete_answer {
+				visibility: visible;
+			}			
+		}
 	}
 
 	.activity_container {
@@ -446,6 +458,9 @@
 	.questions {
 		.label {
 			cursor:pointer;
+		}
+		tbody {
+			border-top: 1px;
 		}
 	}
 }
