@@ -98,7 +98,7 @@
 	}
 }
 
-#question {
+#question, #author_dashboard {
 	/*margin-left: 0px !important;*/
 	margin: auto !important;
 	float: none !important;	
@@ -368,9 +368,12 @@
 
 	.header {
 		background:none;
-		padding-left:0;
+		padding: 0px;
+		margin: 0px;
+		/*padding-left:0;*/
+		/*padding-right:0;*/
 		border-top:0;
-		border-bottom:1px solid #E5E5E5;
+		/*border-bottom:1px solid #E5E5E5;*/
 
 		h2 {
 			float:left;
@@ -393,11 +396,21 @@
 			float:right;
 		}
 
+		.new_question {
+			float: right;
+			/*height: 24px;*/
+			margin-right: 10px;
+			position: relative;
+			top: 6px;			
+		}
+
 		.stats {
 			float:right;
 
 			.breadcrumb {
 				margin-bottom:0;
+				position: relative;
+				top: 3px;
 
 				.badge {
 					margin-left:5px;

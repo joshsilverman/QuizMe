@@ -9,6 +9,7 @@ class Question
 	show_answer: null
 
 	constructor: ->
+		console.log 'question'
 		@element = $("#question")
 		@id = $("#question_id").val()
 		@asker_id = $("#asker_id").val()
@@ -245,9 +246,17 @@ class Card
 			disabled: true
 		})
 
+class @Author extends @Feed
+	constructor: ->
+		@id = $("#asker_id").val()
+		$(".new_question").on "click", => 
+			@post_question()
+		$('#askers_select select').change -> window.location = "/users/#{$('#user_id').val()}/questions/" + $(this).children(":selected").attr('value')
+
 $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
 	window.card = new Card if $(".answer_widget").length > 0
+	window.feed = new Author if $('#author_dashboard').length > 0
 	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
 	# target.click() if target.length > 0
