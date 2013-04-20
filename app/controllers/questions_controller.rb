@@ -1,7 +1,7 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers]
   before_filter :admin?, :only => [:moderate, :moderate_update, :import, :enqueue, :dequeue]
-  before_filter :author?, :only => [:index, :enqueue, :dequeue]
+  before_filter :author?, :only => [:enqueue, :dequeue]
 
 
   def index
@@ -90,6 +90,7 @@ class QuestionsController < ApplicationController
 
   def update
     @question = Question.find(params[:id])
+    params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
     # @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
 
@@ -156,7 +157,7 @@ class QuestionsController < ApplicationController
       ## Trigger UGC events
       Post.trigger_split_test(user_id, 'ugc request type')
       Post.trigger_split_test(user_id, 'ugc script v3.0')
-      Post.trigger_split_test(user_id, "author question followup (return ugc submission)") if author.questions.size > 1
+      Post.trigger_split_test(user.id, 'author followup type (return ugc submission)') if author.questions.size > 1
 
       Mixpanel.track_event "submitted question", {
         :distinct_id => user_id,

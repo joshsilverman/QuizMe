@@ -9,6 +9,7 @@ class Question
 	show_answer: null
 
 	constructor: ->
+		console.log 'question'
 		@element = $("#question")
 		@id = $("#question_id").val()
 		@asker_id = $("#asker_id").val()
@@ -245,9 +246,83 @@ class Card
 			disabled: true
 		})
 
+class Author
+	constructor: ->
+		@id = $("#asker_id").val()
+		$(".new_question").on "click", => 
+			@post_question()
+		$('#askers_select select').change -> window.location = "/users/#{$('#user_id').val()}/questions/" + $(this).children(":selected").attr('value')
+	post_question: (text = null, post_id = null) =>
+		# return unless window.feed.correct > 9 or $('.is_author').length > 0
+		$("#question_input").val(text) if text
+		$("#post_question_modal").modal()
+		$("#question_input").focus() unless $("#manager").length > 0
+		$("#add_answer, #submit_question").off "click"
+		$("#add_answer").on "click", => add_answer()
+		
+		if post_id? # displays conversation history when mgr
+			$(".modal_conversation_history").show()
+			convo =  window.feed.conversations[post_id]
+			$('.modal_conversation_history > .conversation').html('')
+			user_post = window.feed.engagements[@id]
+			$.each convo['posts'], (i, p) ->
+				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
+				subsidiary.find("p").text("#{p['text']}") 
+				subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
+				image = convo['users'][p['user_id']]['twi_profile_img_url']
+				subsidiary.find("img").attr("src", image) unless image == null
+				$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
+				if i == 0 and convo['answers'].length > 0
+					html = "<div class='subsidiary post'>"
+					$.each convo['answers'], (j, a) ->
+						html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
+					html += "</div>"
+					$('.modal_conversation_history').find(".conversation").append(html)		
+
+		$("#submit_question").on "click", (e) => 
+			e.preventDefault()
+			submit()
+		add_answer = ->
+			count = $(".answer").length
+			return if count > 3
+			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
+			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
+			$("#add_answer").hide() if count == 3
+		submit = ->
+			if validate_form()
+				$("#submit_question").button("loading")
+				data =
+					"question" : $("#question_input").val()
+					"asker_id" : window.feed.id
+					"status" : $("#status").val()
+					"canswer" : $("#canswer input").val()
+					"ianswer1" : $("#ianswer1 input").val()
+					"ianswer2" : $("#ianswer2 input").val()
+					"ianswer3" : $("#ianswer3 input").val()
+				data["post_id"] = post_id if post_id
+				$("#submit_question").button("loading")
+				modal = $("#post_question_modal")
+				modal.find(".modal-body").slideToggle(250)
+				$.ajax
+					url: "/questions/save_question_and_answers",
+					type: "POST",
+					data: data,
+					error: => alert "Sorry, something went wrong!",
+					success: (e) => document.location.reload(true)
+		validate_form = ->
+			if $("#question_input").val() == ""
+				alert "Please enter a question!"
+				return false
+			else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
+				alert "Please enter at least one correct and incorrect answer!"
+				return false
+			else
+				return true			
+
 $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
 	window.card = new Card if $(".answer_widget").length > 0
+	window.feed = new Author if $('#author_dashboard').length > 0
 	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
 	# target.click() if target.length > 0
