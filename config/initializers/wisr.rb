@@ -322,9 +322,14 @@ ACCOUNT_DATA = {
 
   ## QuizMeFrenchRev
   35685 => {
-    :hashtags => ['frenchrev', 'frenchrevolution'],
+    :hashtags => ['frenchrev', 'frenchrevolution', 'history'],
     :search_terms => ['studying french revolution']
   },
+  ## AmericanRevQuiz
+  36605 => {
+    :hashtags => ['history', 'americanrevolution'],
+    :search_terms => ['studying american revolution']
+  },  
 
   ## SATvocabQuiz
   227 => {
