@@ -855,27 +855,23 @@ class Asker < User
 
   def send_targeted_mention user
     if topics.present?
-      if Post.create_split_test(user.id, "targeted mention type (answers)", "most popular question", "check out my feed") == "check out my feed"
-        text = "I quiz people on #{topics.first.name}, check out my feed!"
-        Post.tweet(self, text, { 
-          reply_to: user.twi_screen_name, 
-          intention: 'targeted mention',
-          in_reply_to_user_id: user.id,
-          interaction_type: 2
-        })
-      else
-        question = most_popular_question
-        publication = question.publications.order("created_at DESC").first
-        Post.tweet(self, "Pop quiz: #{question.text}", { 
-          reply_to: user.twi_screen_name, 
-          intention: 'targeted mention', 
-          question_id: question.id,
-          in_reply_to_user_id: user.id,
-          publication_id: publication.id,
-          long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
-          interaction_type: 2
-        })
-      end
+      script = Post.create_split_test(user.id, 'targeted mention script (answers)', 'Pop quiz:', "Here's some prep on <topic>:", '<just question>')
+      script = '' if script == '<just question>'
+      script.gsub! '<topic>', asker.topics.first.name
+
+      question = asker.most_popular_question
+      publication = question.publications.order("created_at DESC").first
+      script = "#{script} #{question.text}".strip
+
+      Post.tweet(self, script, { 
+        reply_to: user.twi_screen_name, 
+        intention: 'targeted mention', 
+        question_id: question.id,
+        in_reply_to_user_id: user.id,
+        publication_id: publication.id,
+        long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+        interaction_type: 2
+      })
       Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
     end
   end
@@ -998,6 +994,7 @@ class Asker < User
       profile = {:description => _description}
       update_attribute :description, _description
       twitter.update_profile profile
+      topics << Topic.create({ name: topic })
     end
 
     cards.each_with_index do |card, i|
