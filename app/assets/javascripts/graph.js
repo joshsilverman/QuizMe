@@ -1,4 +1,4 @@
-  window.onload = function(e) {
+$(document).ready ( function(e) {
   if ($("#graph").length < 1) {
     return;
   }
@@ -438,4 +438,4 @@
     .on('keydown', keydown)
     .on('keyup', keyup);
   restart();
-}
+});
