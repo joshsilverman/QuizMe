@@ -994,6 +994,7 @@ class Asker < User
       profile = {:description => _description}
       update_attribute :description, _description
       twitter.update_profile profile
+      topics << Topic.create({ name: topic })
     end
 
     cards.each_with_index do |card, i|
