@@ -25,29 +25,24 @@ class Stat < ActiveRecord::Base
       new_to_existing_before_on = {}
       start_day = Date.today - (domain + 1).days
 
-      existing_before[start_day - 1] = new_on\
-        .reject{|w,c| Date.strptime(w, "%Y-%m-%d") > start_day - 1}\
+      existing_before[start_day - 7] = new_on\
+        .reject{|w,c| Date.strptime(w, "%Y-%m-%d") >= start_day - 7}\
         .collect{|k,v| v}\
         .sum
 
       ((start_day)..(Date.today - 1)).to_a.each do |n|
-        existing_before[n] = existing_before[n - 1] + new_on[(n - 1).to_s].to_i
+        existing_before[n-6] = existing_before[n - 7] + new_on[(n - 7).to_s].to_i
         new_on[n.to_s] ||= 0
         new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
-        new_to_existing_before_on[n][:raw] = ((new_on[n.to_s].to_f / existing_before[n]) + 1) ** 7 - 1
+        new_to_existing_before_on[n][:raw] = new_on[n.to_s].to_f * 7.to_f / existing_before[n - 7.days].to_f
+        llast_7_days_new = new_on.reject{|k,v| Date.parse(k) > n or Date.parse(k) <= n - 7.days}.values.sum.to_f
+        new_to_existing_before_on[n][:avg] = llast_7_days_new / existing_before[n - 7.days]
         new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
-      end
-      existing_before[Date.today] = existing_before[Date.today - 1] + new_on[(Date.today - 1).to_s].to_i
-      
-      new_to_existing_before_on.map do |date, v|
-        group = [v[:raw]]
-        new_to_existing_before_on.map{|ddate,vv| group.push vv[:raw] if ddate < date and ddate > date - 7.days}
-        new_to_existing_before_on[date][:avg] = group.sum/group.length
       end
 
       display_data = {
-        :today => (last_24_hours_new.to_f / existing_before[Date.today] + 1) ** 7 - 1,
-        :total => last_7_days_new.to_f / existing_before[Date.today]
+        :today => last_24_hours_new.to_f * 7 / existing_before[Date.today - 7],
+        :total => last_7_days_new.to_f / existing_before[Date.today - 7]
       }
 
       display_data[:today] = sprintf "%.1f%", display_data[:today] * 100
