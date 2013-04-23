@@ -142,7 +142,8 @@ class Asker < User
   end
 
   def send_backlog_new_user_dms
-    backlog_user = followers.where("users.lifecycle_segment is null and users.id not in (?)", posts.select([:intention, :in_reply_to_user_id]).where("posts.intention = 'initial question dm'").collect(&:in_reply_to_user_id)).limit(1).first
+    # select users who we have NOT sent a message of any type to
+    # backlog_user = followers.where("users.lifecycle_segment is null and users.id not in (?)", posts.select([:interaction_type, :in_reply_to_user_id]).where("posts.interaction_type = 4").collect(&:in_reply_to_user_id)).limit(1).first
     send_new_user_question(backlog_user, { backlog: true })
   end
 
