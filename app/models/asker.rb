@@ -115,13 +115,18 @@ class Asker < User
     user.segment
   end
 
-  def send_new_user_question user, dm_text = "Here's your first question! "
-    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
-    
-    if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+  def send_new_user_question user, options = {}
+    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0
+    dm_text = "Here's your first question! "
+
+    if new_user_question.blank?
       question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
     else
-      question = new_user_question
+      if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+        question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
+      else
+        question = new_user_question
+      end
     end
 
     dm_text += question.text
@@ -131,8 +136,14 @@ class Asker < User
     Post.dm(self, user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
-      :account => twi_screen_name
+      :account => twi_screen_name,
+      :backlog => options[:backlog] == true ? true : false
     }
+  end
+
+  def send_backlog_new_user_dms
+    backlog_user = followers.where("users.lifecycle_segment is null and users.id not in (?)", posts.select([:intention, :in_reply_to_user_id]).where("posts.intention = 'initial question dm'").collect(&:in_reply_to_user_id)).limit(1).first
+    send_new_user_question(backlog_user, { backlog: true })
   end
 
 
