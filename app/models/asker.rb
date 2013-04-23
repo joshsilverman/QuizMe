@@ -286,6 +286,8 @@ class Asker < User
 
     # Send mentions to new users
     Asker.mention_new_users
+
+    Asker.send_backlog_new_user_dms
   end
 
   def self.mention_new_users
