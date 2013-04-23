@@ -857,9 +857,9 @@ class Asker < User
     if topics.present?
       script = Post.create_split_test(user.id, 'targeted mention script (answers)', 'Pop quiz:', "Here's some prep on <topic>:", '<just question>')
       script = '' if script == '<just question>'
-      script.gsub! '<topic>', asker.topics.first.name
+      script.gsub! '<topic>', topics.first.name
 
-      question = asker.most_popular_question
+      question = most_popular_question
       publication = question.publications.order("created_at DESC").first
       script = "#{script} #{question.text}".strip
 
