@@ -145,7 +145,7 @@ class Asker < User
     engaged_user_ids = posts.select(:in_reply_to_user_id).group(:in_reply_to_user_id)\
       .where("in_reply_to_user_id IS NOT NULL")\
       .collect(&:in_reply_to_user_id)
-    backlog_users = followers.not_asker_not_us\
+    backlog_users = followers.not_asker\
       .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("RANDOM()").limit limit
     backlog_users.each do |u|
       send_new_user_question(u, { backlog: true })
@@ -305,6 +305,11 @@ class Asker < User
     Asker.mention_new_users
 
     # Engage backlog
+    # Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
+  end
+
+  # tmp function - move to engage_new_users
+  def self.engage_backlog
     Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
   end
 
