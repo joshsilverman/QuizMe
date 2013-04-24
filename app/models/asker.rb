@@ -141,10 +141,15 @@ class Asker < User
     }
   end
 
-  def send_backlog_new_user_dms
-    # select users who we have NOT sent a message of any type to
-    # backlog_user = followers.where("users.lifecycle_segment is null and users.id not in (?)", posts.select([:interaction_type, :in_reply_to_user_id]).where("posts.interaction_type = 4").collect(&:in_reply_to_user_id)).limit(1).first
-    send_new_user_question(backlog_user, { backlog: true })
+  def send_backlog_new_user_dms limit = 1
+    engaged_user_ids = posts.select(:in_reply_to_user_id).group(:in_reply_to_user_id)\
+      .where("in_reply_to_user_id IS NOT NULL")\
+      .collect(&:in_reply_to_user_id)
+    backlog_users = followers.not_asker_not_us\
+      .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("RANDOM()").limit limit
+    backlog_users.each do |u|
+      send_new_user_question(u, { backlog: true })
+    end
   end
 
 
@@ -299,7 +304,8 @@ class Asker < User
     # Send mentions to new users
     Asker.mention_new_users
 
-    Asker.send_backlog_new_user_dms
+    # Engage backlog
+    Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
   end
 
   def self.mention_new_users
