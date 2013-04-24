@@ -146,7 +146,7 @@ class Asker < User
       .where("in_reply_to_user_id IS NOT NULL")\
       .collect(&:in_reply_to_user_id)
     backlog_users = followers.not_asker\
-      .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("RANDOM()").limit limit
+      .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("follower_id DESC").limit limit
     backlog_users.each do |u|
       send_new_user_question(u, { backlog: true })
     end
@@ -315,7 +315,7 @@ class Asker < User
 
   def self.mention_new_users
     askers = Asker.all
-    answered_dm_users = User.where("learner_level = 'dm answer' and created_at > ?", 1.week.ago).includes(:posts)
+    answered_dm_users = User.where("learner_level = 'dm answer'").includes(:posts)
     app_posts = Post.where("in_reply_to_user_id in (?) and intention = 'new user question mention'", answered_dm_users.collect(&:id)).group_by(&:in_reply_to_user_id)
     popular_asker_publications = {}
     answered_dm_users.each do |user|
