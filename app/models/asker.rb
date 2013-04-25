@@ -527,7 +527,7 @@ class Asker < User
     })
     request_ugc(answerer)
     nudge(answerer)
-    Post.trigger_split_test(answerer.id, "targeted mention type (answers)")
+    Post.trigger_split_test(answerer.id, "targeted mention script (answers)")
   end 
 
 
@@ -860,7 +860,11 @@ class Asker < User
       script.gsub! '<topic>', topics.first.name
 
       question = most_popular_question
+      return unless question
+
       publication = question.publications.order("created_at DESC").first
+      return unless publication
+
       script = "#{script} #{question.text}".strip
 
       Post.tweet(self, script, { 
