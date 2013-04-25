@@ -115,13 +115,18 @@ class Asker < User
     user.segment
   end
 
-  def send_new_user_question user, dm_text = "Here's your first question! "
-    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0 or new_user_question.blank?
-    
-    if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+  def send_new_user_question user, options = {}
+    return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0
+    dm_text = "Here's your first question! "
+
+    if new_user_question.blank?
       question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
     else
-      question = new_user_question
+      if Post.create_split_test(user.id, "New user DM question == most popular question (=> regular)", "false", "true") == "true"
+        question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
+      else
+        question = new_user_question
+      end
     end
 
     dm_text += question.text
@@ -131,8 +136,20 @@ class Asker < User
     Post.dm(self, user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
-      :account => twi_screen_name
+      :account => twi_screen_name,
+      :backlog => options[:backlog] == true ? true : false
     }
+  end
+
+  def send_backlog_new_user_dms limit = 1
+    engaged_user_ids = posts.select(:in_reply_to_user_id).group(:in_reply_to_user_id)\
+      .where("in_reply_to_user_id IS NOT NULL")\
+      .collect(&:in_reply_to_user_id)
+    backlog_users = followers.not_asker\
+      .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("follower_id DESC").limit limit
+    backlog_users.each do |u|
+      send_new_user_question(u, { backlog: true })
+    end
   end
 
 
@@ -286,11 +303,19 @@ class Asker < User
 
     # Send mentions to new users
     Asker.mention_new_users
+
+    # Engage backlog
+    # Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
+  end
+
+  # tmp function - move to engage_new_users
+  def self.engage_backlog
+    Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
   end
 
   def self.mention_new_users
     askers = Asker.all
-    answered_dm_users = User.where("learner_level = 'dm answer' and created_at > ?", 1.week.ago).includes(:posts)
+    answered_dm_users = User.where("learner_level = 'dm answer'").includes(:posts)
     app_posts = Post.where("in_reply_to_user_id in (?) and intention = 'new user question mention'", answered_dm_users.collect(&:id)).group_by(&:in_reply_to_user_id)
     popular_asker_publications = {}
     answered_dm_users.each do |user|

@@ -52,6 +52,10 @@ task :engage_new_users => :environment do
   Asker.engage_new_users()
 end
 
+task :engage_backlog => :environment do 
+  Asker.engage_backlog()
+end
+
 task :post_aggregate_activity => :environment do 
   Asker.post_aggregate_activity()
 end
