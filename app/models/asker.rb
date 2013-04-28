@@ -477,7 +477,6 @@ class Asker < User
       end
     end 
 
-    puts response_text
     if response_text.blank?  
       response_text = generate_response(correct, question)
       if correct and options[:quote_user_answer]

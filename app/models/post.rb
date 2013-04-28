@@ -220,7 +220,7 @@ class Post < ActiveRecord::Base
       :in_reply_to_user => options[:reply_to],
       :question_backlink => short_url,
       :hashtag => options[:hashtag],
-      :resource_backlink => short_resource_url,
+      :resource_backlink => options[:resource_url],
       :via_user => options[:via],
       :wisr_question => options[:wisr_question],
       :answers => answers,
