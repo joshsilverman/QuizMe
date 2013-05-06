@@ -697,8 +697,10 @@ class Post < ActiveRecord::Base
 
             #mimic normal conversation
             publication = self.publication || _in_reply_to_question.publications.order('created_at DESC').limit(1).first
+            return unless publication
+
             post = publication.posts.where('posts.created_at < ?', created_at).order("posts.created_at DESC").first
-            return unless publication and post
+            return unless post
 
             conversation = Conversation.create(:publication_id => publication_id, :post_id => post.id, :user_id => user_id)
             update_attributes({
