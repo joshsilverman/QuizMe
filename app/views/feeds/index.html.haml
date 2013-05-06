@@ -1,18 +1,22 @@
 :css
-  body {background-image: url(http://www.wallpapershd.biz/wp-content/uploads/2012/12/The-Night-Sky-Wallpaper.jpg) !important;}
+  body {background-image: url(/assets/home_bg.png) !important;}
+  / body {background-image: url(http://www.wallpapershd.biz/wp-content/uploads/2012/12/The-Night-Sky-Wallpaper.jpg) !important;}
 
-#post_feed
+#feeds_home
   #feed_container.index.span10
     #wrapper.span9
       .hero-unit.new-user
         .user-info
           %h1.clearfix
-            I want to learn about
-            %input#query.span2{type: "text", placeholder: 'mitosis'}
+            %span.big I want to learn 
             %br
-            my Twitter handle is 
-            %input#handle.span2{type: "text", placeholder: '@johnr'}
-            %input.btn.btn-warning#new_user_cta{value: "Start", type: 'button'}
+            about
+            = succeed '.' do
+              %input#query.span2{type: "text", placeholder: ['anatomy', 'mitosis'].sample}
+            / %br
+            / my Twitter handle is 
+            / %input#handle.span2{type: "text", placeholder: '@johnr'}
+            / %input.btn.btn-warning#new_user_cta{value: "Start", type: 'button'}
 
       #feed.row
         #right_column.rounded.span6
@@ -21,17 +25,15 @@
               %h3
                 Subjects you can follow & learn:
 
-            - @askers.shuffle.each do |asker|
-              .asker
+            - @askers.each do |asker|
+              .asker{'data-asker_id' => asker.id}
                 = image_tag(asker.twi_profile_img_med_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom")
                 %p.twi_name= asker.twi_name
                 %p.twi_screen_name_cont
                   @
                   %a.twi_screen_name= asker.twi_screen_name
-
-                %a.twitter-follow-button{:href => "https://twitter.com/#{asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
-                %script
-                  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+ 
+                %a.twitter-follow-button{'data-screen-name' => asker.twi_screen_name}= " "
 
 %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
   %img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}
@@ -50,3 +52,6 @@
 / = hidden_field_tag :answer_id, @answer_id
 / = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 / = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
+
+%script
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");

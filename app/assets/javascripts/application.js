@@ -8,10 +8,14 @@
 //= require jquery_ujs
 //= require jquery.ui.autocomplete
 //= require jquery.ui.datepicker
+//= require lib/jquery.cookie
+
+//= require lib/bootstrap.tour
 //= require twitter/bootstrap
 //= require best_in_place
 //= require d3
-//= require_tree .
+//= require_tree ../javascripts/controllers/.
+//= require_tree ../javascripts/views/.
 
 if (!window.console) console = {log: function() {}}
 

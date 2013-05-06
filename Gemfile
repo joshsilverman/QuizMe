@@ -43,7 +43,7 @@ end
 gem 'rails', '3.2.11'
 gem 'jquery-ui-rails'
 gem 'haml', '3.1.6'
-gem 'twitter-bootstrap-rails', '2.1.1'
+gem 'twitter-bootstrap-rails', '2.2.6'
 gem 'jquery-rails', '1.0.19'
 
 gem 'devise'
