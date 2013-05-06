@@ -11,6 +11,7 @@
 /db/*.sqlite3
 /db/*.sqlite3.old
 /db/*.sqlite3.*
+/*.psd
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
