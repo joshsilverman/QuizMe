@@ -674,7 +674,7 @@ class Post < ActiveRecord::Base
 
     if _in_reply_to_question.nil? or amatch == true
       #attempt approximate match linking
-      askers = askers=Asker.select([:twi_screen_name]).collect(&:twi_screen_name).join('|')
+      askers = Asker.select([:twi_screen_name]).collect(&:twi_screen_name).join('|')
       reengagement = "@[^\\s]+ (?:Next question!|A question for you:|Pop quiz:|Do you know the answer\\?|Quick quiz:|)\\s?"
       re_with_url = /@(?:#{askers})[\s:]*\s(?:#{reengagement})?([\w\W]+?)(?:http:)[\w\W]*$/
       re_without_url = /@(?:#{askers})[\w|:]*\s(?:#{reengagement})?([\w\W]+?)$/
@@ -696,14 +696,17 @@ class Post < ActiveRecord::Base
             Tag.find_or_create_by_name('auto-linked').posts << self
 
             #mimic normal conversation
-            publication = publication || _in_reply_to_question.publications.order('created_at DESC').limit(1).first
+            publication = self.publication || _in_reply_to_question.publications.order('created_at DESC').limit(1).first
             post = publication.posts.where('posts.created_at < ?', created_at).order("posts.created_at DESC").first
-            self.publication_id = publication.id
-            self.in_reply_to_post_id = post.id
-            self.in_reply_to_user_id = post.user_id
+            return unless publication and post
+
             conversation = Conversation.create(:publication_id => publication_id, :post_id => post.id, :user_id => user_id)
-            self.conversation_id = conversation.id
-            save!
+            update_attributes({
+              publication_id: publication.id,
+              in_reply_to_post_id: post.id,
+              in_reply_to_user_id: post.user_id,
+              conversation_id: conversation.id
+            })
           end
         end
       end
