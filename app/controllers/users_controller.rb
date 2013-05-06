@@ -21,7 +21,7 @@ class UsersController < ApplicationController
       redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :user_id => params[:id], :asker_id => params[:asker_id]) unless current_user
     else
       @user = User.find(params[:id])
-      # redirect_to '/' unless current_user == @user
+      redirect_to '/' unless current_user == @user
       
       @asker = Asker.find(params[:asker_id])
       @questions = @user.questions.where(:created_for_asker_id => params[:asker_id])
