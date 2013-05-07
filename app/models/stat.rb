@@ -181,7 +181,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.revenue domain = 30
-    # revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
+    revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
       rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
       return if rate_sheets.empty?
       clients = rate_sheets.collect{|rs| rs.clients}.flatten.uniq
@@ -247,7 +247,7 @@ class Stat < ActiveRecord::Base
       display_data = Stat.revenue_display_data(askers_by_rate_sheet)
       
       [revenue, display_data]
-    # end
+    end
     return revenue, display_data
   end
 
