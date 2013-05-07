@@ -28,7 +28,6 @@ class Publication < ActiveRecord::Base
 
   def self.recently_published_by_asker asker
     publications, posts = Rails.cache.fetch "publications_recently_published_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do
-      puts "refreshing recent publications cache for #{asker.twi_screen_name}"
       publications = asker.publications\
         .published\
         .includes([:asker, :posts, :question => [:answers, :user]])\
@@ -58,7 +57,6 @@ class Publication < ActiveRecord::Base
 
   def self.recent_responses_by_asker asker, posts
     replies = Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes, :race_condition_ttl => 15 do    
-      puts "refreshing recent responses cache for #{asker.twi_screen_name}"
       replies = Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
         .where(:in_reply_to_post_id => posts.collect(&:id))\
         .order("created_at ASC")\
