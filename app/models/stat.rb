@@ -156,42 +156,64 @@ class Stat < ActiveRecord::Base
 
   def self.econ_engine domain = 30
     econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_domain_#{domain}", :expires_in => 19.minutes do
+      posts_by_date = Post.joins(:user).not_spam.not_us.social\
+        .where('provider_post_id IS NOT NULL')\
+        .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
+        .where("posts.created_at > ?", Date.today - domain)\
+        .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
+        .group("to_char(posts.created_at, 'YY/MM/DD')")\
+        .count('posts.id')
 
-      @posts_by_date = Post.joins(:user).not_spam.not_us.social\
-          .where('provider_post_id IS NOT NULL')\
-          .where("in_reply_to_user_id IN (#{Asker.all.collect(&:id).join(",")})")\
-          .where("posts.created_at > ?", Date.today - domain)\
-          .select(["posts.created_at", :in_reply_to_user_id, :interaction_type, :spam, :autospam, "users.role", :user_id])\
-          .group("to_char(posts.created_at, 'YY/MM/DD')")\
-          .count('posts.id')
+      econ_engine = []
+      posts_by_date.each{|date, post_count| econ_engine << [date, post_count] unless date == Date.today.strftime('%y/%m/%d')}
+      econ_engine.sort!{|a,b| a[0] <=> b[0]}
 
-      @econ_engine = []
-      @posts_by_date.each{|date, post_count| @econ_engine << [date, post_count] unless date == Date.today.strftime('%y/%m/%d')}
-
-      @econ_engine.sort!{|a,b| a[0] <=> b[0]}
-      @econ_engine = @econ_engine.map{|row| [row[0].gsub(/^[0-9]+\//, ""), row[1]]}
-      @econ_engine = [['Date', 'Soc. Actions']] + @econ_engine
+      econ_engine = econ_engine.map{|row| [row[0].gsub(/^[0-9]+\//, ""), row[1]]}
+      econ_engine = [['Date', 'Soc. Actions']] + econ_engine
 
       display_data = {}
       display_data[:today] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 24.hours).count
       display_data[:month] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 30.days).count
 
-      [@econ_engine, display_data]
+      [econ_engine, display_data]
     end
     return econ_engine, display_data
   end
 
   def self.revenue domain = 30
-    revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
-      @rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
-      return if @rate_sheets.empty?
-      @clients = @rate_sheets.collect{|rs| rs.clients}.flatten.uniq
-      @askers_by_rate_sheet = {}
-      @clients.each{|c| @askers_by_rate_sheet[c.rate_sheet] = c.askers}
-      return if @askers_by_rate_sheet.empty?
+    # revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
+      rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
+      return if rate_sheets.empty?
+      clients = rate_sheets.collect{|rs| rs.clients}.flatten.uniq
+      askers_by_rate_sheet = {}
+      client_asker_ids = []
 
-      @posts_by_date_by_rate_sheet = {}
-      @askers_by_rate_sheet.each do |rate_sheet, askers|
+      clients.each do |c| 
+        askers_by_rate_sheet[c.rate_sheet] = c.askers
+        # c.askers.each {|a| client_asker_ids << a.id}
+      end
+
+      return if askers_by_rate_sheet.empty?
+
+      # posts_by_askers = Post.not_spam.social.not_us\
+      #   .where("in_reply_to_user_id in (?)", client_asker_ids)\
+      #   .where("created_at > ?", domain.days.ago)\
+      #   .select([:text, "posts.created_at", :in_reply_to_user_id, :interaction_type, :correct, :user_id, :spam, :autospam])\
+      #   .order("posts.created_at ASC")\
+      #   .group_by{|p| p.in_reply_to_user_id}
+
+      # posts_by_date_by_rate_sheet = {}
+      # askers_by_rate_sheet.each do |rate_sheet, askers|
+      #   askers.each do |asker|
+      #     posts_by_askers[asker.id].group_by{|p| p.created_at.strftime('%y/%m/%d')}.each do |date, posts|
+      #       posts_by_date_by_rate_sheet[date] ||= {}
+      #       posts_by_date_by_rate_sheet[date][rate_sheet] = posts
+      #     end
+      #   end
+      # end
+
+      posts_by_date_by_rate_sheet = {}
+      askers_by_rate_sheet.each do |rate_sheet, askers|
         posts_by_date = Post.not_spam.social.not_us\
             .where("in_reply_to_user_id IN (?)", askers.collect(&:id))\
             .where("created_at > ?", domain.days.ago)\
@@ -199,13 +221,13 @@ class Stat < ActiveRecord::Base
             .order("posts.created_at ASC")\
             .group_by{|p| p.created_at.strftime('%y/%m/%d')}
         posts_by_date.each do |date, posts|
-          @posts_by_date_by_rate_sheet[date] ||= {}
-          @posts_by_date_by_rate_sheet[date][rate_sheet] = posts
+          posts_by_date_by_rate_sheet[date] ||= {}
+          posts_by_date_by_rate_sheet[date][rate_sheet] = posts
         end
       end
 
-      @revenue = [['Date'] + @rate_sheets.collect(&:title)]
-      @posts_by_date_by_rate_sheet.each do |date, posts_by_rate_sheet|
+      revenue = [['Date'] + rate_sheets.collect(&:title)]
+      posts_by_date_by_rate_sheet.each do |date, posts_by_rate_sheet|
         next if date == Date.today.strftime('%y/%m/%d')
         revenues_by_rate_sheet = {}
         posts_by_rate_sheet.each do |rate_sheet, posts|
@@ -216,22 +238,23 @@ class Stat < ActiveRecord::Base
 
           revenues_by_rate_sheet[rate_sheet] = tweet_revenue + rt_revenue
         end
-        @revenue << [date] + @rate_sheets.map{|rs| revenues_by_rate_sheet[rs] || 0 }
+        revenue << [date] + rate_sheets.map{|rs| revenues_by_rate_sheet[rs] || 0 }
       end
 
       #sort
-      title_row = @revenue.shift
-      @revenue = [title_row] + @revenue.sort_by{|r|r[0]}.map{|r| [Time.parse(r[0]).strftime('%m/%d')] + r[1..-1]}
-
-      [@revenue, Stat.revenue_display_data(@askers_by_rate_sheet)]
-    end
+      title_row = revenue.shift
+      revenue = [title_row] + revenue.sort_by{|r|r[0]}.map{|r| [Time.parse(r[0]).strftime('%m/%d')] + r[1..-1]}
+      display_data = Stat.revenue_display_data(askers_by_rate_sheet)
+      
+      [revenue, display_data]
+    # end
     return revenue, display_data
   end
 
   def self.revenue_display_data askers_by_rate_sheet
     display_data = {:today => 0, :month => 0}
 
-    @askers_by_rate_sheet.each do |rate_sheet, askers|
+    askers_by_rate_sheet.each do |rate_sheet, askers|
       posts = {}
       posts[:today] = Post.not_spam.social.not_us.where("created_at > ?", 24.hours.ago).where("in_reply_to_user_id IN (?)", askers.collect(&:id))
       posts[:month] = Post.not_spam.social.not_us.where("created_at > ?", 30.days.ago).where("in_reply_to_user_id IN (?)", askers.collect(&:id))

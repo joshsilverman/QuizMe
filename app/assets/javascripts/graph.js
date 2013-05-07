@@ -1,5 +1,5 @@
 $(document).ready ( function(e) {
-  if ($("#graph").length < 1) {
+  if ($("#asker_graph").length < 1) {
     return;
   }
 
@@ -11,7 +11,7 @@ $(document).ready ( function(e) {
   var height = 725;
   var colors = d3.scale.category10();
 
-  var svg = d3.select('#graph')
+  var svg = d3.select('#asker_graph')
     .append('svg')
     .attr('width', width)
     .attr('height', height);
