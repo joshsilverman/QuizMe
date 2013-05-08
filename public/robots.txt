@@ -11,3 +11,5 @@ Allow: /questions/answers/
 
 User-agent: *
 Disallow: /
+
+Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
