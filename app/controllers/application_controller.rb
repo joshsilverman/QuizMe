@@ -81,6 +81,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def moderator?
+    if current_user
+      redirect_to '/' unless current_user.is_role? "moderator" or current_user.is_role? "admin"
+    else
+      redirect_to '/'
+    end
+
+    current_user.is_role? "moderator"
+  end
+
   def set_session_variables
     if params["lt"] == "reengage" and params[:post_id].present?
       session[:reengagement_publication_id] = params[:post_id] 

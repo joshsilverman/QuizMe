@@ -1,42 +1,43 @@
 class PostsController < ApplicationController
   before_filter :admin?, :except => [:nudge_redirect, :refer, :retweet]
 
+  def manager_retweet
+    post = Post.find(params[:post_id])
+    asker = Asker.find(params[:asker_id])
+    Post.create({
+      :user_id => params[:asker_id],
+      :provider => "twitter",
+      :in_reply_to_post_id => post.id, 
+      :in_reply_to_user_id => post.user_id,
+      :posted_via_app => true, 
+      :interaction_type => 3
+    })
+    retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
+    post.update_attribute :requires_action, false if retweet
+    render :json => retweet
+  end
+
 	def retweet
-		if params[:publication_id]
-			post = Publication.find(params[:publication_id]).posts.last
-      retweet = Post.twitter_request { current_user.twitter.retweet(post.provider_post_id) }
+		return unless params[:publication_id]
+		post = Publication.find(params[:publication_id]).posts.last
+    retweet = Post.twitter_request { current_user.twitter.retweet(post.provider_post_id) }
 
-      if retweet
-        retweet_post = Post.create({
-          :user_id => current_user.id,
-          :provider => "twitter",
-          :in_reply_to_post_id => post.id, 
-          :in_reply_to_user_id => post.user_id,
-          :posted_via_app => true, 
-          :interaction_type => 3
-        })
+    if retweet
+      retweet_post = Post.create({
+        :user_id => current_user.id,
+        :provider => "twitter",
+        :in_reply_to_post_id => post.id, 
+        :in_reply_to_user_id => post.user_id,
+        :posted_via_app => true, 
+        :interaction_type => 3
+      })
 
-        current_user.update_user_interactions({
-          :learner_level => "share", 
-          :last_interaction_at => retweet_post.created_at
-        })      
-        
-        Mixpanel.track_event "in app retweet", { :distinct_id => current_user.id }  
-  			render :json => retweet
-      end
-		else
-			post = Post.find(params[:post_id])
-			asker = Asker.find(params[:asker_id])
-			Post.create({
-				:user_id => params[:asker_id],
-				:provider => "twitter",
-				:in_reply_to_post_id => post.id, 
-				:in_reply_to_user_id => post.user_id,
-				:posted_via_app => true, 
-				:interaction_type => 3
-			})
-      retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
-      post.update_attribute :requires_action, false if retweet
+      current_user.update_user_interactions({
+        :learner_level => "share", 
+        :last_interaction_at => retweet_post.created_at
+      })      
+      
+      Mixpanel.track_event "in app retweet", { :distinct_id => current_user.id }  
 			render :json => retweet
 		end
 	end

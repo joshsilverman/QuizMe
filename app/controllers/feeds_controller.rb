@@ -1,7 +1,8 @@
 class FeedsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
-  before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
+  before_filter :moderator?, :only => [:mod_manage, :manager_response]
+  before_filter :admin?, :only => [:manage]
   before_filter :set_session_variables, :only => [:show]
 
   caches_action :unauth_show, :expires_in => 10.minutes, :cache_path => Proc.new { |c| c.params }
@@ -212,6 +213,12 @@ class FeedsController < ApplicationController
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     tell = (params[:tell].nil? ? nil : params[:tell].match(/(true|t|yes|y|1)$/i) != nil)
 
+    if moderator?
+      user_post.update_attributes(moderator_id: current_user.id, autocorrect: correct)
+      render status: 200, nothing: true
+      return
+    end
+
     unless conversation = user_post.conversation
       post_id = user_post.parent.try(:id) || user_post.id
       conversation = Conversation.create(:post_id => post_id, :user_id => asker.id, :publication_id => params[:publication_id])
@@ -296,24 +303,6 @@ class FeedsController < ApplicationController
     render :json => response_post.present?
   end
 
-  # This should really be rolled up into mgr response!!!
-  def manager_post
-    asker = Asker.find(params[:asker_id])
-    response_text = params[:text]
-
-    if params[:text].include? "@"
-      user = User.find_by_twi_screen_name(params[:text].match(/@[A-Za-z0-9\-_]*/).to_s.gsub("@", ""))
-      response_post = Post.delay.tweet(asker, response_text, {
-        :interaction_type => 2, 
-        :in_reply_to_user_id => user.id
-      }) 
-    else
-      response_post = Post.tweet(asker, response_text, { :interaction_type => 1 })       
-    end
-
-    render :json => response_post
-  end
-
   def link_to_post
     if params[:link_to_pub_id] == "0"
       post = Post.find(params[:post_id])
@@ -342,6 +331,21 @@ class FeedsController < ApplicationController
 
       render :json => [post_to_link, post_to_link_to]
     end
+  end
+
+  def mod_manage
+    @posts = Post.includes(:tags, :conversation).linked_box.not_dm.\
+      where("in_reply_to_user_id IN (?)", current_user.follows.where("role = 'asker'")).\
+      where("moderator_id IS NULL").order("random()").limit(10)
+
+    @questions = []
+    @engagements, @conversations = Post.grouped_as_conversations @posts
+    @asker = User.find 8765
+    @oneinbox = true
+    @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+    @asker_twi_screen_names = Asker.askers_with_id_and_twi_screen_name.sort_by! { |a| a.twi_screen_name.downcase }.each { |a| a.twi_screen_name = a.twi_screen_name.downcase }
+
+    render :manage
   end
 
   def manage

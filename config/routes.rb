@@ -25,6 +25,8 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id/manage" => "feeds#manage"
   match "feeds/manage" => "feeds#manage"
+  match "feeds/mod_manage" => "feeds#mod_manage"
+  
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "askers/:id/import" => "askers#import"
   match "/activity_stream" => "feeds#activity_stream"
@@ -58,6 +60,7 @@ Quizmemanager::Application.routes.draw do
   post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
+  post "posts/manager_retweet"
   match "/posts/mark_ugc" => "posts#mark_ugc"
   match "/posts/toggle_tag" => "posts#toggle_tag"
 
