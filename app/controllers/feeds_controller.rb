@@ -4,7 +4,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response, :link_to_post, :manager_post]
   before_filter :set_session_variables, :only => [:show]
 
-  caches_action :unauth_show, :expires_in => 10.minutes
+  caches_action :unauth_show, :expires_in => 10.minutes, :cache_path => Proc.new { |c| c.params }
 
   def index
     @index = true

@@ -97,7 +97,7 @@ class ApplicationController < ActionController::Base
     # @current_user ||= User.find(cookies.signed[:permanent_user_id] || session[:user_id])
   # end
 
-    def split_user
+    def split_user 
       session[:user_agent] = request.user_agent
       session[:ip] = request.remote_ip
       if current_user
