@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130412182806) do
+ActiveRecord::Schema.define(:version => 20130509153528) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -282,6 +282,7 @@ ActiveRecord::Schema.define(:version => 20130412182806) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "type_id"
   end
 
   create_table "transitions", :force => true do |t|
