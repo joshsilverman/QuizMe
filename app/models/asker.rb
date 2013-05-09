@@ -48,6 +48,22 @@ class Asker < User
     Rails.cache.fetch('asker_twi_screen_names', :expires_in => 1.hour){Asker.published.select([:twi_screen_name, :id])}
   end
 
+  def descriptions
+    topics.descriptions
+  end
+
+  def hashtags
+    topics.hashtags
+  end
+
+  def search_terms
+    topics.search_terms
+  end
+
+  def categories
+    topics.categories
+  end    
+
   def unresponded_count
     posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id = ? AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
@@ -75,6 +91,34 @@ class Asker < User
       queue.increment_index(self.posts_per_day)
       # Rails.cache.delete("askers:#{self.id}:show")
     end
+  end
+
+
+  def add_followers
+    # following patterns
+
+    # dont follow anyone two days a week
+    # 1-3 follow sessions per day 
+    # 1-10 seconds delay between follows
+    # sessions occur within an 18 hour-period
+    # 1-6 hours between follow sessions
+    current_day = Date.today
+    current_time = Time.now
+
+    # Check if we should follow today
+    max_follows = [0, 0, 9, 4, 12, 2, 11][((id + current_day.wday + current_day.cweek) % 7)]
+    return if max_follows == 0
+
+    # Check if we should follow this hour
+    return if current_time.hour < ((id + current_day.wday + current_day.cweek) % 18 + (id % 6))    
+    return if follows.where("created_at > ?", current_day.beginning_of_day).size >= max_follows
+
+    # return if (1..6).to_a.include?(((id + current_day.wday + current_day.cweek + current_time.hour) % 24))
+
+    # next if ACCOUNT_DATA[asker.id][:search_terms].blank?  
+    users = Post.twitter_request { asker.twitter.search(search_terms, :count => 20).statuses.collect { |s| s.user }.uniq }    
+
+
   end
 
 
