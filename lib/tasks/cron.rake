@@ -126,3 +126,5 @@ end
 task :send_targeted_mentions => :environment do
   Asker.send_targeted_mentions()
 end
+
+# task :update_relationships => :environment

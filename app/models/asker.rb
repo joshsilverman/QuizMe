@@ -94,7 +94,14 @@ class Asker < User
   end
 
 
-  def add_followers
+  def update_relationships
+    request_and_update_followers
+    request_and_update_follows
+  end
+
+
+  def autofollow
+    # return if (1..6).to_a.include?(((id + current_day.wday + current_day.cweek + current_time.hour) % 24))
     # following patterns
 
     # dont follow anyone two days a week
@@ -113,51 +120,81 @@ class Asker < User
     return if current_time.hour < ((id + current_day.wday + current_day.cweek) % 18 + (id % 6))    
     return if follows.where("created_at > ?", current_day.beginning_of_day).size >= max_follows
 
-    # return if (1..6).to_a.include?(((id + current_day.wday + current_day.cweek + current_time.hour) % 24))
-
     # next if ACCOUNT_DATA[asker.id][:search_terms].blank?  
     users = Post.twitter_request { asker.twitter.search(search_terms, :count => 20).statuses.collect { |s| s.user }.uniq }    
-
-
   end
 
 
-  def update_followers
-    # Get lists of user ids from twitter + wisr
-    twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
+  # FOLLOWS METHODS
+  def request_and_update_follows
+    twi_follows_ids = Post.twitter_request { twitter.friend_ids.ids }
+    wisr_follows_ids = follows.collect(&:twi_user_id)
+    update_follows(twi_follows_ids, wisr_follows_ids) if twi_follows_ids.present?
+  end
 
-    if twi_follower_ids.present?
-      wisr_follower_ids = followers.collect(&:twi_user_id)
+  def update_follows twi_follows_ids, wisr_follows_ids
+    # Add new friends in wisr
+    (twi_follows_ids - wisr_follows_ids).each { |new_user_twi_id| 
+      add_follow(User.find_or_create_by_twi_user_id(new_user_twi_id)) 
+    }
 
-      # Add new followers in wisr
-      (twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| 
-        Post.twitter_request { twitter.follow(new_user_twi_id) }
-        add_follower(User.find_or_create_by_twi_user_id(new_user_twi_id)) 
-      }
-
-      # Remove unfollowers from asker follow association    
-      unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-      unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
-    else
-      twi_follower_ids = followers.collect(&:twi_user_id)
-    end
+    # Remove unfollows from asker follow association    
+    unfollowed_users = User.where("twi_user_id in (?)", (wisr_follows_ids - twi_follows_ids))
+    unfollowed_users.each { |unfollowed_user| remove_follow(unfollowed_user) }
     
-    return twi_follower_ids 
+    twi_follows_ids 
+  end
+
+  def add_follow user, type_id = nil
+    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
+    relationship.update_attributes(active: true, type_id: type_id)
+  end
+
+  def remove_follow user
+    relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
+    relationship.update_attribute :active, false if relationship
+  end  
+
+
+  # FOLLOWER METHODS
+  def request_and_update_followers
+    twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
+    wisr_follower_ids = followers.collect(&:twi_user_id)
+    update_followers(twi_follower_ids, wisr_follower_ids) if twi_follower_ids.present?
+  end
+
+  def update_followers twi_follower_ids, wisr_follower_ids
+    # Add new followers in wisr
+    (twi_follower_ids - wisr_follower_ids).each { |new_user_twi_id| 
+      follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
+
+      follower_type_id = follows.include?(follower) ? 1 : 3
+
+      Post.twitter_request { twitter.follow(new_user_twi_id) }
+      add_follower(follower, follower_type_id)
+    }
+
+    # Remove unfollowers from asker follow association    
+    unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
+    unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
+    
+    twi_follower_ids 
   end 
 
-  def add_follower user
-    unless followers.include? user
-      followers << user 
-      send_new_user_question(user)
-      user.segment
-    end
+  def add_follower user, type_id = nil
+    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
+    relationship.update_attributes(active: true, type_id: type_id)
+    send_new_user_question(user)
+    user.segment
   end
 
   def remove_follower user
-    followers.delete(user)
-    user.follows.delete(self)
+    relationship = Relationship.find_by_followed_id_and_follower_id(id, user.id)
+    relationship.update_attribute :active, false if relationship
     user.segment
   end
+
+
 
   def send_new_user_question user, options = {}
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0
@@ -343,7 +380,7 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    Asker.published.each { |asker| asker.update_followers() }
+    Asker.published.each { |asker| asker.update_relationships() }
 
     # Send mentions to new users
     Asker.mention_new_users
@@ -852,7 +889,7 @@ class Asker < User
     recipient_hash.each do |user_id, question_data|
       asker = Asker.find(question_data[:asker_id])
       user = User.find(user_id)
-      next unless asker.update_followers().include? user.twi_user_id
+      next unless asker.followers.collect(&:twi_user_id).include? user.twi_user_id
       script = "So far, #{question_data[:answered_count]} people have answered your question "
       script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
       Post.dm(asker, user, script, {:intention => "author followup"})
@@ -991,7 +1028,8 @@ class Asker < User
           .count
       end
     end
-    Question.find(posts.max{|a,b| a[1] <=> b[1]}[0])
+    question_id = posts.max{|a,b| a[1] <=> b[1]}.try(:first) || new_user_q_id || questions.first.id
+    Question.find(question_id)
   end
 
 

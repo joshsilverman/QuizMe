@@ -28,10 +28,10 @@ class User < ActiveRecord::Base
   has_many :issuances
 
   has_many :relationships, :foreign_key => :follower_id, :dependent => :destroy
-  has_many :follows, :through => :relationships, :source => :followed
+  has_many :follows, :through => :relationships, :source => :followed, :conditions => ["relationships.active = ?", true]
 
   has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
-  has_many :followers, :through => :reverse_relationships, :source => :follower
+  has_many :followers, :through => :reverse_relationships, :source => :follower, :conditions => ["relationships.active = ?", true]
 
   has_many :exams
 

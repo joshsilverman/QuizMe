@@ -137,4 +137,52 @@ describe Asker do
 			# end	
 		end				
 	end
+
+	describe "relationships" do
+
+		before :each do
+			@new_user = FactoryGirl.create(:user, twi_user_id: 2)
+		end
+
+		describe "updates followers" do
+			it "adds new follower" do
+				@asker.followers.count.must_equal 1
+		    twi_follower_ids = [@user.twi_user_id, @new_user.twi_user_id]
+		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+		    @asker.followers.count.must_equal 2
+			end
+
+			it "removes unfollowers" do
+		    twi_follower_ids = []
+		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)		    
+		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+		    @asker.followers.count.must_equal 0
+		    @asker.reverse_relationships.count.must_equal 1
+			end
+
+			it "with correct type id" do
+				# TODO
+			end
+		end
+
+		describe "updates follows" do
+			it "adds new follows" do
+				@asker.follows.count.must_equal 0
+		    twi_follows_ids = [@user.twi_user_id, @new_user.twi_user_id]
+		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)
+		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+		    @asker.follows.count.must_equal 2				
+			end
+
+			it "removes unfollows" do
+				@asker.follows << @new_user
+		    twi_follows_ids = []
+		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)		    
+		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+		    @asker.follows.count.must_equal 0
+		    @asker.relationships.count.must_equal 1
+			end
+		end		
+	end
 end
