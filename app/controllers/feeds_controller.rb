@@ -34,53 +34,6 @@ class FeedsController < ApplicationController
     render json: @suggested_askers.to_json
   end
 
-  # def search
-  #   questions_by_asker_id = Question.where("text ilike ?", "%#{params['query']}%")\
-  #     .where("status = 1")\
-  #     .group_by{|q|q.created_for_asker_id}
-  #   asker_id = nil
-  #   questions = []
-  #   questions_by_asker_id.each do |k,v|
-  #     if v.count > questions.count
-  #       asker_id = k
-  #       questions = v
-  #     end
-  #   end
-  #   # Post.where("in_reply_to_question_id IN (?)", questions.collect(&:id)).group('in_reply_to_question_id').count
-
-  #   @query = params['query']
-  #   @asker = Asker.find asker_id
-  #   @question_count, @questions_answered, @followers = @asker.get_stats
-
-  #   _publications = Publication.select(["question_id", "max(id) AS id"])\
-  #     .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC').limit 25
-  #   @publications = Publication.where('id in (?)', _publications.collect(&:id)).order('created_at DESC')
-
-  #   _posts = Post.select(["publication_id", "max(id) AS id"])\
-  #     .where("publication_id IN (?)", @publications.collect(&:id)).group('publication_id')
-  #   posts = Post.where('id in (?)', _posts.collect(&:id)).order('created_at DESC')
-
-  #   actions = Publication.recent_responses_by_asker(posts)
-  #   @actions = Post.recent_activity_on_posts(posts, actions)
-  #   @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
-
-  #   # misc
-  #   @post_id = params[:post_id]
-  #   @answer_id = params[:answer_id]
-  #   @author = User.find @asker.author_id if @asker.author_id
-
-  #   # related
-  #   @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-  #     .where(:id => ACCOUNT_DATA.keys.sample(3)).all
-
-  #   @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
-
-  #   respond_to do |format|
-  #     format.html { render :show }
-  #     format.json { render json: @posts }
-  #   end
-  # end
-
   def unauth_show
     show true
   end

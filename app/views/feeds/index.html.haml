@@ -8,15 +8,11 @@
       .hero-unit.new-user
         .user-info
           %h1.clearfix
-            %span.big I want to learn 
+            %span.big Quiz me about
             %br
-            about
-            = succeed '.' do
-              %input#query.span2{type: "text", placeholder: ['anatomy', 'mitosis'].sample}
-            / %br
-            / my Twitter handle is 
-            / %input#handle.span2{type: "text", placeholder: '@johnr'}
-            / %input.btn.btn-warning#new_user_cta{value: "Start", type: 'button'}
+            / = succeed '.' do
+            %input#query.span2{type: "text", placeholder: ['anatomy'].sample}
+            on Twitter.
 
       #feed.row
         #right_column.rounded.span6

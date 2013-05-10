@@ -4,7 +4,7 @@ class FeedsHome
 			if twttr and twttr.widgets
 				@load_follow_buttons()
 			else
-				setTimeout (-> check_twttr()), 100
+				setTimeout (=> check_twttr()), 100
 
 				@load_follow_buttons_timeouts = []
 				$(document).scroll =>
@@ -16,17 +16,11 @@ class FeedsHome
 							feeds_home.load_follow_buttons()
 						, 500
 
+				twttr.events.bind 'follow', (e) => @afterfollow(e)
+
 		check_twttr()
 		$("#query").on "keyup", (e) => @query(e)
-
-	load_tour: ->
-		@tour = new Tour()
-		@tour.addStep
-			element: "#query"
-			title: "Title of my popover"
-			content: "Content of my popover"
-		@tour.start()
-
+		$("#query").focus()
 
 	load_follow_buttons: ->
 		$('a.twitter-follow-button').filter(->
@@ -66,6 +60,12 @@ class FeedsHome
 					$("#askers h3").html "Search results for \"#{q}\""
 			, 750
 
+	afterfollow: (e) ->
+		$.gritter.add
+			title: "@#{e.data.screen_name}",
+			text: "Thanks for following! I'll DM you a question shortly."
+			image: $("img[title=#{e.data.screen_name}]").attr 'src'
+			time:9000
+
 $ -> 
 	window.feeds_home = new FeedsHome if $("#feeds_home").length > 0
-	window.feeds_home.load_tour()
