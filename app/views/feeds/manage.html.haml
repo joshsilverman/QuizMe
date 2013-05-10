@@ -1,6 +1,12 @@
 - admin = current_user.is_role? "admin"
 
-#manager
+:css
+	body {
+		background: white !important; 
+		/ background-size:cover;
+	}
+
+#manager{:class => ('mod' if !admin)}
 	#feed_container.span10
 		#wrapper.span9
 			#feed.row
@@ -46,7 +52,7 @@
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
-							%h3= @asker.twi_screen_name
+							%h3= admin ? @asker.twi_screen_name : "Moderate"
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
@@ -66,6 +72,8 @@
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
+										- if post.moderator_id
+											%i.icon-user
 										%h5
 											%span= post.user.twi_screen_name	
 										- if @oneinbox
@@ -75,12 +83,15 @@
 										- if correct
 											%p.quick-reply
 												%span{style: 'opacity:0.6;'}
+													Correct: 
 													= correct.text
 
 									- if params[:filter] == 'ugc'
 										= render :partial => "ugc_actions", :locals => {:post => post}
-									- else
+									- elsif admin
 										= render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
+									- else
+										= render :partial => "moderator_actions", :locals => {:post => post, :question => question}
 
 					.pagination-wrapper
 						= paginate @posts if defined? current_page

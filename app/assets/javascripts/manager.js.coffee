@@ -52,8 +52,9 @@ class @Manager extends @Feed
 				$.each @posts, (i, p) => p.element.fadeOut()
 				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
 
-		@hotkeys = new Hotkeys
+		@hotkeys = new Hotkeys @is_admin
 		@load_stats() if @is_admin
+		$('.conversation').first().addClass 'active'
 
 	initialize_posts: (posts) => 
 		$.each posts, (i, post) =>
@@ -139,6 +140,15 @@ class Post
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
+		@element.find(".quick-reply-skip").on "click", => 
+			event.stopPropagation()
+			conv = @element.find('.post').closest(".conversation")
+			conv.addClass("dim")
+			if conv.next().length == 0
+				$('.conversation.active').removeClass "active"
+			else
+				window.feed.hotkeys.prev()
+
 		@element.find(".create-exam").on "click", => feed.hotkeys.toggle_exam_panel false
 		@element.find(".btn.scripts").on "click", => feed.hotkeys.toggle_scripts_panel false
 
@@ -330,6 +340,10 @@ class Post
 				else
 					post.closest(".conversation").addClass "dim"
 
+		if !@is_admin
+			post.closest(".conversation").addClass "dim"
+			window.feed.hotkeys.prev()
+
 	toggle_tag: (name, element = null) =>
 		$.ajax "/posts/toggle_tag",
 			type: 'POST',
@@ -395,33 +409,33 @@ class Post
 			success: => @element.toggleClass "dim"	
 
 class Hotkeys
-	constructor: ->
-		$('.conversation').first().addClass 'active'
+	constructor: (enable_hotkeys) ->
 		$('.active .back').on "click", => @hide_panel()
 
-		$(window).keypress (e) =>
-			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
-			active_post = @_active_post()
-			puts e.keyCode
-			switch e.keyCode
-				when 106 then @prev()
-				when 107 then @next()
-				when 111 then @open(e)
+		if enable_hotkeys
+			$(window).keypress (e) =>
+				return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
+				active_post = @_active_post()
+				puts e.keyCode
+				switch e.keyCode
+					when 106 then @prev()
+					when 107 then @next()
+					when 111 then @open(e)
 
-				when 32 then @accept_autocorrect(e, active_post)
-				when 110 then active_post.quick_reply false if active_post #no
-				when 116 then active_post.quick_reply false, true if active_post #yes
-				when 121 then active_post.quick_reply true if active_post #yes
+					when 32 then @accept_autocorrect(e, active_post)
+					when 110 then active_post.quick_reply false if active_post #no
+					when 116 then active_post.quick_reply false, true if active_post #yes
+					when 121 then active_post.quick_reply true if active_post #yes
 
-				when 102 then $("#best_in_place_post_#{active_post.id}_spam").trigger('click') if active_post
-				when 104 then @toggle_hide active_post
-				when 114 then active_post.retweet() if active_post
+					when 102 then $("#best_in_place_post_#{active_post.id}_spam").trigger('click') if active_post
+					when 104 then @toggle_hide active_post
+					when 114 then active_post.retweet() if active_post
 
-				when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
-				when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle') #@toggle_scripts_panel()
+					when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
+					when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle') #@toggle_scripts_panel()
 
-				when 101 then @toggle_exam_panel()
-				when 98 then @hide_panel()
+					when 101 then @toggle_exam_panel()
+					when 98 then @hide_panel()
 
 	_before_toggle_panel: ->
 		$('.active .sub').hide()

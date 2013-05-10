@@ -57,6 +57,11 @@
             - elsif current_user.is_role? 'author'
               %li
                 %a.nav-link{:href => "/questions"} My Questions
+
+            - elsif current_user.is_role? "moderator"
+              %li
+                %a.nav-link{:href => "/feeds/mod_manage"} Moderate
+
             - else
               %li.hidden-phone
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"
