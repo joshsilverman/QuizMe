@@ -1,5 +1,5 @@
 class ExperimentsController < ApplicationController
-  before_filter :admin?, :except => :index
+  before_filter :admin?, :except => [:index, :trigger]
   before_filter :yc_admin?, :only => :index
 
   def index
@@ -11,6 +11,11 @@ class ExperimentsController < ApplicationController
     @alternative = Split::Alternative.new(params[:alternative], params[:experiment])
     @experiment.winner = @alternative.name
     redirect_to '/experiments'
+  end
+
+  def trigger
+    finished params[:experiment]
+    render nothing: true
   end
 
   def reset

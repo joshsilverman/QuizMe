@@ -67,5 +67,9 @@ class FeedsHome
 			image: $("img[title=#{e.data.screen_name}]").attr 'src'
 			time:9000
 
+		$.ajax '/experiments/trigger',
+			type: 'post'
+			data: {experiment: "New Landing Page"}
+
 $ -> 
 	window.feeds_home = new FeedsHome if $("#feeds_home").length > 0

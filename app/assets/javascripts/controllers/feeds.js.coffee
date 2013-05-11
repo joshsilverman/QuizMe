@@ -38,11 +38,17 @@ class @Feed
 			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
-		# mixpanel.track_links(".tweet_button", "no_auth_tweet_click", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
-		# mixpanel.track_links(".auth_link", "redirected to authorize", {"account" : @name, "source": source})
 		mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
+
+		check_twttr = =>
+			if twttr and twttr.events
+				twttr.events.bind 'follow', (e) => @afterfollow(e)
+			else
+				setTimeout (=> check_twttr()), 100
+		check_twttr()
+
 	post_another: =>
 		modal = $("#post_question_modal")
 		$('#submit_question').button('reset')
@@ -206,6 +212,11 @@ class @Feed
 		$.each arr, (i) ->
 			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
 				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]
+
+	afterfollow: (e) ->
+		$.ajax '/experiments/trigger',
+			type: 'post'
+			data: {experiment: "New Landing Page"}
 
 class Post
 	id: null

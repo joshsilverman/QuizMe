@@ -10,14 +10,35 @@ class FeedsController < ApplicationController
   def index
     @index = true
     @asker = User.find(1)
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
+    @askers = Asker.where(published: true).order("id ASC")
+
+    @publications, posts = Publication.recently_published
+
+    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
+
+    @responses = current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : []
+    
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
+
+
     @directory = {}
-    @wisr = User.find(8765)
     Asker.where("published = ?", true).each do |asker| 
       next unless ACCOUNT_DATA[asker.id]
       (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
     end
 
-    @askers = Asker.where(published: true).order("id ASC")
+    @wisr = User.find(8765)   
+    @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+      question_count = Publication.published.size
+      questions_answered = Post.answers.size
+      followers = Relationship.select("DISTINCT follower_id").size 
+      [question_count, questions_answered, followers]
+    end
+
+    render ab_test("New Landing Page", 'index', 'index_with_search')
   end
 
   def search
