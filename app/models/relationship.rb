@@ -7,10 +7,10 @@ class Relationship < ActiveRecord::Base
   validates :follower_id, :presence => true
   validates :followed_id, :presence => true
 
-  scope :unknown, where("type_id in null")
-  scope :followback, where("type_id = 1")
-  scope :search, where("type_id = 2")
-  scope :organic, where("type_id = 3")
+  scope :unknown, where("relationships.type_id in null")
+  scope :followback, where("relationships.type_id = 1")
+  scope :search, where("relationships.type_id = 2")
+  scope :organic, where("relationships.type_id = 3")
   # scope :friend_search, where("type_id = 4")
   
 end

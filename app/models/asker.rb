@@ -1,4 +1,6 @@
 class Asker < User
+  include ManageTwitterRelationships
+
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
   has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
@@ -92,123 +94,6 @@ class Asker < User
       # Rails.cache.delete("askers:#{self.id}:show")
     end
   end
-
-
-
-  def autofollow
-    # return if (1..6).to_a.include?(((id + current_day.wday + current_day.cweek + current_time.hour) % 24))
-    # following patterns
-
-    # dont follow anyone two days a week
-    # 1-3 follow sessions per day 
-    # 1-10 seconds delay between follows
-    # sessions occur within an 18 hour-period
-    # 1-6 hours between follow sessions
-    current_day = Date.today
-    current_time = Time.now
-
-    # Check if we should follow today
-    max_follows = [0, 0, 9, 4, 12, 2, 11][((id + current_day.wday + current_day.cweek) % 7)]
-    return if max_follows == 0
-
-    # Check if we should follow this hour
-    return if current_time.hour < ((id + current_day.wday + current_day.cweek) % 18 + (id % 6))    
-    return if follows.where("created_at > ?", current_day.beginning_of_day).size >= max_follows
-
-    # next if ACCOUNT_DATA[asker.id][:search_terms].blank?  
-    users = Post.twitter_request { asker.twitter.search(search_terms, :count => 20).statuses.collect { |s| s.user }.uniq }    
-  end
-
-
-  def update_relationships
-    request_and_update_follows
-    request_and_update_followers
-  end
-
-  # FOLLOWS METHODS
-  def request_and_update_follows
-    twi_follows_ids = Post.twitter_request { twitter.friend_ids.ids }
-    wisr_follows_ids = follows.collect(&:twi_user_id)
-    update_follows(twi_follows_ids, wisr_follows_ids) if twi_follows_ids.present?
-  end
-
-  def update_follows twi_follows_ids, wisr_follows_ids
-    # Add new friends in wisr
-    (twi_follows_ids - wisr_follows_ids).each do |new_user_twi_id| 
-      add_follow(User.find_or_create_by_twi_user_id(new_user_twi_id))      
-    end
-
-    # Remove unfollows from asker follow association    
-    unfollowed_users = User.where("twi_user_id in (?)", (wisr_follows_ids - twi_follows_ids))
-    unfollowed_users.each { |unfollowed_user| remove_follow(unfollowed_user) }
-
-    unfollow_nonreciprocal(twi_follows_ids)
-    
-    twi_follows_ids 
-  end
-
-  def unfollow_nonreciprocal twi_follows_ids
-    relationships.where('active = ? and updated_at < ? and followed_id in (?)', true, 1.month.ago, (twi_follows_ids - followers.collect(&:twi_user_id))).each do |nonreciprocal_relationship|
-
-    end
-  end  
-
-  def add_follow user, type_id = nil
-    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
-    relationship.update_attributes(active: true, type_id: type_id)
-  end
-
-  def remove_follow user
-    relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
-    relationship.update_attribute :active, false if relationship
-  end  
-
-
-  # FOLLOWER METHODS
-  def request_and_update_followers
-    twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
-    wisr_follower_ids = followers.collect(&:twi_user_id)
-    update_followers(twi_follower_ids, wisr_follower_ids) if twi_follower_ids.present?
-  end
-
-  def update_followers twi_follower_ids, wisr_follower_ids
-    # Add new followers in wisr
-    (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id| 
-      follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
-      follower_type_id = follows.include?(follower) ? 1 : 3
-      add_follower(follower, follower_type_id)
-    end
-
-    # Remove unfollowers from asker follow association    
-    unfollowed_users = User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids))
-    unfollowed_users.each { |unfollowed_user| remove_follower(unfollowed_user) }
-    
-    followback(twi_follower_ids)
-
-    twi_follower_ids 
-  end 
-
-  def followback twi_follower_ids
-    (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
-      Post.twitter_request { twitter.follow(twi_user_id) }
-      user = User.find_or_create_by_twi_user_id(twi_user_id)
-      add_follow(user, 1)
-    end
-  end
-
-  def add_follower user, type_id = nil
-    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
-    relationship.update_attributes(active: true, type_id: type_id)
-    send_new_user_question(user)
-    user.segment
-  end
-
-  def remove_follower user
-    relationship = Relationship.find_by_followed_id_and_follower_id(id, user.id)
-    relationship.update_attribute :active, false if relationship
-    user.segment
-  end
-
 
 
   def send_new_user_question user, options = {}
