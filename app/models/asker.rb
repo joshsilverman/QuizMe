@@ -321,6 +321,7 @@ class Asker < User
     answered_dm_users.each do |user|
       if app_posts[user.id].blank?
         asker = askers.select { |a| a.id == user.posts.first.in_reply_to_user_id }.first
+        next unless asker
         unless publication = popular_asker_publications[asker.id]
           if popular_post = asker.posts.includes(:conversations => {:publication => :question}).where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?", 1.week.ago, asker.new_user_q_id).sort_by {|p| p.conversations.size}.last
             publication_id = popular_post.publication_id
