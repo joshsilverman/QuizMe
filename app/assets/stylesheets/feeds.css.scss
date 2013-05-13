@@ -20,57 +20,6 @@ body {
 	border-bottom-right-radius: 0px !important;														
 }
 
-#feed_container {
-	float: none;
-	margin: auto;
-
-	#askers {
-	background-color: rgba(250, 250, 250, 0.88);
-	border: solid 1px rgba(0, 0, 0, 0.21) !important;
-	border-radius: 5px;
-	padding-bottom: 15px;
-	margin-bottom: 15px;
-	min-height: 285px;
-	/*background: #f9f9f9 !important;*/
-
-	.header {
-		border-radius: 5px 5px 0 0;
-		background: #F5F5F5;
-		padding: 10px;
-	}
-
-	.asker {
-		padding:25px 68px 00px 17px;
-		height: 213px;
-		/*&:last-child {padding-right:0;}*/
-		float:left;
-
-		img {
-			height: 128px;
-			box-shadow: 0px 0px 1px purple;
-		}
-		.twi_name {
-			padding:10px 0 2px 0;
-			font-weight: bold;
-			color:#555;
-			font-size: 14px;
-			max-width: 128px;
-			height:1.2em;
-			overflow: hidden;
-			text-overflow:ellipsis;
-		}
-
-		.twi_screen_name_cont {
-			color:#888;
-			.twi_screen_name {
-				margin-left: -3px;
-				color:#888;
-			}
-		}
-	}
-}
-}
-
 #feed_container.index {
 	#wrapper {
 		background: rgba(255,255,255,.05);
