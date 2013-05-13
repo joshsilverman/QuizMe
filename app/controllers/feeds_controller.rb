@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more]
+  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :mod_manage]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :moderator?, :only => [:mod_manage, :manager_response]
   before_filter :admin?, :only => [:manage]

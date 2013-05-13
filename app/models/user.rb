@@ -388,7 +388,7 @@ class User < ActiveRecord::Base
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
-      comment = nil
+      comment = "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage"
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 

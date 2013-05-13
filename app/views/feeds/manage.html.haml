@@ -2,7 +2,8 @@
 
 :css
 	body {
-		background: white !important; 
+		/ background: white !important; 
+		background-image: url(/assets/bg_images/twi/tree.jpg) !important;
 		/ background-size:cover;
 	}
 
@@ -45,14 +46,25 @@
 							%li
 								#autograder-correct-stats.graph
 					- else
-						%ul.nav.nav-tabs.nav-stacked.stats
+						%ul.nav.nav-tabs.nav-stacked
 							%li
-								.box.top Thanks for helping us keep up with grading. Grade each question as correct or incorrect. If it doesn't fit or none of the options work, press "skip".
+								.box.top What is this?
+							%li
+								.guidelines 
+									%div Dear Superuser
+									%p
+										You're one of the most active learners asking/answering questions through our handles. Thank you!
+									%div Help Us Grade
+									%p
+										We receive over 1,000 question responses per day -- that's a lot for us to keep up with. Can you give us a hand grading some?
+									%div Guidelines
+									%p
+										Just click Correct/Incorrect for each response. If neither makes sense, hit "Skip". Click "Moderate" in the header whenever you want to grade more.
 
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
-							%h3= admin ? @asker.twi_screen_name : "Moderate"
+							%h3= admin ? @asker.twi_screen_name : "Grade responses"
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0

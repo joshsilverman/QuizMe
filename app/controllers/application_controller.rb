@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
       elsif omniauth_redirect_params['user_id'] and omniauth_redirect_params['asker_id']
         redirect_to = "/users/#{omniauth_redirect_params['user_id']}/questions/#{omniauth_redirect_params['asker_id']}"
       else
-        redirect_to = request.env['omniauth.origin']
+        redirect_to = request.env['omniauth.origin'] || session[:return_to] || root_path
       end
     else
       redirect_to = root_path
@@ -82,13 +82,14 @@ class ApplicationController < ActionController::Base
   end
 
   def moderator?
+    session[:return_to] = request.fullpath
     if current_user
       redirect_to '/' unless current_user.is_role? "moderator" or current_user.is_role? "admin"
+      return current_user.is_role? "moderator"
     else
-      redirect_to '/'
+      redirect_to user_omniauth_authorize_path(:twitter, use_authorize: false)
+      return false
     end
-
-    current_user.is_role? "moderator"
   end
 
   def set_session_variables

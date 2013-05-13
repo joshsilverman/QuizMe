@@ -1249,6 +1249,23 @@ body {
 						border: 1px solid #ddd;
 						background: white;
 					}
+
+					.guidelines {
+						/*margin: 1px;*/
+						border: 1px solid #ddd;
+						background: white;
+						padding:8px 15px;
+						color:#777;
+
+						div {
+							font-size:1.31em;
+							line-height:1.62em;
+							color:#666;
+						}
+						p {
+							padding:5px 0;
+						}
+					}
 				}
 			}
 		}
