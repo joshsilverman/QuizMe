@@ -153,6 +153,22 @@ describe Asker do
 		    @asker.followers.count.must_equal 2
 			end
 
+			it "follows new follower back" do
+				@asker.follows.must_be_empty
+		    twi_follower_ids = [@user.twi_user_id, @new_user.twi_user_id]
+		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+		    @asker.reload.follows.must_include @new_user
+			end
+
+			it "sets correct type_id for user followback" do		
+				@asker.follows.must_be_empty
+		    twi_follower_ids = [@user.twi_user_id]
+		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+		    @asker.reload.relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
+			end
+
 			it "removes unfollowers" do
 		    twi_follower_ids = []
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)		    
@@ -161,9 +177,6 @@ describe Asker do
 		    @asker.reverse_relationships.count.must_equal 1
 			end
 
-			it "with correct type id" do
-				# TODO
-			end
 		end
 
 		describe "updates follows" do
@@ -182,6 +195,13 @@ describe Asker do
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
 		    @asker.follows.count.must_equal 0
 		    @asker.relationships.count.must_equal 1
+			end
+
+			it "sets correct type_id for asker followback" do
+		    twi_follows_ids = [@user.twi_user_id, @new_user.twi_user_id]
+		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)
+		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+		    @asker.relationships.where("followed_id = ?", @new_user.id).first.type_id.must_be_nil
 			end
 		end		
 	end

@@ -10,6 +10,7 @@ group :test do
   gem 'turn', :require => false
   gem "database_cleaner"
   gem 'timecop'
+  gem 'm'
 end
 
 group :production do
