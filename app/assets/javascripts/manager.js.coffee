@@ -52,7 +52,7 @@ class @Manager extends @Feed
 				$.each @posts, (i, p) => p.element.fadeOut()
 				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
 
-		@hotkeys = new Hotkeys @is_admin
+		@hotkeys = new Hotkeys if @is_admin
 		@load_stats() if @is_admin
 		$('.conversation').first().addClass 'active'
 
