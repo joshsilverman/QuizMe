@@ -128,6 +128,5 @@ task :send_targeted_mentions => :environment do
 end
 
 task :autofollow => :environment do
-  autofollow_asker_ids = []
-  Asker.find(autofollow_asker_ids).each { |asker| asker.autofollow() }
+  Asker.find(AUTOFOLLOW_ASKER_IDS).each { |asker| asker.autofollow() }
 end

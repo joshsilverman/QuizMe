@@ -8,6 +8,7 @@ TWI_SHORT_URL_LENGTH = 22 # variable occasionally increased by twitter: https://
 # @ugly, this should make use of Devise roles (wtf)
 ADMINS = (Rails.env.test? ? [] : [1, 3, 4, 11])
 
+AUTOFOLLOW_ASKER_IDS = [32588, 36605, 35106] # Neuro, AmericanRev, Respiratory
 
 URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")
 
@@ -292,7 +293,7 @@ ACCOUNT_DATA = {
   ## RespiratoryQuiz
   35106 => {
     :hashtags => ['respiratory', 'respiratorysystem'],
-    :search_terms => ['studying respiratory']
+    :search_terms => ['studying respiratory', 'respiratory system']
   },
   ## PrepMeMCATBio
   34530 => {
@@ -328,7 +329,7 @@ ACCOUNT_DATA = {
   ## AmericanRevQuiz
   36605 => {
     :hashtags => ['history', 'americanrevolution'],
-    :search_terms => ['studying american revolution']
+    :search_terms => ['studying american revolution', 'american revolutionary war']
   },  
 
   ## SATvocabQuiz

@@ -44,7 +44,7 @@ module ManageTwitterRelationships
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
         add_follow(user, 2)
       end 
-      # sleep(rand(5..60))
+      sleep(rand(5..60))
     end
   end
 
