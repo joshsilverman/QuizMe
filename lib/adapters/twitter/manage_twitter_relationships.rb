@@ -1,19 +1,19 @@
 module ManageTwitterRelationships
 
-  def autofollow twi_user_ids = nil
+  def autofollow options = {}
     # Check if we should follow
     return unless (max_follows = autofollow_count) > 0
 
     # Twi search to get follow targets
-    twi_user_ids = get_follow_target_ids(max_follows) unless twi_user_ids
+    twi_user_ids = options[:twi_user_ids] || get_follow_target_twi_ids(max_follows)
 
     # Send follow requests
-    send_autofollows(twi_user_ids, max_follows)
+    send_autofollows(twi_user_ids, max_follows, options[:force])
   end
 
   def autofollow_count max_follows = nil
     # Check if we should follow today
-    max_follows = [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] unless max_follows
+    max_follows ||= [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
     return 0 if max_follows == 0
 
     # Check if we should follow during this part of the day
@@ -26,7 +26,7 @@ module ManageTwitterRelationships
     max_follows
   end
 
-  def get_follow_target_ids max_follows, follow_target_twi_user_ids = []
+  def get_follow_target_twi_ids max_follows, follow_target_twi_user_ids = []
     wisr_follows_ids = follows.collect(&:twi_user_id)
     search_terms.collect(&:name).each do |search_term|
       next if follow_target_twi_user_ids.size >= max_follows
@@ -34,6 +34,7 @@ module ManageTwitterRelationships
       twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
       twi_user_ids.sample(max_follows - follow_target_twi_user_ids.size).each { |twi_user_id| follow_target_twi_user_ids << twi_user_id }
     end
+    puts "Too few autofollows found!" if follow_target_twi_user_ids.size < max_follows
     follow_target_twi_user_ids
   end
 
@@ -44,7 +45,7 @@ module ManageTwitterRelationships
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
         add_follow(user, 2)
       end 
-      sleep(rand(5..60))
+      sleep(rand(5..60)) unless force # avoids sleep in tests
     end
   end
 
@@ -103,9 +104,10 @@ module ManageTwitterRelationships
 
   def update_followers twi_follower_ids, wisr_follower_ids
     # Add new followers in wisr
+    asker_follows = follows
     (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id| 
       follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
-      follower_type_id = follows.include?(follower) ? 1 : 3
+      follower_type_id = asker_follows.include?(follower) ? 1 : 3
       add_follower(follower, follower_type_id)
     end
 

@@ -166,15 +166,22 @@ describe Asker do
 				@asker.follows.count.must_equal 0
 				Timecop.travel(Time.now.beginning_of_week)
 				twi_user_ids = (1..38).to_a
-				7.times do |i|
-					24.times do |j|
-						if (max_follows = @asker.autofollow_count) > 0
-							@asker.send_autofollows(twi_user_ids, max_follows, true)
-						end
+				7.times do
+					24.times do
+						@asker.autofollow(twi_user_ids: twi_user_ids, force: true)
 						Timecop.travel(Time.now + 1.hour)
 					end
 				end
 				@asker.follows.count.must_equal 38
+			end
+
+			it "doesn't include followbacks in max follows per day" do
+				@asker.follows.count.must_equal 0
+				twi_user_ids = (5..10).to_a
+				@asker.followback(@asker.followers.collect(&:twi_user_id))
+				@asker.reload.follows.count.must_equal 1
+				@asker.send_autofollows(twi_user_ids, 5, true)
+				@asker.reload.follows.count.must_equal 6
 			end
 		end
 
@@ -184,7 +191,7 @@ describe Asker do
 		    twi_follower_ids = [@user.twi_user_id, @new_user.twi_user_id]
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
 		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
-		    @asker.followers.count.must_equal 2
+		    @asker.reload.followers.count.must_equal 2
 			end
 
 			it "follows new follower back" do
@@ -209,6 +216,7 @@ describe Asker do
 		    twi_follower_ids = []
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)		    
 		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+		    @asker = @asker.reload
 		    @asker.followers.count.must_equal 0
 		    @asker.reverse_relationships.count.must_equal 1
 			end
@@ -220,7 +228,7 @@ describe Asker do
 		    twi_follows_ids = [@user.twi_user_id, @new_user.twi_user_id]
 		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
-		    @asker.follows.count.must_equal 2				
+		    @asker.reload.follows.count.must_equal 2				
 			end
 
 			it "removes unfollows" do
@@ -228,6 +236,7 @@ describe Asker do
 		    twi_follows_ids = []
 		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)		    
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+		    @asker = @asker.reload
 		    @asker.follows.count.must_equal 0
 		    @asker.relationships.count.must_equal 1
 			end
@@ -236,17 +245,27 @@ describe Asker do
 		    twi_follows_ids = [@user.twi_user_id, @new_user.twi_user_id]
 		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+		    @asker = @asker.reload
 		    @asker.relationships.where("followed_id = ?", @new_user.id).first.type_id.must_be_nil
 			end
 
 			it "unfollows non-reciprocal follows after one month" do
 				@asker.follows << @new_user
 				twi_follows_ids = [@new_user.twi_user_id]
-				31.times do |i|
+				32.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
 					i < 30 ? @asker.reload.follows.wont_be_empty : @asker.reload.follows.must_be_empty
 				end
+			end
+
+			it "sets unfollows to inactive" do
+				@asker.follows << @new_user
+				@asker.relationships.active.count.must_equal 1
+				twi_follows_ids = [@new_user.twi_user_id]
+				Timecop.travel(Time.now + 32.days)
+				@asker.unfollow_nonreciprocal(twi_follows_ids)
+				@asker.reload.relationships.active.count.must_equal 0
 			end
  		end		
 	end

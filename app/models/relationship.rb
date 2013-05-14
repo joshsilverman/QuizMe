@@ -12,5 +12,8 @@ class Relationship < ActiveRecord::Base
   scope :search, where("relationships.type_id = 2")
   scope :organic, where("relationships.type_id = 3")
   # scope :friend_search, where("type_id = 4")
+
+  scope :active, where("relationships.active = ?", true)
+  scope :inactive, where("relationships.active = ?", false)
   
 end
