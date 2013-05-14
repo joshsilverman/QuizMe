@@ -1,34 +1,40 @@
 module ManageTwitterRelationships
 
-  # dont follow anyone two days a week
-  # 1-3 follow sessions per day 
-  # 1-10 seconds delay between follows
-  # sessions occur within an 18 hour-period
-  # 1-6 hours between follow sessions
+  def autofollow twi_user_ids = nil
+    # Check if we should follow
+    return unless (max_follows = autofollow_count) > 0
 
-  def autofollow
-    return unless (max_follows = should_autofollow) > 0
+    # Twi search to get follow targets
+    twi_user_ids = get_follow_target_ids(max_follows) unless twi_user_ids
 
-    # TODO handle not enough users returned
-    twi_users = Post.twitter_request { twitter.search(search_terms.sample.name, :count => 100).statuses.collect { |s| s.user }.uniq }    
-    wisr_follows_ids = follows.collect(&:twi_user_id)
-    twi_users.reject! { |u| wisr_follows_ids.include? u.id }
-
-    send_autofollows(twi_users.collect(&:id), max_follows)
+    # Send follow requests
+    send_autofollows(twi_user_ids, max_follows)
   end
 
-  def autofollow_count
+  def autofollow_count max_follows = nil
     # Check if we should follow today
-    # puts (id + Date.today.wday + Date.today.cweek)
-    max_follows = [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
+    max_follows = [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] unless max_follows
     return 0 if max_follows == 0
 
+    # Check if we should follow during this part of the day
     return 0 if Time.now.hour <= ((id + Time.now.wday + Time.now.to_date.cweek) % 6)
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
 
+    # Check if we've already followed enough users today
     return 0 if relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
 
     max_follows
+  end
+
+  def get_follow_target_ids max_follows, follow_target_twi_user_ids = []
+    wisr_follows_ids = follows.collect(&:twi_user_id)
+    search_terms.collect(&:name).each do |search_term|
+      next if follow_target_twi_user_ids.size >= max_follows
+      twi_user_ids = Post.twitter_request { twitter.search(search_term, :count => 100).statuses.collect { |s| s.user.id }.uniq }
+      twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
+      twi_user_ids.sample(max_follows - follow_target_twi_user_ids.size).each { |twi_user_id| follow_target_twi_user_ids << twi_user_id }
+    end
+    follow_target_twi_user_ids
   end
 
   def send_autofollows twi_user_ids, max_follows, force = false
@@ -38,6 +44,7 @@ module ManageTwitterRelationships
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
         add_follow(user, 2)
       end 
+      # sleep(rand(5..60))
     end
   end
 
@@ -49,6 +56,7 @@ module ManageTwitterRelationships
     followback(twi_follower_ids)
     unfollow_nonreciprocal(twi_follows_ids)
   end
+
 
   # FOLLOWS METHODS
   def request_and_update_follows
@@ -86,7 +94,6 @@ module ManageTwitterRelationships
     relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
     relationship.update_attribute :active, false if relationship
   end  
-
 
   # FOLLOWER METHODS
   def request_and_update_followers

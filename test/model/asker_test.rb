@@ -145,7 +145,7 @@ describe Asker do
 		end
 
 		describe "autofollow" do
-			it "sends follows five days a week" do
+			it "sends follows five days a week and during 18 hour periods" do
 				Timecop.travel(Time.now.beginning_of_week)
 				sent = 0
 				7.times do |i|
@@ -155,6 +155,11 @@ describe Asker do
 					end
 				end
 				sent.must_equal 5 * 18
+			end
+
+			it "obeys maximum daily follow limit" do
+				12.times { @asker.add_follow(FactoryGirl.create(:user), 2) }
+				@asker.autofollow_count(8).must_equal 0
 			end
 
 			it "follows proper number of users per day and week" do

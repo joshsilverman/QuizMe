@@ -15,7 +15,7 @@ DatabaseCleaner.strategy = :truncation
 class MiniTest::Spec
   before :each do
     DatabaseCleaner.clean
-    # DatabaseCleaner.start
+    Timecop.return
   end
   after :each do
   	Rails.cache.clear
