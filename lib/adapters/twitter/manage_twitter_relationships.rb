@@ -46,7 +46,7 @@ module ManageTwitterRelationships
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
         add_follow(user, 2)
       end 
-      sleep(rand(5..60)) unless force # avoids sleep in tests
+      sleep((5..60).to_a.shuffle) unless force # avoids sleep in tests
     end
   end
 
