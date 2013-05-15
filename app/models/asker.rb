@@ -280,7 +280,10 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    Asker.published.each { |asker| asker.update_relationships() }
+    Asker.published.each do |asker| 
+      asker.update_relationships() 
+      sleep 1
+    end
 
     # Send mentions to new users
     Asker.mention_new_users

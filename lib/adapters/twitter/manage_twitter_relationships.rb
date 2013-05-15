@@ -55,8 +55,8 @@ module ManageTwitterRelationships
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
-    followback(twi_follower_ids)
-    unfollow_nonreciprocal(twi_follows_ids)
+    followback(twi_follower_ids) unless twi_follower_ids.blank?
+    unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
   end
 
   # FOLLOWS METHODS
@@ -82,9 +82,10 @@ module ManageTwitterRelationships
     nonreciprocal_follower_ids = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id)).collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
     relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
-      user = User.find(nonreciprocal_relationship.followed_id)
-      Post.twitter_request { twitter.unfollow(user.twi_user_id) }
-      remove_follow(user)
+      puts "unfollow nonreciprocal user_id #{nonreciprocal_relationship.followed_id} on #{twi_screen_name}"
+      # user = User.find(nonreciprocal_relationship.followed_id)
+      # Post.twitter_request { twitter.unfollow(user.twi_user_id) }
+      # remove_follow(user)
     end
   end  
 
