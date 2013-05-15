@@ -279,8 +279,10 @@ describe Asker do
 				@asker.relationships.active.count.must_equal 1
 				twi_follows_ids = [@new_user.twi_user_id]
 				Timecop.travel(Time.now + 32.days)
+				rel_count = @asker.reload.relationships.count
 				@asker.unfollow_nonreciprocal(twi_follows_ids)
 				@asker.reload.relationships.active.count.must_equal 0
+				@asker.reload.relationships.count.must_equal rel_count
 			end
  		end		
 	end
