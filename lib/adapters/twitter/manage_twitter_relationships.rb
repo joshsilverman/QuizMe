@@ -41,6 +41,7 @@ module ManageTwitterRelationships
 
   def send_autofollows twi_user_ids, max_follows, force = false
     twi_user_ids.sample(max_follows).each do |twi_user_id|
+      puts "send_autofollow follow"
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.present? or force
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
@@ -119,6 +120,7 @@ module ManageTwitterRelationships
 
   def followback twi_follower_ids
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
+      puts "followback follow"
       Post.twitter_request { twitter.follow(twi_user_id) }
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       add_follow(user, 1)

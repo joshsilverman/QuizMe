@@ -135,7 +135,6 @@ ActiveRecord::Schema.define(:version => 20130509193656) do
     t.integer  "in_reply_to_question_id"
     t.boolean  "converted"
     t.integer  "question_id"
-    t.integer  "moderator_id"
   end
 
   add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"
