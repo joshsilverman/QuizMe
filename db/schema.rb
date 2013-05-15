@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130509193656) do
+ActiveRecord::Schema.define(:version => 20130515214257) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -229,6 +229,7 @@ ActiveRecord::Schema.define(:version => 20130509193656) do
     t.datetime "updated_at"
     t.integer  "type_id"
     t.boolean  "active",      :default => true
+    t.boolean  "pending",     :default => true
   end
 
   add_index "relationships", ["followed_id"], :name => "index_relationships_on_followed_id"

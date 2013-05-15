@@ -121,9 +121,21 @@ module ManageTwitterRelationships
   def followback twi_follower_ids
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
       puts "followback follow twi_user_id #{twi_user_id} on #{twi_screen_name}"
-      Post.twitter_request { twitter.follow(twi_user_id) }
       user = User.find_or_create_by_twi_user_id(twi_user_id)
-      add_follow(user, 1)
+      if relationships.where("followed_id = ? and pending = ?", user.id, true)
+        puts "Skip followback again -- request pending"
+        return
+      else
+        twi_pending_ids = Post.twitter_request { twitter.friendships_outgoing.ids }
+        if twi_pending_ids.include? twi_user_id
+          puts "Skip followback -- request pending"
+          relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
+          return
+        end
+      end
+      puts "Send request"
+      # Post.twitter_request { twitter.follow(twi_user_id) }
+      # add_follow(user, 1)
     end
   end
 
