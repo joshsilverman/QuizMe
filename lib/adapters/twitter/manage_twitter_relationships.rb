@@ -63,6 +63,7 @@ module ManageTwitterRelationships
   def request_and_update_follows
     puts "request_and_update_follows"
     twi_follows_ids = Post.twitter_request { twitter.friend_ids.ids }
+    puts "request_and_update_follows after twitter request"
     update_follows(twi_follows_ids, follows.collect(&:twi_user_id)) if twi_follows_ids.present?
   end
 
@@ -101,7 +102,9 @@ module ManageTwitterRelationships
 
   # FOLLOWER METHODS
   def request_and_update_followers
+    puts "request_and_update_followers"
     twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
+    puts "request_and_update_followers after twitter request"
     update_followers(twi_follower_ids, followers.collect(&:twi_user_id)) if twi_follower_ids.present?
   end
 
