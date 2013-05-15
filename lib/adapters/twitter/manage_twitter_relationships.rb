@@ -141,7 +141,7 @@ module ManageTwitterRelationships
 
   def add_follower user, type_id = nil
     relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
-    relationship.update_attributes(active: true, type_id: type_id)
+    relationship.update_attributes(active: true, type_id: type_id, pending: false)
     send_new_user_question(user)
     user.segment
   end
