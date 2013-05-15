@@ -97,8 +97,8 @@ module ManageTwitterRelationships
   end
 
   def remove_follow user
-    # relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
-    # relationship.update_attribute :active, false if relationship
+    relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
+    relationship.update_attribute :active, false if relationship
   end  
 
   # FOLLOWER METHODS
@@ -134,10 +134,10 @@ module ManageTwitterRelationships
   end
 
   def add_follower user, type_id = nil
-    # relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
-    # relationship.update_attributes(active: true, type_id: type_id)
-    # send_new_user_question(user)
-    # user.segment
+    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
+    relationship.update_attributes(active: true, type_id: type_id)
+    send_new_user_question(user)
+    user.segment
   end
 
   def remove_follower user
