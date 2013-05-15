@@ -115,7 +115,7 @@ module ManageTwitterRelationships
     (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id| 
       follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
       follower_type_id = asker_follows.include?(follower) ? 1 : 3
-      add_follower(follower, follower_type_id)
+      # add_follower(follower, follower_type_id)
     end
 
     # Remove unfollowers from asker follow association    
@@ -137,8 +137,8 @@ module ManageTwitterRelationships
   def add_follower user, type_id = nil
     relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
     relationship.update_attributes(active: true, type_id: type_id)
-    # send_new_user_question(user)
-    # user.segment
+    send_new_user_question(user)
+    user.segment
   end
 
   def remove_follower user
