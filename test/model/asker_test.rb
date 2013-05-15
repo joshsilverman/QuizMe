@@ -255,7 +255,22 @@ describe Asker do
 				32.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
-					i < 30 ? @asker.reload.follows.wont_be_empty : @asker.reload.follows.must_be_empty
+					if i < 30
+						@asker.reload.follows.count.must_equal 1
+					else
+						@asker.reload.follows.count.must_equal 0
+					end
+				end
+			end
+
+			it "does not unfollow reciprocal follow after one month" do
+				@asker.follows << @new_user
+				@new_user.follows << @asker
+				twi_follows_ids = [@new_user.twi_user_id]
+				32.times do |i|
+					Timecop.travel(Time.now + 1.day)
+					@asker.unfollow_nonreciprocal(twi_follows_ids)
+					@asker.reload.follows.count.must_equal 1
 				end
 			end
 

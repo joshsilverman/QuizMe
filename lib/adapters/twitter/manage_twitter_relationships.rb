@@ -28,7 +28,7 @@ module ManageTwitterRelationships
 
   def get_follow_target_twi_ids max_follows
     follow_target_twi_user_ids = []
-    wisr_follows_ids = follows.collect(&:twi_user_id)
+    wisr_follows_ids = follows_with_inactive.collect(&:twi_user_id)
     search_terms.collect(&:name).shuffle.each do |search_term|
       next if follow_target_twi_user_ids.size >= max_follows
       twi_user_ids = Post.twitter_request { twitter.search(search_term, :count => 100).statuses.collect { |s| s.user.id }.uniq }
@@ -50,7 +50,6 @@ module ManageTwitterRelationships
     end
   end
 
-
   def update_relationships
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
@@ -58,7 +57,6 @@ module ManageTwitterRelationships
     followback(twi_follower_ids)
     unfollow_nonreciprocal(twi_follows_ids)
   end
-
 
   # FOLLOWS METHODS
   def request_and_update_follows
@@ -79,8 +77,9 @@ module ManageTwitterRelationships
   end
 
   def unfollow_nonreciprocal twi_follows_ids, limit = 1.month.ago
-    nonreciprocal_follower_ids = (twi_follows_ids - followers.collect(&:twi_user_id))
-    relationships.where('active = ? and updated_at < ? and followed_id not in (?)', true, limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
+    nonreciprocal_follower_ids = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id)).collect(&:id)
+    nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
+    relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
       user = User.find(nonreciprocal_relationship.followed_id)
       Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       remove_follow(user)
