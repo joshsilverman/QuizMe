@@ -124,13 +124,13 @@ module ManageTwitterRelationships
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       if relationships.where("followed_id = ? and pending = ?", user.id, true).present?
         puts "Skip followback again -- request pending"
-        return
+        next
       else
         twi_pending_ids = Post.twitter_request { twitter.friendships_outgoing.ids }
         if twi_pending_ids.include? twi_user_id
           puts "Skip followback -- request pending"
           relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
-          return
+          next
         end
       end
       puts "Send request"
