@@ -56,7 +56,7 @@ module ManageTwitterRelationships
     twi_follower_ids = request_and_update_followers
 
     followback(twi_follower_ids) unless twi_follower_ids.blank?
-    # unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
+    unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
   end
 
   # FOLLOWS METHODS
@@ -134,8 +134,8 @@ module ManageTwitterRelationships
         end
       end
       puts "Send request"
-      # Post.twitter_request { twitter.follow(twi_user_id) }
-      # add_follow(user, 1)
+      Post.twitter_request { twitter.follow(twi_user_id) }
+      add_follow(user, 1)
     end
   end
 

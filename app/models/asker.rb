@@ -281,7 +281,7 @@ class Asker < User
   def self.engage_new_users
     # Send DMs to new users
     Asker.published.each do |asker| 
-      asker.update_relationships() 
+      asker.delay.update_relationships() 
       sleep 1
     end
 
