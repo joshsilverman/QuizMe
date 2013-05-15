@@ -26,7 +26,8 @@ module ManageTwitterRelationships
     max_follows
   end
 
-  def get_follow_target_twi_ids max_follows, follow_target_twi_user_ids = []
+  def get_follow_target_twi_ids max_follows
+    follow_target_twi_user_ids = []
     wisr_follows_ids = follows.collect(&:twi_user_id)
     search_terms.collect(&:name).each do |search_term|
       next if follow_target_twi_user_ids.size >= max_follows
