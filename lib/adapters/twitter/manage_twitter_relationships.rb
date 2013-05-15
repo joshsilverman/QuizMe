@@ -29,7 +29,7 @@ module ManageTwitterRelationships
   def get_follow_target_twi_ids max_follows
     follow_target_twi_user_ids = []
     wisr_follows_ids = follows.collect(&:twi_user_id)
-    search_terms.collect(&:name).each do |search_term|
+    search_terms.collect(&:name).shuffle.each do |search_term|
       next if follow_target_twi_user_ids.size >= max_follows
       twi_user_ids = Post.twitter_request { twitter.search(search_term, :count => 100).statuses.collect { |s| s.user.id }.uniq }
       twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
