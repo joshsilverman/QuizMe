@@ -1049,13 +1049,14 @@ class Asker < User
       puts "Follow Summary for #{asker.twi_screen_name}"
       puts "===================="
       puts "\n"
-      asker.relationships.group_by { |r| r.created_at.to_date }.sort.reverse.each do |date, relationships|
+      asker.relationships.group_by { |r| r.updated_at.to_date }.sort.reverse.each do |date, relationships|
         puts "#{date.strftime('%m/%d')}:"
         puts "------"
-        puts "Total: #{relationships.count}"
-        puts "Unknown: #{relationships.select { |r| r.type_id == nil }.count}"
-        puts "Followback: #{relationships.select { |r| r.type_id == 1 }.count}"
-        puts "Search: #{relationships.select { |r| r.type_id == 2 }.count}"
+        puts "Total: #{relationships.select { |r| r.active == true }.count}"
+        puts "Unknown: #{relationships.select { |r| r.active == true and r.type_id == nil }.count}"
+        puts "Followback: #{relationships.select { |r| r.active == true and r.type_id == 1 }.count}"
+        puts "Search: #{relationships.select { |r| r.active == true and r.type_id == 2 }.count}"
+        puts "Unfollows: #{relationships.select { |r| r.active == false }.count}"
         # puts "Organic: #{relationships.select { |r| r.type_id == 3 }.count}"
         puts "\n"
       end
