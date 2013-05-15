@@ -52,6 +52,7 @@ module ManageTwitterRelationships
   end
 
   def update_relationships
+    puts "updating relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
@@ -136,8 +137,8 @@ module ManageTwitterRelationships
   def add_follower user, type_id = nil
     relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
     relationship.update_attributes(active: true, type_id: type_id)
-    send_new_user_question(user)
-    user.segment
+    # send_new_user_question(user)
+    # user.segment
   end
 
   def remove_follower user
