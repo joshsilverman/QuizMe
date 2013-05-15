@@ -55,7 +55,7 @@ module ManageTwitterRelationships
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
-    # followback(twi_follower_ids) unless twi_follower_ids.blank?
+    followback(twi_follower_ids) unless twi_follower_ids.blank?
     # unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
   end
 
@@ -122,7 +122,7 @@ module ManageTwitterRelationships
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
       puts "followback follow twi_user_id #{twi_user_id} on #{twi_screen_name}"
       user = User.find_or_create_by_twi_user_id(twi_user_id)
-      if relationships.where("followed_id = ? and pending = ?", user.id, true)
+      if relationships.where("followed_id = ? and pending = ?", user.id, true).present?
         puts "Skip followback again -- request pending"
         return
       else
