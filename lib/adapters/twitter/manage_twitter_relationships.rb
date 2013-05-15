@@ -120,10 +120,11 @@ module ManageTwitterRelationships
 
   def followback twi_follower_ids
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
-      puts "followback follow"
-      Post.twitter_request { twitter.follow(twi_user_id) }
-      user = User.find_or_create_by_twi_user_id(twi_user_id)
-      add_follow(user, 1)
+      puts "followback follow twi_user_id #{twi_user_id} on #{twi_screen_name}"
+      # Post.twitter_request { twitter.follow(twi_user_id) }
+      # user = User.find_or_create_by_twi_user_id(twi_user_id)
+      # puts user.to_json
+      # add_follow(user, 1)
     end
   end
 
