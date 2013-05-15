@@ -92,8 +92,8 @@ module ManageTwitterRelationships
   end  
 
   def add_follow user, type_id = nil
-    # relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
-    # relationship.update_attributes(active: true, type_id: type_id)
+    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
+    relationship.update_attributes(active: true, type_id: type_id)
   end
 
   def remove_follow user
