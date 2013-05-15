@@ -41,7 +41,7 @@ module ManageTwitterRelationships
 
   def send_autofollows twi_user_ids, max_follows, force = false
     twi_user_ids.sample(max_follows).each do |twi_user_id|
-      puts "send_autofollow follow"
+      # puts "send_autofollow follow"
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.present? or force
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
@@ -52,7 +52,6 @@ module ManageTwitterRelationships
   end
 
   def update_relationships
-    puts "updating relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
@@ -62,9 +61,7 @@ module ManageTwitterRelationships
 
   # FOLLOWS METHODS
   def request_and_update_follows
-    puts "request_and_update_follows"
     twi_follows_ids = Post.twitter_request { twitter.friend_ids.ids }
-    puts "request_and_update_follows after twitter request"
     update_follows(twi_follows_ids, follows.collect(&:twi_user_id)) if twi_follows_ids.present?
   end
 
@@ -84,7 +81,6 @@ module ManageTwitterRelationships
     nonreciprocal_follower_ids = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id)).collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
     relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
-      puts "unfollow nonreciprocal user_id #{nonreciprocal_relationship.followed_id} on #{twi_screen_name}"
       user = User.find(nonreciprocal_relationship.followed_id)
       Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       remove_follow(user)
@@ -103,9 +99,7 @@ module ManageTwitterRelationships
 
   # FOLLOWER METHODS
   def request_and_update_followers
-    puts "request_and_update_followers"
     twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
-    puts "request_and_update_followers after twitter request"
     update_followers(twi_follower_ids, followers.collect(&:twi_user_id)) if twi_follower_ids.present?
   end
 
@@ -141,8 +135,8 @@ module ManageTwitterRelationships
   end
 
   def remove_follower user
-    # relationship = Relationship.find_by_followed_id_and_follower_id(id, user.id)
-    # relationship.update_attribute :active, false if relationship
-    # user.segment
+    relationship = Relationship.find_by_followed_id_and_follower_id(id, user.id)
+    relationship.update_attribute :active, false if relationship
+    user.segment
   end
 end
