@@ -1,8 +1,8 @@
 class FeedsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :mod_manage]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
-  before_filter :moderator?, :only => [:mod_manage, :manager_response]
-  before_filter :admin?, :only => [:manage]
+  before_filter :moderator?, :only => [:mod_manage, :moderator_response]
+  before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
   caches_action :unauth_show, :expires_in => 10.minutes, :cache_path => Proc.new { |c| c.params }
@@ -206,18 +206,19 @@ class FeedsController < ApplicationController
     render :partial => "conversation"
   end
 
+  def moderator_response
+    user_post = Post.find(params[:in_reply_to_post_id])
+    correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
+    user_post.update_attributes(moderator_id: current_user.id, autocorrect: correct)
+    render status: 200, nothing: true
+  end
+
   def manager_response
     asker = Asker.find(params[:asker_id])
     user_post = Post.find(params[:in_reply_to_post_id])
     user = user_post.user
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     tell = (params[:tell].nil? ? nil : params[:tell].match(/(true|t|yes|y|1)$/i) != nil)
-
-    if moderator?
-      user_post.update_attributes(moderator_id: current_user.id, autocorrect: correct)
-      render status: 200, nothing: true
-      return
-    end
 
     unless conversation = user_post.conversation
       post_id = user_post.parent.try(:id) || user_post.id

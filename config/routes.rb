@@ -38,6 +38,7 @@ Quizmemanager::Application.routes.draw do
   match "/ask" => "feeds#ask"
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
+  match '/moderator_response' => 'feeds#moderator_response'
   match "/manager_post" => "feeds#manager_post"
   post '/refer_a_friend' => 'feeds#refer_a_friend'
   match "/link_to_post" => "feeds#link_to_post"

@@ -330,7 +330,9 @@ class Post
 			return unless confirm("Reply again to this conversaion?")
 		if $.grep(window.feed.conversations[@id].posts, (p) -> return p.intention == 'grade' or p.intention == 'dm autoresponse').length > 0
 			return unless confirm("Grade this conversaion again?")			
-		$.ajax '/manager_response',
+		route = if window.feed.is_admin then '/manager_response' else '/moderator_response'
+		puts route
+		$.ajax route,
 			type: 'POST'
 			data: params
 			error: (e) => console.log "ajax error tweeting response"
