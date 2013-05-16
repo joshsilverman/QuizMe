@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
       elsif omniauth_redirect_params['user_id'] and omniauth_redirect_params['asker_id']
         redirect_to = "/users/#{omniauth_redirect_params['user_id']}/questions/#{omniauth_redirect_params['asker_id']}"
       else
-        redirect_to = request.env['omniauth.origin']
+        redirect_to = request.env['omniauth.origin'] || session[:return_to] || root_path
       end
     else
       redirect_to = root_path
@@ -36,7 +36,8 @@ class ApplicationController < ActionController::Base
   end  
 
   def after_sign_out_path_for resource, redirect_to = nil
-    request.referer || root_path
+    # request.referer || root_path
+    root_path
   end    
 
   # preload models so caching works in development
@@ -78,6 +79,17 @@ class ApplicationController < ActionController::Base
       redirect_to '/' unless current_user.is_role? "author" or current_user.is_role? "admin"
     else
       redirect_to '/'
+    end
+  end
+
+  def moderator?
+    session[:return_to] = request.fullpath
+    if current_user
+      redirect_to '/' unless current_user.is_role? "moderator" or current_user.is_role? "admin"
+      return current_user.is_role? "moderator"
+    else
+      redirect_to user_omniauth_authorize_path(:twitter, use_authorize: false)
+      return false
     end
   end
 

@@ -1245,8 +1245,26 @@ body {
 					}
 
 					.graph {
-						margin: 1px;
+						/*margin: 1px;*/
+						border: 1px solid #ddd;
 						background: white;
+					}
+
+					.guidelines {
+						/*margin: 1px;*/
+						border: 1px solid #ddd;
+						background: white;
+						padding:8px 15px;
+						color:#777;
+
+						div {
+							font-size:1.31em;
+							line-height:1.62em;
+							color:#666;
+						}
+						p {
+							padding:5px 0;
+						}
 					}
 				}
 			}
@@ -1271,9 +1289,8 @@ body {
 					visibility:hidden;
 				}
 
-				.actions {
-					display: none;
-				}
+				.actions {display: none;}
+
 				&.active {
 					margin:inherit;
 					border-top:inherit;
@@ -1294,19 +1311,13 @@ body {
 				}
 
 				&.dim {
-					/*background-color:#eee;*/
-
-					/*.icon-share-alt {
-						display: inline-block;
-					}*/
 					.content {
 						opacity: .15;
 					}
-					.actions {
-						background-color: #fafafa;
-					}
+					.actions {background-color: #fafafa;}
 				}
 			}
+
 			.conversation:hover {
 				.post_actions {
 					visibility:visible;
@@ -1319,6 +1330,28 @@ body {
 			.pagination-wrapper {
 				.pagination ul {
 					background-color: white;
+				}
+			}
+		}
+	}
+
+	&.mod {
+		#left_column {
+			.box {
+				/*position: fixed;*/
+				/*width: 258px;*/
+				/*top:190px;*/
+			}
+		}
+
+		.conversation {
+			/*margin:12px 0;*/
+
+			.post {
+				/*border-top: 1px solid #ccc;*/
+
+				.actions {
+					/*display: block !important;*/
 				}
 			}
 		}

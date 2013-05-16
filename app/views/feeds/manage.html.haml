@@ -1,71 +1,70 @@
-= javascript_include_tag "https://www.google.com/jsapi"
-#manager
+- admin = current_user.is_role? "admin"
+
+:css
+	body {
+		/ background: white !important; 
+		background-image: url(/assets/bg_images/twi/tree.jpg) !important;
+		/ background-size:cover;
+	}
+
+#manager{:class => ('mod' if !admin)}
 	#feed_container.span10
 		#wrapper.span9
-			/= render :partial => "account_info"
-
 			#feed.row
 				#left_column.span3.hidden-phone
-					%ul.nav.nav-tabs.nav-stacked
-						%li
-							.box.top Inbox
-						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts (#{@linked_box_count})", '?filter=linked'
-						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
+					- if admin
+						%ul.nav.nav-tabs.nav-stacked
+							%li
+								.box.top Inbox
+							%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts (#{@linked_box_count})", '?filter=linked'
+							%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
 
-						%li
-							.box Quality control
-							%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?'
+							%li
+								.box Quality control
+								%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?'
+								%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+
+							%li
+								.box Tags
+							%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
+							%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
 							%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+							%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
+							%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
+							- if @oneinbox
+								%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 
-						%li
-							.box Tags
-						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
-						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
-						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
-						%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
-						%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
-						- if @oneinbox
-							%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
-						/ - @tags.each do |tag|
-						/ 	%li{:class => "#{'active' if params[:filter] == tag.name}"}= link_to tag.name, "?filter=#{tag.name}"
-						//%li= link_to "Starred", '?filter=starred'
+						%ul.nav.nav-tabs.nav-stacked.stats
+							%li
+								.box.top Auto vs App vs Manual grade
+							%li
+								#autograder-auto-stats.graph
 
-					%ul.nav.nav-tabs.nav-stacked.stats
-						%li
-							.box.top Auto vs App vs Manual grade
-						%li
-							#autograder-auto-stats.graph
-
-					%ul.nav.nav-tabs.nav-stacked.stats
-						%li
-							.box.top Incorrect vs Correct grade
-						%li
-							#autograder-correct-stats.graph
-
-					#send_tweet.rounded.border-color{style: ("display:none;" if @oneinbox)}
-						.header
-							%h4 Post as Asker			
-							/ .message_type.btn-group{"data-toggle" => "buttons-radio"}
-							/ 	%button.btn.correct.active Mention
-							/ 	%button.btn.incorrect DM	
-						.question_container.blur
-							%textarea
-							%p.ask_success.hide
-								Your comment was posted! 
-								%a.ask_again Post another →
-								/ or
-								/ %a.post_url{:target => "_blank"}
-								/ 	see it on Twitter →
-							.tweet_button.btn.btn-primary Tweet
-							.character_count 140															
+						%ul.nav.nav-tabs.nav-stacked.stats
+							%li
+								.box.top Incorrect vs Correct grade
+							%li
+								#autograder-correct-stats.graph
+					- else
+						%ul.nav.nav-tabs.nav-stacked
+							%li
+								.box.top What is this?
+							%li
+								.guidelines 
+									%div Dear Superuser
+									%p
+										You're one of the most active learners asking/answering questions through our handles. Thank you!
+									%div Help Us Grade
+									%p
+										We receive over 1,000 question responses per day -- that's a lot for us to keep up with. Can you give us a hand grading some?
+									%div Guidelines
+									%p
+										Just click Correct/Incorrect for each response. If neither makes sense, hit "Skip". Click "Moderate" in the header whenever you want to grade more.
 
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
-							%h3
-								= @asker.twi_screen_name
-								/ .btn-group
-								/ 	%a.btn.btn-small{:href => "/askers/#{@asker.id}/hide_all/#{@posts.collect(&:id).join('+')}"} Hide all
+							%h3= admin ? @asker.twi_screen_name : "Grade responses"
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
@@ -75,10 +74,7 @@
 							- correct = nil
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
 								- correct = question.answers.reject{|a| a.correct != true}[0]
-							/ - if params[:filter] != 'ugc'
-							/ 	- question = (post.is_dm? ? post.parent.question : post.in_reply_to_question)
-							/ 	- if question
-							/ 		- correct = question.answers.reject{|a| a.correct != true}[0]
+
 							.conversation.border-color{class: ('dim' if params[:filter] == 'tutor' and Asker.ids.include?(post.user_id))}
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
@@ -88,6 +84,8 @@
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
+										- if post.moderator_id
+											%i.icon-user
 										%h5
 											%span= post.user.twi_screen_name	
 										- if @oneinbox
@@ -97,21 +95,21 @@
 										- if correct
 											%p.quick-reply
 												%span{style: 'opacity:0.6;'}
+													Correct: 
 													= correct.text
 
 									- if params[:filter] == 'ugc'
 										= render :partial => "ugc_actions", :locals => {:post => post}
+									- elsif admin
+										= render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
 									- else
-										= render :partial => "default_actions", :locals => {:post => post, :question => question}
+										= render :partial => "moderator_actions", :locals => {:post => post, :question => question}
 
-					/ - if ['spam', 'tutor'].include? params[:filter]
 					.pagination-wrapper
-						= paginate @posts
+						= paginate @posts if defined? current_page
 
-= render :partial => "retweet_modal"
 = render :partial => "respond_modal"
 = render :partial => "question_modal"
-/ = render :partial => "link_post_modal"
 
 #confirm.modal.hide
 	.modal-header
@@ -164,3 +162,4 @@
 = hidden_field_tag :correct_complements, COMPLEMENT.to_json
 = hidden_field_tag :feed_id, @asker.id
 = hidden_field_tag :asker_twi_screen_names, @asker_twi_screen_names.to_json
+= hidden_field_tag :is_admin, admin

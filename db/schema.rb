@@ -135,6 +135,7 @@ ActiveRecord::Schema.define(:version => 20130515214257) do
     t.integer  "in_reply_to_question_id"
     t.boolean  "converted"
     t.integer  "question_id"
+    t.integer  "moderator_id"
   end
 
   add_index "posts", ["conversation_id"], :name => "index_posts_on_conversation_id"
@@ -229,7 +230,7 @@ ActiveRecord::Schema.define(:version => 20130515214257) do
     t.datetime "updated_at"
     t.integer  "type_id"
     t.boolean  "active",      :default => true
-    t.boolean  "pending",     :default => true
+    t.boolean  "pending",     :default => false
   end
 
   add_index "relationships", ["followed_id"], :name => "index_relationships_on_followed_id"

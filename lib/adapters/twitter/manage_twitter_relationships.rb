@@ -119,6 +119,8 @@ module ManageTwitterRelationships
   end 
 
   def followback twi_follower_ids
+    return if relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= 20
+    
     twi_pending_ids = Post.twitter_request { twitter.friendships_outgoing.ids }
     i = 0
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
