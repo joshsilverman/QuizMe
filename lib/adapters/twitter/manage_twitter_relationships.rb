@@ -135,8 +135,8 @@ module ManageTwitterRelationships
         end
       end
 
-      if i > 7
-        puts "Too many followbacks to run all now"
+      if i >= 1
+        puts "Too many followbacks (1) to run all now"
         return
       end
       i += 1
