@@ -20,6 +20,7 @@
     %th
 
     - @experiments.sort_by{|e|e.start_time}.reverse.each do |experiment|
+      - next if experiment.winner
       %tr.experiment-header{:class => ('completed' if experiment.winner)}
         %td= experiment.start_time ? experiment.start_time.strftime('%m-%d') : 'Unknown'
         %td.name
