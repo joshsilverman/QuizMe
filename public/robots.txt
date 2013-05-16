@@ -9,7 +9,4 @@ Allow: /
 User-agent: Twitterbot
 Allow: /questions/answers/
 
-User-agent: *
-Disallow: /
-
 Sitemap: https://s3.amazonaws.com/wisr-sitemap/sitemaps/sitemap1.xml.gz
