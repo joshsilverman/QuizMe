@@ -196,7 +196,7 @@ describe Asker do
 
 			it "follows new follower back" do
 				@asker.follows.must_be_empty
-		    twi_follower_ids = [@user.twi_user_id, @new_user.twi_user_id]
+		    twi_follower_ids = [@new_user.twi_user_id]
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
 		    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
 		    @asker.followback(twi_follower_ids)
