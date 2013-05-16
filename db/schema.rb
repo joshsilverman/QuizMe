@@ -230,10 +230,6 @@ ActiveRecord::Schema.define(:version => 20130515214257) do
     t.datetime "updated_at"
     t.integer  "type_id"
     t.boolean  "active",      :default => true
-<<<<<<< HEAD
-    t.boolean  "pending",     :default => true
-=======
->>>>>>> minor
   end
 
   add_index "relationships", ["followed_id"], :name => "index_relationships_on_followed_id"
