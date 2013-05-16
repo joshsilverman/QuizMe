@@ -12,4 +12,4 @@ Allow: /questions/answers/
 User-agent: *
 Disallow: /
 
-Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
+Sitemap: https://s3.amazonaws.com/wisr-sitemap/sitemaps/sitemap1.xml.gz

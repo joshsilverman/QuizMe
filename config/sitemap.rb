@@ -1,6 +1,5 @@
-# Set the host name for URL creation
 SitemapGenerator::Sitemap.default_host = "http://www.wisr.com"
-SitemapGenerator::Sitemap.sitemaps_host = "wisr-sitemap.s3-website-us-east-1.amazonaws.com"
+SitemapGenerator::Sitemap.sitemaps_host = "http://wisr-sitemap.s3-website-us-east-1.amazonaws.com"
 SitemapGenerator::Sitemap.public_path = 'tmp/'
 SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
 SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
