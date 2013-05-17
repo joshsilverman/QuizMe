@@ -1,18 +1,38 @@
-- content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
+- if @asker
+	- content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
 - if @render_twitter_card
 	= render :partial => "twitter_card"
 
 #post_feed
 	#feed_container.span10
 		#wrapper.span9
-			= render :partial => "account_info"
+			- if @query
+				#askers.clearfix
+					.header.border-color
+						%h3
+							Related subjects you can follow & learn:
+
+					- @suggested_askers.each do |asker|
+						.asker
+							= image_tag(asker.twi_profile_img_med_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom")
+							%p.twi_name= asker.twi_name
+							%p.twi_screen_name_cont
+								@
+								%a.twi_screen_name= asker.twi_screen_name
+
+							%a.twitter-follow-button{:href => "https://twitter.com/#{asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
+							%script
+								!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+			- else
+				= render :partial => "account_info"
 			#feed.row
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
 							- if @query
 								%h3
-									Search results for: #{@query}
+									Recent questions for: #{@query}
 							- else
 								%h3
 									Questions
@@ -25,8 +45,12 @@
 								= render :partial => "feed"
 							- else
 								- requested_publication_id = (defined? @requested_publication) ? @requested_publication.id : 0
-								- cache("_feed_unauthenticated-#{@asker.id}-#{requested_publication_id}", :expires_in => 20.minutes) do
+
+								- if @query
 									= render :partial => "feed"
+								- else
+									- cache("_feed_unauthenticated-#{@asker.id}-#{requested_publication_id}", :expires_in => 20.minutes) do
+										= render :partial => "feed"
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
@@ -59,43 +83,45 @@
 = render :partial => "question_modal"
 = render :partial => "retweet_modal"
 
-#post_template.conversation.border-color{:style => "display: none;"}
-	.post.parent
-		#time
-			%p.time_ago= "time"			
-		%i.icon-share-alt{:style => "display: none;"}
+- unless @query
+	#post_template.conversation.border-color{:style => "display: none;"}
+		.post.parent
+			#time
+				%p.time_ago= "time"			
+			%i.icon-share-alt{:style => "display: none;"}
+			.content
+				= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")
+				%h5= @asker.twi_screen_name
+				%p Post content
+			.answers.rounded.border{:style => "display: none;"}
+		.subsidiaries{:style => "display: none;"}
+		.interactions
+			/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")				
+		.loading{:style => "display: none;"}
+			Loading...
+
+	#subsidiary_template.post{:style => "display: none;"}
 		.content
-			= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")
-			%h5= @asker.twi_screen_name
-			%p Post content
-		.answers.rounded.border{:style => "display: none;"}
-	.subsidiaries{:style => "display: none;"}
-	.interactions
-		/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")				
-	.loading{:style => "display: none;"}
-		Loading...
+			= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")					
+			%h5= "User Name"
+			%p= "Post content"
 
-#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
-	.shadow-top
-	.tweet
-		%span#account= "@#{@asker.twi_screen_name}"
-		%span#answer= " Answer text"
-		/ %span#url= " URL"
-		/ %span#additional{:contenteditable => true}
-	.answer_controls
-		.tweet_button.btn.btn-primary Tweet!
-	.shadow-bottom
+	#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
+		.shadow-top
+		.tweet
+			%span#account= "@#{@asker.twi_screen_name}"
+			%span#answer= " Answer text"
+			/ %span#url= " URL"
+			/ %span#additional{:contenteditable => true}
+		.answer_controls
+			.tweet_button.btn.btn-primary Tweet!
+		.shadow-bottom
 
-#subsidiary_template.post{:style => "display: none;"}
-	.content
-		= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")					
-		%h5= "User Name"
-		%p= "Post content"
-
+- unless @query
+	= hidden_field_tag :feed_name, @asker.twi_screen_name
+	= hidden_field_tag :feed_id, @asker.id
 
 = hidden_field_tag :post_id, @post_id
-= hidden_field_tag :feed_id, @asker.id
-= hidden_field_tag :feed_name, @asker.twi_screen_name
 = hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user

@@ -21,39 +21,43 @@ class FeedsController < ApplicationController
   end
 
   def search
-    questions_by_asker_id = Question.where("text ilike ?", "%#{params['query']}%")\
-      .where("status = 1")\
-      .group_by{|q|q.created_for_asker_id}
-    asker_id = nil
-    questions = []
-    questions_by_asker_id.each do |k,v|
-      if v.count > questions.count
-        asker_id = k
-        questions = v
-      end
-    end
+    questions = Question.where("text ilike ?", "%#{params['query']}%").where("status = 1")
+    # .group_by{|q|q.created_for_asker_id}
+    # asker_id = nil
+    # questions = []
+    # questions_by_asker_id.each do |k,v|
+    #   if v.count > questions.count
+    #     asker_id = k
+    #     questions = v
+    #   end
+    # end
+
     # Post.where("in_reply_to_question_id IN (?)", questions.collect(&:id)).group('in_reply_to_question_id').count
 
     @query = params['query']
-    @asker = Asker.find asker_id
-    @question_count, @questions_answered, @followers = @asker.get_stats
+    # @question_count, @questions_answered, @followers = @asker.get_stats
 
     _publications = Publication.select(["question_id", "max(id) AS id"])\
       .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC').limit 25
     @publications = Publication.where('id in (?)', _publications.collect(&:id)).order('created_at DESC')
+    
+    puts @publications.group_by{|o| o.asker_id}.sort_by {|k, v| v.count}
+    @suggested_askers = @publications.group_by{|o| o.asker_id}.sort_by {|k, v| v.count}.reverse.\
+      slice(0,4).map{|k,v|v.first.asker}
+    @asker = @suggested_askers.first
 
     _posts = Post.select(["publication_id", "max(id) AS id"])\
       .where("publication_id IN (?)", @publications.collect(&:id)).group('publication_id')
     posts = Post.where('id in (?)', _posts.collect(&:id)).order('created_at DESC')
 
-    actions = Publication.recent_responses_by_asker(@asker, posts)
+    actions = Publication.recent_responses_by_asker(posts)
     @actions = Post.recent_activity_on_posts(posts, actions)
     @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
     # misc
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
-    @author = User.find @asker.author_id if @asker.author_id
+    # @author = User.find @asker.author_id if @asker.author_id
 
     # related
     @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
@@ -93,7 +97,7 @@ class FeedsController < ApplicationController
   #     .where("publication_id IN (?)", @publications.collect(&:id)).group('publication_id')
   #   posts = Post.where('id in (?)', _posts.collect(&:id)).order('created_at DESC')
 
-  #   actions = Publication.recent_responses_by_asker(@asker, posts)
+  #   actions = Publication.recent_responses_by_asker(posts)
   #   @actions = Post.recent_activity_on_posts(posts, actions)
   #   @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
@@ -128,7 +132,7 @@ class FeedsController < ApplicationController
 
         # publications, posts and user responses
         @publications, posts = Publication.recently_published_by_asker(@asker)
-        actions = Publication.recent_responses_by_asker(@asker, posts)
+        actions = Publication.recent_responses_by_asker(posts)
 
         # user specific responses
         @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
@@ -276,8 +280,6 @@ class FeedsController < ApplicationController
     
     user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
     @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
-
-    # Rails.cache.delete "publications_recent_responses_by_asker_#{@question_asker.id}"
 
     render :partial => "conversation"
   end
