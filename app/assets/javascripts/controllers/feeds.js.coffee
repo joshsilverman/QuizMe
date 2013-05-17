@@ -14,6 +14,7 @@ class @Feed
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
 		@correct = $("#correct").val()
+		@answered_count = 0
 
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = $.parseJSON($("#engagements").val())
@@ -310,6 +311,7 @@ class Post
 			type: 'POST'
 			data: params
 			success: (e) => 
+				window.feed.answered += 1
 				icon = @element.find(".answered_indicator")
 				icon.removeClass("icon-ok-sign icon-remove-sign")
 				icon.addClass(if correct == "true" then "icon-ok-sign" else "icon-remove-sign")
@@ -324,8 +326,9 @@ class Post
 							loading.delay(1000).fadeOut(500, => 
 								first_post.next().fadeIn(500, => 
 									@show_activity()
-									$(".next_question").on "click", (e) => @jump_to_next_question(e)
-									conversation.find(".after_answer").fadeIn(500)
+									if window.feed.answered == 5
+										$(".next_question").on "click", (e) => $(".post_question").click()
+										conversation.find(".after_answer").fadeIn(500)
 								)
 								icon.fadeIn(250)
 								

@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form]
+  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions]
 
   def supporters
     @supporters = User.supporters
@@ -17,6 +17,10 @@ class UsersController < ApplicationController
   end
 
   def questions
+    redirect_to "/users/#{current_user.id}/questions/#{current_user.questions.group('created_for_asker_id').count.max{|a,b| a[1] <=> b[1]}[0]}"
+  end
+
+  def asker_questions
     if !current_user
       redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :user_id => params[:id], :asker_id => params[:asker_id]) unless current_user
     else

@@ -62,23 +62,25 @@
 									Activity	
 									=image_tag "ajax-loader.gif"
 							%ul.unstyled	
-								#activity_stream_content				
-									/ = render :partial => "stream" 
-						.clr					
-						/ = render :partial => "related"
-						- unless @related.blank? or @query
-							#related.rounded.border-color
-								.header
-									%h4
-										Other Feeds
-								%ul.unstyled
-									- @related.each_with_index do |related, i|
-										%a.related_feed{:href => "/feeds/#{related.id}"}
-											%li{:class => ("border_bottom" if i < 2)}
-												.content
-													= image_tag(related.twi_profile_img_url, :class => "rounded")
-													%h5= related.twi_name
-													%p= related.description
+								#activity_stream_content
+						.clr
+						- if defined?(@contributors)
+							- unless @contributors.blank?			
+								= render :partial => "contributors"
+						- else
+							- unless @related.blank?
+								#related.rounded.border-color
+									.header
+										%h4
+											Other Feeds
+									%ul.unstyled
+										- @related.each_with_index do |related, i|
+											%a.related_feed{:href => "/feeds/#{related.id}"}
+												%li{:class => ("border_bottom" if i < 2)}
+													.content
+														= image_tag(related.twi_profile_img_url, :class => "rounded")
+														%h5= related.twi_name
+														%p= related.description
 
 = render :partial => "question_modal"
 = render :partial => "retweet_modal"

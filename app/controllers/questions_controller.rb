@@ -158,6 +158,7 @@ class QuestionsController < ApplicationController
       Post.trigger_split_test(user_id, 'ugc request type')
       Post.trigger_split_test(user_id, 'ugc script v3.0')
       Post.trigger_split_test(user_id, 'author followup type (return ugc submission)') if author.questions.size > 1
+      Post.trigger_split_test(user_id, 'ugc cta after five answers on site (adds question)')
 
       Mixpanel.track_event "submitted question", {
         :distinct_id => user_id,

@@ -96,9 +96,20 @@ class FeedsController < ApplicationController
         @answer_id = params[:answer_id]
         @author = User.find @asker.author_id if @asker.author_id
 
-        # related
-        @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-          .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+
+        contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count.sort{|a,b| b[1] <=> a[1]}[0..2]
+        if contributor_ids_with_count.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
+          @contributors = []
+          contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count.sort{|a,b| b[1] <=> a[1]}[0..2]
+          contributors = User.find(contributor_ids_with_count.collect {|e| e[0]}).group_by(&:id)
+          contributor_ids_with_count.each do |c|
+            user = contributors[c[0]][0]
+            @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: c[1]}
+          end          
+        else
+          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+            .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+        end
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 

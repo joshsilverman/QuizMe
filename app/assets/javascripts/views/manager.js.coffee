@@ -415,8 +415,6 @@ class Post
 
 class Hotkeys
 	constructor: (enable_hotkeys) ->
-		$('.active .back').on "click", => @hide_panel()
-
 		if enable_hotkeys
 			$(window).keypress (e) =>
 				return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
