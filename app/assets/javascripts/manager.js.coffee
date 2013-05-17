@@ -345,7 +345,7 @@ class Post
 				else
 					post.closest(".conversation").addClass "dim"
 
-		if !@is_admin
+		if !window.feed.is_admin
 			post.closest(".conversation").addClass "dim"
 			window.feed.hotkeys.prev()
 
