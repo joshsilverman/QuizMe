@@ -328,10 +328,13 @@ class Post
 
 		if post.closest(".conversation").hasClass "dim"
 			return unless confirm("Reply again to this conversaion?")
-		if $.grep(window.feed.conversations[@id].posts, (p) -> return p.intention == 'grade' or p.intention == 'dm autoresponse').length > 0
+
+		user_id = window.feed.engagements[@id]['user_id']
+		if $.grep(window.feed.conversations[@id].posts, (p) -> return (p.intention == 'grade' or p.intention == 'dm autoresponse') and p.in_reply_to_user_id == user_id).length > 0
+			puts @id
+			puts window.feed.conversations[@id].posts
 			return unless confirm("Grade this conversaion again?")			
 		route = if window.feed.is_admin then '/manager_response' else '/moderator_response'
-		puts route
 		$.ajax route,
 			type: 'POST'
 			data: params
