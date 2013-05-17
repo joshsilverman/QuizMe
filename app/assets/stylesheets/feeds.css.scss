@@ -743,8 +743,10 @@ body {
 #respond_modal, #link_post_modal {
 	padding-bottom: 0px;
 	padding-top: 5px;
+	top: 35%;
 
 	.modal-body {
+		max-height: 600px;
 
 		.modal_conversation_history {
 			.conversation {

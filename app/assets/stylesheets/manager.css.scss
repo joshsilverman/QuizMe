@@ -66,6 +66,17 @@
 				margin-left: -52px;
 				/*float: left;*/
 			}
+
+			.new-email {
+				.alert-success {
+					position: relative;
+					bottom: 4px;
+				}
+				
+				#user_email {
+					width: 200px;
+				}
+			}
 		}
 	}
 

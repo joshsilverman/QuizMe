@@ -27,7 +27,8 @@
 						
 			.btn-group
 				%a.btn.open= "<u>o</u>pen".html_safe
-				%a.btn.create-exam= "<u>e</u>xam".html_safe
+				/ %a.btn.create-exam= "<u>e</u>xam".html_safe
+				%a.btn.add-email= "<u>e</u>mail".html_safe
 
 				- if admin
 					%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
@@ -37,13 +38,20 @@
 							- @tags.each do |tag|
 								%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
 
-		.sub.new-exam
+		/ .sub.new-exam
+		/ 	.ios-arrow-left.back{title: "Back"}
+		/ 	.form-inline
+		/ 		= form_for(Exam.new, remote: true) do |f|
+		/ 			= f.text_field "subject", :class => "input-small", :placeholder => "Name", :type => "text"
+		/ 			= f.text_field "date", :class => "input-small", :placeholder => "Datetime", :type => "datetime"
+		/ 			= f.text_field "question_count", :class => "input-small", :placeholder => "Question Count", :type => "text"
+		/ 			= f.text_field "price", :class => "input-small", :placeholder => "Price", :type => "text"
+		/ 			= f.hidden_field "user_id", :type => "hidden", :value => post.user_id
+		/ 			= f.button "Add", :class => "btn btn-primary", :type => "submit"
+
+		.sub.new-email
 			.ios-arrow-left.back{title: "Back"}
 			.form-inline
-				= form_for(Exam.new, remote: true) do |f|
-					= f.text_field "subject", :class => "input-small", :placeholder => "Name", :type => "text"
-					= f.text_field "date", :class => "input-small", :placeholder => "Datetime", :type => "datetime"
-					= f.text_field "question_count", :class => "input-small", :placeholder => "Question Count", :type => "text"
-					= f.text_field "price", :class => "input-small", :placeholder => "Price", :type => "text"
-					= f.hidden_field "user_id", :type => "hidden", :value => post.user_id
+				= form_for(post.user, remote: true) do |f|
+					= f.text_field "email", :class => "input-small", :placeholder => "Email", :type => "text"
 					= f.button "Add", :class => "btn btn-primary", :type => "submit"

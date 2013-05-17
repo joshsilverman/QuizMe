@@ -354,7 +354,7 @@ class User < ActiveRecord::Base
       2 => "to noob lifecycle transition comment (=> regular)",
       # 3 => "to regular lifecycle transition comment (=> advanced)",
       3 => "to regular growth comment (=> advanced)",
-      4 => "to advanced lifecycle transition comment (=> pro)",
+      4 => "to advanced lifecycle transition comment v2 (=> pro)",
       5 => "to pro lifecycle transition comment (=> superuser)"
     }
 
@@ -377,7 +377,8 @@ class User < ActiveRecord::Base
       # suggestions?
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
         no_comment, 
-        "You're off to a strong start. How can I make this better?"
+        "You're off to a strong start. How can I make this better?",
+        "I'm going to start sending a weekly progress report, what's your email address?"
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 5 #to pro
