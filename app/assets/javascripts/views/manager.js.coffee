@@ -1,17 +1,11 @@
 class @Manager extends @Feed
-	id: null
-	name: null 
 	posts: []
 	answered: 0
-	user_name: null
-	user_image: null
-	conversations: null
-	engagements: null
-	correct: null
 	correct_responses: []
 	correct_complements: []
 	incorrect_responses: ["Hmmm, not quite.","Uh oh, that's not it...","Sorry, that's not what we were looking for.","Nope. Time to hit the books!","Sorry. Close, but no cigar.","Not quite.","That's not it."]	
 	active_tags: []
+	askers: []
 	asker_twi_screen_names: []
 	
 	constructor: ->
@@ -26,11 +20,9 @@ class @Manager extends @Feed
 		@conversations = $.parseJSON($("#conversations").val())
 		@engagements = window.engagements = $.parseJSON($("#engagements").val())
 		@initialize_posts($(".conversation"))
-		@initialize_ask()
-		@asker_twi_screen_names = $.parseJSON($("#asker_twi_screen_names").val())
-
-		$('.best_in_place').on "ajax:success", ->
-			# alert('broken success callback - this does not fire')
+		@askers = $.parseJSON($("#asker_twi_screen_names").val())
+		@is_admin = $("#is_admin").val() == "true"
+		$.each @askers, (i, p) => @asker_twi_screen_names.push p.twi_screen_name
 
 		$("#respond_modal").on "hidden", => 
 			$("#respond_modal").find("textarea").val("")
@@ -59,67 +51,17 @@ class @Manager extends @Feed
 			else
 				$.each @posts, (i, p) => p.element.fadeOut()
 				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
-		$("#add_tag .btn").on "click", (e) => @add_tag(e)
 
-		@hotkeys = new Hotkeys
-		@load_stats()
+		@hotkeys = new Hotkeys @is_admin
+		@load_stats() if @is_admin
+		$('.conversation').first().addClass 'active'
+		$(".back").on "click", => @hotkeys.hide_panel()
 
 	initialize_posts: (posts) => 
 		$.each posts, (i, post) =>
 			id = parseInt $(post).children('.post').attr('post_id')
 			active_record = window.engagements[id]
 			@posts.push(new Post post, active_record)
-
-	initialize_ask: => 
-		ask_element = $("#send_tweet .question_container")
-		textarea = ask_element.find("textarea")
-		count = ask_element.find(".character_count")
-		button = ask_element.find(".tweet_button")
-		button.on "click", => 
-			if (140 - textarea.val().length) > 0
-				button.button("loading")
-				params = 
-					"text" : textarea.val()
-					"asker_id" : @id
-				$.ajax '/manager_post',
-					type: 'POST'
-					data: params
-					success: (e) =>
-						textarea.hide()
-						button.button("reset")
-						# ask_element.find(".post_url").attr "href", "http://twitter.com/#{@user_name}/status/#{e}"
-						ask_element.removeClass("focus").addClass("blur")
-						ask_element.find(".ask_success").fadeIn(250)
-					error: =>
-						textarea.hide()
-						button.button("reset")
-						ask_element.removeClass("focus").addClass("blur")
-						ask_element.find(".ask_success").text("Sorry, something went wrong!").fadeIn(250)
-		textarea.on "focus", => 
-			ask_element.removeClass("blur").addClass("focus")
-			# if textarea.val() == ""
-				# textarea.val("@#{@name} ")
-			update_character_count()
-		textarea.on "blur", => 
-			if textarea.val() == "@#{@name} " or textarea.val() == ""
-				textarea.val("")
-				# ask_element.removeClass("focus").addClass("blur")
-			update_character_count()
-		textarea.on "keydown", => update_character_count()
-		$(".ask_again").on "click", =>
-			ask_element.find(".ask_success").hide()
-			textarea.val("").fadeIn(250)
-		update_character_count = ->
-			text = 140 - textarea.val().length
-			count.text(text)
-			if text < 0
-				button.addClass("disabled")
-			else if text < 10
-				count.css "color", "red"
-				button.removeClass("disabled")
-			else
-				count.css "color", "#333"
-				button.removeClass("disabled")
 
 	initialize_character_count: => 
 		response_container = $(".response_container")
@@ -141,15 +83,6 @@ class @Manager extends @Feed
 				count.css "font-weight", "normal"
 				count.css "color", "#333"
 				button.removeClass("disabled")
-
-	add_tag: (e) =>
-		$.ajax "/posts/add_tag",
-			type: 'POST',
-			data: 
-				"post_id" : @id,
-				"tag_name" : name
-			success: (status) =>
-				@update_feedback_tag_status(element, status) if element		
 
 	load_stats: ->
 		graph_options =
@@ -208,7 +141,17 @@ class Post
 		@element.find(".quick-reply-yes").on "click", => @quick_reply true
 		@element.find(".quick-reply-no").on "click", => @quick_reply false
 		@element.find(".quick-reply-tell").on "click", => @quick_reply false, true
+		@element.find(".quick-reply-skip").on "click", => 
+			event.stopPropagation()
+			conv = @element.find('.post').closest(".conversation")
+			conv.addClass("dim")
+			if conv.next().length == 0
+				$('.conversation.active').removeClass "active"
+			else
+				window.feed.hotkeys.prev()
+
 		@element.find(".create-exam").on "click", => feed.hotkeys.toggle_exam_panel false
+		@element.find(".add_email").on "click", => feed.hotkeys.toggle_exam_panel false
 		@element.find(".btn.scripts").on "click", => feed.hotkeys.toggle_scripts_panel false
 
 		@element.find(".script").on "click", (e) => @scripted_response($(e.target).attr("script_text"))
@@ -224,10 +167,7 @@ class Post
 			disabled: true
 		})
 
-		@element.find('.btn-hide, .btn-flag').on "ajax:success", -> 
-			puts $(this)
-			$(this).parents(".conversation").toggleClass "dim"
-
+		@element.find('.btn-hide, .btn-flag').on "ajax:success", -> $(this).parents(".conversation").toggleClass "dim"
 	expand: (e) =>
 		if $(e.target).hasClass("link_post")
 			@link_post($(e.target))
@@ -307,7 +247,6 @@ class Post
 					$("#respond_modal").find(".correct").removeClass("active")
 					$("#respond_modal").find(".incorrect").removeClass("active")					
 				success: (e) =>
-					# post.parents(".conversation").css("opacity", 0.8)
 					post.closest(".conversation").addClass "dim"
 					if e == false
 						message = $(".response_message")
@@ -339,10 +278,19 @@ class Post
 
 		$("time.timeago").timeago()
 		textarea.focus()
-		$(".asker_name").on "click", (e) => 
-			button = $(e.target).parents(".asker_list").first().find(".btn").first()
+		$(".refer").on "click", (e) => 
+			source = $(e.target)			
+			button = source.parents(".asker_list").first().find(".btn").first()
+
+			if source.parents(".refer").first().hasClass('ugc')
+				type = 'ugc'
+				asker_id = @asker_id
+			else 
+				type = 'popular'
+				asker_id = source.attr 'asker_id'
 			params =
-				'asker_twi_screen_name': $(e.target).text(),
+				'type': type,
+				'asker_id': asker_id,
 				'user_twi_screen_name': button.text().replace("@", ""),
 				'via': username
 			$.ajax '/refer_a_friend',
@@ -356,9 +304,9 @@ class Post
 	highlight_user_names: (text, re = /@[A-Za-z_0-9]*/g, asker_list = "") =>
 		user_names = text.match(re) || []
 		user_names = user_names.filter (e) -> $.inArray(e.replace('@', '').toLowerCase(), window.feed.asker_twi_screen_names) < 0
-		asker_list += "<li class='asker_name'><a>#{name}</a></li>" for name in window.feed.asker_twi_screen_names
+		asker_list += "<li class='refer ugc'><a>Send UGC</a></li><li class='divider'></li>"
+		asker_list += "<li class='refer asker_name'><a asker_id='#{asker.id}'>#{asker.twi_screen_name}</a></li>" for asker in window.feed.askers
 		text = text.replace name, "<div class='btn-group asker_list'><a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#''>#{name}<span class='caret'></span></a><ul class='dropdown-menu'>#{asker_list}</ul></div>" for name in user_names
-		# text = text.replace name, "<div class='btn btn-mini user_name'>#{name}</div>" for name in user_names
 		text
 
 	quick_reply: (correct, tell = false) =>
@@ -375,7 +323,6 @@ class Post
 			"asker_id" : @asker_id
 			"in_reply_to_post_id" : @id
 			"in_reply_to_user_id" : window.feed.engagements[@id]['user_id']
-			# "message" : tweet
 			"username" : post.find('h5 span').html()
 			"correct" : @correct
 			"tell" : tell #just tell the correct answer
@@ -383,7 +330,12 @@ class Post
 
 		if post.closest(".conversation").hasClass "dim"
 			return unless confirm("Reply again to this conversaion?")
-		$.ajax '/manager_response',
+
+		user_id = window.feed.engagements[@id]['user_id']
+		if $.grep(window.feed.conversations[@id].posts, (p) -> return (p.intention == 'grade' or p.intention == 'dm autoresponse') and p.in_reply_to_user_id == user_id).length > 0
+			return unless confirm("Grade this conversaion again?")			
+		route = if window.feed.is_admin then '/manager_response' else '/moderator_response'
+		$.ajax route,
 			type: 'POST'
 			data: params
 			error: (e) => console.log "ajax error tweeting response"
@@ -392,49 +344,10 @@ class Post
 					console.log "twitter failed to send message"
 				else
 					post.closest(".conversation").addClass "dim"
-					console.log "succeeded in sending message"
-					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()
 
-	unlink_post: =>
-		params =
-			"link_to_pub_id" : 0
-			"post_id" : @id
-		$.ajax '/link_to_post',
-			type: 'POST'
-			data: params
-			success: (e) =>
-				@element.find('.link_post').text("link")
-				window.feed.conversations[@id] = {"posts":[]}
-				$("#unlink").button('reset')
-				$("#confirm").modal('hide')
-
-	link_post: (event) =>
-		window.post = event
-		if $.trim(event.text()) == "unlink"
-			window.current_post = @
-			$("#confirm").modal()
-		else
-			post = event.parents('.post').find('.content')
-			$('#link_post_modal').modal(
-				"keyboard" : true
-			)
-			content = $("#link_post_modal .parent_post .content ")
-			content.find("p").text(post.find("p").text())
-			content.find("h5").text(post.find("h5").text())
-			content.find("img").attr("src", post.find("img").attr("src"))
-			$("#link").off "click"
-			$("#link").on "click", =>
-				params =
-					"link_to_pub_id" : $("input:checked").val()
-					"post_id" : @id
-				$.ajax '/link_to_post',
-					type: 'POST'
-					data: params
-					success: (e) =>
-						window.feed.conversations[@id] = {"posts":[]}
-						window.feed.conversations[@id]['posts'].push("publication_id" : $("input:checked").val())
-						$("#link_post_modal").modal('hide')
-						window.post.text("unlink")
+		if !window.feed.is_admin
+			post.closest(".conversation").addClass "dim"
+			window.feed.hotkeys.prev()
 
 	toggle_tag: (name, element = null) =>
 		$.ajax "/posts/toggle_tag",
@@ -455,7 +368,7 @@ class Post
 	retweet: =>
 		$("#retweet_question").button("loading")
 
-		$.ajax "/posts/retweet",
+		$.ajax "/posts/manager_retweet",
 			type: 'POST',
 			data:
 				"post_id" : @id
@@ -466,7 +379,6 @@ class Post
 			success: => @element.toggleClass "dim"
 
 	scripted_response: (script) =>
-		# event.stopPropagation()
 		post = @element.find('.post')
 		parent_index = window.feed.conversations[@id]['posts'].length - 1
 		parent_post = window.feed.conversations[@id]['posts'][parent_index]
@@ -483,18 +395,14 @@ class Post
 			"username" : post.find('h5 span').html()
 
 		if post.closest(".conversation").hasClass "dim"
-			return unless confirm("Reply again to this conversaion?")
+			return unless confirm("Reply again to this conversation?")
 		$.ajax '/manager_response',
 			type: 'POST'
 			data: params
 			error: (e) => console.log "ajax error tweeting response"
 			success: (e) =>
-				if e == false
-					console.log "twitter failed to send message"
-				else
+				unless e == false
 					post.closest(".conversation").addClass "dim"
-					console.log "succeeded in sending message"
-					# $(".post[post_id=#{@id}]").children('.icon-share-alt').show()		
 
 	nudge: (nudge_type_id) => 
 		$.ajax "/askers/nudge",
@@ -503,45 +411,43 @@ class Post
 				"user_id": window.feed.engagements[@id]['user_id']
 				"nudge_type_id": nudge_type_id
 				"asker_id" : @asker_id
-			# complete: => 
-				# $("#retweet_question_modal").modal('hide')	
-				# $('#retweet_question').button('reset')
 			success: => @element.toggleClass "dim"	
 
 class Hotkeys
-	constructor: ->
-		$('.conversation').first().addClass 'active'
+	constructor: (enable_hotkeys) ->
 		$('.active .back').on "click", => @hide_panel()
 
-		$(window).keypress (e) =>
-			return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
-			active_post = @_active_post()
-			puts e.keyCode
-			switch e.keyCode
-				when 106 then @prev()
-				when 107 then @next()
-				when 111 then @open(e)
+		if enable_hotkeys
+			$(window).keypress (e) =>
+				return if e.target and (e.target.tagName == "TEXTAREA" or e.target.tagName == "INPUT")
+				active_post = @_active_post()
+				# puts e.keyCode
+				switch e.keyCode
+					when 106 then @prev()
+					when 107 then @next()
+					when 111 then @open(e)
 
-				when 32 then @accept_autocorrect(e, active_post)
-				when 110 then active_post.quick_reply false if active_post #no
-				when 116 then active_post.quick_reply false, true if active_post #yes
-				when 121 then active_post.quick_reply true if active_post #yes
+					when 32 then @accept_autocorrect(e, active_post)
+					when 110 then active_post.quick_reply false if active_post #no
+					when 116 then active_post.quick_reply false, true if active_post #yes
+					when 121 then active_post.quick_reply true if active_post #yes
 
-				when 102 then $("#best_in_place_post_#{active_post.id}_spam").trigger('click') if active_post
-				when 104 then @toggle_hide active_post
-				when 114 then active_post.retweet() if active_post
+					when 102 then $("#best_in_place_post_#{active_post.id}_spam").trigger('click') if active_post
+					when 104 then @toggle_hide active_post
+					when 114 then active_post.retweet() if active_post
 
-				when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
-				when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle') #@toggle_scripts_panel()
+					when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
+					when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle') #@toggle_scripts_panel()
 
-				when 101 then @toggle_exam_panel()
-				when 98 then @hide_panel()
+					# when 101 then @toggle_exam_panel()
+					when 101 then e.preventDefault(); @toggle_email_panel()
+					when 98 then @hide_panel()
 
 	_before_toggle_panel: ->
 		$('.active .sub').hide()
 		$('.active .dropdown-menu').parent().removeClass('open')
 		$('.active .actions').css overflow: 'hidden'
-		$('.active .actions .container').addClass "more", 400
+		$('.active .actions .container').addClass "more", 400, -> $(".active form input[type='text']").first().focus()
 
 	hide_panel: =>
 		$('.active .actions .container').removeClass "more", 400, ->
@@ -557,24 +463,28 @@ class Hotkeys
 		$('.active .new-exam').show()
 
 		$('.new-exam form').unbind 'ajax:success'
-		$('.active .new-exam form').bind 'ajax:success', -> 
+		$('.active .new-exam form').on 'ajax:success', -> 
 			user_id = $(this).find('input[name="exam[user_id]"]').attr("value")
 			$(this).html("Success: <a href='/tutor?user_id=#{user_id}'>see tutor nudge</a>.").addClass("alert alert-success")
+
+	toggle_email_panel: ->
+		@_before_toggle_panel()
+		$('.active .new-email').show()
+		$('.new-email form input').focus()
+		$('.new-email form').unbind 'ajax:complete'
+		$('.active .new-email form').on 'ajax:complete', -> 
+			$(this).html("Successfully update user email address!").addClass("alert alert-success")			
 
 	accept_autocorrect: (e, active_post) ->
 		e.preventDefault()
 		if active_post
 			autocorrect = active_post.active_record.autocorrect
-			puts autocorrect
 			return if autocorrect == null
 
 			active_post.quick_reply autocorrect
-			# @prev()
 
 	toggle_hide: (post_obj) ->
 		$("#best_in_place_post_#{post_obj.id}_requires_action").trigger('click') if post_obj
-		# post = $('.conversation.active .post')
-		# post.parents(".conversation").toggleClass "dim"
 
 	open: (e) ->
 		post_obj = @_active_post()

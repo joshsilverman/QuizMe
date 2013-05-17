@@ -1,5 +1,5 @@
-window.onload = function(e) {
-  if ($("#graph").length < 1) {
+$(document).ready ( function(e) {
+  if ($("#asker_graph").length < 1) {
     return;
   }
 
@@ -11,7 +11,7 @@ window.onload = function(e) {
   var height = 725;
   var colors = d3.scale.category10();
 
-  var svg = d3.select('#graph')
+  var svg = d3.select('#asker_graph')
     .append('svg')
     .attr('width', width)
     .attr('height', height);
@@ -47,9 +47,7 @@ window.onload = function(e) {
       .size([width, height])
       .linkDistance(130)
       .linkStrength(1)
-      // .friction(0.3)
-      // .charge(-300)
-      .charge(-300)
+      .charge(-250)
       .gravity(0.1)
       .on('tick', tick)
 
@@ -440,4 +438,4 @@ window.onload = function(e) {
     .on('keydown', keydown)
     .on('keyup', keyup);
   restart();
-}
+});
