@@ -62,6 +62,8 @@ gem 'roadie'
 gem 'newrelic_rpm'
 gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
+gem 'carrierwave'
+gem 'fog'
 gem 'best_in_place'
 
 gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
