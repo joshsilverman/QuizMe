@@ -123,18 +123,22 @@ module ManageTwitterRelationships
     
     twi_pending_ids = Post.twitter_request { twitter.friendships_outgoing.ids }
     i = 0
+
     (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
       puts "followback follow twi_user_id #{twi_user_id} on #{twi_screen_name}"
       user = User.find_or_create_by_twi_user_id(twi_user_id)
-      if relationships.where("followed_id = ? and pending = ?", user.id, true).present?
+      user_relationships = relationships.where("followed_id = ?", user.id)
+
+      if relationships.where("pending = ?", true).present?
         puts "Skip followback again -- request pending"
         next
-      else
-        if twi_pending_ids.include? twi_user_id
-          puts "Skip followback -- request pending"
-          relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
-          next
-        end
+      elsif twi_pending_ids.include? twi_user_id
+        puts "Skip followback -- request pending"
+        relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
+        next
+      elsif user_relationships.where("type_id = 4").present?
+        puts "Skip followback -- account was suspended (?)"
+        next
       end
 
       if i >= 1
@@ -144,7 +148,12 @@ module ManageTwitterRelationships
       i += 1
 
       puts "Send request"
-      Post.twitter_request { twitter.follow(twi_user_id) }
+      response = Post.twitter_request { twitter.follow(twi_user_id) }
+      if response.nil?
+        puts "possible suspended acct, setting relationship to pending"
+        relationships.find_or_create_by_followed_id(user.id).update_attribute(:type_id, 4) 
+        next
+      end
       add_follow(user, 1)
     end
   end
