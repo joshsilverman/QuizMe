@@ -148,6 +148,10 @@ class User < ActiveRecord::Base
 		false
 	end
 
+	def is_author?
+		questions.size > 0
+	end
+
 	def twitter_enabled?
 		return true if self.twi_oauth_token and self.twi_oauth_secret
 		return false
