@@ -42,8 +42,9 @@ class FeedsController < ApplicationController
   end
 
   def search
-    questions = Question.where("text ilike ?", "%#{params['query']}%").where("status = 1").order('RANDOM()').limit 200
     @query = params['query']
+    questions = Question.where("text ilike ?", "%#{@query}%").where("status = 1").order('RANDOM()').limit 200
+    topics = Topic.includes(:users).where("name ilike ?", "%#{@query}%")
 
     _publications = Publication.select(["question_id", "max(id) AS id"])\
       .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC') #.limit 25
@@ -51,6 +52,7 @@ class FeedsController < ApplicationController
     
     @suggested_askers = @publications.group_by{|o| o.asker_id}.sort_by {|k, v| v.count}.reverse\
       .map{|k,v|v.first.asker}
+    @suggested_askers += topics.collect(&:users).flatten.uniq
 
     render json: @suggested_askers.to_json
   end

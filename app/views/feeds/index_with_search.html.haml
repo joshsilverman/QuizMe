@@ -1,5 +1,5 @@
 :css
-  body {background-image: url(/assets/home_bg.png) !important;}
+  body {background-image: url(/assets/home_bg.jpg) !important;}
 
 #feeds_home
   #feed_container.index.span10
@@ -18,15 +18,16 @@
           #askers.clearfix
             .header.border-color
               %h3
-                Subjects you can follow & learn:
+                %span.searching{style: "display:none;"}= image_tag "ajax-loader.gif"
+                %span.text Subjects you can follow & learn:
 
             - @askers.each do |asker|
               .asker{'data-asker_id' => asker.id}
-                = image_tag(asker.twi_profile_img_med_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom")
-                %p.twi_name= asker.twi_name
+                = link_to image_tag(asker.twi_profile_img_med_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom"), "/feeds/#{asker.id}", :class => "", target: :_blank
+                %p= link_to asker.twi_name, "/feeds/#{asker.id}", :class => "twi_name", target: :_blank
                 %p.twi_screen_name_cont
                   %span @
-                  %a.twi_screen_name= asker.twi_screen_name
+                  %a.twi_screen_name{href: "http://twitter.com/#{asker.twi_screen_name}", target: :_blank}= asker.twi_screen_name
  
                 %a.twitter-follow-button{'data-screen-name' => asker.twi_screen_name}= " "
 

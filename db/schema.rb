@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130515214257) do
+ActiveRecord::Schema.define(:version => 20130519194902) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -192,6 +192,7 @@ ActiveRecord::Schema.define(:version => 20130515214257) do
   end
 
   add_index "questions", ["created_for_asker_id"], :name => "index_questions_on_created_for_asker_id"
+  add_index "questions", ["text"], :name => "index_questions_on_text"
   add_index "questions", ["topic_id"], :name => "index_questions_on_topic_id"
   add_index "questions", ["user_id"], :name => "index_questions_on_user_id"
 

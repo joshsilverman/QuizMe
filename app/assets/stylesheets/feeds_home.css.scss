@@ -83,11 +83,20 @@
 				border-radius: 5px 5px 0 0;
 				background: #F5F5F5;
 				padding: 10px;
-			}
 
-			h3 {
-				font-size:22px;
-				line-height:1.32em;
+				h3 {
+					font-size:22px;
+					line-height:1.32em;
+
+					.searching {
+						position:relative;
+						top:-2px;
+						display:inline;
+					}
+					.text {
+						display:inline;
+					}
+				}
 			}
 
 			.asker {
@@ -111,6 +120,7 @@
 					overflow: hidden;
 					text-overflow:ellipsis;
 					white-space: nowrap;
+					display:inline-block;
 				}
 
 				.twi_screen_name_cont {

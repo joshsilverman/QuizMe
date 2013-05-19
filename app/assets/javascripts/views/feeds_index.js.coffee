@@ -52,13 +52,16 @@ class FeedsHome
 		feeds_home.query_timeout = setTimeout =>
 				feeds_home.query_xhr.abort() if feeds_home.query_xhr
 				q = $("#query")[0].value
+				return if q.length < 2
+				$('.header .searching').show()
 				feeds_home.query_xhr = $.post "/feeds/search", {query: q}, (r) ->
 					$('.asker').hide()
 					$.each r, (i, asker) ->
 						$(".asker[data-asker_id=#{asker.id}]").show()
 					feeds_home.load_follow_buttons()
-					$("#askers h3").html "Search results for \"#{q}\""
-			, 750
+					$("#askers h3.text").html "Search results for \"#{q}\""
+					$('.header .searching').hide()
+			, 500
 
 	afterfollow: (e) ->
 		$.gritter.add
