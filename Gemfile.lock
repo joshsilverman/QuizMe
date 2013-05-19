@@ -336,10 +336,11 @@ GEM
       faraday (~> 0.8, < 0.10)
       multi_json (~> 1.0)
       simple_oauth (~> 0.2)
-    twitter-bootstrap-rails (2.2.6)
+    twitter-bootstrap-rails (2.1.1)
       actionpack (>= 3.1)
-      execjs
+      less-rails (~> 2.2.2)
       railties (>= 3.1)
+      therubyracer (= 0.10.1)
     tzinfo (0.3.37)
     uglifier (1.2.6)
       execjs (>= 0.3.0)
@@ -407,6 +408,6 @@ DEPENDENCIES
   timecop
   turn
   twitter (= 4.5.0)
-  twitter-bootstrap-rails (= 2.2.6)
+  twitter-bootstrap-rails (= 2.1.1)
   uglifier (= 1.2.6)
   unicorn

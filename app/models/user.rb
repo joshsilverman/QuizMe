@@ -87,6 +87,10 @@ class User < ActiveRecord::Base
   scope :wisr_author, where(:author_segment => 3)
   scope :handle_author, where(:author_segment => 4)
 
+  def self.tfind name
+  	self.find_by_twi_screen_name name
+  end
+
   def twi_profile_img_med_url
   	twi_profile_img_url.sub("_normal.", "_reasonably_small.")
   end

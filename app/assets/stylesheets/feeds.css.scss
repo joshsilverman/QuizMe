@@ -20,6 +20,11 @@ body {
 	border-bottom-right-radius: 0px !important;														
 }
 
+#feed_container {
+	float: none;
+	margin: auto;
+}
+
 #feed_container.index {
 	#wrapper {
 		background: rgba(255,255,255,.05);

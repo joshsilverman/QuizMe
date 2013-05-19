@@ -69,7 +69,7 @@ class FeedsController < ApplicationController
 
         # publications, posts and user responses
         @publications, posts = Publication.recently_published_by_asker(@asker)
-        actions = Publication.recent_responses_by_asker(posts)
+        actions = Publication.recent_responses_by_asker(@asker, posts)
 
         # user specific responses
         @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
