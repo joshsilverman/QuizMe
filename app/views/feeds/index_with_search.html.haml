@@ -25,7 +25,7 @@
                 = image_tag(asker.twi_profile_img_med_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom")
                 %p.twi_name= asker.twi_name
                 %p.twi_screen_name_cont
-                  @
+                  %span @
                   %a.twi_screen_name= asker.twi_screen_name
  
                 %a.twitter-follow-button{'data-screen-name' => asker.twi_screen_name}= " "

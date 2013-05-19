@@ -98,6 +98,7 @@
 
 				img {
 					height: 128px;
+					width: 128px;
 					box-shadow: 0px 0px 1px purple;
 				}
 				.twi_name {
@@ -115,7 +116,7 @@
 				.twi_screen_name_cont {
 					color:#888;
 					font-size:12px;
-					.twi_screen_name {
+					span, .twi_screen_name {
 						margin-left: -3px;
 						color:#888;
 						text-overflow:ellipsis;
@@ -159,6 +160,7 @@
 
 					img {
 						height:115px;
+						width:115px;
 					}
 
 					.twi_name {
@@ -192,9 +194,11 @@
 
 				.asker {
 					padding-right:4%;
+					height: 190px;
 
 					img {
 						height:100px;
+						width:100px;
 					}
 
 					.twi_name {
@@ -231,16 +235,18 @@
 
 				.asker {
 					padding-right:4%;
+					height: 175px;
 
 					img {
-						height:90px;
+						height:85px;
+						width:85px;
 					}
 
 					.twi_name {
-						max-width: 90px;
+						max-width: 85px;
 					}
 					.twi_screen_name {
-						max-width: 80px;
+						max-width: 75px;
 					}
 				}
 			}
