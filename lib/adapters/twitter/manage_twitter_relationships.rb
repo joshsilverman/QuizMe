@@ -150,7 +150,7 @@ module ManageTwitterRelationships
       puts "Send request"
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil?
-        puts "possible suspended acct, setting relationship to pending"
+        puts "possible suspended acct, setting relationship to suspended"
         relationships.find_or_create_by_followed_id(user.id).update_attribute(:type_id, 4) 
         next
       end
