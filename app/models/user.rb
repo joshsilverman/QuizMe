@@ -241,12 +241,13 @@ class User < ActiveRecord::Base
 		self.update_attributes params	
 	end
 
-	def self.get_activity_summary recipient, activity_hash = {}
-    recipient.posts.group_by(&:in_reply_to_user_id).each do |asker_id, posts|
+	def activity_summary since = 99.years.ago
+		activity_hash = {}
+    posts.answers.where('created_at > ?', since).group_by(&:in_reply_to_user_id).each do |asker_id, period_posts|
       activity_hash[asker_id] = {:count => 0, :correct => 0}
-      activity_hash[asker_id][:count] = posts.count
-      activity_hash[asker_id][:correct] = posts.count { |post| post.correct }
-      activity_hash[asker_id][:lifetime_total] = Post.answers.where("user_id = ? and in_reply_to_user_id = ?", recipient.id, asker_id).size
+      activity_hash[asker_id][:count] = period_posts.count
+      activity_hash[asker_id][:correct] = period_posts.count { |post| post.correct }
+      activity_hash[asker_id][:lifetime_total] = posts.answers.where("in_reply_to_user_id = ?", asker_id).size
     end
 
     activity_hash.sort_by { |k, v| v[:count] }.reverse

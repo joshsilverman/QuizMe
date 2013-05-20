@@ -722,7 +722,7 @@ class Asker < User
 
   def self.compose_progress_report recipient, asker_hash, script = "Last week:"
     primary_asker = asker_hash[recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first].first
-    activity_hash = User.get_activity_summary(recipient)
+    activity_hash = recipient.activity_summary
 
     ugc_answered_count = recipient.get_my_questions_answered_this_week_count
 
