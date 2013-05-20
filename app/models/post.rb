@@ -589,7 +589,8 @@ class Post < ActiveRecord::Base
           asker_id = asker.id
         end
 
-        dm_history = Post.where("interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, post.user_id, post.user_id, asker_id).order("created_at DESC")
+        dm_history = Post.where("interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", asker_id, post.user_id, post.user_id, asker_id).includes(:user).order("created_at DESC")
+        puts dm_history.count
         dm_history.each do |dm|
           conversations[post.id][:posts] << dm
           conversations[post.id][:users][dm.user.id] = dm.user if conversations[post.id][:users][dm.user.id].nil?

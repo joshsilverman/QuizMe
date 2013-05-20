@@ -370,18 +370,12 @@ class FeedsController < ApplicationController
   end
 
   def manage
-    #base selection
-    @posts = Post.includes(:tags, :conversation)
-    if params[:id]
-      @asker = Asker.find params[:id]
-      @posts = @posts.where("posts.in_reply_to_user_id = ?", params[:id])
-    end
-
-    @linked_box_count = @posts.linked_box.count
-    @unlinked_box_count = @posts.unlinked_box.count
-    @autocorrected_box_count = @posts.autocorrected_box.count
+    @linked_box_count = Post.linked_box.count
+    @unlinked_box_count = Post.unlinked_box.count
+    @autocorrected_box_count = Post.autocorrected_box.count
 
     #filter for retweet, spam, starred
+    @posts = Post.includes(:tags, :conversation)
     if params[:filter] == 'retweets'
       @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'spam'
@@ -409,7 +403,7 @@ class FeedsController < ApplicationController
     @tags = Tag.all
     @asker_twi_screen_names = Asker.askers_with_id_and_twi_screen_name.sort_by! { |a| a.twi_screen_name.downcase }.each { |a| a.twi_screen_name = a.twi_screen_name.downcase }
     @nudge_types = NudgeType.all
-    @posts = @posts.page(params[:page]).per(50)
+    @posts = @posts.page(params[:page]).per(25)
 
     if @asker
       @questions = @asker.publications.where(:published => true)\

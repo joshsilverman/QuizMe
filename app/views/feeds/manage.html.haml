@@ -1,4 +1,5 @@
 - admin = current_user.is_role? "admin"
+- moderator = current_user.is_role? "moderator"
 
 :css
 	body {
@@ -101,12 +102,60 @@
 									- if params[:filter] == 'ugc'
 										= render :partial => "ugc_actions", :locals => {:post => post}
 									- elsif admin
-										= render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
+										/ = render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
+
+										.actions
+											.container
+												.main
+													.btn-group.linked
+														- if question
+															%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
+															%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
+															%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+															%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+															%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+														- else
+															%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+															%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+
+														%a.btn.retweet= "<u>r</u>etweet".html_safe
+														.dropdown.btn
+															%span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+															%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+																- SCRIPTS.each do |name, text|
+																	%li
+																		%a.script{script_name: name, script_text: text}= name.to_s.humanize
+																- if post.is_dm? and admin
+																	%li.divider
+																	- @nudge_types.each do |nudge_type|
+																		%li
+																			%a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
+																
+													.btn-group
+														%a.btn.open= "<u>o</u>pen".html_safe
+														/ %a.btn.create-exam= "<u>e</u>xam".html_safe
+														%a.btn.add-email= "<u>e</u>mail".html_safe
+
+														%a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
+														%ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+															%li
+																- tags = post.tags.collect(&:name)
+																- @tags.each do |tag|
+																	%a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
+
+												.sub.new-email
+													.ios-arrow-left.back{title: "Back"}
+													.form-inline
+														= form_for(post.user, remote: true) do |f|
+															= f.text_field "email", :class => "input-small", :placeholder => "Email", :type => "text"
+															= f.button "Add", :class => "btn btn-primary", :type => "submit"
+
+
 									- else
 										= render :partial => "moderator_actions", :locals => {:post => post, :question => question}
 
 					.pagination-wrapper
-						= paginate @posts if defined? current_page
+						= paginate @posts unless moderator
 
 = render :partial => "respond_modal"
 = render :partial => "question_modal"
