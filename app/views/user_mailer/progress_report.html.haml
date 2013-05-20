@@ -1,0 +1,32 @@
+= stylesheet_link_tag "application"
+
+:css 
+  body {
+    background: #FCFCFC;
+  }
+  .navbar .brand {
+    margin-left:0;
+  }
+
+#progress_report
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      %a.brand{:href => "http://www.wisr.com", :target => "_blank"}
+        Wisr
+  .progress_report_body
+    .hello
+      %p
+        = "#{["Hey", "Hi"].sample} #{@user.name.split(' ')[0]},"
+      %p Here's your progress from the past week or so:
+    .asker_progress
+      - askers = [Asker.find(18), Asker.find(19), Asker.find(31)]
+      - askers.each do |asker|
+        .asker.well.well-small
+          %table
+            %tr
+              %td.icon= image_tag(asker.twi_profile_img_url, :class => "rounded")
+              %td.description
+                = "You answered 45 questions on #{asker.twi_screen_name} (55 all time)! You're 32% of the way through the material."   
+          
+              
+              

@@ -9,4 +9,8 @@ class UserMailer < ActionMailer::Base
 
     mail(:to => "#{user.name} <#{user.email}>", :subject => "Wisr - Recent metrics & experiments")
   end
+
+  def progress_report user
+  	
+  end
 end

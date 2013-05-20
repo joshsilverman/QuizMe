@@ -123,4 +123,10 @@ class UsersController < ApplicationController
 
     render "user_mailer/newsletter", :layout => false
   end
+
+  def progress_report
+    @user = User.find(3)
+    
+    render "user_mailer/progress_report", :layout => false
+  end
 end

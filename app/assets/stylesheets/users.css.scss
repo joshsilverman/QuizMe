@@ -8,6 +8,30 @@
   }
 }
 
+#progress_report {
+	margin: 10px;
+
+	.asker {
+		margin-bottom: 10px;
+		
+		p {
+			display: inline;
+			margin-left: 11px;
+			position: absolute;
+		}
+
+		img {
+			height: 32px;
+			width: 32px;
+			max-width: none;
+		}
+
+		.description {
+			padding-left: 10px;
+		}
+	}
+}
+
 #newsletter {
 	font-family: Verdana;
 	color: #1F1F1F;

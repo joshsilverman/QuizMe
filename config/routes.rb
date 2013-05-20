@@ -86,6 +86,7 @@ Quizmemanager::Application.routes.draw do
   match "/tags" => 'posts#tags'
 
   match "/newsletter" => "users#newsletter"
+  match '/progress_report' => 'users#progress_report'
 
   resources :questions
   resources :answers
