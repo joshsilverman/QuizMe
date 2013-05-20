@@ -119,13 +119,14 @@ class UsersController < ApplicationController
     @name = @user.name || @user.twi_name
     @weeks = (Date.today - Date.new(2012,8,20)).to_i/7
 
-
-
     render "user_mailer/newsletter", :layout => false
   end
 
   def progress_report
-    @user = User.find(3)
+    @user = User.find(20)
+    @user = User.find_by_twi_screen_name('LarryCox6')
+    @activity_summary = @user.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true, include_moderated: true)
+    @asker_hash = Asker.published.group_by(&:id)
     
     render "user_mailer/progress_report", :layout => false
   end

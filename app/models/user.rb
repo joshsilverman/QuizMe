@@ -241,16 +241,36 @@ class User < ActiveRecord::Base
 		self.update_attributes params	
 	end
 
-	def activity_summary since = 99.years.ago
+	def activity_summary options = {}
+		options.reverse_merge!(:since => 99.years.ago)
 		activity_hash = {}
-    posts.answers.where('created_at > ?', since).group_by(&:in_reply_to_user_id).each do |asker_id, period_posts|
-      activity_hash[asker_id] = {:count => 0, :correct => 0}
-      activity_hash[asker_id][:count] = period_posts.count
-      activity_hash[asker_id][:correct] = period_posts.count { |post| post.correct }
-      activity_hash[asker_id][:lifetime_total] = posts.answers.where("in_reply_to_user_id = ?", asker_id).size
+		
+		answers = {}
+    posts.answers.where('created_at > ?', options[:since]).group_by(&:in_reply_to_user_id).each do |asker_id, period_posts|
+      answers[asker_id] = {:count => 0, :correct => 0}
+      answers[asker_id][:count] = period_posts.count
+      answers[asker_id][:correct] = period_posts.count { |post| post.correct }
+      answers[asker_id][:lifetime_total] = posts.answers.where("in_reply_to_user_id = ?", asker_id).size
+      if options[:include_progress]
+       	answer_count = posts.answers.where("in_reply_to_user_id = ? and correct = ?", asker_id, true).collect(&:in_reply_to_question_id).uniq
+       	total_questions = Question.where("created_for_asker_id = ?", asker_id).size
+       	answer_count.delete(nil)
+       	answers[asker_id][:progress] = ((answer_count.size.to_f / total_questions.to_f) * 100).ceil
+			end
+    end
+    activity_hash[:answers] = answers
+
+    if options[:include_ugc]
+    	activity_hash[:ugc] = {}
+    	activity_hash[:ugc][:answered_count] = get_my_questions_answered_this_week_count
+    	activity_hash[:ugc][:written_count] = questions.where('created_at > ?', options[:since]).size
     end
 
-    activity_hash.sort_by { |k, v| v[:count] }.reverse
+    if options[:include_moderated]
+    	activity_hash[:moderated] = Post.where("moderator_id = ? and updated_at > ?", id, options[:since]).size
+    end
+
+		activity_hash
   end
 
   def get_my_questions_answered_this_week_count

@@ -10,7 +10,11 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{user.name} <#{user.email}>", :subject => "Wisr - Recent metrics & experiments")
   end
 
-  def progress_report user
-  	
+  def progress_report recipient
+    @user = recipient
+    @activity_summary = @user.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true)
+    @asker_hash = Asker.published.group_by(&:id)
+    
+    mail(:to => "#{@user.name} <#{@user.email}>", :subject => "Wisr - Progress Report")
   end
 end

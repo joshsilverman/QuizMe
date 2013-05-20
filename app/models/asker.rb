@@ -695,13 +695,24 @@ class Asker < User
 
   ## Weekly progress reports
 
-  def self.send_weekly_progress_dms
+  def self.send_progress_reports
     recipients = Asker.select_progress_report_recipients()
-    Asker.send_progress_report_dms(recipients)
+    email_recipients = recipients.select { |r| r.email }
+    dm_recipients = (email_recipients - recipients)
+
+    Asker.send_progress_report_emails(email_recipients)
+    Asker.send_progress_report_dms(dm_recipients)
   end
 
   def self.select_progress_report_recipients
     User.includes(:posts).not_asker_not_us.where("posts.correct is not null and posts.created_at > ? and posts.in_reply_to_user_id in (?)", 1.week.ago, Asker.ids).reject { |user| user.posts.size < 3 }
+  end
+
+  def self.send_progress_report_emails recipients
+    asker_hash = Asker.all.group_by(&:id)
+    recipients.each do |recipient|
+      UserMailer.progress_report(recipient).deliver
+    end
   end
 
   def self.send_progress_report_dms recipients, asker_followers = {}
@@ -722,7 +733,7 @@ class Asker < User
 
   def self.compose_progress_report recipient, asker_hash, script = "Last week:"
     primary_asker = asker_hash[recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first].first
-    activity_hash = recipient.activity_summary
+    activity_hash = recipient.activity_summary(since: 1.week.ago)
 
     ugc_answered_count = recipient.get_my_questions_answered_this_week_count
 

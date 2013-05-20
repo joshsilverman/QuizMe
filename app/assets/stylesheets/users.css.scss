@@ -9,9 +9,24 @@
 }
 
 #progress_report {
-	margin: 10px;
+	font-family: Verdana;
+	color: #1F1F1F;
+	background:#fcfcfc;
 
-	.asker {
+/*	.progress_report_body {
+		margin: 10px;
+	}*/
+	.hello, .asker_progress, .signature, .unsubscribe {
+		margin: 10px;
+	}
+
+	.hello {
+		margin-bottom: 15px;
+		margin-left: 15px;
+		margin-top: 25px;
+	}
+
+	.asker, .ugc {
 		margin-bottom: 10px;
 		
 		p {
@@ -28,7 +43,18 @@
 
 		.description {
 			padding-left: 10px;
+			font-size: 13px;
 		}
+	}
+
+	.ugc {
+		background: white;
+		border: 1px solid #ddd;
+		padding: 9px !important;
+	}
+
+	.unsubscribe {
+		padding-bottom: 20px;
 	}
 }
 

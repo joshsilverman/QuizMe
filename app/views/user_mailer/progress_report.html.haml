@@ -7,6 +7,9 @@
   .navbar .brand {
     margin-left:0;
   }
+  blockquote .unsubscribe, .WordSection1 {
+    display: none !important;
+  }
 
 #progress_report
   .navbar.navbar-fixed-top
@@ -19,14 +22,42 @@
         = "#{["Hey", "Hi"].sample} #{@user.name.split(' ')[0]},"
       %p Here's your progress from the past week or so:
     .asker_progress
-      - askers = [Asker.find(18), Asker.find(19), Asker.find(31)]
-      - askers.each do |asker|
+      - @activity_summary[:answers].each do |asker_id, activity|
+        - asker = @asker_hash[asker_id].first
         .asker.well.well-small
           %table
             %tr
               %td.icon= image_tag(asker.twi_profile_img_url, :class => "rounded")
               %td.description
-                = "You answered 45 questions on #{asker.twi_screen_name} (55 all time)! You're 32% of the way through the material."   
-          
-              
-              
+                = "You answered #{pluralize(activity[:count], 'question')} on "
+                = succeed '.' do
+                  %a{href: "http://www.wisr.com/feeds/#{asker_id}", target: "_blank"}= "#{asker.twi_screen_name}"
+                = "That's #{activity[:lifetime_total]} all time! " if activity[:lifetime_total] > activity[:count]
+                = "You've now learned #{activity[:progress]}% of the material." if activity[:progress] > 10
+      - if @activity_summary[:ugc] and (@activity_summary[:ugc][:written_count] > 0 or @activity_summary[:ugc][:answered_count] > 0)
+        - written = @activity_summary[:ugc][:written_count]
+        - answered = @activity_summary[:ugc][:answered_count]
+        .ugc.well.well-small
+          %table
+            %tr
+              %td.icon= image_tag(@user.twi_profile_img_url, :class => "rounded")
+              %td.description
+                = "You wrote #{pluralize(written, 'question')}. " if written > 0
+                = "Questions that you wrote were answered #{pluralize(answered, 'time')}." if answered > 0
+
+      - if @activity_summary[:moderated] and @activity_summary[:moderated] > 0
+        .ugc.well.well-small
+          %table
+            %tr
+              %td.icon= image_tag(@user.twi_profile_img_url, :class => "rounded")
+              %td.description
+                = "You moderated #{pluralize(@activity_summary[:moderated], 'post')}. Thanks!"          
+    .signature
+      %p Respond to this email if you have an idea for how we can improve, what new subjects you'de like to learn about, or what else we can include in this email!
+      %p Best, 
+      %p Josh and Jason
+    %hr
+    .unsubscribe
+      Don't want to receive these emails?
+      = succeed '.' do
+        %a{href: "http://www.wisr.com/users/#{@user.id}/unsubscribe"} Unsubscribe
