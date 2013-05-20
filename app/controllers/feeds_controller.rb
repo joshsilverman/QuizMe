@@ -355,6 +355,7 @@ class FeedsController < ApplicationController
     @posts = Post.includes(:tags, :conversation).linked_box.not_dm.\
       joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id").\
       where("parents.question_id IS NOT NULL").\
+      where("posts.user_id <> ?", current_user.id).\
       where("posts.in_reply_to_user_id IN (?)", current_user.follows.where("role = 'asker'")).\
       where("posts.moderator_id IS NULL").order("random()").limit(10).\
       sort_by{|p| p.created_at}.reverse

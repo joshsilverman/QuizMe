@@ -47,6 +47,7 @@ class Post < ActiveRecord::Base
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
   scope :not_autocorrected, where("posts.autocorrect IS NULL")
+  scope :moderated, where("posts.moderator_id IS NOT NULL")
 
   scope :tagged, joins(:tags).uniq
 
