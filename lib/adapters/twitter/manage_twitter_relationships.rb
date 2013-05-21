@@ -57,6 +57,7 @@ module ManageTwitterRelationships
 
     followback(twi_follower_ids) unless twi_follower_ids.blank?
     unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
+    unfollow_inactive(twi_follows_ids) unless twi_follows_ids.blank?
   end
 
   # FOLLOWS METHODS
@@ -85,7 +86,11 @@ module ManageTwitterRelationships
       Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       remove_follow(user)
     end
-  end  
+  end 
+
+  def unfollow_inactive twi_follows_ids, limit = 1.month.ago
+    inactive_users = follows.includes(:posts).where( :posts => { :user_id => nil } )
+  end 
 
   def add_follow user, type_id = nil
     relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
