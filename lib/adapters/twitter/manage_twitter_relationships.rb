@@ -88,8 +88,11 @@ module ManageTwitterRelationships
     end
   end 
 
-  def unfollow_inactive twi_follows_ids, limit = 1.month.ago
-    inactive_users = follows.includes(:posts).where( :posts => { :user_id => nil } )
+  def unfollow_oldest_inactive_user limit = 3.months.ago
+    if oldest_inactive_user = follows.includes(:posts).where("users.created_at < ? and posts.user_id is null", limit).order("users.created_at ASC").limit(1).first
+      Post.twitter_request { twitter.unfollow(oldest_inactive_user.twi_user_id) }
+      remove_follow(oldest_inactive_user)
+    end
   end 
 
   def add_follow user, type_id = nil

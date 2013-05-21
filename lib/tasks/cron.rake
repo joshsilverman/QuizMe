@@ -62,6 +62,7 @@ end
 
 task :segment_users => :environment do
   User.update_segments()
+  Asker.published.each { |asker| asker.unfollow_oldest_inactive_user() }
 end
 
 task :send_progress_reports => :environment do
