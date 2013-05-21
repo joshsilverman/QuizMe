@@ -534,17 +534,68 @@ class Asker < User
       :last_interaction_at => user_post.created_at,
       :last_answer_at => user_post.created_at
     })
-    request_ugc(answerer)
+
     nudge(answerer)
+    after_answer_action answerer
+
     Post.trigger_split_test(answerer.id, "targeted mention script (answers)")
   end 
 
+  def after_answer_action answerer
+    actions = [
+      Proc.new {|answerer| request_ugc(answerer)},
+      Proc.new {|answerer| request_mod(answerer)}
+    ].shuffle
+
+    actions.each do |action|
+      break if action.call answerer
+    end
+  end
+
+  def request_mod user
+    return false unless user.lifecycle_above? 3
+    return false if user.transitions.lifecycle.where('created_at > ?', 1.hour.ago).present?
+    return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 2.days.ago).present?
+    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2).try :[], 1
+    return false if llast_solicitation.present? and Post.where(moderator_id: user.id).where("updated_at > ?", llast_solicitation.created_at).empty?
+
+    script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
+      "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage", 
+      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/feeds/mod_manage")
+
+    Post.dm(self, user, script, {intention: 'request mod'}) 
+  end
+
+  def request_ugc user
+    return false if Question.exists?(:user_id => user.id)
+    return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc')
+    return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
+
+    script = Post.create_split_test(user.id, "ugc script v3.0", 
+      "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
+      "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1",
+      "Want to post a question of your own? You can enter it here: wisr.com/feeds/{asker_id}?q=1"
+    )
+    script = script.gsub "{asker_id}", self.id.to_s
+    script = script.gsub "{asker_name}", self.twi_screen_name
+
+    if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
+      Post.dm(self, user, script, {
+        :intention => "solicit ugc"
+      })
+    else
+      Post.tweet(self, script, {
+        :reply_to => user.twi_screen_name,
+        :in_reply_to_user_id => user.id,
+        :intention => 'solicit ugc',
+        :interaction_type => 2
+      })
+    end
+    return true
+  end
 
   def nudge answerer
     return unless client and nudge_type = client.nudge_types.automatic.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
-
-    puts "in nudge:"
-    puts self.twi_screen_name, client.to_json
 
     if client.id == 14699
       nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "SATHabit copy (click-through) < 123 >", 
@@ -553,9 +604,6 @@ class Asker < User
         "Want to see how you would score on the SAT? Check it out: {link}",
         "Hey, if you're interested, you can get a personalized SAT question of the day at {link}",
         "You've answered {x} questions, with just {25-x} more you could have gotten an SAT score! Get one here: {link}"
-        # "Great work so far! If you're interested, I have a more rigorous SAT prep course:",
-        # "Howdy, are you taking the SAT soon? I have a very helpful (free) course:",
-        # "If you're taking the SAT soon, I have a course you might find helpful :) Check it out:"
       ))
       if nudge_type.text.include? "{x}"
         question_count = answerer.posts.answers.where(:in_reply_to_user_id => id).size
@@ -573,17 +621,7 @@ class Asker < User
     else
       nudge_type.send_to(self, answerer)
     end
-
-    # elsif client.id == 23624
-    #   nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "InstaEDU copy (click-through) < ? >", 
-    #     "If you're interested, we work with a Biology tutor website. Could this be helpful?", 
-    #     "",
-    #     "",
-    #     ""
-    #   ))      
-    # end
   end
-
 
   ## Update metrics
 
@@ -653,45 +691,6 @@ class Asker < User
     # Events/triggers where posted_via_app doesn't matter
     Post.trigger_split_test(answerer.id, "reengagement intervals (age > 15 days)") if  answerer.age_greater_than 15.days 
   end
-
-
-  ## Solicit UGC
-
-  def request_ugc user
-    if !Question.exists?(:user_id => user.id) and !Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc') and user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size > 9
-      puts "attempting to send ugc request to #{user.twi_screen_name} on handle #{self.twi_screen_name}"
-      script = self.get_ugc_script(user)
-      if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
-        Post.dm(self, user, script, {
-          :intention => "solicit ugc"
-        })
-      else
-        Post.tweet(self, script, {
-          :reply_to => user.twi_screen_name,
-          :in_reply_to_user_id => user.id,
-          :intention => 'solicit ugc',
-          :interaction_type => 2
-        })
-      end
-    end
-  end
-
-  def get_ugc_script user
-    # "You know this material pretty well, how about writing a question or two? DM one to me or enter it at wisr.com/feeds/{asker_id}?q=1", # winner from v1.0
-    # "You're pretty good at this stuff, try writing a question for others to answer! DM me or enter it at wisr.com/feeds/{asker_id}?q=1" # second best from v1.0
-    # "I'd love to have you write a question or two for this handle... if you would, DM me or enter it at wisr.com/feeds/{asker_id}?q=1", # winner from v2.0
-    # "Hey, would you mind writing a question for me to post? Enter it at wisr.com/feeds/{asker_id}?q=1", # second best from v2.0
-    
-    script = Post.create_split_test(user.id, "ugc script v3.0", 
-      "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
-      "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1",
-      "Want to post a question of your own? You can enter it here: wisr.com/feeds/{asker_id}?q=1"
-    )
-    script = script.gsub "{asker_id}", self.id.to_s
-    script = script.gsub "{asker_name}", self.twi_screen_name
-    return script
-  end
-
 
   ## Weekly progress reports
 

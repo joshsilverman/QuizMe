@@ -344,4 +344,49 @@ describe Asker do
 			end
  		end		
 	end
+
+	describe "requests after answer" do
+
+		describe 'ugc' do
+			it 'with a post' do
+				12.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			end
+
+			# it 'unless already sent'
+			# it 'unless less than 10'
+			# it 'unless already written question'
+		end
+
+		describe 'mod' do
+			it 'with a post b' do
+				# 12.times do |i|
+				# 	@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				# end
+				@user.update_attribute :lifecycle_segment, 4
+				puts @user.lifecycle_segment
+				Timecop.travel(Time.now + 1.hour)
+				puts @user.lifecycle_segment
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+			end
+		# 	it 'with a post'
+		# 	it 'with a two posts in 3 days'
+		# 	it 'unless lifecycle less than advanced'
+		# 	it 'unless just transitioned'
+		# 	it 'unless requested in last two days'
+		# 	it 'unless user ignored last two solicitations'
+		end
+
+		# describe 'nudge'  do
+		# 	it 'with a post'
+		# 	it 'unless already nudged'
+		# 	it 'unless no client'
+		# 	it 'unless no active/automatic nudge_type'
+		# 	it 'unless fewer than 3 answers'
+		# 	it 'unless does not follow asker'
+		# end
+	end
 end
