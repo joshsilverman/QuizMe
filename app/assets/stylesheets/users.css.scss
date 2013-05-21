@@ -120,3 +120,18 @@
 		}
 	}
 }
+
+#unsubscribe {
+	padding: 20px;
+	background: white;
+	border: 1px solid #ccc;
+
+	.status {
+		margin-top: 10px;
+	}
+
+	.btn {
+		position: relative;
+		top: -5px;
+	}
+}

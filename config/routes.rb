@@ -110,6 +110,8 @@ Quizmemanager::Application.routes.draw do
   delete "users/:id" => "users#destroy_supporter"
   get "/user/supporters/:id/touch" => "users#touch_supporter"
   match '/users/:id/questions/:asker_id' => 'users#questions'
+  match '/users/:id/unsubscribe' => 'users#unsubscribe_form'
+  post '/unsubscribe' => 'users#unsubscribe'
 
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
@@ -123,12 +125,6 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   resources :exams
-  
-  # #Split Dashboard
-  # mount Split::Dashboard, :at => 'split'
-  # Split::Dashboard.use Rack::Auth::Basic do |username, password|
-  #   username == 'wisr' && password == 'WrWr@ppl3'
-  # end  
 
   root :to => 'feeds#index'
 

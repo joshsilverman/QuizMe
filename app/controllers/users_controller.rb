@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :badges, :questions]
+  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form]
 
   def supporters
     @supporters = User.supporters
@@ -120,6 +120,16 @@ class UsersController < ApplicationController
     @weeks = (Date.today - Date.new(2012,8,20)).to_i/7
 
     render "user_mailer/newsletter", :layout => false
+  end
+
+  def unsubscribe_form
+    @user = User.find(params[:id])
+  end
+
+  def unsubscribe
+    user = User.find(params[:user_id])
+    user.update_attribute :subscribed, false if user.email.downcase == params[:email].downcase
+    render :json => user.subscribed
   end
 
   def progress_report

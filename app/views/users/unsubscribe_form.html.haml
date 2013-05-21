@@ -1,0 +1,10 @@
+.row
+	#unsubscribe.rounded.span6.offset3
+		%form.span6
+			%fieldset
+				%legend To unsubscribe, confirm your email address
+				%input.span3{type: "text", placeholder: "Email address"}
+				%button.btn.btn-primary Submit
+				.status.alert.hide
+
+= hidden_field_tag :user_id, @user.id

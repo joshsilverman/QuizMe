@@ -60,4 +60,5 @@
     .unsubscribe
       Don't want to receive these emails?
       = succeed '.' do
-        %a{href: "http://www.wisr.com/users/#{@user.id}/unsubscribe"} Unsubscribe
+        %a{href: "http://10.0.1.6:5000/users/#{@user.id}/unsubscribe"} Unsubscribe
+        / %a{href: "http://www.wisr.com/users/#{@user.id}/unsubscribe"} Unsubscribe
