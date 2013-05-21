@@ -700,7 +700,7 @@ class Asker < User
     email_recipients = recipients.select { |r| r.email.present? }
     dm_recipients = (recipients - email_recipients)
 
-    # Asker.send_progress_report_emails(email_recipients)
+    Asker.send_progress_report_emails(email_recipients)
     Asker.send_progress_report_dms(dm_recipients)
   end
 
