@@ -709,9 +709,9 @@ class Asker < User
   end
 
   def self.send_progress_report_emails recipients
-    asker_hash = Asker.all.group_by(&:id)
-    recipients.each do |recipient|
-      UserMailer.progress_report(recipient).deliver
+    asker_hash = Asker.published.group_by(&:id)
+    recipients.each do |recipient| 
+      UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
     end
   end
 
