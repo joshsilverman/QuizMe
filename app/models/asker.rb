@@ -697,10 +697,10 @@ class Asker < User
 
   def self.send_progress_reports
     recipients = Asker.select_progress_report_recipients()
-    email_recipients = recipients.select { |r| r.email }
-    dm_recipients = (email_recipients - recipients)
+    email_recipients = recipients.select { |r| r.email.present? }
+    dm_recipients = (recipients - email_recipients)
 
-    Asker.send_progress_report_emails(email_recipients)
+    # Asker.send_progress_report_emails(email_recipients)
     Asker.send_progress_report_dms(dm_recipients)
   end
 
@@ -715,29 +715,29 @@ class Asker < User
     end
   end
 
-  def self.send_progress_report_dms recipients, asker_followers = {}
+  def self.send_progress_report_dms recipients
+    asker_followers = {}
     asker_hash = Asker.all.group_by(&:id)
     recipients.each do |recipient|
       asker, text = Asker.compose_progress_report(recipient, asker_hash)
+      next unless asker and text
       
-      if asker_followers[asker.id].blank?
-        asker_followers[asker.id] = Post.twitter_request { asker.twitter.follower_ids().ids } 
-      end
-      
-      if asker_followers[asker.id].include?(recipient.twi_user_id) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
+      if asker.followers.include?(recipient) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
         Post.dm(asker, recipient, text, {:intention => "progress report"})
+        puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
         sleep 1
       end
     end
   end
 
-  def self.compose_progress_report recipient, asker_hash, script = "Last week:"
+  def self.compose_progress_report recipient, asker_hash
+    script = "Last week:"
     primary_asker = asker_hash[recipient.posts.collect(&:in_reply_to_user_id).group_by { |e| e }.values.max_by(&:size).first].first
-    activity_hash = recipient.activity_summary(since: 1.week.ago)
-
+    activity_hash = recipient.activity_summary(since: 1.week.ago)[:answers]
     ugc_answered_count = recipient.get_my_questions_answered_this_week_count
 
     activity_hash.each_with_index do |(asker_id, activity), i|
+      return nil, nil unless asker_hash[asker_id].present?
       if i < 3 # Only include top 3 askers
         next if i > 0 and ugc_answered_count > 0
         script += "," if (i > 0 and activity_hash.size > 2)

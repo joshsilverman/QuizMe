@@ -65,7 +65,7 @@ task :segment_users => :environment do
 end
 
 task :send_progress_reports => :environment do
-  Asker.send_progress_reports() if Time.now.wday == 0
+  Asker.send_progress_reports() #if Time.now.wday == 0
 end
 
 # task :update_followers => :environment do
