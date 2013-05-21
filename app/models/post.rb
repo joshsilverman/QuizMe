@@ -709,7 +709,7 @@ class Post < ActiveRecord::Base
             post = publication.posts.where('posts.created_at < ?', created_at).order("posts.created_at DESC").first
             return unless post
 
-            conversation = Conversation.create(:publication_id => publication_id, :post_id => post.id, :user_id => user_id)
+            conversation = Conversation.create(:publication_id => publication.id, :post_id => post.id, :user_id => user_id)
             update_attributes({
               publication_id: publication.id,
               in_reply_to_post_id: post.id,
