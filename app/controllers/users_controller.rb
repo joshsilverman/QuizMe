@@ -137,6 +137,12 @@ class UsersController < ApplicationController
     @user = User.find_by_twi_screen_name('LarryCox6')
     @activity_summary = @user.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true, include_moderated: true)
     @asker_hash = Asker.published.group_by(&:id)
+    @scripts = [
+      "How can we make this service better?",
+      "Any new topics that you'd like to learn about?",
+      "What other information should we put into this progress report?",
+      "Is this progress report helpful?"
+    ]    
     
     render "user_mailer/progress_report", :layout => false
   end

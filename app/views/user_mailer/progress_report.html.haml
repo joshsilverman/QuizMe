@@ -53,12 +53,11 @@
               %td.description
                 = "You moderated #{pluralize(@activity_summary[:moderated], 'post')}. Thanks!"          
     .signature
-      %p Respond to this email if you have an idea for how we can improve, what new subjects you'de like to learn about, or what else we can include in this email!
+      %p= "#{@scripts.sample} Comments and feedback are always welcome!"
       %p Best, 
       %p Josh and Jason
     %hr
     .unsubscribe
       Don't want to receive these emails?
       = succeed '.' do
-        %a{href: "http://10.0.1.6:5000/users/#{@user.id}/unsubscribe"} Unsubscribe
-        / %a{href: "http://www.wisr.com/users/#{@user.id}/unsubscribe"} Unsubscribe
+        %a{href: "http://www.wisr.com/users/#{@user.id}/unsubscribe"} Unsubscribe
