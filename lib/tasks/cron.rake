@@ -129,5 +129,6 @@ task :send_targeted_mentions => :environment do
 end
 
 task :autofollow => :environment do
-  Asker.published.find(AUTOFOLLOW_ASKER_IDS).each { |asker| asker.autofollow() }
+  start_date = Time.find_zone('UTC').parse('2013-05-17 9am').to_date
+  follower_sorted_askers = Asker.published.sort_by { |a| a.followers.size }.slice(0, (Date.today - (start_date)).to_i).each { |a| a.autofollow() }
 end

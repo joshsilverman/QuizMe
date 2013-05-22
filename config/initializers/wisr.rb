@@ -204,97 +204,109 @@ ACCOUNT_DATA = {
   18 => {
     :retweet => [19, 326, 14106, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "biology", "premed", "medschool"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['bio #nerd', 'biology #nerd', '#ilovebio', '#bionerd', '#apbio']
   }, 
   ## QuizMeChem
   19 => {
     :retweet => [18, 31, 326, 7362, 19454, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "chemistry"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['chem #nerd', 'chemistry #nerd', '#apchem']
   },  
   ## QuizMeOrgo
   31 => {
     :retweet => [18, 19, 108, 326, 14106, 26522, 32588, 32575, 26070, 28064], 
     :hashtags => ["science", "premed", "orgo"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['#orgo', '#organicchem', "'organic chem'", 'chem #nerd']
   }, 
   ## QuizMePsych
   108 => {
     :retweet => [18, 19, 31, 326, 191, 26522, 32588, 26070], 
     :hashtags => ["science", "psych"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['#psych101', '#psychology101', '#psychmajor', "'psych major'"]
   },  
   ## QuizMeAnat  
   326 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["science", "premed", "medschool", "anatomy", "trivia"],
-    :category => "Life Sciences"
+    :category => "Life Sciences",
+    :search_terms => ['#anatomy101', 'anatomy #nerd']
   },  
   ## Hematology_101
   28064 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 32588, 26070], 
     :hashtags => ["hematology"],
     :category => "Life Sciences",
-    :search_terms => ['studying hematology']
+    :search_terms => ['studying hematology', 'hematology exam']
   },
 
   ## QuizMeWeather
   7362 => {
     :retweet => [18, 19, 14106, 19454, 32575], 
     :hashtags => ["trivia", "weather", "meteorology", "meteo"],
-    :category => "Trivia"
+    :category => "Trivia",
+    :search_terms => ['weather geek', 'weather #nerd']
   },  
   ## QuizMeGeo
   8367 => {
     :retweet => [8373, 324],
     :hashtags => ["geo", "geography", "worldgeo"],
     :category => "Trivia",
-    :search_terms => ["geography test"]
+    :search_terms => ["geography test", 'geography #nerd', 'maps #nerd']
   },  
   ## QuizMeVetMed
   26522 => {
     :retweet => [326, 31, 18, 19, 32588, 28064],
     :hashtags => ["vetmed", "veterinarian"],
-    :category => "Misc"
+    :category => "Misc",
+    :search_terms => ['vetmed', "'vet school'", "'veterinary school'"]
   },
   ## QuizMeNeuro
   32588 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326, 28064],
     :hashtags => ["neuro", "neuroscience", "brain"],
     :category => "Life Sciences",
-    :search_terms => ["studying neuro exam", "neuro exam"]
+    :search_terms => ["studying neuro exam", "neuro exam", 'neuroscience test']
   },
   ## PrepMeNREMT
   26070 => {
     :retweet => [18, 19, 31, 108, 14106, 26522, 326],
     :hashtags => ["emt", "NREMT"],
     :category => "Life Sciences",
-    :search_terms => ["NREMT test"]
+    :search_terms => ["NREMT test", 'nremt']
   },
   #QuizMePhysics
   27857 => {
     :retweet => [26522, 8367, 7362, 326, 18, 19, 31, 108],
     :hashtags => ['physics'],
     :category => "Life Sciences",
-    :search_terms => ['studying for physics']   
+    :search_terms => ['studying for physics', 'physics #nerd']
   },
   ## PhotosynthQuiz
   32575 => {
     :retweet => [18, 31, 19, 7362],
     :hashtags => ['biology', 'photosynthesis'],
     :category => "Life Sciences",
-    :search_terms => ['studying photosynthesis'] 
+    :search_terms => ['studying photosynthesis', 'photosynthesis test'] 
   },
   ## ImmuneSystmQuiz
   35127 => {
     :hashtags => ['immune', 'immunology'],
-    :search_terms => ['studying immunology']
+    :search_terms => ['studying immunology', 'immune system test']
   },
   ## RespiratoryQuiz
   35106 => {
     :hashtags => ['respiratory', 'respiratorysystem'],
-    :search_terms => ['studying respiratory', 'respiratory system']
+    :search_terms => ['studying respiratory', 'respiratory system', 'respiratory quiz', 'respiratory test']
   },
+  ## QuizMeGenetics
+  35213 => {
+    :search_terms => ['genetics studying']
+  },
+
   ## PrepMeMCATBio
   34530 => {
     :hashtags => ['mcat', 'biology'],
@@ -303,7 +315,7 @@ ACCOUNT_DATA = {
   ## PlantGrowthQuiz
   34905 => {
     :hashtags => ['botany', 'plants', 'plantgrowth'],
-    :search_terms => ['studying botany']
+    :search_terms => ['studying botany', 'botany test']
   },
   ## StereochemQuiz
   35448 => {
@@ -313,18 +325,32 @@ ACCOUNT_DATA = {
   ## PhysiologyQuiz
   35590 => {
     :hashtags => ['physio', 'physiology'],
-    :search_terms => ['studying physiology']
+    :search_terms => ['studying physiology', 'physiology study']
   },
+  ## DermMyotomeQuiz
+  34320 => {
+    :search_terms => ['dermatome']
+  },
+  ## LogarithmsQuiz
+  34963 => {
+    :search_terms => ['logarithms test']
+  },
+  ## LowerLimbQuiz
+  34662 => {
+    :search_terms => ['lower limb']
+  },
+
 
   ## SpanSubjunctive
   35459 => {
-    :hashtags => ['spanish', 'espanol', 'subjunctive']
+    :hashtags => ['spanish', 'espanol', 'subjunctive'],
+    :search_terms => ['spanish subjunctive']
   },
 
   ## QuizMeFrenchRev
   35685 => {
     :hashtags => ['frenchrev', 'frenchrevolution', 'history'],
-    :search_terms => ['studying french revolution']
+    :search_terms => ['studying french revolution', 'french revolution test']
   },
   ## AmericanRevQuiz
   36605 => {
@@ -336,17 +362,20 @@ ACCOUNT_DATA = {
   227 => {
     :retweet => [324, 308, 284], 
     :hashtags => ["trivia", "vocab", "wordnerd", "sat", "satprep", "testprep"],
-    :category => "Trivia"
+    :category => "Trivia",
+    :search_terms => ['#sat', '#highschool', 'psat', 'act']
   },  
   ## US Capitals 
   324 => {
     :retweet => [227, 308, 66, 2], 
     :hashtags => ["trivia"],
-    :category => "Trivia"
+    :category => "Trivia",
+    :search_terms => ["'US geography'", '#trivia']
   },
   ## QuizMeCapitals
   34534 => {
-    :hashtags => ['trivia', 'geography']
+    :hashtags => ['trivia', 'geography'],
+    :search_terms => ['capitals geography', 'world capitals test']
   },
 
   # ## Govt101
@@ -358,139 +387,164 @@ ACCOUNT_DATA = {
   66 => {
     :retweet => [2, 191, 231, 322, 325, 324, 9217], 
     :hashtags => ["presidents", "history", "trivia"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ["'US history'"]
   }, 
   ## PhilosophyQuiz
   191 => {
     :retweet => [2, 66, 231, 322, 325, 108, 9217, 32588, 32584], 
     :hashtags => ["philosophy", "philosopher"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ['#philosophyclass', '#philosophy101', 'philosophy class', 'philosophy', 'plato', 'aristotle']
   }, 
   ## HistoryHabit
   231 => {
     :retweet => [2, 66, 191, 322, 325, 9217, 32584], 
     :hashtags => ["history", "trivia", "historybuff"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ['#history101', '#historyclass', '#historybuff']
   }, 
   ## QuizMeEcon  
   322 => {
     :retweet => [2, 66, 191, 223, 231, 325, 9217], 
     :hashtags => ["econ", "economics"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ['#econ101', '#economics101', '#econmajor', 'economics #nerd', 'econ #nerd']
   },
   ## AP US History 
   325 => {
     :retweet => [2, 66, 191, 231, 322, 374, 9217, 14106, 12640], 
     :hashtags => ["history", "trivia", "historybuff"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ['#apus', '#apushistory', "'history buff'", "history #nerd"]
   },
   ## PrepMeLSAT
   9217 => {
     :retweet => [2, 66, 191, 231, 322, 325], 
     :hashtags => ["lsat", "lawschool", "law"],
-    :category => "Social Sciences"
+    :category => "Social Sciences",
+    :search_terms => ['lsat studying', 'lsat prep', '#lsat']
   },
   ## QuizMeArtHist
   32584 => {
     :retweet => [191, 231], 
     :hashtags => ["art", "artist", "arthistory"],
     :category => "Art",
-    :search_terms => ['studying art history']
+    :search_terms => ['studying art history', 'art history nerd']
+  },
+  ## QuizMeConstLaw
+  36144 => {
+    :search_terms => ['study constitutional law']
   },
 
   ## Marketing_Quiz
   223 => {
     :retweet => [322], 
     :hashtags => ["marketing"],
-    :category => "Misc"
+    :category => "Misc",
+    :search_terms => ['#marketing101', '#marketing', "'marketing class'"]
   },  
   ## QuizMeBeer  
   374 => {
     :retweet => [22, 284, 325], 
     :hashtags => ["trivia", "beer", "craftbeer", "brewing"],
-    :category => "Misc"
+    :category => "Misc",
+    :search_terms => ['beer geek']
   },
   ## QuizMeThailand
   8373 => {
     :retweet => [8367, 324, 325],
     :hashtags => ["thailand", "thai", "thaiTrivia"],
-    :category => "Misc"
+    :category => "Misc",
+    :search_terms => ['traveling thailand']
   },
 
   ## QuizMeCycling 
   22 => {
     :retweet => [284, 374], 
     :hashtags => ["trivia", "cycling", "bicycle"],
-    :category => "Sports"
+    :category => "Sports",
+    :search_terms => ['#cycling']
   },
   ## QuizMeFootball  
   284 => {
     :retweet => [22, 374, 227], 
     :hashtags => ["trivia", "football", "nfl"],
-    :category => "Sports"
+    :category => "Sports",
+    :search_terms => ["'football trivia'", '#sportstrivia', 'football']
   },
 
   #HarryPotterBk3
   10565 => {
     :retweet => [10567, 14106, 12640, 10572, 10573],
     :hashtags => ['potterhead', 'potter', 'harrypotter', 'PrisonerOfAzkaban'],
-    :category => "Literature"
+    :category => "Literature",
+    :search_terms => ['#harrypotter', '#potter', '#potterhead', '#hogwarts', '#sortinghat']
   },
   #QuizHungerGames
   10567 => {
     :retweet => [10565, 10572,10573],
     :hashtags => ['hungergames', 'thehungergames', 'katniss'],
-    :category => "Literature"
+    :category => "Literature",
+    :search_terms => ['#hungergames', '#maytheoddsbeeverinyourfavor', "'may the odds be ever in your favor'", 'katniss', 'the hunger games', 'peeta']
   },
   #Romeo and Juliet
   10566 => {
     :retweet => [],
     :hashtags => ['shakespeare', 'romeoandjuliet'],
-    :category => "Literature"
+    :category => "Literature",
+    :search_terms => ['#shakespeare', '#romeoandjuliet', "'romeo and juliet'"]
   },  
 
   ## 501 Spanish 
   308 => {
     :retweet => [12982, 13588], 
     :hashtags => ["spanish", "espanol"],
-    :category => "Language"
+    :category => "Language",
+    :search_terms => ["'spanish class'", "#spanishclass"]
   },
   #Spanish_110
   12982 => {
     :retweet => [308, 13588],
     :hashtags => ['spanish', 'espanol', 'learnspanish'],
-    :category => "Language"
+    :category => "Language",
+    :search_terms => ['brush up spanish', 'brush up espanol']
   },
   #Beginner Spanish
   13588 => {
     :retweet => [308, 12982],
     :hashtags => ['spanish', 'espanol', 'learnspanish'],
-    :category => "Language"    
+    :category => "Language",
+    :search_terms => ['espanol', 'learnspanish']
   },
 
   #SAThabit_algbra
   14106 => {
     :retweet => [12640, 19454, 24740],
     :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
-    :category => "Math"
+    :category => "Math",
+    :search_terms => ['ilovealgebra', 'algebra #nerd', 'quadratic #nerd', 'math #nerd']
   },
   #SAThabit_numbrs
   19454 => {
     :retweet => [12640, 14106, 24740],
     :hashtags => ['algebra', 'math', 'SAT', "SATprep"],
-    :category => "Math"
+    :category => "Math",
+    :search_terms => ["'SAT studying'", '#ilovemath']
   },
   #SAThabit_math
   12640 => {
     :retweet => [14106, 19454, 24740],
     :hashtags => ['math', 'SAT', "SATprep"],
-    :category => "Math"
+    :category => "Math",
+    :search_terms => ['math #nerd']
   },
   #SAThabit_geomtr
   24740 => {
     :retweet => [14106, 19454, 12640],
     :hashtags => ['math', 'SAT', "SATprep, geometry"],
-    :category => "Math"
+    :category => "Math",
+    :search_terms => ['geometry #nerd']
   },
   #QuizMeCalculus
   # 22741 => {
@@ -503,12 +557,14 @@ ACCOUNT_DATA = {
   10572 => {
     :retweet => [10573,10565,10567],
     :hashtags => ['twilight', 'twilightsaga'],
-    :category => "Literature"
+    :category => "Literature",
+    :search_terms => ['#twilight']
   },
   #quizmethehobbit
   10573 => {
     :retweet => [10572,10565,10567],
     :hashtags => ['thehobbit', 'lordoftherings', "jrrtolkien"],
-    :category => "Literature"
+    :category => "Literature",
+    :search_terms => ['#hobbit']
   }
 }
