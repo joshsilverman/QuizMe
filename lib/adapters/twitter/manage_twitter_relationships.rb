@@ -137,7 +137,6 @@ module ManageTwitterRelationships
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       user_relationships = relationships.where("followed_id = ?", user.id)
 
-      puts user_relationships.to_json
       if user_relationships.where("pending = ?", true).present?
         puts "Skip followback again -- request pending"
         next
