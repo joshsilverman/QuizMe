@@ -212,6 +212,35 @@ describe Asker do
 		    @asker.reload.relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
 			end
 
+			it 'follows new follower back with pending requests' do
+				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship.update_attribute :pending, true
+
+		    twi_follower_ids = [@pending_user.twi_user_id, @new_user.twi_user_id]
+		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+		    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+
+		    @asker.followback(twi_follower_ids)
+		    @asker.reload.follows.must_include @new_user				
+			end
+
+			it 'updates converted pending users to not pending' do
+				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship.update_attribute :pending, true
+
+		    relationship.reload.pending.must_equal true
+		    relationship.reload.active.must_equal true
+
+		    twi_follows_ids = [@pending_user.twi_user_id]
+		    wisr_follows_ids = @asker.followers.collect(&:twi_user_id)
+		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
+
+		    relationship.reload.pending.must_equal false
+		    relationship.reload.active.must_equal true
+			end
+
 			it "removes unfollowers" do
 		    twi_follower_ids = []
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)		    
@@ -251,6 +280,23 @@ describe Asker do
 
 			it "unfollows non-reciprocal follows after one month" do
 				@asker.follows << @new_user
+				twi_follows_ids = [@new_user.twi_user_id]
+				32.times do |i|
+					Timecop.travel(Time.now + 1.day)
+					@asker.unfollow_nonreciprocal(twi_follows_ids)
+					if i < 30
+						@asker.reload.follows.count.must_equal 1
+					else
+						@asker.reload.follows.count.must_equal 0
+					end
+				end
+			end
+
+			it "unfollows non-reciprocal pending follows after one month" do
+				@asker.follows.must_be_empty
+				relationship = @asker.relationships.find_or_create_by_followed_id(@new_user.id)
+				relationship.update_attribute :pending, true
+
 				twi_follows_ids = [@new_user.twi_user_id]
 				32.times do |i|
 					Timecop.travel(Time.now + 1.day)

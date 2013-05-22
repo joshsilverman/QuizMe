@@ -89,7 +89,7 @@ module ManageTwitterRelationships
 
   def add_follow user, type_id = nil
     relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
-    relationship.update_attributes(active: true, type_id: type_id)
+    relationship.update_attributes(active: true, type_id: type_id, pending: false)
   end
 
   def remove_follow user
@@ -106,7 +106,7 @@ module ManageTwitterRelationships
   def update_followers twi_follower_ids, wisr_follower_ids
     # Add new followers in wisr
     asker_follows = follows
-    (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id| 
+    (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id|
       follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
       follower_type_id = asker_follows.include?(follower) ? 1 : 3
       add_follower(follower, follower_type_id)
@@ -129,7 +129,7 @@ module ManageTwitterRelationships
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       user_relationships = relationships.where("followed_id = ?", user.id)
 
-      if relationships.where("pending = ?", true).present?
+      if user_relationships.where("pending = ?", true).present?
         puts "Skip followback again -- request pending"
         next
       elsif twi_pending_ids.include? twi_user_id
@@ -151,7 +151,7 @@ module ManageTwitterRelationships
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil?
         puts "possible suspended acct, setting relationship to suspended"
-        relationships.find_or_create_by_followed_id(user.id).update_attribute(:type_id, 4) 
+        relationships.find_or_create_by_followed_id(user.id).update_attributes(type_id: 4, active: false) 
         next
       end
       add_follow(user, 1)
