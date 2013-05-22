@@ -320,6 +320,18 @@ describe Asker do
 				end
 			end
 
+			it "doesn't followback inactive unfollows" do
+				@inactive_user1 = FactoryGirl.create(:user, twi_user_id: 3)
+				@asker.follows << @inactive_user1
+				@asker.unfollow_oldest_inactive_user
+				@asker.follows.count.must_equal 1
+
+				Timecop.travel(Time.now + 3.months)
+				@asker.reload.unfollow_oldest_inactive_user
+				@asker.reload.followback [@inactive_user1.twi_user_id]
+				@asker.reload.follows.count.must_equal 0
+			end
+
 			it "sets unfollows to inactive" do
 				@asker.follows << @new_user
 				@asker.relationships.active.count.must_equal 1

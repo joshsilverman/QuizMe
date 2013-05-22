@@ -57,7 +57,7 @@ module ManageTwitterRelationships
 
     followback(twi_follower_ids) unless twi_follower_ids.blank?
     unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
-    unfollow_inactive(twi_follows_ids) unless twi_follows_ids.blank?
+    unfollow_oldest_inactive_user
   end
 
   # FOLLOWS METHODS
@@ -137,6 +137,7 @@ module ManageTwitterRelationships
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       user_relationships = relationships.where("followed_id = ?", user.id)
 
+      puts user_relationships.to_json
       if user_relationships.where("pending = ?", true).present?
         puts "Skip followback again -- request pending"
         next
@@ -146,6 +147,9 @@ module ManageTwitterRelationships
         next
       elsif user_relationships.where("type_id = 4").present?
         puts "Skip followback -- account was suspended (?)"
+        next
+      elsif user_relationships.where("active = false").present?
+        puts "Skip followback -- user was inactive unfollowed"
         next
       end
 
