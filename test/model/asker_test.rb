@@ -452,6 +452,14 @@ describe Asker do
 				end
 			end
 				
+			it 'sets role to moderator' do
+				@user.update_attribute :lifecycle_segment, 4
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+				@user.is_role?('moderator').must_equal true
+			end
+
 			describe 'through age progression' do
 				it 'with no mods' do
 					Timecop.travel(Time.now.beginning_of_week)

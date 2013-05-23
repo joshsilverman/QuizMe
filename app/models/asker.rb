@@ -581,6 +581,7 @@ class Asker < User
       ].sample
     end
 
+    user.update_attribute :role, "moderator"
     Post.dm(self, user, script, {intention: 'request mod'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
