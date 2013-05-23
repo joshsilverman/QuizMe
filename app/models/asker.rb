@@ -555,15 +555,34 @@ class Asker < User
   def request_mod user
     return false unless user.lifecycle_above? 3
     return false if user.transitions.lifecycle.where('created_at > ?', 1.hour.ago).present?
-    return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 2.days.ago).present?
+    return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 5.days.ago).present?
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2).try :[], 1
     return false if llast_solicitation.present? and Post.where(moderator_id: user.id).where("updated_at > ?", llast_solicitation.created_at).empty?
 
+    ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
       "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage", 
       "You're pretty good with this material... would you help grade a few responses at http://wisr.com/feeds/mod_manage")
 
-    Post.dm(self, user, script, {intention: 'request mod'}) 
+    # overwrite script if user has mod'ed before
+    ## ALL MUST CONTAIN MORE FOR TEST TO PASS
+    if Post.find_by_moderator_id(user.id)
+      script = [
+        "Do you have a sec to moderate a few more questions? http://wisr.com/feeds/mod_manage",
+        "Thanks for the help so far! Have time to grade a few more? http://wisr.com/feeds/mod_manage",
+        "Have a second to grade a few more questions? http://wisr.com/feeds/mod_manage",
+        "Thanks again for helping grade. Could you help grade a few more? http://wisr.com/feeds/mod_manage",
+        "Have a sec to grade a few more answers? http://wisr.com/feeds/mod_manage",
+        "Could I trouble you for a bit more grading assistance? http://wisr.com/feeds/mod_manage",
+        "Would you grade a few more? http://wisr.com/feeds/mod_manage",
+        "Could you help grade a few more? http://wisr.com/feeds/mod_manage",
+        "Would you grade a few more answers? http://wisr.com/feeds/mod_manage",
+        "Would you mind grading a few more? http://wisr.com/feeds/mod_manage"
+      ].sample
+    end
+
+    Post.dm(self, user, script, {intention: 'request mod'})
+    Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
 
   def request_ugc user
