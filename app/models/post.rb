@@ -139,9 +139,8 @@ class Post < ActiveRecord::Base
     case provider
     when "twitter"
       begin
-        hashtag = ACCOUNT_DATA[asker.id] ? ACCOUNT_DATA[asker.id][:hashtags].sample : nil
         question_post = Post.tweet(asker, question.text, {
-          :hashtag => hashtag, 
+          :hashtag => asker.hashtags.sample, 
           :long_url => long_url, 
           :interaction_type => 1, 
           :link_type => 'initial', 
