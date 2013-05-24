@@ -57,6 +57,23 @@ class Stat < ActiveRecord::Base
     return new_to_existing_before_on, display_data
   end
 
+  def self.pg_wow_eekly domain = 30
+    # new_to_existing_before_on, display_data = Rails.cache.fetch "stat_pg_weekly_domain_#{domain}", :expires_in => 17.minutes do
+
+  end
+
+  def self.pg_daily
+    new_on = {}
+    Post.not_spam.not_us.social\
+      .select(["user_id", "to_char(min(created_at), 'YYYY-MM-DD') as first_active_at"])\
+      .group("user_id").group_by{|p|p.first_active_at}.each{|k,v| new_on[k] = v.count}
+    new_on
+  end
+
+  def self.pg_weekly daus
+
+  end
+
   def self.dau_mau domain = 30
     graph_data, display_data = Rails.cache.fetch "stat_dau_mau_domain_#{domain}", :expires_in => 13.minutes do
 
