@@ -140,7 +140,7 @@ class Post < ActiveRecord::Base
     when "twitter"
       begin
         question_post = Post.tweet(asker, question.text, {
-          :hashtag => asker.hashtags.sample, 
+          :hashtag => asker.hashtags.sample.name, 
           :long_url => long_url, 
           :interaction_type => 1, 
           :link_type => 'initial', 
