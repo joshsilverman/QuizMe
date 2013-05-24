@@ -98,7 +98,7 @@ class FeedsController < ApplicationController
 
         contributors = User.find(@asker.questions.approved.ugc.collect { |q| q.user_id }.uniq.sample(3))
 
-        if contributors.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
+        if current_user and contributors.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
           contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count
           if current_user.questions.approved.ugc.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
             contributors += [current_user]
