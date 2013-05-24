@@ -12,7 +12,7 @@
 					%a.answer_link{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
 			- else
 				%p= formatted_response[0].html_safe
-- if current_user and current_user.is_author? and Post.create_split_test(current_user.id, "ugc cta after five answers on site (adds question)", "false", "true") == "true"
+- if current_user and Post.create_split_test(current_user.id, "ugc cta after five answers on site (adds question)", "false", "true") == "true"
 	.subsidiary.post.answered.after_answer.hide
 		.content
 			%p.cta_message.hidden-phone Want to contribute a question?

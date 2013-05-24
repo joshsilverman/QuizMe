@@ -2,7 +2,7 @@
 #related.rounded.border-color
 	.header
 		%h4
-			Top Contributors
+			Contributors
 	%ul.unstyled
 		- @contributors.each_with_index do |contributor, i|
 			%a.related_feed{href: "http://www.twitter.com/#{contributor[:twi_screen_name]}", target: "_blank"}

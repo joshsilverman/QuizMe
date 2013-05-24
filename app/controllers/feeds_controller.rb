@@ -96,16 +96,17 @@ class FeedsController < ApplicationController
         @answer_id = params[:answer_id]
         @author = User.find @asker.author_id if @asker.author_id
 
+        contributors = User.find(@asker.questions.approved.ugc.collect { |q| q.user_id }.uniq.sample(3))
 
-        contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count.sort{|a,b| b[1] <=> a[1]}[0..2]
-        if contributor_ids_with_count.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
+        if contributors.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
+          contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count
+          if current_user.questions.approved.ugc.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
+            contributors += [current_user]
+          end
           @contributors = []
-          contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count.sort{|a,b| b[1] <=> a[1]}[0..2]
-          contributors = User.find(contributor_ids_with_count.collect {|e| e[0]}).group_by(&:id)
-          contributor_ids_with_count.each do |c|
-            user = contributors[c[0]][0]
-            @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: c[1]}
-          end          
+          contributors.sample(3).each do |user|
+            @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
+          end      
         else
           @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
             .where(:id => ACCOUNT_DATA.keys.sample(3)).all
