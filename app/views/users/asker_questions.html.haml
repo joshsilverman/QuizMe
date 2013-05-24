@@ -1,77 +1,201 @@
-:css
-  body {background:white !important;}
-  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
-  .question-row img {height:18px;}
-  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+/ :css
+/   body {background:white !important;}
+/   .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+/   .question-row img {height:18px;}
+/   @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
 
-#author_dashboard.index
-  .well.well-small
-    .header.form-actions
-      %h2
-        My questions:
-        %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name, @asker.id)
-      .stats
-        %ul.breadcrumb
-          %li
-            %span.divider
-              Approved:
-              %span.badge-success.badge
-                = @approved_count
-          %li
-            %span.divider
-              Pending:
-              %span.badge
-                = @pending_count
-      %a.btn.new_question
-        %i.icon-plus
-        New Question
+#author_dashboard
+  #feed_container.span10
+    #wrapper.span9
+      #feed.row
+        #left_column.span3.hidden-phone
+          %ul.nav.nav-tabs.nav-stacked
+            %li
+              .box.top My questions for:
+            %li
+              %a 
+                %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name, @asker.id)
+          %ul.nav.nav-tabs.nav-stacked
+            %li
+              .box.top Progress
+            %li
+              .guidelines 
+                .progress
+                  / .bar{:style => "width: #{@questions.count / 50.0}%;"}
+                  .bar{:style => "width: 50%;"}
+                %p
+                  - launch_count = 50 - @questions.count
+                  #{launch_count > 0 ? launch_count : 0} more questions needed to launch handle!
+        #right_column.span6
+          #posts.rounded
+            .header.border-color
+              %h3= "Questions"
+            - @questions.each do |question|
+              - owner = (question.user_id == current_user.id)
+              .conversation.border-color
+                .post.parent.answered
+                  %p.time= time_formatter(question.created_at)
+                  .status
+                    - if question.status == 0
+                      %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'We will review this question shortly.', "data-placement" => "left"} Pending
+                    - elsif question.status == 1
+                      %span.label.label-success.approved Approved
+                    - elsif question.status == -1
+                      %span.label.label-important.rejected.has-tooltip{:rel => "tooltip", "data-original-title" => 'Something was wrong with this question.', "data-placement" => "left"} Rejected               
+                  .content
+                    = image_tag(question.user.twi_profile_img_url, :class => "rounded")
+                    %h5
+                      %span= question.user.twi_screen_name  
+                    .question
+                      - if owner
+                        = best_in_place question, :text, :type => :textarea
+                      - else
+                        %p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+                    - question.answers.order("correct DESC").each_with_index do |answer, i|
+                      %p.answer
+                        / %a.delete_answer X
+                        %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+                        - if owner
+                          = best_in_place answer, :text, :type => :input
+                        - else
+                          %p= answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+                    / - if correct
+                    /   %p.quick-reply
+                    /     %span{style: 'opacity:0.6;'}
+                    /       Correct: 
+                    /       = correct.text
+                    / .actions
+                    /   .container
+                    /     .main
+                    /       .btn-group.linked
+                    /         - if question
+                    /           %a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
+                    /           %a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
+                    /           %a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+                    /           %a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+                    /           %a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+                    /         - else
+                    /           %a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
+                    /           %a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
 
-  %table.table.questions{:style => 'margin-bottom: 0px;'}
-    %thead
-      %tr
-        %th Created
-        %th Status
-        %th.has-tooltip{:rel => "tooltip", "data-original-title" => 'Number of times this question has been answered.', "data-placement" => "left"} Answered
-        %th{:style => 'width:70%;'} Question/Answers
-    - @questions.each do |question|
-      %tbody
-        - queued_pubs = question.publications.reject{|p| !p.publication_queue_id}
-        - if queued_pubs.empty?
-        - elsif queued_pubs[0].published
-          - style_class = 'success'
-        - elsif i >= queued_pubs[0].asker.posts_per_day
-          - style_class = 'disabled'
-        - else 
-          - style_class = 'info'
-          
-        %tr.question-row{:question_id => question.id, :class => style_class}
-          %td
-            = question.created_at.strftime "%m/%d"
-          %td.status
-            - if question.status == 0
-              %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'We will review this question shortly.', "data-placement" => "left"} Pending
-            - elsif question.status == 1
-              %span.label.label-success.approved Approved
-            - elsif question.status == -1
-              %span.label.label-important.rejected.has-tooltip{:rel => "tooltip", "data-original-title" => 'Something was wrong with this question.', "data-placement" => "left"} Rejected
-          %td
-            %p= "#{@questions_answered_count[question.id] || 0} times"
-          %td
-            %p{:style => "font-weight: bold;"}
-              = best_in_place question, :text, :type => :textarea
-            - question.answers.order("correct DESC").each_with_index do |answer, i|
-              %p.answer
-                / %a.delete_answer X
-                %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
-                = best_in_place answer, :text, :type => :input
-            %p
-              %span.has-tooltip{:rel => "tooltip", "data-original-title" => 'This will be sent if someone gets your question wrong.', "data-placement" => "left"} Hint:
-              = best_in_place question, :hint, :type => :textarea
+                    /         %a.btn.retweet= "<u>r</u>etweet".html_safe
+                    /         .dropdown.btn
+                    /           %span.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"}= "<u>s</u>cript".html_safe
+                    /           %ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+                    /             - SCRIPTS.each do |name, text|
+                    /               %li
+                    /                 %a.script{script_name: name, script_text: text}= name.to_s.humanize
+                    /             - if post.is_dm? and admin
+                    /               %li.divider
+                    /               - @nudge_types.each do |nudge_type|
+                    /                 %li
+                    /                   %a.nudge{nudge_id: nudge_type.id}= nudge_type.text.to_s.humanize
+                                
+                    /       .btn-group
+                    /         %a.btn.open= "<u>o</u>pen".html_safe
+                    /         / %a.btn.create-exam= "<u>e</u>xam".html_safe
+                    /         %a.btn.add-email= "<u>e</u>mail".html_safe
 
-  .pagination-wrapper
-    = paginate @questions
+                    /         %a.btn.dropdown-toggle.feedback{"data-toggle" => "dropdown", :href => "#"} tag
+                    /         %ul.dropdown-menu{:role => "menu", "aria-labelledby" => "dLabel"}
+                    /           %li
+                    /             - tags = post.tags.collect(&:name)
+                    /             - @tags.each do |tag|
+                    /               %a.tag_post{:tag_name => tag.name, :style => ("font-weight: bold;" if tags.include?(tag.name))}= tag.name
 
-  = render "feeds/question_modal"
+                    /     .sub.new-email
+                    /       .ios-arrow-left.back{title: "Back"}
+                    /       .form-inline
+                    /         = form_for(post.user, remote: true) do |f|
+                    /           = f.text_field "email", :class => "input-small", :placeholder => "Email", :type => "text"
+                    /           = f.button "Add", :class => "btn btn-primary", :type => "submit"
+
+          / .pagination-wrapper
+          /   = paginate @posts unless moderator
+
+
+
+/ #author_dashboard.index
+/ #manager
+/   #feed_container.span10
+/     #wrapper.span9{:style => "margin-left: 0px;"}
+/       #feed.row
+/         #left_column.span3.hidden-phone
+/           %ul.nav.nav-tabs.nav-stacked
+/             %li
+/               .box.top Inbox
+/         #right_column.span6
+/           #posts.rounded
+/             .header.border-color
+/               %h3= "Grade responses"
+/             %table.table.questions{:style => 'margin-bottom: 0px;'}
+/               %thead
+/                 %tr
+/                   %th Created
+/                   %th Status
+/                   %th.has-tooltip{:rel => "tooltip", "data-original-title" => 'Number of times this question has been answered.', "data-placement" => "left"} Answered
+/                   %th{:style => 'width:70%;'} Question/Answers
+/               - @questions.each do |question|
+/                 %tbody
+/                   - queued_pubs = question.publications.reject{|p| !p.publication_queue_id}
+/                   - if queued_pubs.empty?
+/                   - elsif queued_pubs[0].published
+/                     - style_class = 'success'
+/                   - elsif i >= queued_pubs[0].asker.posts_per_day
+/                     - style_class = 'disabled'
+/                   - else 
+/                     - style_class = 'info'
+                    
+/                   %tr.question-row{:question_id => question.id, :class => style_class}
+/                     %td
+/                       = question.created_at.strftime "%m/%d"
+/                     %td.status
+/                       - if question.status == 0
+/                         %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'We will review this question shortly.', "data-placement" => "left"} Pending
+/                       - elsif question.status == 1
+/                         %span.label.label-success.approved Approved
+/                       - elsif question.status == -1
+/                         %span.label.label-important.rejected.has-tooltip{:rel => "tooltip", "data-original-title" => 'Something was wrong with this question.', "data-placement" => "left"} Rejected
+/                     %td
+/                       %p= "#{@questions_answered_count[question.id] || 0} times"
+/                     %td
+/                       %p{:style => "font-weight: bold;"}
+/                         = best_in_place question, :text, :type => :textarea
+/                       - question.answers.order("correct DESC").each_with_index do |answer, i|
+/                         %p.answer
+/                           / %a.delete_answer X
+/                           %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+/                           = best_in_place answer, :text, :type => :input
+/                       %p
+/                         %span.has-tooltip{:rel => "tooltip", "data-original-title" => 'This will be sent if someone gets your question wrong.', "data-placement" => "left"} Hint:
+/                         = best_in_place question, :hint, :type => :textarea              
+/ .well.well-small
+/   .header.form-actions
+/     %h2
+/       My questions:
+/       %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name, @asker.id)
+/     .stats
+/       %ul.breadcrumb
+/         %li
+/           %span.divider
+/             Approved:
+/             %span.badge-success.badge
+/               = @approved_count
+/         %li
+/           %span.divider
+/             Pending:
+/             %span.badge
+/               = @pending_count
+/     %a.btn.new_question
+/       %i.icon-plus
+/       New Question
+
+  
+
+/ .pagination-wrapper
+/   = paginate @questions
+
+= render "feeds/question_modal"
 
 = hidden_field_tag :asker_id, @asker.id
 = hidden_field_tag :user_id, @user.id
