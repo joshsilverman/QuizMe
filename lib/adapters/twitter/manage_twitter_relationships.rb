@@ -35,7 +35,7 @@ module ManageTwitterRelationships
       twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
       twi_user_ids.sample(max_follows - follow_target_twi_user_ids.size).each { |twi_user_id| follow_target_twi_user_ids << twi_user_id }
     end
-    puts "Too few autofollows found!" if follow_target_twi_user_ids.size < max_follows
+    puts "Too few autofollows found for #{twi_screen_name} (only found #{follow_target_twi_user_ids.size})!" if follow_target_twi_user_ids.size < max_follows
     follow_target_twi_user_ids
   end
 
