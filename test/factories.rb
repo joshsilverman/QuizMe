@@ -2,10 +2,12 @@ FactoryGirl.define do
 	factory :asker do
 		role 'asker'
 		published true
+		twi_screen_name 'BillClinton'
 	end
 
 	factory :user do
 		role 'user'
+		twi_screen_name 'MrLeroyJenkins'
 	end
 
 	factory :post do

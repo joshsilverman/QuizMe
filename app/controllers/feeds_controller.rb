@@ -227,6 +227,7 @@ class FeedsController < ApplicationController
     user_post = Post.find(params[:in_reply_to_post_id])
     correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
     user_post.update_attributes(moderator_id: current_user.id, autocorrect: correct)
+    Post.trigger_split_test(current_user.id, 'mod request script (=> moderate answer)')
     render status: 200, nothing: true
   end
 

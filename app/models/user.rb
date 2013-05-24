@@ -141,6 +141,13 @@ class User < ActiveRecord::Base
 		tags.where("name = 'teacher'").size > 0
 	end
 
+	def lifecycle_above? segment_id
+		return false if lifecycle_segment.nil?
+		return true if segment_id.nil?
+		return true if SEGMENT_HIERARCHY[1].index(lifecycle_segment) > SEGMENT_HIERARCHY[1].index(segment_id)
+		false
+	end
+
 	def twitter_enabled?
 		return true if self.twi_oauth_token and self.twi_oauth_secret
 		return false
@@ -418,11 +425,11 @@ class User < ActiveRecord::Base
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
-    	if is_role? "user"
-    		update_attribute :role, "moderator"
-	      comment = "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage"
-	      Mixpanel.track_event "moderator request sent", { distinct_id: id }
-    	end
+    	# if is_role? "user"
+    	# 	update_attribute :role, "moderator"
+	    #   comment = "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage"
+	    #   Mixpanel.track_event "moderator request sent", { distinct_id: id }
+    	# end
 	    Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 

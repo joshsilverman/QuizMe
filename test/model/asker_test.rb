@@ -13,11 +13,12 @@ describe Asker do
 		@publication = FactoryGirl.create(:publication, question_id: @question.id)
 		@question_status = FactoryGirl.create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
 
-		@user_response = FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 	end
 
 	describe "responds to user answer" do
 		before :each do 
+			@user_response = FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+
 			@correct = [1, 2].sample == 1
 			@correct_answer = FactoryGirl.create(:answer, correct: true, text: 'the correct answer', question_id: @question.id)
 			@incorrect_answer = FactoryGirl.create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
@@ -62,6 +63,7 @@ describe Asker do
 		before :each do
 			@strategy = [1, 2, 4, 8]
 
+			@user_response = FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 			@user_response.update_attributes created_at: (@strategy.first + 1).days.ago, correct: true
 			@user.update_attributes last_answer_at: @user_response.created_at, last_interaction_at: @user_response.created_at, activity_segment: nil
 
@@ -141,6 +143,7 @@ describe Asker do
 	describe "relationships" do
 
 		before :each do
+
 			@new_user = FactoryGirl.create(:user, twi_user_id: 2)
 		end
 
@@ -343,5 +346,161 @@ describe Asker do
 				@asker.reload.relationships.count.must_equal rel_count
 			end
  		end		
+	end
+
+	describe "requests after answer" do
+
+		describe 'ugc' do
+			it 'with a post' do
+				30.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			end
+
+			it 'unless already sent' do
+				30.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			end
+
+			it 'unless less than 10' do
+				8.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_ugc @user
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+			end
+
+			it 'if greater than 10' do
+				10.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_ugc @user
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			end
+
+			it 'unless already written question' do
+				@question = FactoryGirl.create(:question, user_id: @user.id, status: 1)		
+				10.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_ugc @user
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+			end
+		end
+
+		describe 'mod' do
+			it 'with a post' do
+				@user.update_attribute :lifecycle_segment, 4
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+			end
+
+			it 'with two posts in 5 days' do
+				@user.update_attribute :lifecycle_segment, 4
+				7.times do |i|
+					if i == 0 
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					elsif i < 6
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+					else
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
+					end
+
+					@asker.request_mod @user.reload
+					Timecop.travel(Time.now + 1.day)
+				end
+			end
+
+			it 'unless lifecycle less than advanced' do
+				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
+					user = FactoryGirl.create(:user, twi_user_id: 1)
+					@asker.followers << user
+					user.update_attribute :lifecycle_segment, lifecycle_segment
+					
+					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
+					@asker.request_mod user.reload
+
+					if SEGMENT_HIERARCHY[1].slice(0,4).include? lifecycle_segment
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
+					else
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
+					end
+				end
+			end
+
+			it 'uses correct script' do
+				@user.update_attribute :lifecycle_segment, 4
+				7.times do |i|
+					if i == 0 
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					elsif i < 6
+						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
+						user_mod_post = FactoryGirl.create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						request_mod.text.include?("more").must_equal false
+					else
+						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
+						request_mod.text.include?("more").must_equal true
+					end
+					@asker.request_mod @user.reload
+					Timecop.travel(Time.now + 1.day)
+				end
+			end
+				
+			it 'sets role to moderator' do
+				@user.update_attribute :lifecycle_segment, 4
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+				@user.is_role?('moderator').must_equal true
+			end
+
+			describe 'through age progression' do
+				it 'with no mods' do
+					Timecop.travel(Time.now.beginning_of_week)
+					5.times do
+						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					end
+					30.times do |i|
+						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						Timecop.travel(Time.now + 1.day)
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
+				end
+
+				it 'with regular mods' do
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					@user.update_attribute :lifecycle_segment, 4
+					30.times do |i|
+						user_response = FactoryGirl.create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						@asker.request_mod @user.reload
+						Timecop.travel(Time.now + 1.day)
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 6
+				end
+			end
+
+			it 'unless just transitioned' do
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				@user.update_attribute :lifecycle_segment, nil
+				@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				@asker.request_mod @user
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+			end
+		end
+
+		# describe 'nudge'  do
+		# 	it 'with a post'
+		# 	it 'unless already nudged'
+		# 	it 'unless no client'
+		# 	it 'unless no active/automatic nudge_type'
+		# 	it 'unless fewer than 3 answers'
+		# 	it 'unless does not follow asker'
+		# end
 	end
 end
