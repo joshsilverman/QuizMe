@@ -212,7 +212,7 @@
 			border-top-color: #ddd;	
 			height: 37px;
 			text-align: center;	
-			padding-top: 20px;					
+			padding-top: 20px;
 			background-color: #FAFAFA;
 			-webkit-border-bottom-left-radius: 5px;
 			-moz-border-bottom-left-radius: 5px;
@@ -223,7 +223,36 @@
 			/*padding: 20px 0px;							*/
 			padding-left: 20px;
 			padding-right: 20px;
+		}
 
+		.tabbable {
+			height: inherit;
+			padding: 35px 40px 15px;
+
+			.twitter-follow-button {
+				float:right;
+				position:relative;
+				top:5px;
+			}
+
+			p {
+				color:#999;
+				font-size:12px;
+				// line-height:1.6em;
+			}
+
+			.video {
+				margin:0px 0 0;
+			}
+
+			.activity_container {
+				padding:0;
+				margin:0;
+				.interactions {
+					height: inherit;
+					margin:0;
+				}
+			}
 		}
 
 		.post.subsidiary {
@@ -311,6 +340,11 @@
 					font-size: 14px;
 					position: relative;
 					top: 8px;
+				}
+				.twitter-follow-button {
+					float:right;
+					position:relative;
+					top:-12px;
 				}
 			}
 
@@ -558,7 +592,18 @@
 	}
 }
 
+#question {
+	width:642px;
 
+	.conversation {
+		//min-height: 140px;
+		// background-color: rgba(250, 250, 250, 0.88);
+		// border: solid 1px rgba(0, 0, 0, 0.21) !important;
+
+		// border: 1px solid #ddd;
+		// border-radius: 5px;
+	}
+}
 
 
 .answer_widget {

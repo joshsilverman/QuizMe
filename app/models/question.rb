@@ -135,12 +135,17 @@ class Question < ActiveRecord::Base
 	require 'net/http'
   require 'uri'
 
-  @qb = Rails.env.production? ? 'http://questionbase.studyegg.com' : 'http://localhost:3001'
+  # @qb = Rails.env.production? ? 'http://questionbase.studyegg.com' : 'http://localhost:3001'
+  @qb = 'http://questionbase.studyegg.com'
 
-  def self.import_studyegg_from_qb(egg_id, topic_name, created_for_asker_id)
-    egg = Question.get_studyegg_details(egg_id)
-    egg['chapters'].each do |ch|
-      Question.save_lesson(ch, topic_name, created_for_asker_id)
+  def self.import_video_urls_from_qb
+    egg_ids = {13 => 18, 14 => 19}
+
+    egg_ids.each do |egg_id, created_for_asker_id|
+      egg = Question.get_studyegg_details(egg_id)
+      egg['chapters'].each do |ch|
+        Question.save_lesson(ch, created_for_asker_id)
+      end
     end
   end  
 
@@ -158,30 +163,22 @@ class Question < ActiveRecord::Base
     return studyegg
   end
 
-  def self.save_lesson(lesson, topic_name, created_for_asker_id)
+  def self.save_lesson(lesson, created_for_asker_id)
     @lesson_id = lesson['id'].to_i
     if @lesson_id
       questions = Question.get_lesson_questions(@lesson_id)
       return if questions['questions'].nil?
-      topic = Topic.find_or_create_by_name(topic_name)
       questions['questions'].each do |q|
-        new_q = Question.find_or_create_by_text(Question.clean_and_clip_question(q['question']))
-        new_q.topic_id = topic.id
-        new_q.created_for_asker_id = created_for_asker_id
-        new_q.status = 1
-        new_q.user_id = 1
+        q = Question.find_by_text(Question.clean_and_clip_question(q['question']))
+        next q.nil?
+
+        q.created_for_asker_id = created_for_asker_id
         resources = q['resources'] || []
         resources.each do |r|
-          next unless new_q.resource_url.blank? and r['media_type'] == "video"
-          new_q.resource_url = "http://www.youtube.com/watch?v=#{r['url']}&t=#{r['begin']}"
+          next unless q.resource_url.blank? and r['media_type'] == "video"
+          q.resource_url = "http://www.youtube.com/v/#{r['url']}&start=#{r['begin']}&end=#{r['end']}"
         end
-        new_q.save
-        q['answers'].each do |a|
-          ans = Answer.find_or_create_by_text(:text => Question.clean_text(a['answer']))
-          ans.correct = a['correct']
-          ans.question_id = new_q.id
-          ans.save
-        end
+        q.save
       end
     end
   end
@@ -217,39 +214,4 @@ class Question < ActiveRecord::Base
     a.gsub!('</sup>','')
     a
   end
-
-  # def self.get_lesson_details(lesson)
-  #   url = URI.parse("#{@qb}/api-V1/JKD673890RTSDFG45FGHJSUY/get_lesson_details/#{lesson}")
-  #   req = Net::HTTP::Get.new(url.path)
-  #   res = Net::HTTP.start(url.host, url.port) {|http|
-  #     http.request(req)
-  #   }
-  #   begin
-  #     studyeggs = JSON.parse(res.body)
-  #   rescue
-  #     studyeggs = []
-  #   end
-  #   return studyeggs
-  # end
-
-  # def self.import_lesson_from_qb(lesson_id, topic_name)
-  #   lesson = Question.get_lesson_details(lesson_id.to_s)
-  #   lesson.each do |l|
-  #     Question.save_lesson(l, topic_name)
-  #   end
-  # end
-
-  # def self.import_data_from_qmm
-  #   url = URI.parse("http://studyegg-quizme.herokuapp.com/db.json")
-  #   req = Net::HTTP::Get.new(url.path)
-  #   res = Net::HTTP.start(url.host, url.port) {|http|
-  #     http.request(req)
-  #   }
-  #   begin
-  #     questions = JSON.parse(res.body)
-  #   rescue
-  #     questions = nil
-  #   end
-  #   return questions
-  # end  
 end

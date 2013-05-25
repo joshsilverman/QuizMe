@@ -31,7 +31,10 @@ class QuestionsController < ApplicationController
   end
 
   def show(posts = [])
-    @show_answer = !params[:ans].nil?
+    is_follow_up = params[:lt] == "follow_up"
+    @show_answer = true unless is_follow_up #!params[:ans].nil?
+
+
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
     publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")

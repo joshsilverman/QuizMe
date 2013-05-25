@@ -1,0 +1,20 @@
+
+.tabbable
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#tab1"} Video
+    / %li
+    /   %a{"data-toggle" => "tab", :href => "#tab2"} Notes
+    %li
+      %a{"data-toggle" => "tab", :href => "#tab3"} Activity
+  .tab-content
+    #tab1.tab-pane.active
+      / - if @question.resource_url =~ /^http:\/\/www.youtube.com/
+      .video
+        %iframe{:allowfullscreen => "", :frameborder => "0", :height => "315", :src => "http://www.youtube.com/v/_-vZ_g7K6P0&start=1573&end=1589", :width => "560"}
+    / #tab2.tab-pane
+    #tab3.tab-pane
+      %p This question has been answered by:
+      = render :partial => "feeds/activity", :locals => {:post => post}
+
+
