@@ -227,7 +227,11 @@
 
 		.tabbable {
 			height: inherit;
-			padding: 35px 40px 15px;
+			padding: 10px 40px 15px;
+
+			.nav-tabs {
+				// margin-bottom:14px;
+			}
 
 			.twitter-follow-button {
 				float:right;
@@ -243,6 +247,7 @@
 
 			.video {
 				margin:0px 0 0;
+				padding-top:0px;
 			}
 
 			.activity_container {

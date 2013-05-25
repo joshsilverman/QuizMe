@@ -31,14 +31,19 @@ class QuestionsController < ApplicationController
   end
 
   def show(posts = [])
-    is_follow_up = params[:lt] == "follow_up"
-    @show_answer = true unless is_follow_up #!params[:ans].nil?
-
-
     @question = Question.find(params[:id])
     @asker = User.find(@question.created_for_asker_id)
     publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")
     @publication = publications.first
+    
+    if params[:slug].nil?
+      redirect_to "/questions/#{params[:id]}/#{@question.slug}"
+      return
+    end
+
+    is_follow_up = params[:lt] == "follow_up"
+    @show_answer = true unless is_follow_up #!params[:ans].nil?
+
     publications.each { |pub| posts += pub.posts.collect(&:id) }
     @actions = {params[:id].to_i => []}
     user_ids = []
@@ -55,7 +60,9 @@ class QuestionsController < ApplicationController
         :interaction_type => action.interaction_type
       }
     end
-    redirect_to "/feeds/#{@asker.id}" unless (@question and @publication and @question.slug == params[:slug])
+    redirect_to "/feeds/#{@asker.id}" unless (@question and @publication)
+
+    # render ab_test("Better question pages (=> follow)", 'no follow button or video', 'follow button and video')
   end
 
   def new

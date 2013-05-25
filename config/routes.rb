@@ -80,6 +80,7 @@ Quizmemanager::Application.routes.draw do
   match "questions/asker/:asker_id" => "questions#index"
   match "questions/asker/:asker_id/import" => "questions#import"
   post "questions/save_question_and_answers"
+  match "questions/:id" => "questions#show"
   match "questions/:id/:slug" => "questions#show"
   match "questions/new/:asker_id" => "questions#new"
   match "/moderate" => "questions#moderate"

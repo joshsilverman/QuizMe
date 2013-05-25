@@ -168,14 +168,16 @@ class Question < ActiveRecord::Base
     if @lesson_id
       questions = Question.get_lesson_questions(@lesson_id)
       return if questions['questions'].nil?
-      questions['questions'].each do |q|
-        q = Question.find_by_text(Question.clean_and_clip_question(q['question']))
-        next q.nil?
+      questions['questions'].each do |imported_q|
+        q = Question.find_by_text(Question.clean_and_clip_question(imported_q['question']))
+        next if q.nil?
+        puts "\n\nid: #{q.id}"
+        puts q.text
 
-        q.created_for_asker_id = created_for_asker_id
-        resources = q['resources'] || []
+        resources = imported_q['resources'] || []
+        puts resources.count
         resources.each do |r|
-          next unless q.resource_url.blank? and r['media_type'] == "video"
+          next unless r['media_type'] == "video"
           q.resource_url = "http://www.youtube.com/v/#{r['url']}&start=#{r['begin']}&end=#{r['end']}"
         end
         q.save
@@ -191,6 +193,7 @@ class Question < ActiveRecord::Base
     }
     begin
       studyegg = JSON.parse(res.body)
+      puts res.body
     rescue
       studyegg = nil
     end
