@@ -21,7 +21,7 @@
 
     - @experiments.sort_by{|e|e.start_time}.reverse.each do |experiment|
       - next if experiment.winner
-      %tr.experiment-header{:class => ('completed' if experiment.winner)}
+      %tr.experiment-header{:class => ('completed' if experiment.winner), 'data-name' => experiment.name}
         %td= experiment.start_time ? experiment.start_time.strftime('%m-%d') : 'Unknown'
         %td.name
           #{experiment.name.capitalize}
@@ -42,4 +42,4 @@
               %a= submit_tag "Delete"
       %tr.experiment-details
         %td{colspan: 5}
-          =render :partial => 'experiment', :locals => {:experiment => experiment}
+          / =render :partial => 'experiment', :locals => {:experiment => experiment}

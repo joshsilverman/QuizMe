@@ -8,7 +8,7 @@
     %th Confidence
     %th Finish
   - total_participants = total_completed = 0
-  - experiment.alternatives.each do |alternative|
+  - @experiment.alternatives.each do |alternative|
     %tr
       %td
         = alternative.name
@@ -20,26 +20,26 @@
       %td
         = number_to_percentage(alternative.conversion_rate)
         \%
-        - if experiment.control.conversion_rate > 0 && !alternative.control?
-          - if alternative.conversion_rate > experiment.control.conversion_rate
+        - if @experiment.control.conversion_rate > 0 && !alternative.control?
+          - if alternative.conversion_rate > @experiment.control.conversion_rate
             %span.better
-              +#{number_to_percentage((alternative.conversion_rate/experiment.control.conversion_rate)-1)}%
-          - elsif alternative.conversion_rate < experiment.control.conversion_rate
+              +#{number_to_percentage((alternative.conversion_rate/@experiment.control.conversion_rate)-1)}%
+          - elsif alternative.conversion_rate < @experiment.control.conversion_rate
             %span.worse
-              = number_to_percentage((alternative.conversion_rate/experiment.control.conversion_rate)-1)
+              = number_to_percentage((alternative.conversion_rate/@experiment.control.conversion_rate)-1)
               \%
       %td
         %span{:title => "z-score: #{round(alternative.z_score, 3)}"}= confidence_level(alternative.z_score)
       %td
-        - if experiment.winner
-          - if experiment.winner.name == alternative.name
+        - if @experiment.winner
+          - if @experiment.winner.name == alternative.name
             Winner
           - else
             Loser
         - else
           = form_tag "/experiments/conclude", :method => "post", :onclick => "return window.experiment.confirmWinner()" do
             = hidden_field_tag "alternative", alternative.name
-            = hidden_field_tag "experiment", experiment.name
+            = hidden_field_tag "experiment", @experiment.name
             %a= submit_tag "Use this"
     - total_participants += alternative.participant_count
     - total_completed += alternative.completed_count

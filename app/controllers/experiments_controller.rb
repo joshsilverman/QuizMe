@@ -6,6 +6,11 @@ class ExperimentsController < ApplicationController
     @experiments = Split::Experiment.all
   end
 
+  def show
+    @experiment = Split::Experiment.find params[:name]
+    render "_experiment", layout: false
+  end
+
   def conclude
     @experiment = Split::Experiment.find(params[:experiment])
     @alternative = Split::Alternative.new(params[:alternative], params[:experiment])
