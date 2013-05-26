@@ -249,42 +249,17 @@ class Card
 class Author
 	constructor: ->
 		@id = $("#asker_id").val()
-		$(".new_question").on "click", => 
-			@post_question()
 		$('#askers_select select').change -> window.location = "/users/#{$('#user_id').val()}/questions/" + $(this).children(":selected").attr('value')
 		$("#question_input").on "focus", => $(".answer_area").show()
-	post_question: (text = null, post_id = null) =>
-		# return unless window.feed.correct > 9 or $('.is_author').length > 0
-		$("#question_input").val(text) if text
-		$("#post_question_modal").modal()
-		$("#question_input").focus() unless $("#manager").length > 0
 		$("#add_answer, #submit_question").off "click"
+		console.log $("#add_answer")
 		$("#add_answer").on "click", => add_answer()
-		
-		if post_id? # displays conversation history when mgr
-			$(".modal_conversation_history").show()
-			convo =  window.feed.conversations[post_id]
-			$('.modal_conversation_history > .conversation').html('')
-			user_post = window.feed.engagements[@id]
-			$.each convo['posts'], (i, p) ->
-				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("#{p['text']}") 
-				subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
-				image = convo['users'][p['user_id']]['twi_profile_img_url']
-				subsidiary.find("img").attr("src", image) unless image == null
-				$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
-				if i == 0 and convo['answers'].length > 0
-					html = "<div class='subsidiary post'>"
-					$.each convo['answers'], (j, a) ->
-						html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
-					html += "</div>"
-					$('.modal_conversation_history').find(".conversation").append(html)		
 
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
 			submit()
 		add_answer = ->
-			count = $(".answer").length
+			count = $(".answer_area .answer").length
 			return if count > 3
 			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
@@ -300,7 +275,6 @@ class Author
 					"ianswer1" : $("#ianswer1 input").val()
 					"ianswer2" : $("#ianswer2 input").val()
 					"ianswer3" : $("#ianswer3 input").val()
-				data["post_id"] = post_id if post_id
 				$("#submit_question").button("loading")
 				modal = $("#post_question_modal")
 				modal.find(".modal-body").slideToggle(250)
