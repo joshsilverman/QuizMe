@@ -31,7 +31,8 @@ module ManageTwitterRelationships
     wisr_follows_ids = follows_with_inactive.collect(&:twi_user_id)
     search_terms.collect(&:name).shuffle.each do |search_term|
       next if follow_target_twi_user_ids.size >= max_follows
-      twi_user_ids = Post.twitter_request { twitter.search(search_term, :count => 100).statuses.collect { |s| s.user.id }.uniq }
+      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
+      twi_user_ids = statuses.select { |s| s.user.present? }.collect { |s| s.user.id }.uniq
       twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
       twi_user_ids.sample(max_follows - follow_target_twi_user_ids.size).each { |twi_user_id| follow_target_twi_user_ids << twi_user_id }
     end
