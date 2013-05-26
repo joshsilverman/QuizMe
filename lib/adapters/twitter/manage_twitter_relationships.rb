@@ -5,7 +5,7 @@ module ManageTwitterRelationships
     return unless (max_follows = autofollow_count) > 0
 
     # Twi search to get follow targets
-    twi_user_ids = options[:twi_user_ids] || get_follow_target_twi_ids(max_follows)
+    twi_user_ids = options[:twi_user_ids] || get_follow_target_twi_users(max_follows).collect(&:id)
 
     # Send follow requests
     send_autofollows(twi_user_ids, max_follows, options[:force])
@@ -26,17 +26,18 @@ module ManageTwitterRelationships
     max_follows
   end
 
-  def get_follow_target_twi_ids max_follows
-    follow_target_twi_user_ids = []
+  def get_follow_target_twi_users max_follows
+    follow_target_twi_users = []
     wisr_follows_ids = follows_with_inactive.collect(&:twi_user_id)
     search_terms.collect(&:name).shuffle.each do |search_term|
-      next if follow_target_twi_user_ids.size >= max_follows
-      twi_user_ids = Post.twitter_request { twitter.search(search_term, :count => 100).statuses.collect { |s| s.user.id }.uniq }
-      twi_user_ids.reject! { |twi_user_id| wisr_follows_ids.include?(twi_user_id) or follow_target_twi_user_ids.include?(twi_user_id) }
-      twi_user_ids.sample(max_follows - follow_target_twi_user_ids.size).each { |twi_user_id| follow_target_twi_user_ids << twi_user_id }
+      next if follow_target_twi_users.size >= max_follows
+      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
+      twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
+      twi_users.reject! { |twi_user| wisr_follows_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
+      twi_users.sample(max_follows - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
     end
-    puts "Too few autofollows found for #{twi_screen_name} (only found #{follow_target_twi_user_ids.size})!" if follow_target_twi_user_ids.size < max_follows
-    follow_target_twi_user_ids
+    puts "Too few autofollows found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_follows
+    follow_target_twi_users
   end
 
   def send_autofollows twi_user_ids, max_follows, force = false

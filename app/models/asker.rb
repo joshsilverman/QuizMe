@@ -481,10 +481,11 @@ class Asker < User
     if correct 
       response_text = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     else
-      if question
+      answer = Answer.where("question_id = ? and correct = ?", question.id, true).first
+      if question and answer
         response_text = ''
         response_text = "#{['Sorry', 'Not quite', 'No'].sample}, " unless tell
-        answer_text = Answer.where("question_id = ? and correct = ?", question.id, true).first().text
+        answer_text = answer.text
         answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
         response_text +=  "I was looking for '#{answer_text}'"
       else
@@ -872,13 +873,10 @@ class Asker < User
 
 
   def self.send_targeted_mentions
-    Asker.published.where("id in (?)", ACCOUNT_DATA.keys).each do |asker|
-      next if ACCOUNT_DATA[asker.id][:search_terms].blank?
-      users = Post.twitter_request { asker.twitter.search(ACCOUNT_DATA[asker.id][:search_terms].sample, :count => 20).statuses.collect { |s| s.user }.uniq }
-      existing_user_ids = User.select(:twi_user_id).where(:twi_user_id => users.collect { |s| s.id.to_s }).collect(&:twi_user_id)
-      users_grouped_by_id = users.reject { |u| existing_user_ids.include? u.id }.group_by { |u| u.id }
-      users_grouped_by_id.keys.sample(4).each do |target_user_id|
-        target_user = users_grouped_by_id[target_user_id].first
+    start_date = Time.find_zone('UTC').parse('2013-05-22 9am').to_date
+    Asker.published.sort_by { |a| a.followers.size }.slice(0, (Date.today - (start_date)).to_i).each do |asker|
+      next if asker.search_terms.blank?
+      asker.get_follow_target_twi_users(4).each do |target_user|
         user = User.find_or_initialize_by_twi_user_id(target_user.id)
         user.update_attributes(
           :twi_name => target_user.name,
