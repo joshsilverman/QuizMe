@@ -481,10 +481,11 @@ class Asker < User
     if correct 
       response_text = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     else
-      if question
+      answer = Answer.where("question_id = ? and correct = ?", question.id, true).first
+      if question and answer
         response_text = ''
         response_text = "#{['Sorry', 'Not quite', 'No'].sample}, " unless tell
-        answer_text = Answer.where("question_id = ? and correct = ?", question.id, true).first().text
+        answer_text = answer.text
         answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
         response_text +=  "I was looking for '#{answer_text}'"
       else
