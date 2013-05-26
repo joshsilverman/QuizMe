@@ -52,6 +52,7 @@ Quizmemanager::Application.routes.draw do
   match "/graph/:party/:graph" => 'askers#graph'
   match "/get_retention_metrics" => 'askers#get_retention_metrics'
   get "experiments" => 'experiments#index'
+  get "experiments/index_concluded"
   post "experiments/conclude" => 'experiments#conclude'
   post "experiments/show"
   post "experiments/trigger" => 'experiments#trigger'

@@ -6,6 +6,12 @@ class ExperimentsController < ApplicationController
     @experiments = Split::Experiment.all
   end
 
+  def index_concluded
+    @concluded = true
+    @experiments = Split::Experiment.all
+    render "_experiments", layout: false
+  end
+
   def show
     @experiment = Split::Experiment.find params[:name]
     render "_experiment", layout: false

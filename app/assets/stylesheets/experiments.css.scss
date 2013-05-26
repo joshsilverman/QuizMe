@@ -1,5 +1,13 @@
 .experiments {
 
+  h1 {
+    margin:5px 0 30px;
+  }
+
+  #running, #concluded {
+    margin-top:10px;
+  }
+
   form {
     margin:0;
 
@@ -31,8 +39,8 @@
 
     &.completed{
       .name {
-        font-style:italic;
-        color:#999;
+        // font-style:italic;
+        // color:#999; 
       }
     }
 

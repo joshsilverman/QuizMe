@@ -1,12 +1,19 @@
 class Experiment
   constructor: ->
     $('.experiment-header').click -> experiment.load_details($(this))
+    $('#concluded_tab').click -> experiment.load_concluded_tab()
 
   load_details: (header) ->
     $.post "/experiments/show", name: header.data('name'), (res) ->
-      puts header.find('.experiment-details td')
       header.next('.experiment-details').find('td').html res
       $([header.next('.experiment-details'), this]).toggleClass('active')
+
+  load_concluded_tab: ->
+    $.get "/experiments/index_concluded", (res) -> 
+      $("#concluded").html res
+      $('#concluded_tab').off 'click'
+      $('.experiment-header').off 'click'
+      $('.experiment-header').click -> experiment.load_details($(this))
 
   confirmReset: (e) ->
     agree = confirm("This will delete all data for this experiment?")
