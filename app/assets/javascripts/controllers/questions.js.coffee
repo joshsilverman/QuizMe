@@ -252,6 +252,7 @@ class Author
 		$(".new_question").on "click", => 
 			@post_question()
 		$('#askers_select select').change -> window.location = "/users/#{$('#user_id').val()}/questions/" + $(this).children(":selected").attr('value')
+		$("#question_input").on "focus", => $(".answer_area").show()
 	post_question: (text = null, post_id = null) =>
 		# return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#question_input").val(text) if text
