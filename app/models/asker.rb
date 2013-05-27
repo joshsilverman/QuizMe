@@ -538,8 +538,6 @@ class Asker < User
 
     nudge(answerer)
     after_answer_action answerer
-
-    Post.trigger_split_test(answerer.id, "targeted mention script (answers)")
   end 
 
   def after_answer_action answerer
@@ -891,30 +889,27 @@ class Asker < User
   end
 
   def send_targeted_mention user
-    if topics.present?
-      script = Post.create_split_test(user.id, 'targeted mention script (answers)', 'Pop quiz:', "Here's some prep on <topic>:", '<just question>')
-      script = '' if script == '<just question>'
-      script.gsub! '<topic>', topics.first.name
+    script = Post.create_split_test(user.id, 'targeted mention script (joins)', '<just question>', 'Pop quiz:')
+    script = '' if script == '<just question>'
 
-      question = most_popular_question
-      return unless question
+    question = most_popular_question
+    return unless question
 
-      publication = question.publications.order("created_at DESC").first
-      return unless publication
+    publication = question.publications.order("created_at DESC").first
+    return unless publication
 
-      script = "#{script} #{question.text}".strip
+    script = "#{script} #{question.text}".strip
 
-      Post.tweet(self, script, { 
-        reply_to: user.twi_screen_name, 
-        intention: 'targeted mention', 
-        question_id: question.id,
-        in_reply_to_user_id: user.id,
-        publication_id: publication.id,
-        long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
-        interaction_type: 2
-      })
-      Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
-    end
+    Post.tweet(self, script, { 
+      reply_to: user.twi_screen_name, 
+      intention: 'targeted mention', 
+      question_id: question.id,
+      in_reply_to_user_id: user.id,
+      publication_id: publication.id,
+      long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+      interaction_type: 2
+    })
+    Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
   end
 
 

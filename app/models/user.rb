@@ -312,6 +312,7 @@ class User < ActiveRecord::Base
     }
     classify
 		register_referrals
+		Post.trigger_split_test(id, "targeted mention script (joins)")
 	end
 
 	def classify matched_tags = []
