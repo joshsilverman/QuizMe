@@ -6,7 +6,7 @@
 	%ul.unstyled
 		- @contributors.each_with_index do |contributor, i|
 			%a.related_feed{href: "http://www.twitter.com/#{contributor[:twi_screen_name]}", target: "_blank"}
-				%li{:class => ("border_bottom" if i < 2)}
+				%li{:class => ("border_bottom" if i < (@contributors.size - 1))}
 					.content
 						= image_tag(contributor[:twi_profile_img_url], :class => "rounded")
 						%h5= contributor[:twi_screen_name]

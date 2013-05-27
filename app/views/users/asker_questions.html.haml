@@ -11,21 +11,27 @@
         #left_column.span3.hidden-phone
           %ul.nav.nav-tabs.nav-stacked
             %li
-              .box.top My questions for:
+              .box.top Questions for:
             %li
               %a 
-                %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name, @asker.id)
-          %ul.nav.nav-tabs.nav-stacked
-            %li
-              .box.top Progress
-            %li
-              .guidelines 
-                .progress
-                  / .bar{:style => "width: #{@questions.count / 50.0}%;"}
-                  .bar{:style => "width: 50%;"}
-                %p
-                  - launch_count = 50 - @questions.count
-                  #{launch_count > 0 ? launch_count : 0} more questions needed to launch #{@asker.twi_screen_name}!
+                %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.order("twi_screen_name ASC"), :id, :twi_screen_name, @asker.id)
+          - if @question_count[1] and @question_count[1] < 50
+            - question_count = ((@question_count[1] || 0) + (@question_count[0] || 0))
+            %ul.nav.nav-tabs.nav-stacked
+              %li
+                .box.top Progress
+              %li
+                .guidelines 
+                  .progress
+                    .bar{:style => "width: #{(question_count / 50.0) * 100}%;"}
+                  %p
+                    - launch_count = question_count >= 50 ? 0 : 50 - question_count
+                    - if launch_count > 0
+                      #{launch_count} more questions needed to launch.
+                    - else
+                      Enough questions to launch!
+          - if @contributors.present?
+            = render :partial => 'feeds/contributors'
         #right_column.span6
           #posts.rounded
             #post_question_modal
@@ -104,7 +110,7 @@
                         - if owner
                           = best_in_place answer, :text, :type => :input
                         - else
-                          %p= answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+                          #{answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe}
           .pagination-wrapper
             = paginate @questions
 

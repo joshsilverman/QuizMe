@@ -28,11 +28,24 @@ class UsersController < ApplicationController
       redirect_to '/' unless current_user == @user
       
       @asker = Asker.find(params[:asker_id])
-      @questions = @user.questions.where(:created_for_asker_id => params[:asker_id])
+      @questions = @asker.questions.order("questions.id DESC").page(params[:page]).per(25)
+      # @questions = @user.questions.where(:created_for_asker_id => params[:asker_id])
+      @question_count = @asker.questions.group("status").count
 
       @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
-      @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-      @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
+      # @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
+      # @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
+
+      contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
+
+      contributor_ids_with_count = @asker.questions.approved.group("user_id").count
+      if current_user.questions.approved.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
+        contributors += [current_user]
+      end
+      @contributors = []
+      contributors.shuffle.each do |user|
+        @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
+      end      
 
       @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
       @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}

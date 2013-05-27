@@ -3,19 +3,31 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #author_dashboard {
-	.content h5 {
-		display: block;
+	.border-color {
+		border-color: #ddd;
 	}
-	.answer {
-		margin: 2px 0px;
-		color: #666;
-		i {
-			opacity: 0.4;
+
+	.conversation {
+		.post {
+			cursor: default !important;
 		}
-	}
-	.question {
-		display: block;
-		margin: 5px 0px;
+
+		.content h5 {
+			display: block;
+		}
+
+		.answer {
+			margin: 2px 0px;
+			color: #666;
+			i {
+				opacity: 0.4;
+			}
+		}
+
+		.question {
+			display: block;
+			margin: 5px 0px;
+		}
 	}
 
 	.status {
@@ -23,6 +35,7 @@
 		position: relative;
 		top: -3px;
 		left: -9px;		
+		opacity: 0.6;
 	}
 	#askers_select {
 		select {
@@ -33,6 +46,11 @@
 
 	.guidelines {
 		padding: 15px !important;
+		border-radius: 0px 0px 5px 5px;
+
+		p {
+			padding: 0px !important;
+		}
 	}
 
 	.progress {
@@ -42,7 +60,28 @@
 	#post_question_modal {
 		background: white;
 		margin-bottom: 15px;
-		border-radius: 3px 3px 3px 3px;
+		border-radius: 5px 5px 5px 5px;
+		border: 1px solid #ddd;
+	}
+
+	.best_in_place {
+		cursor: text;
+	}
+
+	#related {
+		.content {
+			min-height: 32px !important;
+			margin-left: 42px !important;
+
+			img {
+				height: 32px !important;
+			}
+
+		}
+
+		.header, li {
+			background: #efefef !important;
+		}
 	}
 }
 
