@@ -590,10 +590,9 @@ class Asker < User
     return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc')
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
 
-    script = Post.create_split_test(user.id, "ugc script v3.0", 
+    script = Post.create_split_test(user.id, "ugc script v4.0", 
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
-      "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1",
-      "Want to post a question of your own? You can enter it here: wisr.com/feeds/{asker_id}?q=1"
+      "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1"
     )
     script = script.gsub "{asker_id}", self.id.to_s
     script = script.gsub "{asker_name}", self.twi_screen_name
