@@ -115,7 +115,7 @@ Quizmemanager::Application.routes.draw do
   post '/unsubscribe' => 'users#unsubscribe'
   # match '/users/:id/questions/:asker_id' => 'users#asker_questions'
   # match '/users/:id/questions' => 'users#questions'
-  match '/askers/:id/questions' => 'users#asker_questions'
+  match '/askers/:id/questions' => 'askers#questions'
 
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"

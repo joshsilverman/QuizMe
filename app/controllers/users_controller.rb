@@ -16,27 +16,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def questions
-    redirect_to "/users/#{current_user.id}/questions/#{current_user.questions.group('created_for_asker_id').count.max{|a,b| a[1] <=> b[1]}[0]}"
-  end
-
-  def asker_questions
-    if !current_user
-      redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
-    else
-      @asker = Asker.find(params[:id])
-      @questions = @asker.questions.order("questions.id DESC").page(params[:page]).per(25)
-      @question_count = @asker.questions.group("status").count
-
-      @contributors = []
-      contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
-      contributor_ids_with_count = @asker.questions.approved.group("user_id").count
-      contributors.shuffle.each do |user|
-        @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
-      end      
-    end
-  end
-
   def badges
     @user = User.where("twi_screen_name ILIKE ?", params[:twi_screen_name]).first
     if @user.nil?

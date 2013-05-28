@@ -1,5 +1,5 @@
 class AskersController < ApplicationController
-  before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph]
+  before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph, :questions]
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
@@ -175,4 +175,21 @@ class AskersController < ApplicationController
     @asker.seeder_import params[:seeder_id]
     redirect_to :back
   end
+
+  def questions
+    if !current_user
+      redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
+    else
+      @asker = Asker.find(params[:id])
+      @questions = @asker.questions.order("questions.id DESC").page(params[:page]).per(25)
+      @question_count = @asker.questions.group("status").count
+
+      @contributors = []
+      contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
+      contributor_ids_with_count = @asker.questions.approved.group("user_id").count
+      contributors.shuffle.each do |user|
+        @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
+      end      
+    end
+  end  
 end
