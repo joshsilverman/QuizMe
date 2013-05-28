@@ -50,6 +50,16 @@ class Asker < User
     Rails.cache.fetch('asker_twi_screen_names', :expires_in => 1.hour){Asker.published.select([:twi_screen_name, :id])}
   end
 
+  def self.in_progress_askers
+    Rails.cache.fetch('in_progress_askers', :expires_in => 1.hour){ 
+      Asker.includes([:questions])\
+        .select('"users".*, count("questions".id) as question_count')\
+        .group('"users".id, "questions".id HAVING count("questions".id) < 50')\
+        .where("users.published is null")\
+        .all
+    }
+  end
+
   def descriptions
     topics.descriptions
   end
@@ -543,7 +553,8 @@ class Asker < User
   def after_answer_action answerer
     actions = [
       Proc.new {|answerer| request_ugc(answerer)},
-      Proc.new {|answerer| request_mod(answerer)}
+      Proc.new {|answerer| request_mod(answerer)},
+      Proc.new {|answerer| request_new_handle_ugc(answerer)}
     ].shuffle
 
     actions.each do |action|
@@ -610,6 +621,46 @@ class Asker < User
       })
     end
     return true
+  end
+
+  def request_new_handle_ugc user
+    return false unless user.lifecycle_above? 3
+    return false if Post.where("in_reply_to_user_id = ? and intention = 'request new handle ugc' and created_at > ?", user.id, 1.week.ago).size > 0 # we haven't asked them in the past week
+    in_progress_askers = Asker.in_progress_askers
+    user_askers_with_enough_answers_ids = user.posts.answers\
+      .where("in_reply_to_user_id in (?)", in_progress_askers.collect(&:related_askers).flatten.collect(&:id))\
+      .group("in_reply_to_user_id")\
+      .count.select {|k, v| v > 10}.keys
+    in_progress_asker = in_progress_askers.select { |asker| (user_askers_with_enough_answers_ids & asker.related_askers.collect(&:id)).present? }.sample
+    return false if in_progress_asker.blank? # user has answered enough questions on a related handle in the past month
+    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request new handle ugc').order('created_at DESC').limit(2).try :[], 1
+    return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
+    
+    ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
+    script = Post.create_split_test(user.id, 'new handle ugc request script (=> add question)', 
+      "Hey, we're working on questions for @<new handle>, could you add one? <link>",
+      "You're doing great with this material, would you help us write questions for a new handle at <link>"
+    )
+    script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
+    script.gsub! '<new handle>', in_progress_asker.twi_screen_name
+    
+    # overwrite script if user has added UGC to this handle before
+    ## ALL MUST CONTAIN MORE FOR TEST TO PASS
+    if Question.exists?(user_id: user.id, created_for_asker_id: in_progress_asker.id)
+      script = [
+        "Do you have a sec to write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Have a second to write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Thanks again for contributing questions. Could you write a few more? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Have a sec to write a few more questions? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Could I trouble you to write a couple more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Would you write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "Would you mind writing a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
+        "We're looking for more questions for @#{twi_screen_name}. Can you write a couple? http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
+      ].sample
+    end
+
+    Post.dm(self, user, script, {intention: 'request new handle ugc'})
+    Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
   def nudge answerer

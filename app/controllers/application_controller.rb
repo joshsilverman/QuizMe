@@ -23,8 +23,8 @@ class ApplicationController < ActionController::Base
             redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
           end
         end      
-      elsif omniauth_redirect_params['user_id'] and omniauth_redirect_params['asker_id']
-        redirect_to = "/users/#{omniauth_redirect_params['user_id']}/questions/#{omniauth_redirect_params['asker_id']}"
+      elsif omniauth_redirect_params['asker_id']
+        redirect_to = "/askers/#{omniauth_redirect_params['asker_id']}/questions"
       else
         redirect_to = request.env['omniauth.origin'] || session[:return_to] || root_path
       end

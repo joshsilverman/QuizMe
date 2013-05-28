@@ -22,40 +22,18 @@ class UsersController < ApplicationController
 
   def asker_questions
     if !current_user
-      redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :user_id => params[:id], :asker_id => params[:asker_id]) unless current_user
+      redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
     else
-      @user = User.find(params[:id])
-      redirect_to '/' unless current_user == @user
-      
-      @asker = Asker.find(params[:asker_id])
+      @asker = Asker.find(params[:id])
       @questions = @asker.questions.order("questions.id DESC").page(params[:page]).per(25)
-      # @questions = @user.questions.where(:created_for_asker_id => params[:asker_id])
       @question_count = @asker.questions.group("status").count
 
-      @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
-      # @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-      # @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
-
-      contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
-
-      contributor_ids_with_count = @asker.questions.approved.group("user_id").count
-      if current_user.questions.approved.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
-        contributors += [current_user]
-      end
       @contributors = []
+      contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
+      contributor_ids_with_count = @asker.questions.approved.group("user_id").count
       contributors.shuffle.each do |user|
         @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
       end      
-
-      @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
-      @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
-      @approved_count = @all_questions.where(:status => 1).count
-      @pending_count = @all_questions.where(:status => 0).count
-
-      @questions_answered_count = Post.answers\
-        .where("in_reply_to_question_id in (?)", @questions.collect(&:id))\
-        .group("posts.in_reply_to_question_id")\
-        .count
     end
   end
 

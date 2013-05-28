@@ -106,7 +106,6 @@ Quizmemanager::Application.routes.draw do
   post '/askers/add_related' => 'askers#add_related'
   post '/askers/remove_related' => 'askers#remove_related'
 
-  resources :askers
   get "users/supporters" => "users#supporters"
   post "users/supporters" => "users#create_supporter"
   delete "users/:id" => "users#destroy_supporter"
@@ -114,8 +113,9 @@ Quizmemanager::Application.routes.draw do
 
   match '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
-  match '/users/:id/questions/:asker_id' => 'users#asker_questions'
-  match '/users/:id/questions' => 'users#questions'
+  # match '/users/:id/questions/:asker_id' => 'users#asker_questions'
+  # match '/users/:id/questions' => 'users#questions'
+  match '/askers/:id/questions' => 'users#asker_questions'
 
   match "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
@@ -129,6 +129,7 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   resources :exams
+  resources :askers
 
   root :to => 'feeds#index'
 
