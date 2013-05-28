@@ -181,7 +181,7 @@ class AskersController < ApplicationController
       redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
     else
       @asker = Asker.find(params[:id])
-      @questions = @asker.questions.order("questions.id DESC").page(params[:page]).per(25)
+      @questions = @asker.questions.includes(:answers, :user).order("questions.id DESC").page(params[:page]).per(15)
       @question_count = @asker.questions.group("status").count
 
       @contributors = []
