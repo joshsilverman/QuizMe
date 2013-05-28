@@ -641,24 +641,24 @@ class Asker < User
       "Hey, we're working on questions for @<new handle>, could you add one? <link>",
       "You're doing great with this material, would you help us write questions for a new handle at <link>"
     )
-    script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
-    script.gsub! '<new handle>', in_progress_asker.twi_screen_name
     
     # overwrite script if user has added UGC to this handle before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
-    # modularize these
     if Question.exists?(user_id: user.id, created_for_asker_id: in_progress_asker.id)
       script = [
-        "Do you have a sec to write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Have a second to write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Thanks again for contributing questions. Could you write a few more? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Have a sec to write a few more questions? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Could I trouble you to write a couple more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Would you write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "Would you mind writing a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",
-        "We're looking for more questions for @#{twi_screen_name}. Can you write a couple? http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
+        "Do you have a sec to write a few more questions for @<new handle>? <link>",
+        "Have a second to write a few more questions for @<new handle>? <link>",
+        "Thanks again for contributing questions. Could you write a few more? <link>",
+        "Have a sec to write a few more questions? <link>",
+        "Could I trouble you to write a couple more questions for @<new handle>? <link>",
+        "Would you write a few more questions for @<new handle>? <link>",
+        "Would you mind writing a few more questions for @<new handle>? <link>",
+        "We're looking for more questions for @<new handle>. Can you write a couple? <link>"
       ].sample
     end
+
+    script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
+    script.gsub! '<new handle>', in_progress_asker.twi_screen_name
 
     Post.dm(self, user, script, {intention: 'request new handle ugc'})
     Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
