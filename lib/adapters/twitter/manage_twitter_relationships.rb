@@ -58,7 +58,6 @@ module ManageTwitterRelationships
 
     followback(twi_follower_ids) unless twi_follower_ids.blank?
     unfollow_nonreciprocal(twi_follows_ids) unless twi_follows_ids.blank?
-    unfollow_oldest_inactive_user
   end
 
   # FOLLOWS METHODS
