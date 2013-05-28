@@ -636,14 +636,14 @@ class Asker < User
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request new handle ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
     
-    ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
+    ## ALL MUST ***NOT*** CONTAIN 'MORE' FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'new handle ugc request script (=> add question)', 
       "Hey, we're working on questions for @<new handle>, could you add one? <link>",
       "You're doing great with this material, would you help us write questions for a new handle at <link>"
     )
     
     # overwrite script if user has added UGC to this handle before
-    ## ALL MUST CONTAIN MORE FOR TEST TO PASS
+    ## ALL MUST CONTAIN 'MORE' FOR TEST TO PASS
     if Question.exists?(user_id: user.id, created_for_asker_id: in_progress_asker.id)
       script = [
         "Do you have a sec to write a few more questions for @<new handle>? <link>",
