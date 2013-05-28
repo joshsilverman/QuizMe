@@ -566,7 +566,7 @@ class Asker < User
     return false unless user.lifecycle_above? 3
     return false if user.transitions.lifecycle.where('created_at > ?', 1.hour.ago).present?
     return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 5.days.ago).present?
-    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2).try :[], 1
+    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and Post.where(moderator_id: user.id).where("updated_at > ?", llast_solicitation.created_at).empty?
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
@@ -624,7 +624,7 @@ class Asker < User
   end
 
   def request_new_handle_ugc user
-    return false unless user.lifecycle_above? 3
+    return false unless user.lifecycle_above? 2
     return false if Post.where("in_reply_to_user_id = ? and intention = 'request new handle ugc' and created_at > ?", user.id, 1.week.ago).size > 0 # we haven't asked them in the past week
     in_progress_askers = Asker.in_progress_askers
     user_askers_with_enough_answers_ids = user.posts.answers\
@@ -633,7 +633,7 @@ class Asker < User
       .count.select {|k, v| v > 10}.keys
     in_progress_asker = in_progress_askers.select { |asker| (user_askers_with_enough_answers_ids & asker.related_askers.collect(&:id)).present? }.sample
     return false if in_progress_asker.blank? # user has answered enough questions on a related handle in the past month
-    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request new handle ugc').order('created_at DESC').limit(2).try :[], 1
+    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request new handle ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
     
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
@@ -646,6 +646,7 @@ class Asker < User
     
     # overwrite script if user has added UGC to this handle before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
+    # modularize these
     if Question.exists?(user_id: user.id, created_for_asker_id: in_progress_asker.id)
       script = [
         "Do you have a sec to write a few more questions for @#{in_progress_asker.twi_screen_name}? http://www.wisr.com/askers/#{in_progress_asker.id}/questions",

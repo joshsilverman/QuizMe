@@ -504,15 +504,15 @@ describe Asker do
 				@new_asker.related_askers << @asker
 			end
 
-			it 'with a post b' do
+			it 'with a post' do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@asker.request_new_handle_ugc @user
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
 			end
 
-			it 'unless lifecycle less than advanced' do
+			it 'unless lifecycle less than regular' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
 					user = FactoryGirl.create(:user, twi_user_id: 1)
 					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
@@ -521,7 +521,7 @@ describe Asker do
 					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					@asker.request_new_handle_ugc user.reload
 
-					if SEGMENT_HIERARCHY[1].slice(0,4).include? lifecycle_segment
+					if SEGMENT_HIERARCHY[1].slice(0, 3).include? lifecycle_segment
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					else
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 1
@@ -530,7 +530,7 @@ describe Asker do
 			end			
 
 			it 'if enough answers on related handle' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				12.times do |i|
 					if i > 10
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
@@ -539,14 +539,14 @@ describe Asker do
 					end
 
 					FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
-					@user.update_attribute :lifecycle_segment, 4
+					@user.update_attribute :lifecycle_segment, 3
 					@asker.request_new_handle_ugc @user
 				end
 			end
 
 			it 'with two posts in eight days' do
 				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				8.times do |i|
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
@@ -563,7 +563,7 @@ describe Asker do
 
 			it 'uses correct script' do
 				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					new_handle_ugc = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').order('created_at DESC').first
 					case i
@@ -598,7 +598,7 @@ describe Asker do
 				it 'with regular contributions' do
 					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					@user.update_attribute :lifecycle_segment, 4
+					@user.update_attribute :lifecycle_segment, 3
 					30.times do
 						FactoryGirl.create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
 						@asker.request_new_handle_ugc @user.reload
