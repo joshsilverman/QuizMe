@@ -588,7 +588,7 @@ describe Asker do
 					5.times do
 						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					end
-					30.times do |i|
+					30.times do
 						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 						Timecop.travel(Time.now + 1.day)
 					end
@@ -599,7 +599,7 @@ describe Asker do
 					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					@user.update_attribute :lifecycle_segment, 4
-					30.times do |i|
+					30.times do
 						FactoryGirl.create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
 						@asker.request_new_handle_ugc @user.reload
 						Timecop.travel(Time.now + 1.day)
