@@ -248,7 +248,7 @@ class Card
 class Author
 	constructor: ->
 		@id = $("#asker_id").val()
-		$('#askers_select select').change -> window.location = "/users/#{$('#user_id').val()}/questions/" + $(this).children(":selected").attr('value')
+		$('#askers_select select').on "change", -> window.location = "/askers/#{$(this).children(':selected').attr('value')}/questions"
 		$("#question_input").on "focus", => $(".answer_area").show()
 		$("#add_answer, #submit_question").off "click"
 		$("#add_answer").on "click", => @add_answer()
