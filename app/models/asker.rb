@@ -880,7 +880,7 @@ class Asker < User
       if Post.create_split_test(user.id, 'author followup type (return ugc submission)', 'write another here', 'direct to dashboard') == 'write another here'
         script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
       else
-        script = "Check out your dashboard here: #{URL}/users/#{user_id}/questions/#{asker.id}"
+        script = "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"
       end
 
       Post.dm(asker, user, script, {:intention => "author followup"})
