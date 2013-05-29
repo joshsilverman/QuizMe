@@ -30,7 +30,9 @@
           #posts.rounded
             #post_question_modal
               .modal-header
-                %h3 Add a New Question
+                %h3 
+                  Add a Question to
+                  %span= "#{@asker.twi_screen_name}"
               .modal-body
                 .question_form
                   %h3

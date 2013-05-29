@@ -781,11 +781,11 @@ class Asker < User
     asker_hash = Asker.published.group_by(&:id)
     recipients.each do |recipient| 
       UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+      puts "sending progress report email to #{recipient.twi_screen_name}"
     end
   end
 
   def self.send_progress_report_dms recipients
-    asker_followers = {}
     asker_hash = Asker.all.group_by(&:id)
     recipients.each do |recipient|
       asker, text = Asker.compose_progress_report(recipient, asker_hash)
@@ -793,7 +793,7 @@ class Asker < User
       
       if asker.followers.include?(recipient) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
         Post.dm(asker, recipient, text, {:intention => "progress report"})
-        puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
+        # puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
         sleep 1
       end
     end

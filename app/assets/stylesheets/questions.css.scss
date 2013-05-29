@@ -51,6 +51,10 @@
 		p {
 			padding: 0px !important;
 		}
+
+		.bar {
+			background-image: -webkit-linear-gradient(top, #0088cc, #0055cc);
+		}
 	}
 
 	.progress {
@@ -62,6 +66,11 @@
 		margin-bottom: 15px;
 		border-radius: 5px 5px 5px 5px;
 		border: 1px solid #ddd;
+
+		.modal-header h3 span {
+			/*border-bottom: 1px dotted #ddd;*/
+			color: #0088cc;
+		}
 	}
 
 	.best_in_place {
