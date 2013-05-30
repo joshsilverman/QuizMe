@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130520224612) do
+ActiveRecord::Schema.define(:version => 20130530161216) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -99,6 +99,15 @@ ActiveRecord::Schema.define(:version => 20130520224612) do
     t.integer  "badge_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "moderations", :force => true do |t|
+    t.integer  "post_id"
+    t.integer  "user_id"
+    t.integer  "type_id"
+    t.boolean  "accepted"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "nudge_types", :force => true do |t|

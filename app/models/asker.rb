@@ -571,23 +571,23 @@ class Asker < User
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
-      "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/mod_manage", 
-      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/feeds/mod_manage")
+      "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/moderator_manage", 
+      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/feeds/moderator_manage")
 
     # overwrite script if user has mod'ed before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
     if Post.find_by_moderator_id(user.id)
       script = [
-        "Do you have a sec to moderate a few more questions? http://wisr.com/feeds/mod_manage",
-        "Thanks for the help so far! Have time to grade a few more? http://wisr.com/feeds/mod_manage",
-        "Have a second to grade a few more questions? http://wisr.com/feeds/mod_manage",
-        "Thanks again for helping grade. Could you help grade a few more? http://wisr.com/feeds/mod_manage",
-        "Have a sec to grade a few more answers? http://wisr.com/feeds/mod_manage",
-        "Could I trouble you for a bit more grading assistance? http://wisr.com/feeds/mod_manage",
-        "Would you grade a few more? http://wisr.com/feeds/mod_manage",
-        "Could you help grade a few more? http://wisr.com/feeds/mod_manage",
-        "Would you grade a few more answers? http://wisr.com/feeds/mod_manage",
-        "Would you mind grading a few more? http://wisr.com/feeds/mod_manage"
+        "Do you have a sec to moderate a few more questions? http://wisr.com/feeds/moderator_manage",
+        "Thanks for the help so far! Have time to grade a few more? http://wisr.com/feeds/moderator_manage",
+        "Have a second to grade a few more questions? http://wisr.com/feeds/moderator_manage",
+        "Thanks again for helping grade. Could you help grade a few more? http://wisr.com/feeds/moderator_manage",
+        "Have a sec to grade a few more answers? http://wisr.com/feeds/moderator_manage",
+        "Could I trouble you for a bit more grading assistance? http://wisr.com/feeds/moderator_manage",
+        "Would you grade a few more? http://wisr.com/feeds/moderator_manage",
+        "Could you help grade a few more? http://wisr.com/feeds/moderator_manage",
+        "Would you grade a few more answers? http://wisr.com/feeds/moderator_manage",
+        "Would you mind grading a few more? http://wisr.com/feeds/moderator_manage"
       ].sample
     end
 

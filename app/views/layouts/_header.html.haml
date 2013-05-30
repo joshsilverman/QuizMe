@@ -60,7 +60,7 @@
 
             - elsif current_user.is_role? "moderator"
               %li
-                %a.nav-link{:href => "/feeds/mod_manage"} Moderate
+                %a.nav-link{:href => "/feeds/moderator_manage"} Moderate
                 
             - elsif Question.exists?(:user_id => current_user.id)
               %li.hidden-phone
