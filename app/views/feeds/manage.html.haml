@@ -8,7 +8,7 @@
 		/ background-size:cover;
 	}
 
-#manager{:class => ('mod' if !admin)}
+#manager{:class => (admin ? 'feeds_manage' : 'feeds_moderator_manage')}
 	#feed_container.span10
 		#wrapper.span9
 			#feed.row

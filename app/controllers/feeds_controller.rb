@@ -1,7 +1,7 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :mod_manage, :search]
+  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :moderator_manage, :search]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
-  before_filter :moderator?, :only => [:mod_manage, :moderator_response]
+  before_filter :moderator?, :only => [:moderator_manage, :moderator_response]
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
@@ -236,9 +236,9 @@ class FeedsController < ApplicationController
   end
 
   def moderator_response
-    user_post = Post.find(params[:in_reply_to_post_id])
-    correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
-    user_post.update_attributes(moderator_id: current_user.id, autocorrect: correct)
+    moderation = current_user.moderations.find_or_initialize_by_post_id params['post_id']
+    moderation.update_attributes type_id: params['type_id']
+
     Post.trigger_split_test(current_user.id, 'mod request script (=> moderate answer)')
     render status: 200, nothing: true
   end
@@ -364,13 +364,16 @@ class FeedsController < ApplicationController
     end
   end
 
-  def mod_manage
+  def moderator_manage
     @posts = Post.includes(:tags, :conversation).linked_box.not_dm.\
       joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id").\
+      includes(:moderations).\
       where("parents.question_id IS NOT NULL").\
       where("posts.user_id <> ?", current_user.id).\
       where("posts.in_reply_to_user_id IN (?)", current_user.follows.where("role = 'asker'")).\
-      where("posts.moderator_id IS NULL").order("random()").limit(10).\
+      select('count("moderations".id) as moderation_count').\
+      group('"posts".id, "tags".id, "conversations".id, "users".id, "moderations".id HAVING count("moderations".id) < 2').\
+      order("random()").limit(10).\
       sort_by{|p| p.created_at}.reverse
 
     @questions = []

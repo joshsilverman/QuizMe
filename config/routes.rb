@@ -25,7 +25,7 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id/manage" => "feeds#manage"
   match "feeds/manage" => "feeds#manage"
-  match "feeds/mod_manage" => "feeds#mod_manage"
+  match "feeds/moderator_manage" => "feeds#moderator_manage"
   
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "askers/:id/import" => "askers#import"
