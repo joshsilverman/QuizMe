@@ -139,11 +139,11 @@ class Dashboard
     window.location.hash = "#{target}?domain=#{domain}"
 
   draw_paulgraham: (container, data) =>
-    data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
-    $.each data, (k,v) -> 
-      v['avg'] = .2 if v['avg'] > .2
-      data_array.push [k, .05, .05, .05, v['raw'], v['avg']]
-    graph_data = google.visualization.arrayToDataTable(data_array)
+    # data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
+    # $.each data, (k,v) -> 
+    #   v['avg'] = .2 if v['avg'] > .2
+    #   data_array.push [k, .05, .05, .05, v['raw'], v['avg']]
+    graph_data = google.visualization.arrayToDataTable(data)
 
     #scope chart container if container provided - this is if there are multiple types of the same graph
     if container == undefined
@@ -151,7 +151,7 @@ class Dashboard
     else
       chart_elmnt = $(container + " .paulgraham_graph")[0]
 
-    chart = new google.visualization.ComboChart(chart_elmnt)
+    chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, pg_options
 
   draw_dau_mau: (container, data) =>
@@ -277,10 +277,37 @@ class Dashboard
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
+# pg_options = 
+#   width: 425
+#   height: 275
+#   legend: "none"
+#   chartArea:  
+#     width: 420
+#     left: 30
+#     height: 225
+#   hAxis:
+#     textStyle: 
+#       fontSize: 9
+#   vAxis:
+#     viewWindowMode: 'explicit'
+#     viewWindow:
+#       max: 0.1501
+#       min: 0
+#   series: [
+#     {type:'area', lineWidth:0},
+#     {type:'area', lineWidth:0},
+#     {type:'area', lineWidth:0},
+#     {areaOpacity: 0, lineWidth: 0, color:'#1D3880', pointSize:2},
+#     {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
+#   isStacked: false
+#   colors: ['orange', 'green', 'orange', "#1D3880"]
+
 pg_options = 
   width: 425
   height: 275
   legend: "none"
+  pointSize: 3
+  lineWidth: 3
   chartArea:  
     width: 420
     left: 30
@@ -291,16 +318,8 @@ pg_options =
   vAxis:
     viewWindowMode: 'explicit'
     viewWindow:
-      max: 0.1501
+      max: 0.2
       min: 0
-  series: [
-    {type:'area', lineWidth:0},
-    {type:'area', lineWidth:0},
-    {type:'area', lineWidth:0},
-    {areaOpacity: 0, lineWidth: 0, color:'#1D3880', pointSize:2},
-    {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
-  isStacked: true
-  colors: ['orange', 'green', 'orange', "#1D3880"]
 
 learner_levels_options = 
   width: 850
