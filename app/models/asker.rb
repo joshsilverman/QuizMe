@@ -52,11 +52,11 @@ class Asker < User
 
   def self.in_progress_askers
     Rails.cache.fetch('in_progress_askers', :expires_in => 1.hour){ 
-      Asker.includes([:questions])\
-        .select('"users".*, count("questions".id) as question_count')\
-        .group('"users".id, "questions".id HAVING count("questions".id) < 50')\
+      Asker.includes(:questions)\
+        .joins(:related_askers)\
+        .select('"users".*')\
         .where("users.published is null")\
-        .all
+        .select { |asker| asker.questions.size < 50 }        
     }
   end
 

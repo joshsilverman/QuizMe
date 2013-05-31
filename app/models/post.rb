@@ -418,8 +418,6 @@ class Post < ActiveRecord::Base
       :last_interaction_at => post.created_at
     })
 
-    # puts "missed item in stream! DM: #{post.to_json}" if asker.id == 18
-
     Post.classifier.classify post
     Post.grader.grade post
 
