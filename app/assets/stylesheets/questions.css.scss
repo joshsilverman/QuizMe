@@ -227,7 +227,7 @@
 
 		.tabbable {
 			height: inherit;
-			padding: 10px 40px 15px;
+			padding: 10px 40px 20px;
 
 			.nav-tabs {
 				// margin-bottom:14px;
@@ -292,7 +292,7 @@
 
 		.post.parent {
 			/*padding: 10px;*/
-			padding: 20px 40px;
+			padding: 25px 40px;
 			padding-bottom: 10px;
 			position: relative;
 			cursor: pointer;
@@ -335,7 +335,7 @@
 				
 				img {
 					position: absolute;
-					top: 20px;
+					top: 25px;
 					left: 40px;
 					height: 48px;
 				}
@@ -597,8 +597,14 @@
 	}
 }
 
+@media (max-width:768px) {
+	#question {
+		width:inherit !important;
+	}
+}
 #question {
 	width:642px;
+
 
 	.conversation {
 		//min-height: 140px;

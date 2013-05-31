@@ -139,7 +139,7 @@ class Question < ActiveRecord::Base
   @qb = 'http://questionbase.studyegg.com'
 
   def self.import_video_urls_from_qb
-    egg_ids = {13 => 18, 14 => 19}
+    egg_ids = {13 => 18, 14 => 19, 30 => 22, 28 => 374}
 
     egg_ids.each do |egg_id, created_for_asker_id|
       egg = Question.get_studyegg_details(egg_id)
