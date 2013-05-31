@@ -434,11 +434,6 @@ class User < ActiveRecord::Base
       )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
-    	# if is_role? "user"
-    	# 	update_attribute :role, "moderator"
-	    #   comment = "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/feeds/moderator_manage"
-	    #   Mixpanel.track_event "moderator request sent", { distinct_id: id }
-    	# end
 	    Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 

@@ -212,12 +212,20 @@ describe Asker do
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
 		    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
 		    @asker.followback(twi_follower_ids)
+<<<<<<< HEAD
 		    @asker.reload.follow_relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
+=======
+		    @asker.reload.relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
+>>>>>>> capybara running with first few tests on moderations; some naming convention changes for test directories
 			end
 
 			it 'follows new follower back with pending requests' do
 				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+<<<<<<< HEAD
 				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
+=======
+				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+>>>>>>> capybara running with first few tests on moderations; some naming convention changes for test directories
 				relationship.update_attribute :pending, true
 
 		    twi_follower_ids = [@pending_user.twi_user_id, @new_user.twi_user_id]
@@ -230,7 +238,11 @@ describe Asker do
 
 			it 'updates converted pending users to not pending' do
 				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+<<<<<<< HEAD
 				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
+=======
+				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+>>>>>>> capybara running with first few tests on moderations; some naming convention changes for test directories
 				relationship.update_attribute :pending, true
 
 		    relationship.reload.pending.must_equal true
@@ -250,7 +262,11 @@ describe Asker do
 		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
 		    @asker = @asker.reload
 		    @asker.followers.count.must_equal 0
+<<<<<<< HEAD
 		    @asker.follower_relationships.count.must_equal 1
+=======
+		    @asker.reverse_relationships.count.must_equal 1
+>>>>>>> capybara running with first few tests on moderations; some naming convention changes for test directories
 			end
 		end
 
@@ -284,10 +300,10 @@ describe Asker do
 			it "unfollows non-reciprocal follows after one month" do
 				@asker.follows << @new_user
 				twi_follows_ids = [@new_user.twi_user_id]
-				31.times do |i|
+				32.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
-					if i < 29
+					if i < 30
 						@asker.reload.follows.count.must_equal 1
 					else
 						@asker.reload.follows.count.must_equal 0
