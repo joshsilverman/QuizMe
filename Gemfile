@@ -4,10 +4,13 @@ gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 
 group :test do
-  gem 'minitest'
+  # gem 'minitest'
+  gem 'minitest-rails'
+  gem 'minitest-rails-capybara'
+  
   gem 'factory_girl_rails'
   gem 'capybara'
-  gem 'turn', :require => false
+  gem 'turn'#, :require => false
   gem "database_cleaner"
   gem 'timecop'
   gem 'm'
@@ -22,7 +25,6 @@ group :development do
   gem 'rack-mini-profiler'
   gem 'awesome_print'
   gem 'quiet_assets'
-  gem 'heroku'
   gem 'better_errors'
   gem 'meta_request'
 

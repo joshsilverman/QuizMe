@@ -25,7 +25,9 @@ Quizmemanager::Application.routes.draw do
   match "feeds/:id/more/:last_post_id" => "feeds#more"
   match "feeds/:id/manage" => "feeds#manage"
   match "feeds/manage" => "feeds#manage"
-  match "feeds/moderator_manage" => "feeds#moderator_manage"
+
+  resource :moderations
+  get "moderations/manage"
   
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "askers/:id/import" => "askers#import"
@@ -39,7 +41,6 @@ Quizmemanager::Application.routes.draw do
   match "/ask" => "feeds#ask"
   match "/respond_to_question" => "feeds#respond_to_question"
   match "/manager_response" => "feeds#manager_response"
-  match '/moderator_response' => 'feeds#moderator_response'
   match "/manager_post" => "feeds#manager_post"
   post '/refer_a_friend' => 'feeds#refer_a_friend'
   match "/link_to_post" => "feeds#link_to_post"
