@@ -62,7 +62,8 @@ class QuestionsController < ApplicationController
     end
     redirect_to "/feeds/#{@asker.id}" unless (@question and @publication)
 
-    # render ab_test("Better question pages (=> follow)", 'no follow button or video', 'follow button and video')
+    opts = ['no follow button or video', 'follow button and video']
+    @new_question_page = ab_test("Better question pages (=> follow)", opts[0], opts[1]) == opts[1] ? true : false
   end
 
   def new

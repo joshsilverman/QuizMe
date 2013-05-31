@@ -48,6 +48,17 @@ class Question
 
 		$("#question.index .status .label").click -> question.change_status $(this)
 
+		check_twttr = =>
+			if twttr and twttr.events
+				twttr.events.bind 'follow', (e) =>
+					$.ajax '/experiments/trigger',
+						type: 'post'
+						data: {experiment: "Better question pages (=> follow)"}
+			else
+				setTimeout (=> check_twttr()), 100
+		check_twttr()
+
+
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
 	respond_to_question: (text, answer_id, correct) =>
@@ -87,20 +98,6 @@ class Question
 			error: => 
 				loading.text("Something went wrong, sorry!")
 
-	# populate_response: (message_hash) =>
-	# 	response = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-	# 	response.find("p").text(message_hash.app_message) 
-	# 	response.find("h5").text(@name)
-	# 	loading = @element.find(".loading").text("Thinking...")
-	# 	if @element.find(".subsidiaries:visible").length > 0
-	# 		loading.fadeIn(500, => loading.delay(1000).fadeOut(500, => 
-	# 				@element.find(".subsidiary").after(response.fadeIn(500, => $(".more").fadeIn(500)))
-	# 				@element.find("i").show()
-	# 			)
-	# 		)
-	# 	else
-	# 		@element.find(".subsidiary").after(response.fadeIn(500))
-	# 		@element.find("i").show()
 	show_activity: =>
 		if @element.find(".activity_container:visible").length > 0
 			@element.find(".user_answered").fadeIn(500)
@@ -143,12 +140,7 @@ class Question
 		$("#submit_question").off "click"
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
-			question.post_edit_question_submit(q.id)
-
-		# $('.accept').off "click"
-		# $('.reject').off "click"
-		# $('.accept').on "click", (e) => @respond(true, question_id)
-		# $('.reject').on "click", (e) => @respond(false, question_id)				
+			question.post_edit_question_submit(q.id)			
 
 	post_edit_question_submit: (question_id) ->
 		if question.post_question_validate_form()
@@ -249,5 +241,3 @@ $ ->
 	window.moderator = new Moderator if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
 	window.card = new Card if $(".answer_widget").length > 0
-	# target = $("h3[answer_id=#{$('#answer_id').val()}]")
-	# target.click() if target.length > 0

@@ -10,9 +10,10 @@
               %h5= @asker.twi_screen_name
             %a.twi_link{:href => "http://www.twitter.com/#{@asker.twi_screen_name}", :target => "_blank"}= "@#{@asker.twi_screen_name}"
 
-            %a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}
-            %script
-              !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+            - if @new_question_page
+              %a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}
+              %script
+                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 
           %h1= @question.text.html_safe
           .answers.rounded.border.ui-accordion.ui-widget.ui-helper-reset
@@ -36,7 +37,7 @@
         .loading{:style => "display: none;"}
           Loading...
 
-        - if @question.resource_url =~ /^http:\/\/www.youtube.com/
+        - if @new_question_page and @question.resource_url =~ /^http:\/\/www.youtube.com\/v\//
           = render :partial => "show_more", :locals => {:post => @question}
           .more{:style => "display: none;"}
             %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
