@@ -213,7 +213,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.tweet sender, text, options = {}, post = nil, answers = nil
-    options[:resource_url] = options[:resource_url].gsub(/\/v\/([^\/]*)?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/v\//
+    options[:resource_url] = options[:resource_url].gsub(/\/v\/([^\?]*)\?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/v\//
     short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, options[:reply_to]) if options[:long_url]
     answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})" if (options[:publication_id].present? and options[:include_answers])
 
