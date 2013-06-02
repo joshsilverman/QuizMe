@@ -513,6 +513,7 @@ class Asker < User
     if user_post.is_dm?
       return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
       interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210",)
+      puts user_post.to_json if user_post.question.nil?
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
         :run_at => interval.to_i.minutes.from_now
