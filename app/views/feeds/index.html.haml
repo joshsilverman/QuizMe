@@ -1,30 +1,51 @@
-#post_feed
+#post_feed.index
 	#feed_container.span10
 		#wrapper.span9
 			/ = render :partial => "home"
 			#feed.row
 				#right_column.span6
-					%ul.nav.nav-tabs
-						%li.active
-							%a{href: '#tab1', 'data-toggle' => 'tab'} Questions
-						%li
-							%a{href: '#tab2', 'data-toggle' => 'tab'} Activity
-					.tab-content
-						#tab1.tab-pane.active
-							#posts.rounded
-								/ .header.border-color			
-								#feed_content
-									- if current_user
+					- if current_user
+						%ul.nav.nav-tabs
+							%li.active
+								%a{href: '#tab1', 'data-toggle' => 'tab'} Questions
+							- if @activity.present?
+								%li
+									%a{href: '#tab2', 'data-toggle' => 'tab'} Activity
+						.tab-content
+							#tab1.tab-pane.active
+								#posts.rounded
+									/ .header.border-color			
+									#feed_content
 										= render :partial => "feed"
-									- else
-										- cache("_feed_unauthenticated", :expires_in => 20.minutes) do
-											= render :partial => "feed"
-								#posts_more.border-color
-									%a{:href => "#"} Load more
-						#tab2.tab-pane
-							#posts.rounded
-								#feed_content
-									
+									#posts_more.border-color
+										%a{:href => "#"} Load more
+							- if @activity.present?
+								#tab2.tab-pane
+									#recent_activity
+										%ul.unstyled
+											- @activity.each_with_index do |activity, i|
+												%li{:class => ("border_bottom" if (@activity.count - 1) > i)}
+													.content
+														.activity_container
+															= image_tag(activity[:profile_image_url], :class => "rounded")
+															.action
+																= activity[:verb]
+															.text
+																= activity[:text]
+															- puts activity[:created_at]
+															- puts "bro"
+															- if activity[:created_at] < 1.day.ago
+																- puts 1
+																%p.time= time_formatter(activity[:created_at])
+															- else
+																- puts 2
+																%p.time.timeago{:title => activity[:created_at].to_time.iso8601}														
+					- else
+						#posts.rounded
+							.header.border-color			
+							#feed_content
+								- cache("_feed_unauthenticated", :expires_in => 20.minutes) do
+									= render :partial => "feed"	
 				#left_column.span3.hidden-phone
 					#left_column_container
 						- if current_user

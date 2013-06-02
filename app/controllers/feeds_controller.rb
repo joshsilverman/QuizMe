@@ -35,11 +35,11 @@ class FeedsController < ApplicationController
       else
         @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
       end
-      answers = current_user.posts.includes(:question).answers.where("created_at > ?", 1.month.ago)
-      moderations = Post.where("moderator_id = ?", current_user.id)
+      answers = current_user.posts.includes(:question, :in_reply_to_user).answers.where("created_at > ?", 1.month.ago).map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url}}
+      moderations = Post.includes(:in_reply_to_user).where("moderator_id = ?", current_user.id).map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url}}
       # moderations = current_user.moderations.where("created_at > ?", 1.month.ago)
-      questions_submitted = Question.ugc.where("status != -1").where("created_at > ?", 1.month.ago)
-      @activity = (answers + moderations + questions_submitted).sort_by { |e| e.created_at }
+      questions_submitted = current_user.questions.includes(:asker).ugc.where("status != -1").where("created_at > ?", 1.month.ago).map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url}}
+      @activity = (answers + moderations + questions_submitted).sort_by { |e| e[:created_at] }.reverse
     else
       @responses = []
       @publications, posts = Publication.recently_published
@@ -59,6 +59,10 @@ class FeedsController < ApplicationController
     end
 
     render ab_test("New Landing Page", 'index', 'index_with_search')
+  end
+
+  def activity
+
   end
 
   def search

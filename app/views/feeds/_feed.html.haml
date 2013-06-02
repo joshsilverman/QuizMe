@@ -74,8 +74,6 @@
 				.loading{:style => "display: none;"}
 					Loading...	
 
-			/###
-			/ = render :partial => "activity", :locals => {:post => publication}
 			.activity_container{:style => ("display: none;" unless @actions[publication.id].present?)}
 				.interactions
 					- if @actions[publication.id]

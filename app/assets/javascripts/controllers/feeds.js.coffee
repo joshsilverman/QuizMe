@@ -73,8 +73,9 @@ class @Feed
 			complete: => 
 				$("#activity_stream h4 img").hide()
 	initialize_fix_position_listener: =>
+		offset = if $(".index").length > 0 then 41 else 204
 		$(window).on "scroll", => 
-			if $(window).scrollTop() >= 204
+			if $(window).scrollTop() >= offset
 				$("#left_column_container").css("position", "fixed").css("top", "15px")
 			else
 				$("#left_column_container").css("position", "").css("top", "auto")
