@@ -20,6 +20,13 @@ body {
 	border-bottom-right-radius: 0px !important;														
 }
 
+#post_feed {
+	.nav-tabs {
+		margin-bottom: 0px;
+		margin-top: 15px;
+	}
+}
+
 #feed_container {
 	float: none;
 	margin: auto;
@@ -248,7 +255,7 @@ body {
 				width: inherit;
 			}
 
-			#related, #scoreboard, #directory, #activity_stream, #ask {
+			#related, #scoreboard, #directory, #activity_stream, #ask, #subscribed {
 				background: white;
 				border-style: solid;
 				border-width: 1px;	
@@ -342,6 +349,32 @@ body {
 						}
 					}
 				}	
+			}
+
+			#subscribed {
+				background-color: rgba(250, 250, 250, .8);	
+
+				img {
+					height: 32px !important;
+					width: 32px;
+				}
+
+				.content {
+					min-height: 32px !important;
+					margin-left: 42px !important;
+
+					h5 {
+						position: relative;
+						top: 7px;
+					}
+					.twitter-follow-button {
+						width: 79px;
+						height: 28px;
+						float: right;
+						position: relative;
+						bottom: 16px;
+					}
+				}
 			}
 
 			#activity_stream {

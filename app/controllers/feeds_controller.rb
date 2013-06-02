@@ -9,27 +9,48 @@ class FeedsController < ApplicationController
   def index
     @index = true
     @asker = User.find(1)
+    @wisr = User.find(8765)   
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
     @askers = Asker.where(published: true).order("id ASC")
 
-    @publications, posts = Publication.recently_published
-
-    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-    @responses = current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : []
-    
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-
-
-    @directory = {}
-    Asker.where("published = ?", true).each do |asker| 
-      next unless ACCOUNT_DATA[asker.id]
-      (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
+    if current_user
+      @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
+        .published\
+        .where("asker_id in (?)", current_user.follows.collect(&:id))\
+        .where("posts.interaction_type = 1", true)\
+        .where("posts.created_at > ?", 1.days.ago)\
+        .order("posts.created_at DESC")\
+        .limit(15)
+      posts = Post.select([:id, :created_at, :publication_id])\
+        .where("publication_id in (?)", @publications.collect(&:id))\
+        .order("created_at DESC")
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
+      @subscribed = current_user.follows
+      # alternative to 'becomes': set 'follows' association to return Asker objects
+      if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
+        @related = @askers.reject {|a| @subscribed.include? a }.sample(3)
+      else
+        @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
+      end
+      answers = current_user.posts.includes(:question).answers.where("created_at > ?", 1.month.ago)
+      moderations = Post.where("moderator_id = ?", current_user.id)
+      # moderations = current_user.moderations.where("created_at > ?", 1.month.ago)
+      questions_submitted = Question.ugc.where("status != -1").where("created_at > ?", 1.month.ago)
+      @activity = (answers + moderations + questions_submitted).sort_by { |e| e.created_at }
+    else
+      @responses = []
+      @publications, posts = Publication.recently_published
+      @directory = {}
+      Asker.where("published = ?", true).each do |asker| 
+        next unless ACCOUNT_DATA[asker.id]
+        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
+      end      
     end
 
-    @wisr = User.find(8765)   
+    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
     @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
       question_count = Publication.published.size
       questions_answered = Post.answers.size
@@ -169,16 +190,23 @@ class FeedsController < ApplicationController
     if params[:id].to_i > 0
       @asker = User.asker(params[:id])
       @publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
-    else
+    else  
       post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
-      @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
+        .published\
+        .where("asker_id in (?)", current_user.follows.collect(&:id))\
+        .where("posts.created_at < ?", post.created_at)\
+        .where("publications.id != ?", publication.id)\
+        .where("posts.interaction_type = 1")
+        .order("posts.created_at DESC")\
+        .limit(5)
     end
 
+    @responses = []
     if current_user     
       @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
-    else
-      @responses = []
-    end    
+    end
+    
     posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
     
     @actions = post_pub_map = {}
