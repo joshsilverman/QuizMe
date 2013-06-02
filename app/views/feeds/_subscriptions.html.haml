@@ -5,7 +5,7 @@
   %ul.unstyled
     - @subscribed.each_with_index do |subscribed_asker, i|
       %a.related_feed{:href => "/feeds/#{subscribed_asker.id}"}
-        %li{:class => ("border_bottom" if (@subscribed.count - 1))}
+        %li{:class => ("border_bottom" if (@subscribed.count - 1) > i)}
           .content
             = image_tag(subscribed_asker.twi_profile_img_url, :class => "rounded")
             %h5= subscribed_asker.twi_name
