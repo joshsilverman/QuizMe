@@ -1,0 +1,15 @@
+#subscribed.rounded.border-color
+  .header
+    %h4
+      Subscribed To
+  %ul.unstyled
+    - @subscribed.each_with_index do |subscribed_asker, i|
+      %a.related_feed{:href => "/feeds/#{subscribed_asker.id}"}
+        %li{:class => ("border_bottom" if (@subscribed.count - 1))}
+          .content
+            = image_tag(subscribed_asker.twi_profile_img_url, :class => "rounded")
+            %h5= subscribed_asker.twi_name
+            / %a.twitter-follow-button{'data-screen-name' => subscribed_asker.twi_screen_name}= " "
+            %a.twitter-follow-button{:href => "https://twitter.com/#{subscribed_asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
+%script
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");

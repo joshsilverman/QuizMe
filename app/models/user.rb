@@ -382,6 +382,7 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "DM autoresponse interval v2 (activity segment +)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
 		Post.trigger_split_test(id, "New user DM question == most popular question (=> regular)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "related feeds vs. top contributors (lifecycle+)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
+		Post.trigger_split_test(id, 'other feeds panel shows related askers (=> regular)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 	end
 
   def lifecycle_transition_comment to_segment
