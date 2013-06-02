@@ -178,7 +178,7 @@ class Question < ActiveRecord::Base
         puts resources.count
         resources.each do |r|
           next unless r['media_type'] == "video"
-          q.resource_url = "http://www.youtube.com/v/#{r['url']}?start=#{r['begin']}&end=#{r['end']}"
+          q.resource_url = "http://www.youtube.com/embed/#{r['url']}?start=#{r['begin']}&end=#{r['end']}"
         end
         q.save
       end
