@@ -373,6 +373,17 @@ body {
 				}	
 			}
 
+			#related {
+				h4 { display: inline; }
+				.more {
+					display: inline;
+					float: right;
+					position: relative;
+					bottom: 5px;
+					left: 3px;
+				}
+			}
+
 			#subscribed {
 				background-color: rgba(250, 250, 250, .8);
 
@@ -1482,6 +1493,8 @@ body {
 			padding: 0px;
 			margin-bottom: 0px;
 
+			a { text-decoration: none; }
+
 			li {
 				padding: 10px;			
 
@@ -1502,16 +1515,21 @@ body {
 							position: relative;
 							top: 1px;
 						}
+						
+						.action { color: #333333; }
 
 						.text {
 							display: inline-block;
-							width: 55%;
 							color: #777;
 							overflow: hidden;
 							text-overflow:ellipsis;
 							white-space: nowrap;
 							position: relative;
 							top: 1px;
+
+							@media (min-width: 978px) { width: 70%; }
+							@media (min-width: 480px) and (max-width: 977px) { width: 65%; }
+							@media (max-width: 479px) { width: 48%; }
 						}
 
 						img {

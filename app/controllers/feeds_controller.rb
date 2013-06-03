@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :show, :unauth_show, :activity_stream, :more, :search]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :activity_stream, :more, :search]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
@@ -7,62 +7,81 @@ class FeedsController < ApplicationController
   caches_action :unauth_show, :expires_in => 10.minutes, :cache_path => Proc.new { |c| c.params }
 
   def index
-    @index = true
-    @asker = User.find(1)
-    @wisr = User.find(8765)   
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
     @askers = Asker.where(published: true).order("id ASC")
+    if ab_test("New Landing Page", 'index', 'index_with_search') == 'index'
+      @index = true
+      @asker = User.find(1)
+      @wisr = User.find(8765)   
+      @post_id = params[:post_id]
+      @answer_id = params[:answer_id]
+      @post_id = params[:post_id]
+      @answer_id = params[:answer_id]
 
-    if current_user
-      @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
-        .published\
-        .where("asker_id in (?)", current_user.follows.collect(&:id))\
-        .where("posts.interaction_type = 1", true)\
-        .where("posts.created_at > ?", 1.days.ago)\
-        .order("posts.created_at DESC")\
-        .limit(15)
-      posts = Post.select([:id, :created_at, :publication_id])\
-        .where("publication_id in (?)", @publications.collect(&:id))\
-        .order("created_at DESC")
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
-      @subscribed = current_user.follows
-      # alternative to 'becomes': set 'follows' association to return Asker objects
-      if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
-        @related = @askers.reject {|a| @subscribed.include? a }.sample(3)
+      if current_user
+        @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
+          .published\
+          .where("asker_id in (?)", current_user.follows.collect(&:id))\
+          .where("posts.interaction_type = 1", true)\
+          .where("posts.created_at > ?", 1.days.ago)\
+          .order("posts.created_at DESC")\
+          .limit(15)
+        posts = Post.select([:id, :created_at, :publication_id])\
+          .where("publication_id in (?)", @publications.collect(&:id))\
+          .order("created_at DESC")
+        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
+        @subscribed = current_user.follows
+        # alternative to 'becomes': set 'follows' association to return Asker objects
+        if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
+          @related = @askers.reject {|a| @subscribed.include? a }.sample(3)
+        else
+          @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
+        end
       else
-        @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
+        @responses = []
+        @publications, posts = Publication.recently_published
+        @directory = {}
+        Asker.where("published = ?", true).each do |asker| 
+          next unless ACCOUNT_DATA[asker.id]
+          (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
+        end      
       end
+
+      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
+      @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+        question_count = Publication.published.size
+        questions_answered = Post.answers.size
+        followers = Relationship.select("DISTINCT follower_id").size 
+        [question_count, questions_answered, followers]
+      end
+      render 'index'
     else
-      @responses = []
-      @publications, posts = Publication.recently_published
-      @directory = {}
-      Asker.where("published = ?", true).each do |asker| 
-        next unless ACCOUNT_DATA[asker.id]
-        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-      end      
+      redirect_to '/search'
     end
-
-    @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-    @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-      question_count = Publication.published.size
-      questions_answered = Post.answers.size
-      followers = Relationship.select("DISTINCT follower_id").size 
-      [question_count, questions_answered, followers]
-    end
-
-    render ab_test("New Landing Page", 'index', 'index_with_search')
   end
 
-  def activity
-    answers = current_user.posts.includes(:in_reply_to_question, :in_reply_to_user).answers.where("created_at > ?", 1.month.ago).map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url}}
-    moderations = Post.includes(:in_reply_to_user).where("moderator_id = ?", current_user.id).map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url}}
-    # moderations = current_user.moderations.where("created_at > ?", 1.month.ago)
-    questions_submitted = current_user.questions.includes(:asker).ugc.where("status != -1").where("created_at > ?", 1.month.ago).map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url}}
-    @activity = (answers + moderations + questions_submitted).sort_by { |e| e[:created_at] }.reverse
+  def index_with_search 
+    @askers = Asker.where(published: true).order("id ASC")  
+    render 'index_with_search'
+  end
 
+  def activity limit = 1.month.ago
+    answers = current_user.posts.includes(:in_reply_to_question, :in_reply_to_user)\
+      .answers\
+      .where("created_at > ?", limit)\
+      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}"}}
+
+    moderations = Post.includes(:in_reply_to_user)\
+      .where("moderator_id = ?", current_user.id)\
+      .where("updated_at > ?", limit)\
+      .map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url}}  
+    # moderations = current_user.moderations.where("created_at > ?", 1.month.ago)
+
+    questions_submitted = current_user.questions.includes(:asker)\
+      .ugc.where("status != -1")\
+      .where("created_at > ?", limit)\
+      .map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url, href: "/askers/#{q.created_for_asker_id}/questions"}}
+
+    @activity = (answers + moderations + questions_submitted).sort_by { |e| e[:created_at] }.reverse
     render :partial => 'activity'  
   end
 
