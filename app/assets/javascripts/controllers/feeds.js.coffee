@@ -28,8 +28,7 @@ class @Feed
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
 			$.get '/feeds/activity', (data) =>
-				container = $(".tab-content .activity")
-				container.empty().append(data)
+				$(".tab-content .activity").empty().append(data)
 				$(".timeago").timeago()
 
 		$(".timeago").timeago()

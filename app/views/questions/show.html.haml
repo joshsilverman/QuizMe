@@ -42,7 +42,14 @@
           .more{:style => "display: none;"}
             %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
         - else
-          = render :partial => "feeds/activity", :locals => {:post => @question}
+          .activity_container{:style => ("display: none;" unless @actions[@question.id].present?)}
+            .interactions
+              - if @actions[@question.id]
+                - @actions[@question.id].each do |interaction|
+                  = image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction profile", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom")
+
+              - if current_user
+                = image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")
 
         .more{:style => "display: none;"}
           %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
