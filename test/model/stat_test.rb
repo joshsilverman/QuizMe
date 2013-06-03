@@ -21,14 +21,12 @@ describe Stat do
 		end
 
 		it 'with correct daus' do
-			calculated_daus = Stat.daus
-			puts calculated_daus
-			puts calculated_daus.map{}
-			# calculated_daus.sort.map{|e|e[1]}.must_equal @waus
+			calculated_daus = Stat.dau_ids_by_date.sort
+			calculated_daus.map{|r|r[1].count}.must_equal @daus
 		end
 
 		it 'with correct waus' do
-			calculated_waus = Stat.paus Stat.daus, 7
+			calculated_waus = Stat.paus_by_date Stat.dau_ids_by_date, 7
 			calculated_waus.sort.map{|e|e[1]}.must_equal @waus
 		end
 
@@ -38,15 +36,16 @@ describe Stat do
 				calculated_ratios_rounded.must_equal @ratios
 			end
 
-			it 'and averages' do
-				puts Stat.pg_ratios_running_avg Stat.ratios
-			end
+			# it 'and averages' do
+			# 	Stat.pg_ratios_with_running_avg Stat.ratios
+			# end
 
 			it 'with repeated users' do
 				user = Post.last.user
 				user.posts << FactoryGirl.create(:post, interaction_type: 3, created_at: 2.day.ago)
 				calculated_ratios_rounded = Stat.pg_ratios.map{|r|(r[1]*1000.0).round/1000.0}
 				calculated_ratios_rounded.last.must_equal @ratios.last
+				calculated_ratios_rounded[-2].wont_equal @ratios[-2]
 			end
 		end
 	end
