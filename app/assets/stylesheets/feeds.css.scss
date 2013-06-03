@@ -285,10 +285,6 @@ body {
 				margin-bottom: 15px;
 				width: inherit;
 
-				a {
-					color: #ddd;
-				}
-
 				a:hover {
 					text-decoration: none;
 				}
@@ -378,7 +374,13 @@ body {
 			}
 
 			#subscribed {
-				background-color: rgba(250, 250, 250, .8);	
+				background-color: rgba(250, 250, 250, .8);
+
+				/*ul {
+					max-height: 250px;
+					overflow-y: scroll; 	
+
+				}*/
 
 				.header {
 					background: none;
@@ -404,6 +406,13 @@ body {
 						position: relative;
 						bottom: 16px;
 					}
+				}
+
+				.unfollow {
+					position: absolute;
+					right: 10px;
+					bottom: 18px;
+					font-size: 11px;
 				}
 			}
 
