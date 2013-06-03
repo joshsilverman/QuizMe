@@ -7,17 +7,18 @@ class FeedsController < ApplicationController
   caches_action :unauth_show, :expires_in => 10.minutes, :cache_path => Proc.new { |c| c.params }
 
   def index
+    @index = true
+    @asker = User.find(1)
+    @wisr = User.find(8765)   
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]
+    @post_id = params[:post_id]
+    @answer_id = params[:answer_id]    
     @askers = Asker.where(published: true).order("id ASC")
-    if ab_test("New Landing Page", 'index', 'index_with_search') == 'index'
-      @index = true
-      @asker = User.find(1)
-      @wisr = User.find(8765)   
-      @post_id = params[:post_id]
-      @answer_id = params[:answer_id]
-      @post_id = params[:post_id]
-      @answer_id = params[:answer_id]
-
-      if current_user
+    
+    if current_user
+      if current_user.follows.present? and ab_test("logged in home page ()", 'index', 'filtered index w/ activity') == 'filtered index w/ activity' # logged in user, new homepage
+        puts "logged in user, new homepage"
         @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
           .published\
           .where("asker_id in (?)", current_user.follows.collect(&:id))\
@@ -28,34 +29,62 @@ class FeedsController < ApplicationController
         posts = Post.select([:id, :created_at, :publication_id])\
           .where("publication_id in (?)", @publications.collect(&:id))\
           .order("created_at DESC")
-        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
         @subscribed = current_user.follows
         # alternative to 'becomes': set 'follows' association to return Asker objects
         if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
           @related = @askers.reject {|a| @subscribed.include? a }.sample(3)
         else
           @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
-        end
-      else
-        @responses = []
+        end 
+        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)      
+        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
+        
+        render 'index_with_activity' 
+      else # logged in user, old homepage
+        puts "logged in user, old homepage"
         @publications, posts = Publication.recently_published
+
+        @responses = []
         @directory = {}
         Asker.where("published = ?", true).each do |asker| 
           next unless ACCOUNT_DATA[asker.id]
           (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-        end      
-      end
+        end
+        @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+          question_count = Publication.published.size
+          questions_answered = Post.answers.size
+          followers = Relationship.select("DISTINCT follower_id").size 
+          [question_count, questions_answered, followers]
+        end  
+        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
+        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
 
-      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-      @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-        question_count = Publication.published.size
-        questions_answered = Post.answers.size
-        followers = Relationship.select("DISTINCT follower_id").size 
-        [question_count, questions_answered, followers]
+        render 'index'        
       end
-      render 'index'
     else
-      redirect_to '/search'
+      if ab_test("New Landing Page", 'index', 'index_with_search') == 'index' # logged out user, old homepage
+        puts "logged out user, old homepage"
+        @publications, posts = Publication.recently_published
+
+        @responses = []
+        @directory = {}
+        Asker.where("published = ?", true).each do |asker| 
+          next unless ACCOUNT_DATA[asker.id]
+          (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
+        end
+        @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+          question_count = Publication.published.size
+          questions_answered = Post.answers.size
+          followers = Relationship.select("DISTINCT follower_id").size 
+          [question_count, questions_answered, followers]
+        end
+        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
+
+        render 'index'
+      else # logged out user, new homepage
+        puts "logged out user, new homepage"
+        redirect_to '/search'
+      end
     end
   end
 

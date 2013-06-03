@@ -1,12 +1,13 @@
-#subscribed.rounded.border-color
-  .header
-    %h4
-      Following
-  %ul.unstyled
-    - @subscribed.each_with_index do |subscribed_asker, i|
-      %li{:class => ("border_bottom" if (@subscribed.count - 1) > i)}
-        %a.related_feed{:href => "/feeds/#{subscribed_asker.id}"}
-          .content
-            = image_tag(subscribed_asker.twi_profile_img_url, :class => "rounded")
-            %h5= subscribed_asker.twi_name
-            %a.unfollow{href: "https://twitter.com/intent/user?screen_name=#{subscribed_asker.twi_screen_name}", target: '_blank'} Unfollow
+- if @subscribed.present?
+  #subscribed.rounded.border-color
+    .header
+      %h4
+        Following
+    %ul.unstyled
+      - @subscribed.each_with_index do |subscribed_asker, i|
+        %li{:class => ("border_bottom" if (@subscribed.count - 1) > i)}
+          %a.related_feed{:href => "/feeds/#{subscribed_asker.id}"}
+            .content
+              = image_tag(subscribed_asker.twi_profile_img_url, :class => "rounded")
+              %h5= subscribed_asker.twi_name
+              %a.unfollow{href: "https://twitter.com/intent/user?screen_name=#{subscribed_asker.twi_screen_name}", target: '_blank'} Unfollow

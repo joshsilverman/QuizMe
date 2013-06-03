@@ -1,43 +1,26 @@
-#post_feed.index
+#post_feed
 	#feed_container.span10
 		#wrapper.span9
-			/ = render :partial => "home"
+			= render :partial => "home"
 			#feed.row
 				#right_column.span6
-					- if current_user
-						%ul.nav.nav-tabs
-							%li.active
-								%a{href: '#tab1', 'data-toggle' => 'tab'} Questions
-							%li
-								%a.activity{href: '#tab2', 'data-toggle' => 'tab'} Activity
-						.tab-content
-							#tab1.tab-pane.active
-								#posts.rounded
-									/ .header.border-color			
-									#feed_content
-										= render :partial => "feed"
-									#posts_more.border-color
-										%a{:href => "#"} Load more	
-							#tab2.activity.tab-pane
-								.loading
-									.header
-										%p
-											Loading	
-											=image_tag "ajax-loader.gif"
-					- else
-						#posts.rounded
-							.header.border-color			
-							#feed_content
+					#posts.rounded
+						.header.border-color
+							%h3
+								All Activity						
+						#feed_content
+							- if current_user
+								= render :partial => "feed"
+							- else
 								- cache("_feed_unauthenticated", :expires_in => 20.minutes) do
-									= render :partial => "feed"	
+									= render :partial => "feed"
+
+						#posts_more.border-color
+							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
 					#left_column_container
-						- if current_user
-							= render :partial => "subscriptions"
-						- else
-							- cache("_directory", :expires_in => 30.hour) do
-								= render :partial => "directory"
-						= render :partial => "related"
+						- cache("_directory", :expires_in => 30.hour) do
+							= render :partial => "directory"
 
 %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
 	%img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}
