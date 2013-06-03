@@ -7,57 +7,88 @@ class Stat < ActiveRecord::Base
     end
   end
 
-  def self.paulgraham domain = 30
-    new_to_existing_before_on, display_data = Rails.cache.fetch "stat_paulgraham_domain_#{domain}", :expires_in => 17.minutes do
+  ##
+  ## Growth functions
+  ##
 
-      new_on = {}
-      Post.not_spam.not_us.social\
-        .select(["user_id", "to_char(min(created_at), 'YYYY-MM-DD') as first_active_at"])\
-        .group("user_id").group_by{|p|p.first_active_at}.each{|k,v| new_on[k] = v.count}
-
-      created_at_to_user_id = Hash[*Post.not_spam.not_us.social\
-        .select(["user_id", "min(created_at) as first_active_at"])\
-        .group("user_id").map{|p|[Time.parse(p.first_active_at), p.user_id]}.flatten]
-      last_24_hours_new = created_at_to_user_id.keys.reject{|t|t < Time.now - 1.day}.count
-      last_7_days_new = created_at_to_user_id.keys.reject{|t|t < Time.now - 7.days}.count
-
-      existing_before = {}
-      new_to_existing_before_on = {}
-      start_day = Date.today - (domain + 1).days
-
-      existing_before[start_day - 7] = new_on\
-        .reject{|w,c| Date.strptime(w, "%Y-%m-%d") >= start_day - 7}\
-        .collect{|k,v| v}\
-        .sum
-
-      ((start_day)..(Date.today - 1)).to_a.each do |n|
-        existing_before[n-6] = existing_before[n - 7] + new_on[(n - 7).to_s].to_i
-        new_on[n.to_s] ||= 0
-        new_to_existing_before_on[n] = {:raw => nil, :avg => nil}
-        new_to_existing_before_on[n][:raw] = new_on[n.to_s].to_f * 7.to_f / existing_before[n - 7.days].to_f
-        llast_7_days_new = new_on.reject{|k,v| Date.parse(k) > n or Date.parse(k) <= n - 7.days}.values.sum.to_f
-        new_to_existing_before_on[n][:avg] = llast_7_days_new / existing_before[n - 7.days]
-        new_to_existing_before_on[n][:raw] = 0 if new_to_existing_before_on[n][:raw].nan? or new_to_existing_before_on[n][:raw].infinite?
-      end
-
+  def self.graph_paulgraham domain = 30
+    ratios_running_avg, display_data = Rails.cache.fetch "stat_paulgraham_domain_#{domain}", :expires_in => 17.minutes do
+      ratios_running_avg = pg_ratios_with_running_avg(pg_ratios)
       display_data = {
-        :today => last_24_hours_new.to_f * 7 / existing_before[Date.today - 7],
-        :total => last_7_days_new.to_f / existing_before[Date.today - 7]
+        :today => ratios_running_avg.last[1],
+        :total => ratios_running_avg.last[2]
       }
-
       display_data[:today] = sprintf "%.1f%", display_data[:today] * 100
       display_data[:total] = sprintf "%.1f%", display_data[:total] * 100
-
-      _new_to_existing_before_on = {}
-      new_to_existing_before_on.map{|day,dat| _new_to_existing_before_on[day.strftime('%m/%d')] = dat}
-
-      [_new_to_existing_before_on, display_data]
+      [ratios_running_avg, display_data]
     end
-
-    return new_to_existing_before_on, display_data
+    return [ratios_running_avg, display_data]
   end
 
-  def self.dau_mau domain = 30
+  def self.pg_ratios
+    ratios = {}
+    waus = Stat.paus_by_date(Stat.dau_ids_by_date, 7)
+    waus.each do |d,count|
+      date_formated = Date.parse(d)
+      prev_week_formated = (date_formated - 7.days).strftime
+      next if waus[prev_week_formated] == 0 or waus[prev_week_formated].nil?
+      ratios[d] = waus[d].to_f / waus[prev_week_formated] - 1
+    end
+    ratios.sort #convert from hash to 2x array
+  end
+
+  def self.pg_ratios_with_running_avg ratios, period = 30
+    ratios_with_avg = []
+    ratios.each_with_index do |ratio, i|
+      ii = i - (period - 1)
+      ii = 0 if ii < 0
+      sum = 0
+      (ii..i).to_a.each do |j|
+        sum += ratios[j][1]
+      end
+      avg = sum.to_f / (i - ii)
+      avg = 0 if i == 0
+      ratios_with_avg << ratios[i] + [avg]
+    end
+    ratios_with_avg
+  end
+
+  def self.dau_ids_by_date domain = 30
+    user_ids_by_date_raw = Post.social.not_us.not_spam\
+      .where("created_at > ?", Date.today - (domain + 31).days)\
+      .select(["to_char(posts.created_at, 'YYYY-MM-DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").all
+
+    user_ids_by_date = {}
+    user_ids_by_date_raw.each do |post|
+      user_ids_by_date[post.to_char] = post.array_to_string.split(',').uniq
+    end
+    user_ids_by_date
+  end
+
+
+  def self.paus_by_date daus, period = 7
+    paus = {}
+    daus.sort.each do |r|
+      date = r[0]
+      catch :missing_day do
+        ids = []
+        start_date_formated = Date.parse(date)
+        ((start_date_formated - (period - 1).days)..start_date_formated).to_a.each do |rdate|
+          rdate_formatted = rdate.strftime
+          throw :missing_day if daus[rdate_formatted].nil?
+          ids += daus[rdate_formatted] unless daus[rdate_formatted].empty?
+        end
+        paus[date] = ids.uniq.count
+      end
+    end
+    paus
+  end
+
+  ###
+  ### DAU MAU
+  ###
+
+  def self.graph_dau_mau domain = 30
     graph_data, display_data = Rails.cache.fetch "stat_dau_mau_domain_#{domain}", :expires_in => 13.minutes do
 
       user_ids_by_date_raw = Post.social.not_us.not_spam\
@@ -110,7 +141,7 @@ class Stat < ActiveRecord::Base
     return graph_data, display_data
   end
 
-  def self.daus asker_id = nil, domain = 30
+  def self.month_summary asker_id = nil, domain = 30
     graph_data, display_data = Rails.cache.fetch "stat_daus_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 17.minutes do
       asker_ids = User.askers.collect(&:id)
 
@@ -154,7 +185,7 @@ class Stat < ActiveRecord::Base
     return graph_data, display_data
   end
 
-  def self.econ_engine domain = 30
+  def self.graph_econ_engine domain = 30
     econ_engine, display_data = Rails.cache.fetch "stat_econ_engine_domain_#{domain}", :expires_in => 19.minutes do
       posts_by_date = Post.joins(:user).not_spam.not_us.social\
         .where('provider_post_id IS NOT NULL')\
@@ -173,14 +204,14 @@ class Stat < ActiveRecord::Base
 
       display_data = {}
       display_data[:today] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 24.hours).count
-      display_data[:month] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 30.days).count
+      display_data[:total] = Post.not_spam.not_us.social.where('provider_post_id IS NOT NULL').where("posts.created_at > ?", Time.now - 30.days).count
 
       [econ_engine, display_data]
     end
     return econ_engine, display_data
   end
 
-  def self.revenue domain = 30
+  def self.graph_revenue domain = 30
     revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
       rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
       return if rate_sheets.empty?
@@ -190,27 +221,9 @@ class Stat < ActiveRecord::Base
 
       clients.each do |c| 
         askers_by_rate_sheet[c.rate_sheet] = c.askers
-        # c.askers.each {|a| client_asker_ids << a.id}
       end
 
       return if askers_by_rate_sheet.empty?
-
-      # posts_by_askers = Post.not_spam.social.not_us\
-      #   .where("in_reply_to_user_id in (?)", client_asker_ids)\
-      #   .where("created_at > ?", domain.days.ago)\
-      #   .select([:text, "posts.created_at", :in_reply_to_user_id, :interaction_type, :correct, :user_id, :spam, :autospam])\
-      #   .order("posts.created_at ASC")\
-      #   .group_by{|p| p.in_reply_to_user_id}
-
-      # posts_by_date_by_rate_sheet = {}
-      # askers_by_rate_sheet.each do |rate_sheet, askers|
-      #   askers.each do |asker|
-      #     posts_by_askers[asker.id].group_by{|p| p.created_at.strftime('%y/%m/%d')}.each do |date, posts|
-      #       posts_by_date_by_rate_sheet[date] ||= {}
-      #       posts_by_date_by_rate_sheet[date][rate_sheet] = posts
-      #     end
-      #   end
-      # end
 
       posts_by_date_by_rate_sheet = {}
       askers_by_rate_sheet.each do |rate_sheet, askers|
@@ -270,7 +283,7 @@ class Stat < ActiveRecord::Base
     end
 
     display_data[:today] = sprintf "$%.2f", display_data[:today]
-    display_data[:month] = sprintf "$%.2f", display_data[:month]
+    display_data[:total] = sprintf "$%.2f", display_data[:month]
     display_data
   end
 

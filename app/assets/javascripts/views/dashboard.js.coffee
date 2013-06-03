@@ -102,29 +102,19 @@ class Dashboard
     qs ||= '?'
     qs += "&domain=#{domain}"
 
-    $.get ("/dashboard/core#{qs}"), (data) =>
-      data = $.parseJSON(data) if ($.type(data) == 'string')
+    party = 'core'
+    $.each ['paulgraham', 'dau_mau', 'econ_engine', 'revenue'], (i, graph) =>
+      url = "/graph/#{ party }/#{ graph }#{qs}"
+      puts graph
+      $.ajax url,
+        success: (data) =>
+          draw_func = this["draw_#{graph}"]
+          draw_func(data[0])
 
-      dashboard.draw_paulgraham('', data['paulgraham'])
-      dashboard.draw_dau_mau('', data['dau_mau'])
-      dashboard.draw_econ_engine('', data['econ_engine'])
-      dashboard.draw_revenue('', data['revenue'])
+          $(".#{graph} .new .number").html data[1]['today']
+          $(".#{graph} .total .number").html data[1]['total']
 
-      $('.paulgraham_users .new .number').html data['core_display_data'][0]['paulgraham']['today']
-      $('.paulgraham_users .total .number').html data['core_display_data'][0]['paulgraham']['total']
-
-      $('.econ_engine .new .number').html data['core_display_data'][0]['econ_engine']['today']
-      $('.econ_engine .month .number').html data['core_display_data'][0]['econ_engine']['month']
-
-      $('.dau_mau .new .number').html data['core_display_data'][0]['dau_mau']['today']
-      $('.dau_mau .total .number').html data['core_display_data'][0]['dau_mau']['total']
-
-      $('.revenue .new .number').html data['core_display_data'][0]['revenue']['today']
-      $('.revenue .total .number').html data['core_display_data'][0]['revenue']['month']
-      
-      $(".loading").hide()
-
-      dashboard.after_update(domain)
+    $(".loading").hide()
 
   update_dashboard: =>
     @draw_graphs()
@@ -138,33 +128,25 @@ class Dashboard
     $(".domains a[domain=#{domain}]").addClass "active"
     window.location.hash = "#{target}?domain=#{domain}"
 
-  draw_paulgraham: (container, data) =>
+  draw_paulgraham: (data) =>
     data_array = [['Date', 'Min', 'Max', "Over", 'Total', '7 Day Avg']]
-    $.each data, (k,v) -> 
-      v['avg'] = .2 if v['avg'] > .2
-      data_array.push [k, .05, .05, .05, v['raw'], v['avg']]
+    $.each data, (i,r) ->
+      date = r[0]
+      ratio = r[1]
+      avg = r[2]
+      avg = .2 if avg > .2
+      ratio = .2 if ratio > .2
+      data_array.push [date, .05, .05, .05, ratio, avg]
+
     graph_data = google.visualization.arrayToDataTable(data_array)
-
-    #scope chart container if container provided - this is if there are multiple types of the same graph
-    if container == undefined
-      chart_elmnt = $(".paulgraham_graph")[0]
-    else
-      chart_elmnt = $(container + " .paulgraham_graph")[0]
-
-    chart = new google.visualization.ComboChart(chart_elmnt)
+    chart = new google.visualization.LineChart($(".paulgraham_graph")[0])
     chart.draw graph_data, pg_options
 
-  draw_dau_mau: (container, data) =>
+  draw_dau_mau: (data) =>
     data_array = [["Date", "Ratio"]]
     $.each data, (k,v) -> data_array.push([k, v])
     graph_data = google.visualization.arrayToDataTable(data_array)
-
-    if container == undefined
-      chart_elmnt = $(".dau_mau_graph")[0]
-    else
-      chart_elmnt = $(container + " .dau_mau_graph")[0]
-
-    chart = new google.visualization.LineChart(chart_elmnt)
+    chart = new google.visualization.LineChart($(".dau_mau_graph")[0])
     chart.draw graph_data, dau_mau_options    
 
   draw_daus: (container, data) =>
@@ -182,26 +164,14 @@ class Dashboard
     chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, dau_mau_options  
 
-  draw_revenue: (container, data) =>
+  draw_revenue: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
-    
-    if container == undefined
-      chart_elmnt = $(".revenue_graph")[0]
-    else
-      chart_elmnt = $(container + " .revenue_graph")[0]
-  
-    chart = new google.visualization.AreaChart(chart_elmnt)
+    chart = new google.visualization.AreaChart($(".revenue_graph")[0])
     chart.draw graph_data, revenue_options  
 
-  draw_econ_engine: (container, data) =>
+  draw_econ_engine: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
-    
-    if container == undefined
-      chart_elmnt = $(".econ_engine_graph")[0]
-    else
-      chart_elmnt = $(container + " .econ_engine_graph")[0]
-
-    chart = new google.visualization.LineChart(chart_elmnt)
+    chart = new google.visualization.LineChart($(".econ_engine_graph")[0])
     chart.draw graph_data, econ_engine_options
 
   draw_handle_activity: =>

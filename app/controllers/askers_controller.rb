@@ -88,36 +88,6 @@ class AskersController < ApplicationController
     @askers = User.askers
   end 
 
-  def get_core_metrics
-    @askers = User.askers
-    @core_display_data = {0 => {}}
-    @domain = params[:domain] || 30
-    @domain = @domain.to_i
-
-    params.delete 'asker_id' if params[:asker_id] == '-1'
-
-    @dau_mau, dau_mau_display_data = Stat.dau_mau @domain
-    @core_display_data[0][:dau_mau] = dau_mau_display_data
-
-    @econ_engine, econ_engine_display_data = Stat.econ_engine @domain
-    @core_display_data[0][:econ_engine] = econ_engine_display_data 
-
-    @paulgraham, pg_display_data = Stat.paulgraham @domain
-    @core_display_data[0][:paulgraham] = pg_display_data
-
-    @revenue, revenue_display_data = Stat.revenue @domain
-    @core_display_data[0][:revenue] = revenue_display_data
-
-    render :json => {
-      :paulgraham => @paulgraham, 
-      :dau_mau => @dau_mau, 
-      :daus => @daus, 
-      :revenue => @revenue, 
-      :econ_engine => @econ_engine,
-      :core_display_data => @core_display_data
-    }, :locals => {domain: @domain}
-  end
-
   def graph
     @domain = params[:domain] || 30
     @domain = @domain.to_i
@@ -128,7 +98,11 @@ class AskersController < ApplicationController
     rescue
     end
     
-    render :partial => params[:party]
+    if params[:party] == 'core'
+      render json: @data
+    else
+      render :partial => params[:party]
+    end
   end
 
   def send_nudge
