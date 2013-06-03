@@ -22,8 +22,8 @@ class @Feed
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
-		@initialize_fix_position_listener()
-		@activity_stream() 
+		@initialize_fix_position_listener() unless $(".index").length > 0
+		@activity_stream()
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
@@ -81,7 +81,7 @@ class @Feed
 			complete: => 
 				$("#activity_stream h4 img").hide()
 	initialize_fix_position_listener: =>
-		offset = if $(".index").length > 0 then 41 else 204
+		offset = 204
 		$(window).on "scroll", => 
 			if $(window).scrollTop() >= offset
 				$("#left_column_container").css("position", "fixed").css("top", "15px")
