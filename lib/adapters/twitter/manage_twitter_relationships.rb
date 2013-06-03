@@ -137,17 +137,17 @@ module ManageTwitterRelationships
       user = User.find_or_create_by_twi_user_id(twi_user_id)
       user_relationships = relationships.where("followed_id = ?", user.id)
 
-      if user_relationships.where("pending = ?", true).present?
+      if user_relationships.select { |r| r.pending == true }.present?
         # puts "Skip followback again -- request pending"
         next
       elsif twi_pending_ids.include? twi_user_id
         # puts "Skip followback -- request pending"
         relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
         next
-      elsif user_relationships.where("type_id = 4").present?
+      elsif user_relationships.select { |r| r.type_id == 4 }.present?
         # puts "Skip followback -- account was suspended (?)"
         next
-      elsif user_relationships.where("active = false").present?
+      elsif user_relationships.select { |r| r.active == false }.present?
         # puts "Skip followback -- user was inactive unfollowed"
         next
       end
