@@ -24,6 +24,14 @@ class @Feed
 		@initialize_tooltips()
 		@initialize_fix_position_listener()
 		@activity_stream() 
+
+		$('.nav-tabs .activity').on 'click', => 
+			return if $(".tab-content .activity").find(".tab-pane").length > 0
+			$.get '/feeds/activity', (data) =>
+				container = $(".tab-content .activity")
+				container.empty().append(data)
+				$(".timeago").timeago()
+
 		$(".timeago").timeago()
 
 		$(".post_question").on "click", (e) =>

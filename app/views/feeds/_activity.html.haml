@@ -1,0 +1,16 @@
+#tab2.tab-pane
+	#recent_activity
+		%ul.unstyled
+			- @activity.each_with_index do |activity, i|
+				%li{:class => ("border_bottom" if (@activity.count - 1) > i)}
+					.content
+						.activity_container
+							= image_tag(activity[:profile_image_url], :class => "rounded")
+							.action
+								= activity[:verb]
+							.text
+								= activity[:text]
+							- if activity[:created_at] < 1.day.ago
+								%p.time= time_formatter(activity[:created_at])
+							- else
+								%p.time.timeago{:title => activity[:created_at].to_time.iso8601}	
