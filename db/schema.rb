@@ -101,6 +101,15 @@ ActiveRecord::Schema.define(:version => 20130520224612) do
     t.datetime "updated_at"
   end
 
+  create_table "moderations", :force => true do |t|
+    t.integer  "post_id"
+    t.integer  "user_id"
+    t.integer  "type_id"
+    t.boolean  "accepted"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "nudge_types", :force => true do |t|
     t.integer  "client_id"
     t.string   "url"

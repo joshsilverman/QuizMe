@@ -78,7 +78,7 @@ module ManageTwitterRelationships
     twi_follows_ids 
   end
 
-  def unfollow_nonreciprocal twi_follows_ids, limit = 1.month.ago
+  def unfollow_nonreciprocal twi_follows_ids, limit = 30.days.ago
     nonreciprocal_follower_ids = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id)).collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
     relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
@@ -88,7 +88,7 @@ module ManageTwitterRelationships
     end
   end 
 
-  def unfollow_oldest_inactive_user limit = 3.months.ago
+  def unfollow_oldest_inactive_user limit = 90.days.ago
     if oldest_inactive_user = follows.includes(:posts).where("users.created_at < ? and posts.user_id is null", limit).order("users.created_at ASC").limit(1).first
       Post.twitter_request { twitter.unfollow(oldest_inactive_user.twi_user_id) }
       remove_follow(oldest_inactive_user)

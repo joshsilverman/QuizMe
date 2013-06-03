@@ -284,10 +284,10 @@ describe Asker do
 			it "unfollows non-reciprocal follows after one month" do
 				@asker.follows << @new_user
 				twi_follows_ids = [@new_user.twi_user_id]
-				32.times do |i|
+				34.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
-					if i < 30
+					if i < 29
 						@asker.reload.follows.count.must_equal 1
 					else
 						@asker.reload.follows.count.must_equal 0
@@ -299,12 +299,12 @@ describe Asker do
 				@asker.follows.must_be_empty
 				relationship = @asker.relationships.find_or_create_by_followed_id(@new_user.id)
 				relationship.update_attribute :pending, true
-
+				Timecop.travel(Time.now.beginning_of_month)
 				twi_follows_ids = [@new_user.twi_user_id]
-				32.times do |i|
+				34.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
-					if i < 30
+					if i < 31
 						@asker.reload.follows.count.must_equal 1
 					else
 						@asker.reload.follows.count.must_equal 0
