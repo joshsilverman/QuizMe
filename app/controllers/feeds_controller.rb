@@ -28,13 +28,14 @@ class FeedsController < ApplicationController
         posts = Post.select([:id, :created_at, :publication_id])\
           .where("publication_id in (?)", @publications.collect(&:id))\
           .order("created_at DESC")
-        @subscribed = current_user.follows
+
         # alternative to 'becomes': set 'follows' association to return Asker objects
         if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
           @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
             .where(:id => ACCOUNT_DATA.keys.sample(3)).all          
         else
-          @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
+          @subscribed = Asker.includes(:related_askers).where("id in (?)", current_user.follows.collect(&:id))
+          @related = @subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
         end 
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)      
         @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
