@@ -13,7 +13,7 @@ class Stat < ActiveRecord::Base
 
   def self.graph_paulgraham domain = 30
     ratios_running_avg, display_data = Rails.cache.fetch "stat_paulgraham_domain_#{domain}", :expires_in => 17.minutes do
-      ratios_running_avg = pg_ratios_with_running_avg(pg_ratios)
+      ratios_running_avg = pg_ratios_with_running_avg(pg_ratios domain)
       display_data = {
         :today => ratios_running_avg.last[1],
         :total => ratios_running_avg.last[2]
@@ -25,9 +25,9 @@ class Stat < ActiveRecord::Base
     return [ratios_running_avg, display_data]
   end
 
-  def self.pg_ratios
+  def self.pg_ratios domain
     ratios = {}
-    waus = Stat.paus_by_date(Stat.dau_ids_by_date, 7)
+    waus = Stat.paus_by_date(Stat.dau_ids_by_date(domain), 7)
     waus.each do |d,count|
       date_formated = Date.parse(d)
       prev_week_formated = (date_formated - 7.days).strftime
