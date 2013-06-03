@@ -8,9 +8,8 @@
 						%ul.nav.nav-tabs
 							%li.active
 								%a{href: '#tab1', 'data-toggle' => 'tab'} Questions
-							- if @activity.present?
-								%li
-									%a{href: '#tab2', 'data-toggle' => 'tab'} Activity
+							%li
+								%a.activity{href: '#tab2', 'data-toggle' => 'tab'} Activity
 						.tab-content
 							#tab1.tab-pane.active
 								#posts.rounded
@@ -18,28 +17,13 @@
 									#feed_content
 										= render :partial => "feed"
 									#posts_more.border-color
-										%a{:href => "#"} Load more
-							- if @activity.present?
-								#tab2.tab-pane
-									#recent_activity
-										%ul.unstyled
-											- @activity.each_with_index do |activity, i|
-												%li{:class => ("border_bottom" if (@activity.count - 1) > i)}
-													.content
-														.activity_container
-															= image_tag(activity[:profile_image_url], :class => "rounded")
-															.action
-																= activity[:verb]
-															.text
-																= activity[:text]
-															- puts activity[:created_at]
-															- puts "bro"
-															- if activity[:created_at] < 1.day.ago
-																- puts 1
-																%p.time= time_formatter(activity[:created_at])
-															- else
-																- puts 2
-																%p.time.timeago{:title => activity[:created_at].to_time.iso8601}														
+										%a{:href => "#"} Load more	
+							#tab2.activity.tab-pane
+								.loading
+									.header
+										%p
+											Loading	
+											=image_tag "ajax-loader.gif"
 					- else
 						#posts.rounded
 							.header.border-color			

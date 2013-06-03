@@ -28,10 +28,12 @@ Quizmemanager::Application.routes.draw do
 
   resource :moderations
   get "moderations/manage"
+
+  match 'feeds/activity' => 'feeds#activity'
+  match "/activity_stream" => "feeds#activity_stream"
   
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
   match "askers/:id/import" => "askers#import"
-  match "/activity_stream" => "feeds#activity_stream"
 
   post "feeds/search"
   match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"

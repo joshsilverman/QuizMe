@@ -40,7 +40,7 @@ body {
 		padding-top: 4px;
 		-webkit-border-top-right-radius: 5px;
 		-moz-border-top-right-radius: 5px;
-		border-top-right-radius: 5px;	
+		border-top-right-radius: 5px;
 		-webkit-border-top-left-radius: 5px;
 		-moz-border-top-left-radius: 5px;
 		border-top-left-radius: 5px;			
@@ -1450,59 +1450,74 @@ body {
 	right: 10px;
 }
 
-#recent_activity {
-	background: white;
-	border: 1px #ddd solid;
-	border-top: 0px;
+.activity {
+	.loading .header {
+		-webkit-border-bottom-left-radius: 5px;
+		-moz-border-bottom-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+		-webkit-border-bottom-right-radius: 5px;
+		-moz-border-bottom-right-radius: 5px;
+		border-bottom-right-radius: 5px;	
+		background: white !important;
 
-	ul {
-		padding: 0px;
-		margin-bottom: 0px;
+		border: 1px solid #ddd;
+		border-top: 0px;
+	}
 
-		li {
-			padding: 10px;			
+	#recent_activity {
+		background: white;
+		border: 1px #ddd solid;
+		border-top: 0px;
 
-			&.border_bottom {
-				border-bottom: 1px dotted #ddd;
-			}
+		ul {
+			padding: 0px;
+			margin-bottom: 0px;
 
-			.content {
-				.action_container {
-					display: inline;
+			li {
+				padding: 10px;			
+
+				&.border_bottom {
+					border-bottom: 1px dotted #ddd;
 				}
 
-				.activity_container {
-					.action {
-						font-weight: bold;
-						display: inline;
-						margin-left: 6px;
-						position: relative;
-						top: 1px;
-					}
-
-					.text {
-						display: inline-block;
-						width: 55%;
-						color: #777;
-						overflow: hidden;
-						text-overflow:ellipsis;
-						white-space: nowrap;
-						position: relative;
-						top: 1px;
-					}
-
-					img {
-						height: 32px;
+				.content {
+					.action_container {
 						display: inline;
 					}
 
-					.time {
-						float: right;
-						color: #999;
-						/*position: absolute;*/
-						position: relative;
-						bottom: -6px;
-						right: 5px;
+					.activity_container {
+						.action {
+							font-weight: bold;
+							display: inline;
+							margin-left: 6px;
+							position: relative;
+							top: 1px;
+						}
+
+						.text {
+							display: inline-block;
+							width: 55%;
+							color: #777;
+							overflow: hidden;
+							text-overflow:ellipsis;
+							white-space: nowrap;
+							position: relative;
+							top: 1px;
+						}
+
+						img {
+							height: 32px;
+							display: inline;
+						}
+
+						.time {
+							float: right;
+							color: #999;
+							/*position: absolute;*/
+							position: relative;
+							bottom: -6px;
+							right: 5px;
+						}
 					}
 				}
 			}
