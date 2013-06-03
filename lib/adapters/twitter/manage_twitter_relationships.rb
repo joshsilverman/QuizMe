@@ -21,7 +21,7 @@ module ManageTwitterRelationships
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
 
     # Check if we've already followed enough users today
-    return 0 if relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
+    return 0 if follow_relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
 
     max_follows
   end
@@ -79,10 +79,11 @@ module ManageTwitterRelationships
   end
 
   def unfollow_nonreciprocal twi_follows_ids, limit = 30.days.ago
-    nonreciprocal_follower_ids = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id)).collect(&:id)
+    nonreciprocal_followers = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id))
+    nonreciprocal_follower_ids = nonreciprocal_followers.collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
-    relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
-      user = User.find(nonreciprocal_relationship.followed_id)
+    follow_relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).each do |nonreciprocal_relationship|
+      user = nonreciprocal_followers.select { |u| u.id == nonreciprocal_relationship.followed_id }.first
       Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       remove_follow(user)
     end
@@ -96,13 +97,13 @@ module ManageTwitterRelationships
   end 
 
   def add_follow user, type_id = nil
-    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(user.id, id)
+    relationship = follow_relationships.find_or_initialize_by_followed_id(user.id)
     relationship.update_attributes(active: true, type_id: type_id, pending: false)
   end
 
   def remove_follow user
-    relationship = Relationship.find_by_followed_id_and_follower_id(user.id, id)
-    relationship.update_attribute :active, false if relationship
+    relationship = follow_relationships.find_by_followed_id(user.id)
+    relationship.update_attribute(:active, false) if relationship
   end  
 
   # FOLLOWER METHODS
@@ -127,42 +128,39 @@ module ManageTwitterRelationships
   end 
 
   def followback twi_follower_ids
-    return if relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= 20
+    return if follow_relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= 20
     
     twi_pending_ids = Post.twitter_request { twitter.friendships_outgoing.ids }
     i = 0
 
-    (twi_follower_ids - follows.collect(&:twi_user_id)).each do |twi_user_id|
-      # puts "followback follow twi_user_id #{twi_user_id} on #{twi_screen_name}"
-      user = User.find_or_create_by_twi_user_id(twi_user_id)
-      user_relationships = relationships.where("followed_id = ?", user.id)
+    twi_ids_to_followback = (twi_follower_ids - follows.collect(&:twi_user_id))
+    existing_users = User.where("twi_user_id in (?)", twi_ids_to_followback)
+    asker_follow_relationships = follow_relationships.where("followed_id in (?)", existing_users.collect(&:id)).group_by(&:followed_id)
 
-      if user_relationships.select { |r| r.pending == true }.present?
-        # puts "Skip followback again -- request pending"
+    twi_ids_to_followback.each do |twi_user_id| # should be doing this instead, tests need to be updated: (followers - follows).each do |user|
+      ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
+      user = existing_users.select { |u| u.twi_user_id == twi_user_id }.first
+      user = User.find_or_create_by_twi_user_id(twi_user_id) if user.blank?
+
+      if asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
         next
-      elsif twi_pending_ids.include? twi_user_id
-        # puts "Skip followback -- request pending"
-        relationships.find_or_create_by_followed_id(user.id).update_attribute :pending, true
+      elsif twi_pending_ids.include? twi_user_id # Skip followback -- request pending
+        follow_relationships.find_or_initialize_by_followed_id(user.id).update_attribute :pending, true
         next
-      elsif user_relationships.select { |r| r.type_id == 4 }.present?
-        # puts "Skip followback -- account was suspended (?)"
+      elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.type_id == 4 }.present? # Skip followback -- account was suspended (?)
         next
-      elsif user_relationships.select { |r| r.active == false }.present?
-        # puts "Skip followback -- user was inactive unfollowed"
+      elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.active == false }.present? # Skip followback -- user was inactive unfollowed
         next
       end
 
-      if i >= 1
-        # puts "Too many followbacks (1) to run all now"
+      if i >= 1 # Too many followbacks (1) to run all now
         return
       end
       i += 1
 
-      # puts "Send request"
       response = Post.twitter_request { twitter.follow(twi_user_id) }
-      if response.nil?
-        # puts "possible suspended acct, setting relationship to suspended"
-        relationships.find_or_create_by_followed_id(user.id).update_attributes(type_id: 4, active: false) 
+      if response.nil? # possible suspended acct, setting relationship to suspended
+        follow_relationships.find_or_initialize_by_followed_id(user.id).update_attributes(type_id: 4, active: false) 
         next
       end
       add_follow(user, 1)
@@ -170,14 +168,14 @@ module ManageTwitterRelationships
   end
 
   def add_follower user, type_id = nil
-    relationship = Relationship.find_or_create_by_followed_id_and_follower_id(id, user.id)
+    relationship = follower_relationships.find_or_initialize_by_follower_id(user.id)
     relationship.update_attributes(active: true, type_id: type_id, pending: false)
     send_new_user_question(user)
     user.segment
   end
 
   def remove_follower user
-    relationship = Relationship.find_by_followed_id_and_follower_id(id, user.id)
+    relationship = follower_relationships.find_by_follower_id(user.id)
     relationship.update_attribute :active, false if relationship
     user.segment
   end

@@ -212,12 +212,12 @@ describe Asker do
 		    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
 		    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
 		    @asker.followback(twi_follower_ids)
-		    @asker.reload.relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
+		    @asker.reload.follow_relationships.where("followed_id = ?", @user.id).first.type_id.must_equal 1
 			end
 
 			it 'follows new follower back with pending requests' do
 				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
-				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
 				relationship.update_attribute :pending, true
 
 		    twi_follower_ids = [@pending_user.twi_user_id, @new_user.twi_user_id]
@@ -230,7 +230,7 @@ describe Asker do
 
 			it 'updates converted pending users to not pending' do
 				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
-				relationship = @asker.relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
 				relationship.update_attribute :pending, true
 
 		    relationship.reload.pending.must_equal true
@@ -250,7 +250,7 @@ describe Asker do
 		    @asker.update_followers(twi_follower_ids, wisr_follower_ids)
 		    @asker = @asker.reload
 		    @asker.followers.count.must_equal 0
-		    @asker.reverse_relationships.count.must_equal 1
+		    @asker.follower_relationships.count.must_equal 1
 			end
 		end
 
@@ -270,7 +270,7 @@ describe Asker do
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
 		    @asker = @asker.reload
 		    @asker.follows.count.must_equal 0
-		    @asker.relationships.count.must_equal 1
+		    @asker.follow_relationships.count.must_equal 1
 			end
 
 			it "sets correct type_id for asker followback" do
@@ -278,13 +278,13 @@ describe Asker do
 		    wisr_follows_ids = @asker.follows.collect(&:twi_user_id)
 		    @asker.update_follows(twi_follows_ids, wisr_follows_ids)
 		    @asker = @asker.reload
-		    @asker.relationships.where("followed_id = ?", @new_user.id).first.type_id.must_be_nil
+		    @asker.follow_relationships.where("followed_id = ?", @new_user.id).first.type_id.must_be_nil
 			end
 
 			it "unfollows non-reciprocal follows after one month" do
 				@asker.follows << @new_user
 				twi_follows_ids = [@new_user.twi_user_id]
-				34.times do |i|
+				31.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
 					if i < 29
@@ -297,14 +297,13 @@ describe Asker do
 
 			it "unfollows non-reciprocal pending follows after one month" do
 				@asker.follows.must_be_empty
-				relationship = @asker.relationships.find_or_create_by_followed_id(@new_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@new_user.id)
 				relationship.update_attribute :pending, true
-				Timecop.travel(Time.now.beginning_of_month)
 				twi_follows_ids = [@new_user.twi_user_id]
-				34.times do |i|
+				31.times do |i|
 					Timecop.travel(Time.now + 1.day)
 					@asker.unfollow_nonreciprocal(twi_follows_ids)
-					if i < 31
+					if i < 29
 						@asker.reload.follows.count.must_equal 1
 					else
 						@asker.reload.follows.count.must_equal 0
@@ -337,13 +336,13 @@ describe Asker do
 
 			it "sets unfollows to inactive" do
 				@asker.follows << @new_user
-				@asker.relationships.active.count.must_equal 1
+				@asker.follow_relationships.active.count.must_equal 1
 				twi_follows_ids = [@new_user.twi_user_id]
 				Timecop.travel(Time.now + 32.days)
-				rel_count = @asker.reload.relationships.count
+				rel_count = @asker.reload.follow_relationships.count
 				@asker.unfollow_nonreciprocal(twi_follows_ids)
-				@asker.reload.relationships.active.count.must_equal 0
-				@asker.reload.relationships.count.must_equal rel_count
+				@asker.reload.follow_relationships.active.count.must_equal 0
+				@asker.reload.follow_relationships.count.must_equal rel_count
 			end
  		end		
 	end
