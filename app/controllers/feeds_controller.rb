@@ -17,8 +17,7 @@ class FeedsController < ApplicationController
     @askers = Asker.where(published: true).order("id ASC")
     
     if current_user
-      if current_user.follows.present? and ab_test("logged in home page ()", 'index', 'filtered index w/ activity') == 'filtered index w/ activity' # logged in user, new homepage
-        puts "logged in user, new homepage"
+      if current_user.follows.present? and ab_test("logged in home page (=> advanced)", 'index', 'filtered index w/ activity') == 'filtered index w/ activity' # logged in user, new homepage
         @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
           .published\
           .where("asker_id in (?)", current_user.follows.collect(&:id))\
@@ -32,7 +31,8 @@ class FeedsController < ApplicationController
         @subscribed = current_user.follows
         # alternative to 'becomes': set 'follows' association to return Asker objects
         if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
-          @related = @askers.reject {|a| @subscribed.include? a }.sample(3)
+          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+            .where(:id => ACCOUNT_DATA.keys.sample(3)).all          
         else
           @related = @subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
         end 
@@ -41,7 +41,6 @@ class FeedsController < ApplicationController
         
         render 'index_with_activity' 
       else # logged in user, old homepage
-        puts "logged in user, old homepage"
         @publications, posts = Publication.recently_published
 
         @responses = []
@@ -63,7 +62,6 @@ class FeedsController < ApplicationController
       end
     else
       if ab_test("New Landing Page", 'index', 'index_with_search') == 'index' # logged out user, old homepage
-        puts "logged out user, old homepage"
         @publications, posts = Publication.recently_published
 
         @responses = []
@@ -82,8 +80,7 @@ class FeedsController < ApplicationController
 
         render 'index'
       else # logged out user, new homepage
-        puts "logged out user, new homepage"
-        redirect_to '/search'
+        render 'index_with_search'
       end
     end
   end
@@ -181,8 +178,13 @@ class FeedsController < ApplicationController
             @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
           end      
         else
-          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-            .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+          if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
+            @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+              .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+          else
+            subscribed = current_user.follows
+            @related = subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
+          end             
         end
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
