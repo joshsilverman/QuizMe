@@ -25,7 +25,7 @@ class Stat < ActiveRecord::Base
     return [ratios_running_avg, display_data]
   end
 
-  def self.pg_ratios domain
+  def self.pg_ratios domain = 30
     ratios = {}
     waus = Stat.paus_by_date(Stat.dau_ids_by_date(domain), 7)
     waus.each do |d,count|
