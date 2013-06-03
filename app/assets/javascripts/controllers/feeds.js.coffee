@@ -50,13 +50,6 @@ class @Feed
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
 
-		check_twttr = =>
-			if twttr and twttr.events
-				twttr.events.bind 'follow', (e) => @afterfollow(e)
-			else
-				setTimeout (=> check_twttr()), 100
-		check_twttr()
-
 	post_another: =>
 		modal = $("#post_question_modal")
 		$('#submit_question').button('reset')
