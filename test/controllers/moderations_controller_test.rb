@@ -44,9 +44,16 @@ describe ModerationsController do
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
 		end
 
-		it 'displays post without displaying hidden posts' do
+		it 'displays post without displaying admin hidden posts' do
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
 			@post.update_attributes requires_action: false
+			visit '/moderations/manage'
+			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
+		end
+
+		it 'displays post without displaying previous moderated by user posts' do
+			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
+			@post.moderations << FactoryGirl.create(:moderation, user_id: @moderator.id)
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
 		end
@@ -74,6 +81,77 @@ describe ModerationsController do
 			@post.update_attributes moderator_id: 2
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
+		end
+
+		describe 'moderation' do
+			before :each do
+				Capybara.current_driver = :selenium
+				@admin = FactoryGirl.create(:user, twi_user_id: 1, role: 'admin')
+				login_as(@admin, :scope => :user)
+			end
+			
+			describe 'correct grade' do
+				before :each do
+					2.times do
+						moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+						@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
+						@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 1)
+						@moderation.accepted.must_equal nil
+					end
+					visit '/feeds/manage?filter=moderated'
+				end
+
+				it 'is accepted when admin agrees' do
+					page.find('.quick-reply-yes').click
+					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
+					@moderation.reload.accepted.must_equal true
+				end
+
+				it 'is rejected when admin disagrees' do
+					page.find('.quick-reply-no').click
+					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
+					@moderation.reload.accepted.must_equal false
+				end
+			end
+
+			it 'tell is accepted when admin agrees' do
+				2.times do
+					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 3)
+					@moderation.accepted.must_equal nil
+				end
+				visit '/feeds/manage?filter=moderated'
+				page.find('.quick-reply-tell').click
+				page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
+				@moderation.reload.accepted.must_equal true
+			end
+
+			it 'hide is accepted when admin agrees' do
+				2.times do
+					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 5)
+					@moderation.accepted.must_equal nil
+				end
+				visit '/feeds/manage?filter=moderated'
+				page.find('.btn-hide').click
+				page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
+				@moderation.reload.accepted.must_equal true
+			end
+
+			it 'yes is rejected when admin hides' do
+				2.times do
+					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 1)
+					@moderation.accepted.must_equal nil
+				end
+				visit '/feeds/manage?filter=moderated'
+				page.find('.btn-hide').click
+				page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
+				@moderation.reload.accepted.must_equal false
+			end
 		end
 	end
 

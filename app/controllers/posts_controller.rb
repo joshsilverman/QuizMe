@@ -44,6 +44,17 @@ class PostsController < ApplicationController
 
 	def update
     @post = Post.find(params[:id])
+    if params[:post][:requires_action] == 'false'
+      @post.moderations.each do |moderation|
+        if moderation.type_id == 5
+          moderation.update_attribute :accepted, true
+          next if moderation.user.moderations.count > 1
+          Post.trigger_split_test(moderation.user_id, 'show moderator question or answer (-> accepted grade)')
+        else
+          moderation.update_attribute :accepted, false
+        end
+      end
+    end
 
     respond_to do |format|
       if @post.update_attributes(params[:post])

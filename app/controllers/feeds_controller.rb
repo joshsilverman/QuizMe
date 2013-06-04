@@ -322,6 +322,27 @@ class FeedsController < ApplicationController
     end
 
     user_post.update_attributes({:requires_action => (['new content', 'ask a friend', 'ugc'] & user_post.tags.collect(&:name)).present?, :conversation_id => conversation.id}) if response_post
+
+    if params[:message].present?
+      accepted_moderation_type_id = 6
+    elsif tell == true
+      accepted_moderation_type_id = 3
+    elsif correct == true
+      accepted_moderation_type_id = 1
+    elsif correct == false
+      accepted_moderation_type_id = 2
+    end
+        
+    user_post.moderations.each do |moderation|
+      if accepted_moderation_type_id == moderation.type_id
+        moderation.update_attribute :accepted, true
+        next if moderation.user.moderations.count > 1
+        Post.trigger_split_test(moderation.user_id, 'show moderator question or answer (-> accepted grade)')
+      else
+        moderation.update_attribute :accepted, false
+      end
+    end
+
     render :json => response_post.present?
   end
 
@@ -366,6 +387,8 @@ class FeedsController < ApplicationController
       @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'spam'
       @posts = @posts.spam_box.order("posts.created_at DESC")
+    elsif params[:filter] == 'moderated'
+      @posts = @posts.moderated_box.order("posts.created_at DESC")
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'feedback'

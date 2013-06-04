@@ -309,7 +309,6 @@ class Post
 		text
 
 	quick_reply: (correct, tell = false) =>
-		event.stopPropagation()
 		@correct = correct
 		post = @element.find('.post')
 		parent_index = window.feed.conversations[@id]['posts'].length - 1

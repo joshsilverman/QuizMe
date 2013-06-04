@@ -23,6 +23,7 @@
 							%li
 								.box Quality control
 								%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?'
+								%li{:class => "#{'active' if params[:filter] == 'moderated'}"}= link_to "Moderated", '?filter=moderated'
 								%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
 
 							%li
@@ -91,22 +92,22 @@
 											%span= post.user.twi_screen_name	
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
-
-										/ - show_question = "question" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer")
-										/ - if show_question
-										.question
-											%i 
-												Q.
-												#{question.text}
+										- show_answer = true if admin == true
+										- show_answer ||= ("question" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer"))
+										- unless show_answer
+											.question
+												%i 
+													Q.
+													#{question.text}
 
 										%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 
-										/ - unless show_question
-										/ 	- if correct
-										/ 		%p.quick-reply
-										/ 			%span{style: 'opacity:0.6;'}
-										/ 				Correct: 
-										/ 				= correct.text
+										- if show_answer
+											- if correct
+												%p.quick-reply
+													%span{style: 'opacity:0.6;'}
+														Correct: 
+														= correct.text
 
 									- if params[:filter] == 'ugc'
 										= render :partial => "ugc_actions", :locals => {:post => post}
@@ -158,10 +159,29 @@
 														= form_for(post.user, remote: true) do |f|
 															= f.text_field "email", :class => "input-small", :placeholder => "Email", :type => "text"
 															= f.button "Add", :class => "btn btn-primary", :type => "submit"
-
-
 									- else
 										= render :partial => "actions", :locals => {:post => post, :question => question}
+
+									- if admin and params[:filter] == 'moderated'
+										.actions
+											%i{style: 'color:#666'}
+												Moderations -
+												- count = post.moderations.select{|m|m.type_id==1}.count
+												- if count > 0
+													Correct: #{count}
+												- count = post.moderations.select{|m|m.type_id==2}.count
+												- if count > 0
+													Incorrect: #{count}
+												- count = post.moderations.select{|m|m.type_id==3}.count
+												- if count > 0
+													Tell answer: #{count}
+												- count = post.moderations.select{|m|m.type_id==5}.count
+												- if count > 0
+													Ignore: #{count}
+												- count = post.moderations.select{|m|m.type_id==6}.count
+												- if count > 0
+													Not sure: #{count}
+
 
 					.pagination-wrapper
 						= paginate @posts unless moderator

@@ -42,13 +42,14 @@ class Post < ActiveRecord::Base
   scope :content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
   scope :not_content, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
+  
+  scope :moderated, lambda { joins(:moderations).group('posts.id').having('count(moderations.id) > 1') } 
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
 
   scope :autocorrected, where("posts.autocorrect IS NOT NULL")
   scope :not_autocorrected, where("posts.autocorrect IS NULL")
-  scope :moderated, where("posts.moderator_id IS NOT NULL")
 
   scope :tagged, joins(:tags).uniq
 
@@ -70,6 +71,7 @@ class Post < ActiveRecord::Base
   scope :tutor_box, tutor
   scope :retweet_box, requires_action.retweet.not_ugc
   scope :spam_box, spam.not_ugc
+  scope :moderated_box, requires_action.moderated
   scope :ugc_box, requires_action.ugc
   scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend
