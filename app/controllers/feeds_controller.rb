@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :stream, :more, :search]
-  before_filter :unauthenticated_user!, :only => [:unauth_show]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :stream, :more, :search] 
+  before_filter :unauthenticated_user!, :only => [:unauth_show] 
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
@@ -90,27 +90,6 @@ class FeedsController < ApplicationController
   def index_with_search 
     @askers = Asker.where(published: true).order("id ASC")  
     render 'index_with_search'
-  end
-
-  def activity limit = 1.month.ago
-    answers = current_user.posts.includes(:in_reply_to_question, :in_reply_to_user)\
-      .answers\
-      .where("created_at > ?", limit)\
-      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name}}
-
-    moderations = Post.includes(:in_reply_to_user)\
-      .where("moderator_id = ?", current_user.id)\
-      .where("updated_at > ?", limit)\
-      .map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, twi_screen_name: p.in_reply_to_user.twi_screen_name}}  
-    # moderations = current_user.moderations.where("created_at > ?", limit)
-
-    questions_submitted = current_user.questions.includes(:asker)\
-      .ugc.where("status != -1")\
-      .where("created_at > ?", limit)\
-      .map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url, href: "/askers/#{q.created_for_asker_id}/questions", twi_screen_name: q.asker.twi_screen_name}}
-
-    @activity = (answers + moderations + questions_submitted).sort_by { |e| e[:created_at] }.reverse
-    render :partial => 'activity'  
   end
 
   def search

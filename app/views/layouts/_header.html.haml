@@ -60,19 +60,12 @@
 
             - elsif current_user.is_role? "moderator"
               %li
-                %a.nav-link{:href => "/feeds/mod_manage"} Moderate
+                %a.nav-link{:href => "/moderations/manage"} Moderate
                 
-            / - elsif Question.exists?(:user_id => current_user.id)
-            /   %li.hidden-phone
-            /     %a.nav-link{:href => "/users/#{current_user.id}/questions"}= "My Questions"
-
             - else
               %li.hidden-phone
                 %a.nav-link{:href => "#"}= "Welcome #{current_user.twi_screen_name}!"
 
-            / - elsif Question.exists?(:user_id => current_user.id)
-            /   %li.hidden-phone
-            /     %a.nav-link{:href => "/users/#{current_user.id}/questions"}= "My Questions"
             %li= link_to "Sign Out", destroy_user_session_path, :method => :delete, :class => "nav-link"
           - else
             %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")

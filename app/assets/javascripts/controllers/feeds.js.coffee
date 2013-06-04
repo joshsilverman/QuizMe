@@ -27,7 +27,7 @@ class @Feed
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
-			$.get '/feeds/activity', (data) =>
+			$.get '/users/activity', (data) =>
 				$(".tab-content .activity").empty().append(data)
 				$(".timeago").timeago()
 				$(".tab-content .activity img").tooltip()

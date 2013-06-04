@@ -29,7 +29,6 @@ Quizmemanager::Application.routes.draw do
   resource :moderations
   get "moderations/manage"
 
-  match 'feeds/activity' => 'feeds#activity'
   match "feeds/stream" => "feeds#stream"
   
   match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
@@ -116,6 +115,7 @@ Quizmemanager::Application.routes.draw do
   post "users/supporters" => "users#create_supporter"
   delete "users/:id" => "users#destroy_supporter"
   get "/user/supporters/:id/touch" => "users#touch_supporter"
+  get 'users/activity'
 
   match '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
