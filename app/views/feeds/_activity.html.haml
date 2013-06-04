@@ -6,7 +6,7 @@
 					%li{:class => ("border_bottom" if (@activity.count - 1) > i)}
 						.content
 							.activity_container
-								= image_tag(activity[:profile_image_url], :class => "rounded")
+								= image_tag(activity[:profile_image_url], :class => "rounded", :rel => "tooltip", :title => activity[:twi_screen_name], "data-placement" => "left")
 								.action
 									= activity[:verb]
 								.text
