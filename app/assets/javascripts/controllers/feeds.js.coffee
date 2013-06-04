@@ -23,7 +23,7 @@ class @Feed
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
 		@initialize_fix_position_listener() unless $(".index").length > 0
-		@activity_stream()
+		@initialize_stream()
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
@@ -102,9 +102,9 @@ class @Feed
 			modal.find(".message").hide()
 			modal.find(".question_form").show()
 		).delay(250).slideToggle(250, => $("#question_input").focus())
-	activity_stream: =>
+	initialize_stream: =>
 		return unless $("#activity_stream_content").length > 0
-		$.ajax '/activity_stream',
+		$.ajax '/feeds/stream',
 			type: 'GET'
 			success: (e) => 
 				container = $("#activity_stream_content")
