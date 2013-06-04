@@ -3,6 +3,7 @@ class ModerationsController < ApplicationController
 
   def manage
   	post_ids_with_enough_moderations = Post.requires_action.select('posts.id').joins(:moderations).group('posts.id').having('count(moderations.id) > 1').collect(&:id)
+    post_ids_with_enough_moderations = [0] if post_ids_with_enough_moderations.empty?
 		
 		@posts = Post.includes(:tags, :conversation).linked_box.not_dm\
 			.joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\

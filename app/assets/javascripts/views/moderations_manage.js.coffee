@@ -16,7 +16,8 @@ class ModerationsManage
 			type_id: elem.data 'type_id'
 			post_id: elem.closest(".post").attr 'post_id'
 
-		$.post '/moderations', params
+		$.post '/moderations', params, ->
+			elem.closest('.conversation').addClass('moderated')
 
 		elem.closest(".conversation").addClass "dim"
 		window.moderations_manage.hotkeys.prev()

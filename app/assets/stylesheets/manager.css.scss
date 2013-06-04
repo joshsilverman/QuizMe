@@ -1,4 +1,23 @@
 #manager, #author_dashboard {
+	.conversation {
+		.content {
+			img {
+				filter: grayscale(65%);
+				-webkit-filter: grayscale(65%);
+				-moz-filter: grayscale(65%);
+				-ms-filter: grayscale(65%);
+				-o-filter: grayscale(65%);
+			}
+			h5 {
+				color: #888;
+			}
+			.question {
+				color: #777; 
+				margin:5px 0;
+			}
+		}
+	}
+
 	.actions {
 		/*float:none;*/
 		background: #efefef;
@@ -20,6 +39,14 @@
 			}
 
 			.main {
+				a {
+					filter: grayscale(5%);
+					-webkit-filter: grayscale(5%);
+					-moz-filter: grayscale(5%);
+					-ms-filter: grayscale(5%);
+					-o-filter: grayscale(5%);
+					opacity:.95;
+				}
 
 				div:first-child {
 					margin-left:10px;

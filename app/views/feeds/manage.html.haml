@@ -92,12 +92,21 @@
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 
+										/ - show_question = "question" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer")
+										/ - if show_question
+										.question
+											%i 
+												Q.
+												#{question.text}
+
 										%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
-										- if correct
-											%p.quick-reply
-												%span{style: 'opacity:0.6;'}
-													Correct: 
-													= correct.text
+
+										/ - unless show_question
+										/ 	- if correct
+										/ 		%p.quick-reply
+										/ 			%span{style: 'opacity:0.6;'}
+										/ 				Correct: 
+										/ 				= correct.text
 
 									- if params[:filter] == 'ugc'
 										= render :partial => "ugc_actions", :locals => {:post => post}
