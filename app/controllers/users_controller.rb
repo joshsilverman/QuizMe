@@ -22,11 +22,9 @@ class UsersController < ApplicationController
       .where("created_at > ?", limit)\
       .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name}}
 
-    moderations = Post.includes(:in_reply_to_user)\
-      .where("moderator_id = ?", current_user.id)\
-      .where("updated_at > ?", limit)\
-      .map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, twi_screen_name: p.in_reply_to_user.twi_screen_name}}  
-    # moderations = current_user.moderations.where("created_at > ?", limit)
+    moderations = current_user.moderations.includes(:post => :in_reply_to_user)\
+      .where("created_at > ?", limit)\
+      .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}  
 
     questions_submitted = current_user.questions.includes(:asker)\
       .ugc.where("status != -1")\
