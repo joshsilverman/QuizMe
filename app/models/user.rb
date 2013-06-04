@@ -377,11 +377,8 @@ class User < ActiveRecord::Base
     after_new_user_filter if transition.segment_type == 1 and transition.from_segment.blank? and transition.to_segment.present?
 
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
-		# Post.trigger_split_test(id, "reengagement tight intervals") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
-		# Post.trigger_split_test(id, "auto respond") if ((transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)) or (transition.segment_type == 2 and transition.is_positive? and transition.is_above?(4)))
 		Post.trigger_split_test(id, "DM autoresponse interval v2 (activity segment +)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
 		Post.trigger_split_test(id, "New user DM question == most popular question (=> regular)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
-		Post.trigger_split_test(id, "related feeds vs. top contributors (lifecycle+)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
 		Post.trigger_split_test(id, 'other feeds panel shows related askers (=> regular)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
 	end

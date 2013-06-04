@@ -51,6 +51,8 @@ class @Feed
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
 
+		@filtered = $('.tab-content .activity').length > 0
+
 		check_twttr = =>
 			if twttr and twttr.widgets
 				@load_follow_buttons()
@@ -234,7 +236,7 @@ class @Feed
 			return 
 		else
 			$.ajax
-				url: "/feeds/#{@id}/more/#{last_post_id}",
+				url: "/feeds/#{@id}/more/#{last_post_id}?filtered=#{@filtered}",
 				type: "GET",
 				error: => window.appending = false, 
 				success: (e) => 

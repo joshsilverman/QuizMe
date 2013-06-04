@@ -167,26 +167,19 @@ class FeedsController < ApplicationController
         @answer_id = params[:answer_id]
         @author = User.find @asker.author_id if @asker.author_id
 
-        contributors = User.find(@asker.questions.approved.ugc.collect { |q| q.user_id }.uniq.sample(3))
-
-        if current_user and contributors.present? and Post.create_split_test(current_user.id, "related feeds vs. top contributors (lifecycle+)", "related feeds", "top contributors") == "top contributors"
-          contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count
-          if current_user.questions.approved.ugc.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
-            contributors += [current_user]
-          end
-          @contributors = []
-          contributors.sample(3).each do |user|
-            @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
-          end      
+        if current_user and Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'true'
+          subscribed = current_user.follows
+          @related = subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
         else
-          if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
-            @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-              .where(:id => ACCOUNT_DATA.keys.sample(3)).all
-          else
-            subscribed = current_user.follows
-            @related = subscribed.collect {|a| a.becomes(Asker).related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
-          end             
+          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+            .where(:id => ACCOUNT_DATA.keys.sample(3)).all
         end
+
+        # contributors = User.find(@asker.questions.approved.ugc.collect { |q| q.user_id }.uniq.sample(3))
+        # contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count
+        # contributors += [current_user] if current_user.questions.approved.ugc.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
+        # @contributors = []
+        # contributors.sample(3).each { |user| @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}}
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 
@@ -248,14 +241,18 @@ class FeedsController < ApplicationController
       @publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
     else  
       post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
-      @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
-        .published\
-        .where("asker_id in (?)", current_user.follows.collect(&:id))\
-        .where("posts.created_at < ?", post.created_at)\
-        .where("publications.id != ?", publication.id)\
-        .where("posts.interaction_type = 1")
-        .order("posts.created_at DESC")\
-        .limit(5)
+      if params[:filtered] == 'true'
+        @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
+          .published\
+          .where("asker_id in (?)", current_user.follows.collect(&:id))\
+          .where("posts.created_at < ?", post.created_at)\
+          .where("publications.id != ?", publication.id)\
+          .where("posts.interaction_type = 1")
+          .order("posts.created_at DESC")\
+          .limit(5)
+      else
+        @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
+      end
     end
 
     @responses = []
