@@ -32,7 +32,6 @@ class FeedsHome
 						return false unless feeds_home.is_scrolled_into_view(this)
 						return false if $(this).find("iframe").length > 0
 						twttr.widgets.createFollowButton $(this).data('screen-name'), this, ((el) ->
-							console.log "Follow button created."
 						),
 							size: "large",
 							'count': "none",

@@ -30,6 +30,7 @@ class @Feed
 			$.get '/feeds/activity', (data) =>
 				$(".tab-content .activity").empty().append(data)
 				$(".timeago").timeago()
+				$(".tab-content .activity img").tooltip()
 
 		$(".timeago").timeago()
 
@@ -49,6 +50,48 @@ class @Feed
 		mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
+
+		check_twttr = =>
+			if twttr and twttr.widgets
+				@load_follow_buttons()
+			else
+				setTimeout (=> check_twttr()), 100
+
+				@load_follow_buttons_timeouts = []
+				$(document).scroll =>
+					$.each feed.load_follow_buttons_timeouts, (i, t) -> clearTimeout(t)
+					feed.load_follow_buttons_timeouts = []
+
+					feed.load_follow_buttons_timeouts.push setTimeout ->
+							feed.load_follow_buttons()
+						, 500
+
+				twttr.events.bind 'follow', (e) => @afterfollow(e)
+		check_twttr()	
+
+	load_follow_buttons: ->
+		$('a.twitter-follow-button').filter(->
+				return false unless feed.is_scrolled_into_view(this)
+				return false if $(this).find("iframe").length > 0
+				return true
+			).each (i) ->
+				feed.load_follow_buttons_timeouts.push(setTimeout =>
+						return false unless feed.is_scrolled_into_view(this)
+						return false if $(this).find("iframe").length > 0
+						twttr.widgets.createFollowButton $(this).data('screen-name'), this, ((el) ->
+							console.log "Follow button created."
+						),
+							size: "large",
+							'count': "none",
+							text: "follow",
+							"showScreenName": 'false'
+					, 220*(i-1) + Math.floor(((i-1)/4))*900)
+	is_scrolled_into_view: (elem) ->
+		docViewTop = $(window).scrollTop()
+		docViewBottom = docViewTop + $(window).height()
+		elemTop = $(elem).offset().top
+		elemBottom = elemTop + $(elem).height()
+		(elemBottom <= docViewBottom) and (elemTop >= docViewTop)	
 
 	post_another: =>
 		modal = $("#post_question_modal")
@@ -269,7 +312,7 @@ class Post
 				$(e.target).find("h3").removeClass("active_next")
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
-				$(e.target).find("h3").removeClass("active_next")
+				$(e.target).find("h3").removeClass("active_next")		
 	expand: =>
 		if @element.hasClass("active")
 			@expanded = false
