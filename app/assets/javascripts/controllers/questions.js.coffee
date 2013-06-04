@@ -46,8 +46,6 @@ class Question
 
 		$(".contributor").tooltip()
 
-		$("#question.index .status .label").click -> question.change_status $(this)
-
 		check_twttr = =>
 			if twttr and twttr.events
 				twttr.events.bind 'follow', (e) =>
@@ -184,6 +182,26 @@ class Question
 		else
 			return true
 
+
+class Moderator
+
+	constructor: ->
+		$('.btn.btn-success').on "click", (e) => @respond(true, $(e.target).attr('qid'))
+		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))
+		$("#moderate_questions .status .label").click -> console.log  moderator.change_status $(this)
+	respond: (accepted, id) ->
+		q = {}
+		q['question_id'] = parseInt id
+		q['accepted'] = accepted
+		$.ajax '/moderate/update',
+			type: 'POST'
+			dataType: 'html'
+			data: q
+			error: (jqXHR, textStatus, errorThrown) ->
+				console.log "AJAX Error: #{errorThrown}"
+			success: (data, textStatus, jqXHR) ->
+				$("#question_#{q['question_id']}").fadeOut()
+
 	change_status: (label) ->
 		window.label = label
 		question_id = label.closest('.question-row').attr('question_id')
@@ -207,25 +225,7 @@ class Question
 					label.text 'Accepted'
 				else
 					label.addClass 'rejected label-important'
-					label.text 'Rejected'
-
-class Moderator
-
-	constructor: ->
-		$('.btn.btn-success').on "click", (e) => @respond(true, $(e.target).attr('qid'))
-		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))
-	respond: (accepted, id) ->
-		q = {}
-		q['question_id'] = parseInt id
-		q['accepted'] = accepted
-		$.ajax '/moderate/update',
-			type: 'POST'
-			dataType: 'html'
-			data: q
-			error: (jqXHR, textStatus, errorThrown) ->
-				console.log "AJAX Error: #{errorThrown}"
-			success: (data, textStatus, jqXHR) ->
-				$("#question_#{q['question_id']}").fadeOut()
+					label.text 'Rejected'				
 
 class Card
 	constructor: ->
