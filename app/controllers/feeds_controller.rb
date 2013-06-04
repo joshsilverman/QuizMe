@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :activity_stream, :more, :search]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :stream, :more, :search]
   before_filter :unauthenticated_user!, :only => [:unauth_show]
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
@@ -9,7 +9,6 @@ class FeedsController < ApplicationController
   def index
     @index = true
     @asker = User.find(1)
-    @wisr = User.find(8765)   
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]
     @post_id = params[:post_id]
@@ -42,6 +41,7 @@ class FeedsController < ApplicationController
         
         render 'index_with_activity' 
       else # logged in user, old homepage
+        @wisr = User.find(8765)
         @publications, posts = Publication.recently_published
 
         @responses = []
@@ -63,6 +63,7 @@ class FeedsController < ApplicationController
       end
     else
       if ab_test("New Landing Page", 'index', 'index_with_search') == 'index' # logged out user, old homepage
+        @wisr = User.find(8765)
         @publications, posts = Publication.recently_published
 
         @responses = []
@@ -101,7 +102,7 @@ class FeedsController < ApplicationController
       .where("moderator_id = ?", current_user.id)\
       .where("updated_at > ?", limit)\
       .map {|p| {created_at: p.created_at, verb: 'moderated', text: p.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, twi_screen_name: p.in_reply_to_user.twi_screen_name}}  
-    # moderations = current_user.moderations.where("created_at > ?", 1.month.ago)
+    # moderations = current_user.moderations.where("created_at > ?", limit)
 
     questions_submitted = current_user.questions.includes(:asker)\
       .ugc.where("status != -1")\
@@ -193,7 +194,7 @@ class FeedsController < ApplicationController
     end
   end
 
-  def activity_stream(user_followers = [])
+  def stream(user_followers = [])
     asker_ids = User.askers.collect(&:id)
     if current_user
       unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
