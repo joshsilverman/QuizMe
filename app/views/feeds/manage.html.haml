@@ -93,7 +93,7 @@
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 										- show_answer = true if admin == true
-										- show_answer ||= ("answer" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer"))
+										- show_answer ||= ("answer" == ab_test("show moderator q & a or answer (-> accepted grade)", "answer", "q & a"))
 										- unless show_answer
 											.question
 												%i 
