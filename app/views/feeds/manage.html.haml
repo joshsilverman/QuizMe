@@ -178,7 +178,7 @@
 									- else
 										= render :partial => "actions", :locals => {:post => post, :question => question}
 
-									- if admin and params[:filter] == 'moderated'
+									- if admin and params[:filter].nil?
 										.actions
 											%i{style: 'color:#666'}
 												Moderations -
