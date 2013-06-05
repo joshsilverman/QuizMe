@@ -350,14 +350,15 @@ class Asker < User
     current_time = Time.now
     range_begin = 24.hours.ago
     range_end = 23.hours.ago
+    asker_ids = Asker.ids
     
     recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or ((intention = ? or intention = ?) and created_at > ?))", false, range_begin, range_end, 'reengage', 'incorrect answer follow up', range_end).includes(:user)
     user_grouped_posts = recent_posts.group_by(&:user_id)
-    asker_ids = askers.collect(&:id)
+    
     user_grouped_posts.each do |user_id, posts|
       # should ensure only one tweet per user as well here?
       next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
-      incorrect_post = posts.sample
+      incorrect_post = posts.select {|p| asker_ids.include? p.in_reply_to_user_id }.sample
       next unless incorrect_post and incorrect_post.conversation
       publication = incorrect_post.conversation.publication
       question = publication.question
