@@ -442,15 +442,16 @@ class FeedsController < ApplicationController
     @linked_box_count = Post.linked_box.count
     @unlinked_box_count = Post.unlinked_box.count
     @autocorrected_box_count = Post.autocorrected_box.count
+    @moderated_box_count = Post.moderated_box.to_a.count
 
-    #filter for retweet, spam, starred
-    @posts = Post.includes(:tags, :conversation)
+    #filters
+    @posts = Post.includes(:tags, :user, :parent, [:conversation => [:publication => [:question => :answers], :post => [:user], :posts => [:user]]])
     if params[:filter] == 'retweets'
       @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'spam'
       @posts = @posts.spam_box.order("posts.created_at DESC")
-    elsif params[:filter] == 'moderated'
-      @posts = @posts.moderated_box.order("posts.created_at DESC")
+    elsif params[:filter] == 'autocorrected'
+      @posts = @posts.autocorrected_box.not_spam.order("posts.created_at ASC")
     elsif params[:filter] == 'ugc'
       @posts = @posts.ugc_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'feedback'
@@ -468,7 +469,7 @@ class FeedsController < ApplicationController
     elsif params[:filter] == 'all'
       @posts = @posts.all_box.not_spam.order("posts.created_at DESC")
     else
-      @posts = @posts.autocorrected_box.not_spam.order("posts.created_at ASC")
+      @posts = @posts.moderated_box.order("posts.created_at DESC")
     end
 
     @tags = Tag.all
