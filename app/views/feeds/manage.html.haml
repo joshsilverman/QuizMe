@@ -93,12 +93,13 @@
 										- if @oneinbox
 											→ #{@askers_by_id[post.in_reply_to_user_id]}
 										- show_answer = true if admin == true
-										- show_answer ||= ("question" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer"))
+										- show_answer ||= ("answer" == ab_test("show moderator question or answer (-> accepted grade)", "question", "answer"))
 										- unless show_answer
 											.question
 												%i 
-													Q.
-													#{question.text}
+													Q. #{question.text}
+													%br
+													A. #{correct.text}
 
 										%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 
