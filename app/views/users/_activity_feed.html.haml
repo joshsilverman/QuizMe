@@ -1,0 +1,22 @@
+- if @activity.present?
+	#recent_activity
+		%ul.unstyled		
+			- @activity.each_with_index do |activity, i|
+				%a{href: activity[:href]}
+					%li{:class => ("border_bottom" if (@activity.count - 1) > i)}
+						.content
+							.activity_container
+								= image_tag(activity[:profile_image_url], :class => "rounded", :rel => "tooltip", :title => activity[:twi_screen_name], "data-placement" => "left")
+								.action
+									= activity[:verb]
+								.text
+									= activity[:text]
+								- if activity[:created_at] < 1.day.ago
+									%p.time= time_formatter(activity[:created_at])
+								- else
+									%p.time.timeago{:title => activity[:created_at].to_time.iso8601}	
+- else
+	.loading
+		.header{style: 'border-top: 0px;'}
+			%p
+				No recent activity...

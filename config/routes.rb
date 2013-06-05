@@ -111,11 +111,12 @@ Quizmemanager::Application.routes.draw do
   post '/askers/add_related' => 'askers#add_related'
   post '/askers/remove_related' => 'askers#remove_related'
 
+  get '/users/:id/activity' => 'users#activity'
   get "users/supporters" => "users#supporters"
   post "users/supporters" => "users#create_supporter"
   delete "users/:id" => "users#destroy_supporter"
   get "/user/supporters/:id/touch" => "users#touch_supporter"
-  get 'users/activity'
+  get '/users/activity_feed'
 
   match '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'

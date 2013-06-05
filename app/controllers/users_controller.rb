@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity]
+  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed]
 
   def supporters
     @supporters = User.supporters
@@ -16,23 +16,15 @@ class UsersController < ApplicationController
     end
   end
 
-  def activity limit = 1.month.ago
-    answers = current_user.posts.includes(:in_reply_to_question, :in_reply_to_user)\
-      .answers\
-      .where("created_at > ?", limit)\
-      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name}}
+  def activity_feed
+    @activity = current_user.activity(since: 1.month.ago)
+    render :partial => 'activity_feed'  
+  end
 
-    moderations = current_user.moderations.includes(:post => :in_reply_to_user)\
-      .where("created_at > ?", limit)\
-      .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}  
-
-    questions_submitted = current_user.questions.includes(:asker)\
-      .ugc.where("status != -1")\
-      .where("created_at > ?", limit)\
-      .map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url, href: "/askers/#{q.created_for_asker_id}/questions", twi_screen_name: q.asker.twi_screen_name}}
-
-    @activity = (answers + moderations + questions_submitted).sort_by { |e| e[:created_at] }.reverse
-    render :partial => 'activity'  
+  def activity
+    @user = User.find(params[:id])
+    @activity = @user.activity(since: 1.month.ago)
+    @subscribed = Asker.includes(:related_askers).where("id in (?)", @user.follows.collect(&:id))
   end
 
   def badges

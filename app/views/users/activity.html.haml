@@ -1,0 +1,15 @@
+#post_feed.index
+	#feed_container.span10
+		#wrapper.span9
+			#feed.row
+				#right_column.span6
+					#posts.rounded{style: 'margin-top: 16px;'}
+						.header.border-color.rounded-top
+							%h3 
+								Activity for 
+								= link_to "@#{@user.twi_screen_name}", "http://www.twitter.com/#{@user.twi_screen_name}", target: '_blank'
+						.activity
+							= render :partial => 'activity_feed'
+				#left_column.span3.hidden-phone
+					#left_column_container
+						= render :partial => "feeds/subscriptions"

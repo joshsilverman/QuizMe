@@ -255,7 +255,28 @@ class User < ActiveRecord::Base
 		self.update_attributes params	
 	end
 
-	def activity_summary options = {}
+	# Following two methods should be combined in the future... 
+	def activity options = {} # for activity feed
+		options.reverse_merge!(:since => 1.month.ago)
+
+    answers = posts.includes(:in_reply_to_question, :in_reply_to_user)\
+      .answers\
+      .where("created_at > ?", options[:since])\
+      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name}}
+
+    mods = moderations.includes(:post => :in_reply_to_user)\
+      .where("created_at > ?", options[:since])\
+      .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}  
+
+    ugc = questions.includes(:asker)\
+      .ugc.where("status != -1")\
+      .where("created_at > ?", options[:since])\
+      .map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url, href: "/askers/#{q.created_for_asker_id}/questions", twi_screen_name: q.asker.twi_screen_name}}
+
+    (answers + mods + ugc).sort_by { |e| e[:created_at] }.reverse		
+	end
+
+	def activity_summary options = {} # used for generating progress reports
 		options.reverse_merge!(:since => 99.years.ago)
 		activity_hash = {}
 		

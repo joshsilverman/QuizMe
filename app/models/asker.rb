@@ -553,12 +553,23 @@ class Asker < User
     actions = [
       Proc.new {|answerer| request_ugc(answerer)},
       Proc.new {|answerer| request_mod(answerer)},
-      Proc.new {|answerer| request_new_handle_ugc(answerer)}
+      Proc.new {|answerer| request_new_handle_ugc(answerer)},
+      Proc.new {|answerer| send_link_to_activity_feed(answerer)}
     ].shuffle
 
     actions.each do |action|
       break if action.call answerer
     end
+  end
+
+  def send_link_to_activity_feed user
+    return false unless user.lifecycle_above? 3
+    return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'send link to activity feed')
+
+    # return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
+    # return false if Question.exists?(:user_id => user.id)
+
+    script = "If you're interested, you can see all of your recent activity here: http://wisr.com/"
   end
 
   def request_mod user
