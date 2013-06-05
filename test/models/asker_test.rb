@@ -608,6 +608,48 @@ describe Asker do
 			end			
 		end
 
+		describe 'send link to activity feed' do
+			before :each do 
+				@intention = 'send link to activity feed'
+			end
+
+			it 'with a post' do
+				30.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.send_link_to_activity_feed(@user.reload, true)
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
+			end
+
+			it 'unless already sent' do
+				FactoryGirl.create(:post, in_reply_to_user_id: @user.id, intention: @intention)
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
+				30.times do |i|
+					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.send_link_to_activity_feed(@user.reload, true)
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
+			end
+
+			it 'if appropriate lifecycle' do
+				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
+					user = FactoryGirl.create(:user, twi_user_id: 1)
+					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					user.update_attribute :lifecycle_segment, lifecycle_segment
+					
+					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 0
+					@asker.send_link_to_activity_feed user.reload, true
+
+					if SEGMENT_HIERARCHY[1].slice(0, 4).include? lifecycle_segment
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 0
+					else
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 1
+					end
+				end
+			end	
+		end
 		# describe 'nudge'  do
 		# 	it 'with a post'
 		# 	it 'unless already nudged'

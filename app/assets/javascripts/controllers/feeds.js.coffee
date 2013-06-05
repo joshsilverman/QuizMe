@@ -30,8 +30,9 @@ class @Feed
 			$.get '/users/activity_feed', (data) =>
 				$(".tab-content .activity").empty().append(data)
 				$(".timeago").timeago()
-				$(".tab-content .activity img").tooltip()
+				$(".activity img").tooltip()
 
+		$(".activity img").tooltip()
 		$(".timeago").timeago()
 
 		$(".post_question").on "click", (e) =>

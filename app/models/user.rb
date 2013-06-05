@@ -262,7 +262,7 @@ class User < ActiveRecord::Base
     answers = posts.includes(:in_reply_to_question, :in_reply_to_user)\
       .answers\
       .where("created_at > ?", options[:since])\
-      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name}}
+      .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name, correct: p.correct}}
 
     mods = moderations.includes(:post => :in_reply_to_user)\
       .where("created_at > ?", options[:since])\
@@ -402,6 +402,8 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "New user DM question == most popular question (=> regular)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, 'other feeds panel shows related askers (=> regular)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
+		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
+		Post.trigger_split_test(id, 'link to activity feed script (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 	end
 
   def lifecycle_transition_comment to_segment

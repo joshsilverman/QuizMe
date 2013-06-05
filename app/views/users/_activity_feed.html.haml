@@ -15,6 +15,8 @@
 									%p.time= time_formatter(activity[:created_at])
 								- else
 									%p.time.timeago{:title => activity[:created_at].to_time.iso8601}	
+								- if !activity[:correct].nil?
+									%i.answered_indicator{:class => (activity[:correct] ? "icon-ok-sign" : "icon-remove-sign")}
 - else
 	.loading
 		.header{style: 'border-top: 0px;'}

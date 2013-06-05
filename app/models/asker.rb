@@ -551,10 +551,10 @@ class Asker < User
 
   def after_answer_action answerer
     actions = [
-      Proc.new {|answerer| request_ugc(answerer)},
-      Proc.new {|answerer| request_mod(answerer)},
-      Proc.new {|answerer| request_new_handle_ugc(answerer)},
-      Proc.new {|answerer| send_link_to_activity_feed(answerer)}
+      Proc.new {|answerer| request_ugc(answerer)}, # one time
+      Proc.new {|answerer| request_mod(answerer)}, # recurring
+      Proc.new {|answerer| request_new_handle_ugc(answerer)}, # recurring
+      Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
     ].shuffle
 
     actions.each do |action|
@@ -562,14 +562,23 @@ class Asker < User
     end
   end
 
-  def send_link_to_activity_feed user
-    return false unless user.lifecycle_above? 3
+  def send_link_to_activity_feed user, force = false
     return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'send link to activity feed')
+    unless force # used to bypass split for tests
+      return false unless Post.create_split_test(user.id, 'send link to activity feed (=> pro)', 'false', 'true') == 'true'
+    end
+    return false unless user.lifecycle_above? 3
 
-    # return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
-    # return false if Question.exists?(:user_id => user.id)
+    script = Post.create_split_test(user.id, 'link to activity feed script (=> pro)', 
+      "If you're interested, you can see all of your recent activity here: <link>", 
+      "Check out all of your recent activity at <link>",
+      "You can see your recent recent activity at <link>"
+    )
+    script.gsub! '<link>', "http://wisr.com/users/#{user.id}/activity"
 
-    script = "If you're interested, you can see all of your recent activity here: http://wisr.com/"
+    Post.dm(self, user, script, {
+      :intention => "send link to activity feed"
+    })    
   end
 
   def request_mod user
@@ -582,7 +591,8 @@ class Asker < User
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
       "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/moderations/manage", 
-      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/moderations/manage")
+      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/moderations/manage"
+    )
 
     # overwrite script if user has mod'ed before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
