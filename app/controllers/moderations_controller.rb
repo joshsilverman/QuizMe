@@ -29,14 +29,6 @@ class ModerationsController < ApplicationController
   def create
     moderation = current_user.moderations.find_or_initialize_by_post_id params['post_id']
     moderation.update_attributes type_id: params['type_id']
-    
-    if moderation.type_id.blank?
-      puts "moderation with blank type id"
-      puts params.to_json
-      puts moderation.to_json
-      puts moderation.user.to_json
-      puts moderation.post.to_json
-    end
 
     Post.trigger_split_test(current_user.id, 'mod request script (=> moderate answer)')
     render status: 200, nothing: true
