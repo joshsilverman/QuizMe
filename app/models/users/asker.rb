@@ -338,44 +338,37 @@ class Asker < User
     end
   end
 
-  def self.reengage_incorrect_answerers
-    askers = Asker.published
-    current_time = Time.now
-    range_begin = 24.hours.ago
-    range_end = 23.hours.ago
-    asker_ids = Asker.ids
-    
-    recent_posts = Post.where("user_id is not null and ((correct = ? and created_at > ? and created_at < ? and interaction_type = 2) or ((intention = ? or intention = ?) and created_at > ?))", false, range_begin, range_end, 'reengage', 'incorrect answer follow up', range_end).includes(:user)
-    user_grouped_posts = recent_posts.group_by(&:user_id)
-    
-    user_grouped_posts.each do |user_id, posts|
-      # should ensure only one tweet per user as well here?
-      next if asker_ids.include? user_id or recent_posts.where("(intention = ? or intention = ?) and in_reply_to_user_id = ?", 'reengage', 'incorrect answer follow up', user_id).present?
-      incorrect_post = posts.select {|p| asker_ids.include? p.in_reply_to_user_id }.sample
-      next unless incorrect_post and incorrect_post.conversation
-      publication = incorrect_post.conversation.publication
-      question = publication.question
-      asker = Asker.find(incorrect_post.in_reply_to_user_id)
-      Post.tweet(asker, "Try this one again: #{question.text}", {
-        :reply_to => incorrect_post.user.twi_screen_name,
-        :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
-        # :in_reply_to_post_id => incorrect_post.id,
-        :in_reply_to_user_id => user_id,
-        # :conversation_id => incorrect_post.conversation_id,
-        :publication_id => publication.id,
-        :posted_via_app => true, 
-        :requires_action => false,
-        :interaction_type => 2,
-        :link_to_parent => false,
-        :link_type => "follow_up",
-        :intention => "incorrect answer follow up",
-        :include_answers => true,
-        :question_id => question.id
-      })  
-      Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => user_id}
-      sleep(1)
-    end
-  end 
+  def schedule_incorrect_answer_followup user, question
+    return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user.id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month    
+    return false if Delayed::Job.where(attempts: 0).select { |dj| 
+        fj = YAML.load(dj.handler).instance_values 
+        fj['options'][:intention] == 'incorrect answer follow up' and fj['sender'].id == id and fj['options'][:in_reply_to_user_id] == user.id 
+      }.present? # check if already have scheduled followup    
+    last_followup = posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and created_at > ?", user.id, 1.week.ago).order("created_at ASC").last
+    return false if last_followup.present? and !Post.exists?(:in_reply_to_user_id => id, :user_id => user.id, :in_reply_to_post_id => last_followup.id) # check no unresponded followup from past week
+
+    script = "Try this one again: #{question.text}"
+    followup_post = TwitterMention.new(self, script, {
+      :reply_to => user.twi_screen_name,
+      :in_reply_to_user_id => user.id,
+      :intention => 'incorrect answer follow up',
+      :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
+      :publication_id => question.publications.order("created_at ASC").try(:last).try(:id),
+      :posted_via_app => true, 
+      :requires_action => false,
+      :interaction_type => 2,
+      :link_to_parent => false,
+      :link_type => "follow_up",
+      :include_answers => true,
+      :question_id => question.id      
+    })
+
+    interval = Post.create_split_test(user.id, "incorrect answer followup interval (answers)", '1', '3', '7', '14')
+    Delayed::Job.enqueue(
+      followup_post,
+      :run_at => interval.to_i.days.from_now
+    )
+  end
 
   def update_aggregate_activity_cache user, correct
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
@@ -418,7 +411,7 @@ class Asker < User
         :wisr_question => publication.question.resource_url ? false : true,
         :intention => 'grade',
         :conversation_id => options[:conversation_id]
-      })        
+      })   
     else
       app_post = Post.create({
         :user_id => id,
@@ -439,6 +432,7 @@ class Asker < User
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
       after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
+      schedule_incorrect_answer_followup(answerer, question) if correct == false and question
       return app_post
     else
       return false
@@ -505,7 +499,7 @@ class Asker < User
     answerer = user_post.user  
     if user_post.is_dm?
       return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
-      interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210",)
+      interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210")
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.in_reply_to_question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
         :run_at => interval.to_i.minutes.from_now

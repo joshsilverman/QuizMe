@@ -38,9 +38,9 @@ task :fill_queue => :environment do
   end
 end
 
-task :reengage_incorrect_answerers => :environment do
-  Asker.reengage_incorrect_answerers()
-end
+# task :reengage_incorrect_answerers => :environment do
+#   Asker.published.each { |asker| asker.delay.reengage_incorrect_answerers }
+# end
 
 task :reengage_inactive_users => :environment do
   Asker.reengage_inactive_users()
