@@ -307,7 +307,7 @@ class Asker < User
   end
 
   def self.mention_new_users
-    askers = Asker.all
+    askers = Asker.published
     answered_dm_users = User.where("learner_level = 'dm answer'").includes(:posts)
     app_posts = Post.where("in_reply_to_user_id in (?) and intention = 'new user question mention'", answered_dm_users.collect(&:id)).group_by(&:in_reply_to_user_id)
     popular_asker_publications = {}
@@ -1143,11 +1143,11 @@ class Asker < User
   end 
 
   def self.autofollow_summary
-    Asker.includes(:relationships).find(AUTOFOLLOW_ASKER_IDS).each do |asker|
+    Asker.includes(:follow_relationships).find(AUTOFOLLOW_ASKER_IDS).each do |asker|
       puts "Follow Summary for #{asker.twi_screen_name}"
       puts "===================="
       puts "\n"
-      asker.relationships.group_by { |r| r.updated_at.to_date }.sort.reverse.each do |date, relationships|
+      asker.follow_relationships.group_by { |r| r.updated_at.to_date }.sort.reverse.each do |date, relationships|
         puts "#{date.strftime('%m/%d')}:"
         puts "------"
         puts "Total: #{relationships.select { |r| r.active == true }.count}"
