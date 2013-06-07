@@ -76,12 +76,12 @@ class User < ActiveRecord::Base
   scope :engaged, where(:activity_segment => 6)
 
   # Interaction segmentation scopes
-  scope :dmer, where(:interaction_segment => 1)
-  scope :sharer, where(:interaction_segment => 2)
-  scope :commenter, where(:interaction_segment => 3)
-  scope :twitter_answerer, where(:interaction_segment => 4)
-  scope :wisr_answerer, where(:interaction_segment => 5)
-  scope :author, where(:interaction_segment => 6)
+  scope :non_moderator, where('moderator_segment is null')
+  scope :edger_mod, where(:moderator_segment => 1)
+  scope :noob_mod, where(:moderator_segment => 2)
+  scope :regular_mod, where(:moderator_segment => 3)
+  scope :advanced_mod, where(:moderator_segment => 4)
+  scope :super_mod, where(:moderator_segment => 5)
 
   # Author segmentation scopes
   scope :not_author, where("author_segment is null")
@@ -366,6 +366,10 @@ class User < ActiveRecord::Base
 
 	# Segmentation methods
 	def transition segment_name, to_segment
+		# puts from_segment
+		# puts to_segment
+		# puts segment_name
+		# puts "#{segment_name}_segment"
 		return if to_segment == (from_segment = self.send("#{segment_name}_segment"))
 
 		self.update_attribute "#{segment_name}_segment", to_segment
@@ -379,6 +383,8 @@ class User < ActiveRecord::Base
 			segment_type = 3
 		when :author
 			segment_type = 4
+		when :moderator
+			segment_type = 5
 		end
 
     comment = nil
@@ -609,21 +615,25 @@ class User < ActiveRecord::Base
 	def is_super_mod?
 		enough_mods = moderations.count > 50
 		enough_acceptance_rate = moderator_acceptance_rate > 0.9
+		enough_mods and enough_acceptance_rate
 	end
 
 	def is_advanced_mod?
 		enough_mods = moderations.count > 20
 		enough_acceptance_rate = moderator_acceptance_rate > 0.8
+		enough_mods and enough_acceptance_rate
 	end
 
 	def is_regular_mod?
 		enough_mods = moderations.count > 10
 		enough_acceptance_rate = moderator_acceptance_rate > 0.65
+		enough_mods and enough_acceptance_rate
 	end
 
 	def is_noob_mod?
 		enough_mods = moderations.count > 2
 		enough_acceptance_rate = moderator_acceptance_rate > 0.5
+		enough_mods and enough_acceptance_rate
 	end
 
 	def is_edger_mod?
@@ -632,9 +642,10 @@ class User < ActiveRecord::Base
 
 
 	def moderator_acceptance_rate
-		accepted = moderations.where accepted: true
-		not_accepted = moderations.where accepted: false
-		accepted.to_f / accepted + not_accepted
+		accepted = moderations.where(accepted: true).count
+		not_accepted = moderations.where(accepted: false).count
+		total = accepted + not_accepted
+		total == 0 ? 0 : (accepted.to_f / total.to_f)
 	end
 
 	def age_greater_than age = 15.days

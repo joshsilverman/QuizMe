@@ -39,9 +39,9 @@ describe User do
 					Timecop.travel(Time.now + 1.day)
 				end
 			end
-		end
+		end	
 
-		describe "moderation"
+		describe "moderation" do
 			before :each do
 				@user = FactoryGirl.create(:user, twi_user_id: 1)
 				@moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
@@ -54,8 +54,15 @@ describe User do
 				@conversation = FactoryGirl.create(:conversation, post: @post_question, publication: @publication)
 			end
 
-			it 'segment between edger => super mod' do
+			it 'segment between edger => super mod with enough posts' do
 				55.times do |i|
+					i < 1 ? @moderator.reload.moderator_segment.must_equal(nil) : @moderator.reload.moderator_segment.wont_be_nil
+					i > 0 ? @moderator.is_edger_mod?.must_equal(true) : @moderator.is_edger_mod?.must_equal(false)
+					i > 2 ? @moderator.is_noob_mod?.must_equal(true) : @moderator.is_noob_mod?.must_equal(false)
+					i > 10 ? @moderator.is_regular_mod?.must_equal(true) : @moderator.is_regular_mod?.must_equal(false)
+					i > 20 ? @moderator.is_advanced_mod?.must_equal(true) : @moderator.is_advanced_mod?.must_equal(false)
+					i > 50 ? @moderator.is_super_mod?.must_equal(true) : @moderator.is_super_mod?.must_equal(false)
+
 					post = FactoryGirl.create :post, 
 						user: @user, 
 						requires_action: true, 
@@ -64,18 +71,32 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
-					@moderator.moderations << FactoryGirl.create(:moderation, type_id:1, accepted: true)
+					FactoryGirl.create(:moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
+				end	
+			end	
 
-					if i > 50
-						@moderator.is_super_mod?.must_equal true
-					elsif i > 20
-					elsif i > 10
-					elsif i > 2
-					elsif i > 0
-					else
-					end
+			it 'run segment between edger => super mod with enough acceptance' do
+				100.times do 
+					post = FactoryGirl.create :post, 
+						user: @user, 
+						requires_action: true, 
+						in_reply_to_post_id: @post_question.id,
+						in_reply_to_user_id: @asker.id,
+						in_reply_to_question_id: @question.id,
+						interaction_type: 2, 
+						conversation: @conversation
+					FactoryGirl.create(:moderation, type_id:1, accepted: false, user_id: @moderator.id, post_id: post.id)
 				end
-			end
+
+				@moderator.moderations.each_with_index do |moderation, i|
+					moderation.update_attribute :accepted, true
+					@moderator.is_edger_mod?.must_equal(true)
+					@moderator.is_noob_mod?.must_equal(true) if i > 49
+					@moderator.is_regular_mod?.must_equal(true) if i > 64
+					@moderator.is_advanced_mod?.must_equal(true) if i > 79
+					@moderator.is_super_mod?.must_equal(true) if i > 89
+				end
+			end							
 		end
 	end
 end

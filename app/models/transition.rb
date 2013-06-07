@@ -10,6 +10,7 @@ class Transition < ActiveRecord::Base
 	scope :to_interested, where("segment_type = 1 and to_segment = 7")
 
 	scope :lifecycle, where("segment_type = 1")
+	scope :moderator, where("segment_type = 5")
 
 	def is_positive?
 		return true if SEGMENT_HIERARCHY[segment_type].index(from_segment).nil? or SEGMENT_HIERARCHY[segment_type].index(to_segment) > SEGMENT_HIERARCHY[segment_type].index(from_segment)
