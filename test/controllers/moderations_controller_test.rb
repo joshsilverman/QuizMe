@@ -10,6 +10,7 @@ describe ModerationsController do
 		@wisr_asker = create(:asker, id: 8765)
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
+
 		@asker.followers << [@user, @moderator]
 
 		@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		

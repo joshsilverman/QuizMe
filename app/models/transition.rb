@@ -34,18 +34,4 @@ class Transition < ActiveRecord::Base
 		end
 	end
 
-	# def print segment = "", to = "", from = ""
-	# 	case segment_type
-	# 	when 1
-	# 		segment = 'lifecycle'
-	# 	when 2
-	# 		segment = 'activity'
-	# 	when 3
-	# 		segment = 'interaction'
-	# 	when 4
-	# 		segment = 'author'
-	# 	end
-
-	# 	puts "user #{segment} segment transitioned from #{} to #{}"
-	# end
 end

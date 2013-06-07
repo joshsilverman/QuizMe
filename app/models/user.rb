@@ -364,7 +364,6 @@ class User < ActiveRecord::Base
 		end
 	end
 
-
 	# Segmentation methods
 	def transition segment_name, to_segment
 		return if to_segment == (from_segment = self.send("#{segment_name}_segment"))
@@ -480,8 +479,8 @@ class User < ActiveRecord::Base
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
+		update_moderator_segment
 		Post.trigger_split_test(id, "Personalized reengagement question (age > 15 days)") if age_greater_than 15.days
-		# Post.trigger_split_test(id, "<test>") if age_greater_than 15.days
 	end
 
 	# Lifecycle checks - include UGC reqs?
@@ -543,7 +542,6 @@ class User < ActiveRecord::Base
 		enough_posts and enough_frequency
 	end
 
-
 	# Activity checks
 	def update_activity_segment	
 		if is_unfollowed?
@@ -589,6 +587,55 @@ class User < ActiveRecord::Base
 		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 2
 	end
 
+	# moderator segment checks
+	def update_moderator_segment
+		if is_super_mod?
+			level = 5
+		elsif is_advanced_mod?
+			level = 4
+		elsif is_regular_mod?
+			level = 3
+		elsif is_noob_mod?
+			level = 2
+		elsif is_edger_mod?
+			level = 1
+		else
+			level = nil
+		end
+
+		transition :moderator, level
+	end
+
+	def is_super_mod?
+		enough_mods = moderations.count > 50
+		enough_acceptance_rate = moderator_acceptance_rate > 0.9
+	end
+
+	def is_advanced_mod?
+		enough_mods = moderations.count > 20
+		enough_acceptance_rate = moderator_acceptance_rate > 0.8
+	end
+
+	def is_regular_mod?
+		enough_mods = moderations.count > 10
+		enough_acceptance_rate = moderator_acceptance_rate > 0.65
+	end
+
+	def is_noob_mod?
+		enough_mods = moderations.count > 2
+		enough_acceptance_rate = moderator_acceptance_rate > 0.5
+	end
+
+	def is_edger_mod?
+		moderations.count > 0
+	end
+
+
+	def moderator_acceptance_rate
+		accepted = moderations.where accepted: true
+		not_accepted = moderations.where accepted: false
+		accepted.to_f / accepted + not_accepted
+	end
 
 	def age_greater_than age = 15.days
 		return false if posts.blank?
@@ -645,20 +692,6 @@ class User < ActiveRecord::Base
 		# select question from highest scoring question group
 		return asker, Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
   end
-
-  # def select_reengagement_question asker_id, question_scores, recent_reengagements
-  # 	recent_reengagement_question_ids = (recent_reengagements ? recent_reengagements.collect { |p| p.question_id } : [])
-
-  # 	# filter out answered and recently sent question ids if possible
-  # 	question_ids = question_scores.keys - questions_answered_ids_by_asker(asker_id) # get unanswered questions
-  # 	question_ids = question_scores.keys if question_ids.blank? # degrade to using answered questions
-  # 	question_ids = question_ids.reject { |id| recent_reengagement_question_ids.include? id } if (question_ids - recent_reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
-
-  # 	score_grouped_question_ids = question_ids.group_by { |question_id| question_scores[question_id] }
-
-  # 	# select question from highest scoring question group
-  # 	Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
-  # end
 
   def questions_answered_ids_by_asker asker_id, question_ids = []
   	posts.where("in_reply_to_user_id = ?", asker_id).includes(:conversation => {:publication => :question}).answers.each do |answer_post|
