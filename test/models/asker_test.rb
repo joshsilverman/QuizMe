@@ -12,7 +12,6 @@ describe Asker do
 		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
 		@publication = create(:publication, question_id: @question.id)
 		@question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
-
 	end
 
 	describe "responds to user answer" do
@@ -158,75 +157,9 @@ describe Asker do
 		end				
 	end
 
-	describe "follows up with incorrect answerers" do
-		before :each do 
-			@user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
-		end
-
-		it 'with a post' do
-			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
-			@asker.app_response @user_response, false
-			16.times do |i|
-				Delayed::Worker.new.work_off
-				Timecop.travel(Time.now + 1.day)
-			end
-			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
-		end
-
-		it 'run who have responded to recent followups' do
-			@asker.app_response @user_response, false
-			while Delayed::Job.all.size > 0
-				Delayed::Worker.new.work_off
-				Timecop.travel(Time.now + 1.day)
-			end
-			followup = @asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).first
-			new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
-			@asker.app_response FactoryGirl.create(:post, text: 'the correct answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_post_id: followup.id, in_reply_to_question_id: new_question.id), false
-			Delayed::Job.count.must_equal 1
-		end
-
-		it 'unless already followed up on this question this month' do
-			2.times do 
-				@asker.app_response @user_response, false
-				16.times do |i|
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
-				end
-			end
-			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
-		end
-
-		it "unless we've already scheduled a followup for the user" do 
-			@asker.app_response @user_response, false
-			while Delayed::Job.all.size > 0
-				new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
-				@asker.app_response FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id), false
-				Delayed::Worker.new.work_off
-				Timecop.travel(Time.now + 1.day)
-			end
-			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
-		end 
-
-		it 'unless there is another unresponded to followup from the past week' do
-			FactoryGirl.create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
-			9.times do |i|
-				if i < 8
-					Delayed::Job.count.must_equal 0
-				else
-					Delayed::Job.count.must_equal 1
-				end
-				new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
-				@asker.app_response FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id), false
-				Delayed::Worker.new.work_off
-				Timecop.travel(Time.now + 1.day)
-			end
-		end
-	end
-
 	describe "relationships" do
 
 		before :each do
-
 			@new_user = create(:user, twi_user_id: 2)
 		end
 
@@ -688,8 +621,95 @@ describe Asker do
 					end
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 5
 				end
-			end			
+			end		
 		end
+
+		describe "follows up with incorrect answerers" do
+			before :each do 
+				@conversation = FactoryGirl.create(:conversation, publication_id: @publication.id)
+				@user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+				@conversation.posts << @user_response
+			end
+
+			it 'with a post' do
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+				@asker.app_response @user_response, false
+				16.times do
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+			end
+
+			it 'unless they answered correctly' do
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+				@asker.app_response @user_response, true
+				16.times do
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+			end
+
+			it 'run who have responded to recent followups' do
+				@asker.app_response @user_response, false
+				while Delayed::Job.all.size > 0
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+				followup = @asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).first
+				new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
+				publication = FactoryGirl.create(:publication, question_id: new_question.id)
+				conversation = FactoryGirl.create(:conversation, publication_id: publication.id)
+				user_post = FactoryGirl.create(:post, text: 'the correct answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_post_id: followup.id, in_reply_to_question_id: new_question.id)
+				conversation.posts << user_post
+				@asker.app_response(user_post, false)
+				Delayed::Job.count.must_equal 1
+			end
+
+
+			it 'unless we already followed up on the question this month' do
+				2.times do 
+					@asker.app_response @user_response, false
+					16.times do |i|
+						Delayed::Worker.new.work_off
+						Timecop.travel(Time.now + 1.day)
+					end
+				end
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+			end
+
+			it "unless we've already scheduled a followup for the user" do 
+				@asker.app_response @user_response, false
+				while Delayed::Job.all.size > 0
+					new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
+					@asker.app_response FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id), false
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+			end 
+
+			it 'unless there is another unresponded to followup from the past week' do
+				FactoryGirl.create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
+				9.times do |i|
+					if i < 8
+						Delayed::Job.count.must_equal 0
+					else
+						Delayed::Job.count.must_equal 1
+					end
+
+					new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
+					publication = FactoryGirl.create(:publication, question_id: new_question.id)
+					conversation = FactoryGirl.create(:conversation, publication_id: publication.id)
+					user_post = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id)
+					conversation.posts << user_post
+					@asker.app_response(user_post, false)
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+			end
+		end		
 
 		describe 'send link to activity feed' do
 			before :each do 
