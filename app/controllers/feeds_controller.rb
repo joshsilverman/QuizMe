@@ -446,6 +446,7 @@ class FeedsController < ApplicationController
 
     #filters
     @posts = Post.includes(:tags, :user, :parent, [:conversation => [:publication => [:question => :answers], :post => [:user], :posts => [:user]]])
+    # @posts = Post.includes(:tags, :conversation)
     if params[:filter] == 'retweets'
       @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'spam'

@@ -658,9 +658,9 @@ class Asker < User
     return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
     
     ## ALL MUST ***NOT*** CONTAIN 'MORE' FOR TEST TO PASS
-    script = Post.create_split_test(user.id, 'new handle ugc request script (=> add question)', 
+    script = Post.create_split_test(user.id, 'new handle ugc request script v2 (=> add question)', 
       "Hey, we're working on questions for @<new handle>, could you add one? <link>",
-      "You're doing great with this material, would you help us write questions for a new handle at <link>"
+      "We're making @<new handle>, could you write a question for it? <link>"
     )
     
     # overwrite script if user has added UGC to this handle before
