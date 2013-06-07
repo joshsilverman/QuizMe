@@ -120,7 +120,7 @@
 
 										- if show_answer
 											- if correct
-												%p.quick-reply
+												%p
 													%span{style: 'opacity:0.6;'}
 														Correct: 
 														= correct.text
@@ -130,16 +130,28 @@
 									- elsif admin
 										/ = render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
 
+										- if post.moderations.select{|m|m.type_id==post.moderations.first.type_id}.count > 1
+											- correct = incorrect = tell = hide = ''
+											- case post.moderations.first.type_id
+											- when 1
+												- correct = 'btn-success'
+											- when 2
+												- incorrect = 'btn-danger'
+											- when 3
+												- tell = 'btn-info'
+											- when 5
+												- hide = 'btn-warning'
+
 										.actions
 											.container
 												.main
 													.btn-group.linked
 														- if question
-															%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect}"}= "<u>y</u>es".html_safe
-															%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false}"}= "<u>n</u>o".html_safe
-															%a.btn.quick-reply-tell= "<u>t</u>ell".html_safe
+															%a.btn.quick-reply-yes{:class => "#{'btn-success' if post.autocorrect} #{correct}"}= "<u>y</u>es".html_safe
+															%a.btn.quick-reply-no{:class => "#{'btn-warning' if post.autocorrect == false} #{incorrect}"}= "<u>n</u>o".html_safe
+															%a.btn.quick-reply-tell{:class => tell}= "<u>t</u>ell".html_safe
 															%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
-															%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
+															%a.btn{:class => hide}= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
 														- else
 															%a.btn= best_in_place post, :spam, :type => :checkbox, :classes => "btn-flag", :collection => ["<u>f</u>lag".html_safe, "un<u>f</u>lag".html_safe], :data => {:spam => post.spam}
 															%a.btn= best_in_place post, :requires_action, :type => :checkbox, :classes => "btn-hide", :collection => ["s<u>h</u>ow".html_safe, "<u>h</u>ide".html_safe], :data => {:requires_action => post.requires_action}
@@ -196,8 +208,7 @@
 													Ignore: #{count}
 												- count = post.moderations.select{|m|m.type_id==6}.count
 												- if count > 0
-													Not sure: #{count}
-
+													Not sure: #{count} 
 
 					.pagination-wrapper
 						= paginate @posts unless moderator
