@@ -338,7 +338,8 @@ class Asker < User
     end
   end
 
-  def schedule_incorrect_answer_followup user, question
+  def schedule_incorrect_answer_followup user, user_post
+    return false unless question = user_post.in_reply_to_question and publication = user_post.conversation.try(:publication)
     return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user.id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month    
     return false if Delayed::Job.where(attempts: 0).select { |dj| 
         fj = YAML.load(dj.handler).instance_values 
@@ -353,7 +354,7 @@ class Asker < User
       :in_reply_to_user_id => user.id,
       :intention => 'incorrect answer follow up',
       :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
-      :publication_id => question.publications.order("created_at ASC").try(:last).try(:id),
+      :publication_id => publication.id,
       :posted_via_app => true, 
       :requires_action => false,
       :interaction_type => 2,
@@ -363,7 +364,7 @@ class Asker < User
       :question_id => question.id      
     })
 
-    interval = Post.create_split_test(user.id, "incorrect answer followup interval (answers)", '1', '3', '7', '14')
+    interval = Post.create_split_test(user.id, "incorrect answer followup interval in days (answers followup)", '1', '3', '7', '14')
     Delayed::Job.enqueue(
       followup_post,
       :run_at => interval.to_i.days.from_now
@@ -432,7 +433,6 @@ class Asker < User
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
       after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
-      schedule_incorrect_answer_followup(answerer, question) if correct == false and question
       return app_post
     else
       return false
@@ -533,7 +533,10 @@ class Asker < User
     })
 
     nudge(answerer)
-    after_answer_action answerer
+    if user_post.correct == false and question = user_post.in_reply_to_question
+      schedule_incorrect_answer_followup(answerer, user_post) 
+    end
+    after_answer_action(answerer)
   end 
 
   def after_answer_action answerer
@@ -721,6 +724,7 @@ class Asker < User
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication.id).order("created_at DESC").limit(1).first
         if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication.id).blank?
           in_reply_to = "incorrect answer follow up" 
+          Post.trigger_split_test(answerer.id, "incorrect answer followup interval in days (answers followup)")
         end
       end
 
@@ -750,6 +754,7 @@ class Asker < User
           in_reply_to = "reengage inactive"
         when 'incorrect answer follow up'
           in_reply_to = "incorrect answer follow up" 
+          Post.trigger_split_test(answerer.id, "incorrect answer followup interval in days (answers followup)")
         when 'new user question mention'
           in_reply_to = "new follower question mention"
         end
