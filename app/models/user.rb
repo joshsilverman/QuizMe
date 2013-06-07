@@ -399,7 +399,6 @@ class User < ActiveRecord::Base
 
 		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "DM autoresponse interval v2 (activity segment +)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
-		Post.trigger_split_test(id, "New user DM question == most popular question (=> regular)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, 'other feeds panel shows related askers (=> regular)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
 		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
@@ -450,10 +449,7 @@ class User < ActiveRecord::Base
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 5 #to pro
       # great commitment
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        no_comment, 
-        "Fantastic dedication to this material."
-      )
+      comment = "Fantastic dedication to this material."
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
 	    Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
