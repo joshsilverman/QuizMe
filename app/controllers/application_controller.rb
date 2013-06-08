@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   def preload_models
     if Rails.env == "development"
       Dir.foreach("#{Rails.root}/app/models") do |model_name|
-        require_dependency model_name unless model_name == "." || model_name == ".." || model_name == ".gitkeep"
+        require_dependency model_name unless model_name == "." || model_name == ".." || model_name == ".gitkeep" || model_name == ".DS_Store"
       end 
     end
   end

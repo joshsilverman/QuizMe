@@ -3,20 +3,20 @@ require 'minitest_helper'
 describe ModerationsController do
 
 	before :each do
-		@user = FactoryGirl.create(:user, twi_user_id: 1, role: 'user')
-		@moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+		@user = create(:user, twi_user_id: 1, role: 'user')
+		@moderator = create(:user, twi_user_id: 1, role: 'moderator')
 		login_as(@moderator, :scope => :user)
 
-		@wisr_asker = FactoryGirl.create(:asker, id: 8765)
-		@asker = FactoryGirl.create(:asker)
-		@user = FactoryGirl.create(:user, twi_user_id: 1)
+		@wisr_asker = create(:asker, id: 8765)
+		@asker = create(:asker)
+		@user = create(:user, twi_user_id: 1)
 		@asker.followers << [@user, @moderator]
 
-		@question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
-		@publication = FactoryGirl.create(:publication, question: @question, asker: @asker)
-		@post_question = FactoryGirl.create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
-		@conversation = FactoryGirl.create(:conversation, post: @post_question, publication: @publication)
-		@post = FactoryGirl.create :post, 
+		@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+		@publication = create(:publication, question: @question, asker: @asker)
+		@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+		@conversation = create(:conversation, post: @post_question, publication: @publication)
+		@post = create :post, 
 			user: @user, 
 			requires_action: true, 
 			in_reply_to_post_id: @post_question.id,
@@ -37,8 +37,8 @@ describe ModerationsController do
 
 		it 'displays post without displaying graded posts' do
 			2.times do
-				moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
-				@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
+				moderator = create(:user, twi_user_id: 1, role: 'moderator')
+				@post.moderations << create(:moderation, user_id: moderator.id)
 			end
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
@@ -53,19 +53,19 @@ describe ModerationsController do
 
 		it 'displays post without displaying previous moderated by user posts' do
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
-			@post.moderations << FactoryGirl.create(:moderation, user_id: @moderator.id)
+			@post.moderations << create(:moderation, user_id: @moderator.id)
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
 		end
 
 		it 'displays only askers user follow' do
-			asker = FactoryGirl.create(:asker)
+			asker = create(:asker)
 			asker.followers << [@user]
-			question = FactoryGirl.create(:question, created_for_asker_id: asker.id, status: 1, user: @user)		
-			publication = FactoryGirl.create(:publication, question: question, asker: asker)
-			post_question = FactoryGirl.create(:post, user_id: asker.id, interaction_type: 1, question: question, publication: publication)		
-			conversation = FactoryGirl.create(:conversation, post: post_question, publication: publication)
-			post = FactoryGirl.create :post, 
+			question = create(:question, created_for_asker_id: asker.id, status: 1, user: @user)		
+			publication = create(:publication, question: question, asker: asker)
+			post_question = create(:post, user_id: asker.id, interaction_type: 1, question: question, publication: publication)		
+			conversation = create(:conversation, post: post_question, publication: publication)
+			post = create :post, 
 				user: @user, 
 				requires_action: true, 
 				in_reply_to_post_id: post_question.id,
@@ -86,22 +86,22 @@ describe ModerationsController do
 		describe 'moderation' do
 			before :each do
 				Capybara.current_driver = :selenium
-				@admin = FactoryGirl.create(:user, twi_user_id: 1, role: 'admin')
+				@admin = create(:user, twi_user_id: 1, role: 'admin')
 				login_as(@admin, :scope => :user)
 			end
 			
 			describe 'correct grade' do
 				before :each do
 					2.times do
-						moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
-						@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
-						@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 1)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator')
+						@post.moderations << create(:moderation, user_id: moderator.id)
+						@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 1)
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
 				end
 
-				it 'is accepted when admin agrees' do
+				it 'runis accepted when admin agrees' do
 					page.find('.quick-reply-yes').click
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal true
@@ -116,9 +116,9 @@ describe ModerationsController do
 
 			it 'tell is accepted when admin agrees' do
 				2.times do
-					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 3)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 3)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'
@@ -129,9 +129,9 @@ describe ModerationsController do
 
 			it 'hide is accepted when admin agrees' do
 				2.times do
-					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 5)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 5)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'
@@ -142,9 +142,9 @@ describe ModerationsController do
 
 			it 'yes is rejected when admin hides' do
 				2.times do
-					moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << FactoryGirl.create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = FactoryGirl.create(:moderation, user_id: moderator.id, type_id: 1)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@post.moderations << create(:moderation, user_id: moderator.id)
+					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 1)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'

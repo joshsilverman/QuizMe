@@ -1,10 +1,4 @@
 FactoryGirl.define do
-	factory :asker do
-		role 'asker'
-		published true
-		twi_profile_img_url 'abc.jpg'
-		twi_screen_name 'leroy j.'
-	end
 
 	factory :user do
 		role 'user'
@@ -12,7 +6,23 @@ FactoryGirl.define do
 		password "password"
 		twi_profile_img_url 'abc.jpg'
 		twi_screen_name 'scottie p.'
+		sequence(:twi_user_id) {|n| n}
+
+		factory :admin do
+      role 'admin'
+    end
+
+    factory :moderator do
+      role 'moderator'
+    end
 	end
+	
+	factory :asker do
+		role 'asker'
+		published true
+		twi_profile_img_url 'abc.jpg'
+		twi_screen_name 'leroy asker'
+	end	
 
 	factory :post do
 		user_id 1
@@ -26,9 +36,17 @@ FactoryGirl.define do
 	end
 
 	factory :answer do
+		text 'I am an answer'
+		factory :correct_answer do
+			correct true
+		end
+		factory :incorrect_answer do
+			correct false
+		end
 	end	
 
 	factory :publication do
+		published true
 	end
 
 	factory :conversation do

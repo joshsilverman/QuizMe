@@ -18,6 +18,7 @@ class ActiveSupport::TestCase
   Warden.test_mode!
   include Capybara::DSL
   include Capybara::RSpecMatchers
+  include FactoryGirl::Syntax::Methods
 
   self.use_transactional_fixtures = false
   self.use_instantiated_fixtures  = true

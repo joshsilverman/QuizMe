@@ -4,25 +4,27 @@ describe Asker do
 	before :each do 
 		Rails.cache.clear
 
-		@asker = FactoryGirl.create(:asker)
-		@user = FactoryGirl.create(:user, twi_user_id: 1)
+		@asker = create(:asker)
+		@user = create(:user, twi_user_id: 1)
 
 		@asker.followers << @user		
 
-		@question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
-		@publication = FactoryGirl.create(:publication, question_id: @question.id)
-		@question_status = FactoryGirl.create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
+		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
+		@publication = create(:publication, question_id: @question.id)
+		@question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
 
 	end
 
 	describe "responds to user answer" do
 		before :each do 
-			@user_response = FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+			@conversation = create(:conversation, post: @question_status, publication: @publication)
+			@conversation.posts << @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 
 			@correct = [1, 2].sample == 1
-			@correct_answer = FactoryGirl.create(:answer, correct: true, text: 'the correct answer', question_id: @question.id)
-			@incorrect_answer = FactoryGirl.create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
+			@correct_answer = create(:answer, correct: true, text: 'the correct answer', question_id: @question.id)
+			@incorrect_answer = create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
 		end
+
 
 		it "with a post" do
 			@asker.app_response @user_response, @correct
@@ -57,17 +59,33 @@ describe Asker do
 				app_response.text.include?(@user_response.text).must_equal true
 			end
 		end
+
+		describe 'from autoresponse' do
+			it 'automatically responds to autocorrected posts' do
+				@user_response.update_attributes(requires_action: true, autocorrect: true)
+				@asker.auto_respond(@user_response)
+				@user_response.reload.requires_action.must_equal false
+				@asker.posts.where(intention: 'grade', in_reply_to_post_id: @user_response.id).count.must_equal 1
+			end
+
+			it 'run won\'t response to un-autocorrected posts' do
+				@user_response.update_attributes(requires_action: true, autocorrect: nil)
+				@asker.auto_respond(@user_response)
+				@user_response.reload.requires_action.must_equal true
+				@asker.posts.where(intention: 'grade', in_reply_to_post_id: @user_response.id).count.must_equal 0
+			end
+		end
 	end
 
 	describe "reengages users" do
 		before :each do
 			@strategy = [1, 2, 4, 8]
 
-			@user_response = FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+			@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 			@user_response.update_attributes created_at: (@strategy.first + 1).days.ago, correct: true
 			@user.update_attributes last_answer_at: @user_response.created_at, last_interaction_at: @user_response.created_at, activity_segment: nil
 
-			FactoryGirl.create(:post, in_reply_to_user_id: @asker.id, correct: true, interaction_type: 2, in_reply_to_question_id: @question.id)
+			create(:post, in_reply_to_user_id: @asker.id, correct: true, interaction_type: 2, in_reply_to_question_id: @question.id)
 		end
 
 		it "with a post" do
@@ -104,7 +122,7 @@ describe Asker do
 
 		describe "but not" do
 			before :each do 
-				@reengagement_post = FactoryGirl.create(:post, user_id: @asker.id, created_at: (@user_response.created_at + @strategy.first.days + 1.hour), in_reply_to_user_id: @user.id, intention: 'reengage inactive')
+				@reengagement_post = create(:post, user_id: @asker.id, created_at: (@user_response.created_at + @strategy.first.days + 1.hour), in_reply_to_user_id: @user.id, intention: 'reengage inactive')
 			end
 
 			it "if they've already been reengaged" do
@@ -115,14 +133,14 @@ describe Asker do
 
 		describe "with a question" do
 			it "that has been approved" do
-				@unapproved_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 0)
+				@unapproved_question = create(:question, created_for_asker_id: @asker.id, status: 0)
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
 			end
 
 			# describe "that hasn't been" do
 			# 	before :each do
-			# 		@new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
+			# 		@new_question = create(:question, created_for_asker_id: @asker.id, status: 1)
 			# 	end
 
 			# 	it "that hasn't been answered before" do
@@ -132,7 +150,7 @@ describe Asker do
 			# 	end
 
 			# 	it "that hasn't been asked before" do
-			# 		@reengagement_post = FactoryGirl.create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
+			# 		@reengagement_post = create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
 			# 		Asker.reengage_inactive_users strategy: @strategy
 			# 		Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
 			# 	end		
@@ -144,7 +162,7 @@ describe Asker do
 
 		before :each do
 
-			@new_user = FactoryGirl.create(:user, twi_user_id: 2)
+			@new_user = create(:user, twi_user_id: 2)
 		end
 
 		describe "autofollow" do
@@ -161,7 +179,7 @@ describe Asker do
 			end
 
 			it "obeys maximum daily follow limit" do
-				12.times { @asker.add_follow(FactoryGirl.create(:user), 2) }
+				12.times { @asker.add_follow(create(:user), 2) }
 				@asker.autofollow_count(8).must_equal 0
 			end
 
@@ -216,7 +234,7 @@ describe Asker do
 			end
 
 			it 'follows new follower back with pending requests' do
-				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+				@pending_user = create(:user, twi_user_id: 3)
 				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
 				relationship.update_attribute :pending, true
 
@@ -229,7 +247,7 @@ describe Asker do
 			end
 
 			it 'updates converted pending users to not pending' do
-				@pending_user = FactoryGirl.create(:user, twi_user_id: 3)
+				@pending_user = create(:user, twi_user_id: 3)
 				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
 				relationship.update_attribute :pending, true
 
@@ -323,7 +341,7 @@ describe Asker do
 			end
 
 			it "doesn't followback inactive unfollows" do
-				@inactive_user1 = FactoryGirl.create(:user, twi_user_id: 3)
+				@inactive_user1 = create(:user, twi_user_id: 3)
 				@asker.follows << @inactive_user1
 				@asker.unfollow_oldest_inactive_user
 				@asker.follows.count.must_equal 1
@@ -352,14 +370,14 @@ describe Asker do
 		describe 'ugc' do
 			it 'with a post' do
 				30.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
 			it 'unless already sent' do
 				30.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					Timecop.travel(Time.now + 1.day)
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
@@ -367,7 +385,7 @@ describe Asker do
 
 			it 'unless less than 10' do
 				8.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					@asker.request_ugc @user
 					Timecop.travel(Time.now + 1.day)
 				end
@@ -376,16 +394,16 @@ describe Asker do
 
 			it 'if greater than 10' do
 				10.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					@asker.request_ugc @user
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
 			it 'unless already written question' do
-				@question = FactoryGirl.create(:question, user_id: @user.id, status: 1)		
+				@question = create(:question, user_id: @user.id, status: 1)		
 				10.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					@asker.request_ugc @user
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
@@ -418,7 +436,7 @@ describe Asker do
 
 			it 'unless lifecycle less than advanced' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-					user = FactoryGirl.create(:user, twi_user_id: 1)
+					user = create(:user, twi_user_id: 1)
 					@asker.followers << user
 					user.update_attribute :lifecycle_segment, lifecycle_segment
 					
@@ -440,7 +458,7 @@ describe Asker do
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 					elsif i < 6
 						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
-						user_mod_post = FactoryGirl.create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						user_mod_post = create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
 						request_mod.text.include?("more").must_equal false
 					else
 						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
@@ -463,10 +481,10 @@ describe Asker do
 				it 'with no mods' do
 					Timecop.travel(Time.now.beginning_of_week)
 					5.times do
-						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					end
 					30.times do |i|
-						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 						Timecop.travel(Time.now + 1.day)
 					end
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
@@ -476,7 +494,7 @@ describe Asker do
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 					@user.update_attribute :lifecycle_segment, 4
 					30.times do |i|
-						user_response = FactoryGirl.create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						user_response = create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
 						@asker.request_mod @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
@@ -487,7 +505,7 @@ describe Asker do
 			it 'unless just transitioned' do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				@user.update_attribute :lifecycle_segment, nil
-				@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 				@asker.request_mod @user
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 			end
@@ -496,16 +514,16 @@ describe Asker do
 		describe 'new handle ugc' do
 			before :each do 
 				50.times do 
-					@question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
+					@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
 				end
 
-				@new_asker = FactoryGirl.create(:asker, published: nil)
+				@new_asker = create(:asker, published: nil)
 				@new_asker.related_askers << @asker
 			end
 
 			it 'with a post' do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				@user.update_attribute :lifecycle_segment, 3
 				@asker.request_new_handle_ugc @user
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
@@ -513,8 +531,8 @@ describe Asker do
 
 			it 'unless lifecycle less than regular' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-					user = FactoryGirl.create(:user, twi_user_id: 1)
-					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					user = create(:user, twi_user_id: 1)
+					15.times { create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					user.update_attribute :lifecycle_segment, lifecycle_segment
 					
 					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
@@ -537,14 +555,14 @@ describe Asker do
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					end
 
-					FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+					create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
 					@user.update_attribute :lifecycle_segment, 3
 					@asker.request_new_handle_ugc @user
 				end
 			end
 
 			it 'with two posts in eight days' do
-				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				@user.update_attribute :lifecycle_segment, 3
 				8.times do |i|
 					if i == 0 
@@ -561,7 +579,7 @@ describe Asker do
 			end
 
 			it 'uses correct script' do
-				15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					new_handle_ugc = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').order('created_at DESC').first
@@ -570,10 +588,10 @@ describe Asker do
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					when 1
 						new_handle_ugc.text.include?("more").must_equal false						
-						FactoryGirl.create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
+						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
 					else
 						new_handle_ugc.text.include?("more").must_equal true
-						FactoryGirl.create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
+						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
 					end
 
 					@asker.request_new_handle_ugc @user.reload
@@ -585,21 +603,21 @@ describe Asker do
 				it 'with no contributions' do
 					Timecop.travel(Time.now.beginning_of_week)
 					5.times do
-						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					end
 					30.times do
-						@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 						Timecop.travel(Time.now + 1.day)
 					end
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
 				end
 
 				it 'with regular contributions' do
-					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 					@user.update_attribute :lifecycle_segment, 3
 					30.times do
-						FactoryGirl.create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
+						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
 						@asker.request_new_handle_ugc @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
@@ -615,7 +633,7 @@ describe Asker do
 
 			it 'with a post' do
 				30.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					@asker.send_link_to_activity_feed(@user.reload, true)
 					Timecop.travel(Time.now + 1.day)
 				end
@@ -623,10 +641,10 @@ describe Asker do
 			end
 
 			it 'unless already sent' do
-				FactoryGirl.create(:post, in_reply_to_user_id: @user.id, intention: @intention)
+				create(:post, in_reply_to_user_id: @user.id, intention: @intention)
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
 				30.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					@asker.send_link_to_activity_feed(@user.reload, true)
 					Timecop.travel(Time.now + 1.day)
 				end
@@ -635,8 +653,8 @@ describe Asker do
 
 			it 'if appropriate lifecycle' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-					user = FactoryGirl.create(:user, twi_user_id: 1)
-					15.times { FactoryGirl.create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					user = create(:user, twi_user_id: 1)
+					15.times { create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					user.update_attribute :lifecycle_segment, lifecycle_segment
 					
 					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 0

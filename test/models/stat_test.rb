@@ -13,8 +13,8 @@ describe Stat do
 
 			@daus.each do |count|
 				count.times do
-					user = FactoryGirl.create :user
-					user.posts << (post = FactoryGirl.create(:post, interaction_type: 3))
+					user = create :user
+					user.posts << (post = create(:post, interaction_type: 3))
 				end
 				Timecop.travel(Time.now + 1.day)
 			end
@@ -42,7 +42,7 @@ describe Stat do
 
 			it 'with repeated users' do
 				user = Post.last.user
-				user.posts << FactoryGirl.create(:post, interaction_type: 3, created_at: 2.day.ago)
+				user.posts << create(:post, interaction_type: 3, created_at: 2.day.ago)
 				calculated_ratios_rounded = Stat.pg_ratios.map{|r|(r[1]*1000.0).round/1000.0}
 				calculated_ratios_rounded.last.must_equal @ratios.last
 				calculated_ratios_rounded[-2].wont_equal @ratios[-2]
