@@ -402,13 +402,12 @@ class User < ActiveRecord::Base
 
     after_new_user_filter if transition.segment_type == 1 and transition.from_segment.blank? and transition.to_segment.present?
 
-		# Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
+		Post.trigger_split_test(id, "weekly progress report") if transition.segment_type == 1 and transition.is_positive?
 		Post.trigger_split_test(id, "DM autoresponse interval v2 (activity segment +)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(1)
 		Post.trigger_split_test(id, 'other feeds panel shows related askers (=> regular)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(2)
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
 		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 		Post.trigger_split_test(id, 'link to activity feed script (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
-		Post.trigger_split_test(id, "weekly progress report email (=> superuser)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(5)
 	end
 
   def lifecycle_transition_comment to_segment
@@ -425,7 +424,7 @@ class User < ActiveRecord::Base
       1 => "to edger lifecycle transition comment (=> noob)",
       2 => "to noob lifecycle transition comment (=> regular)",
       # 3 => "to regular lifecycle transition comment (=> advanced)",
-      3 => "to regular growth comment v2 (=> advanced)",
+      3 => "to regular growth comment (=> advanced)",
       4 => "to advanced lifecycle transition comment v2 (=> pro)",
       5 => "to pro lifecycle transition comment (=> superuser)"
     }
@@ -442,10 +441,8 @@ class User < ActiveRecord::Base
 	      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
 	        "Is there anything specific I can quiz you on?",
 	        "Any other topics you would be interested in learning about?",
-	        "Check out your recent recent activity at <link>!"
-	        # "Do you have any friends that I could quiz?"
+	        "Do you have any friends that I could quiz?"
 	      )
-	      comment.gsub! '<link>', "http://wisr.com/users/#{id}/activity"
 	    end
     when 4 #to advanced 
       # suggestions?
