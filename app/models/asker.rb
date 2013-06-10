@@ -546,8 +546,8 @@ class Asker < User
     actions = [
       Proc.new {|answerer| request_ugc(answerer)}, # one time
       Proc.new {|answerer| request_mod(answerer)}, # recurring
-      Proc.new {|answerer| request_new_handle_ugc(answerer)}, # recurring
-      Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
+      Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
+      # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
     ].shuffle
 
     actions.each do |action|
@@ -557,10 +557,12 @@ class Asker < User
 
   def send_link_to_activity_feed user, force = false
     return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'send link to activity feed')
+    return false unless user.lifecycle_above? 3
+    # return false if posts.where("intention = 'lifecycle+' and in_reply_to_user_id = ? and created_at > ?", user.id, 3.days.ago).present? # buffer after lifecycle transition
+    
     unless force # used to bypass split for tests
       return false unless Post.create_split_test(user.id, 'send link to activity feed (=> pro)', 'false', 'true') == 'true'
     end
-    return false unless user.lifecycle_above? 3
 
     script = Post.create_split_test(user.id, 'link to activity feed script (=> pro)', 
       "If you're interested, you can see all of your recent activity here: <link>", 
