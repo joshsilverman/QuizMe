@@ -280,7 +280,9 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    Asker.published.each do |asker| 
+    selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).to_i % 2
+    puts "asker selector = #{selector}"
+    Asker.published.select { |a| a.id % 2 == selector }.each do |asker|
       asker.delay.update_relationships() 
       sleep 1
     end
@@ -499,7 +501,6 @@ class Asker < User
 
   def auto_respond user_post
     return unless !user_post.autocorrect.nil? and user_post.requires_action
-    return unless Post.where("autocorrect IS NOT NULL AND (correct IS NOT NULL OR requires_action = ?) AND moderator_id IS NULL", true).where("created_at > ?", Time.now - 1.day).count >= 20
     
     answerer = user_post.user  
     if user_post.is_dm?
@@ -545,8 +546,8 @@ class Asker < User
     actions = [
       Proc.new {|answerer| request_ugc(answerer)}, # one time
       Proc.new {|answerer| request_mod(answerer)}, # recurring
-      Proc.new {|answerer| request_new_handle_ugc(answerer)}, # recurring
-      Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
+      Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
+      # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
     ].shuffle
 
     actions.each do |action|
@@ -556,10 +557,12 @@ class Asker < User
 
   def send_link_to_activity_feed user, force = false
     return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'send link to activity feed')
+    return false unless user.lifecycle_above? 3
+    # return false if posts.where("intention = 'lifecycle+' and in_reply_to_user_id = ? and created_at > ?", user.id, 3.days.ago).present? # buffer after lifecycle transition
+    
     unless force # used to bypass split for tests
       return false unless Post.create_split_test(user.id, 'send link to activity feed (=> pro)', 'false', 'true') == 'true'
     end
-    return false unless user.lifecycle_above? 3
 
     script = Post.create_split_test(user.id, 'link to activity feed script (=> pro)', 
       "If you're interested, you can see all of your recent activity here: <link>", 
@@ -779,10 +782,10 @@ class Asker < User
   def self.send_progress_reports
     recipients = Asker.select_progress_report_recipients()
     email_recipients = recipients.select { |r| r.email.present? }
-    dm_recipients = (recipients - email_recipients)
+    # dm_recipients = (recipients - email_recipients)
 
     Asker.send_progress_report_emails(email_recipients)
-    Asker.send_progress_report_dms(dm_recipients)
+    # Asker.send_progress_report_dms(dm_recipients)
   end
 
   def self.select_progress_report_recipients
@@ -792,8 +795,9 @@ class Asker < User
   def self.send_progress_report_emails recipients
     asker_hash = Asker.published.group_by(&:id)
     recipients.each do |recipient| 
-      UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
-      puts "sending progress report email to #{recipient.twi_screen_name}"
+      if Post.create_split_test(recipient.id, "weekly progress report email (=> superuser)", "false", "true") == "true"
+        UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+      end
     end
   end
 
