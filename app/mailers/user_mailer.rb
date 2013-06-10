@@ -22,5 +22,7 @@ class UserMailer < ActionMailer::Base
     ]
 
     mail(:to => "#{@user.name} <#{@user.email}>", :subject => "Wisr - Progress Report")
+
+    Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }   
   end
 end

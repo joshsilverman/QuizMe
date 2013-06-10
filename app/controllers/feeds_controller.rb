@@ -443,7 +443,7 @@ class FeedsController < ApplicationController
     @unlinked_box_count = Post.unlinked_box.count
     @autocorrected_box_count = Post.autocorrected_box.count
     @moderated_box_count = Post.moderated_box.to_a.count
-    @email_count = Post.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id)).count
+    @email_count = Post.requires_action.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id)).count
 
     #filters
     @posts = Post.includes(:tags, :user, :parent, [:conversation => [:publication => [:question => :answers], :post => [:user], :posts => [:user]]])
@@ -469,7 +469,7 @@ class FeedsController < ApplicationController
     elsif params[:filter] == 'friend'
       @posts = @posts.friend_box.not_spam.order("posts.created_at ASC")            
     elsif params[:filter] == 'email'
-      @posts = @posts.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id))   
+      @posts = @posts.requires_action.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id))   
     elsif params[:filter] == 'all'
       @posts = @posts.all_box.not_spam.order("posts.created_at DESC")
     else

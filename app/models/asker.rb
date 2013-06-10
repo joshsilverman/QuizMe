@@ -782,10 +782,10 @@ class Asker < User
   def self.send_progress_reports
     recipients = Asker.select_progress_report_recipients()
     email_recipients = recipients.select { |r| r.email.present? }
-    dm_recipients = (recipients - email_recipients)
+    # dm_recipients = (recipients - email_recipients)
 
     Asker.send_progress_report_emails(email_recipients)
-    Asker.send_progress_report_dms(dm_recipients)
+    # Asker.send_progress_report_dms(dm_recipients)
   end
 
   def self.select_progress_report_recipients
@@ -795,8 +795,9 @@ class Asker < User
   def self.send_progress_report_emails recipients
     asker_hash = Asker.published.group_by(&:id)
     recipients.each do |recipient| 
-      UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
-      puts "sending progress report email to #{recipient.twi_screen_name}"
+      if Post.create_split_test(recipient.id, "weekly progress report email (=> superuser)", "false", "true") == "true"
+        UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+      end
     end
   end
 
