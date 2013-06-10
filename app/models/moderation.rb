@@ -13,16 +13,16 @@ class Moderation < ActiveRecord::Base
   scope :requires_detailed, where(type_id: 6)
 
   def respond_with_type_id
+    return false if !post.correct.nil? or !post.requires_action
+
   	greater_than_one_mod = post.moderations.count > 1
   	complete_consensus = post.moderations.collect(&:type_id).uniq.count == 1
   	at_least_one_mod_above_noob = post.moderations.select{|m| m.user.moderator_segment > 2}.count > 0
   	at_least_one_mod_above_advanced = post.moderations.select{|m| m.user.moderator_segment > 4}.count > 0
 
-  	# early consensus
-  	if greater_than_one_mod and complete_consensus and at_least_one_mod_above_noob
+  	if greater_than_one_mod and complete_consensus and at_least_one_mod_above_noob # early consensus
   		return type_id
-  	# supermod
-  	elsif at_least_one_mod_above_advanced
+  	elsif at_least_one_mod_above_advanced # supermod
   		super_moderation = post.moderations.select{|m| m.user.moderator_segment > 4}.first
   		return super_moderation.type_id
   	end
@@ -62,6 +62,7 @@ class Moderation < ActiveRecord::Base
         :intention => 'grade'
       })
     end
+    accept_and_reject_moderations
   end
 
   def accept_and_reject_moderations

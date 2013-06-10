@@ -75,20 +75,6 @@ class User < ActiveRecord::Base
   scope :engaging, where(:activity_segment => 5)
   scope :engaged, where(:activity_segment => 6)
 
-  # Moderator segmentation scopes
-  scope :non_moderator, where('moderator_segment is null')
-  scope :edger_mod, where(:moderator_segment => 1)
-  scope :noob_mod, where(:moderator_segment => 2)
-  scope :regular_mod, where(:moderator_segment => 3)
-  scope :advanced_mod, where(:moderator_segment => 4)
-  scope :super_mod, where(:moderator_segment => 5)
-
-  # Author segmentation scopes
-  scope :not_author, where("author_segment is null")
-  scope :unapproved_author, where(:author_segment => 1)
-  scope :message_author, where(:author_segment => 2)
-  scope :wisr_author, where(:author_segment => 3)
-  scope :handle_author, where(:author_segment => 4)
 
   def self.tfind name
   	self.find_by_twi_screen_name name
@@ -366,10 +352,6 @@ class User < ActiveRecord::Base
 
 	# Segmentation methods
 	def transition segment_name, to_segment
-		# puts from_segment
-		# puts to_segment
-		# puts segment_name
-		# puts "#{segment_name}_segment"
 		return if to_segment == (from_segment = self.send("#{segment_name}_segment"))
 
 		self.update_attribute "#{segment_name}_segment", to_segment
@@ -592,60 +574,7 @@ class User < ActiveRecord::Base
 		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 2
 	end
 
-	# moderator segment checks
-	def update_moderator_segment
-		if is_super_mod?
-			level = 5
-		elsif is_advanced_mod?
-			level = 4
-		elsif is_regular_mod?
-			level = 3
-		elsif is_noob_mod?
-			level = 2
-		elsif is_edger_mod?
-			level = 1
-		else
-			level = nil
-		end
 
-		transition :moderator, level
-	end
-
-	def is_super_mod?
-		enough_mods = moderations.count > 50
-		enough_acceptance_rate = moderator_acceptance_rate > 0.9
-		enough_mods and enough_acceptance_rate
-	end
-
-	def is_advanced_mod?
-		enough_mods = moderations.count > 20
-		enough_acceptance_rate = moderator_acceptance_rate > 0.8
-		enough_mods and enough_acceptance_rate
-	end
-
-	def is_regular_mod?
-		enough_mods = moderations.count > 10
-		enough_acceptance_rate = moderator_acceptance_rate > 0.65
-		enough_mods and enough_acceptance_rate
-	end
-
-	def is_noob_mod?
-		enough_mods = moderations.count > 2
-		enough_acceptance_rate = moderator_acceptance_rate > 0.5
-		enough_mods and enough_acceptance_rate
-	end
-
-	def is_edger_mod?
-		moderations.count > 0
-	end
-
-
-	def moderator_acceptance_rate
-		accepted = moderations.where(accepted: true).count
-		not_accepted = moderations.where(accepted: false).count
-		total = accepted + not_accepted
-		total == 0 ? 0 : (accepted.to_f / total.to_f)
-	end
 
 	def age_greater_than age = 15.days
 		return false if posts.blank?

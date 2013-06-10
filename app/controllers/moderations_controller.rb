@@ -3,6 +3,7 @@ class ModerationsController < ApplicationController
 
   def manage
   	post_ids_with_enough_moderations = Post.requires_action.select('posts.id').joins(:moderations).group('posts.id').having('count(moderations.id) > 1').collect(&:id)
+
     post_ids_moderated_by_current_user = current_user.moderations.collect(&:post_id)
     excluded_post_ids = (post_ids_with_enough_moderations + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
