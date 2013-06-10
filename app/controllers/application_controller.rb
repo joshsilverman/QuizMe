@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
   # http://aaronvb.com/articles/37-rails-caching-and-undefined-class-module
   def preload_models
     if Rails.env == "development"
-      Dir.foreach("#{Rails.root}/app/models") do |model_name|
+      Dir[Rails.root.join('app', 'models', '{**.rb}')].each do |model_name|
         require_dependency model_name unless model_name == "." || model_name == ".." || model_name == ".gitkeep" || model_name == ".DS_Store"
       end 
     end

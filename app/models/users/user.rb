@@ -302,7 +302,7 @@ class User < ActiveRecord::Base
     end
 
     if options[:include_moderated]
-    	activity_hash[:moderated] = Post.where("moderator_id = ? and updated_at > ?", id, options[:since]).size
+    	activity_hash[:moderated] = moderations.where("created_at > ?", options[:since]).size
     end
 
 		activity_hash

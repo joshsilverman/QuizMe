@@ -102,7 +102,7 @@
 									.content
 										= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 										%i{:class => interaction_icon(post.interaction_type)}
-										- if post.moderator_id
+										- if post.moderations.present?
 											%i.icon-user
 										%h5
 											%span= post.user.twi_screen_name	
