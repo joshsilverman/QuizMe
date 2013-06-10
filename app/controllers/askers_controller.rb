@@ -157,6 +157,8 @@ class AskersController < ApplicationController
       @asker = Asker.find(params[:id])
       @questions = @asker.questions.includes(:answers, :user).order("questions.id DESC").page(params[:page]).per(15)
       @question_count = @asker.questions.group("status").count
+      [-1, 0, 1].each { |status| @question_count[status] ||= 0 }
+      
 
       @contributors = []
       contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)

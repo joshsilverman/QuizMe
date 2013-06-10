@@ -9,7 +9,7 @@
             %li
               %a 
                 %span#askers_select= select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.order("twi_screen_name ASC"), :id, :twi_screen_name, @asker.id)
-          - if @question_count[1] and @question_count[1] < 50
+          - if @question_count[1] < 50
             - question_count = ((@question_count[1] || 0) + (@question_count[0] || 0))
             %ul.nav.nav-tabs.nav-stacked
               %li
