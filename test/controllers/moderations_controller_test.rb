@@ -39,7 +39,7 @@ describe ModerationsController do
 		it 'displays post without displaying graded posts' do
 			2.times do
 				moderator = create(:user, twi_user_id: 1, role: 'moderator')
-				@post.moderations << create(:moderation, user_id: moderator.id)
+				@post.moderations << create(:moderation, user_id: moderator.id, post: @post)
 			end
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
@@ -54,7 +54,7 @@ describe ModerationsController do
 
 		it 'displays post without displaying previous moderated by user posts' do
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
-			@post.moderations << create(:moderation, user_id: @moderator.id)
+			@post.moderations << create(:moderation, user_id: @moderator.id, post: @post)
 			visit '/moderations/manage'
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 0
 		end
@@ -95,14 +95,14 @@ describe ModerationsController do
 				before :each do
 					2.times do
 						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@post.moderations << create(:moderation, user_id: moderator.id)
-						@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 1)
+						create(:moderation, user_id: moderator.id, post: @post)
+						@moderation = create(:moderation, user_id: moderator.id, type_id: 1, post: @post)
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
 				end
 
-				it 'runis accepted when admin agrees' do
+				it 'is accepted when admin agrees' do
 					page.find('.quick-reply-yes').click
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal true
@@ -118,8 +118,8 @@ describe ModerationsController do
 			it 'tell is accepted when admin agrees' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 3)
+					create(:moderation, user_id: moderator.id, post: @post)
+					@moderation = create(:moderation, user_id: moderator.id, type_id: 3, post: @post)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'
@@ -131,8 +131,8 @@ describe ModerationsController do
 			it 'hide is accepted when admin agrees' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 5)
+					create(:moderation, user_id: moderator.id, post: @post)
+					@moderation = create(:moderation, user_id: moderator.id, type_id: 5, post: @post)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'
@@ -144,8 +144,8 @@ describe ModerationsController do
 			it 'yes is rejected when admin hides' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@post.moderations << create(:moderation, user_id: moderator.id)
-					@post.moderations << @moderation = create(:moderation, user_id: moderator.id, type_id: 1)
+					create(:moderation, user_id: moderator.id, post: @post)
+					@moderation = create(:moderation, user_id: moderator.id, type_id: 1, post: @post)
 					@moderation.accepted.must_equal nil
 				end
 				visit '/feeds/manage?filter=moderated'

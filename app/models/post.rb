@@ -84,6 +84,10 @@ class Post < ActiveRecord::Base
 
   scope :author_followup, where("posts.intention = 'author followup'")
 
+  scope :moderated_by_consensus, where(moderation_trigger_type_id: 1)
+  scope :moderated_by_above_advanced, where(moderation_trigger_type_id: 2)
+  scope :moderated_by_admin, where(moderation_trigger_type_id: nil)
+
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
       Post.where("correct is not null").count

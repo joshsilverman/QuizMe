@@ -63,7 +63,7 @@ describe User do
 					i > 20 ? @moderator.is_advanced_mod?.must_equal(true) : @moderator.is_advanced_mod?.must_equal(false)
 					i > 50 ? @moderator.is_super_mod?.must_equal(true) : @moderator.is_super_mod?.must_equal(false)
 
-					post = FactoryGirl.create :post, 
+					post = create :post, 
 						user: @user, 
 						requires_action: true, 
 						in_reply_to_post_id: @post_question.id,
@@ -71,11 +71,12 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
-					FactoryGirl.create(:moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
+					moderation = create(:moderation, type_id:1, user_id: @moderator.id, post_id: post.id)
+					moderation.update_attribute :accepted, true
 				end	
 			end	
 
-			it 'run segment between edger => super mod with enough acceptance' do
+			it 'segment between edger => super mod with enough acceptance' do
 				100.times do 
 					post = FactoryGirl.create :post, 
 						user: @user, 

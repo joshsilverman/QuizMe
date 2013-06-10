@@ -68,7 +68,7 @@ describe Asker do
 				@asker.posts.where(intention: 'grade', in_reply_to_post_id: @user_response.id).count.must_equal 1
 			end
 
-			it 'run won\'t response to un-autocorrected posts' do
+			it 'won\'t response to un-autocorrected posts' do
 				@user_response.update_attributes(requires_action: true, autocorrect: nil)
 				@asker.auto_respond(@user_response)
 				@user_response.reload.requires_action.must_equal true
@@ -458,7 +458,7 @@ describe Asker do
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 					elsif i < 6
 						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
-						user_mod_post = create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						create(:moderation, user_id: @user.id, type_id: 1, post: create(:post))
 						request_mod.text.include?("more").must_equal false
 					else
 						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
@@ -494,7 +494,7 @@ describe Asker do
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 					@user.update_attribute :lifecycle_segment, 4
 					30.times do |i|
-						user_response = create(:post, in_reply_to_user_id: @asker.id, moderator_id: @user.id)
+						create(:moderation, user_id: @user.id, type_id: 1, post: create(:post))
 						@asker.request_mod @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end

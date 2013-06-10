@@ -677,43 +677,6 @@ class Stat < ActiveRecord::Base
     experiment_data
   end
 
-  def self.graph_mangrades_to_autogrades domain = 30
-    mangrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("correct IS NOT NULL").where(posted_via_app: false)\
-      .where("autocorrect IS NULL").group("to_char(posts.created_at, 'YY/MM/DD')").count
-    appgrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("correct IS NOT NULL").where(posted_via_app: true)\
-      .where("autocorrect IS NULL").group("to_char(posts.created_at, 'YY/MM/DD')").count
-
-    autogrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("autocorrect IS NOT NULL").group("to_char(posts.created_at, 'YY/MM/DD')")\
-      .where("moderator_id IS NULL").count
-    modgrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("autocorrect IS NOT NULL").group("to_char(posts.created_at, 'YY/MM/DD')")\
-      .where("moderator_id IS NOT NULL").count
-
-    # data = [['Date', 'Mod', 'App', 'Auto', 'Man']]
-    data = [['Date', 'Mod', 'Auto', 'Man']]
-    autogrades.keys.sort.each do |date|
-      mangrades_count = mangrades[date] || 0
-      appgrades_count = appgrades[date] || 0
-
-      autogrades_count = autogrades[date] || 0
-      modgrades_count = modgrades[date] || 0
-      # sum = (autogrades_count + mangrades_count + appgrades_count + modgrades_count).to_f
-      sum = (autogrades_count + mangrades_count + modgrades_count).to_f
-
-      mangrades_count_norm = mangrades_count / sum
-      appgrades_count_norm = appgrades_count / sum
-      autogrades_count_norm = autogrades_count / sum
-      modgrades_count_norm = modgrades_count / sum
-      
-      # data << [date, modgrades_count_norm, appgrades_count_norm, autogrades_count_norm, mangrades_count_norm]
-      data << [date, modgrades_count_norm, autogrades_count_norm, mangrades_count_norm]
-    end
-    data
-  end
-
   def self.graph_incorrect_vs_correct_autogrades domain = 30
     misgrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
       .where("autocorrect IS NOT NULL and correct IS NOT NULL").where("correct <> autocorrect")\

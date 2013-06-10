@@ -94,13 +94,6 @@ class @Manager extends @Feed
 				left:45
 				top:30
 
-		$.ajax "/graph/moderators/mangrades_to_autogrades",
-			success: (data) ->
-				data = data.replace(/&quot;/g, '"')
-				data = google.visualization.arrayToDataTable($.parseJSON(data))
-				chart = new google.visualization.AreaChart(document.getElementById("autograder-auto-stats"))
-				chart.draw data, graph_options
-
 		$.ajax "/graph/moderators/incorrect_vs_correct_autogrades",
 			success: (data) ->
 				data = data.replace(/&quot;/g, '"')
