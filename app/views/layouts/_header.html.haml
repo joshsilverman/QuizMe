@@ -17,24 +17,24 @@
                     %li
                       %a{:href => "/askers/edit_graph", :tabindex => "-1"} Graph                      
 
-              %li
-                .dropdown.nav-link
-                  %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
-                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-                    - RateSheet.includes_clients_by_created_at.each do |r|
-                      - client = r.clients[0]
-                      - next if client.nil? or r.title.nil?
-                      %li
-                        %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}= r.title 
+              / %li
+              /   .dropdown.nav-link
+              /     %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
+              /     %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+              /       - RateSheet.includes_clients_by_created_at.each do |r|
+              /         - client = r.clients[0]
+              /         - next if client.nil? or r.title.nil?
+              /         %li
+              /           %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}= r.title 
                         
-                    %li.divider
-                    - Client.includes_rate_sheets_by_created_at.each do |client|
-                      - rs = client.rate_sheet
-                      - next unless rs.nil?
-                      - next if client.twi_screen_name.nil?
-                      %li
-                        %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}
-                          %i= client.twi_screen_name 
+              /       %li.divider
+              /       - Client.includes_rate_sheets_by_created_at.each do |client|
+              /         - rs = client.rate_sheet
+              /         - next unless rs.nil?
+              /         - next if client.twi_screen_name.nil?
+              /         %li
+              /           %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}
+              /             %i= client.twi_screen_name 
 
               %li
                 .dropdown.nav-link
