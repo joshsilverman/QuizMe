@@ -343,7 +343,7 @@ class Asker < User
     return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user_post.user_id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month    
     return false if Delayed::Job.where(attempts: 0).select { |dj| 
         fj = YAML.load(dj.handler).instance_values 
-        fj['options'][:intention] == 'incorrect answer follow up' and fj['sender'].id == id and fj['options'][:in_reply_to_user_id] == user_post.user_id 
+        fj['options'].present? and fj['options'][:intention] == 'incorrect answer follow up' and fj['sender'].id == id and fj['options'][:in_reply_to_user_id] == user_post.user_id 
       }.present? # check if already have scheduled followup    
     last_followup = posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and created_at > ?", user_post.user_id, 1.week.ago).order("created_at ASC").last
     return false if last_followup.present? and !Post.exists?(:in_reply_to_user_id => id, :user_id => user_post.user_id, :in_reply_to_post_id => last_followup.id) # check no unresponded followup from past week
