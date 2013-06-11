@@ -32,7 +32,21 @@
 			.dau_mau_graph.graph
 
 	.data_row.row
-		.econ_engine.panel.rounded.span6
+		.quality_response.panel.rounded.span6
+			.quality_response_stats.stats
+				.header
+					%h3 Timely Reply
+				.new
+					.container
+						%p.number
+						%p.period last 24 hours
+				.total
+					.container
+						%p.number
+						%p.period last 30 days			
+			.quality_response_graph.graph
+
+		.econ_engine.panel.right.rounded.span6
 			.econ_engine_stats.stats
 				.header
 					%h3 Vir. Actions
@@ -46,19 +60,6 @@
 						%p.period last 30 days
 			.econ_engine_graph.graph
 
-		.revenue.panel.right.rounded.span6
-			.revenue_stats.stats
-				.header
-					%h3 Revenue
-				.new
-					.container
-						%p.number
-						%p.period last 24 hours
-				.total
-					.container
-						%p.number{:style => "font-size: 28px;"}
-						%p.period last 30 days			
-			.revenue_graph.graph
 
 		.daus.panel.right.rounded.span6
 			.daus_stats.stats
