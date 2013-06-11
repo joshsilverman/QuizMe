@@ -8,6 +8,10 @@ class AuthorizationsController < ApplicationController
   	oauthorize "facebook"
   end  
 
+  def failure
+  	redirect_to '/'
+  end
+
   private
 
   	def oauthorize provider
