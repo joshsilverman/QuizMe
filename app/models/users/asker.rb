@@ -604,7 +604,7 @@ class Asker < User
       ].sample
     end
 
-    user.update_attribute :role, "moderator"
+    user.update_attribute :role, "moderator" unless user.is_role?('admin')
     Post.dm(self, user, script, {intention: 'request mod'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
