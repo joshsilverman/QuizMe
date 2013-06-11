@@ -641,6 +641,18 @@ describe Asker do
 				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
 			end
 
+			it 'after an interval' do
+				@asker.app_response @user_response, false
+				number_of_days_until_followup = (((Delayed::Job.first.run_at - Time.now) / 60 / 60 / 24).to_i + 1)
+				number_of_days_until_followup.times do |i|
+					Delayed::Worker.new.work_off
+					@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+					Timecop.travel(Time.now + 1.day)
+				end
+				Delayed::Worker.new.work_off
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+			end
+
 			it 'unless they answered correctly' do
 				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
 				@asker.app_response @user_response, true
@@ -651,7 +663,7 @@ describe Asker do
 				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
 			end
 
-			it 'run who have responded to recent followups' do
+			it 'who have responded to recent followups' do
 				@asker.app_response @user_response, false
 				while Delayed::Job.all.size > 0
 					Delayed::Worker.new.work_off
