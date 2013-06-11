@@ -19,16 +19,25 @@
 	}
 
 	.actions {
-		/*float:none;*/
 		background: #efefef;
 		padding:12px 10px 40px 57px;
 		margin: 8px -10px -10px -10px;
 		height: 0px;
-		/*overflow: hidden;*/
+		
+		@media (max-width:480px) { 
+			height: 32px;
+			padding:12px 10px 40px 10px;
 
-		/*overflow-x: hidden;*/
-		/*overflow-y: visible;*/
-		/*position: relative;*/
+			.replies {
+				float: right !important;
+			}
+
+			.defers {
+				float: right !important;
+				position: relative;
+				top: 7px;
+			}
+		}
 
 		.container {
 			width:100%;
