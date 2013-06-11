@@ -7,6 +7,7 @@
 						.content
 							.activity_container
 								= image_tag(activity[:profile_image_url], :class => "rounded", :rel => "tooltip", :title => activity[:twi_screen_name], "data-placement" => "left")
+								/ .activity_container_content{style: 'display: inline;'}
 								.action
 									= activity[:verb]
 								.text

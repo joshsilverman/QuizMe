@@ -45,7 +45,6 @@ class Question
 		$("#askers_select option[value=#{$('#asker_id').html()}]").attr 'selected', true if $('#askers_select select')	
 
 		$(".contributor").tooltip()
-
 		check_twttr = =>
 			if twttr and twttr.events
 				twttr.events.bind 'follow', (e) =>
@@ -54,7 +53,7 @@ class Question
 						data: {experiment: "Better question pages (=> follow)"}
 			else
 				setTimeout (=> check_twttr()), 100
-		check_twttr()
+		check_twttr() if $(".twitter-follow-button").length > 0
 
 
 	initialize_tooltips: =>
