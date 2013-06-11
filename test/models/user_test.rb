@@ -44,7 +44,7 @@ describe User do
 		describe "moderation" do
 			before :each do
 				@user = FactoryGirl.create(:user, twi_user_id: 1)
-				@moderator = FactoryGirl.create(:user, twi_user_id: 1, role: 'moderator')
+				@moderator = FactoryGirl.create(:moderator, twi_user_id: 1, role: 'moderator')
 				@asker = FactoryGirl.create(:asker)
 				@asker.followers << [@user, @moderator]
 

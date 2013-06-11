@@ -12,10 +12,14 @@ FactoryGirl.define do
       role 'admin'
     end
 
-    factory :moderator do
-      role 'moderator'
-    end
 	end
+
+	factory :asker do
+		role 'moderator'
+		published true
+		twi_profile_img_url 'abc.jpg'
+		twi_screen_name 'leroy asker'
+	end	
 	
 	factory :asker do
 		role 'asker'

@@ -4,6 +4,6 @@ class ModerationObserver < ActiveRecord::Observer
   end
 
   def after_update(moderation)
-    moderation.user.update_moderator_segment
+    moderation.user.becomes(Moderator).update_moderator_segment
   end
 end
