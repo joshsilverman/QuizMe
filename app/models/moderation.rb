@@ -1,9 +1,8 @@
 class Moderation < ActiveRecord::Base
   attr_accessible :accepted, :post_id, :type_id, :user_id
 
-  belongs_to :user
   belongs_to :post
-  belongs_to :moderator, foreign_key: :user_id
+  belongs_to :moderator, :class_name => 'Moderator', foreign_key: :user_id
 
   scope :correct, where(type_id: 1)
   scope :incorrect, where(type_id: 2)
@@ -17,8 +16,8 @@ class Moderation < ActiveRecord::Base
 
   	greater_than_one_mod = post.moderations.count > 1
   	complete_consensus = post.moderations.collect(&:type_id).uniq.count == 1
-  	at_least_one_mod_above_noob = post.moderations.select{|m| m.user.moderator_segment > 2 if m.user.moderator_segment}.count > 0
-  	at_least_one_mod_above_advanced = post.moderations.select{|m| m.user.moderator_segment > 4 if m.user.moderator_segment}.count > 0
+  	at_least_one_mod_above_noob = post.moderations.select{|m| m.moderator.moderator_segment > 2 if m.moderator.moderator_segment}.count > 0
+  	at_least_one_mod_above_advanced = post.moderations.select{|m| m.moderator.moderator_segment > 4 if m.moderator.moderator_segment}.count > 0
 
     # consensus
   	if greater_than_one_mod and complete_consensus and at_least_one_mod_above_noob
@@ -26,7 +25,7 @@ class Moderation < ActiveRecord::Base
   		return type_id
   	elsif at_least_one_mod_above_advanced # supermod
       post.update_attributes moderation_trigger_type_id: 2
-  		super_moderation = post.moderations.select{|m| m.user.moderator_segment > 4 if m.user.moderator_segment}.first
+  		super_moderation = post.moderations.select{|m| m.moderator.moderator_segment > 4 if m.moderator.moderator_segment}.first
   		return super_moderation.type_id
   	end
 
@@ -73,7 +72,7 @@ class Moderation < ActiveRecord::Base
     post.moderations.each do |moderation|
       if type_id == moderation.type_id
         moderation.update_attribute :accepted, true
-        next if moderation.user.moderations.count > 1
+        next if moderation.moderator.moderations.count > 1
         Post.trigger_split_test(moderation.user_id, "show moderator q & a or answer (-> accepted grade)")
       else
         moderation.update_attribute :accepted, false

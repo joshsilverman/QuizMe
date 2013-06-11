@@ -14,11 +14,11 @@ FactoryGirl.define do
 
 	end
 
-	factory :asker do
+	factory :moderator do
 		role 'moderator'
 		published true
 		twi_profile_img_url 'abc.jpg'
-		twi_screen_name 'leroy asker'
+		twi_screen_name 'leroy moderator'
 	end	
 	
 	factory :asker do

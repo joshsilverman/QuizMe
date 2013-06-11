@@ -1,5 +1,5 @@
 class Moderator < User
-	has_many :moderations
+	has_many :moderations, foreign_key: :user_id
 
   scope :non_moderator, where('moderator_segment is null')
   scope :edger_mod, where(:moderator_segment => 1)

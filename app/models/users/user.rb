@@ -37,7 +37,6 @@ class User < ActiveRecord::Base
   has_many :followers, :through => :follower_relationships, :source => :follower, :conditions => ["relationships.active = ?", true]
   has_many :followers_with_inactive, :through => :follower_relationships, :source => :follower
 
-  has_many :moderations
   has_many :exams
 
   scope :supporters, where("users.role == 'supporter'")
@@ -74,14 +73,6 @@ class User < ActiveRecord::Base
   scope :active, where(:activity_segment => 4)
   scope :engaging, where(:activity_segment => 5)
   scope :engaged, where(:activity_segment => 6)
-
-  # Moderator segmentation scopes
-  scope :non_moderator, where('moderator_segment is null')
-  scope :edger_mod, where(:moderator_segment => 1)
-  scope :noob_mod, where(:moderator_segment => 2)
-  scope :regular_mod, where(:moderator_segment => 3)
-  scope :advanced_mod, where(:moderator_segment => 4)
-  scope :super_mod, where(:moderator_segment => 5)
 
   # Author segmentation scopes
   scope :not_author, where("author_segment is null")
@@ -366,10 +357,6 @@ class User < ActiveRecord::Base
 
 	# Segmentation methods
 	def transition segment_name, to_segment
-		# puts from_segment
-		# puts to_segment
-		# puts segment_name
-		# puts "#{segment_name}_segment"
 		return if to_segment == (from_segment = self.send("#{segment_name}_segment"))
 
 		self.update_attribute "#{segment_name}_segment", to_segment

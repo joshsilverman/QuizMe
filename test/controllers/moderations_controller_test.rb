@@ -104,6 +104,7 @@ describe ModerationsController do
 
 				it 'is accepted when admin agrees' do
 					page.find('.quick-reply-yes').click
+					# sleep 200
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal true
 				end
@@ -128,7 +129,7 @@ describe ModerationsController do
 				@moderation.reload.accepted.must_equal true
 			end
 
-			it 'hide is accepted when admin agrees' do
+			it 'run hide is accepted when admin agrees' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
 					create(:moderation, user_id: moderator.id, post: @post)
