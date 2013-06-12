@@ -12,6 +12,8 @@ describe Asker do
 		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
 		@publication = create(:publication, question_id: @question.id)
 		@question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
+
+		Delayed::Worker.delay_jobs = false
 	end
 
 	describe "responds to user answer" do
@@ -629,6 +631,8 @@ describe Asker do
 				@conversation = FactoryGirl.create(:conversation, publication_id: @publication.id)
 				@user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 				@conversation.posts << @user_response
+
+				Delayed::Worker.delay_jobs = true
 			end
 
 			it 'with a post' do
@@ -643,6 +647,8 @@ describe Asker do
 
 			it 'after an interval' do
 				@asker.app_response @user_response, false
+				Delayed::Worker.new.work_off
+
 				number_of_days_until_followup = (((Delayed::Job.first.run_at - Time.now) / 60 / 60 / 24).to_i + 1)
 				number_of_days_until_followup.times do |i|
 					Delayed::Worker.new.work_off

@@ -272,7 +272,7 @@ class FeedsController < ApplicationController
     @scores = User.get_top_scorers(params[:id])
   end
 
-  def respond_to_question post_to_twitter = false
+  def respond_to_question
     publication = Publication.find(params[:publication_id])
     @question_asker = Asker.find(params[:asker_id])
     answer = Answer.find(params[:answer_id])

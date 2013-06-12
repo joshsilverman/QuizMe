@@ -281,7 +281,6 @@ class Asker < User
   def self.engage_new_users
     # Send DMs to new users
     selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).to_i % 2
-    puts "asker selector = #{selector}"
     Asker.published.select { |a| a.id % 2 == selector }.each do |asker|
       asker.delay.update_relationships() 
       sleep 1
@@ -432,7 +431,7 @@ class Asker < User
 
     if app_post
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
-      after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
       return app_post
     else
@@ -532,7 +531,6 @@ class Asker < User
       :last_interaction_at => user_post.created_at,
       :last_answer_at => user_post.created_at
     })
-
     nudge(answerer)
     if user_post.correct == false and question = user_post.in_reply_to_question
       schedule_incorrect_answer_followup(user_post) 
