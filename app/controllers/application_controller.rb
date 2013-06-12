@@ -6,7 +6,8 @@ class ApplicationController < ActionController::Base
 
   def unauthenticated_user!
     if current_user
-      redirect_to request.fullpath.gsub(/^\/u/, ""), params
+      # redirect_to request.fullpath.gsub(/^\/u/, ""), params
+      redirect_to "/u#{request.fullpath}", params
     end
   end
 

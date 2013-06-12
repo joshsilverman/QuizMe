@@ -35,8 +35,8 @@ Quizmemanager::Application.routes.draw do
   match "askers/:id/import" => "askers#import"
 
   post "feeds/search"
-  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
-  match "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
+  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
+  match "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
 
   match '/search' => 'feeds#index_with_search'
 
