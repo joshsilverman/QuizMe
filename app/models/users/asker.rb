@@ -979,6 +979,20 @@ class Asker < User
     Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
   end
 
+  def get_targeted_mention_twi_user_targets max_count
+    follow_target_twi_users = []
+    search_terms.collect(&:name).shuffle.each do |search_term|
+      next if follow_target_twi_users.size >= max_count
+      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
+      twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
+      wisr_user_ids = User.where(twi_user_id: twi_users.collect(&:id)).collect(&:twi_user_id)
+      twi_users.reject! { |twi_user| wisr_user_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
+      twi_users.sample(max_count - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
+    end
+    puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_follows
+    follow_target_twi_users    
+  end
+
 
   def most_popular_question options = {}
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
