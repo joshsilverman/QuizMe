@@ -1,13 +1,4 @@
 GIT
-  remote: https://github.com/KentonWhite/bitly.git
-  revision: bcc1e089499195d9ed119158ef70265f02235348
-  specs:
-    bitly (0.8.0)
-      crack (>= 0.1.4)
-      httparty (>= 0.7.6)
-      oauth2 (>= 0.5.0, < 0.9)
-
-GIT
   remote: https://github.com/bderusha/split
   revision: ebba7abb64510ece709d353d841f3e4464557d9d
   specs:
@@ -92,7 +83,6 @@ GEM
       execjs
     coffee-script-source (1.6.2)
     commonjs (0.2.6)
-    crack (0.3.2)
     css_parser (1.3.4)
       addressable
     d3_rails (3.1.4)
@@ -152,9 +142,6 @@ GEM
       excon (~> 0.20.1)
     hike (1.2.2)
     hirb (0.7.1)
-    httparty (0.10.2)
-      multi_json (~> 1.0)
-      multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.4)
     journey (1.0.4)
@@ -213,7 +200,6 @@ GEM
       json
       rack
     multi_json (1.7.3)
-    multi_xml (0.5.3)
     multipart-post (1.2.0)
     net-scp (1.1.1)
       net-ssh (>= 2.6.5)
@@ -380,7 +366,6 @@ DEPENDENCIES
   bcrypt-ruby (= 3.0.1)
   best_in_place
   better_errors
-  bitly!
   capybara
   capybara_minitest_spec
   carrierwave

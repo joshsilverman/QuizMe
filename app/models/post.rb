@@ -131,12 +131,8 @@ class Post < ActiveRecord::Base
   end
 
 
-  def self.shorten_url(url, source, lt, campaign, target, show_answer = nil)
-    if Rails.env.production?
-      return Shortener.shorten("#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}").short_url
-    else
-      return "http://wisr.co/devurl"
-    end
+  def self.format_url(url, source, lt, campaign, target, show_answer = nil)
+    return "#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}&sent=#{Time.now.strftime('%H%M')}"
   end
 
   def self.publish(provider, asker, publication)
@@ -227,7 +223,7 @@ class Post < ActiveRecord::Base
 
   def self.tweet sender, text, options = {}, post = nil, answers = nil
     options[:resource_url] = options[:resource_url].gsub(/\/embed\/([^\?]*)\?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/embed\//
-    short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, options[:reply_to]) if options[:long_url]
+    short_url = Post.format_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, options[:reply_to]) if options[:long_url]
     answers = "(#{Question.includes(:answers).find(Publication.find(options[:publication_id]).question_id).answers.shuffle.collect {|a| a.text}.join('; ')})" if (options[:publication_id].present? and options[:include_answers])
 
     tweet = Post.format_tweet(text, {
@@ -284,7 +280,7 @@ class Post < ActiveRecord::Base
     if options[:short_url]
       short_url = options[:short_url]
     elsif options[:long_url]
-      short_url = Post.shorten_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, recipient.twi_screen_name) 
+      short_url = Post.format_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, recipient.twi_screen_name) 
     end
 
     text = "#{text} #{short_url}" if options[:include_url] and short_url

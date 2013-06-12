@@ -71,7 +71,7 @@ gem 'carrierwave'
 gem 'fog'
 gem 'best_in_place'
 
-gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
+# gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
 

@@ -11,7 +11,7 @@ class NudgeType < ActiveRecord::Base
     text.split("\n").each do |message|
       
       if message.include? "{link}"
-        short_url = Post.shorten_url("#{URL}/nudge/#{id}/#{user.id}/#{asker.id}", 'twi', 'wisr', asker.twi_screen_name, user.twi_screen_name)
+        short_url = Post.format_url("#{URL}/nudge/#{id}/#{user.id}/#{asker.id}", 'twi', 'wisr', asker.twi_screen_name, user.twi_screen_name)
         message.gsub!("{link}", short_url)
       end
 
