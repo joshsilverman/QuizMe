@@ -202,11 +202,16 @@ class Post < ActiveRecord::Base
   end
 
   def self.format_tweet(text, options = {})
+    # set default ordering of text entities in tweet
     entity_order = [:in_reply_to_user, :text, :question_backlink, :hashtag, :resource_backlink, :via_user]
+    # set how each entity should be displayed
     formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :via_user => "via @{content}", :resource_backlink => "Learn more at {content}"}
 
+    # select entities in use for this tweet (always includes text)
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
+    # map over the array and replace with formatted text using provided entities
     tweet_format.map! { |entity| entity == :text ? entity : (formatting[entity].present? ? formatting[entity].gsub("{content}", options[entity]) : options[entity]) }
+    # see how much space we have left for text 
     max_text_length = 140 - (tweet_format.sum { |entity| entity == :text ? 0 : entity.size } + tweet_format.size)
 
     #adjust max text length for backlinks which will be wrapped with t.co
@@ -215,6 +220,7 @@ class Post < ActiveRecord::Base
       max_text_length = max_text_length + options[key].length - TWI_SHORT_URL_LENGTH
     end
 
+    # add answers if present and there's space
     text += " #{options[:answers]}" if (options[:answers].present? and (max_text_length - text.size) > (options[:answers].size + 1))
     tweet_format.map! { |entity| entity != :text ? entity : text.size > max_text_length ? "#{text[0..(max_text_length - 3)]}..." : text }.join " "
   end
