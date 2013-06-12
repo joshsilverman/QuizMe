@@ -117,7 +117,8 @@ class FeedsController < ApplicationController
     if !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     elsif current_user.nil? and force == false
-      redirect_to "/u#{request.fullpath}", params
+      redirect_to request.fullpath.gsub(/^\/u/, ""), params
+      # redirect_to "/u#{request.fullpath}", params
     else
       if @asker = Asker.find(params[:id])
 
