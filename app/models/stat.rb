@@ -211,80 +211,47 @@ class Stat < ActiveRecord::Base
     return econ_engine, display_data
   end
 
-  def self.graph_revenue domain = 30
-    revenue, display_data = Rails.cache.fetch "stat_revenue_domain_#{domain}", :expires_in => 23.minutes do
-      rate_sheets = RateSheet.where('title IS NOT NULL').includes(:clients => :askers)
-      return if rate_sheets.empty?
-      clients = rate_sheets.collect{|rs| rs.clients}.flatten.uniq
-      askers_by_rate_sheet = {}
-      client_asker_ids = []
+  def self.graph_quality_response domain = 30
+    data = Rails.cache.fetch "stat_quality_response_domain_#{domain}", :expires_in => 23.minutes do
+      good_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+        .where('requires_action = ?', false)\
+        .where("(posts.updated_at - posts.created_at < interval '3 hours')")\
+        .where("posts.created_at > ?", Date.today - domain.days)\
+        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+      slow_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+        .where('requires_action = ?', false)\
+        .where("(posts.updated_at - posts.created_at > interval '3 hours')")\
+        .where("posts.created_at > ?", Date.today - domain.days)\
+        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+      no_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+        .requires_action\
+        .where("posts.created_at > ?", Date.today - domain.days)\
+        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
 
-      clients.each do |c| 
-        askers_by_rate_sheet[c.rate_sheet] = c.askers
+      data = [["Date", "Good Reply", "Slow Reply", "No Reply"]]
+      total_stat = []
+      today_stat = 0
+      ((Date.today - domain.days)..Date.today).each do |date|
+        datef = date.to_s
+
+        good_replies[datef] ||= 0
+        slow_replies[datef] ||= 0
+        no_replies[datef] ||= 0
+
+        total = (good_replies[datef]  + slow_replies[datef]  + no_replies[datef] ).to_f
+        total = 1 if total < 1
+        good_normalized = good_replies[datef] / total
+        slow_normalized = slow_replies[datef] / total
+        no_normalized = no_replies[datef] / total
+
+        data << [datef, good_normalized, slow_normalized, no_normalized]
+        today_stat = sprintf "%.1f%", good_normalized * 100 if date == Date.today
+        total_stat << good_normalized if date > Date.today - 7.days
       end
-
-      return if askers_by_rate_sheet.empty?
-
-      posts_by_date_by_rate_sheet = {}
-      askers_by_rate_sheet.each do |rate_sheet, askers|
-        posts_by_date = Post.not_spam.social.not_us\
-            .where("in_reply_to_user_id IN (?)", askers.collect(&:id))\
-            .where("created_at > ?", domain.days.ago)\
-            .select([:text, "posts.created_at", :in_reply_to_user_id, :interaction_type, :correct, :user_id, :spam, :autospam])\
-            .order("posts.created_at ASC")\
-            .group_by{|p| p.created_at.strftime('%y/%m/%d')}
-        posts_by_date.each do |date, posts|
-          posts_by_date_by_rate_sheet[date] ||= {}
-          posts_by_date_by_rate_sheet[date][rate_sheet] = posts
-        end
-      end
-
-      revenue = [['Date'] + rate_sheets.collect(&:title)]
-      posts_by_date_by_rate_sheet.each do |date, posts_by_rate_sheet|
-        next if date == Date.today.strftime('%y/%m/%d')
-        revenues_by_rate_sheet = {}
-        posts_by_rate_sheet.each do |rate_sheet, posts|
-          posts_by_interaction_type = posts.group_by{|p| p.interaction_type}
-          rt_revenue = tweet_revenue = 0
-          tweet_revenue = posts_by_interaction_type[2].count * rate_sheet.tweet if posts_by_interaction_type[2]
-          rt_revenue = posts_by_interaction_type[3].count * rate_sheet.retweet if posts_by_interaction_type[3]
-
-          revenues_by_rate_sheet[rate_sheet] = tweet_revenue + rt_revenue
-        end
-        revenue << [date] + rate_sheets.map{|rs| revenues_by_rate_sheet[rs] || 0 }
-      end
-
-      #sort
-      title_row = revenue.shift
-      revenue = [title_row] + revenue.sort_by{|r|r[0]}.map{|r| [Time.parse(r[0]).strftime('%m/%d')] + r[1..-1]}
-      display_data = Stat.revenue_display_data(askers_by_rate_sheet)
-      
-      [revenue, display_data]
+      total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
+      [data, {today: today_stat, total: total_stat}]
     end
-    return revenue, display_data
-  end
-
-  def self.revenue_display_data askers_by_rate_sheet
-    display_data = {:today => 0, :month => 0}
-
-    askers_by_rate_sheet.each do |rate_sheet, askers|
-      posts = {}
-      posts[:today] = Post.not_spam.social.not_us.where("created_at > ?", 24.hours.ago).where("in_reply_to_user_id IN (?)", askers.collect(&:id))
-      posts[:month] = Post.not_spam.social.not_us.where("created_at > ?", 30.days.ago).where("in_reply_to_user_id IN (?)", askers.collect(&:id))
-
-      [:today, :month].each do |period|
-        posts_by_interaction_type = posts[period].group_by{|p| p.interaction_type}
-
-        rt_revenue = tweet_revenue = 0
-        tweet_revenue = posts_by_interaction_type[2].count * rate_sheet.tweet if posts_by_interaction_type[2]
-        rt_revenue = posts_by_interaction_type[3].count * rate_sheet.retweet if posts_by_interaction_type[3]
-        display_data[period] += tweet_revenue + rt_revenue
-      end
-    end
-
-    display_data[:today] = sprintf "$%.2f", display_data[:today]
-    display_data[:total] = sprintf "$%.2f", display_data[:month]
-    display_data
+    data
   end
 
   def self.graph_handle_activity domain = 30, handle_activity = {}, graph_data = []

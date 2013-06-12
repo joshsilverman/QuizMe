@@ -1,13 +1,3 @@
-= hidden_field_tag :core_display_data, @core_display_data.to_json
-= hidden_field_tag :asker_data, @askers.group_by(&:id).to_json
-
-= hidden_field_tag :paulgraham, @paulgraham.to_json
-= hidden_field_tag :dau_mau, @dau_mau.to_json
-= hidden_field_tag :econ_engine, @econ_engine.to_json
-/= hidden_field_tag :daus, @daus.to_json
-= hidden_field_tag :revenue, @revenue.to_json
-= hidden_field_tag :cohort, @cohort.to_json
-
 :css
   @media (min-width: 1200px) {
     .navbar-fixed-top .container {

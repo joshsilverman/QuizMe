@@ -103,9 +103,8 @@ class Dashboard
     qs += "&domain=#{domain}"
 
     party = 'core'
-    $.each ['paulgraham', 'dau_mau', 'econ_engine', 'revenue'], (i, graph) =>
+    $.each ['paulgraham', 'dau_mau', 'econ_engine', 'quality_response'], (i, graph) =>
       url = "/graph/#{ party }/#{ graph }#{qs}"
-      puts graph
       $.ajax url,
         success: (data) =>
           draw_func = this["draw_#{graph}"]
@@ -164,9 +163,9 @@ class Dashboard
     chart = new google.visualization.LineChart(chart_elmnt)
     chart.draw graph_data, dau_mau_options  
 
-  draw_revenue: (data) =>
+  draw_quality_response: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
-    chart = new google.visualization.AreaChart($(".revenue_graph")[0])
+    chart = new google.visualization.AreaChart($(".quality_response_graph")[0])
     chart.draw graph_data, revenue_options  
 
   draw_econ_engine: (data) =>
