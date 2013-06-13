@@ -9,13 +9,13 @@ class ModerationsController < ApplicationController
     excluded_post_ids = (post_ids_with_enough_moderations + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
 		
-		@posts = Post.includes(:tags, :conversation, :in_reply_to_question => :answers).linked_box.not_dm\
+		@posts = Post.includes(:tags, :conversation, :in_reply_to_question => :answers).linked_box\
 			.joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
 		  .where("parents.question_id IS NOT NULL")\
 		  .where("posts.in_reply_to_user_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
 		  .where("posts.user_id <> ?", moderator.id)\
 		  .where("posts.id NOT IN (?)", excluded_post_ids)\
-      .order('random()').limit(10)\
+      .order('posts.created_at DESC').limit(10)\
       .sort_by{|p| p.created_at}.reverse
 
     @questions = []

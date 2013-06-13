@@ -33,6 +33,14 @@ FactoryGirl.define do
 		spam false
 		interaction_type 1
 		text 'Leroy\'s my boy'
+
+		factory :dm do
+			interaction_type 4
+
+			trait :initial_question_dm do
+				intention 'initial question dm'
+			end
+		end
 	end
 
 	factory :question do

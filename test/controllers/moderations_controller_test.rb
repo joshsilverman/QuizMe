@@ -25,6 +25,22 @@ describe ModerationsController do
 			in_reply_to_question_id: @question.id,
 			interaction_type: 2, 
 			conversation: @conversation
+
+
+		@initial_question_dm = create(:dm, :initial_question_dm, user_id: @asker.id, question: @question)
+		@dm_answer = create :dm, 
+			user: @user, 
+			requires_action: true, 
+			in_reply_to_post_id: @initial_question_dm.id,
+			in_reply_to_user_id: @asker.id,
+			in_reply_to_question_id: @question.id
+
+		@dm_from_asker = create(:dm, user_id: @asker.id)
+		@dm_reply = create :dm, 
+			user: @user, 
+			requires_action: true, 
+			in_reply_to_post_id: @dm_from_asker.id,
+			in_reply_to_user_id: @asker.id
 	end
 
 	describe 'manage' do
@@ -32,8 +48,16 @@ describe ModerationsController do
 			visit '/moderations/manage'
 		end
 
-		it 'displays post for moderation' do
+		it 'displays mention for moderation' do
 			page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
+		end
+
+		it 'displays dm for moderation' do
+			page.all(".post[post_id=\"#{@dm_answer.id}\"]").count.must_equal 1
+		end
+
+		it 'displays only if in reply to post has question' do
+			page.all(".post[post_id=\"#{@dm_reply.id}\"]").count.must_equal 0
 		end
 
 		it 'displays post without displaying graded posts' do
@@ -129,7 +153,7 @@ describe ModerationsController do
 				@moderation.reload.accepted.must_equal true
 			end
 
-			it 'run hide is accepted when admin agrees' do
+			it 'hide is accepted when admin agrees' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
 					create(:moderation, user_id: moderator.id, post: @post)
