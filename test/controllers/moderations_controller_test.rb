@@ -56,7 +56,7 @@ describe ModerationsController do
 			page.all(".post[post_id=\"#{@dm_answer.id}\"]").count.must_equal 1
 		end
 
-		it 'displays only if in reply to post has question' do
+		it 'only if in reply to post has question' do
 			page.all(".post[post_id=\"#{@dm_reply.id}\"]").count.must_equal 0
 		end
 
@@ -182,11 +182,13 @@ describe ModerationsController do
 	end
 
 	describe 'creates moderation' do
-		it 'with correct type id' do
+		it 'run with correct type id' do
 		  Capybara.current_driver = :selenium # unfortunately must be manually inserted if you want a js driver
 			visit '/moderations/manage'
 			page.all(".conversation.dim .post[post_id=\"#{@post.id}\"]").count.must_equal 0
-			page.find('.quick-reply.btn-success').click
+			post = page.find(".conversation .post[post_id=\"#{@post.id}\"]")
+			post.click
+			post.find('.quick-reply.btn-success').click
 			page.find(".conversation.moderated .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 			@post.moderations[0].type_id.must_equal 1
 		end
