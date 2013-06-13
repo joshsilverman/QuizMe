@@ -132,7 +132,8 @@ class Post < ActiveRecord::Base
 
 
   def self.format_url(url, source, lt, campaign, target, show_answer = nil)
-    return "#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}&sent=#{Time.now.strftime('%H%M')}"
+    return "#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}"
+    #&sent=#{Time.now.strftime('%H%M')}"
   end
 
   def self.publish(provider, asker, publication)
