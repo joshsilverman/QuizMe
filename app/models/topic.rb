@@ -1,5 +1,8 @@
 class Topic < ActiveRecord::Base
+	has_many :search_term_users, foreign_key: :search_term_topic_id, class_name: 'User'
+
 	has_many :users, :through => :askertopics
+	# has_many :askers, :through => :askertopics, :source => :user
 	has_many :askertopics
 	has_many :questions
 

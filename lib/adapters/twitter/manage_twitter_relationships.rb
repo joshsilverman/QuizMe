@@ -5,7 +5,12 @@ module ManageTwitterRelationships
     return unless (max_follows = autofollow_count) > 0
 
     # Twi search to get follow targets
-    twi_user_ids = options[:twi_user_ids] || get_follow_target_twi_users(max_follows).collect(&:id)
+    if options[:twi_user_ids]
+      twi_user_ids, search_term_source = options[:twi_user_ids], {}  
+    else
+      twi_users, search_term_source = get_follow_target_twi_users(max_follows)
+      twi_user_ids = twi_users.collect(&:id)
+    end
 
     # Send follow requests
     send_autofollows(twi_user_ids, max_follows, options[:force])
@@ -28,16 +33,23 @@ module ManageTwitterRelationships
 
   def get_follow_target_twi_users max_follows
     follow_target_twi_users = []
+    search_term_source = {}
     wisr_follows_ids = follows_with_inactive.collect(&:twi_user_id)
-    search_terms.collect(&:name).shuffle.each do |search_term|
+
+    search_terms.shuffle.each do |search_term|
       next if follow_target_twi_users.size >= max_follows
-      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
+      
+      search_text = search_term.name
+      statuses = Post.twitter_request { twitter.search(search_text, :count => 100).statuses }
       twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
       twi_users.reject! { |twi_user| wisr_follows_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
-      twi_users.sample(max_follows - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
+      twi_users.sample(max_follows - follow_target_twi_users.size).each do |twi_user| 
+        follow_target_twi_users << twi_user
+        search_term_source[twi_user.id] = search_text
+      end
     end
     puts "Too few autofollows found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_follows
-    follow_target_twi_users
+    return follow_target_twi_users, search_term_source
   end
 
   def send_autofollows twi_user_ids, max_follows, force = false
