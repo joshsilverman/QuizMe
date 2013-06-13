@@ -939,7 +939,7 @@ class Asker < User
     start_date = Time.find_zone('UTC').parse('2013-05-22 9am').to_date
     Asker.published.sort_by { |a| a.followers.size }.slice(0, (Date.today - (start_date)).to_i).each do |asker|
       next if asker.search_terms.blank?
-      asker.get_follow_target_twi_users(4).each do |target_user|
+      asker.get_targeted_mention_twi_user_targets(4).each do |target_user|
         user = User.find_or_initialize_by_twi_user_id(target_user.id)
         user.update_attributes(
           :twi_name => target_user.name,
@@ -987,7 +987,7 @@ class Asker < User
       twi_users.reject! { |twi_user| wisr_user_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
       twi_users.sample(max_count - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
     end
-    puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_follows
+    puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_count
     follow_target_twi_users    
   end
 
