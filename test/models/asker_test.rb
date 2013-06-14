@@ -364,13 +364,17 @@ describe Asker do
 			end
  		end		
 
- 		it 'links users to search terms they were followed throuh' do
+ 		it 'links users to search terms they were followed through' do
 			@new_user.reload.search_term_topic_id.must_equal nil
 			twi_user_ids = [@new_user.twi_user_id]
 			@asker.send_autofollows(twi_user_ids, 5, { force: true, search_term_source: { @new_user.twi_user_id => 1 } })
 			@new_user.reload.search_term_topic_id.must_equal 1
  		end
 	end
+
+	# describe 'sends targeted mentions' do
+		
+	# end
 
 	describe "requests after answer" do
 

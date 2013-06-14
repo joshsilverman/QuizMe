@@ -39,6 +39,8 @@ class User < ActiveRecord::Base
 
   has_many :exams
 
+  belongs_to :search_term, foreign_key: :search_term_topic_id, class_name: 'Topic'
+
   scope :supporters, where("users.role == 'supporter'")
   scope :not_asker, where("users.role != 'asker'")
   scope :not_asker_not_us, where("users.id not in (?) and users.role != 'asker'" , ADMINS)

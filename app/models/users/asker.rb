@@ -937,15 +937,18 @@ class Asker < User
 
   def self.send_targeted_mentions
     start_date = Time.find_zone('UTC').parse('2013-05-22 9am').to_date
-    Asker.published.sort_by { |a| a.followers.size }.slice(0, (Date.today - (start_date)).to_i).each do |asker|
+    Asker.published.sort_by { |a| a.followers.size }.slice(0, (Date.today - (start_date)).to_i).each do |asker| 
       next if asker.search_terms.blank?
-      asker.get_targeted_mention_twi_user_targets(4).each do |target_user|
+      
+      target_users, search_term_source = asker.get_targeted_mention_twi_user_targets(4)
+      target_users.each do |target_user|
         user = User.find_or_initialize_by_twi_user_id(target_user.id)
         user.update_attributes(
           :twi_name => target_user.name,
           :name => target_user.name,
           :twi_screen_name => target_user.screen_name,
-          :description => target_user.description.present? ? target_user.description : nil
+          :description => target_user.description.present? ? target_user.description : nil,
+          :search_term_topic_id => search_term_source[target_user.id]
         )
         asker.send_targeted_mention(user)
         sleep 1
@@ -979,16 +982,20 @@ class Asker < User
 
   def get_targeted_mention_twi_user_targets max_count
     follow_target_twi_users = []
-    search_terms.collect(&:name).shuffle.each do |search_term|
+    search_term_source = {}
+    search_terms.shuffle.each do |search_term|
       next if follow_target_twi_users.size >= max_count
-      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
+      statuses = Post.twitter_request { twitter.search(search_term.name, :count => 100).statuses }
       twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
       wisr_user_ids = User.where(twi_user_id: twi_users.collect(&:id)).collect(&:twi_user_id)
       twi_users.reject! { |twi_user| wisr_user_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
-      twi_users.sample(max_count - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
+      twi_users.sample(max_count - follow_target_twi_users.size).each do |twi_user| 
+        follow_target_twi_users << twi_user
+        search_term_source[twi_user.id] = search_term.id
+      end
     end
     puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_count
-    follow_target_twi_users    
+    return follow_target_twi_users, search_term_source  
   end
 
 
