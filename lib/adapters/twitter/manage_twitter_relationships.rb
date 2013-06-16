@@ -5,15 +5,10 @@ module ManageTwitterRelationships
     return unless (max_follows = autofollow_count) > 0
 
     # Twi search to get follow targets
-    if options[:twi_user_ids]
-      twi_user_ids, search_term_source = options[:twi_user_ids], {}  
-    else
-      twi_users, search_term_source = get_follow_target_twi_users(max_follows)
-      twi_user_ids = twi_users.collect(&:id)
-    end
+    twi_user_ids = options[:twi_user_ids] || get_follow_target_twi_users(max_follows).collect(&:id)
 
     # Send follow requests
-    send_autofollows(twi_user_ids, max_follows, { force: options[:force], search_term_source: search_term_source })
+    send_autofollows(twi_user_ids, max_follows, options[:force])
   end
 
   def autofollow_count max_follows = nil
@@ -33,33 +28,27 @@ module ManageTwitterRelationships
 
   def get_follow_target_twi_users max_follows
     follow_target_twi_users = []
-    search_term_source = {}
     wisr_follows_ids = follows_with_inactive.collect(&:twi_user_id)
-
-    search_terms.shuffle.each do |search_term|
+    search_terms.collect(&:name).shuffle.each do |search_term|
       next if follow_target_twi_users.size >= max_follows
-      
-      statuses = Post.twitter_request { twitter.search(search_term.name, :count => 100).statuses }
+      statuses = Post.twitter_request { twitter.search(search_term, :count => 100).statuses }
       twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
       twi_users.reject! { |twi_user| wisr_follows_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
-      twi_users.sample(max_follows - follow_target_twi_users.size).each do |twi_user| 
-        follow_target_twi_users << twi_user
-        search_term_source[twi_user.id] = search_term.id
-      end
+      twi_users.sample(max_follows - follow_target_twi_users.size).each { |twi_user| follow_target_twi_users << twi_user }
     end
     puts "Too few autofollows found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_follows
-    return follow_target_twi_users, search_term_source
+    follow_target_twi_users
   end
 
-  def send_autofollows twi_user_ids, max_follows, options = {}
+  def send_autofollows twi_user_ids, max_follows, force = false
     twi_user_ids.sample(max_follows).each do |twi_user_id|
+      # puts "send_autofollow follow"
       response = Post.twitter_request { twitter.follow(twi_user_id) }
-      if response.present? or options[:force]
+      if response.present? or force
         user = User.find_or_create_by_twi_user_id(twi_user_id)    
-        user.update_attribute(:search_term_topic_id, options[:search_term_source][twi_user_id]) if options[:search_term_source][twi_user_id]
         add_follow(user, 2)
       end 
-      sleep((5..60).to_a.sample) unless options[:force] # avoids sleep in tests
+      sleep((5..60).to_a.sample) unless force # avoids sleep in tests
     end
   end
 
