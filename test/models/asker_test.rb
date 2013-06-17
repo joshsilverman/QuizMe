@@ -364,11 +364,12 @@ describe Asker do
 			end
  		end		
 
- 		it 'links users to search terms they were followed through' do
+ 		it 'run links users to search terms they were followed through' do
+ 			search_term = create(:search_term)
 			@new_user.reload.search_term_topic_id.must_equal nil
 			twi_user_ids = [@new_user.twi_user_id]
-			@asker.send_autofollows(twi_user_ids, 5, { force: true, search_term_source: { @new_user.twi_user_id => 1 } })
-			@new_user.reload.search_term_topic_id.must_equal 1
+			@asker.send_autofollows(twi_user_ids, 5, { force: true, search_term_source: { @new_user.twi_user_id => search_term } })
+			@new_user.reload.search_term_topic_id.must_equal search_term.id
  		end
 	end
 

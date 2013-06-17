@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
 	has_many :transitions
 
-	has_many :topics, :through => :askertopics
+	has_many :topics, :through => :askertopics, uniq: true
 	has_many :askertopics, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts

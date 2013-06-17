@@ -948,7 +948,7 @@ class Asker < User
           :name => target_user.name,
           :twi_screen_name => target_user.screen_name,
           :description => target_user.description.present? ? target_user.description : nil,
-          :search_term_topic_id => search_term_source[target_user.id]
+          :search_term_topic_id => search_term_source[target_user.id].try(:id)
         )
         asker.send_targeted_mention(user)
         sleep 1
@@ -991,7 +991,7 @@ class Asker < User
       twi_users.reject! { |twi_user| wisr_user_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
       twi_users.sample(max_count - follow_target_twi_users.size).each do |twi_user| 
         follow_target_twi_users << twi_user
-        search_term_source[twi_user.id] = search_term.id
+        search_term_source[twi_user.id] = search_term
       end
     end
     puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_count
