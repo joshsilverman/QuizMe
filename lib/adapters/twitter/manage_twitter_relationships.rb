@@ -58,7 +58,7 @@ module ManageTwitterRelationships
         user = User.find_or_create_by_twi_user_id(twi_user_id) 
         if options[:search_term_source] and search_term = options[:search_term_source][twi_user_id]
           user.update_attribute(:search_term_topic_id, search_term.id)
-          Post.create_split_test_and_enroll_with_alternative(user.id, "#{asker.twi_screen_name} search terms (=> advanced)", search_term.name, *search_terms.collect(&:name))
+          Post.create_split_test_and_enroll_with_alternative(user.id, "#{twi_screen_name} search terms (=> advanced)", search_term.name, *search_terms.collect(&:name))
         end
         add_follow(user, 2)
       end 
