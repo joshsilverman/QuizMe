@@ -395,6 +395,31 @@ describe Asker do
 	# end
 
 	describe "requests after answer" do
+		it 'run unless more than one unresponded request' do
+			10.times { create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id, correct: true) }
+			Timecop.travel(Time.now + 2.hours)
+			@user.update_attribute :lifecycle_segment, 4
+
+			@asker.request_mod @user.reload
+			@asker.request_ugc @user
+			# @asker.request_new_handle_ugc @user
+			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1			
+			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
+
+			20.times do
+				@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				# @user.reload
+				# @asker.request_ugc @user
+				# @asker.request_mod @user
+				# @asker.request_new_handle_ugc @user
+				Timecop.travel(Time.now + 1.day)
+			end			
+
+			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+		end
 
 		describe 'ugc' do
 			it 'with a post' do

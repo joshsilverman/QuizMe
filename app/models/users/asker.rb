@@ -592,6 +592,8 @@ class Asker < User
   end 
 
   def after_answer_action answerer
+    return unless can_send_requests_to_user?(answerer)
+
     actions = [
       Proc.new {|answerer| request_ugc(answerer)}, # one time
       Proc.new {|answerer| request_mod(answerer)}, # recurring
@@ -602,6 +604,19 @@ class Asker < User
     actions.each do |action|
       break if action.call answerer
     end
+  end
+
+  def can_send_requests_to_user? user
+    recent_requests = Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", user.id, '%request%', '%solicit%').order("created_at DESC").limit(2)
+    date_limit = recent_requests.last.created_at
+    recent_requests.each do |request|
+      if request.intention == 'request mod'
+        return true if user.becomes(Moderator).moderations.where('created_at > ?', date_limit).present?
+      elsif request.intention == 'solicit ugc' or request.intention == 'request new handle ugc'
+        return true if user.questions.where('created_at > ?', date_limit).present?
+      end
+    end
+    return false
   end
 
   def send_link_to_activity_feed user, force = false
