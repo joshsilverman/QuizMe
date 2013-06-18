@@ -3,7 +3,8 @@ class ExperimentsController < ApplicationController
   before_filter :yc_admin?, :only => :index
 
   def index
-    @experiments = Split::Experiment.all.reject { |e| e.name.include? 'search term' }
+    puts Split::Experiment.all.to_json
+    @experiments = Split::Experiment.all.reject { |e| e.blank? or e.name.include? 'search term' }
   end
 
   def index_concluded
@@ -13,13 +14,13 @@ class ExperimentsController < ApplicationController
   end
 
   def index_search_terms
-    @experiments = Split::Experiment.all.select { |e| e.name.include? 'search term' }
+    @experiments = Split::Experiment.all.select { |e| e.present? and e.name.include? 'search term' }
     render "_experiments", layout: false
   end
 
   def index_concluded_search_terms
     @concluded = true
-    @experiments = Split::Experiment.all.select { |e| e.name.include? 'search term' }
+    @experiments = Split::Experiment.all.select { |e| e.present? and e.name.include? 'search term' }
     render "_experiments", layout: false
   end
 
