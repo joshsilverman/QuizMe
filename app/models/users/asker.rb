@@ -680,10 +680,8 @@ class Asker < User
   end
 
   def request_new_question user
-    # return false if Question.exists?(:user_id => user.id)
-    # return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc')
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
-    return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 1.week.ago).size > 0 # we haven't asked them in the past week
+    return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).size > 0 # we haven't asked them in the past two weeks
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
 
@@ -691,8 +689,39 @@ class Asker < User
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
       "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1"
     )
-    script = script.gsub "{asker_id}", self.id.to_s
-    script = script.gsub "{asker_name}", self.twi_screen_name
+    script.gsub! "{asker_id}", self.id.to_s
+    script.gsub! "{asker_name}", self.twi_screen_name
+
+    question_count = user.get_my_questions_answered_this_week_count
+
+    if questions.where(user_id: user.id).present?
+      if question_count > 2
+        script = [
+          "<last_week> Do you have a sec to write a few more? <link>",
+          "<last_week> Have a second to write a few more? <link>",
+          "<last_week> Have a sec to write a few more? <link>",
+          "<last_week> Thanks again for contributing! If you'd like to add more: <link>",
+          "<last_week> Would you to write a couple more? <link>",
+          "<last_week> Would you write a few more? <link>",
+          "<last_week> Would you mind writing a few more? <link>",
+          "<last_week> Any more you'd like to add? <link>"
+        ].sample
+      else
+        script = [
+          "Do you have a sec to write a few more questions? <link>",
+          "Have a second to write a few more questions? <link>",
+          "Have a sec to write a few more questions? <link>",
+          "If you'd like to add more questions: <link>",
+          "Could I trouble you to write a couple more questions? <link>",
+          "Would you write a few more questions? <link>",
+          "Would you mind writing a few more questions? <link>",
+          "Any more questions you'd like to add? <link>"
+        ].sample
+      end
+    end
+    
+    script.gsub! "<link>", "www.wisr.com/askers/#{id}/questions"
+    script.gsub! "<last_week>", "Your question(s) were answered #{question_count} times last week!"
 
     if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
       Post.dm(self, user, script, {

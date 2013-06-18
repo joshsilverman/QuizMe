@@ -302,7 +302,7 @@ class User < ActiveRecord::Base
   end
 
   def get_my_questions_answered_this_week_count
-  	Publication.includes(:conversations).where("publications.question_id in (?) and conversations.created_at > ?", Question.where("user_id = ?", id).collect(&:id), 1.week.ago).collect {|pub| pub.conversations.size}.sum
+  	Post.answers.where("created_at > ? and in_reply_to_question_id in (?)", 1.week.ago, questions.collect(&:id)).count
   end
 
 	def enrolled_in_experiment? experiment_name

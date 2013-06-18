@@ -442,23 +442,71 @@ describe Asker do
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
-			
-			it 'run unless already sent' do
-				30.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+
+			it 'with two posts in fifteen days' do
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				16.times do |i|
+					if i == 0 
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+					elsif i < 15
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+					else
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
+					end
+
+					@asker.request_new_question @user.reload
 					Timecop.travel(Time.now + 1.day)
 				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-			it 'run unless already written question' do
-				@question = create(:question, user_id: @user.id, status: 1)		
-				10.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					@asker.request_new_question @user
+			it 'uses correct script' do
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				7.times do |i|
+					question = nil
+					new_question_post = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').order('created_at DESC').first
+					case i
+					when 0
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+					when 1
+						new_question_post.text.include?("more").must_equal false						
+						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+					when 2
+						new_question_post.text.include?("more").must_equal true
+						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+					else						
+						new_question_post.text.include?("more").must_equal true
+						new_question_post.text.include?("last week").must_equal true
+						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+					end
+
+					@asker.request_new_question @user.reload
+					Timecop.travel(Time.now + 15.days)
+					10.times { create(:post, text: 'the correct answer, yo', user_id: create(:user).id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: question.id, correct: true) } if question
 				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-			end
+			end			
+
+			describe 'through age progression' do
+				it 'with no contributions' do
+					Timecop.travel(Time.now.beginning_of_week)
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					30.times do
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						Timecop.travel(Time.now + 1.day)
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
+				end
+
+				it 'with regular contributions' do
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+					45.times do
+						create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)		
+						@asker.request_new_question @user.reload
+						Timecop.travel(Time.now + 1.day)
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 4
+				end
+			end		
 		end
 
 		describe 'mod' do
