@@ -364,7 +364,7 @@ describe Asker do
 			end
  		end		
 
- 		it 'run links users to search terms they were followed through' do
+ 		it 'links users to search terms they were followed through' do
  			search_term = create(:search_term)
 			@new_user.reload.search_term_topic_id.must_equal nil
 			twi_user_ids = [@new_user.twi_user_id]
