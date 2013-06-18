@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130610231344) do
+ActiveRecord::Schema.define(:version => 20130613182931) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -356,6 +356,7 @@ ActiveRecord::Schema.define(:version => 20130610231344) do
     t.string   "last_sign_in_ip"
     t.boolean  "subscribed",             :default => true
     t.integer  "moderator_segment"
+    t.integer  "search_term_topic_id"
   end
 
   add_index "users", ["author_id"], :name => "index_users_on_author_id"

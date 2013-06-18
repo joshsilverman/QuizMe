@@ -17,7 +17,13 @@
         %a{"data-toggle" => "tab", :href => "#running"} Running
       %li
         %a#concluded_tab{"data-toggle" => "tab", :href => "#concluded"} Concluded
+      %li{style: 'float: right;'}
+        %a#concluded_search_terms_tab{"data-toggle" => "tab", :href => "#concluded_search_terms"} Concluded Search
+      %li{style: 'float: right;'}
+        %a#search_terms_tab{"data-toggle" => "tab", :href => "#search_terms"} Search        
     .tab-content
       #running.tab-pane.active
         = render "experiments"
       #concluded.tab-pane
+      #search_terms.tab-pane
+      #concluded_search_terms.tab-pane

@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
 	has_many :transitions
 
-	has_many :topics, :through => :askertopics
+	has_many :topics, :through => :askertopics, uniq: true
 	has_many :askertopics, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts
@@ -38,6 +38,8 @@ class User < ActiveRecord::Base
   has_many :followers_with_inactive, :through => :follower_relationships, :source => :follower
 
   has_many :exams
+
+  belongs_to :search_term, foreign_key: :search_term_topic_id, class_name: 'Topic'
 
   scope :supporters, where("users.role == 'supporter'")
   scope :not_asker, where("users.role != 'asker'")
@@ -395,6 +397,9 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
 		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 		Post.trigger_split_test(id, 'link to activity feed script (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
+		if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3) and search_term
+			search_term.askers.each { |asker| Post.trigger_split_test(id, "#{asker.twi_screen_name} search terms (=> advanced)") }
+		end
 	end
 
   def lifecycle_transition_comment to_segment

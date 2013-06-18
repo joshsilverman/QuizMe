@@ -2,6 +2,8 @@ class Experiment
   constructor: ->
     $('.experiment-header').click -> experiment.load_details($(this))
     $('#concluded_tab').click -> experiment.load_concluded_tab()
+    $('#search_terms_tab').click -> experiment.load_search_terms_tab()
+    $('#concluded_search_terms_tab').click -> experiment.load_concluded_search_terms_tab()
 
   load_details: (header) ->
     $.post "/experiments/show", name: header.data('name'), (res) ->
@@ -14,6 +16,20 @@ class Experiment
       $('#concluded_tab').off 'click'
       $('.experiment-header').off 'click'
       $('.experiment-header').click -> experiment.load_details($(this))
+  
+  load_search_terms_tab: ->
+    $.get "/experiments/index_search_terms", (res) -> 
+      $("#search_terms").html res
+      $('#search_terms_tab').off 'click'
+      $('.experiment-header').off 'click'
+      $('.experiment-header').click -> experiment.load_details($(this))      
+
+  load_concluded_search_terms_tab: ->
+    $.get "/experiments/index_concluded_search_terms", (res) -> 
+      $("#concluded_search_terms").html res
+      $('#concluded_search_terms_tab').off 'click'
+      $('.experiment-header').off 'click'
+      $('.experiment-header').click -> experiment.load_details($(this))            
 
   confirmReset: (e) ->
     agree = confirm("This will delete all data for this experiment?")

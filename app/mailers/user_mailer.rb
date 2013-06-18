@@ -21,8 +21,11 @@ class UserMailer < ActionMailer::Base
       "Is this progress report helpful?"
     ]
 
-    mail(:to => "#{@user.name} <#{@user.email}>", :subject => "Wisr - Progress Report")
-
-    Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }   
+    begin
+      mail(:to => "#{@user.name} <#{@user.email}>", :subject => "Wisr - Progress Report")
+      Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }   
+    rescue Exception => exception
+      puts "Failed to send progress report to #{@user.email} (#{exception})"
+    end 
   end
 end

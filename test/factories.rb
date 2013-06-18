@@ -71,4 +71,12 @@ FactoryGirl.define do
 	factory :moderation do
 		type_id 1
 	end
+
+	factory :topic do
+		name 'great topic name!'
+
+		factory :search_term do
+			type_id 3
+		end		
+	end	
 end

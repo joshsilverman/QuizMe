@@ -201,7 +201,7 @@ describe Asker do
 				twi_user_ids = (5..10).to_a
 				@asker.followback(@asker.followers.collect(&:twi_user_id))
 				@asker.reload.follows.count.must_equal 1
-				@asker.send_autofollows(twi_user_ids, 5, true)
+				@asker.send_autofollows(twi_user_ids, 5, { force: true })
 				@asker.reload.follows.count.must_equal 6
 			end
 		end
@@ -363,7 +363,19 @@ describe Asker do
 				@asker.reload.follow_relationships.count.must_equal rel_count
 			end
  		end		
+
+ 		it 'run links users to search terms they were followed through' do
+ 			search_term = create(:search_term)
+			@new_user.reload.search_term_topic_id.must_equal nil
+			twi_user_ids = [@new_user.twi_user_id]
+			@asker.send_autofollows(twi_user_ids, 5, { force: true, search_term_source: { @new_user.twi_user_id => search_term } })
+			@new_user.reload.search_term_topic_id.must_equal search_term.id
+ 		end
 	end
+
+	# describe 'sends targeted mentions' do
+		
+	# end
 
 	describe "requests after answer" do
 

@@ -582,6 +582,15 @@ class Post < ActiveRecord::Base
     ab_test(test_name, *alternatives)
   end
 
+  def self.create_split_test_and_enroll_with_alternative(user_id, experiment_name, forced_alternative, *alternatives)
+    ab_user.set_id(user_id, true)
+    ab_user.confirm_js("WISR app", '')
+    experiment = Split::Experiment.find_or_create(experiment_name, *alternatives)
+    alternative = experiment.alternatives.select {|a| a.name == forced_alternative }.first
+    alternative.increment_participation
+    begin_experiment(experiment, alternative)
+  end
+    
   def self.grouped_as_conversations posts, asker = nil, engagements = {}, conversations = {}, dm_ids = []
     return {}, {} if posts.blank?
 

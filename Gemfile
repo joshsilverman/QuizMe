@@ -18,7 +18,7 @@ end
 
 group :production do
   gem 'bcrypt-ruby', '3.0.1'
-  gem 'dalli', '2.1.0'
+  gem 'dalli', '2.6.4'
   gem 'memcachier'
 end
 
