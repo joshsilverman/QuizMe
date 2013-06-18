@@ -390,35 +390,31 @@ describe Asker do
  		end
 	end
 
-	# describe 'sends targeted mentions' do
-		
-	# end
+	# describe 'sends targeted mentions'
 
 	describe "requests after answer" do
-		it 'run unless more than one unresponded request' do
-			10.times { create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id, correct: true) }
-			Timecop.travel(Time.now + 2.hours)
+		it 'unless more than one unresponded request in past week' do
+			# qualify user for all solicitations
+			50.times { @question = create(:question, created_for_asker_id: @asker.id, status: 1) }
+			@new_asker = create(:asker, published: nil)
+			@new_asker.related_askers << @asker
+			15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 			@user.update_attribute :lifecycle_segment, 4
+			Timecop.travel(Time.now + 2.hours)
 
-			@asker.request_mod @user.reload
-			@asker.request_ugc @user
-			# @asker.request_new_handle_ugc @user
-			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1			
-			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
-
-			20.times do
-				@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-				# @user.reload
-				# @asker.request_ugc @user
-				# @asker.request_mod @user
-				# @asker.request_new_handle_ugc @user
+			14.times do |i|
+				@asker.after_answer_action @user
 				Timecop.travel(Time.now + 1.day)
-			end			
-
-			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-			@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
-			# @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+				if i == 0
+					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+				elsif i == 1
+					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+				elsif i == 7
+					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
+				elsif i > 7
+					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
+				end
+			end
 		end
 
 		describe 'ugc' do
@@ -429,7 +425,25 @@ describe Asker do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-			it 'unless already sent' do
+
+			it 'unless user has less than 10 answers' do
+				8.times do |i|
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_new_question @user
+					Timecop.travel(Time.now + 1.day)
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+			end
+
+			it 'if user has greater than 10 answers' do
+				10.times do |i|
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_new_question @user
+				end
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+			end
+			
+			it 'run unless already sent' do
 				30.times do |i|
 					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					Timecop.travel(Time.now + 1.day)
@@ -437,28 +451,11 @@ describe Asker do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-			it 'unless less than 10' do
-				8.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					@asker.request_ugc @user
-					Timecop.travel(Time.now + 1.day)
-				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-			end
-
-			it 'if greater than 10' do
-				10.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					@asker.request_ugc @user
-				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-			end
-
-			it 'unless already written question' do
+			it 'run unless already written question' do
 				@question = create(:question, user_id: @user.id, status: 1)		
 				10.times do |i|
 					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					@asker.request_ugc @user
+					@asker.request_new_question @user
 				end
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
 			end

@@ -595,7 +595,7 @@ class Asker < User
     return unless can_send_requests_to_user?(answerer)
 
     actions = [
-      Proc.new {|answerer| request_ugc(answerer)}, # one time
+      Proc.new {|answerer| request_new_question(answerer)}, # one time
       Proc.new {|answerer| request_mod(answerer)}, # recurring
       Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
       # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
@@ -607,7 +607,11 @@ class Asker < User
   end
 
   def can_send_requests_to_user? user
-    recent_requests = Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", user.id, '%request%', '%solicit%').order("created_at DESC").limit(2)
+    recent_requests = Post.where("created_at > ?", 1.week.ago)\
+      .where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", user.id, '%request%', '%solicit%')\
+      .order("created_at DESC")\
+      .limit(2)
+    return true unless recent_requests.size > 1
     date_limit = recent_requests.last.created_at
     recent_requests.each do |request|
       if request.intention == 'request mod'
@@ -675,10 +679,13 @@ class Asker < User
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
 
-  def request_ugc user
-    return false if Question.exists?(:user_id => user.id)
-    return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc')
+  def request_new_question user
+    # return false if Question.exists?(:user_id => user.id)
+    # return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'solicit ugc')
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
+    return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 1.week.ago).size > 0 # we haven't asked them in the past week
+    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
+    return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
 
     script = Post.create_split_test(user.id, "ugc script v4.0", 
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
