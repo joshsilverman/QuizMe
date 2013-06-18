@@ -8,8 +8,7 @@ describe FeedsController do
 		@asker = create :asker
 		@asker.followers << @user	
 
-		@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
-		@question.answers << create(:correct_answer)
+		@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
 		@publication = create(:publication, question: @question, asker: @asker)
 		@question_post = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
 	end
@@ -31,7 +30,7 @@ describe FeedsController do
 			user_response.in_reply_to_post_id.must_equal @question_post.id
 		end
 
-		it 'run responds to user post' do
+		it 'responds to user post' do
 			grade_post = @asker.posts.where(intention: 'grade').first
 			grade_post.in_reply_to_user_id.must_equal @user.id
 		end

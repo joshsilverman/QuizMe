@@ -26,21 +26,24 @@ describe ModerationsController do
 			interaction_type: 2, 
 			conversation: @conversation
 
-
 		@initial_question_dm = create(:dm, :initial_question_dm, user_id: @asker.id, question: @question)
+		@conversation = create(:conversation, post: @initial_question_dm)
+		@initial_question_dm.update_attributes conversation: @conversation
 		@dm_answer = create :dm, 
 			user: @user, 
 			requires_action: true, 
 			in_reply_to_post_id: @initial_question_dm.id,
 			in_reply_to_user_id: @asker.id,
-			in_reply_to_question_id: @question.id
+			in_reply_to_question_id: @question.id,
+			conversation: @conversation
 
-		@dm_from_asker = create(:dm, user_id: @asker.id)
+		@dm_from_asker = create(:dm, user_id: @asker.id, conversation: @conversation)
 		@dm_reply = create :dm, 
 			user: @user, 
 			requires_action: true, 
 			in_reply_to_post_id: @dm_from_asker.id,
-			in_reply_to_user_id: @asker.id
+			in_reply_to_user_id: @asker.id,
+			conversation: @conversation
 	end
 
 	describe 'manage' do
@@ -112,7 +115,7 @@ describe ModerationsController do
 			before :each do
 				Capybara.current_driver = :selenium
 				@admin = create(:user, twi_user_id: 1, role: 'admin')
-				login_as(@admin, :scope => :user)
+				login_as @admin
 			end
 			
 			describe 'correct grade' do
@@ -140,7 +143,7 @@ describe ModerationsController do
 				end
 			end
 
-			it 'tell is accepted when admin agrees' do
+			it 'public tell is accepted when admin agrees' do
 				2.times do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
 					create(:moderation, user_id: moderator.id, post: @post)
@@ -151,6 +154,20 @@ describe ModerationsController do
 				page.find('.quick-reply-tell').click
 				page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 				@moderation.reload.accepted.must_equal true
+			end
+
+			it 'private tell is accepted when admin agrees' do
+				2.times do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					create(:moderation, user_id: moderator.id, post: @dm_answer)
+					@moderation = create(:moderation, user_id: moderator.id, type_id: 3, post: @dm_answer)
+					@moderation.accepted.must_equal nil
+				end
+				visit '/feeds/manage?filter=moderated'
+				page.find('.quick-reply-tell').click
+				page.find(".conversation.dim .post[post_id=\"#{@dm_answer.id}\"]").visible?.must_equal true
+				Delayed::Worker.new.work_off
+				@asker.posts.where(in_reply_to_user_id: @user.id, intention: 'grade').count.must_equal 1
 			end
 
 			it 'hide is accepted when admin agrees' do
@@ -282,8 +299,8 @@ describe ModerationsController do
 					end
 				end
 
-				describe "for public response" do
-					it 'runas correct' do
+				describe "for private response" do
+					it 'as correct' do
 						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
 						create(:moderation, user_id: moderator.id, type_id: 1, post_id: @dm_answer.id)
 						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
@@ -291,7 +308,8 @@ describe ModerationsController do
 
 						@dm_answer.reload.requires_action.must_equal false
 						@dm_answer.correct.must_equal true
-						Post.where(in_reply_to_post_id: @dm_answer.id, intention: 'grade').count.must_equal 1
+						Delayed::Worker.new.work_off
+						Post.where(in_reply_to_user_id: @dm_answer.user_id, intention: 'grade').count.must_equal 1
 					end
 				end
 			end

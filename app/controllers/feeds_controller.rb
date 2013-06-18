@@ -312,53 +312,12 @@ class FeedsController < ApplicationController
     root_post = conversation.post
 
     if params[:interaction_type] == "4"
-      if correct.nil?
-       response_text = params[:message]
-        if response_text == "Refer a friend?"
-          response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
-            "Do you have any friends/classmates that would also be interested?",
-            "Could you share with a couple of friends/classmates please?"
-          )
-        else
-          response_text = params[:message].gsub("@#{params[:username]}", "")
-        end
-
-        response_post = Post.delay.dm(asker, user, response_text, {
-          :conversation_id => conversation.id,
-          :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil
-        })
-      else
-        if tell
-          answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first.text
-          answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
-          response_text = "I was looking for '#{answer_text}'"
-        else
-          response_text = asker.generate_response(correct, user_post.question, tell)
-        end
-
-        user_post.update_attribute(:correct, correct)
-
-        # Will double count if we grade people again via DM
-        Mixpanel.track_event "answered", {
-          :distinct_id => params[:in_reply_to_user_id],
-          :time => user_post.created_at.to_i,
-          :account => asker.twi_screen_name,
-          :type => "twitter",
-          :in_reply_to => "new follower question DM"
-        }
-
-        user.update_user_interactions({
-          :learner_level => "dm answer", 
-          :last_interaction_at => user_post.created_at,
-          :last_answer_at => user_post.created_at
-        }) 
-
-        response_post = Post.delay.dm(asker, user, response_text, {
-          :conversation_id => conversation.id,
-          :intention => params[:message] == "Refer a friend?" ? 'refer a friend' : nil,
-          :intention => 'grade'
-        })
-      end
+      response_post = asker.private_response user_post, correct, 
+        tell: tell,
+        message: params[:message],
+        username: params[:username],
+        in_reply_to_user_id: params[:in_reply_to_user_id],
+        conversation: conversation
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       if correct.nil?

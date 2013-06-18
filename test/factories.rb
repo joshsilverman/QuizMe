@@ -45,6 +45,10 @@ FactoryGirl.define do
 
 	factory :question do
 		text 'Whats up?'
+
+	  after(:create) do |question|
+	    create :correct_answer, question: question
+	  end
 	end
 
 	factory :answer do

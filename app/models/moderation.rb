@@ -55,15 +55,22 @@ class Moderation < ActiveRecord::Base
     asker = post.in_reply_to_user.becomes Asker
 
     if [1,2,3].include? type_id
-      asker.app_response(post, correct, {
-        :link_to_parent => root_post.is_question_post? ? false : true,
-        :tell => tell,
-        :conversation_id => post.conversation.id,
-        :post_to_twitter => true,
-        :manager_response => true,
-        :quote_user_answer => root_post.is_question_post? ? true : false,
-        :intention => 'grade'
-      })
+      if post.interaction_type == 4
+        response_post = asker.private_response post, correct, 
+          tell: tell,
+          in_reply_to_user_id: post.user_id,
+          conversation: post.conversation
+      else
+        asker.app_response(post, correct, {
+          :link_to_parent => root_post.is_question_post? ? false : true,
+          :tell => tell,
+          :conversation_id => post.conversation.id,
+          :post_to_twitter => true,
+          :manager_response => true,
+          :quote_user_answer => root_post.is_question_post? ? true : false,
+          :intention => 'grade'
+        })
+      end
     end
     accept_and_reject_moderations
   end

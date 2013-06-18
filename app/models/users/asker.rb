@@ -382,7 +382,60 @@ class Asker < User
     Rails.cache.write("aggregate activity", current_cache)
   end
 
+  def private_response user_post, correct, options = {}
+    user = user_post.user
+    conversation = options[:conversation]
+    if correct.nil?
+     response_text = options[:message]
+      if response_text == "Refer a friend?"
+        response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
+          "Do you have any friends/classmates that would also be interested?",
+          "Could you share with a couple of friends/classmates please?"
+        )
+      else
+        response_text = options[:message].gsub("@#{options[:username]}", "")
+      end
 
+      response_post = Post.delay.dm(self, user, response_text, {
+        :conversation_id => conversation.id,
+        :intention => options[:message] == "Refer a friend?" ? 'refer a friend' : nil
+      })
+    else
+      if options[:tell]
+        answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first.text
+        answer_text = "#{answer_text[0..77]}..." if answer_text.size > 80
+        response_text = "I was looking for '#{answer_text}'"
+      else
+        response_text = generate_response(correct, user_post.in_reply_to_question, options[:tell])
+      end
+
+      user_post.update_attribute(:correct, correct)
+
+      # Will double count if we grade people again via DM
+      Mixpanel.track_event "answered", {
+        :distinct_id => options[:in_reply_to_user_id],
+        :time => user_post.created_at.to_i,
+        :account => twi_screen_name,
+        :type => "twitter",
+        :in_reply_to => "new follower question DM"
+      }
+
+      user.update_user_interactions({
+        :learner_level => "dm answer", 
+        :last_interaction_at => user_post.created_at,
+        :last_answer_at => user_post.created_at
+      }) 
+
+      response_post = Post.delay.dm(self, user, response_text, {
+        :conversation_id => conversation.id,
+        :intention => 'grade'
+      })
+    end
+    user_post.update_attributes(:requires_action => false, :correct => correct)
+    response_post
+  end
+
+  # rename public_response
   def app_response user_post, correct, options = {}
     publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
     answerer = user_post.user
