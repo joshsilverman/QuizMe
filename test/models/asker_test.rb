@@ -183,6 +183,23 @@ describe Asker do
 				@asker.autofollow_count(8).must_equal 0
 			end
 
+			it "obeys maximum daily unfollow limit" do
+				100.times { @asker.follows << create(:user) }
+				Timecop.travel((Time.now + 40.days).beginning_of_week)
+				total = 0
+				7.times do 
+					24.times do
+						unfollow_count = @asker.unfollow_count
+						(unfollow_count < 11).must_equal true
+						pre = @asker.follows.count
+						@asker.unfollow_nonreciprocal(@asker.follows.collect(&:twi_user_id), unfollow_count)
+						total += (pre - @asker.follows.count)
+						Timecop.travel(Time.now + 1.hour)
+					end
+				end
+				total.must_equal 35	
+			end			
+
 			it "follows proper number of users per day and week" do
 				@asker.follows.count.must_equal 0
 				Timecop.travel(Time.now.beginning_of_week)
@@ -304,7 +321,7 @@ describe Asker do
 				twi_follows_ids = [@new_user.twi_user_id]
 				34.times do |i|
 					Timecop.travel(Time.now + 1.day)
-					@asker.unfollow_nonreciprocal(twi_follows_ids)
+					@asker.unfollow_nonreciprocal(twi_follows_ids, 10)
 					if i < 29
 						@asker.reload.follows.count.must_equal 1
 					else
@@ -320,7 +337,7 @@ describe Asker do
 				twi_follows_ids = [@new_user.twi_user_id]
 				31.times do |i|
 					Timecop.travel(Time.now + 1.day)
-					@asker.unfollow_nonreciprocal(twi_follows_ids)
+					@asker.unfollow_nonreciprocal(twi_follows_ids, 10)
 					if i < 29
 						@asker.reload.follows.count.must_equal 1
 					else
@@ -335,7 +352,7 @@ describe Asker do
 				twi_follows_ids = [@new_user.twi_user_id]
 				32.times do |i|
 					Timecop.travel(Time.now + 1.day)
-					@asker.unfollow_nonreciprocal(twi_follows_ids)
+					@asker.unfollow_nonreciprocal(twi_follows_ids, 10)
 					@asker.reload.follows.count.must_equal 1
 				end
 			end
@@ -358,7 +375,7 @@ describe Asker do
 				twi_follows_ids = [@new_user.twi_user_id]
 				Timecop.travel(Time.now + 32.days)
 				rel_count = @asker.reload.follow_relationships.count
-				@asker.unfollow_nonreciprocal(twi_follows_ids)
+				@asker.unfollow_nonreciprocal(twi_follows_ids, 10)
 				@asker.reload.follow_relationships.active.count.must_equal 0
 				@asker.reload.follow_relationships.count.must_equal rel_count
 			end
