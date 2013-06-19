@@ -3,7 +3,6 @@ class ExperimentsController < ApplicationController
   before_filter :yc_admin?, :only => :index
 
   def index
-    puts Split::Experiment.all.to_json
     @experiments = Split::Experiment.all.reject { |e| e.blank? or e.name.include? 'search term' }
   end
 
