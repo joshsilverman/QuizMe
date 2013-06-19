@@ -393,26 +393,47 @@ describe Asker do
 	# describe 'sends targeted mentions'
 
 	describe "requests after answer" do
-		it 'unless more than one unresponded request in past week' do
-			# qualify user for all solicitations
-			50.times { @question = create(:question, created_for_asker_id: @asker.id, status: 1) }
-			@new_asker = create(:asker, published: nil)
-			@new_asker.related_askers << @asker
-			15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-			@user.update_attribute :lifecycle_segment, 4
-			Timecop.travel(Time.now + 2.hours)
-
-			14.times do |i|
+		describe 'unless' do
+			before :each do 
+				# qualify user for all solicitations
+				50.times { @question = create(:question, created_for_asker_id: @asker.id, status: 1) }
+				@new_asker = create(:asker, published: nil)
+				@new_asker.related_askers << @asker
+				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				@user.update_attribute :lifecycle_segment, 4
+				Timecop.travel(Time.now + 2.hours)
+			end
+			
+			it 'already requested in the past four hours' do
 				@asker.after_answer_action @user
-				Timecop.travel(Time.now + 1.day)
-				if i == 0
-					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
-				elsif i == 1
-					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
-				elsif i == 7
-					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
-				elsif i > 7
-					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
+				Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+				Timecop.travel(Time.now + 5.minutes)
+				4.times do |i|
+					Timecop.travel(Time.now + 1.hour)
+					@asker.after_answer_action @user
+					if i < 3
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+					else
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+					end
+				end
+			end
+
+			it 'more than one unresponded request in past week' do
+				14.times do |i|
+					@asker.after_answer_action @user
+					Timecop.travel(Time.now + 1.day)
+					if i == 0
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+					elsif i == 1
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+					elsif i == 7
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
+					elsif i > 7
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
+					else
+						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+					end
 				end
 			end
 		end
@@ -425,10 +446,9 @@ describe Asker do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-
 			it 'unless user has less than 10 answers' do
 				8.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
 					@asker.request_new_question @user
 					Timecop.travel(Time.now + 1.day)
 				end

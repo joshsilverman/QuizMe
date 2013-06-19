@@ -595,7 +595,7 @@ class Asker < User
     return unless can_send_requests_to_user?(answerer)
 
     actions = [
-      Proc.new {|answerer| request_new_question(answerer)}, # one time
+      Proc.new {|answerer| request_new_question(answerer)}, # recurring
       Proc.new {|answerer| request_mod(answerer)}, # recurring
       Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
       # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
@@ -611,13 +611,18 @@ class Asker < User
       .where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", user.id, '%request%', '%solicit%')\
       .order("created_at DESC")\
       .limit(2)
-    return true unless recent_requests.size > 1
-    date_limit = recent_requests.last.created_at
+    return true if recent_requests.blank?
+
+    last_request_time = recent_requests.last.created_at
+    return false if last_request_time > 4.hours.ago
+
+    return true if recent_requests.size < 2
+
     recent_requests.each do |request|
       if request.intention == 'request mod'
-        return true if user.becomes(Moderator).moderations.where('created_at > ?', date_limit).present?
+        return true if user.becomes(Moderator).moderations.where('created_at > ?', last_request_time).present?
       elsif request.intention == 'solicit ugc' or request.intention == 'request new handle ugc'
-        return true if user.questions.where('created_at > ?', date_limit).present?
+        return true if user.questions.where('created_at > ?', last_request_time).present?
       end
     end
     return false
@@ -682,9 +687,10 @@ class Asker < User
   def request_new_question user
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
     return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).size > 0 # we haven't asked them in the past two weeks
+    
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
-
+    
     script = Post.create_split_test(user.id, "ugc script v4.0", 
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
       "I'd love to have you write a question or two for this handle... if you would, enter it at wisr.com/feeds/{asker_id}?q=1"
