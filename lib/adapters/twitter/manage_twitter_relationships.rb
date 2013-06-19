@@ -27,7 +27,7 @@ module ManageTwitterRelationships
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
 
     # Check if we've already followed enough users today
-    return 0 if follow_relationships.search.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
+    return 0 if follow_relationships.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
 
     max_follows
   end
