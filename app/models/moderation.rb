@@ -54,6 +54,8 @@ class Moderation < ActiveRecord::Base
     root_post = post.conversation.post
     asker = post.in_reply_to_user.becomes Asker
 
+    puts "triggering response on post ID #{post.id}"
+
     if [1,2,3].include? type_id
       if post.interaction_type == 4
         response_post = asker.private_response post, correct, 
