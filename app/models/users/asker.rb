@@ -904,7 +904,12 @@ class Asker < User
     asker_hash = Asker.published.group_by(&:id)
     recipients.each do |recipient| 
       if Post.create_split_test(recipient.id, "weekly progress report email (=> superuser)", "false", "true") == "true"
-        UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+        begin
+          UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+          Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }
+        rescue Exception => exception
+          puts "Failed to send progress report to #{@user.email} (#{exception})"
+        end         
       end
     end
   end
