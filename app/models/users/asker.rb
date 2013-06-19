@@ -1034,9 +1034,11 @@ class Asker < User
 
   def self.dm_nudge_followups recipient_hash
     recipient_hash.each do |recipient_id, recipient_data|
+      asker = Asker.find(recipient_data[:asker_id])
+      next unless asker.published
+      
       if Post.create_split_test(recipient_id, "nudge followup (nudge conversion)", "false", "true") == "true"
         user = User.find(recipient_id)
-        asker = Asker.find(recipient_data[:asker_id])
         script = "You have a chance to check out that link? What did you think?"
         Post.dm(asker, user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
         Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
