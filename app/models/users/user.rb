@@ -31,6 +31,7 @@ class User < ActiveRecord::Base
   has_many :follow_relationships, :foreign_key => :follower_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :follows, :through => :follow_relationships, :source => :followed, :conditions => ["relationships.active = ?", true]
   has_many :follows_with_inactive, :through => :follow_relationships, :source => :followed
+  has_many :asker_follows, :through => :follow_relationships, :source => :followed, :conditions => ["relationships.active = ?", true], class_name: 'Asker'
 
   # has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :follower_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
