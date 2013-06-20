@@ -11,6 +11,9 @@ class Moderation < ActiveRecord::Base
   scope :ignore, where(type_id: 5)
   scope :requires_detailed, where(type_id: 6)
 
+  scope :accepted, where("accepted = ?", true)
+  scope :rejected, where("accepted = ?", false)
+
   def respond_with_type_id
     return false if !post.correct.nil? or !post.requires_action
 
