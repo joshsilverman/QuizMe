@@ -3,12 +3,15 @@ class ModerationsController < ApplicationController
 
   def manage
     moderator = current_user.becomes(Moderator)
-    posts_with_enough_moderations = Post.moderated_box
-    posts_with_enough_moderations.reject! {|p| p.moderations.count == 2 and p.moderations.collect(&:type_id).uniq.count == 2 } if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)    
-    post_ids_with_enough_moderations = posts_with_enough_moderations.collect(&:id)
+
+    # get all posts w/ more than one mod
+    excluded_posts = Post.requires_action.joins(:moderations).group('posts.id').having('count(moderations.id) > 1')
+    # allow tiebreaker if mod is qualified
+    excluded_posts.reject! {|p| p.moderations.count == 2 and p.moderations.collect(&:type_id).uniq.count == 2 } if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)    
+    excluded_post_ids = excluded_posts.collect(&:id)
 
     post_ids_moderated_by_current_user = moderator.moderations.collect(&:post_id)
-    excluded_post_ids = (post_ids_with_enough_moderations + post_ids_moderated_by_current_user).uniq
+    excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
 		
 		@posts = Post.includes(:tags, :conversation, :in_reply_to_question => :answers).linked_box\

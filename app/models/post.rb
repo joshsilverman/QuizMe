@@ -42,8 +42,7 @@ class Post < ActiveRecord::Base
   scope :content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
   scope :not_content, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
-  
-  scope :moderated, lambda { joins(:moderations).group('posts.id').having('count(moderations.id) > 1') } 
+  scope :moderated, lambda { joins(:moderations).group('posts.id').having('count(moderations.id) > 2') } 
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
