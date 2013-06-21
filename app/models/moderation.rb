@@ -17,11 +17,16 @@ class Moderation < ActiveRecord::Base
   def respond_with_type_id
     return false if !post.correct.nil? or !post.requires_action
 
-  	greater_than_one_mod = post.moderations.count > 1
-  	complete_consensus = post.moderations.collect(&:type_id).uniq.count == 1
-  	at_least_one_mod_above_noob = post.moderations.select{|m| m.moderator.moderator_segment > 2 if m.moderator.moderator_segment}.count > 0
-  	at_least_one_mod_above_advanced = post.moderations.select{|m| m.moderator.moderator_segment > 4 if m.moderator.moderator_segment}.count > 0
+    greater_than_one_mod = post.moderations.count > 1
+    three_mods = (post.moderations.count == 3)
 
+    complete_consensus = post.moderations.collect(&:type_id).uniq.count == 1
+    partial_consensus = (three_mods and (post.moderations.collect(&:type_id).uniq.count == 2))
+    
+    at_least_one_mod_above_noob = post.moderations.select{|m| m.moderator.moderator_segment > 2 if m.moderator.moderator_segment}.count > 0
+    at_least_one_mod_above_advanced = post.moderations.select{|m| m.moderator.moderator_segment > 4 if m.moderator.moderator_segment}.count > 0
+    at_least_one_consensus_mod_above_noob = (three_mods and partial_consensus and (post.moderations.select { |m| post.moderations.select { |mm| mm.type_id == m.type_id }.count > 1 and m.moderator.moderator_segment and m.moderator.moderator_segment > 2 }.count > 0))
+    
     # consensus
   	if greater_than_one_mod and complete_consensus and at_least_one_mod_above_noob
       post.update_attributes moderation_trigger_type_id: 1
@@ -30,14 +35,11 @@ class Moderation < ActiveRecord::Base
       post.update_attributes moderation_trigger_type_id: 2
   		super_moderation = post.moderations.select{|m| m.moderator.moderator_segment > 4 if m.moderator.moderator_segment}.first
   		return super_moderation.type_id
-  	end
-
-  	# tie-breaker
-  	# if 3 moderations
-  		# if consensus on 2
-  		# if consensus group contains mod with segment > 3
-        # post.update_attributes moderation_trigger_type_id: 3
-        # return consensus group type id
+  	elsif three_mods and partial_consensus and at_least_one_consensus_mod_above_noob
+      post.update_attributes moderation_trigger_type_id: 3
+      partial_consensus_moderation = post.moderations.select { |m| post.moderations.select { |mm| mm.type_id == m.type_id }.count > 1 and m.moderator.moderator_segment and m.moderator.moderator_segment > 2 }.first
+      return partial_consensus_moderation.type_id
+    end
   end
 
   def trigger_response
@@ -57,7 +59,7 @@ class Moderation < ActiveRecord::Base
     root_post = post.conversation.post
     asker = post.in_reply_to_user.becomes Asker
 
-    puts "triggering response on post ID #{post.id}"
+    # puts "triggering response on post ID #{post.id}"
 
     if [1,2,3].include? type_id
       if post.interaction_type == 4

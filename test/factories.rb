@@ -69,7 +69,7 @@ FactoryGirl.define do
 	end
 
 	factory :moderation do
-		type_id 1
+		# type_id 1
 	end
 
 	factory :topic do

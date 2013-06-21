@@ -3,7 +3,9 @@ class ModerationsController < ApplicationController
 
   def manage
     moderator = current_user.becomes(Moderator)
-  	post_ids_with_enough_moderations = Post.requires_action.select('posts.id').joins(:moderations).group('posts.id').having('count(moderations.id) > 1').collect(&:id)
+    posts_with_enough_moderations = Post.moderated_box
+    posts_with_enough_moderations.reject! {|p| p.moderations.count == 2 and p.moderations.collect(&:type_id).uniq.count == 2 } if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)    
+    post_ids_with_enough_moderations = posts_with_enough_moderations.collect(&:id)
 
     post_ids_moderated_by_current_user = moderator.moderations.collect(&:post_id)
     excluded_post_ids = (post_ids_with_enough_moderations + post_ids_moderated_by_current_user).uniq
