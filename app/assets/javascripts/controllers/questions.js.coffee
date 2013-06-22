@@ -46,7 +46,7 @@ class Question
 
 		$(".contributor").tooltip()
 		check_twttr = =>
-			if twttr and twttr.events
+			if (typeof twttr != 'undefined') and twttr.events
 				twttr.events.bind 'follow', (e) =>
 					$.ajax '/experiments/trigger',
 						type: 'post'

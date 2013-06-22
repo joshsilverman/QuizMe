@@ -4,7 +4,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
-  caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { request.fullpath.split('?').first }
+  caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
 
   def index
     @index = true

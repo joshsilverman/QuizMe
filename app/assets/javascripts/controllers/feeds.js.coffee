@@ -13,7 +13,6 @@ class @Feed
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
-		@correct = $("#correct").val()
 		@answered_count = 0
 
 		@conversations = $.parseJSON($("#conversations").val())
@@ -55,10 +54,10 @@ class @Feed
 		@filtered = $('.tab-content .activity').length > 0
 
 		check_twttr = =>
-			if twttr and twttr.widgets
-				@load_follow_buttons()
-			else
+			if (typeof twttr == 'undefined') or !twttr.widgets
 				setTimeout (=> check_twttr()), 100
+			else
+				@load_follow_buttons()
 
 				@load_follow_buttons_timeouts = []
 				$(document).scroll =>
@@ -68,8 +67,8 @@ class @Feed
 					feed.load_follow_buttons_timeouts.push setTimeout ->
 							feed.load_follow_buttons()
 						, 500
-
 				twttr.events.bind 'follow', (e) => @afterfollow(e)
+
 		check_twttr()	
 
 	load_follow_buttons: ->

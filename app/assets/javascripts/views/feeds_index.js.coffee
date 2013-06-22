@@ -1,12 +1,11 @@
 class FeedsHome
 	constructor: ->
 		check_twttr = =>
-			if twttr and twttr.widgets
-				@load_follow_buttons()
-			else
+			if (typeof twttr == 'undefined') or !twttr.widgets
 				setTimeout (=> check_twttr()), 100
-
-				@load_follow_buttons_timeouts = []
+			else
+				feeds_home.load_follow_buttons_timeouts = []
+				@load_follow_buttons()
 				$(document).scroll =>
 					puts feeds_home.load_follow_buttons_timeouts
 					$.each feeds_home.load_follow_buttons_timeouts, (i, t) -> clearTimeout(t)
