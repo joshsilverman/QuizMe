@@ -188,7 +188,7 @@ class User < ActiveRecord::Base
 	end
 
 	def dm_conversation_history_with_asker asker_id
-		Post.dms.where("(user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?)", id, asker_id, asker_id, id).order("created_at ASC")
+		Asker.dms.where("(user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?)", id, asker_id, asker_id, id).order("created_at ASC")
 	end
 
 	def is_follower_of? asker
@@ -199,7 +199,7 @@ class User < ActiveRecord::Base
 
 	def app_answer asker, post, answer, options = {}
 		if options[:post_to_twitter]
-      user_post = Post.tweet(self, answer.text, {
+      user_post = self.public_send(answer.text, {
         :reply_to => asker.twi_screen_name,
         :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
         :interaction_type => 2, 
@@ -454,7 +454,7 @@ class User < ActiveRecord::Base
     end
 
     unless comment == no_comment or comment.nil?
-      Post.dm(asker, self, comment, {:intention => "lifecycle+"})
+      asker.private_send(self, comment, {:intention => "lifecycle+"})
       return comment
     end
 

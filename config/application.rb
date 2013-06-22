@@ -21,6 +21,7 @@ module Quizmemanager
     config.autoload_paths += %W(#{config.root}/lib/classifiers)
     config.autoload_paths += %W(#{config.root}/lib/adapters/twitter)
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
+    config.autoload_paths += Dir[Rails.root.join('app', 'models', 'users', '{**}')]
 
     config.assets.initialize_on_precompile = false
     

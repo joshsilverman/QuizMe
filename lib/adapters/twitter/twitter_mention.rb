@@ -6,7 +6,7 @@ class TwitterMention
 	end
 
   def perform
-    Post.tweet(@sender, @text, @options)
+    @sender.public_send(@text, @options)
     
     if @options[:intention] == 'incorrect answer follow up'
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => @options[:in_reply_to_user_id]}

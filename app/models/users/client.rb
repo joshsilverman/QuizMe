@@ -57,16 +57,16 @@ class Client < User
   #   message = "You're doing really well! I offer a much more comprehensive (free) course here:"
   #   puts "From SAThabit: " + message
   #   long_url = "http://www.testive.com/sathabit/?version=email&utm_source=wisr&utm_twi_screen_name=#{user.twi_screen_name}"
-  #   dm_status = Post.dm(asker, user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
+  #   dm_status = asker.private_send(user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
   # end
 
   # def self.nudge_instaedu user, asker
   #   message = "If you're interested, we work with a Biology tutor website. Could this be helpful? "
   #   puts "From instaEDU: " + message
   #   long_url = "http://instaedu.com/Biology-online-tutoring/?utm_source=wisr"
-  #   dm_status = Post.dm(asker, user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
+  #   dm_status = asker.private_send(user, message, {:long_url => long_url, :link_type => 'wisr', :include_url => true})
   #   message = "Are you currently a student? Could this be helpful?"
-  #   dm_status = Post.dm(asker, user, message, {:long_url => nil, :link_type => 'wisr', :include_url => true})
+  #   dm_status = asker.private_send(user, message, {:long_url => nil, :link_type => 'wisr', :include_url => true})
   # end
 
   def export_stats_to_csv

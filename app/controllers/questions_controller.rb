@@ -220,12 +220,12 @@ class QuestionsController < ApplicationController
     if accepted
       question.update_attributes(:status => 1)
       a = User.asker(question.created_for_asker_id)
-      # Post.dm(a, "Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
+      # a.private_send("Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
     else
       question.update_attributes(:status => -1)
       a = User.asker(question.created_for_asker_id)
       ## DM user to let them know!
-      # Post.dm(a, "Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
+      # a.private_send("Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
     end
     render :json => accepted, :status => 200
   end

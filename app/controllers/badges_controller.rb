@@ -45,7 +45,7 @@ class BadgesController < ApplicationController
         tweet = "@#{@user.twi_screen_name} You earned the #{@badge.title} badge"
         
         long_url = "#{URL}/#{@user.twi_screen_name}/badges/story/#{@badge.title.parameterize}"
-        Post.tweet(@badge.asker, tweet, :long_url => long_url)
+        @badge.asker.public_send(tweet, :long_url => long_url)
 
         render :nothing => true, :status => 200
       end

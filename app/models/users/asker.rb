@@ -94,6 +94,14 @@ class Asker < User
     counts
   end
 
+  def public_send text, options = {}, post = nil, answers = nil
+    self.becomes(TwitterAsker).public_send(text, options = {}, post = nil, answers = nil)
+  end
+  
+  def private_send recipient, text, options = {}
+    self.becomes(TwitterAsker).private_send(recipient, text, options = {})
+  end
+
   def publish_question
     queue = self.publication_queue
     unless queue.blank?
@@ -114,7 +122,7 @@ class Asker < User
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
     dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
 
-    Post.dm(self, user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
+    self.private_send(user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name,
@@ -143,7 +151,7 @@ class Asker < User
         if asker_cache[:last_answer_at] < 5.minutes.ago and asker_cache[:count] > 0
           asker = Asker.find(asker_id)
           script = Asker.get_aggregate_post_response_script(asker_cache[:count], asker_cache[:correct])
-          Post.tweet(asker, script, {
+          asker.public_send(script, {
             :reply_to => user_cache[:twi_screen_name],
             :interaction_type => 2, 
             :link_type => "agg", 
@@ -249,7 +257,7 @@ class Asker < User
 
     # puts "send question: '#{question.text}' to #{user.twi_screen_name}" 
 
-    Post.tweet(asker, question.text, {
+    asker.public_send(question.text, {
       :reply_to => user.twi_screen_name,
       :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
       :in_reply_to_user_id => user.id,
@@ -316,7 +324,7 @@ class Asker < User
           publication = Publication.includes(:question).find(publication_id)
           popular_asker_publications[asker.id] = publication
         end
-        Post.tweet(asker, "Next question! #{publication.question.text}", {
+        asker.public_send("Next question! #{publication.question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}", 
           :interaction_type => 2, 
@@ -396,7 +404,7 @@ class Asker < User
         response_text = options[:message].gsub("@#{options[:username]}", "")
       end
 
-      response_post = Post.delay.dm(self, user, response_text, {
+      response_post = self.delay.private_send(user, response_text, {
         :conversation_id => conversation.id,
         :intention => options[:message] == "Refer a friend?" ? 'refer a friend' : nil
       })
@@ -426,7 +434,7 @@ class Asker < User
         :last_answer_at => user_post.created_at
       }) 
 
-      response_post = Post.delay.dm(self, user, response_text, {
+      response_post = self.delay.private_send(user, response_text, {
         :conversation_id => conversation.id,
         :intention => 'grade'
       })
@@ -453,7 +461,7 @@ class Asker < User
     end
 
     if options[:post_to_twitter]
-      app_post = Post.tweet(self, response_text, {
+      app_post = self.public_send(response_text, {
         :reply_to => answerer.twi_screen_name,
         :long_url => "#{URL}/feeds/#{id}/#{publication.id}", 
         :interaction_type => 2, 
@@ -644,7 +652,7 @@ class Asker < User
     )
     script.gsub! '<link>', "http://wisr.com/users/#{user.id}/activity"
 
-    Post.dm(self, user, script, {
+    self.private_send(user, script, {
       :intention => "send link to activity feed"
     })    
   end
@@ -680,7 +688,7 @@ class Asker < User
     end
 
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
-    Post.dm(self, user, script, {intention: 'request mod'})
+    self.private_send(user, script, {intention: 'request mod'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
 
@@ -730,11 +738,11 @@ class Asker < User
     script.gsub! "<last_week>", "Your question(s) were answered #{question_count} times last week!"
 
     if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
-      Post.dm(self, user, script, {
+      self.private_send(user, script, {
         :intention => "solicit ugc"
       })
     else
-      Post.tweet(self, script, {
+      self.public_send(script, {
         :reply_to => user.twi_screen_name,
         :in_reply_to_user_id => user.id,
         :intention => 'solicit ugc',
@@ -781,7 +789,7 @@ class Asker < User
     script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
     script.gsub! '<new handle>', in_progress_asker.twi_screen_name
 
-    Post.dm(self, user, script, {intention: 'request new handle ugc'})
+    self.private_send(user, script, {intention: 'request new handle ugc'})
     Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
@@ -921,7 +929,7 @@ class Asker < User
       next unless asker and text
       
       if asker.followers.include?(recipient) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
-        Post.dm(asker, recipient, text, {:intention => "progress report"})
+        asker.private_send(recipient, text, {:intention => "progress report"})
         # puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
         sleep 1
       end
@@ -968,7 +976,7 @@ class Asker < User
       next unless post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
       if Time.now.hour % 12 == 0
-        Post.tweet(asker, "Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
+        asker.public_send("Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
           :intention => 'solicit ugc',
           :interaction_type => 2
         })
@@ -1004,7 +1012,7 @@ class Asker < User
       next unless asker.followers.collect(&:twi_user_id).include? user.twi_user_id
       script = "So far, #{question_data[:answered_count]} people have answered your question "
       script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
-      Post.dm(asker, user, script, {:intention => "author followup"})
+      asker.private_send(user, script, {:intention => "author followup"})
       
       if Post.create_split_test(user.id, 'author followup type (return ugc submission)', 'write another here', 'direct to dashboard') == 'write another here'
         script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
@@ -1012,7 +1020,7 @@ class Asker < User
         script = "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"
       end
 
-      Post.dm(asker, user, script, {:intention => "author followup"})
+      asker.private_send(user, script, {:intention => "author followup"})
       Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
     end
   end
@@ -1045,7 +1053,7 @@ class Asker < User
       if Post.create_split_test(recipient_id, "nudge followup (nudge conversion)", "false", "true") == "true"
         user = User.find(recipient_id)
         script = "You have a chance to check out that link? What did you think?"
-        Post.dm(asker, user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
+        asker.private_send(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
         Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
       end 
     end
@@ -1085,7 +1093,7 @@ class Asker < User
 
     script = "#{script} #{question.text}".strip
 
-    Post.tweet(self, script, { 
+    self.public_send(script, { 
       reply_to: user.twi_screen_name, 
       intention: 'targeted mention', 
       question_id: question.id,
