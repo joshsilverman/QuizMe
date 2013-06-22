@@ -44,7 +44,7 @@ describe Asker do
 
 		it "and quotes the right answer when incorrect" do
 			app_response = @asker.app_response @user_response, false
-			app_response.text.include?(@correct_answer.text).must_equal true
+			app_response.text.include?(@question.answers.correct.text).must_equal true
 		end
 
 		describe "from the manager" do
