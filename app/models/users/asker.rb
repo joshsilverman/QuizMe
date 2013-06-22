@@ -95,11 +95,11 @@ class Asker < User
   end
 
   def public_send text, options = {}, post = nil, answers = nil
-    self.becomes(TwitterAsker).public_send(text, options = {}, post = nil, answers = nil)
+    self.becomes(TwitterAsker).public_send(text, options, post, answers)
   end
   
   def private_send recipient, text, options = {}
-    self.becomes(TwitterAsker).private_send(recipient, text, options = {})
+    self.becomes(TwitterAsker).private_send(recipient, text, options)
   end
 
   def publish_question
@@ -111,7 +111,6 @@ class Asker < User
       # Rails.cache.delete("askers:#{self.id}:show")
     end
   end
-
 
   def send_new_user_question user, options = {}
     return if posts.where("intention = 'initial question dm' and in_reply_to_user_id = ?", user.id).size > 0
