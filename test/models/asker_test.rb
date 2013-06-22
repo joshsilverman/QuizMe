@@ -22,7 +22,6 @@ describe Asker do
 			@conversation.posts << @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
 
 			@correct = [1, 2].sample == 1
-			@correct_answer = create(:answer, correct: true, text: 'the correct answer', question_id: @question.id)
 			@incorrect_answer = create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
 		end
 

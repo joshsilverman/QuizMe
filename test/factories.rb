@@ -55,6 +55,7 @@ FactoryGirl.define do
 		text 'I am an answer'
 		factory :correct_answer do
 			correct true
+			text 'the correct answer'
 		end
 		factory :incorrect_answer do
 			correct false
