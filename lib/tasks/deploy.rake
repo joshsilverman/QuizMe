@@ -1,4 +1,5 @@
 task :deploy do
+	system "git push origin master"
 	test_suite_status = system "rake test"
 	if test_suite_status
 		system "git push wisr master"
