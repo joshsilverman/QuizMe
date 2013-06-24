@@ -31,7 +31,7 @@ class Publication < ActiveRecord::Base
       publications = asker.publications\
         .published\
         .includes([:asker, :posts, :question => [:answers, :user]])\
-        .where("posts.created_at > ? and posts.interaction_type = 1", 2.days.ago)\
+        .where("posts.created_at > ? and posts.interaction_type = 1", 1.days.ago)\
         .order("posts.created_at DESC")\
         .all
       posts = Post.select([:id, :created_at, :publication_id])\
