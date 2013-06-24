@@ -60,6 +60,7 @@ class Post < ActiveRecord::Base
   scope :not_retweet, where("posts.interaction_type <> 3")
   scope :dms, where("posts.interaction_type = 4")
   scope :not_dm, where("posts.interaction_type <> 4")
+  scope :email, where("posts.interaction_type = 5")
 
   scope :reengage_inactive, where("posts.intention = 'reengage inactive'")
   scope :followup, where("posts.intention = 'incorrect answer followup'")

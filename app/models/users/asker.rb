@@ -95,8 +95,16 @@ class Asker < User
     counts
   end
 
-  def public_send text, options = {}, post = nil, answers = nil
-    self.becomes(TwitterAsker).public_send(text, options, post, answers)
+  def public_send text, options = {}
+    recipient = User.where(id: options[:in_reply_to_user_id]).first
+    case recipient.communication_preference
+    when 2
+      self.becomes(EmailAsker).public_send(text, options, recipient)
+    when 1
+      self.becomes(TwitterAsker).public_send(text, options, recipient)
+    else
+      raise 'no public send method for that communication preference'
+    end
   end
   
   def private_send recipient, text, options = {}

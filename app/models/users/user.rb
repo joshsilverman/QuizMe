@@ -89,6 +89,12 @@ class User < ActiveRecord::Base
   scope :wisr_author, where(:author_segment => 3)
   scope :handle_author, where(:author_segment => 4)
 
+  # communication preference scopes
+  scope :tweeters, where(:communication_preference => 1)
+  scope :emailers, where(:communication_preference => 2)
+  # scope :texters, where(:communication_preference => 3)
+  # scope :whatsappers, where(:communication_preference => 4)
+
   def self.tfind name
   	self.find_by_twi_screen_name name
   end

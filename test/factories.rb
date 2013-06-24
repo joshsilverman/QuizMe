@@ -2,7 +2,7 @@ FactoryGirl.define do
 
 	factory :user do
 		role 'user'
-		email "a@a.com"
+    email 'joshs.silverman@gmail.com'
 		password "password"
 		twi_profile_img_url 'abc.jpg'
 		twi_screen_name 'scottie p.'
@@ -12,6 +12,9 @@ FactoryGirl.define do
       role 'admin'
     end
 
+    factory :emailer do
+    	communication_preference 2
+    end
 	end
 
 	factory :moderator do
@@ -25,7 +28,7 @@ FactoryGirl.define do
 		role 'asker'
 		published true
 		twi_profile_img_url 'abc.jpg'
-		twi_screen_name 'leroy asker'
+		twi_screen_name 'QuizMeBio'
 	end	
 
 	factory :post do
@@ -44,10 +47,13 @@ FactoryGirl.define do
 	end
 
 	factory :question do
-		text 'Whats up?'
+		text 'Where on the myosin does ATP bond to?'
 
 	  after(:create) do |question|
 	    create :correct_answer, question: question
+	    create :incorrect_answer, question: question
+	    create :incorrect_answer, question: question
+	    create :incorrect_answer, question: question
 	  end
 	end
 
@@ -59,6 +65,7 @@ FactoryGirl.define do
 		end
 		factory :incorrect_answer do
 			correct false
+			text ['red herring', 'not me', 'me me me... j/k', 'Im right, trust me'].sample
 		end
 	end	
 
