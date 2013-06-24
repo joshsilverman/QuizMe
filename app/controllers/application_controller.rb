@@ -3,11 +3,23 @@ class ApplicationController < ActionController::Base
   before_filter :referrer_data
   before_filter :split_user
   before_filter :preload_models
+  before_filter :check_for_authentication_token
 
   def unauthenticated_user!
     if current_user
       # redirect_to request.fullpath.gsub(/^\/u/, ""), params
       redirect_to "/u#{request.fullpath}", params
+    end
+  end
+
+  def check_for_authentication_token
+    if !current_user and params[:auth]
+      auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params[:auth]))
+      return unless auth_hash["authentication_token"] and auth_hash["expires_at"]
+      return unless Time.now < Time.at(auth_hash["expires_at"].to_i)
+      user = User.find_by_authentication_token(auth_hash["authentication_token"])
+      return unless user
+      sign_in user
     end
   end
 

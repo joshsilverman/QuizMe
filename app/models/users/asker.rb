@@ -672,18 +672,20 @@ class Asker < User
     # overwrite script if user has mod'ed before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
     if Moderation.exists?(user_id: user.id)
+      link = authenticated_link('http://wisr.com/moderations/manage', user, (Time.now + 1.week))
       script = [
-        "Do you have a sec to moderate a few more questions? http://wisr.com/moderations/manage",
-        "Thanks for the help so far! Have time to grade a few more? http://wisr.com/moderations/manage",
-        "Have a second to grade a few more questions? http://wisr.com/moderations/manage",
-        "Thanks again for helping grade. Could you help grade a few more? http://wisr.com/moderations/manage",
-        "Have a sec to grade a few more answers? http://wisr.com/moderations/manage",
-        "Could I trouble you for a bit more grading assistance? http://wisr.com/moderations/manage",
-        "Would you grade a few more? http://wisr.com/moderations/manage",
-        "Could you help grade a few more? http://wisr.com/moderations/manage",
-        "Would you grade a few more answers? http://wisr.com/moderations/manage",
-        "Would you mind grading a few more? http://wisr.com/moderations/manage"
+        "Do you have a sec to moderate a few more questions? <link>",
+        "Thanks for the help so far! Have time to grade a few more? <link>",
+        "Have a second to grade a few more questions? <link>",
+        "Thanks again for helping grade. Could you help grade a few more? <link>",
+        "Have a sec to grade a few more answers? <link>",
+        "Could I trouble you for a bit more grading assistance? <link>",
+        "Would you grade a few more? <link>",
+        "Could you help grade a few more? <link>",
+        "Would you grade a few more answers? <link>",
+        "Would you mind grading a few more? <link>"
       ].sample
+      script.gsub! '<link>', link
     end
 
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
