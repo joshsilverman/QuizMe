@@ -1,6 +1,6 @@
 class Asker < User
   include ManageTwitterRelationships
-  include ApplicationHelper
+  include AuthorizationsHelper
 
   belongs_to :client
   has_many :questions, :foreign_key => :created_for_asker_id
