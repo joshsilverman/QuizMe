@@ -13,8 +13,8 @@ class ApplicationController < ActionController::Base
   end
 
   def check_for_authentication_token
-    if !current_user and params[:auth]
-      auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params[:auth]))
+    if !current_user and params["auth"]
+      auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params["auth"]))
       return unless auth_hash["authentication_token"] and auth_hash["expires_at"]
       return unless Time.now < Time.at(auth_hash["expires_at"].to_i)
       user = User.find_by_authentication_token(auth_hash["authentication_token"])
@@ -24,6 +24,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for resource, redirect_to = nil
+    # return unless request.env["omniauth.params"]
     omniauth_redirect_params = request.env["omniauth.params"]
     if omniauth_redirect_params
       if omniauth_redirect_params["feed_id"]
