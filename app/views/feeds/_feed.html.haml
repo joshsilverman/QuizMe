@@ -34,7 +34,7 @@
 					%p.question_text= publication.question.text.html_safe
 					.post_actions
 						%a.expand Answer
-						- unless retweeted
+						- unless retweeted or !current_user.twitter_enabled?
 							%a.retweet.rollover 
 								%i.icon-retweet
 								Retweet			

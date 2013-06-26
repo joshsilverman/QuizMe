@@ -9,11 +9,11 @@ describe Authorization do
 	end
 
 	describe 'by token authentication' do
-		include AuthorizationsHelper
+		include ApplicationHelper
 
 		before :each do 
 			Capybara.current_driver = :selenium
-			@root_url = 'http://127.0.0.1:51452'
+			@url = "http://#{Capybara.current_session.server.host}:#{Capybara.current_session.server.port}"
 		end
 
 		describe 'logs user in' do
@@ -49,24 +49,23 @@ describe Authorization do
 				## from /users/auth/twitter to /oauth/authenticate. 
 				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				3.times do |i|
-					Capybara.reset_session!
+					# Capybara.reset_session! # using reset_session! results in periodic 401 errors when running the full suite 
+					session = Capybara::Session.new(:selenium)
 					Timecop.travel(Time.now + 1.day)
-					visit auth_mod_manage
+					session.visit "#{@url}#{auth_mod_manage}"
 					if i < 2
-						current_path.must_equal '/moderations/manage'
+						session.current_path.must_equal '/moderations/manage'
 					else
-						current_path.must_equal '/users/auth/twitter'
+						session.current_path.must_equal '/users/auth/twitter'
 					end
 				end
 			end
 
 			it "cookie isn't expired after successful authentication" do
 				auth_mod_manage = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
-
 				visit auth_mod_manage
 				current_path.must_equal '/moderations/manage'
 				Timecop.travel(Time.now + 11.months)
-				
 				visit auth_mod_manage
 				current_path.must_equal '/moderations/manage'
 				Timecop.travel(Time.now + 13.months)
@@ -87,13 +86,14 @@ describe Authorization do
 				visit auth_mod_manage1
 				current_path.must_equal '/moderations/manage'
 
-				Capybara.reset_session!
+				session = Capybara::Session.new(:selenium)
+
 				auth_mod_manage2 = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
-				visit auth_mod_manage1
-				current_path.must_equal '/oauth/authenticate'
+				session.visit "#{@url}#{auth_mod_manage1}"
+				session.current_path.must_equal '/oauth/authenticate'
 				
-				visit auth_mod_manage2
-				current_path.must_equal '/moderations/manage'
+				session.visit "#{@url}#{auth_mod_manage2}"
+				session.current_path.must_equal '/moderations/manage'
 			end
 		end
 	end

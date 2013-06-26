@@ -15,6 +15,7 @@ group :test do
   gem "database_cleaner"
   gem 'timecop'
   gem 'm'
+  gem 'selenium-webdriver'
 end
 
 group :production do

@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   # :lockable, :timeoutable and :validatable
   devise :database_authenticatable, :registerable,
          :recoverable, :timeoutable, :trackable, 
-         :omniauthable, :token_authenticatable
+         :omniauthable, :token_authenticatable, :rememberable # error on remember_expired? if rememberable removed, 
 
   def timeout_in
   	1.year
@@ -155,8 +155,7 @@ class User < ActiveRecord::Base
 	end
 
 	def twitter_enabled?
-		return true if self.twi_oauth_token and self.twi_oauth_secret
-		return false
+		authorizations.where(provider: 'twitter').where('token is not null').present?
 	end
 
 	def tumblr_enabled?
