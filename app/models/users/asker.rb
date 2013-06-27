@@ -666,14 +666,13 @@ class Asker < User
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
-      "I'd love some help grading my followers... if you would, grade a few responses at http://wisr.com/moderations/manage", 
-      "You're pretty good with this material... would you help grade a few responses at http://wisr.com/moderations/manage"
+      "I'd love some help grading my followers... if you would, grade a few responses at <link>", 
+      "You're pretty good with this material... would you help grade a few responses at <link>"
     )
 
     # overwrite script if user has mod'ed before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS
     if Moderation.exists?(user_id: user.id)
-      link = authenticated_link('http://wisr.com/moderations/manage', user, (Time.now + 1.week))
       script = [
         "Do you have a sec to moderate a few more questions? <link>",
         "Thanks for the help so far! Have time to grade a few more? <link>",
@@ -685,9 +684,11 @@ class Asker < User
         "Could you help grade a few more? <link>",
         "Would you grade a few more answers? <link>",
         "Would you mind grading a few more? <link>"
-      ].sample
-      script.gsub! '<link>', link
+      ].sample  
     end
+
+    link = authenticated_link('http://wisr.com/moderations/manage', user, (Time.now + 1.week))
+    script.gsub! '<link>', link
 
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
     self.private_send(user, script, {intention: 'request mod'})
