@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
+ruby '1.9.3'
 
 group :test do
   gem 'capybara'
