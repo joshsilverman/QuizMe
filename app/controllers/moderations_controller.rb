@@ -3,6 +3,8 @@ class ModerationsController < ApplicationController
 
   def manage
     moderator = current_user.becomes(Moderator)
+    # conversations w/ multiple requires action posts being moderated, triggering multiple responses, dupe status errors
+    # need to filter out posts from conversations that already have grades, Post id: 965010
 
     # get all posts w/ more than one mod
     excluded_posts = Post.requires_action.joins(:moderations).group('posts.id').having('count(moderations.id) > 1')
