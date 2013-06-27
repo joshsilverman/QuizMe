@@ -9,7 +9,7 @@ describe Authorization do
 	end
 
 	describe 'by token authentication' do
-		include ApplicationHelper
+		include AuthorizationsHelper
 
 		before :each do 
 			Capybara.current_driver = :selenium
@@ -62,7 +62,7 @@ describe Authorization do
 			end
 
 			it "cookie isn't expired after successful authentication" do
-				auth_mod_manage = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
+				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				visit auth_mod_manage
 				current_path.must_equal '/moderations/manage'
 				Timecop.travel(Time.now + 11.months)
@@ -75,20 +75,20 @@ describe Authorization do
 			end	
 
 			it 'retains authentication for other pages that require authentication' do
-				auth_mod_manage = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
+				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				visit auth_mod_manage
 				visit "/askers/#{@wisr_asker.id}/questions"
 				current_path.must_equal "/askers/#{@wisr_asker.id}/questions"
 			end
 
 			it 'invalidates previous authenticated links' do
-				auth_mod_manage1 = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
+				auth_mod_manage1 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				visit auth_mod_manage1
 				current_path.must_equal '/moderations/manage'
 
 				session = Capybara::Session.new(:selenium)
 
-				auth_mod_manage2 = authenticated_link("/moderations/manage?", @user, (Time.now + 3.days))
+				auth_mod_manage2 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				session.visit "#{@url}#{auth_mod_manage1}"
 				session.current_path.must_equal '/oauth/authenticate'
 				
