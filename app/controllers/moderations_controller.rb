@@ -41,7 +41,8 @@ class ModerationsController < ApplicationController
     moderation.update_attributes type_id: params['type_id']
 
     Post.trigger_split_test(moderator.id, 'mod request script (=> moderate answer)')
-    render status: 200, nothing: true
+    render :json => moderation
+    # render status: 200, nothing: true
   end
 
 end

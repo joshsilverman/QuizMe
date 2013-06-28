@@ -17,11 +17,24 @@ class ModerationsManage
 			type_id: elem.data 'type_id'
 			post_id: elem.closest(".post").attr 'post_id'
 
-		$.post '/moderations', params, ->
+		$.post '/moderations', params, (e) ->
 			conversation.addClass('moderated')
+			# @notify()
+			console.log e
 
 		conversation.addClass "dim"
 		window.moderations_manage.hotkeys.prev() if conversation.nextAll(".conversation").length < 1
+	
+	notify: (e) ->
+		$.gritter.add
+			title: "@#{e.data.screen_name}",
+			text: "Thanks for following! I'll DM you a question shortly."
+			image: $("img[title=#{e.data.screen_name}]").attr 'src'
+			time:9000
+
+		$.ajax '/experiments/trigger',
+			type: 'post'
+			data: {experiment: "New Landing Page"}		
 
 $ ->
 	if $('.moderations_manage').length > 0
