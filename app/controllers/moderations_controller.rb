@@ -1,5 +1,6 @@
 class ModerationsController < ApplicationController
   before_filter :moderator?
+  before_filter :check_for_authentication_token, :only => [:manage]
 
   def manage
     moderator = current_user.becomes(Moderator)

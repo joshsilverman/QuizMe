@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
   before_filter :referrer_data
   before_filter :split_user
   before_filter :preload_models
-  before_filter :check_for_authentication_token
 
   def unauthenticated_user!
     if current_user
