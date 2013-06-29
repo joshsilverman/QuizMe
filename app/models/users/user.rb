@@ -402,6 +402,7 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, "logged in home page (=> advanced)") if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
 		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 		Post.trigger_split_test(id, 'link to activity feed script (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
+		Post.trigger_split_test(id, 'grading on mod manage displays actions via growl (mod => regular)') if transition.segment_type == 5 and transition.is_positive? and transition.is_above?(2)
 		if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3) and search_term
 			search_term.askers.each { |asker| Post.trigger_split_test(id, "#{asker.twi_screen_name} search terms (=> advanced)") }
 		end

@@ -20,7 +20,7 @@ class ModerationsManage
 
 		$.post '/moderations', params, (trigger_type_id) ->
 			conversation.addClass('moderated')
-			window.moderations_manage.notify(conversation, trigger_type_id) unless trigger_type_id == null
+			window.moderations_manage.notify(conversation, trigger_type_id) unless trigger_type_id == false
 
 		conversation.addClass "dim"
 		window.moderations_manage.hotkeys.prev() if conversation.nextAll(".conversation").length < 1
@@ -28,6 +28,7 @@ class ModerationsManage
 	notify: (conversation, trigger_type_id) =>
 		user_name = conversation.find(".content h5").text().trim()
 		switch trigger_type_id
+			when null then text = "Thanks, I'll confirm that and get it out shortly!"
 			when 1 then text = "Sent correct grade post to #{user_name}."
 			when 2 then text = "Sent incorrect grade post to #{user_name}."
 			when 3 then text = "Sent tell message to #{user_name}."
@@ -36,7 +37,7 @@ class ModerationsManage
 			title: conversation.find(".asker_twi_screen_name").text().split(" ")[1]
 			text: text
 			image: @askers[conversation.attr('asker_id')]['twi_profile_img_url']
-			time: 9000
+			time: 6000
 
 $ ->
 	if $('.moderations_manage').length > 0

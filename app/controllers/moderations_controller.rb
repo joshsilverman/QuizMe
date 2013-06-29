@@ -41,7 +41,11 @@ class ModerationsController < ApplicationController
     moderation.update_attributes type_id: params['type_id']
 
     Post.trigger_split_test(moderator.id, 'mod request script (=> moderate answer)')
-    render :json => moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
+    
+    if Post.create_split_test(moderator.id, 'grading on mod manage displays actions via growl (mod => regular)', 'false', 'true') == 'false'
+      render :json => false
+    else
+      render :json => moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
+    end
   end
-
 end
