@@ -33,6 +33,16 @@ test:
   host: localhost
   timeout: 5000
 
+perftest:
+  adapter: postgresql
+  encoding: unicode
+  database: wisr_perftest
+  pool: 5
+  username: wisr
+  password: password
+  host: localhost
+  timeout: 5000
+
 # production:
 #   adapter: sqlite3
 #   database: db/production.sqlite3

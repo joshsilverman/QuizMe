@@ -4,7 +4,7 @@ gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 ruby '1.9.3'
 
-group :test do
+group :test, :perftest do
   gem 'capybara'
   gem 'minitest-rails-capybara'
   gem 'capybara_minitest_spec'
@@ -16,6 +16,12 @@ group :test do
   gem 'timecop'
   gem 'm'
 end
+
+# uncomment when running rake test:benchmark
+# group :perftest do
+#   gem 'ruby-prof'
+#   gem 'test-unit'
+# end
 
 group :production do
   gem 'bcrypt-ruby', '3.0.1'
