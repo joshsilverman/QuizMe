@@ -450,7 +450,7 @@ class FeedsController < ApplicationController
       @engagements, @conversations = Post.grouped_as_conversations @posts
       @asker = User.find 8765
       @oneinbox = true
-      @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name]).map{|a| [a.id, a.twi_screen_name]}.flatten]
+      @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name, :twi_profile_img_url]).map{|a| [a.id, {twi_screen_name: a.twi_screen_name, twi_profile_img_url: a.twi_profile_img_url}]}.flatten]
     end
   end
 
