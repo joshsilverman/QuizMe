@@ -224,7 +224,7 @@ class Stat < ActiveRecord::Base
         .where("(posts.updated_at - posts.created_at > interval '3 hours')")\
         .where("posts.created_at > ?", Date.today - domain.days)\
         .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
-      no_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+      no_replies = Post.mentions.not_spam.not_us.where("posts.posted_via_app = ?", false)\
         .requires_action\
         .where("posts.created_at > ?", Date.today - domain.days)\
         .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
