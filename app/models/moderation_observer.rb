@@ -3,7 +3,11 @@ class ModerationObserver < ActiveRecord::Observer
     moderation.trigger_response if moderation.respond_with_type_id
   end
 
-  def after_update(moderation)
+  # def after_update(moderation)
+  #   moderation.moderator.becomes(Moderator).update_moderator_segment
+  # end
+
+  def after_save(moderation)
     moderation.moderator.becomes(Moderator).update_moderator_segment
-  end
+  end  
 end
