@@ -12,13 +12,13 @@ class ApplicationController < ActionController::Base
   end
 
   def check_for_authentication_token
-    if !current_user and params["auth"]
-      auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params["auth"]))
+    if !current_user and params["a"]
+      auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params["a"]))
       return unless auth_hash["authentication_token"] and auth_hash["expires_at"]
       return unless Time.now < Time.at(auth_hash["expires_at"].to_i)
       user = User.find_by_authentication_token(auth_hash["authentication_token"])
       return unless user
-      sign_in user
+      sign_in :user, user
     end
   end
 

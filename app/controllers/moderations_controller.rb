@@ -1,5 +1,5 @@
 class ModerationsController < ApplicationController
-  before_filter :check_for_authentication_token, :only => [:manage]
+  prepend_before_filter :check_for_authentication_token, :only => [:manage]
   before_filter :moderator?
 
   def manage
