@@ -18,10 +18,10 @@ group :test, :perftest do
 end
 
 # uncomment when running rake test:benchmark
-# group :perftest do
-#   gem 'ruby-prof'
-#   gem 'test-unit'
-# end
+group :perftest do
+  gem 'ruby-prof'
+  gem 'test-unit'
+end
 
 group :production do
   gem 'bcrypt-ruby', '3.0.1'

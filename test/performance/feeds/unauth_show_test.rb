@@ -13,9 +13,9 @@ class UnauthShow < ActionDispatch::PerformanceTest
   
   # user = FactoryGirl.create(:user)
   # wisr = FactoryGirl.create(:wisr)
-  Rails.cache.clear
 
   def test_homepage
+  	Rails.cache.clear
     get '/feeds/10565/63801'
   end
 end

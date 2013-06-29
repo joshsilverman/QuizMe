@@ -357,6 +357,7 @@ ActiveRecord::Schema.define(:version => 20130613182931) do
     t.boolean  "subscribed",             :default => true
     t.integer  "moderator_segment"
     t.integer  "search_term_topic_id"
+    t.string   "authentication_token"
   end
 
   add_index "users", ["author_id"], :name => "index_users_on_author_id"

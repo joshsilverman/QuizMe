@@ -3,7 +3,12 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :validatable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :omniauthable
+         :recoverable, :timeoutable, :trackable, 
+         :omniauthable, :token_authenticatable, :rememberable
+
+  def timeout_in
+    1.year
+  end
 
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :password_confirmation, :remember_me
@@ -150,8 +155,7 @@ class User < ActiveRecord::Base
 	end
 
 	def twitter_enabled?
-		return true if self.twi_oauth_token and self.twi_oauth_secret
-		return false
+		authorizations.where(provider: 'twitter').where('token is not null').present?
 	end
 
 	def tumblr_enabled?
