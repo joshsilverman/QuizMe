@@ -98,6 +98,12 @@
         //padding-top:20px;
         //overflow:scroll;
       }
+
+      .panel {
+        background-image:url("ajax-loader.gif");
+        background-repeat:no-repeat;
+        background-position:330px center;
+      }
     }
 
     .select_option {
@@ -123,7 +129,7 @@
 
       .panel {
         /*box-shadow: 0 0 8px -3px #888;*/
-        background: white;
+        // background: white;
         margin: 0 0 25px 0;
         height: 275px;
         border: 1px rgba(0, 0, 0, 0.207031) solid;
@@ -132,6 +138,7 @@
 
           & {
             height:380px;
+            background-position:center 222px !important;
           }
 
           .stats {
@@ -148,7 +155,8 @@
               border-top: none !important;
               width:49%;
               float:left;
-              height:inherit !important;
+              // height:inherit !important;
+              height:50px !important;
 
               .container {
                 height:20px !important;
@@ -178,6 +186,7 @@
             clear:both;
             width:702px;
             float:left !important;
+            background-position:450px center !important;
           }
 
           .stats {
@@ -211,6 +220,7 @@
             width:99%;
             float:left !important;
             height: 400px;
+            background-position:center center !important;
           }
 
           .stats {
@@ -286,8 +296,8 @@
 
           .header {
             height: 49px;
-            /*background-color: whiteSmoke;*/
-            background: url("/assets/light_toast.png");
+            background-color: whiteSmoke;
+            // background: url("/assets/light_toast.png");
             border-bottom: 1px dotted #ccc;
             -webkit-border-top-left-radius: 5px;
             -moz-border-top-left-radius: 5px;

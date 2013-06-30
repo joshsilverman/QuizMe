@@ -95,8 +95,6 @@ class Dashboard
     $('.tab-content .tab-pane').removeClass 'active'
     $('.tab-content #core').addClass 'active'
 
-    $(".loading").show()
-
     match = window.location.href.match(/\?[^#]+|\?[\w\W]+/)
     qs = match[0] if match
     qs ||= '?'
@@ -112,8 +110,6 @@ class Dashboard
 
           $(".#{graph} .new .number").html data[1]['today']
           $(".#{graph} .total .number").html data[1]['total']
-
-    $(".loading").hide()
 
   update_dashboard: =>
     @draw_graphs()
@@ -385,7 +381,7 @@ handle_activity_options =
       min: 0
 
 questions_options = 
-  width: 1170
+  width: 850
   height: 450
   legend: "none"
   pointSize: 5
@@ -397,6 +393,7 @@ questions_options =
   chartArea:  
     left: 42
     height:400
+    width: 780
   hAxis:
     textStyle: 
       fontSize: 9
