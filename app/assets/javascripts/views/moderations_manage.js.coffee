@@ -33,6 +33,7 @@ class ModerationsManage
 			when 2 then text = "Sent incorrect grade post to #{user_name}."
 			when 3 then text = "Sent tell message to #{user_name}."
 			when 5 then text = "Hid #{user_name}'s post."
+			when 6 then text = "Hid #{user_name}'s post."
 		$.gritter.add
 			title: conversation.find(".asker_twi_screen_name").text().split(" ")[1]
 			text: text
