@@ -17,7 +17,6 @@ describe EmailAsker do
 
 		Delayed::Worker.delay_jobs = false
 		Asker.reengage_inactive_users strategy: @strategy
-		Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @emailer.id).wont_be_empty
 	end
 
 	it 'is not the default communication preference' do
@@ -38,7 +37,11 @@ describe EmailAsker do
 
 		it 'run is not used when communication preference is set for Twitter' do
 			@emailer.update_attributes communication_preference: 1
-			@asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer).first.interaction_type.must_equal 2
+			Timecop.travel 3.days
+			Asker.reengage_inactive_users strategy: @strategy
+			posts = @asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer)
+			posts.count.must_equal 2
+			posts.last.interaction_type.must_equal 2
 		end
 
 		it 'will cause email delivery' do

@@ -1,6 +1,6 @@
 class TwitterAsker < Asker
 
-	def public_send text, options = {}
+	def public_send text, options = {}, recipient = nil
     sender = self
 
     options[:resource_url] = options[:resource_url].gsub(/\/embed\/([^\?]*)\?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/embed\//
@@ -26,30 +26,27 @@ class TwitterAsker < Asker
       twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
     end
     if twitter_response
-      options[:in_reply_to_user_id] = [options[:in_reply_to_user_id]] unless options[:in_reply_to_user_id].is_a?(Array)
-      options[:in_reply_to_user_id].each do |user_id|
-        post = Post.create(
-          :user_id => sender.id,
-          :provider => 'twitter',
-          :text => tweet,
-          :provider_post_id => twitter_response.present? ? twitter_response.id.to_s : 0,
-          :in_reply_to_post_id => options[:in_reply_to_post_id],
-          :in_reply_to_user_id => user_id,
-          :conversation_id => options[:conversation_id],
-          :publication_id => options[:publication_id],
-          :url => options[:long_url] ? short_url : nil,
-          :posted_via_app => true, 
-          :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
-          :interaction_type => options[:interaction_type],
-          :correct => options[:correct],
-          :intention => options[:intention],
-          :question_id => options[:question_id],
-          :in_reply_to_question_id => options[:in_reply_to_question_id]
-        )
-        if options[:publication_id]
-          publication = Publication.find(options[:publication_id])
-          publication.posts << post
-        end
+      post = Post.create(
+        :user_id => sender.id,
+        :provider => 'twitter',
+        :text => tweet,
+        :provider_post_id => twitter_response.present? ? twitter_response.id.to_s : 0,
+        :in_reply_to_post_id => options[:in_reply_to_post_id],
+        :in_reply_to_user_id => options[:in_reply_to_user_id],
+        :conversation_id => options[:conversation_id],
+        :publication_id => options[:publication_id],
+        :url => options[:long_url] ? short_url : nil,
+        :posted_via_app => true, 
+        :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
+        :interaction_type => options[:interaction_type],
+        :correct => options[:correct],
+        :intention => options[:intention],
+        :question_id => options[:question_id],
+        :in_reply_to_question_id => options[:in_reply_to_question_id]
+      )
+      if options[:publication_id]
+        publication = Publication.find(options[:publication_id])
+        publication.posts << post
       end
     end
     return post 

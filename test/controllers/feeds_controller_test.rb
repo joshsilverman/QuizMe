@@ -20,8 +20,8 @@ describe FeedsController do
 			visit "/feeds/#{@asker.id}"
 			post_elmnt = page.find(".post[post_id=\"#{@question_post.id}\"]")
 			post_elmnt.click
-			post_elmnt.find('.answers h3').click
-			post_elmnt.find('.tweet_button').click
+			post_elmnt.all('.answers h3').first.click
+			post_elmnt.all('.tweet_button').first.click
 			page.find(".conversation[asker_id=\"#{@asker.id}\"] .subsidiary.answered")
 		end
 		
