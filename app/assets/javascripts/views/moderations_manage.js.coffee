@@ -1,6 +1,8 @@
 class ModerationsManage
 	constructor: ->
 		@askers = $.parseJSON($("#askers").val())
+		@display_notifications = $('#display_notifications').val()
+		console.log @display_notifications
 		$(".quick-reply").on "click", @quick_reply
 
 		# # toggle open post
@@ -13,21 +15,25 @@ class ModerationsManage
 
 	quick_reply: ->
 		elem = $(this)
+		selected_type_id = elem.data 'type_id'
 		conversation = elem.closest('.conversation')
 		params =
-			type_id: elem.data 'type_id'
+			type_id: selected_type_id
 			post_id: elem.closest(".post").attr 'post_id'
+		
+		window.moderations_manage.notify(conversation, selected_type_id) if selected_type_id == 5 or selected_type_id == 6
 
-		$.post '/moderations', params, (trigger_type_id) ->
+		$.post '/moderations', params, (type_id) ->
 			conversation.addClass('moderated')
-			window.moderations_manage.notify(conversation, trigger_type_id) unless trigger_type_id == false
+			window.moderations_manage.notify(conversation, type_id) unless type_id == false or selected_type_id == 5 or selected_type_id == 6
 
 		conversation.addClass "dim"
 		window.moderations_manage.hotkeys.prev() if conversation.nextAll(".conversation").length < 1
 	
-	notify: (conversation, trigger_type_id) =>
+	notify: (conversation, type_id) =>
+		return unless @display_notifications == 'true'
 		user_name = conversation.find(".content h5").text().trim()
-		switch trigger_type_id
+		switch type_id
 			when null then text = "Thanks, I'll confirm that and get it out shortly!"
 			when 1 then text = "Sent correct grade post to #{user_name}."
 			when 2 then text = "Sent incorrect grade post to #{user_name}."
