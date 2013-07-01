@@ -4,12 +4,14 @@ gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 ruby '1.9.3'
 
+gem 'rails', '4.0.0'
+gem 'activesupport', '4.0.0'
+
 group :test do
   gem 'capybara'
   gem 'minitest-rails-capybara'
   gem 'capybara_minitest_spec'
   gem 'launchy'
-  
   gem 'factory_girl_rails'
   gem 'turn'#, :require => false
   gem "database_cleaner"
@@ -40,21 +42,18 @@ group :development do
   # gem 'ruby-prof'
 end
 
-group :assets do
-  gem 'sass-rails', '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
-  gem 'uglifier', '1.2.6'
-  gem 'therubyracer', '0.10.1'
-  gem "less-rails"
-end
+gem 'sass-rails', '~> 4.0.0'
+gem 'coffee-rails', '~> 4.0.0'
+gem 'uglifier', '>= 2.1.1'
+gem 'therubyracer', '0.10.1'
+gem "less-rails"
 
-gem 'rails', '3.2.11'
 gem 'jquery-ui-rails'
 gem 'haml', '3.1.6'
 gem 'twitter-bootstrap-rails', '2.1.1'
-gem 'jquery-rails', '1.0.19'
+gem 'jquery-rails'
 
-gem 'devise'
+gem 'devise', '3.0.0.rc'
 gem 'omniauth'
 gem 'omniauth-twitter'
 
@@ -66,7 +65,7 @@ gem 'twitter', '4.5.0'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
-gem 'roadie'
+gem 'actionmailer', '~> 4.0.0'
 gem 'newrelic_rpm'
 gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
@@ -74,7 +73,6 @@ gem 'carrierwave'
 gem 'fog'
 gem 'best_in_place'
 
-# gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
 
@@ -84,6 +82,12 @@ gem 'google_drive'
 gem 'redis'
 
 gem 'unicorn'
-gem 'delayed_job_active_record'
+gem 'delayed_job_active_record', '~> 4.0.0.beta2'
 
 gem 'd3_rails'
+
+gem 'protected_attributes'
+gem 'rails-observers'
+gem 'actionpack-page_caching'
+gem 'actionpack-action_caching'
+gem 'activerecord-deprecated_finders'

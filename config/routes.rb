@@ -1,8 +1,8 @@
 Quizmemanager::Application.routes.draw do
   
   # temporarily disallow basic auth
-  match "/users/sign_up" => redirect("/")
-  match "/users/sign_in" => redirect("/")
+  get "/users/sign_up" => redirect("/")
+  get "/users/sign_in" => redirect("/")
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
@@ -20,41 +20,41 @@ Quizmemanager::Application.routes.draw do
   resources :badges
 
   get "feeds/index"
-  match "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
-  match "feeds/:id/scores" => "feeds#scores"
-  match "feeds/:id/more/:last_post_id" => "feeds#more"
-  match "feeds/:id/manage" => "feeds#manage"
-  match "feeds/manage" => "feeds#manage"
+  get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
+  get "feeds/:id/scores" => "feeds#scores"
+  get "feeds/:id/more/:last_post_id" => "feeds#more"
+  get "feeds/:id/manage" => "feeds#manage"
+  get "feeds/manage" => "feeds#manage"
 
   resource :moderations
   get "moderations/manage"
 
-  match "feeds/stream" => "feeds#stream"
+  get "feeds/stream" => "feeds#stream"
   
-  match "askers/:id/hide_all/:post_ids" => "askers#hide_all"
-  match "askers/:id/import" => "askers#import"
+  get "askers/:id/hide_all/:post_ids" => "askers#hide_all"
+  get "askers/:id/import" => "askers#import"
 
   post "feeds/search"
-  match "feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
-  match "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  get "feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
+  get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
 
-  match '/search' => 'feeds#index_with_search'
+  get '/search' => 'feeds#index_with_search'
 
 
-  match "/ask" => "feeds#ask"
-  match "/respond_to_question" => "feeds#respond_to_question"
-  match "/manager_response" => "feeds#manager_response"
-  match "/manager_post" => "feeds#manager_post"
+  get "/ask" => "feeds#ask"
+  post "/respond_to_question" => "feeds#respond_to_question"
+  post "/manager_response" => "feeds#manager_response"
+  post "/manager_post" => "feeds#manager_post"
   post '/refer_a_friend' => 'feeds#refer_a_friend'
-  match "/link_to_post" => "feeds#link_to_post"
-  match "/create_split_test" => "feeds#create_split_test"
-  match "/trigger_split_test" => "feeds#trigger_split_test"
+  post "/link_to_post" => "feeds#link_to_post"
+  post "/create_split_test" => "feeds#create_split_test"
+  post "/trigger_split_test" => "feeds#trigger_split_test"
 
-  match "/dashboard" => "askers#dashboard"
-  match "/dashboard/core" => "askers#get_core_metrics"
-  match "/get_detailed_metrics" => 'askers#get_detailed_metrics'
-  match "/graph/:party/:graph" => 'askers#graph'
-  match "/get_retention_metrics" => 'askers#get_retention_metrics'
+  get "/dashboard" => "askers#dashboard"
+  get "/dashboard/core" => "askers#get_core_metrics"
+  get "/get_detailed_metrics" => 'askers#get_detailed_metrics'
+  get "/graph/:party/:graph" => 'askers#graph'
+  get "/get_retention_metrics" => 'askers#get_retention_metrics'
   get "experiments" => 'experiments#index'
   get "experiments/index_concluded"
   get '/experiments/index_search_terms'
@@ -65,38 +65,39 @@ Quizmemanager::Application.routes.draw do
   post "experiments/reset" => 'experiments#reset'
   post "experiments/delete" => 'experiments#destroy'
 
-  match "/posts/:publication_id/refer" => "posts#refer"
-  match "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
+  get "/posts/:publication_id/refer" => "posts#refer"
+  get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
 
   post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
   post "posts/manager_retweet"
-  match "/posts/mark_ugc" => "posts#mark_ugc"
-  match "/posts/toggle_tag" => "posts#toggle_tag"
+  post "/posts/mark_ugc" => "posts#mark_ugc"
+  post "/posts/toggle_tag" => "posts#toggle_tag"
 
-  match "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
-  match "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
+  get "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
+  get "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
 
-  match "/questions/answers/:question_id" => "questions#display_answers"
+  get "/questions/answers/:question_id" => "questions#display_answers"
   # match "/questions/answers/:question_id" => "questions#display_answers", :constraints => { :protocol => "https" }
   # match "/questions/answers(/*path)", :to => redirect { |_, request|
     # "https://" + request.host_with_port + request.fullpath }
 
-  match "questions/manage" => "questions#manage"
-  match "questions/asker/:asker_id" => "questions#index"
-  match "questions/asker/:asker_id/import" => "questions#import"
+  get "questions/manage" => "questions#manage"
+  get "questions/asker/:asker_id" => "questions#index"
+  get "questions/asker/:asker_id/import" => "questions#import"
+
   post "questions/save_question_and_answers"
   get "questions/:id" => "questions#show"
-  match "questions/:id/:slug" => "questions#show"
-  match "questions/new/:asker_id" => "questions#new"
-  match "/moderate" => "questions#moderate"
-  match "/moderate/update" => "questions#moderate_update"
+  get "questions/:id/:slug" => "questions#show"
+  get "questions/new/:asker_id" => "questions#new"
+  get "/moderate" => "questions#moderate"
+  get "/moderate/update" => "questions#moderate_update"
 
-  match "/tags" => 'posts#tags'
+  get "/tags" => 'posts#tags'
 
-  match "/newsletter" => "users#newsletter"
-  match '/progress_report' => 'users#progress_report'
+  get "/newsletter" => "users#newsletter"
+  get '/progress_report' => 'users#progress_report'
 
   resources :questions
   resources :answers
@@ -105,10 +106,10 @@ Quizmemanager::Application.routes.draw do
   # resources :services, :only => [:index, :create, :destroy]
 
   # match "/signout" => "sessions#destroy", :as => :signout
-  match "/confirm_js" => "sessions#confirm_js"
+  get "/confirm_js" => "sessions#confirm_js"
 
-  match 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
-  match '/stats' => 'accounts#stats'
+  get 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
+  get '/stats' => 'accounts#stats'
   
   get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
@@ -121,19 +122,19 @@ Quizmemanager::Application.routes.draw do
   get "/user/supporters/:id/touch" => "users#touch_supporter"
   get '/users/activity_feed'
 
-  match '/users/:id/unsubscribe' => 'users#unsubscribe_form'
+  get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
   # match '/users/:id/questions/:asker_id' => 'users#asker_questions'
   # match '/users/:id/questions' => 'users#questions'
-  match '/askers/:id/questions' => 'askers#questions'
+  get '/askers/:id/questions' => 'askers#questions'
 
-  match "clients/:id/report" => "clients#report"
+  get "clients/:id/report" => "clients#report"
   post "clients/nudge" => "clients#nudge"
 
   post '/askers/nudge' => 'askers#send_nudge'
   post '/email_askers/save_private_response'
 
-  match '/tutor' => 'askers#tutor'
+  get '/tutor' => 'askers#tutor'
 
   resources :rate_sheets
   resources :users

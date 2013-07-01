@@ -5,7 +5,7 @@ class Publication < ActiveRecord::Base
 	has_many :conversations
 	has_many :posts
 
-  scope :published, where("publications.published = ?", true)
+  scope :published, -> { where("publications.published = ?", true) }
 
   def self.recently_published
     publications, posts = Rails.cache.fetch 'publications_recently_published', :expires_in => 10.minutes, :race_condition_ttl => 15 do

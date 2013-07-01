@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :password_confirmation, :remember_me
-  has_and_belongs_to_many :tags, :uniq => true
+  has_and_belongs_to_many :tags, -> { uniq }
   
   has_many :authorizations, :dependent => :destroy
 
@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
 	has_many :transitions
 
-	has_many :topics, :through => :askertopics, uniq: true
+	has_many :topics, -> { uniq }, through: :askertopics
 	has_many :askertopics, :foreign_key => 'asker_id'
 	has_many :stats, :foreign_key => 'asker_id'
 	has_many :posts
@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
 	
-  has_many :badges, :through => :issuances, :uniq => true
+  has_many :badges, -> { uniq }, :through => :issuances
   has_many :issuances
 
   # has_many :relationships, :foreign_key => :follower_id, :dependent => :destroy
@@ -47,47 +47,47 @@ class User < ActiveRecord::Base
 
   belongs_to :search_term, foreign_key: :search_term_topic_id, class_name: 'Topic'
 
-  scope :supporters, where("users.role == 'supporter'")
-  scope :not_asker, where("users.role != 'asker'")
-  scope :not_asker_not_us, where("users.id not in (?) and users.role != 'asker'" , ADMINS)
+  scope :supporters, -> { where("users.role == 'supporter'") }
+  scope :not_asker, -> { where("users.role != 'asker'") }
+  scope :not_asker_not_us, -> { where("users.id not in (?) and users.role != 'asker'" , ADMINS) }
 
-  scope :not_spam_with_posts, joins(:posts)\
+  scope :not_spam_with_posts, -> { joins(:posts)\
+    .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
+    .where("role in ('user','author')") }
+
+  scope :social_not_spam_with_posts, -> { joins(:posts)\ 
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
+    .where('interaction_type IN (2,3)') }
 
-  scope :social_not_spam_with_posts, joins(:posts)\
-    .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
-    .where("role in ('user','author')")\
-    .where('interaction_type IN (2,3)')\
-
-  scope :teacher, joins(:tags).where('tags.name = ?', 'teacher')
-  scope :student, joins(:tags).where('tags.name = ?', 'student')
+  scope :teacher, -> { joins(:tags).where('tags.name = ?', 'teacher') }
+  scope :student, -> { joins(:tags).where('tags.name = ?', 'student') }
 
   # Lifecycle segmentation scopes
-  scope :unengaged, where("lifecycle_segment is null")
-  scope :interested, where(:lifecycle_segment => 7)
-  scope :edger, where(:lifecycle_segment => 1)
-  scope :noob, where(:lifecycle_segment => 2)
-  scope :regular, where(:lifecycle_segment => 3)
-  scope :advanced, where(:lifecycle_segment => 4)
-  scope :pro, where(:lifecycle_segment => 5)
-  scope :superuser, where(:lifecycle_segment => 6)
+  scope :unengaged, -> { where("lifecycle_segment is null") }
+  scope :interested, -> { where(:lifecycle_segment => 7) }
+  scope :edger, -> { where(:lifecycle_segment => 1) }
+  scope :noob, -> { where(:lifecycle_segment => 2) }
+  scope :regular, -> { where(:lifecycle_segment => 3) }
+  scope :advanced, -> { where(:lifecycle_segment => 4) }
+  scope :pro, -> { where(:lifecycle_segment => 5) }
+  scope :superuser, -> { where(:lifecycle_segment => 6) }
 
   # Activity segmentation scopes
-  scope :unfollowed, where(:activity_segment => 7)
-  scope :disengaged, where(:activity_segment => 1)
-  scope :disengaging, where(:activity_segment => 2)
-  scope :slipping, where(:activity_segment => 3)
-  scope :active, where(:activity_segment => 4)
-  scope :engaging, where(:activity_segment => 5)
-  scope :engaged, where(:activity_segment => 6)
+  scope :unfollowed, -> { where(:activity_segment => 7) }
+  scope :disengaged, -> { where(:activity_segment => 1) }
+  scope :disengaging, -> { where(:activity_segment => 2) }
+  scope :slipping, -> { where(:activity_segment => 3) }
+  scope :active, -> { where(:activity_segment => 4) }
+  scope :engaging, -> { where(:activity_segment => 5) }
+  scope :engaged, -> { where(:activity_segment => 6) }
 
   # Author segmentation scopes
-  scope :not_author, where("author_segment is null")
-  scope :unapproved_author, where(:author_segment => 1)
-  scope :message_author, where(:author_segment => 2)
-  scope :wisr_author, where(:author_segment => 3)
-  scope :handle_author, where(:author_segment => 4)
+  scope :not_author, -> { where("author_segment is null") }
+  scope :unapproved_author, -> { where(:author_segment => 1) }
+  scope :message_author, -> { where(:author_segment => 2) }
+  scope :wisr_author, -> { where(:author_segment => 3) }
+  scope :handle_author, -> { where(:author_segment => 4) }
 
   # communication preference scopes
   scope :tweeters, where(:communication_preference => 1)

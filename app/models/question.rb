@@ -13,13 +13,13 @@ class Question < ActiveRecord::Base
   has_many :badges, :through => :requirements
   has_many :requirements
 
-  scope :not_us, where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS)
-  scope :ugc, where('questions.user_id not in (?)', Asker.all.collect(&:id) + ADMINS)
+  scope :not_us, -> { where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS) }
+  scope :ugc, -> { where('questions.user_id not in (?)', Asker.all.collect(&:id) + ADMINS) }
 
-  scope :priority, where('priority = ?', true)
-  scope :not_priority, where('priority = ?', false)
+  scope :priority, -> { where('priority = ?', true) }
+  scope :not_priority, -> { where('priority = ?', false) }
 
-  scope :approved, where('status = 1')
+  scope :approved, -> { where('status = 1') }
 
   scope :moderated_by_consensus, where(moderation_trigger_type_id: 1)
   scope :moderated_by_above_advanced, where(moderation_trigger_type_id: 2)

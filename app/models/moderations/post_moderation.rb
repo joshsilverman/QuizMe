@@ -2,12 +2,15 @@ class PostModeration < Moderation
 	default_scope where('post_id is not null')
 	belongs_to :post
 
-  scope :correct, where(type_id: 1)
-  scope :incorrect, where(type_id: 2)
-  scope :tell, where(type_id: 3)
-  # scope :hide, where(type_id: 4)
-  scope :ignore, where(type_id: 5)
-  scope :requires_detailed, where(type_id: 6)
+  scope :correct, -> { where(type_id: 1) }
+  scope :incorrect, -> { where(type_id: 2) }
+  scope :tell, -> { where(type_id: 3) }
+  # scope :hide, -> { where(type_id: 4) }
+  scope :ignore, -> { where(type_id: 5) }
+  scope :requires_detailed, -> { where(type_id: 6) }
+
+  scope :accepted, -> { where("accepted = ?", true) }
+  scope :rejected, -> { where("accepted = ?", false) }
 
   def respond_with_type_id
     return false if !post.correct.nil? or !post.requires_action

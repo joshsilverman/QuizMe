@@ -3,12 +3,12 @@ class Moderator < User
 	has_many :post_moderations, foreign_key: :user_id, class_name: 'PostModeration'
 	has_many :question_moderations, foreign_key: :user_id, class_name: 'QuestionModeration'
 
-  scope :non_moderator, where('moderator_segment is null')
-  scope :edger_mod, where(:moderator_segment => 1)
-  scope :noob_mod, where(:moderator_segment => 2)
-  scope :regular_mod, where(:moderator_segment => 3)
-  scope :advanced_mod, where(:moderator_segment => 4)
-  scope :super_mod, where(:moderator_segment => 5)	
+  scope :non_moderator, -> { where('moderator_segment is null') }
+  scope :edger_mod, -> { where(:moderator_segment => 1) }
+  scope :noob_mod, -> { where(:moderator_segment => 2) }
+  scope :regular_mod, -> { where(:moderator_segment => 3) }
+  scope :advanced_mod, -> { where(:moderator_segment => 4) }
+  scope :super_mod, -> { where(:moderator_segment => 5)	 }
 
   def moderator_segment_above? segment_id
 		return false if moderator_segment.nil?

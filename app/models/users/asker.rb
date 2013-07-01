@@ -17,7 +17,7 @@ class Asker < User
 
   default_scope where(:role => 'asker')
 
-  scope :published, where("published = ?", true)
+  scope :published, -> { where("published = ?", true) }
 
   # cached queries
 

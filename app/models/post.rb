@@ -5,8 +5,8 @@ class Post < ActiveRecord::Base
   # has_one :question
   
   belongs_to :user
-  has_and_belongs_to_many :tags, :uniq => true
-  belongs_to :asker, :foreign_key => 'user_id', :conditions => { :role => 'asker' }
+  has_and_belongs_to_many :tags, -> { uniq }
+  belongs_to :asker, -> { where(role: 'asker') }, foreign_key: 'user_id'
   belongs_to :nudge_type
   # has_many :comments, :conditions => { :published => true }
   # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
@@ -20,74 +20,74 @@ class Post < ActiveRecord::Base
 	has_many :reps
   has_many :post_moderations
 
-  scope :requires_action, where('posts.requires_action = ?', true)
+  scope :requires_action, -> { where('posts.requires_action = ?', true) }
 
-  scope :not_spam, where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false)
-  scope :spam, where('posts.spam = ? or (posts.autospam = ? and posts.spam IS NULL)', true, true)
+  scope :not_spam, -> { where("((posts.interaction_type = 3 or posts.posted_via_app = ? or posts.correct is not null) or ((posts.autospam = ? and posts.spam is null) or posts.spam = ?))", true, false, false) }
+  scope :spam, -> { where('posts.spam = ? or (posts.autospam = ? and posts.spam IS NULL)', true, true) }
 
-  scope :not_us, lambda { where('posts.user_id NOT IN (?)', (Asker.ids + ADMINS).empty? ? [0] : Asker.ids + ADMINS) }
-  scope :us, where('posts.user_id IN (?)', Asker.ids + ADMINS)
-  scope :social, where('posts.interaction_type IN (2,3)')
-  scope :answers, where('posts.correct is not null')
+  scope :not_us, -> { where('posts.user_id NOT IN (?)', (Asker.ids + ADMINS).empty? ? [0] : Asker.ids + ADMINS) }
+  scope :us, -> { where('posts.user_id IN (?)', Asker.ids + ADMINS) }
+  scope :social, -> { where('posts.interaction_type IN (2,3)') }
+  scope :answers, -> { where('posts.correct is not null') }
 
-  scope :ugc, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
-  scope :not_ugc, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
+  scope :ugc, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
+  scope :not_ugc, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
 
-  scope :tutor, includes(:tags).where("tags.name LIKE 'tutor-%'")
+  scope :tutor, -> { includes(:tags).where("tags.name LIKE 'tutor-%'") }
 
-  scope :friend, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
-  scope :not_friend, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
+  scope :friend, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
+  scope :not_friend, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
 
-  scope :content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
-  scope :not_content, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
+  scope :content, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
+  scope :not_content, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
-  scope :moderated, lambda { joins(:post_moderations).group('posts.id').having('count(moderations.id) > 2') } 
+  scope :moderated, -> { joins(:post_moderations).group('posts.id').having('count(moderations.id) > 2') } 
 
   #published asker
-  scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
+  scope :published, -> { includes(:in_reply_to_user).where("users.published = ?", true) }
 
-  scope :autocorrected, where("posts.autocorrect IS NOT NULL")
-  scope :not_autocorrected, where("posts.autocorrect IS NULL")
+  scope :autocorrected, -> { where("posts.autocorrect IS NOT NULL") }
+  scope :not_autocorrected, -> { where("posts.autocorrect IS NULL") }
 
-  scope :tagged, joins(:tags).uniq
+  scope :tagged, -> { joins(:tags).uniq }
 
-  scope :grade, where("posts.intention = ? or posts.intention = ?", 'grade', 'dm autoresponse')
+  scope :grade, -> { where("posts.intention = ? or posts.intention = ?", 'grade', 'dm autoresponse') }
 
-  scope :statuses, where("posts.interaction_type = 1")
-  scope :mentions, where("posts.interaction_type = 2")
-  scope :retweet, where("posts.interaction_type = 3")
-  scope :not_retweet, where("posts.interaction_type <> 3")
-  scope :dms, where("posts.interaction_type = 4")
-  scope :not_dm, where("posts.interaction_type <> 4")
-  scope :email, where("posts.interaction_type = 5")
+  scope :statuses, -> { where("posts.interaction_type = 1") }
+  scope :mentions, -> { where("posts.interaction_type = 2") }
+  scope :retweet, -> { where("posts.interaction_type = 3") }
+  scope :not_retweet, -> { where("posts.interaction_type <> 3") }
+  scope :dms, -> { where("posts.interaction_type = 4") }
+  scope :not_dm, -> { where("posts.interaction_type <> 4") }
+  scope :email, -> { where("posts.interaction_type = 5") }
 
-  scope :reengage_inactive, where("posts.intention = 'reengage inactive'")
-  scope :followup, where("posts.intention = 'incorrect answer followup'")
+  scope :reengage_inactive, -> { where("posts.intention = 'reengage inactive'") }
+  scope :followup, -> { where("posts.intention = 'incorrect answer followup'") }
 
-  scope :linked, where('posts.in_reply_to_question_id IS NOT NULL')
-  scope :unlinked, where('posts.in_reply_to_question_id IS NULL')
+  scope :linked, -> { where('posts.in_reply_to_question_id IS NOT NULL') }
+  scope :unlinked, -> { where('posts.in_reply_to_question_id IS NULL') }
 
-  scope :tutor_box, tutor
-  scope :retweet_box, requires_action.retweet.not_ugc
-  scope :spam_box, spam.not_ugc
-  scope :moderated_box, requires_action.moderated
-  scope :ugc_box, requires_action.ugc
-  scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
-  scope :moderatable, requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
-  scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend
-  scope :all_box, requires_action.not_spam.not_retweet
-  scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
-  scope :content_box, requires_action.content
-  scope :friend_box, requires_action.friend
+  scope :tutor_box, -> { tutor }
+  scope :retweet_box, -> { requires_action.retweet.not_ugc }
+  scope :spam_box, -> { spam.not_ugc }
+  scope :moderated_box, -> { requires_action.moderated }
+  scope :ugc_box, -> { requires_action.ugc }
+  scope :linked_box, -> { requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend }
+  scope :unlinked_box, -> { requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend }
+  scope :moderatable, -> { requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend }
+  scope :all_box, -> { requires_action.not_spam.not_retweet }
+  scope :autocorrected_box, -> { includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected }
+  scope :content_box, -> { requires_action.content }
+  scope :friend_box, -> { requires_action.friend }
 
-  scope :nudge, where("posts.nudge_type_id is not null")
+  scope :nudge, -> { where("posts.nudge_type_id is not null") }
 
-  scope :author_followup, where("posts.intention = 'author followup'")
+  scope :author_followup, -> { where("posts.intention = 'author followup'") }
 
-  scope :moderated_by_admin, where(moderation_trigger_type_id: nil)
-  scope :moderated_by_consensus, where(moderation_trigger_type_id: 1)
-  scope :moderated_by_above_advanced, where(moderation_trigger_type_id: 2)
-  scope :moderated_by_tiebreaker, where(moderation_trigger_type_id: 3)
+  scope :moderated_by_admin, -> { where(moderation_trigger_type_id: nil) }
+  scope :moderated_by_consensus, -> { where(moderation_trigger_type_id: 1) }
+  scope :moderated_by_above_advanced, -> { where(moderation_trigger_type_id: 2) }
+  scope :moderated_by_tiebreaker, -> { where(moderation_trigger_type_id: 3) }
 
   def self.answers_count
     Rails.cache.fetch 'posts_answers_count', :expires_in => 5.minutes do
