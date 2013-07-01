@@ -214,25 +214,32 @@ class Stat < ActiveRecord::Base
 
   def self.graph_quality_response domain = 30
     data = Rails.cache.fetch "stat_quality_response_domain_#{domain}", :expires_in => 23.minutes do
-      good_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
-        .where('requires_action = ?', false)\
-        .where("(posts.updated_at - posts.created_at < interval '3 hours')")\
-        .where("posts.created_at > ?", Date.today - domain.days)\
-        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
-      slow_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
-        .where('requires_action = ?', false)\
-        .where("(posts.updated_at - posts.created_at > interval '3 hours')")\
-        .where("posts.created_at > ?", Date.today - domain.days)\
-        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
-      no_replies = Post.mentions.not_spam.not_us.where("posts.posted_via_app = ?", false)\
-        .requires_action\
-        .where("posts.created_at > ?", Date.today - domain.days)\
-        .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+      def self.replies(domain, end_time)
+        good_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+          .where('requires_action = ?', false)\
+          .where("(posts.updated_at - posts.created_at < interval '3 hours')")\
+          .where("posts.created_at > ?", end_time - domain)\
+          .where("posts.created_at < ?", end_time)\
+          .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+        slow_replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+          .where('requires_action = ?', false)\
+          .where("(posts.updated_at - posts.created_at > interval '3 hours')")\
+          .where("posts.created_at > ?", end_time - domain)\
+          .where("posts.created_at < ?", end_time)\
+          .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+        no_replies = Post.mentions.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+          .requires_action\
+          .where("posts.created_at > ?", end_time - domain)\
+          .where("posts.created_at < ?", end_time)\
+          .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
+        return [good_replies, slow_replies, no_replies]
+      end
 
+      good_replies, slow_replies, no_replies = replies domain.days, Date.today
       data = [["Date", "Good Reply", "Slow Reply", "No Reply"]]
       total_stat = []
       today_stat = 0
-      ((Date.today - domain.days)..Date.today).each do |date|
+      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
         datef = date.to_s
 
         good_replies[datef] ||= 0
@@ -246,9 +253,13 @@ class Stat < ActiveRecord::Base
         no_normalized = no_replies[datef] / total
 
         data << [datef, good_normalized, slow_normalized, no_normalized]
-        today_stat = sprintf "%.1f%", good_normalized * 100 if date == Date.today
+        # today_stat = sprintf "%.1f%", good_normalized * 100 if date == Date.today
         total_stat << good_normalized if date > Date.today - 7.days
       end
+
+      good_replies, slow_replies, no_replies = replies 24.hours, Time.now
+      today_stat = good_replies.values.sum / (good_replies.values.sum  + slow_replies.values.sum  + no_replies.values.sum ).to_f
+      today_stat = sprintf "%.1f%", today_stat * 100
       total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
       [data, {today: today_stat, total: total_stat}]
     end
