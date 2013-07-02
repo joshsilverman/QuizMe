@@ -229,6 +229,8 @@ class Stat < ActiveRecord::Base
           .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
         no_replies = Post.mentions.not_spam.not_us.where("posts.posted_via_app = ?", false)\
           .requires_action\
+          .joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
+          .where("parents.question_id IS NOT NULL")\
           .where("posts.created_at > ?", end_time - domain)\
           .where("posts.created_at < ?", end_time)\
           .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
