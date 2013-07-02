@@ -25,7 +25,7 @@ class ModerationsManage
 
 		$.post '/moderations', params, (type_id) ->
 			conversation.addClass('moderated')
-			window.moderations_manage.notify(conversation, type_id) unless type_id == false or selected_type_id == 5 or selected_type_id == 6
+			window.moderations_manage.notify(conversation, type_id) unless selected_type_id == 5 or selected_type_id == 6
 
 		conversation.addClass "dim"
 		window.moderations_manage.hotkeys.prev() if conversation.nextAll(".conversation").length < 1
@@ -39,7 +39,7 @@ class ModerationsManage
 			when 2 then text = "Sent incorrect grade post to #{user_name}."
 			when 3 then text = "Sent tell message to #{user_name}."
 			when 5 then text = "Hid #{user_name}'s post."
-			when 6 then text = "Hid #{user_name}'s post."
+			when 6 then text = "I'll take a look at that soon."
 		$.gritter.add
 			title: conversation.find(".asker_twi_screen_name").text().split(" ")[1]
 			text: text
