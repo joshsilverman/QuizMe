@@ -401,6 +401,20 @@ describe Asker do
 				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				@user.update_attribute :lifecycle_segment, 4
 				Timecop.travel(Time.now + 2.hours)
+
+				@answerer = create(:user)
+				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+				@publication = create(:publication, question: @question, asker: @asker)
+				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+				@conversation = create(:conversation, post: @post_question, publication: @publication)
+				@post = create :post, 
+					user: @answerer, 
+					requires_action: true, 
+					in_reply_to_post_id: @post_question.id,
+					in_reply_to_user_id: @asker.id,
+					in_reply_to_question_id: @question.id,
+					interaction_type: 2, 
+					conversation: @conversation				
 			end
 			
 			it 'already requested in the past four hours' do
@@ -585,7 +599,7 @@ describe Asker do
 				end
 			end
 
-			it 'run unless no posts to moderate' do
+			it 'unless no posts to moderate' do
 				@user.update_attribute :lifecycle_segment, 4
 				@post.destroy
 				@asker.request_mod @user.reload
