@@ -52,7 +52,6 @@ class @Manager extends @Feed
 				$.each @active_tags, (i, t) => $(".#{t}").fadeIn()
 
 		@hotkeys = new Hotkeys true
-		@load_stats()
 		$('.conversation').first().addClass 'active'
 		$(".back").on "click", => @hotkeys.hide_panel()
 
@@ -82,24 +81,6 @@ class @Manager extends @Feed
 				count.css "font-weight", "normal"
 				count.css "color", "#333"
 				button.removeClass("disabled")
-
-	load_stats: ->
-		graph_options =
-			isStacked: true
-			backgroundColor: 'transparent'
-			legend: 'none'
-			chartArea:
-				height:120
-				width:210
-				left:45
-				top:30
-
-		$.ajax "/graph/moderators/incorrect_vs_correct_autogrades",
-			success: (data) ->
-				data = data.replace(/&quot;/g, '"')
-				data = google.visualization.arrayToDataTable($.parseJSON(data))
-				chart = new google.visualization.AreaChart(document.getElementById("autograder-correct-stats"))
-				chart.draw data, graph_options
 
 class Post
 	constructor: (element, active_record) ->

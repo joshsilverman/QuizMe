@@ -1,1 +1,17 @@
-= @data.to_json if @data
+.row
+  %ul.nav.nav-tabs.nav-stacked.span3
+    %li 
+      %a{:href => "#moderators-user_moderated_posts"} 
+        Moderated posts by type
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    / %li 
+    /   %a
+    /     /{:href => "#users-socactions"} 
+    /     Questions / day / handle (soon)
+    /     %span.loading.hide= image_tag "ajax-loader.gif"
+
+  .graphs
+    .user_moderated_posts.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data

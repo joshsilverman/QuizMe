@@ -30,6 +30,8 @@
       %a{:href => "#askers"} Askers
     %li
       %a{:href => "#authors"} Authors
+    %li
+      %a{:href => "#moderators"} Moderators
 
     %span.domains
       %span.loading.hide= image_tag "ajax-loader.gif"
@@ -48,4 +50,6 @@
         = render :partial => "askers"
       #authors.dashboard.span12.tab-pane.reloadable
         = render :partial => "authors"
+      #moderators.dashboard.span12.tab-pane.reloadable
+        = render :partial => "moderators"
 
