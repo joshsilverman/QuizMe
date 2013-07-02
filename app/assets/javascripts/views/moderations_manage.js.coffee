@@ -44,7 +44,7 @@ class ModerationsManage
 			title: conversation.find(".asker_twi_screen_name").text().split(" ")[1]
 			text: text
 			image: @askers[conversation.attr('asker_id')]['twi_profile_img_url']
-			time: 6000
+			time: 5000
 
 $ ->
 	if $('.moderations_manage').length > 0
