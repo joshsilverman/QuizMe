@@ -196,6 +196,13 @@
 												- if count > 0
 													Not sure: #{count} 
 
+						- if moderator
+							.more
+								- if @posts.count < 10
+									No more answers to moderate... try answering a few more questions
+									= link_to 'here.', '/'
+								- else
+									= link_to 'Moderate more answers here.', '/moderations/manage'
 					.pagination-wrapper
 						= paginate @posts unless moderator
 
