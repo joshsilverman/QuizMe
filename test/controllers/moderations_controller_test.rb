@@ -64,7 +64,8 @@ describe ModerationsController do
 		end
 
 		it 'wont display graded posts with consensus' do
-			2.times do |i|
+			3.times do |i|
+				puts i
 				moderator = create(:user, twi_user_id: 1, role: 'moderator')
 				@post.moderations << create(:moderation, user_id: moderator.id, post: @post, type_id: 1)
 				visit '/moderations/manage'

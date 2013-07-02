@@ -6,12 +6,16 @@ class ModerationsController < ApplicationController
     moderator = current_user.becomes(Moderator)
     excluded_posts = Moderation.where('created_at > ?', 30.days.ago)\
       .select(["post_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("post_id").all
-    if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)
-      excluded_posts = excluded_posts.reject do |p|
-        type_ids = p.type_ids.split ','
-        true if type_ids.count == 2 and type_ids.uniq.count == 2
+
+    excluded_posts.reject! do |p|
+      type_ids = p.type_ids.split ','
+      if type_ids.count < 2
+        true
+      elsif (type_ids.count == 2 and type_ids.uniq.count == 2 and moderator.moderator_segment.present? and moderator.moderator_segment > 2)
+        true
       end
     end
+
     excluded_post_ids = excluded_posts.collect(&:post_id)
     post_ids_moderated_by_current_user = moderator.moderations.collect(&:post_id)
     excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
