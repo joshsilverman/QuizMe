@@ -560,14 +560,14 @@ describe Asker do
 			end
 
 			it 'with a post' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				@asker.request_mod @user.reload
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
 			end
 
 			it 'with two posts in 5 days' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
@@ -582,7 +582,7 @@ describe Asker do
 				end
 			end
 
-			it 'unless lifecycle less than advanced' do
+			it 'unless lifecycle less than regular' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
 					user = create(:user, twi_user_id: 1)
 					@asker.followers << user
@@ -591,7 +591,7 @@ describe Asker do
 					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
 					@asker.request_mod user.reload
 
-					if SEGMENT_HIERARCHY[1].slice(0,4).include? lifecycle_segment
+					if SEGMENT_HIERARCHY[1].slice(0,3).include? lifecycle_segment
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
 					else
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
@@ -600,14 +600,14 @@ describe Asker do
 			end
 
 			it 'unless no posts to moderate' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@post.destroy
 				@asker.request_mod @user.reload
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 			end
 
 			it 'uses correct script' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
@@ -625,7 +625,7 @@ describe Asker do
 			end
 				
 			it 'sets role to moderator' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				@asker.request_mod @user.reload
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
@@ -647,7 +647,7 @@ describe Asker do
 
 				it 'with regular mods' do
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-					@user.update_attribute :lifecycle_segment, 4
+					@user.update_attribute :lifecycle_segment, 3
 					30.times do |i|
 						create(:moderation, user_id: @user.id, type_id: 1, post: create(:post))
 						@asker.request_mod @user.reload

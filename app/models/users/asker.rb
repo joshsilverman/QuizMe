@@ -658,7 +658,7 @@ class Asker < User
   end
 
   def request_mod user
-    return false unless user.lifecycle_above? 3
+    return false unless user.lifecycle_above? 2
     return false if user.transitions.lifecycle.where('created_at > ?', 1.hour.ago).present?
     return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 5.days.ago).present?
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2)[1]

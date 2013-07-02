@@ -30,7 +30,8 @@ class Moderator < User
 	def is_super_mod?
 		enough_mods = moderations.where('accepted is not null').count > 50
 		enough_acceptance_rate = acceptance_rate > 0.9
-		enough_mods and enough_acceptance_rate
+		is_above_regular = lifecycle_above?(4)
+		enough_mods and enough_acceptance_rate and is_above_regular
 	end
 
 	def is_advanced_mod?
