@@ -35,17 +35,6 @@
 							- if @oneinbox
 								%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 
-						%ul.nav.nav-tabs.nav-stacked.stats
-							%li
-								.box.top Manual vs App vs Auto vs Manual grade
-							%li
-								#autograder-auto-stats.graph
-
-						%ul.nav.nav-tabs.nav-stacked.stats
-							%li
-								.box.top Correct vs Incorrect grade
-							%li
-								#autograder-correct-stats.graph
 					- else
 						%ul.nav.nav-tabs.nav-stacked
 							%li
@@ -207,6 +196,13 @@
 												- if count > 0
 													Not sure: #{count} 
 
+						- if moderator
+							.more
+								- if @posts.count < 10
+									No more answers to moderate... try answering a few more questions
+									= link_to 'here.', '/'
+								- else
+									= link_to 'Moderate more answers here.', '/moderations/manage'
 					.pagination-wrapper
 						= paginate @posts unless moderator
 

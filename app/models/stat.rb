@@ -621,6 +621,58 @@ class Stat < ActiveRecord::Base
     data
   end
 
+  def self.graph_user_moderated_posts domain = 30
+    consensus_mods_by_date = Post.moderated_by_consensus\
+      .where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(posts.updated_at, 'YYYY-MM-DD')").count
+    above_advanced_mods_by_date = Post.moderated_by_above_advanced\
+      .where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(posts.updated_at, 'YYYY-MM-DD')").count
+    tiebreaker_mods_by_date = Post.moderated_by_tiebreaker\
+      .where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(posts.updated_at, 'YYYY-MM-DD')").count
+
+    data = [['Day', 'Consensus', 'Tiebreaker', 'Above Advanced']]
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
+      date = date.to_s
+      consensus_mods_count = consensus_mods_by_date[date] || 0
+      above_advanced_mods_count = above_advanced_mods_by_date[date] || 0
+      tiebreaker_mods_count = tiebreaker_mods_by_date[date] || 0
+      data << [datef, consensus_mods_count, above_advanced_mods_count, tiebreaker_mods_count]
+    end
+    data
+  end
+
+  def self.graph_moderations_count domain = 30
+    moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count
+
+    data = [['Date', 'Count']]
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
+      date = date.to_s
+      moderations_count = moderations_by_date[date] || 0
+      data << [datef, moderations_count]
+    end
+    data
+  end
+
+  def self.graph_moderators_count domain = 30
+    moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
+      .select([:updated_at])\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count('distinct(user_id)')
+
+    data = [['Date', 'Count']]
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
+      date = date.to_s
+      moderations_count = moderations_by_date[date] || 0
+      data << [datef, moderations_count]
+    end
+    data
+  end
+
   def self.experiment_summary experiment_name
     case experiment_name
     when "post aggregate activity"
@@ -654,36 +706,5 @@ class Stat < ActiveRecord::Base
       end
     end
     experiment_data
-  end
-
-  def self.graph_incorrect_vs_correct_autogrades domain = 30
-    misgrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("autocorrect IS NOT NULL and correct IS NOT NULL").where("correct <> autocorrect")\
-      .group("to_char(posts.created_at, 'YY/MM/DD')").count
-    goodgrades = Post.not_spam.not_us.where("posts.created_at > ?", domain.days.ago)\
-      .where("autocorrect IS NOT NULL and correct IS NOT NULL").where("correct = autocorrect")\
-      .group("to_char(posts.created_at, 'YY/MM/DD')").count
-
-    manually_hidden = Tag.find_or_create_by_name "hide-manual"
-    falsepositive = manually_hidden.posts.where("posts.created_at > ?", domain.days.ago)\
-      .where("autocorrect IS NOT NULL").group("to_char(posts.created_at, 'YY/MM/DD')").count
-
-    data = [['Date', 'Misgrade', 'False Positive', 'Goodgrade']]
-    goodgrades.keys.sort.each do |date|
-      misgrades_count = misgrades[date] || 0
-      goodgrades_count = goodgrades[date] || 0
-      sum = (misgrades_count + goodgrades_count).to_f
-
-      falsepositive_count = falsepositive[date] || 0
-      falsepositive_count = falsepositive_count.to_f / 20 * sum
-      sum += falsepositive_count
-
-      misgrades_count_norm = misgrades_count / sum
-      goodgrades_count_norm = goodgrades_count / sum
-      falsepositive_count_norm = falsepositive_count / sum
-      
-      data << [date, misgrades_count_norm, falsepositive_count_norm, goodgrades_count_norm]
-    end
-    data
   end
 end

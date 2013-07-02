@@ -32,6 +32,7 @@ class Dashboard
     target = "#users-answer_source" if target == '#users'
     target = "#askers-handle_activity" if target == '#askers'
     target = "#authors-ugc" if target == '#authors'
+    target = "#moderators-user_moderated_posts" if target == '#moderators'
     target = "#core" if target == '#' or target == ''
     party_graph = target.split("-")
     party = party_graph[0].replace /#/, ''
@@ -60,7 +61,7 @@ class Dashboard
           $('.reloadable .graph').remove()
           $(".tab-content ##{party}").html(e)
 
-          this[graph] = $.parseJSON($("#data").val())
+          this[graph] = $.parseJSON($(".#{graph} #data").val())
           draw_func = this["draw_#{graph}"]
 
           if draw_func
@@ -239,6 +240,21 @@ class Dashboard
     data = google.visualization.arrayToDataTable(data)
     chart = new google.visualization[type](document.getElementById("graph"))
     chart.draw data, window["generic_#{type}_options"]
+
+  draw_user_moderated_posts: =>
+    graph_data = google.visualization.arrayToDataTable(@user_moderated_posts)
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
+    chart.draw graph_data, cohort_options
+
+  draw_moderations_count: =>
+    graph_data = google.visualization.arrayToDataTable(@moderations_count)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options
+
+  draw_moderators_count: =>
+    graph_data = google.visualization.arrayToDataTable(@moderators_count)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options  
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
