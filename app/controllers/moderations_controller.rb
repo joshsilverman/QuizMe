@@ -4,25 +4,26 @@ class ModerationsController < ApplicationController
 
   def manage
     moderator = current_user.becomes(Moderator)
-    # conversations w/ multiple requires action posts being moderated, triggering multiple responses, dupe status errors
-    # need to filter out posts from conversations that already have grades, Post id: 965010
-
-    # get all posts w/ more than one mod
-    excluded_posts = Post.requires_action.joins(:moderations).group('posts.id').having('count(moderations.id) > 1')
-    # allow tiebreaker if mod is qualified
-    excluded_posts.reject! {|p| p.moderations.count == 2 and p.moderations.collect(&:type_id).uniq.count == 2 } if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)    
-    excluded_post_ids = excluded_posts.collect(&:id)
-
+    excluded_posts = Moderation.where('created_at > ?', 30.days.ago)\
+      .select(["post_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("post_id").all
+    if (moderator.moderator_segment.present? and moderator.moderator_segment > 2)
+      excluded_posts = excluded_posts.reject do |p|
+        type_ids = p.type_ids.split ','
+        true if type_ids.count == 2 and type_ids.uniq.count == 2
+      end
+    end
+    excluded_post_ids = excluded_posts.collect(&:post_id)
     post_ids_moderated_by_current_user = moderator.moderations.collect(&:post_id)
     excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
-		
-		@posts = Post.includes(:tags, :conversation, :in_reply_to_question => :answers).linked_box\
+    
+    @posts = Post.includes(:in_reply_to_question => :answers).linked_box\
 			.joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
 		  .where("parents.question_id IS NOT NULL")\
 		  .where("posts.in_reply_to_user_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
 		  .where("posts.user_id <> ?", moderator.id)\
 		  .where("posts.id NOT IN (?)", excluded_post_ids)\
+      .where('posts.created_at > ?', 30.days.ago)\
       .order('posts.created_at DESC').limit(10)\
       .sort_by{|p| p.created_at}.reverse
 
