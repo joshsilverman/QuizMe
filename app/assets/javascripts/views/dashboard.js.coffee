@@ -61,7 +61,7 @@ class Dashboard
           $('.reloadable .graph').remove()
           $(".tab-content ##{party}").html(e)
 
-          this[graph] = $.parseJSON($("#data").val())
+          this[graph] = $.parseJSON($(".#{graph} #data").val())
           draw_func = this["draw_#{graph}"]
 
           if draw_func
