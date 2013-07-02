@@ -529,6 +529,22 @@ describe Asker do
 		end
 
 		describe 'mod' do
+			before :each do 
+				@answerer = create(:user)
+				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+				@publication = create(:publication, question: @question, asker: @asker)
+				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+				@conversation = create(:conversation, post: @post_question, publication: @publication)
+				@post = create :post, 
+					user: @answerer, 
+					requires_action: true, 
+					in_reply_to_post_id: @post_question.id,
+					in_reply_to_user_id: @asker.id,
+					in_reply_to_question_id: @question.id,
+					interaction_type: 2, 
+					conversation: @conversation
+			end
+
 			it 'with a post' do
 				@user.update_attribute :lifecycle_segment, 4
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
@@ -567,6 +583,13 @@ describe Asker do
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
 					end
 				end
+			end
+
+			it 'run unless no posts to moderate' do
+				@user.update_attribute :lifecycle_segment, 4
+				@post.destroy
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 			end
 
 			it 'uses correct script' do
