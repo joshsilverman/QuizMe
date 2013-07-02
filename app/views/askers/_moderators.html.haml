@@ -4,14 +4,25 @@
       %a{:href => "#moderators-user_moderated_posts"} 
         Moderated posts by type
         %span.loading.hide= image_tag "ajax-loader.gif"
-    / %li 
-    /   %a
-    /     /{:href => "#users-socactions"} 
-    /     Questions / day / handle (soon)
-    /     %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#moderators-moderations_count"} 
+        Moderations per day
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
+      %a{:href => "#moderators-moderators_count"} 
+        Moderators per day
+        %span.loading.hide= image_tag "ajax-loader.gif"
 
   .graphs
     .user_moderated_posts.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data
+    .moderations_count.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data
+    .moderators_count.panel
       #data_row.row
         #graph.graph
       = hidden_field_tag :data, @data.to_json if @data

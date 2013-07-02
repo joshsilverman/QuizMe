@@ -244,7 +244,17 @@ class Dashboard
   draw_user_moderated_posts: =>
     graph_data = google.visualization.arrayToDataTable(@user_moderated_posts)
     chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options  
+    chart.draw graph_data, cohort_options
+
+  draw_moderations_count: =>
+    graph_data = google.visualization.arrayToDataTable(@moderations_count)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options
+
+  draw_moderators_count: =>
+    graph_data = google.visualization.arrayToDataTable(@moderators_count)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options  
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 

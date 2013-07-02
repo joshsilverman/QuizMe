@@ -634,12 +634,41 @@ class Stat < ActiveRecord::Base
 
     data = [['Day', 'Consensus', 'Tiebreaker', 'Above Advanced']]
     (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
       date = date.to_s
-      datef = Time.new(date).strftime("%m-%d")
       consensus_mods_count = consensus_mods_by_date[date] || 0
       above_advanced_mods_count = above_advanced_mods_by_date[date] || 0
       tiebreaker_mods_count = tiebreaker_mods_by_date[date] || 0
       data << [datef, consensus_mods_count, above_advanced_mods_count, tiebreaker_mods_count]
+    end
+    data
+  end
+
+  def self.graph_moderations_count domain = 30
+    moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count
+
+    data = [['Date', 'Count']]
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
+      date = date.to_s
+      moderations_count = moderations_by_date[date] || 0
+      data << [datef, moderations_count]
+    end
+    data
+  end
+
+  def self.graph_moderators_count domain = 30
+    moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
+      .select([:updated_at])\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count('distinct(user_id)')
+
+    data = [['Date', 'Count']]
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = Time.parse(date.to_s).strftime("%m-%d")
+      date = date.to_s
+      moderations_count = moderations_by_date[date] || 0
+      data << [datef, moderations_count]
     end
     data
   end
