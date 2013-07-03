@@ -134,8 +134,8 @@ class FeedsController < ApplicationController
 
         # inject requested publication from params, render twi card
         if params[:post_id]
-          @requested_publication = @asker.publications.find(params[:post_id])
-          @publications.reverse!.push(@requested_publication).reverse! unless @publications.include? @requested_publication
+          @requested_publication = @asker.publications.where(id: params[:post_id]).first
+          @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)
           @render_twitter_card = true
         else
           @render_twitter_card = false     
