@@ -54,6 +54,23 @@ describe User do
 				@conversation = FactoryGirl.create(:conversation, post: @post_question, publication: @publication)
 			end
 
+			it 'to supermod only if high enough lifecycle segment' do
+				100.times do 
+					post = FactoryGirl.create :post, 
+						user: @user, 
+						requires_action: true, 
+						in_reply_to_post_id: @post_question.id,
+						in_reply_to_user_id: @asker.id,
+						in_reply_to_question_id: @question.id,
+						interaction_type: 2, 
+						conversation: @conversation
+					FactoryGirl.create(:moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
+				end		
+				@moderator.is_super_mod?.must_equal false
+				@moderator.update_attribute :lifecycle_segment, 5
+				@moderator.is_super_mod?.must_equal true		
+			end
+
 			it 'segment between edger => super mod with enough posts' do
 				55.times do |i|
 					i < 1 ? @moderator.reload.moderator_segment.must_equal(nil) : @moderator.reload.moderator_segment.wont_be_nil
@@ -73,6 +90,7 @@ describe User do
 						conversation: @conversation
 					moderation = create(:moderation, type_id:1, user_id: @moderator.id, post_id: post.id)
 					moderation.update_attribute :accepted, true
+					@moderator.update_attribute :lifecycle_segment, 5
 				end	
 			end	
 
@@ -89,6 +107,7 @@ describe User do
 					FactoryGirl.create(:moderation, type_id:1, accepted: false, user_id: @moderator.id, post_id: post.id)
 				end
 
+				@moderator.update_attribute :lifecycle_segment, 5
 				@moderator.moderations.each_with_index do |moderation, i|
 					moderation.update_attribute :accepted, true
 					@moderator.is_edger_mod?.must_equal(true)
@@ -97,7 +116,7 @@ describe User do
 					@moderator.is_advanced_mod?.must_equal(true) if i > 79
 					@moderator.is_super_mod?.must_equal(true) if i > 89
 				end
-			end							
+			end						
 		end
 	end
 end

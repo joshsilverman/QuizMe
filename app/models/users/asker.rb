@@ -658,11 +658,12 @@ class Asker < User
   end
 
   def request_mod user
-    return false unless user.lifecycle_above? 3
+    return false unless user.lifecycle_above? 2
     return false if user.transitions.lifecycle.where('created_at > ?', 1.hour.ago).present?
     return false if Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').where('created_at > ?', 5.days.ago).present?
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request mod').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and Moderation.where('user_id = ? and created_at > ?', user.id, llast_solicitation.created_at).empty?
+    return false unless Post.requires_moderations(user).present?
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 

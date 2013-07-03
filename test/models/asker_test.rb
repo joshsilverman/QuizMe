@@ -401,6 +401,20 @@ describe Asker do
 				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				@user.update_attribute :lifecycle_segment, 4
 				Timecop.travel(Time.now + 2.hours)
+
+				@answerer = create(:user)
+				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+				@publication = create(:publication, question: @question, asker: @asker)
+				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+				@conversation = create(:conversation, post: @post_question, publication: @publication)
+				@post = create :post, 
+					user: @answerer, 
+					requires_action: true, 
+					in_reply_to_post_id: @post_question.id,
+					in_reply_to_user_id: @asker.id,
+					in_reply_to_question_id: @question.id,
+					interaction_type: 2, 
+					conversation: @conversation				
 			end
 			
 			it 'already requested in the past four hours' do
@@ -529,15 +543,31 @@ describe Asker do
 		end
 
 		describe 'mod' do
+			before :each do 
+				@answerer = create(:user)
+				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+				@publication = create(:publication, question: @question, asker: @asker)
+				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+				@conversation = create(:conversation, post: @post_question, publication: @publication)
+				@post = create :post, 
+					user: @answerer, 
+					requires_action: true, 
+					in_reply_to_post_id: @post_question.id,
+					in_reply_to_user_id: @asker.id,
+					in_reply_to_question_id: @question.id,
+					interaction_type: 2, 
+					conversation: @conversation
+			end
+
 			it 'with a post' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				@asker.request_mod @user.reload
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
 			end
 
 			it 'with two posts in 5 days' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
@@ -552,7 +582,7 @@ describe Asker do
 				end
 			end
 
-			it 'unless lifecycle less than advanced' do
+			it 'unless lifecycle less than regular' do
 				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
 					user = create(:user, twi_user_id: 1)
 					@asker.followers << user
@@ -561,7 +591,7 @@ describe Asker do
 					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
 					@asker.request_mod user.reload
 
-					if SEGMENT_HIERARCHY[1].slice(0,4).include? lifecycle_segment
+					if SEGMENT_HIERARCHY[1].slice(0,3).include? lifecycle_segment
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
 					else
 						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
@@ -569,8 +599,15 @@ describe Asker do
 				end
 			end
 
+			it 'unless no posts to moderate' do
+				@user.update_attribute :lifecycle_segment, 3
+				@post.destroy
+				@asker.request_mod @user.reload
+				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+			end
+
 			it 'uses correct script' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				7.times do |i|
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
@@ -588,7 +625,7 @@ describe Asker do
 			end
 				
 			it 'sets role to moderator' do
-				@user.update_attribute :lifecycle_segment, 4
+				@user.update_attribute :lifecycle_segment, 3
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				@asker.request_mod @user.reload
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
@@ -610,7 +647,7 @@ describe Asker do
 
 				it 'with regular mods' do
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-					@user.update_attribute :lifecycle_segment, 4
+					@user.update_attribute :lifecycle_segment, 3
 					30.times do |i|
 						create(:moderation, user_id: @user.id, type_id: 1, post: create(:post))
 						@asker.request_mod @user.reload
