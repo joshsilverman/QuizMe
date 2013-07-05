@@ -73,6 +73,7 @@ class Post < ActiveRecord::Base
   scope :moderated_box, requires_action.moderated
   scope :ugc_box, requires_action.ugc
   scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
+  scope :moderatable, requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend
   scope :all_box, requires_action.not_spam.not_retweet
   scope :autocorrected_box, includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected
@@ -135,7 +136,7 @@ class Post < ActiveRecord::Base
     return false if is_retweet?
     return false if is_spam?
     return false if posted_via_app
-    return false if (Asker.ids + ADMINS).include?(user_id )
+    return false if (Asker.ids + ADMINS).include?(user_id)
     return false if parent.try(:question_id).blank?
     true
   end
@@ -159,7 +160,7 @@ class Post < ActiveRecord::Base
     excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
     
-    Post.includes(:in_reply_to_question => :answers).linked_box\
+    Post.includes(:in_reply_to_question => :answers).moderatable\
       .joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
       .where("parents.question_id IS NOT NULL")\
       .where("posts.in_reply_to_user_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
