@@ -97,7 +97,8 @@ class Asker < User
 
   def public_send text, options = {}
     recipient = User.where(id: options[:in_reply_to_user_id]).first
-    case recipient.communication_preference
+    communication_preference = recipient.blank? ? 1 : recipient.communication_preference
+    case communication_preference
     when 2
       self.becomes(EmailAsker).public_send(text, options, recipient)
     when 1
