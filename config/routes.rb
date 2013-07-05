@@ -130,6 +130,7 @@ Quizmemanager::Application.routes.draw do
   post "clients/nudge" => "clients#nudge"
 
   post '/askers/nudge' => 'askers#send_nudge'
+  post '/email_askers/save_private_response'
 
   match '/tutor' => 'askers#tutor'
 

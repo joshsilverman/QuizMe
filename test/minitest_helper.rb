@@ -29,5 +29,6 @@ class ActiveSupport::TestCase
     Rails.cache.clear
     Timecop.return
     Capybara.current_driver = :rack_test
+    ActionMailer::Base.deliveries = []
   end
 end
