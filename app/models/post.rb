@@ -72,6 +72,7 @@ class Post < ActiveRecord::Base
   scope :spam_box, spam.not_ugc
   scope :moderated_box, requires_action.moderated
   scope :ugc_box, requires_action.ugc
+  scope :moderatable, requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend 
   scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend
   scope :all_box, requires_action.not_spam.not_retweet
@@ -128,6 +129,16 @@ class Post < ActiveRecord::Base
 
   def is_dm?
     interaction_type == 4
+  end
+
+  def is_moderatable?
+    return false unless correct.nil?
+    return false if is_retweet?
+    return false if is_spam?
+    return false if posted_via_app
+    return false if (Asker.ids + ADMINS).include?(user_id )
+    return false if parent.try(:question_id).blank?
+    true
   end
 
   def self.requires_moderations moderator

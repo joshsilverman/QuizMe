@@ -560,6 +560,7 @@ class Asker < User
     answerer = user_post.user  
     if user_post.is_dm?
       return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
+      return if user_post.is_moderatable? and [1, 2, 3, 4].sample == 1 # return 1/4 of eligible posts for moderation
       interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210")
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.in_reply_to_question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
@@ -569,6 +570,7 @@ class Asker < User
       learner_level = "dm answer"
     else
       return unless user_post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
+      return if user_post.is_moderatable? and [1, 2, 3, 4].sample == 1 # return 1/4 of eligible posts for moderation
       root_post = user_post.conversation.post
       asker_response = app_response(user_post, user_post.autocorrect, {
         :link_to_parent => false, 
