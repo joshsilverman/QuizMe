@@ -72,7 +72,6 @@ class Post < ActiveRecord::Base
   scope :spam_box, spam.not_ugc
   scope :moderated_box, requires_action.moderated
   scope :ugc_box, requires_action.ugc
-  scope :moderatable, requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend 
   scope :linked_box, requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend
   scope :unlinked_box, requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend
   scope :all_box, requires_action.not_spam.not_retweet
