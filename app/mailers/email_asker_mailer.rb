@@ -1,5 +1,5 @@
 class EmailAskerMailer < ActionMailer::Base
-  default :from => "jsilverman@studyegg.com"
+  default :from => "Wisr <app6915090@heroku.com>"
 
   def question sender, recipient, text, question, options = {}
     short_url = nil
@@ -12,7 +12,7 @@ class EmailAskerMailer < ActionMailer::Base
     @question = question
     @text = text + ' '
     @text = "#{text} #{short_url}" if options[:include_url] and short_url
-    from = "#{sender.twi_screen_name} <jsilverman@studyegg.com>"
+    from = "#{sender.twi_screen_name} <app6915090@heroku.com>"
     m = mail(to: "Josh <#{recipient.email}>", from: from, subject: @text, template_name: 'question')
     return m, text, short_url
   end

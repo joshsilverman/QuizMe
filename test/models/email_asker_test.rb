@@ -35,13 +35,14 @@ describe EmailAsker do
 			@asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer.reload).first.interaction_type.must_equal 5
 		end
 
-		it 'run is not used when communication preference is set for Twitter' do
+		it 'is not used when communication preference is set for Twitter' do
 			@emailer.update_attributes communication_preference: 1
 			Timecop.travel 3.days
 			Asker.reengage_inactive_users strategy: @strategy
 			posts = @asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer)
 			posts.count.must_equal 2
 			posts.last.interaction_type.must_equal 2
+			ActionMailer::Base.deliveries.count.must_equal 1
 		end
 
 		it 'will cause email delivery' do
