@@ -1,9 +1,8 @@
-require 'minitest_helper'
+require 'test_helper'
 
 describe Asker do	
 	before :each do 
 		Rails.cache.clear
-
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
 
@@ -12,7 +11,6 @@ describe Asker do
 		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
 		@publication = create(:publication, question_id: @question.id)
 		@question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
-
 		Delayed::Worker.delay_jobs = false
 	end
 
@@ -26,8 +24,9 @@ describe Asker do
 		end
 
 
-		it "with a post" do
+		it "run with a post" do
 			@asker.app_response @user_response, @correct
+			puts @asker.posts.to_json
 			@asker.posts.where("intention = 'grade' and in_reply_to_user_id = ?", @user.id).wont_be_empty
 		end
 

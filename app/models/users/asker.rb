@@ -6,16 +6,11 @@ class Asker < User
   has_many :questions, :foreign_key => :created_for_asker_id
   has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
   
-  has_and_belongs_to_many :related_askers,
-    class_name: 'Asker',
-    join_table: :related_askers,
-    foreign_key: :asker_id,
-    association_foreign_key: :related_asker_id,
-    uniq: true
+  has_and_belongs_to_many :related_askers, -> { uniq }, class_name: 'Asker', join_table: :related_askers, foreign_key: :asker_id, association_foreign_key: :related_asker_id
 
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
-  default_scope where(:role => 'asker')
+  default_scope { where(role: 'asker') }
 
   scope :published, -> { where("published = ?", true) }
 
@@ -501,7 +496,9 @@ class Asker < User
 
     if app_post
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
-      self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      learner_level = user_post.posted_via_app ? "feed answer" : "twitter answer"
+      # self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      self.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
       return app_post
     else

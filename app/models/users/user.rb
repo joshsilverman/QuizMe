@@ -34,13 +34,13 @@ class User < ActiveRecord::Base
 
   # has_many :relationships, :foreign_key => :follower_id, :dependent => :destroy
   has_many :follow_relationships, :foreign_key => :follower_id, :class_name => 'Relationship', :dependent => :destroy
-  has_many :follows, :through => :follow_relationships, :source => :followed, :conditions => ["relationships.active = ?", true]
+  has_many :follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed # ["relationships.active = ?", true]
   has_many :follows_with_inactive, :through => :follow_relationships, :source => :followed
-  has_many :asker_follows, :through => :follow_relationships, :source => :followed, :conditions => ["relationships.active = ?", true], class_name: 'Asker'
+  has_many :asker_follows, -> { where("relationships.active = ?", false) }, through: :follow_relationships, source: :followed, class_name: 'Asker' # ["relationships.active = ?", true], 
 
   # has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :follower_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
-  has_many :followers, :through => :follower_relationships, :source => :follower, :conditions => ["relationships.active = ?", true]
+  has_many :followers, -> { where("relationships.active = ?", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
   has_many :followers_with_inactive, :through => :follower_relationships, :source => :follower
 
   has_many :exams
@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')") }
 
-  scope :social_not_spam_with_posts, -> { joins(:posts)\ 
+  scope :social_not_spam_with_posts, -> { joins(:posts)\
     .where("((interaction_type = 3 or posted_via_app = ? or correct is not null) or ((autospam = ? and spam is null) or spam = ?))", true, false, false)\
     .where("role in ('user','author')")\
     .where('interaction_type IN (2,3)') }
