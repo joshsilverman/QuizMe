@@ -212,8 +212,71 @@ class Stat < ActiveRecord::Base
     return econ_engine, display_data
   end
 
+
   def self.graph_quality_response domain = 30
-    data = Rails.cache.fetch "stat_quality_response_domain_#{domain}", :expires_in => 23.minutes do
+    data = Rails.cache.fetch "stat_quality_response_domain_#{domain}", :expires_in => 19.minutes do
+      data = [["Date", "Quality Response %"]]
+      today_stat = "0%"
+      total_stat = []
+
+      moderated_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+        .where("moderation_trigger_type_id is not null")\
+        .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
+        .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
+        .count
+      autocorrected_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+        .where("autocorrect is not null")\
+        .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
+        .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
+        .count 
+      autocorrected_and_moderated_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+        .where("moderation_trigger_type_id is not null")\
+        .where("autocorrect is not null")\
+        .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
+        .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
+        .count
+      correctly_autograded_as_correct_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+        .where("moderation_trigger_type_id is not null")\
+        .where("autocorrect = true")\
+        .where("correct = true")\
+        .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
+        .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
+        .count
+      correctly_autograded_as_incorrect_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+        .where("moderation_trigger_type_id is not null")\
+        .where("autocorrect = false")\
+        .where("correct = false")\
+        .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
+        .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
+        .count      
+
+      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
+        datef = date.to_s
+        moderated_post_count = moderated_post_counts_by_date[datef] || 0
+        autocorrected_and_moderated_post_count = (autocorrected_and_moderated_post_counts_by_date[datef] || 0)
+        total_post_count = (moderated_post_counts_by_date[datef] || 0) + (autocorrected_post_counts_by_date[datef] || 0)
+
+        if autocorrected_and_moderated_post_count > 0
+          autocorrected_quality_response_count = (correctly_autograded_as_correct_post_counts_by_date[datef] || 0) + (correctly_autograded_as_incorrect_post_counts_by_date[datef] || 0)
+          autocorrected_percent_quality = (autocorrected_quality_response_count.to_f / autocorrected_and_moderated_post_count.to_f)
+          quality_autocorrected_post_count = (autocorrected_post_counts_by_date[datef] || 0) * autocorrected_percent_quality
+          quality_response_count = quality_autocorrected_post_count + moderated_post_count
+        else
+          quality_response_count = moderated_post_count
+        end
+
+        percent_quality = quality_response_count.to_f / total_post_count.to_f
+        data << [datef, percent_quality]
+        today_stat = sprintf("%.1f%", percent_quality * 100) if date == Date.yesterday
+        total_stat << percent_quality
+      end
+      total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
+      [data, {today: today_stat, total: total_stat}]
+    end
+  end
+
+  def self.graph_timely_response domain = 30
+    data = Rails.cache.fetch "stat_timely_response_domain_#{domain}", :expires_in => 23.minutes do
       def self.replies(domain, end_time)
         replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
           .where('requires_action = ?', false)\

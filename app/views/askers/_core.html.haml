@@ -32,8 +32,8 @@
 			.dau_mau_graph.graph
 
 	.data_row.row
-		.quality_response.panel.rounded.span6
-			.quality_response_stats.stats
+		.timely_response.panel.rounded.span6
+			.timely_response_stats.stats
 				.header
 					%h3 Timely Reply
 				.new
@@ -44,18 +44,32 @@
 					.container
 						%p.number
 						%p.period last 30 days			
-			.quality_response_graph.graph
+			.timely_response_graph.graph
 
-		.econ_engine.panel.right.rounded.span6
-			.econ_engine_stats.stats
+		.quality_response.panel.right.rounded.span6
+			.quality_response_stats.stats
 				.header
-					%h3 Vir. Actions
+					%h3 Quality Reply
 				.new
 					.container
 						%p.number
 						%p.period last 24 hours
-				.month.total
+				.total
 					.container
 						%p.number
-						%p.period last 30 days
-			.econ_engine_graph.graph
+						%p.period last 30 days			
+			.quality_response_graph.graph
+
+		/ .econ_engine.panel.right.rounded.span6
+		/ 	.econ_engine_stats.stats
+		/ 		.header
+		/ 			%h3 Vir. Actions
+		/ 		.new
+		/ 			.container
+		/ 				%p.number
+		/ 				%p.period last 24 hours
+		/ 		.month.total
+		/ 			.container
+		/ 				%p.number
+		/ 				%p.period last 30 days
+		/ 	.econ_engine_graph.graph
