@@ -1,7 +1,5 @@
 - if @asker
 	- content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
-- if @render_twitter_card
-	= render :partial => "twitter_card"
 
 #post_feed
 	#feed_container.span10
