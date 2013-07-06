@@ -74,6 +74,7 @@ gem 'sitemap_generator'
 gem 'carrierwave'
 gem 'fog'
 gem 'best_in_place'
+gem 'mail'
 
 # gem 'bitly', :git => 'https://github.com/KentonWhite/bitly.git'
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'

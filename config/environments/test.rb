@@ -35,6 +35,8 @@ Quizmemanager::Application.configure do
   # config.action_mailer.default_url_options = { :host => 'localhost:5000' }
   # config.action_mailer.raise_delivery_errors = true
   # config.action_mailer.delivery_method = :smtp
+  # ENV['SENDGRID_PASSWORD'] = 'zseli3ne'
+  # ENV['SENDGRID_USERNAME'] = 'app6915090@heroku.com'
 
   # Use SQL instead of Active Record's schema dumper when creating the test database.
   # This is necessary if your schema can't be completely dumped by the schema dumper,

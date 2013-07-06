@@ -1,12 +1,18 @@
 class EmailAskersController < ApplicationController
+	# skip filters designed for humans
+	skip_before_filter :referrer_data, :split_user
+
   def save_private_response
-    handle = params[:to].split('@').first
-    user = User.find_by_email params[:from]
-    asker = Asker.tfind(handle).first
+  	handle =  Mail::Address.new(params[:to]).local
+    user = User.find_by_email Mail::Address.new(params[:from]).address
+    
+    asker = EmailAsker.tfind(handle)
+    post = asker.save params, user
 
-    # post = asker.save_email params, user
+    Post.classifier.classify post
+    Post.grader.grade post.reload
 
-    # asker.auto_respond post
+    asker.auto_respond post.reload, user
 
     render text: nil
   end

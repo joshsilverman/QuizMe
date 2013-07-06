@@ -19,6 +19,8 @@ Quizmemanager::Application.configure do
   # config.action_mailer.default_url_options = { :host => 'localhost:5000' }
   # config.action_mailer.raise_delivery_errors = true
   # config.action_mailer.delivery_method = :smtp
+  # ENV['SENDGRID_PASSWORD'] = 'zseli3ne'
+  # ENV['SENDGRID_USERNAME'] = 'app6915090@heroku.com'
 
   # Print deprecation notices to the Rails logger
   config.active_support.deprecation = :log
