@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg', '0.14.0'#, :require => false
 ruby '1.9.3'
+gem 'unicorn'
 
 group :test do
   gem 'capybara'
@@ -83,7 +84,6 @@ gem 'sourcify'
 gem 'google_drive'
 gem 'redis'
 
-gem 'unicorn'
 gem 'delayed_job_active_record'
 
 gem 'd3_rails'
