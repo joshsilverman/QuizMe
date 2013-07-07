@@ -78,7 +78,7 @@ module ManageTwitterRelationships
     twi_user_ids.sample(max_follows).each do |twi_user_id|
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.present? or options[:force]
-        user = User.find_or_create_by_twi_user_id(twi_user_id) 
+        user = User.find_or_create_by(twi_user_id: (twi_user_id))
         if options[:search_term_source] and search_term = options[:search_term_source][twi_user_id]
           user.update_attribute(:search_term_topic_id, search_term.id)
           if !options[:force] and search_terms.size > 1
@@ -111,7 +111,7 @@ module ManageTwitterRelationships
   def update_follows twi_follows_ids, wisr_follows_ids
     # Add new friends in wisr
     (twi_follows_ids - wisr_follows_ids).each do |new_user_twi_id| 
-      add_follow(User.find_or_create_by_twi_user_id(new_user_twi_id)) # Should have a type_id?     
+      add_follow(User.find_or_create_by(twi_user_id: (new_user_twi_id))) # Should have a type_id?     
     end
 
     # Remove unfollows from asker follow association    
@@ -121,7 +121,7 @@ module ManageTwitterRelationships
   end
 
   def unfollow_nonreciprocal twi_follows_ids, max_unfollows, limit = 30.days.ago
-    nonreciprocal_followers = User.find_all_by_twi_user_id(twi_follows_ids - followers.collect(&:twi_user_id))
+    nonreciprocal_followers = User.where(twi_user_id: (twi_follows_ids - followers.collect(&:twi_user_id)))
     nonreciprocal_follower_ids = nonreciprocal_followers.collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
     follow_relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).sample(max_unfollows).each do |nonreciprocal_relationship|
@@ -132,20 +132,20 @@ module ManageTwitterRelationships
   end 
 
   def unfollow_oldest_inactive_user limit = 90.days.ago
-    if oldest_inactive_user = follows.includes(:posts).where("users.created_at < ? and posts.user_id is null", limit).order("users.created_at ASC").limit(1).first
+    if oldest_inactive_user = follows.includes(:posts).where("users.created_at < ? and posts.user_id is null", limit).references(:posts).order("users.created_at ASC").limit(1).first
       Post.twitter_request { twitter.unfollow(oldest_inactive_user.twi_user_id) }
       remove_follow(oldest_inactive_user)
     end
   end 
 
   def add_follow user, type_id = nil
-    relationship = follow_relationships.find_or_initialize_by_followed_id(user.id)
+    relationship = follow_relationships.find_or_initialize_by(followed_id: user.id)
     relationship.update_attributes(active: true, type_id: type_id, pending: false)
     Mixpanel.track_event "add follow", { distinct_id: id, type_id: type_id }  
   end
 
   def remove_follow user
-    relationship = follow_relationships.find_by_followed_id(user.id)
+    relationship = follow_relationships.find_by(followed_id: user.id)
     if relationship
       relationship.update_attribute(:active, false) 
       Mixpanel.track_event "remove follow", { distinct_id: id }
@@ -162,7 +162,7 @@ module ManageTwitterRelationships
     # Add new followers in wisr
     asker_follows = follows
     (twi_follower_ids - wisr_follower_ids).each do |new_user_twi_id|
-      follower = User.find_or_create_by_twi_user_id(new_user_twi_id)
+      follower = User.find_or_create_by(twi_user_id: new_user_twi_id)
       follower_type_id = asker_follows.include?(follower) ? 1 : 3
       add_follower(follower, follower_type_id)
     end
@@ -186,12 +186,12 @@ module ManageTwitterRelationships
     twi_ids_to_followback.each do |twi_user_id| # should be doing the following instead, tests need to be updated: (followers - follows).each do |user|
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
       user = existing_users.select { |u| u.twi_user_id == twi_user_id }.first
-      user = User.find_or_create_by_twi_user_id(twi_user_id) if user.blank?
+      user = User.find_or_create_by(twi_user_id: twi_user_id) if user.blank?
 
       if asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
         next
       elsif twi_pending_ids.include? twi_user_id # Skip followback -- request pending
-        follow_relationships.find_or_initialize_by_followed_id(user.id).update_attribute :pending, true
+        follow_relationships.find_or_initialize_by(followed_id: user.id).update_attribute :pending, true
         next
       elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.type_id == 4 }.present? # Skip followback -- account was suspended (?)
         next
@@ -206,7 +206,7 @@ module ManageTwitterRelationships
 
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil? # possible suspended acct, setting relationship to suspended
-        follow_relationships.find_or_initialize_by_followed_id(user.id).update_attributes(type_id: 4, active: false) 
+        follow_relationships.find_or_initialize_by(followed_id: user.id).update_attributes(type_id: 4, active: false) 
         next
       end
       add_follow(user, 1)
@@ -214,14 +214,14 @@ module ManageTwitterRelationships
   end
 
   def add_follower user, type_id = nil
-    relationship = follower_relationships.find_or_initialize_by_follower_id(user.id)
+    relationship = follower_relationships.find_or_initialize_by(follower_id: user.id)
     relationship.update_attributes(active: true, type_id: type_id, pending: false)
     send_new_user_question(user)
     user.segment
   end
 
   def remove_follower user
-    relationship = follower_relationships.find_by_follower_id(user.id)
+    relationship = follower_relationships.find_by(follower_id: user.id)
     relationship.update_attribute :active, false if relationship
     user.segment
   end

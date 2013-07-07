@@ -197,13 +197,13 @@ class Asker < User
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\
-      .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
+      .group("user_id").map{|p| [p.user_id, p.last_active_at]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
       .where('posts.intention' => 'reengage inactive')\
       .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
 
     @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}

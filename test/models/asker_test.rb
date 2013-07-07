@@ -92,13 +92,14 @@ describe Asker do
 			Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 		end
 
-		it "on the proper schedule" do 
+		it "run on the proper schedule" do 
 			Asker.reengage_inactive_users strategy: @strategy
 			intervals = []
 			@strategy.each_with_index { |e, i| intervals << @strategy[0..i].sum }
 			@strategy.sum.times do |i|
 				Timecop.travel(Time.now + 1.day)
 				Asker.reengage_inactive_users strategy: @strategy
+				puts Post.reengage_inactive.to_json
 				Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty if intervals.include?(i + 2)
 			end
 		end
@@ -285,7 +286,7 @@ describe Asker do
 
 			it 'follows new follower back with pending requests' do
 				@pending_user = create(:user, twi_user_id: 3)
-				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by(followed_id: @pending_user.id)
 				relationship.update_attribute :pending, true
 
 		    twi_follower_ids = [@pending_user.twi_user_id, @new_user.twi_user_id]
@@ -298,7 +299,7 @@ describe Asker do
 
 			it 'updates converted pending users to not pending' do
 				@pending_user = create(:user, twi_user_id: 3)
-				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@pending_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by(followed_id: @pending_user.id)
 				relationship.update_attribute :pending, true
 
 		    relationship.reload.pending.must_equal true
@@ -365,7 +366,7 @@ describe Asker do
 
 			it "unfollows non-reciprocal pending follows after one month" do
 				@asker.follows.must_be_empty
-				relationship = @asker.follow_relationships.find_or_create_by_followed_id(@new_user.id)
+				relationship = @asker.follow_relationships.find_or_create_by(followed_id: @new_user.id)
 				relationship.update_attribute :pending, true
 				twi_follows_ids = [@new_user.twi_user_id]
 				31.times do |i|
