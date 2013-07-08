@@ -639,7 +639,7 @@ class Asker < User
 
     recent_requests.each do |request|
       if request.intention == 'request mod'
-        return true if user.becomes(Moderator).moderations.where('created_at > ?', last_request_time).present?
+        return true if user.becomes(Moderator).post_moderations.where('created_at > ?', last_request_time).present?
       elsif request.intention == 'solicit ugc' or request.intention == 'request new handle ugc'
         return true if user.questions.where('created_at > ?', last_request_time).present?
       end
@@ -931,7 +931,7 @@ class Asker < User
           UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
           Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }
         rescue Exception => exception
-          puts "Failed to send progress report to #{@user.email} (#{exception})"
+          puts "Failed to send progress report to #{recipient.email} (#{exception})"
         end         
       end
     end

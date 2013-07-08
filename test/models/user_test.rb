@@ -41,7 +41,7 @@ describe User do
 			end
 		end	
 
-		describe "moderation" do
+		describe "post moderation" do
 			before :each do
 				@user = FactoryGirl.create(:user, twi_user_id: 1)
 				@moderator = FactoryGirl.create(:moderator, twi_user_id: 1, role: 'moderator')
@@ -64,7 +64,7 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
-					FactoryGirl.create(:moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
+					FactoryGirl.create(:post_moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
 				end		
 				@moderator.is_super_mod?.must_equal false
 				@moderator.update_attribute :lifecycle_segment, 5
@@ -88,7 +88,7 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
-					moderation = create(:moderation, type_id:1, user_id: @moderator.id, post_id: post.id)
+					moderation = create(:post_moderation, type_id:1, user_id: @moderator.id, post_id: post.id)
 					moderation.update_attribute :accepted, true
 					@moderator.update_attribute :lifecycle_segment, 5
 				end	
@@ -104,11 +104,11 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
-					FactoryGirl.create(:moderation, type_id:1, accepted: false, user_id: @moderator.id, post_id: post.id)
+					FactoryGirl.create(:post_moderation, type_id:1, accepted: false, user_id: @moderator.id, post_id: post.id)
 				end
 
 				@moderator.update_attribute :lifecycle_segment, 5
-				@moderator.moderations.each_with_index do |moderation, i|
+				@moderator.post_moderations.each_with_index do |moderation, i|
 					moderation.update_attribute :accepted, true
 					@moderator.is_edger_mod?.must_equal(true)
 					@moderator.is_noob_mod?.must_equal(true) if i > 49

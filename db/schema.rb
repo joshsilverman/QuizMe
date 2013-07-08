@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130624140824) do
+ActiveRecord::Schema.define(:version => 20130708143738) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -106,8 +106,9 @@ ActiveRecord::Schema.define(:version => 20130624140824) do
     t.integer  "user_id"
     t.integer  "type_id"
     t.boolean  "accepted"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.integer  "question_id"
   end
 
   create_table "nudge_types", :force => true do |t|

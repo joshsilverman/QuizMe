@@ -268,7 +268,7 @@ class User < ActiveRecord::Base
       .where("created_at > ?", options[:since])\
       .map {|p| {created_at: p.created_at, verb: 'answered', text: p.in_reply_to_question.text, profile_image_url: p.in_reply_to_user.twi_profile_img_url, href: "/questions/#{p.in_reply_to_question_id}", twi_screen_name: p.in_reply_to_user.twi_screen_name, correct: p.correct}}
 
-    mods = self.becomes(Moderator).moderations.includes(:post => :in_reply_to_user)\
+    mods = self.becomes(Moderator).post_moderations.includes(:post => :in_reply_to_user)\
       .where("created_at > ?", options[:since])\
       .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}  
 
@@ -306,7 +306,7 @@ class User < ActiveRecord::Base
     end
 
     if options[:include_moderated]
-    	activity_hash[:moderated] = moderations.where("created_at > ?", options[:since]).size
+    	activity_hash[:moderated] = self.becomes(Moderator).post_moderations.where("created_at > ?", options[:since]).size
     end
 
 		activity_hash

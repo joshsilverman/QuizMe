@@ -352,10 +352,10 @@ class FeedsController < ApplicationController
       accepted_moderation_type_id = 2
     end
         
-    user_post.moderations.each do |moderation|
+    user_post.post_moderations.each do |moderation|
       if accepted_moderation_type_id == moderation.type_id
         moderation.update_attribute :accepted, true
-        next if moderation.moderator.moderations.count > 1
+        next if moderation.moderator.post_moderations.count > 1
         Post.trigger_split_test(moderation.user_id, "show moderator q & a or answer (-> accepted grade)")
       else
         moderation.update_attribute :accepted, false

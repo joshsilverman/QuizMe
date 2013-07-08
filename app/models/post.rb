@@ -18,8 +18,7 @@ class Post < ActiveRecord::Base
   has_one :child, :class_name => 'Post', :foreign_key => 'in_reply_to_post_id'
   has_many :conversations
 	has_many :reps
-  has_many :moderations
-
+  has_many :post_moderations
 
   scope :requires_action, where('posts.requires_action = ?', true)
 
@@ -42,7 +41,7 @@ class Post < ActiveRecord::Base
   scope :content, lambda { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
   scope :not_content, lambda { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
-  scope :moderated, lambda { joins(:moderations).group('posts.id').having('count(moderations.id) > 2') } 
+  scope :moderated, lambda { joins(:post_moderations).group('posts.id').having('count(moderations.id) > 2') } 
 
   #published asker
   scope :published, includes(:in_reply_to_user).where("users.published = ?", true)
@@ -157,7 +156,7 @@ class Post < ActiveRecord::Base
     end
 
     excluded_post_ids = excluded_posts.collect(&:post_id)
-    post_ids_moderated_by_current_user = moderator.moderations.collect(&:post_id)
+    post_ids_moderated_by_current_user = moderator.post_moderations.collect(&:post_id)
     excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
     

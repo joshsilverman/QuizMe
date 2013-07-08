@@ -116,9 +116,9 @@
 									- elsif admin
 										/ = render :partial => "default_actions", :locals => {:post => post, :question => question, :admin => admin}
 
-										- if post.moderations.select{|m|m.type_id==post.moderations.first.type_id}.count > 1
+										- if post.post_moderations.select{|m|m.type_id==post.post_moderations.first.type_id}.count > 1
 											- correct = incorrect = tell = hide = ''
-											- case post.moderations.first.type_id
+											- case post.post_moderations.first.type_id
 											- when 1
 												- correct = 'btn-success'
 											- when 2
@@ -180,19 +180,19 @@
 										.actions
 											%i{style: 'color:#666'}
 												Moderations -
-												- count = post.moderations.select{|m|m.type_id==1}.count
+												- count = post.post_moderations.select{|m|m.type_id==1}.count
 												- if count > 0
 													Correct: #{count}
-												- count = post.moderations.select{|m|m.type_id==2}.count
+												- count = post.post_moderations.select{|m|m.type_id==2}.count
 												- if count > 0
 													Incorrect: #{count}
-												- count = post.moderations.select{|m|m.type_id==3}.count
+												- count = post.post_moderations.select{|m|m.type_id==3}.count
 												- if count > 0
 													Tell answer: #{count}
-												- count = post.moderations.select{|m|m.type_id==5}.count
+												- count = post.post_moderations.select{|m|m.type_id==5}.count
 												- if count > 0
 													Ignore: #{count}
-												- count = post.moderations.select{|m|m.type_id==6}.count
+												- count = post.post_moderations.select{|m|m.type_id==6}.count
 												- if count > 0
 													Not sure: #{count} 
 

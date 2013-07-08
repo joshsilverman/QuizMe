@@ -4,6 +4,8 @@ class Question < ActiveRecord::Base
 
   has_many :answers
   has_many :publications
+  has_many :question_moderations
+  
   belongs_to :topic
   belongs_to :user
   belongs_to :asker, :foreign_key => :created_for_asker_id

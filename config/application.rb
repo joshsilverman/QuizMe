@@ -22,6 +22,7 @@ module Quizmemanager
     config.autoload_paths += %W(#{config.root}/lib/adapters/twitter)
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', 'users', '{**}')]
+    config.autoload_paths += Dir[Rails.root.join('app', 'models', 'moderations', '{**}')]
 
     config.assets.initialize_on_precompile = false
     
@@ -30,7 +31,7 @@ module Quizmemanager
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
     # Activate observers that should always be running.
-    config.active_record.observers = :post_observer, :moderation_observer
+    config.active_record.observers = :post_observer, :post_moderation_observer#, :question_moderation_observer
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
