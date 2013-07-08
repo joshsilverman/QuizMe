@@ -1,5 +1,11 @@
 #manager, #author_dashboard {
 	.conversation {
+		&.active {
+			.hide {
+				display: block;
+			}
+		}
+
 		.content {
 			img {
 				filter: grayscale(65%);

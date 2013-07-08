@@ -96,7 +96,7 @@
 										- show_answer = true if admin == true
 										- show_answer ||= ("answer" == ab_test("show moderator q & a or answer (-> accepted grade)", "answer", "q & a"))
 										- unless show_answer
-											.question
+											.question.hide
 												%i 
 													Q. #{question.text}
 													%br
@@ -106,7 +106,7 @@
 
 										- if show_answer
 											- if correct
-												%p
+												%p.hide
 													%span{style: 'opacity:0.6;'}
 														Correct: 
 														= correct.text

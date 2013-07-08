@@ -2,7 +2,6 @@ class ModerationsManage
 	constructor: ->
 		@askers = $.parseJSON($("#askers").val())
 		@display_notifications = $('#display_notifications').val()
-		console.log @display_notifications
 		$(".quick-reply").on "click", @quick_reply
 
 		# # toggle open post
