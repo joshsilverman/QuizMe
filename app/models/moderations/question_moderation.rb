@@ -4,6 +4,5 @@ class QuestionModeration < Moderation
 
 	scope :publishable, where(type_id: 7)
 	scope :innacurate, where(type_id: 8)
-	scope :errors, where(type_id: 9)
-	scope :incomplete, where(type_id: 10)
+	scope :grammar, where(type_id: 9)
 end

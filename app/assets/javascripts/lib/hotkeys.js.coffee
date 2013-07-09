@@ -41,6 +41,10 @@ class window.Hotkeys
 		@_before_toggle_panel()
 		$('.active .scripts').show()
 
+	toggle_question_feedback_panel: ->
+		@_before_toggle_panel()
+		$('.active .question_feedback_actions').show()
+
 	toggle_exam_panel: ->
 		@_before_toggle_panel()
 		$('.active .new-exam').show()

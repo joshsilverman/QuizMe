@@ -716,7 +716,7 @@ body {
 		}
 	}				
 
-	.active {
+	.conversation.active {
 		margin: 10px 0px;
 		-webkit-border-radius: 5px !important;
 		-moz-border-radius: 5px !important;
@@ -727,7 +727,7 @@ body {
 		border-bottom-width: 1px;
 	}
 
-	.active_prev {
+	.conversation.active_prev {
 		-webkit-border-bottom-right-radius: 5px;
 		-moz-border-bottom-right-radius: 5px;
 		border-bottom-right-radius: 5px;	
@@ -738,7 +738,7 @@ body {
 		border-bottom-width: 1px;
 	}
 	
-	.active_next {
+	.conversation.active_next {
 		-webkit-border-top-right-radius: 5px;
 		-moz-border-top-right-radius: 5px;
 		border-top-right-radius: 5px;	

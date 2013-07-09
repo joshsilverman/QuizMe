@@ -1,0 +1,129 @@
+- admin = current_user.is_role? "admin"
+- moderator = current_user.is_role? "moderator"
+
+:css
+	body {
+		background-image: url(/assets/bg_images/twi/tree.jpg) !important;
+	}
+
+#manager.moderations_manage
+	#feed_container.span10
+		#wrapper.span9
+			#feed.row
+				#left_column.span3.hidden-phone
+					%ul.nav.nav-tabs.nav-stacked
+						%li
+							.box.top What is this?
+						%li
+							.guidelines 
+								%div Dear Superuser
+								%p
+									You're one of the most active learners asking/answering questions through our handles. Thank you!
+								%div Please Help Us Grade
+								%p
+									We receive over 1,000 question responses per day -- that's a lot for us to keep up with! Can you give us a hand grading some?
+								%div Guidelines
+								%p
+									For each response:
+									%ul 
+										%li 
+											Click 
+											%span{style: 'font-weight: bold;'} Correct/Incorrect/Tell 
+											answer for each response. 
+										%li 
+											Click 
+											%span{style: 'font-weight: bold;'} Ignore this
+											if the post doesn't need a response.
+										%li 
+											Click
+											%span{style: 'font-weight: bold;'} Not sure
+											If you aren't sure what to do with it.
+
+									Click "Moderate" in the header whenever you want to grade more!
+
+				#right_column.span6
+					#posts.rounded
+						.header.border-color
+							%h3= "Responses and Questions"
+						- @moderatables.each do |moderatable|
+							- if moderatable.is_a? Post
+								- post = moderatable
+								- correct = nil
+								- if params[:filter] != 'ugc' and question = post.in_reply_to_question
+									- correct = question.answers.reject{|a| a.correct != true}[0]
+
+								.conversation.border-color{asker_id: post.in_reply_to_user_id}
+									.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
+										%p.time= time_formatter(post.created_at)
+										%i.icon-share-alt{:style => "display: none;"}
+										.content
+											= image_tag(post.user.twi_profile_img_url, :class => "rounded")
+											%i{:class => interaction_icon(post.interaction_type)}
+											%h5
+												%span= "#{post.user.twi_screen_name} answered on #{post.in_reply_to_user.twi_screen_name}"
+											- show_answer = true if admin == true
+											- show_answer ||= ("answer" == ab_test("show moderator q & a or answer (-> accepted grade)", "answer", "q & a"))
+											- unless show_answer
+												.question.hide
+													%i 
+														Q. #{question.text}
+														%br
+														A. #{correct.text}
+
+											%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+
+											- if show_answer
+												- if correct
+													%p.hide
+														%span{style: 'opacity:0.6;'}
+															Correct: 
+															= correct.text
+										= render :partial => "post_moderation_actions", :locals => {:post => post, :question => question}
+							- elsif moderatable.is_a? Question
+								- question = moderatable
+								- owner = (question.user_id == current_user.id)
+								.conversation.border-color{asker_id: question.created_for_asker_id}
+									.post.parent.answered{:question_id => question.id}
+										%p.time= time_formatter(question.created_at)            
+										.content
+											%i.question_icon.icon-pencil
+											/ icon-question-sign										
+											/ = image_tag(question.user.twi_profile_img_url, :class => "rounded")
+											%h5
+												%span= "#{question.user.twi_screen_name} wrote a question for #{question.asker.twi_screen_name}"
+											.question
+												%p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+											.answer_area.hide
+												- question.answers.sort{|a, b| (b.correct ? 1 : 0)  <=> (a.correct ? 1 : 0) }.each_with_index do |answer, i|
+													%p.answer
+														/ %a.delete_answer X
+														%i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+														- if owner
+															= best_in_place answer, :text, :type => :input
+														- else
+															#{answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe}	
+										= render :partial => "question_moderation_actions", :locals => {:post => post, :question => question}
+						.show_more
+							- if @posts.count < 10
+								No more answers to moderate... try answering a few more questions
+								= link_to 'here.', '/'
+							- else
+								= link_to 'Moderate more answers here.', '/moderations/manage'
+
+
+= hidden_field_tag :feed_id, @asker.id
+= hidden_field_tag :feed_name, @asker.twi_screen_name
+= hidden_field_tag :conversations, @conversations.to_json
+= hidden_field_tag :engagements, @engagements.to_json
+= hidden_field_tag :user_name, current_user.twi_screen_name if current_user
+= hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
+
+= hidden_field_tag :correct_responses, CORRECT.to_json
+= hidden_field_tag :correct_complements, COMPLEMENT.to_json
+= hidden_field_tag :feed_id, @asker.id
+= hidden_field_tag :asker_twi_screen_names, @asker_twi_screen_names.to_json
+= hidden_field_tag :is_admin, admin
+= hidden_field_tag :askers, @askers_by_id.to_json
+
+- if defined? @display_notifications
+	= hidden_field_tag :display_notifications, @display_notifications

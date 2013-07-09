@@ -76,6 +76,37 @@ class Question < ActiveRecord::Base
     answers.select{|a| a.correct != true} || []
   end
 
+  def self.requires_moderations moderator
+    # TODO check if qualified!
+    moderator = moderator.becomes(Moderator)
+    excluded_questions = QuestionModeration.where('created_at > ?', 30.days.ago)\
+      .select(["question_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("question_id").all
+     
+   excluded_questions.reject! do |q|
+      # TODO proper exclusions?
+      type_ids = q.type_ids.split ','
+      true if type_ids.count < 2
+      # if type_ids.count < 2
+      #   true
+      # elsif (type_ids.count == 2 and type_ids.uniq.count == 2 and moderator.moderator_segment.present? and moderator.moderator_segment > 2)
+      #   true
+      # end
+    end
+
+    excluded_question_ids = excluded_questions.collect(&:question_id)
+    question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
+    excluded_question_ids = (excluded_question_ids + question_ids_moderated_by_current_user).uniq
+    excluded_question_ids = [0] if excluded_question_ids.empty?    
+
+    Question.where('status = 0')\
+      .where("questions.user_id <> ?", moderator.id)\
+      .where("questions.id NOT IN (?)", excluded_question_ids)\
+      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+      .order('questions.created_at DESC')\
+      .limit(5)\
+      .sort_by{|p| p.created_at}.reverse
+  end
+
   def self.recently_published_ugc domain_start = 7, domain_end = 3
     Question.includes(:user, :in_reply_to_posts)\
       .approved\

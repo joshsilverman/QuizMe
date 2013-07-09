@@ -11,65 +11,33 @@
 		#wrapper.span9
 			#feed.row
 				#left_column.span3.hidden-phone
-					- if admin
-						%ul.nav.nav-tabs.nav-stacked
-							%li
-								.box.top Inbox
-							%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Moderated (#{@moderated_box_count})", '?'
-							%li{:class => "#{'active' if params[:filter] == 'email'}"}= link_to "Email (#{@email_count})", '?filter=email'
-							%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts (#{@linked_box_count})", '?filter=linked'
-							%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
+					%ul.nav.nav-tabs.nav-stacked
+						%li
+							.box.top Inbox
+						%li{:class => "#{'active' if params[:filter].nil?}"}= link_to "Moderated (#{@moderated_box_count})", '?'
+						%li{:class => "#{'active' if params[:filter] == 'email'}"}= link_to "Email (#{@email_count})", '?filter=email'
+						%li{:class => "#{'active' if params[:filter] == 'linked'}"}= link_to "Linked Posts (#{@linked_box_count})", '?filter=linked'
+						%li{:class => "#{'active' if params[:filter] == 'unlinked'}"}= link_to "Unlinked Posts (#{@unlinked_box_count})", '?filter=unlinked'
 
-							%li
-								.box Quality control
-								%li{:class => "#{'active' if params[:filter] == 'autocorrected'}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?filter=autocorrected'
-								%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
-
-							%li
-								.box Tags
-							%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
-							%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
+						%li
+							.box Quality control
+							%li{:class => "#{'active' if params[:filter] == 'autocorrected'}"}= link_to "Autocorrected (#{@autocorrected_box_count})", '?filter=autocorrected'
 							%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
-							%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
-							%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
-							- if @oneinbox
-								%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 
-					- else
-						%ul.nav.nav-tabs.nav-stacked
-							%li
-								.box.top What is this?
-							%li
-								.guidelines 
-									%div Dear Superuser
-									%p
-										You're one of the most active learners asking/answering questions through our handles. Thank you!
-									%div Please Help Us Grade
-									%p
-										We receive over 1,000 question responses per day -- that's a lot for us to keep up with! Can you give us a hand grading some?
-									%div Guidelines
-									%p
-										For each response:
-										%ul 
-											%li 
-												Click 
-												%span{style: 'font-weight: bold;'} Correct/Incorrect/Tell 
-												answer for each response. 
-											%li 
-												Click 
-												%span{style: 'font-weight: bold;'} Ignore this
-												if the post doesn't need a response.
-											%li 
-												Click
-												%span{style: 'font-weight: bold;'} Not sure
-												If you aren't sure what to do with it.
-
-										Click "Moderate" in the header whenever you want to grade more!
+						%li
+							.box Tags
+						%li{:class => "#{'active' if params[:filter] == 'ugc'}"}= link_to "User Generated Questions", '?filter=ugc'
+						%li{:class => "#{'active' if params[:filter] == 'retweets'}"}= link_to "Retweets", '?filter=retweets'
+						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
+						%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
+						%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
+						- if @oneinbox
+							%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
-							%h3= admin ? @asker.twi_screen_name : "Grade responses"
+							%h3= @asker.twi_screen_name
 							
 						- asker_collection = User.askers.collect {|a| [a.id, a.twi_screen_name]}
 						- unresponded_unlinked_count = unresponded_linked_count = autocorrect_count = 0
@@ -196,15 +164,8 @@
 												- if count > 0
 													Not sure: #{count} 
 
-						- if moderator
-							.more
-								- if @posts.count < 10
-									No more answers to moderate... try answering a few more questions
-									= link_to 'here.', '/'
-								- else
-									= link_to 'Moderate more answers here.', '/moderations/manage'
 					.pagination-wrapper
-						= paginate @posts unless moderator
+						= paginate @posts
 
 = render :partial => "/feeds/respond_modal"
 = render :partial => "/feeds/question_modal"
