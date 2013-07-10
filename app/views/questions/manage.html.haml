@@ -1,0 +1,111 @@
+:css
+  body {background:white !important;}
+  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);}
+  .question-row img {height:18px;}
+  @media (min-width: 1200px) {.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {width: 874px;}}
+
+#moderate_questions.index
+  / .page-header
+
+  .header.form-actions
+    %h2
+      My questions:
+      %span#askers_select=select_tag 'asker', '<option value="0">All</option>'.html_safe + options_from_collection_for_select(Asker.where(:published => true), :id, :twi_screen_name)
+    .stats
+      %ul.breadcrumb
+        %li
+          %span.divider
+            Approved:
+            %span.badge-success.badge
+              = @approved_count
+        %li
+          %span.divider
+            Pending:
+            %span.badge
+              = @pending_count
+
+  / = render :partial => "kaminari/pagination_top", :locals => {:results => @questions}
+
+  - model_class = Question.new.class
+  - [@questions_enqueued, @questions].each_with_index do |questions, ii|
+    %br
+    %p
+      %h3{:id => ("not_tweeting" if ii == 1)}= ["Tweeting", "Not Tweeting"][ii]
+    %table.table.questions
+      %thead
+        %tr
+          - if ii == 0
+            %th
+            %th{:style => 'width:16px;'}
+            %th Status
+            %th{:style => 'width:55%;'}= model_class.human_attribute_name(:text)
+            %th Created
+            %th= t '.actions', :default => t("helpers.actions")
+          - else
+            %th
+            %th{:style => 'width:16px;'}
+            %th
+            %th{:style => 'width:55%;'}
+            %th
+            %th
+
+      %tbody
+        - questions.each_with_index do |question, i|
+          - next if ii == 1 and @questions_enqueued.include? question
+
+          - queued_pubs = question.publications.reject{|p| !p.publication_queue_id}
+          - if queued_pubs.empty?
+          - elsif queued_pubs[0].published
+            - style_class = 'success'
+          - elsif i >= queued_pubs[0].asker.posts_per_day
+            - style_class = 'disabled'
+          - else 
+            - style_class = 'info'
+            
+          %tr.question-row{:question_id => question.id, :class => style_class}
+
+            %td.faded= i + params[:page].to_i * 25 + 1
+            %td
+              - asker = question.user
+              - if question.created_for_asker_id
+                %a{:href => "/feeds/#{question.created_for_asker_id}"}
+                  = image_tag(asker.twi_profile_img_url, :class => "contributor rounded", :rel => "tooltip", :title => asker.twi_screen_name, "data-placement" => "left")
+            %td.status
+              - if question.status == 0
+                %span.label.pending Pending
+              - elsif question.status == 1
+                %span.label.label-success.approved Approved
+              - elsif question.status == -1
+                %span.label.label-important.rejected Rejected
+
+            / %td= link_to question.text, question_path(question)
+            %td
+              / %a.post-question{:class => ("pending" if question.status == 0),:style => "cursor:pointer;"}
+              /   = question.text
+
+              %p{:style => "font-weight: bold;"}
+                = best_in_place question, :text, :type => :textarea
+              - question.answers.each_with_index do |answer, i|
+                %p
+                  %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
+                  = best_in_place answer, :text, :type => :input
+              %p
+                Hint:
+                = best_in_place question, :hint, :type => :textarea
+                
+            %td.has-tooltip{:rel => "tooltip", "data-original-title" => question.created_at, "data-placement" => "bottom"}
+              = question.created_at.strftime "%m/%d"
+            %td
+              = link_to "Delete", question_path(question), :method => :delete, :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?'))
+              &nbsp;|&nbsp;
+              %a.post-question{href: '#'} Edit
+
+              - if current_user.is_role? 'admin'
+                &nbsp;|&nbsp;
+                - if !question.publications.reject{|p| !p.publication_queue_id}.empty?
+                  = link_to 'Dequeue', "/questions/dequeue/#{question.asker.id}/#{question.id}"
+                - else
+                  = link_to 'Enqueue', "/questions/enqueue/#{question.asker.id}/#{question.id}"
+
+  .pagination-wrapper
+    = paginate @questions

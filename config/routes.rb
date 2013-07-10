@@ -83,6 +83,7 @@ Quizmemanager::Application.routes.draw do
   # match "/questions/answers(/*path)", :to => redirect { |_, request|
     # "https://" + request.host_with_port + request.fullpath }
 
+  match "questions/manage" => "questions#manage"
   match "questions/asker/:asker_id" => "questions#index"
   match "questions/asker/:asker_id/import" => "questions#import"
   post "questions/save_question_and_answers"
