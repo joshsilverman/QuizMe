@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130708143738) do
+ActiveRecord::Schema.define(:version => 20130710140531) do
 
   create_table "answers", :force => true do |t|
     t.boolean  "correct"
@@ -192,14 +192,19 @@ ActiveRecord::Schema.define(:version => 20130708143738) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "user_id"
-    t.integer  "status",               :default => 0
+    t.integer  "status",                     :default => 0
     t.integer  "created_for_asker_id"
-    t.boolean  "priority",             :default => false
+    t.boolean  "priority",                   :default => false
     t.string   "hashtag"
     t.integer  "seeder_id"
     t.text     "resource_url"
     t.string   "slug"
     t.string   "hint"
+    t.boolean  "publishable"
+    t.boolean  "inaccurate"
+    t.boolean  "ungrammatical"
+    t.boolean  "bad_answers"
+    t.integer  "moderation_trigger_type_id"
   end
 
   add_index "questions", ["created_for_asker_id"], :name => "index_questions_on_created_for_asker_id"

@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers]
-  before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue]
+  before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
 
 
@@ -251,16 +251,10 @@ class QuestionsController < ApplicationController
   end
 
   def manage
-    @questions = Question.where(status: 0)
-
-    @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
-    @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
-
-    @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
-    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
-    @approved_count = @all_questions.where(:status => 1).count
-    @pending_count = @all_questions.where(:status => 0).count    
+    all_questions = Question.where('status = 0').includes(:answers, :publications, :asker).order("questions.id DESC")
+    @questions = all_questions.where('moderation_trigger_type_id is not null').page(params[:page]).per(25)
+    @moderated_count = @questions.count
+    @pending_count = all_questions.count - @questions.count
   end
 
   def import

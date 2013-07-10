@@ -3,8 +3,9 @@ class QuestionModeration < Moderation
 	belongs_to :question
 
 	scope :publishable, where(type_id: 7)
-	scope :innacurate, where(type_id: 8)
-	scope :grammar, where(type_id: 9)
+	scope :inaccurate, where(type_id: 8)
+	scope :ungrammatical, where(type_id: 9)
+	scope :bad_answers, where(type_id: 10)
 
 	def respond_with_type_id
     return false if question.status != 0
@@ -33,4 +34,21 @@ class QuestionModeration < Moderation
       return partial_consensus_moderation.type_id
     end		
 	end
+
+  def trigger_response
+    case type_id
+    when 7
+      attribute = :publishable
+    when 8
+      attribute = :inaccurate
+    when 9
+      attribute = :ungrammatical
+    when 10
+    	attribute = :bad_answers
+    end
+
+    question.update_attribute(attribute, true)
+
+    # accept_and_reject_moderations
+  end	
 end

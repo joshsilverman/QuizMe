@@ -10,6 +10,14 @@ class Moderator < User
   scope :advanced_mod, where(:moderator_segment => 4)
   scope :super_mod, where(:moderator_segment => 5)	
 
+  def moderator_segment_above? segment_id
+		return false if moderator_segment.nil?
+		return false if SEGMENT_HIERARCHY[5].index(segment_id).blank?
+		return true if segment_id.nil?
+		return true if SEGMENT_HIERARCHY[5].index(moderator_segment) > SEGMENT_HIERARCHY[5].index(segment_id)
+		false  	
+  end
+
 	# moderator segment checks
 	def update_moderator_segment
 		if is_super_mod?
@@ -57,7 +65,6 @@ class Moderator < User
 	def is_edger_mod?
 		post_moderations.count > 0
 	end
-
 
 	def acceptance_rate
 		accepted = post_moderations.where(accepted: true).count

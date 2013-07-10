@@ -60,7 +60,7 @@
 											= image_tag(post.user.twi_profile_img_url, :class => "rounded")
 											%i{:class => interaction_icon(post.interaction_type)}
 											%h5
-												%span= "#{post.user.twi_screen_name} answered on #{post.in_reply_to_user.twi_screen_name}"
+												%span= "#{post.user.twi_screen_name} → #{post.in_reply_to_user.twi_screen_name}"
 											- show_answer = true if admin == true
 											- show_answer ||= ("answer" == ab_test("show moderator q & a or answer (-> accepted grade)", "answer", "q & a"))
 											- unless show_answer
@@ -87,10 +87,10 @@
 										%p.time= time_formatter(question.created_at)            
 										.content
 											%i.question_icon.icon-pencil
-											/ icon-question-sign										
+											/ %i.question_icon.icon-question-sign										
 											/ = image_tag(question.user.twi_profile_img_url, :class => "rounded")
 											%h5
-												%span= "#{question.user.twi_screen_name} wrote a question for #{question.asker.twi_screen_name}"
+												%span= "#{question.user.twi_screen_name} → #{question.asker.twi_screen_name}"
 											.question
 												%p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 											.answer_area.hide

@@ -7,6 +7,8 @@
 		}
 
 		.content {
+			margin-top: -3px;
+			
 			img {
 				filter: grayscale(65%);
 				-webkit-filter: grayscale(65%);
@@ -58,7 +60,7 @@
 		@media (max-width:480px) { 
 			padding:12px 10px 40px 10px;
 
-			&.post_moderation_actions {
+			&.post_moderation_actions, &.question_moderation_actions {
 				height: 32px;
 				padding:12px 10px 40px 10px;
 

@@ -684,6 +684,27 @@
 }
 
 #moderate_questions {	
+	.header h2 {
+		display: inline;
+	}
+
+	.header {
+		.stats {
+			display: inline;
+
+			.breadcrumb {
+				display: inline;
+				float: right;
+				width: 211px;
+				margin-bottom: 0px;
+
+				li {
+					display: inline;
+				}
+			}
+		}
+	}
+
 	.correct_indicator {
 		opacity: 0.4;
 	}	

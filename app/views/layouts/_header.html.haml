@@ -8,34 +8,20 @@
             - if current_user.is_role? 'admin'
               %li
                 .dropdown.nav-link
+                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Askers
+                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+                    %li
+                      %a{:href => "/askers", :tabindex => "-1"} Status
+                    %li
+                      %a{:href => "/askers/edit_graph", :tabindex => "-1"} Graph     
+              %li
+                .dropdown.nav-link
                   %a.nav-link{:href => "/feeds/manage", 'data-target' => "#"} Users
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
-                      %a{:href => "/feeds/manage", :tabindex => "-1"} Manage
+                      %a{:href => "/feeds/manage", :tabindex => "-1"} Posts
                     %li
-                      %a{:href => "/askers", :tabindex => "-1"} Askers
-                    %li
-                      %a{:href => "/askers/edit_graph", :tabindex => "-1"} Graph                      
-
-              / %li
-              /   .dropdown.nav-link
-              /     %a.nav-link{:href => "/clients", 'data-target' => "#"} Clients
-              /     %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-              /       - RateSheet.includes_clients_by_created_at.each do |r|
-              /         - client = r.clients[0]
-              /         - next if client.nil? or r.title.nil?
-              /         %li
-              /           %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}= r.title 
-                        
-              /       %li.divider
-              /       - Client.includes_rate_sheets_by_created_at.each do |client|
-              /         - rs = client.rate_sheet
-              /         - next unless rs.nil?
-              /         - next if client.twi_screen_name.nil?
-              /         %li
-              /           %a{:href => "/clients/#{client.id}/report", :tabindex => "-1"}
-              /             %i= client.twi_screen_name 
-
+                      %a{:href => "/questions/manage", :tabindex => "-1"} Questions                   
               %li
                 .dropdown.nav-link
                   %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Founders
@@ -45,11 +31,7 @@
                     %li
                       %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
                     %li
-                      %a{:href => "/tags", :tabindex => "-1"} Tags
-
-              %li
-                %a.nav-link{:href => "/users/supporters"} Supporters
-              
+                      %a{:href => "/users/supporters", :tabindex => "-1"} Supporters        
 
             - elsif current_user.is_role? 'client'
               %li

@@ -1,6 +1,6 @@
 class QuestionModerationObserver < ActiveRecord::Observer
-  def after_create question
-    question.respond_with_type_id
+  def after_create moderation
+    moderation.trigger_response if moderation.respond_with_type_id
   end
 
   # def after_save(question)

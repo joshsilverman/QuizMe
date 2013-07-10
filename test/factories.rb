@@ -84,6 +84,10 @@ FactoryGirl.define do
 		# type_id 1
 	end
 
+	factory :question_moderation do
+		# type_id 1
+	end	
+
 	factory :topic do
 		name 'great topic name!'
 

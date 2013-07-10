@@ -151,6 +151,7 @@ class User < ActiveRecord::Base
 
 	def lifecycle_above? segment_id
 		return false if lifecycle_segment.nil?
+		return false if SEGMENT_HIERARCHY[1].index(segment_id).blank?
 		return true if segment_id.nil?
 		return true if SEGMENT_HIERARCHY[1].index(lifecycle_segment) > SEGMENT_HIERARCHY[1].index(segment_id)
 		false

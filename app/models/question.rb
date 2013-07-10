@@ -21,6 +21,10 @@ class Question < ActiveRecord::Base
 
   scope :approved, where('status = 1')
 
+  scope :moderated_by_consensus, where(moderation_trigger_type_id: 1)
+  scope :moderated_by_above_advanced, where(moderation_trigger_type_id: 2)
+  scope :moderated_by_tiebreaker, where(moderation_trigger_type_id: 3)  
+
   before_save :generate_slug
 
   def self.select_questions_to_post(asker, num_days_back_to_exclude, queue = [], priority_questions = [])
@@ -77,20 +81,20 @@ class Question < ActiveRecord::Base
   end
 
   def self.requires_moderations moderator
-    # TODO check if qualified!
     moderator = moderator.becomes(Moderator)
+    return [] unless moderator.lifecycle_above?(3) # check if user is > regular
+    return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
+    return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
+    
     excluded_questions = QuestionModeration.where('created_at > ?', 30.days.ago)\
       .select(["question_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("question_id").all
-     
-   excluded_questions.reject! do |q|
-      # TODO proper exclusions?
+    excluded_questions.reject! do |q|
       type_ids = q.type_ids.split ','
-      true if type_ids.count < 2
-      # if type_ids.count < 2
-      #   true
-      # elsif (type_ids.count == 2 and type_ids.uniq.count == 2 and moderator.moderator_segment.present? and moderator.moderator_segment > 2)
-      #   true
-      # end
+      if type_ids.count < 2
+        true
+      elsif (type_ids.count == 2 and type_ids.uniq.count == 2 and moderator.moderator_segment.present? and moderator.moderator_segment > 3)
+        true
+      end
     end
 
     excluded_question_ids = excluded_questions.collect(&:question_id)
@@ -99,6 +103,7 @@ class Question < ActiveRecord::Base
     excluded_question_ids = [0] if excluded_question_ids.empty?    
 
     Question.where('status = 0')\
+      .where('moderation_trigger_type_id is null')\
       .where("questions.user_id <> ?", moderator.id)\
       .where("questions.id NOT IN (?)", excluded_question_ids)\
       .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
