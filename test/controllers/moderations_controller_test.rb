@@ -432,6 +432,20 @@ describe ModerationsController do
 			@ugc_question.question_moderations[0].type_id.must_equal 7
 		end
 
+		it 'for questions multiple times' do
+			@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+			5.times { @moderator.questions << create(:question, status: 1) }
+			@moderator.update_attribute :lifecycle_segment, 4
+			@moderator.update_attribute :moderator_segment, 3
+
+		  Capybara.current_driver = :selenium
+			visit '/moderations/manage'
+			@ugc_question.question_moderations.count.must_equal 0
+			page.all('.replies .question_feedback').each { |element| element.click }
+			sleep 1 # again with the not waiting...
+			@ugc_question.reload.question_moderations.count.must_equal 3
+		end
+
 		# it 'without duplicating moderation'
 	end
 
@@ -795,7 +809,7 @@ describe ModerationsController do
 						moderation3.reload.accepted.must_equal false
 					end
 
-					it 'run properly accepts/rejects when admin changes mind' do
+					it 'properly accepts/rejects when admin changes mind' do
 						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
 						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
 						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)

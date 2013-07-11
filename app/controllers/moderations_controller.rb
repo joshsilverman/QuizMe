@@ -28,8 +28,7 @@ class ModerationsController < ApplicationController
 
       render :json => moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
-      moderation = moderator.question_moderations.find_or_initialize_by_question_id params['question_id']
-      moderation.update_attributes type_id: params['type_id']
+      moderation = moderator.question_moderations.find_or_create_by_question_id_and_type_id(params['question_id'], params['type_id'])
 
       render :nothing => true
     end
