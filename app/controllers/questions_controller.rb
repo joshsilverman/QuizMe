@@ -216,18 +216,10 @@ class QuestionsController < ApplicationController
 
   def moderate_update
     question = Question.find(params[:question_id])
-    accepted = params[:accepted].match(/(true|t|yes|y|1)$/i) != nil
-    if accepted
-      question.update_attributes(:status => 1)
-      a = User.asker(question.created_for_asker_id)
-      # a.private_send("Your question was accepted! Nice!", nil, nil, question.id, question.user.twi_user_id)
-    else
-      question.update_attributes(:status => -1)
-      a = User.asker(question.created_for_asker_id)
-      ## DM user to let them know!
-      # a.private_send("Your question was not approved. Sorry :(", nil, nil, question.id, question.user.twi_user_id)
-    end
-    render :json => accepted, :status => 200
+    question.update_attribute(:status, (params[:accepted].match(/(true|t|yes|y|1)$/i) != nil) ? 1 : -1)
+    question.question_moderations.each { |qm| qm.update_attribute(:accepted, ((question.status == 1 and qm.type_id == 7) or (question.status == -1 and qm.type_id != 7))) }
+
+    render :json => question.status, :status => 200
   end
 
   def export

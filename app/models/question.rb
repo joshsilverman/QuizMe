@@ -85,27 +85,14 @@ class Question < ActiveRecord::Base
     return [] unless moderator.lifecycle_above?(3) # check if user is > regular
     return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
     return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
-    
-    excluded_questions = QuestionModeration.where('created_at > ?', 30.days.ago)\
-      .select(["question_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("question_id").all
-    excluded_questions.reject! do |q|
-      type_ids = q.type_ids.split ','
-      if type_ids.count < 2
-        true
-      elsif (type_ids.count == 2 and type_ids.uniq.count == 2 and moderator.moderator_segment.present? and moderator.moderator_segment > 3)
-        true
-      end
-    end
 
-    excluded_question_ids = excluded_questions.collect(&:question_id)
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
-    excluded_question_ids = (excluded_question_ids + question_ids_moderated_by_current_user).uniq
-    excluded_question_ids = [0] if excluded_question_ids.empty?    
+    question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
 
     Question.where('status = 0')\
       .where('moderation_trigger_type_id is null')\
       .where("questions.user_id <> ?", moderator.id)\
-      .where("questions.id NOT IN (?)", excluded_question_ids)\
+      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
       .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
       .order('questions.created_at DESC')\
       .limit(5)\

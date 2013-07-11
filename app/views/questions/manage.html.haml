@@ -28,9 +28,8 @@
         %th{:style => 'width:16px;'}
         %th Asker
         %th{:style => 'width:55%;'} Text
-        %th Created
-        %th Moderated
-        %th Status
+        %th Moderation
+        %th{style: 'width: 95px;'} Status
     %tbody
 
     - @questions.each_with_index do |question, i|
@@ -39,7 +38,7 @@
         %td
           - question_asker = question.user
           = image_tag(question_asker.twi_profile_img_url, :class => "contributor rounded", :rel => "tooltip", :title => question_asker.twi_screen_name, "data-placement" => "left")
-        %td= Asker.find(question.created_for_asker_id).twi_screen_name
+        %td.asker_name= Asker.find(question.created_for_asker_id).twi_screen_name
         %td
           %p{:style => "font-weight: bold;"}
             = best_in_place question, :text, :type => :textarea
@@ -51,22 +50,26 @@
             Hint:
             = best_in_place question, :hint, :type => :textarea
             
-        %td.has-tooltip{:rel => "tooltip", "data-original-title" => question.created_at, "data-placement" => "bottom"}
-          = question.created_at.strftime "%m/%d"
         %td.moderation_type
           - if question.publishable
             %span.label.label-success Publishable
-          - elsif question.innacurate
+          - if question.inaccurate
             %span.label.label-important Inaccurate
-          - elsif question.ungrammatical
+          - if question.ungrammatical
             %span.label.label-important Ungrammatical
+          - if question.bad_answers
+            %span.label.label-important Bad Answers
         %td.status
-          - if question.status == 0
-            %span.label.pending Pending
-          - elsif question.status == 1
-            %span.label.label-success.approved Approved
-          - elsif question.status == -1
-            %span.label.label-important.rejected Rejected
+          .btn-group{'data-toggle' => 'buttons-radio'}
+            .btn.btn-mini.btn-danger.reject{type: 'button'} Reject        
+            .btn.btn-mini.btn-success.accept{type: 'button'} Accept
+        / %td.status
+        /   - if question.status == 0
+        /     %span.label.pending Pending
+        /   - elsif question.status == 1
+        /     %span.label.label-success.approved Approved
+        /   - elsif question.status == -1
+        /     %span.label.label-important.rejected Rejected
 
   .pagination-wrapper
     = paginate @questions

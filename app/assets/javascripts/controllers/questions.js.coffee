@@ -182,24 +182,23 @@ class Question
 			return true
 
 
-class Moderator
-
+class Manager
 	constructor: ->
-		$('.btn.btn-success').on "click", (e) => @respond(true, $(e.target).attr('qid'))
-		$('.btn.btn-danger').on "click", (e) => @respond(false, $(e.target).attr('qid'))
-		$("#moderate_questions .status .label").click -> console.log  moderator.change_status $(this)
-	respond: (accepted, id) ->
-		q = {}
-		q['question_id'] = parseInt id
-		q['accepted'] = accepted
-		$.ajax '/moderate/update',
-			type: 'POST'
-			dataType: 'html'
-			data: q
-			error: (jqXHR, textStatus, errorThrown) ->
-				console.log "AJAX Error: #{errorThrown}"
-			success: (data, textStatus, jqXHR) ->
-				$("#question_#{q['question_id']}").fadeOut()
+		$('.status .btn-group').on 'click', (e) => 
+			question_id = $(e.target).parents('.question-row').attr('question_id')
+			accepted = $(e.target).hasClass('btn-success')
+			asker_name = $(e.target).parents('.question-row').find('.asker_name').text()
+			@respond(accepted, question_id, asker_name)
+
+	respond: (accepted, id, asker_name) ->
+		params = 
+			question_id: id
+			accepted: accepted
+		$.post '/moderate/update', params, (status) ->
+			$.gritter.add
+				title: asker_name
+				text: (if status == 1 then 'Published question.' else 'Rejected question.')
+				time: 3000
 
 	change_status: (label) ->
 		window.label = label
@@ -237,6 +236,6 @@ class Card
 		})		
 
 $ ->
-	window.moderator = new Moderator if $('#moderate_questions').length > 0
+	window.manager = new Manager if $('#moderate_questions').length > 0
 	window.question = new Question if $("#question").length > 0
 	window.card = new Card if $(".answer_widget").length > 0

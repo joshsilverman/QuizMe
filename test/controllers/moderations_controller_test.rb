@@ -205,55 +205,77 @@ describe ModerationsController do
 					@moderator.update_attribute :moderator_segment, 3
 				end
 
+				it 'wont display questions already moderated by the user' do
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+					@ugc_question.question_moderations << create(:question_moderation, user_id: @moderator.id, question: @ugc_question, type_id: 10)
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+				end
+
 				it 'wont display questions that are already decided' do 
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
-					@ugc_question.update_attribute :moderation_trigger_type_id, 2
+					@ugc_question.update_attribute :moderation_trigger_type_id, 1
 
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 				end
 
-				it 'displays twice-moderated questions without consensus to > regular moderators' do
+				it 'displays questions with multiple moderations from only one user' do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 1)
-					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 2)
-
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 10)
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)					
 					visit '/moderations/manage'
-					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+				end
 
-					@moderator.update_attribute :moderator_segment, 4
+				it 'displays twice-moderated questions without consensus' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 10)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1	
 
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 2)
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+				end
+
+				it 'displays questions until consensus' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 7)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 10)
+
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+					
+					moderator = create(:user, twi_user_id: 1, role: 'moderator')
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 7)
+					
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 				end
 
 				it 'wont display questions with consensus' do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 2)
+					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
 					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 2)
-					visit '/moderations/manage'
-					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
-				end
-
-				it 'wont display questions with more than 1 grade' do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 2)
-					visit '/moderations/manage'
-					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
-
-					moderator = create(:user, twi_user_id: 1, role: 'moderator')
-					@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 1)
+					@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 				end
@@ -669,42 +691,128 @@ describe ModerationsController do
 
 			describe 'on questions' do
 				# NOTE: I decided not to test every trigger type every attribute as above
-				before :each do 
-					@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+				describe 'and triggers response' do
+					before :each do 
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+					end
+
+					it 'as publishable by consensus' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.reload.publishable.must_equal true
+					end
+
+					it 'as inaccurate by tiebreaker' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
+						@ugc_question.reload.inaccurate.must_equal nil
+
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+						@ugc_question.reload.inaccurate.must_equal true
+					end
+
+					it 'as ungrammatical by tiebreaker' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.reload.ungrammatical.must_equal nil
+
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
+						@ugc_question.reload.ungrammatical.must_equal true
+					end				
+
+					it 'as having bad answers consensus' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+						@ugc_question.reload.bad_answers.must_equal true
+					end
+
+					it 'after trigger condition has been satisfied' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
+
+						@ugc_question.reload.moderation_trigger_type_id.must_equal nil
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
+						@ugc_question.reload.moderation_trigger_type_id.wont_be_nil
+						
+						create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+						@ugc_question.reload.bad_answers.must_equal true
+						@ugc_question.reload.ungrammatical.must_equal true
+					end
 				end
 
-				it 'as publishable by consensus' do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
-					create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-					create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
-					@ugc_question.reload.publishable.must_equal true
-				end
+				describe 'and accepts/rejects other moderations' do
+					before :each do 
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+						Capybara.current_driver = :selenium
+						@admin = create(:user, twi_user_id: 1, role: 'admin')
+						login_as @admin
+					end
 
-				it 'as inaccurate by above advanced' do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
-					create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
-					@ugc_question.reload.inaccurate.must_equal true
-				end
+					it 'wont accept moderations before admin accepts/rejects' do
+						10.times do
+							moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: [7, 8, 9, 10].sample, question_id: @ugc_question.id)
+							@ugc_question.reload.question_moderations.select { |qm| !qm.accepted.nil? }.count.must_equal 0
+						end
+					end
 
-				it 'as ungrammatical by tiebreaker' do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-					create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-					create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
-					@ugc_question.reload.ungrammatical.must_equal nil
+					it 'accepts publishable + rejects non-publishable moderations when published by admin' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-success').click
+						sleep 1 # capybara isn't waiting for ajax to return...
 
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-					create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)
-					@ugc_question.reload.ungrammatical.must_equal true
-				end				
+						moderation.reload.accepted.must_equal true
+						moderation2.reload.accepted.must_equal false
+						moderation3.reload.accepted.must_equal true
+					end
 
-				it 'as having bad answers consensus' do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
-					@ugc_question.reload.bad_answers.must_equal true
+					it 'rejects publishable + accepts non-publishable when question rejected by admin' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-danger').click
+						sleep 1
+						
+						moderation.reload.accepted.must_equal false
+						moderation2.reload.accepted.must_equal true
+						moderation3.reload.accepted.must_equal false
+					end
+
+					it 'run properly accepts/rejects when admin changes mind' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+
+						visit '/questions/manage'
+						page.find('.btn-danger').click
+						sleep 1
+						moderation.reload.accepted.must_equal false
+						moderation2.reload.accepted.must_equal true
+						moderation3.reload.accepted.must_equal false
+
+						page.find('.btn-success').click
+						sleep 1
+						moderation.reload.accepted.must_equal true
+						moderation2.reload.accepted.must_equal false	
+						moderation3.reload.accepted.must_equal true					
+					end					
 				end
 			end
 		end
@@ -824,9 +932,6 @@ describe ModerationsController do
 			describe 'on questions' do
 				before :each do 
 					@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
-					# 5.times { @moderator.questions << create(:question, status: 1) }
-					# @moderator.update_attribute :lifecycle_segment, 4
-					# @moderator.update_attribute :moderator_segment, 3
 				end
 
 				it 'if less than one moderation' do
@@ -868,21 +973,21 @@ describe ModerationsController do
 					@ugc_question.bad_answers.must_equal nil					
 				end
 
-				it "run if supermod moderates and post was approved" do
-					@ugc_question.update_attribute :status, 1
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
-					@ugc_question.reload.status.must_equal 1
-					@ugc_question.bad_answers.must_equal nil		
-				end
+				# it "if supermod moderates and post was approved" do
+				# 	@ugc_question.update_attribute :status, 1
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal 1
+				# 	@ugc_question.bad_answers.must_equal nil		
+				# end
 
-				it "run if supermod moderates and post was rejected" do
-					@ugc_question.update_attribute :status, -1
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
-					@ugc_question.reload.status.must_equal -1
-					@ugc_question.bad_answers.must_equal nil		
-				end
+				# it "if supermod moderates and post was rejected" do
+				# 	@ugc_question.update_attribute :status, -1
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal -1
+				# 	@ugc_question.bad_answers.must_equal nil		
+				# end
 			end
 		end
 	end
