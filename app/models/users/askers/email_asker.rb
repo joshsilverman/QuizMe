@@ -29,7 +29,7 @@ class EmailAsker < Asker
 	end
 
   def save params, u
-    in_reply_to_post_id = detect_in_reply_to_post_id params[:text]
+    in_reply_to_post_id = detect_in_reply_to_post_id params[:text], u
 
     if in_reply_to_post_id
       in_reply_to_post = Post.find in_reply_to_post_id
@@ -58,11 +58,11 @@ class EmailAsker < Asker
     end
   end
 
-  def auto_respond post, answerer
+  def auto_respond post, answerer, params
     return unless !post.autocorrect.nil? and post.requires_action
-    # return unless post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
+    return unless post.conversation.posts.grade.blank?
 
-    text = post.autocorrect
+    text = generate_response post.autocorrect, post.in_reply_to_question, true
     private_send answerer, text, {
       :user_id => id,
       :provider => 'email',
@@ -70,8 +70,9 @@ class EmailAsker < Asker
       :in_reply_to_user_id => answerer.id,
       :conversation_id => post.conversation.id,
       :intention => 'grade',
-      :question_id => post.question,
-      :publication_id => post.conversation.post.publication.id
+      :question_id => post.in_reply_to_question_id,
+      :publication_id => post.conversation.post.publication.id,
+      :subject => params[:subject]
     }
 
     learner_level = "twitter answer"
@@ -79,20 +80,24 @@ class EmailAsker < Asker
   end
 
   def choose_format_and_send recipient, text, options
-    if options[:question_id]
+    if options[:intention] == 'reengage inactive'
       question = Question.includes(:answers).find(options[:question_id])
       mail, text, url = EmailAskerMailer.question(self, recipient, text, question, options)
-      mail .deliver
+      mail.deliver
+      return text, url
+    elsif options[:intention] == 'grade'
+      mail, text, url = EmailAskerMailer.generic(self, recipient, text, options)
+      mail.deliver
       return text, url
     else
       false
     end
   end
 
-  def detect_in_reply_to_post_id text
-    if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)\?s=email&lt=reengage/)
+  def detect_in_reply_to_post_id text, user
+    if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)\?s=[a-zA-Z]+&lt=reengage/)
       url, asker_id, pub_id = match.to_a
-      post_id = Publication.find(pub_id.to_i).posts.last.id
+      post_id = Publication.find(pub_id.to_i).posts.where(in_reply_to_user_id: user.id).last.id
       return post_id if id == asker_id.to_i
     else
     end

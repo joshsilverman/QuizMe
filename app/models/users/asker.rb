@@ -528,7 +528,7 @@ class Asker < User
       end
     end 
 
-    if response_text.blank?  
+    if response_text.blank?
       response_text = generate_response(correct, question)
       if correct and options[:quote_user_answer]
         cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""

@@ -27,8 +27,6 @@ describe EmailAsker do
 		it 'degrades to private send' do
 			@asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer).first.interaction_type.must_equal 5
 		end
-
-		it 'uses correct from address'
 	end
 
 	describe 'private send' do
@@ -50,5 +48,7 @@ describe EmailAsker do
 		it 'will cause email delivery' do
 			ActionMailer::Base.deliveries.wont_be_empty
 		end
+
+		it 'sends a clickable link'
 	end
 end

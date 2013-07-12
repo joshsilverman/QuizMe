@@ -12,7 +12,7 @@ class EmailAskersController < ApplicationController
     Post.classifier.classify post
     Post.grader.grade post.reload
 
-    asker.auto_respond post.reload, user
+    asker.auto_respond post.reload, user, params
 
     render text: nil
   end

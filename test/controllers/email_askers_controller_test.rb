@@ -56,9 +56,7 @@ describe EmailAskersController do
 		end
 
 		it 'and fails if format cannot be interpreted'
+		it 'and does not appear in moderations/manage on failure'
 	end
 
-	it 'does not appear in moderations/manage'
-
-	it 'sends a clickable link'
 end
