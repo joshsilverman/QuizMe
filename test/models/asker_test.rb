@@ -177,40 +177,75 @@ describe Asker do
 				sent.must_equal 5 * 18
 			end
 
-			it "obeys maximum daily follow limit" do
-				12.times { @asker.add_follow(create(:user), 2) }
-				@asker.autofollow_count(8).must_equal 0
+			it "obeys maximum daily follow limit on small handles" do
+				Timecop.travel(Time.now.beginning_of_week)
+				@asker.stub :followers, 1..150 do
+					total_follows = []
+					7.times do |i|
+						follows_today = 0
+						24.times do |j|
+							Timecop.travel(Time.now + 1.hour)
+							next if follows_today > 0
+							follows_today = @asker.autofollow_count
+						end
+						total_follows << follows_today
+					end
+					total_follows.sum.must_equal 21
+				end
 			end
 
-			it "obeys maximum daily unfollow limit" do
-				100.times { @asker.follows << create(:user) }
-				Timecop.travel((Time.now + 40.days).beginning_of_week)
-				total = 0
-				7.times do 
-					24.times do
-						unfollow_count = @asker.unfollow_count
-						(unfollow_count < 11).must_equal true
-						pre = @asker.follows.count
-						@asker.unfollow_nonreciprocal(@asker.follows.collect(&:twi_user_id), unfollow_count)
-						total += (pre - @asker.follows.count)
-						Timecop.travel(Time.now + 1.hour)
+			it "obeys maximum daily follow limit on large handles" do
+				Timecop.travel(Time.now.beginning_of_week)
+				@asker.stub :followers, 1..10000 do
+					total_follows = []
+					7.times do |i|
+						follows_today = 0
+						24.times do |j|
+							Timecop.travel(Time.now + 1.hour)
+							next if follows_today > 0
+							follows_today = @asker.autofollow_count
+						end
+						total_follows << follows_today
 					end
+					total_follows.sum.must_equal 49
 				end
-				total.must_equal 35	
+			end			
+
+			it "obeys maximum daily unfollow limit on large handles" do
+				100.times { @asker.follows << create(:user) }
+				Timecop.travel(Time.now.beginning_of_week)
+				@asker.stub :followers, 1..10000 do
+					total_unfollows = []
+					7.times do |i|
+						unfollows_today = 0
+						24.times do |j|
+							Timecop.travel(Time.now + 1.hour)
+							next if unfollows_today > 0
+							unfollows_today = @asker.unfollow_count
+						end
+						total_unfollows << unfollows_today
+					end
+					total_unfollows.sum.must_equal 49
+				end				
 			end			
 
 			it "follows proper number of users per day and week" do
-				@asker.follows.count.must_equal 0
 				Timecop.travel(Time.now.beginning_of_week)
-				twi_user_ids = (1..38).to_a
-				7.times do
-					24.times do
-						@asker.autofollow(twi_user_ids: twi_user_ids, force: true)
-						Timecop.travel(Time.now + 1.hour)
+				@asker.stub :followers, 1..10000 do
+					total_follows = []
+					7.times do |i|
+						follows_today = 0
+						24.times do |j|
+							Timecop.travel(Time.now + 1.hour)
+							next if follows_today > 0
+							follows_today = @asker.autofollow_count
+						end
+						total_follows << follows_today
 					end
+					total_follows.select { |f| f == 0 }.count.must_equal 2
+					total_follows.select { |f| f < 16 }.count.must_equal 7
 				end
-				@asker.follows.count.must_equal 38
-			end
+			end		
 
 			it "doesn't include followbacks in max follows per day" do
 				@asker.follows.count.must_equal 0

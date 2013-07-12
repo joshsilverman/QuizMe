@@ -18,23 +18,29 @@ module ManageTwitterRelationships
   end
 
   def autofollow_count max_follows = nil
+    target_follow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
+    target_follow_count_avg = 7 if target_follow_count_avg > 7
+    scale = [0.0, 0.0, 1.6, 0.8, 2.0, 0.4, 2.2][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
+    max_follows = (target_follow_count_avg * scale).round # scale target avg
     # Check if we should follow today
-    max_follows ||= [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
+    # max_follows ||= [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
     return 0 if max_follows == 0
-
     # Check if we should follow during this part of the day
     return 0 if Time.now.hour <= ((id + Time.now.wday + Time.now.to_date.cweek) % 6)
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
-
     # Check if we've already followed enough users today
     return 0 if follow_relationships.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
-
     max_follows
   end
 
   def unfollow_count max_unfollows = nil
+    target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
+    target_unfollow_count_avg = 7 if target_unfollow_count_avg > 7
+    scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
+    max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
+
     # Check if we should unfollow today
-    max_unfollows ||= [0, 0, 8, 10, 2, 6, 9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
+    # max_unfollows ||= [0, 0, 8, 10, 2, 6, 9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
     return 0 if max_unfollows == 0
     
     # Check if we should unfollow during this part of the day
