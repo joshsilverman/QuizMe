@@ -111,7 +111,7 @@ describe Asker do
 					# puts "they do"
 					Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty 
 				end
-				puts "========"
+				# puts "========"
 			end
 			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
 			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).size

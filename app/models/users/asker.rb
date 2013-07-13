@@ -194,17 +194,28 @@ class Asker < User
     strategy = options[:strategy]
     strategy_string = options[:strategy].join "/" if strategy
 
+    # user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
+    #   .select(["user_id", "max(created_at) as last_active_at"])\
+    #   .where("created_at > ?", period.days.ago)\
+    #   .group("user_id").map{|p| [p.user_id, p.last_active_at]}.flatten]
+
+    # user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
+    #   .where('posts.intention' => 'reengage inactive')\
+    #   .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
+    #   .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
+    #   .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
+
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\
-      .group("user_id").map{|p| [p.user_id, p.last_active_at]}.flatten]
+      .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
       .where('posts.intention' => 'reengage inactive')\
       .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
-
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
+      
     @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}
     user_ids_to_last_active_at.each do |user_id, last_active_at|
@@ -223,7 +234,14 @@ class Asker < User
         # puts interval
         # puts (aggregate_intervals + interval)
         # puts Time.now
-        if (last_active_at + (aggregate_intervals + interval).days) < Time.now
+        # puts last_active_at
+        # puts last_active_at.class
+        # puts last_active_at.time
+        # puts last_active_at.time.class
+        # puts (last_active_at + (aggregate_intervals + interval).days).class
+        # puts Time.now.class
+        # puts (last_active_at + (aggregate_intervals + interval).days).utc < Time.now
+        if (last_active_at + (aggregate_intervals + interval).days).utc < Time.now
           aggregate_intervals += interval
           puts "aggregate_intervals: #{aggregate_intervals}"
           ideal_last_reengage_at = last_active_at + aggregate_intervals.days
