@@ -1,5 +1,5 @@
 class PostModeration < Moderation
-	default_scope where('post_id is not null')
+	default_scope -> { where('post_id is not null') }
 	belongs_to :post
 
   scope :correct, -> { where(type_id: 1) }

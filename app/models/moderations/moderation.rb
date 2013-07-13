@@ -3,6 +3,6 @@ class Moderation < ActiveRecord::Base
 
   belongs_to :moderator, :class_name => 'Moderator', foreign_key: :user_id
 
-  scope :accepted, where("accepted = ?", true)
-  scope :rejected, where("accepted = ?", false)
+  scope :accepted, -> { where("accepted = ?", true) }
+  scope :rejected, -> { where("accepted = ?", false) }
 end

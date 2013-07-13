@@ -1,6 +1,6 @@
 class TwitterAsker < Asker
 
-	def public_send text, options = {}, recipient = nil
+	def send_public_message text, options = {}, recipient = nil
     sender = self
 
     options[:resource_url] = options[:resource_url].gsub(/\/embed\/([^\?]*)\?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/embed\//
@@ -52,7 +52,7 @@ class TwitterAsker < Asker
     return post 
 	end
 
-	def private_send recipient, text, options = {}
+	def send_private_message recipient, text, options = {}
 	  sender = self
     	
     short_url = nil

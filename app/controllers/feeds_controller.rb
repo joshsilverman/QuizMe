@@ -318,7 +318,7 @@ class FeedsController < ApplicationController
     else
       response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
       if correct.nil?
-        response_post = asker.delay.public_send(response_text, {
+        response_post = asker.delay.send_public_message(response_text, {
           :reply_to => params[:username], 
           :interaction_type => 2, 
           :conversation_id => conversation.id,
@@ -472,7 +472,7 @@ class FeedsController < ApplicationController
     end    
 
     if question and publication
-      response_post = asker.public_send(question.text, {
+      response_post = asker.send_public_message(question.text, {
         :reply_to => params[:user_twi_screen_name], 
         :interaction_type => 2,
         :intention => 'quiz a friend',

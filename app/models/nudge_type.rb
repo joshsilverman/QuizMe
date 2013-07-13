@@ -15,7 +15,7 @@ class NudgeType < ActiveRecord::Base
         message.gsub!("{link}", short_url)
       end
 
-      dm = asker.private_send(user, message, {
+      dm = asker.send_private_message(user, message, {
     		:intention => 'nudge',
         :nudge_type_id => id,
         :short_url => short_url

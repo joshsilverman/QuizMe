@@ -1,11 +1,11 @@
 class QuestionModeration < Moderation
-	default_scope where('question_id is not null')
+	default_scope -> { where('question_id is not null') }
 	belongs_to :question
 
-	scope :publishable, where(type_id: 7)
-	scope :inaccurate, where(type_id: 8)
-	scope :ungrammatical, where(type_id: 9)
-	scope :bad_answers, where(type_id: 10)
+	scope :publishable, -> { where(type_id: 7) }
+	scope :inaccurate, -> { where(type_id: 8) }
+	scope :ungrammatical, -> { where(type_id: 9) }
+	scope :bad_answers, -> { where(type_id: 10) }
 
 	def respond_with_type_id
     return false if question.status != 0

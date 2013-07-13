@@ -21,9 +21,9 @@ class Question < ActiveRecord::Base
 
   scope :approved, -> { where('status = 1') }
 
-  scope :moderated_by_consensus, where(moderation_trigger_type_id: 1)
-  scope :moderated_by_above_advanced, where(moderation_trigger_type_id: 2)
-  scope :moderated_by_tiebreaker, where(moderation_trigger_type_id: 3)  
+  scope :moderated_by_consensus, -> { where(moderation_trigger_type_id: 1) }
+  scope :moderated_by_above_advanced, -> { where(moderation_trigger_type_id: 2) }
+  scope :moderated_by_tiebreaker, -> { where(moderation_trigger_type_id: 3) }
 
   before_save :generate_slug
 

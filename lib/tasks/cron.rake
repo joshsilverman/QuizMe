@@ -87,7 +87,7 @@ task :retweet_related => :environment do
       if questions_remaining > 0
         ACCOUNT_DATA[new_handle_id][:retweet].each do |asker_id|
           a = Asker.find(asker_id)
-          a.public_send("We need #{questions_remaining} more questions to launch #{new_asker.twi_screen_name}! Help by writing one here: wisr.com/feeds/#{new_handle_id}?q=1", {
+          a.send_public_message("We need #{questions_remaining} more questions to launch #{new_asker.twi_screen_name}! Help by writing one here: wisr.com/feeds/#{new_handle_id}?q=1", {
             :intention => 'solicit ugc',
             :interaction_type => 2
           })

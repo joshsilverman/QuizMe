@@ -90,21 +90,21 @@ class Asker < User
     counts
   end
 
-  def public_send text, options = {}
+  def send_public_message text, options = {}
     recipient = User.where(id: options[:in_reply_to_user_id]).first
     communication_preference = recipient.blank? ? 1 : recipient.communication_preference
     case communication_preference
     when 2
-      self.becomes(EmailAsker).public_send(text, options, recipient)
+      self.becomes(EmailAsker).send_public_message(text, options, recipient)
     when 1
-      self.becomes(TwitterAsker).public_send(text, options, recipient)
+      self.becomes(TwitterAsker).send_public_message(text, options, recipient)
     else
       raise 'no public send method for that communication preference'
     end
   end
   
-  def private_send recipient, text, options = {}
-    self.becomes(TwitterAsker).private_send(recipient, text, options)
+  def send_private_message recipient, text, options = {}
+    self.becomes(TwitterAsker).send_private_message(recipient, text, options)
   end
 
   def publish_question
@@ -126,7 +126,7 @@ class Asker < User
     answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
     dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
 
-    self.private_send(user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
+    self.send_private_message(user, dm_text, {:question_id => question.id, :intention => "initial question dm"})
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name,
@@ -155,7 +155,7 @@ class Asker < User
         if asker_cache[:last_answer_at] < 5.minutes.ago and asker_cache[:count] > 0
           asker = Asker.find(asker_id)
           script = Asker.get_aggregate_post_response_script(asker_cache[:count], asker_cache[:correct])
-          asker.public_send(script, {
+          asker.send_public_message(script, {
             :reply_to => user_cache[:twi_screen_name],
             :interaction_type => 2, 
             :link_type => "agg", 
@@ -207,7 +207,6 @@ class Asker < User
 
     @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}
-
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
         strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
@@ -218,9 +217,15 @@ class Asker < User
 
       aggregate_intervals = 0
       ideal_last_reengage_at = nil
+      # puts strategy
+      puts "last_active_at: #{last_active_at}"
       strategy.each do |interval|
+        # puts interval
+        # puts (aggregate_intervals + interval)
+        # puts Time.now
         if (last_active_at + (aggregate_intervals + interval).days) < Time.now
           aggregate_intervals += interval
+          puts "aggregate_intervals: #{aggregate_intervals}"
           ideal_last_reengage_at = last_active_at + aggregate_intervals.days
         else
           break
@@ -228,7 +233,15 @@ class Asker < User
       end
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
-      Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+      puts "last_reengaged_at: #{last_reengaged_at}"
+      puts "ideal_last_reengage_at: #{ideal_last_reengage_at}"
+      # puts last_reengaged_at.class
+      # puts ideal_last_reengage_at.class
+      if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+        # puts last_reengaged_at < ideal_last_reengage_at
+        puts 'send tweet!'
+        Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) 
+      end
     end
   end 
 
@@ -261,7 +274,7 @@ class Asker < User
 
     # puts "send question: '#{question.text}' to #{user.twi_screen_name}" 
 
-    asker.public_send(question.text, {
+    asker.send_public_message(question.text, {
       :reply_to => user.twi_screen_name,
       :long_url => "http://wisr.com/feeds/#{asker.id}/#{publication.id}",
       :in_reply_to_user_id => user.id,
@@ -328,7 +341,7 @@ class Asker < User
           publication = Publication.includes(:question).find(publication_id)
           popular_asker_publications[asker.id] = publication
         end
-        asker.public_send("Next question! #{publication.question.text}", {
+        asker.send_public_message("Next question! #{publication.question.text}", {
           :reply_to => user.twi_screen_name,
           :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}", 
           :interaction_type => 2, 
@@ -408,7 +421,7 @@ class Asker < User
         response_text = options[:message].gsub("@#{options[:username]}", "")
       end
 
-      response_post = self.delay.private_send(user, response_text, {
+      response_post = self.delay.send_private_message(user, response_text, {
         :conversation_id => conversation.id,
         :intention => options[:message] == "Refer a friend?" ? 'refer a friend' : nil
       })
@@ -438,7 +451,7 @@ class Asker < User
         :last_answer_at => user_post.created_at
       }) 
 
-      response_post = self.delay.private_send(user, response_text, {
+      response_post = self.delay.send_private_message(user, response_text, {
         :conversation_id => conversation.id,
         :intention => 'grade'
       })
@@ -465,7 +478,7 @@ class Asker < User
     end
 
     if options[:post_to_twitter]
-      app_post = self.public_send(response_text, {
+      app_post = self.send_public_message(response_text, {
         :reply_to => answerer.twi_screen_name,
         :long_url => "#{URL}/feeds/#{id}/#{publication.id}", 
         :interaction_type => 2, 
@@ -660,7 +673,7 @@ class Asker < User
     )
     script.gsub! '<link>', "http://wisr.com/users/#{user.id}/activity"
 
-    self.private_send(user, script, {
+    self.send_private_message(user, script, {
       :intention => "send link to activity feed"
     })    
   end
@@ -700,7 +713,7 @@ class Asker < User
     script.gsub! '<link>', link
 
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
-    self.private_send(user, script, {intention: 'request mod'})
+    self.send_private_message(user, script, {intention: 'request mod'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
 
@@ -750,11 +763,11 @@ class Asker < User
     script.gsub! "<last_week>", "Your question(s) were answered #{question_count} times last week!"
 
     if Post.create_split_test(user.id, 'ugc request type', 'mention', 'dm') == 'dm'
-      self.private_send(user, script, {
+      self.send_private_message(user, script, {
         :intention => "solicit ugc"
       })
     else
-      self.public_send(script, {
+      self.send_public_message(script, {
         :reply_to => user.twi_screen_name,
         :in_reply_to_user_id => user.id,
         :intention => 'solicit ugc',
@@ -801,7 +814,7 @@ class Asker < User
     script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
     script.gsub! '<new handle>', in_progress_asker.twi_screen_name
 
-    self.private_send(user, script, {intention: 'request new handle ugc'})
+    self.send_private_message(user, script, {intention: 'request new handle ugc'})
     Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
@@ -941,7 +954,7 @@ class Asker < User
       next unless asker and text
       
       if asker.followers.include?(recipient) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
-        asker.private_send(recipient, text, {:intention => "progress report"})
+        asker.send_private_message(recipient, text, {:intention => "progress report"})
         # puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
         sleep 1
       end
@@ -988,7 +1001,7 @@ class Asker < User
       next unless post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
       if Time.now.hour % 12 == 0
-        asker.public_send("Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
+        asker.send_public_message("Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
           :intention => 'solicit ugc',
           :interaction_type => 2
         })
@@ -1024,7 +1037,7 @@ class Asker < User
       next unless asker.followers.collect(&:twi_user_id).include? user.twi_user_id
       script = "So far, #{question_data[:answered_count]} people have answered your question "
       script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
-      asker.private_send(user, script, {:intention => "author followup"})
+      asker.send_private_message(user, script, {:intention => "author followup"})
       
       if Post.create_split_test(user.id, 'author followup type (return ugc submission)', 'write another here', 'direct to dashboard') == 'write another here'
         script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
@@ -1032,7 +1045,7 @@ class Asker < User
         script = "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"
       end
 
-      asker.private_send(user, script, {:intention => "author followup"})
+      asker.send_private_message(user, script, {:intention => "author followup"})
       Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
     end
   end
@@ -1065,7 +1078,7 @@ class Asker < User
       if Post.create_split_test(recipient_id, "nudge followup (nudge conversion)", "false", "true") == "true"
         user = User.find(recipient_id)
         script = "You have a chance to check out that link? What did you think?"
-        asker.private_send(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
+        asker.send_private_message(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
         Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
       end 
     end
@@ -1105,7 +1118,7 @@ class Asker < User
 
     script = "#{script} #{question.text}".strip
 
-    self.public_send(script, { 
+    self.send_public_message(script, { 
       reply_to: user.twi_screen_name, 
       intention: 'targeted mention', 
       question_id: question.id,

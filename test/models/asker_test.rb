@@ -24,7 +24,7 @@ describe Asker do
 		end
 
 
-		it "run with a post" do
+		it "with a post" do
 			@asker.app_response @user_response, @correct
 			puts @asker.posts.to_json
 			@asker.posts.where("intention = 'grade' and in_reply_to_user_id = ?", @user.id).wont_be_empty
@@ -93,15 +93,28 @@ describe Asker do
 		end
 
 		it "run on the proper schedule" do 
-			Asker.reengage_inactive_users strategy: @strategy
+			# Asker.reengage_inactive_users strategy: @strategy
+			# puts "========"
+			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
 			intervals = []
 			@strategy.each_with_index { |e, i| intervals << @strategy[0..i].sum }
+			puts intervals.to_json
 			@strategy.sum.times do |i|
+				puts "day #{i + 1}"
 				Timecop.travel(Time.now + 1.day)
+				puts "current time: #{Time.now}"
+				# puts Time.now
 				Asker.reengage_inactive_users strategy: @strategy
-				puts Post.reengage_inactive.to_json
-				Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty if intervals.include?(i + 2)
+				# puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).to_json
+				# puts Post.reengage_inactive.to_json
+				if intervals.include?(i + 1)
+					# puts "they do"
+					Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty 
+				end
+				puts "========"
 			end
+			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
+			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).size
 		end
 
 		it "that have answered a question" do

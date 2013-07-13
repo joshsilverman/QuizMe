@@ -184,7 +184,7 @@ class Post < ActiveRecord::Base
     case provider
     when "twitter"
       begin
-        question_post = asker.public_send(question.text, {
+        question_post = asker.send_public_message(question.text, {
           :hashtag => asker.hashtags.sample.try(:name), 
           :long_url => long_url, 
           :interaction_type => 1, 
@@ -215,7 +215,7 @@ class Post < ActiveRecord::Base
             include_url = false
           end
 
-          asker.public_send(text, {
+          asker.send_public_message(text, {
             :reply_to => via, 
             :long_url => include_url ? long_url : nil, 
             :interaction_type => 2, 

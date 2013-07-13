@@ -1,14 +1,14 @@
 class EmailAsker < Asker
 
-	def public_send text, options = {}, recipient = nil
+	def send_public_message text, options = {}, recipient = nil
     if recipient
-      private_send recipient, text, options
+      send_private_message recipient, text, options
     else
       raise "no recipient to degrade public to private send"
     end
 	end
 
-	def private_send recipient, text, options = {}
+	def send_private_message recipient, text, options = {}
     text, url = choose_format_and_send recipient, text, options
     post = Post.create(
       :user_id => self.id,

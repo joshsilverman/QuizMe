@@ -90,10 +90,10 @@ class User < ActiveRecord::Base
   scope :handle_author, -> { where(:author_segment => 4) }
 
   # communication preference scopes
-  scope :tweeters, where(:communication_preference => 1)
-  scope :emailers, where(:communication_preference => 2)
-  # scope :texters, where(:communication_preference => 3)
-  # scope :whatsappers, where(:communication_preference => 4)
+  scope :tweeters, -> { where(:communication_preference => 1) }
+  scope :emailers, -> { where(:communication_preference => 2) }
+  # scope :texters, -> { where(:communication_preference => 3) }
+  # scope :whatsappers, -> { where(:communication_preference => 4) }
 
   def self.tfind name
   	self.find_by_twi_screen_name name
@@ -210,7 +210,7 @@ class User < ActiveRecord::Base
 
 	def app_answer asker, post, answer, options = {}
 		if options[:post_to_twitter]
-      user_post = self.public_send(answer.text, {
+      user_post = self.send_public_message(answer.text, {
         :reply_to => asker.twi_screen_name,
         :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
         :interaction_type => 2, 
@@ -466,7 +466,7 @@ class User < ActiveRecord::Base
     end
 
     unless comment == no_comment or comment.nil?
-      asker.private_send(self, comment, {:intention => "lifecycle+"})
+      asker.send_private_message(self, comment, {:intention => "lifecycle+"})
       return comment
     end
 
