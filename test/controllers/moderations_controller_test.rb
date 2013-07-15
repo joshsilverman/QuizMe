@@ -790,7 +790,7 @@ describe ModerationsController do
 						moderation3.reload.accepted.must_equal true
 					end
 
-					it 'rejects publishable + accepts non-publishable when question rejected by admin' do
+					it 'run rejects publishable + accepts non-publishable when question rejected by admin' do
 						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
 						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
 						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)

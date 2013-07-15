@@ -92,7 +92,7 @@ describe Asker do
 			Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 		end
 
-		it "run on the proper schedule" do 
+		it "on the proper schedule" do 
 			Asker.reengage_inactive_users strategy: @strategy
 			# puts "========"
 			# puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
@@ -524,9 +524,10 @@ describe Asker do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-			it 'with two posts in fifteen days' do
+			it 'run with two posts in fifteen days' do
 				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				16.times do |i|
+					puts "i: #{i}"
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
 					elsif i < 15
@@ -536,7 +537,8 @@ describe Asker do
 					end
 
 					@asker.request_new_question @user.reload
-					Timecop.travel(Time.now + 1.day)
+					Timecop.travel(Time.now + 1.day + 1.minute)
+					puts "========="
 				end
 			end
 

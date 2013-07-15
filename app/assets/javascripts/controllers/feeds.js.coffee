@@ -15,8 +15,8 @@ class @Feed
 		@id = $("#feed_id").val()
 		@answered_count = 0
 
-		@conversations = $.parseJSON($("#conversations").val())
-		@engagements = $.parseJSON($("#engagements").val())
+		# @conversations = $.parseJSON($("#conversations").val())
+		# @engagements = $.parseJSON($("#engagements").val())
 
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()

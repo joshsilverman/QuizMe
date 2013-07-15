@@ -194,7 +194,7 @@ class Question < ActiveRecord::Base
       questions = Question.get_lesson_questions(@lesson_id)
       return if questions['questions'].nil?
       questions['questions'].each do |imported_q|
-        q = Question.find_by_text(Question.clean_and_clip_question(imported_q['question']))
+        q = Question.find_by(text: Question.clean_and_clip_question(imported_q['question']))
         next if q.nil?
         puts "\n\nid: #{q.id}"
         puts q.text

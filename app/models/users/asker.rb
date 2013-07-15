@@ -741,11 +741,19 @@ class Asker < User
   end
 
   def request_new_question user
+    puts 1
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
+    puts 2
+    # puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc'", user.id).to_json
+    puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).to_json#.size > 0 # we haven't asked them in the past two weeks
+    puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).first.try(:created_at)
+    puts 2.weeks.ago
     return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).size > 0 # we haven't asked them in the past two weeks
+    puts 3
     
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
+    puts 4
     
     script = Post.create_split_test(user.id, "ugc script v4.0", 
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 
@@ -1115,7 +1123,7 @@ class Asker < User
       
       target_users, search_term_source = asker.get_targeted_mention_twi_user_targets(4)
       target_users.each do |target_user|
-        user = User.find_or_initialize_by_twi_user_id(target_user.id)
+        user = User.find_or_initialize_by(twi_user_id: target_user.id)
         user.update_attributes(
           :twi_name => target_user.name,
           :name => target_user.name,

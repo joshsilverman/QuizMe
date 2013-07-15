@@ -57,7 +57,7 @@ class Stat < ActiveRecord::Base
     user_ids_by_date_raw = Post.social.not_us.not_spam\
       .where("created_at > ?", Date.today - (domain + 31).days)\
       .where("created_at < ?", Date.today)\
-      .select(["to_char(posts.created_at, 'YYYY-MM-DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").all
+      .select(["to_char(posts.created_at, 'YYYY-MM-DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").to_a
 
     user_ids_by_date = {}
     user_ids_by_date_raw.each do |post|

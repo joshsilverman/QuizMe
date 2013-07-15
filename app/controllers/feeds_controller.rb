@@ -389,7 +389,7 @@ class FeedsController < ApplicationController
       Post.grader.grade post_to_link
 
       #add manually linked label to have training data for auto-linking
-      tag = Tag.find_or_create_by_name "manually-linked"
+      tag = Tag.find_or_create_by(name: "manually-linked")
       tag.posts << post_to_link
 
       render :json => [post_to_link, post_to_link_to]
@@ -455,7 +455,7 @@ class FeedsController < ApplicationController
   def refer_a_friend
     asker = Asker.find(params[:asker_id])
     twitter_user = Post.twitter_request { asker.twitter.user(params[:user_twi_screen_name]) }
-    user = User.find_or_initialize_by_twi_user_id(twitter_user.id)
+    user = User.find_or_initialize_by(twi_user_id: twitter_user.id)
     user.update_attributes( 
       :twi_name => twitter_user.name,
       :name => twitter_user.name,
@@ -468,7 +468,7 @@ class FeedsController < ApplicationController
       question = asker.most_popular_question
       publication = question.publications.order("created_at DESC").first
     elsif params[:type] == 'ugc'
-      question = User.find_by_twi_screen_name(params[:via]).questions.where("created_for_asker_id = ?", params[:asker_id]).last
+      question = User.find_by(twi_screen_name: params[:via]).questions.where("created_for_asker_id = ?", params[:asker_id]).last
       publication = question.publications.order("created_at DESC").first
     end    
 

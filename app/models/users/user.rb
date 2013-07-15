@@ -96,7 +96,7 @@ class User < ActiveRecord::Base
   # scope :whatsappers, -> { where(:communication_preference => 4) }
 
   def self.tfind name
-  	self.find_by_twi_screen_name name
+  	self.find_by(twi_screen_name: name)
   end
 
   def twi_profile_img_med_url
@@ -138,7 +138,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.asker(id)
-		find_by_role_and_id('asker', id)
+		find_by(role: 'asker', id: id)
 	end
 
 	def is_role?(role)
@@ -419,7 +419,7 @@ class User < ActiveRecord::Base
     return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition or one above
     
     #find asker
-    asker = Asker.find_by_id posts.order("created_at DESC").first.in_reply_to_user_id
+    asker = Asker.find_by(id: posts.order("created_at DESC").first.in_reply_to_user_id)
     return nil if asker.nil?
 
     #default no comment

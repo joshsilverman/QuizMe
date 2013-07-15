@@ -34,7 +34,6 @@ class QuestionModeration < Moderation
     when 10
     	attribute = :bad_answers
     end
-
     question.update_attribute(attribute, true)
   end	
 

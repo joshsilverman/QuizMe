@@ -146,7 +146,7 @@ class QuestionsController < ApplicationController
 
       if params[:post_id] # For questions generated from user posts
         ugc_post = Post.find(params[:post_id]) 
-        # ugc_post.tags.delete(Tag.find_by_name("ugc"))
+        # ugc_post.tags.delete(Tag.find_by(name: "ugc"))
         user_id = ugc_post.user_id
         question_created_at = ugc_post.created_at
         asker_id = ugc_post.in_reply_to_user_id
@@ -182,7 +182,7 @@ class QuestionsController < ApplicationController
     end
 
     #correct answer save
-    @answer = Answer.find_or_create_by_id(params[:canswer_id])
+    @answer = Answer.find_or_create_by(id: params[:canswer_id])
     @answer.update_attributes(:text => params[:canswer], :correct => true)
     @question.answers << @answer
 
@@ -270,7 +270,7 @@ class QuestionsController < ApplicationController
       as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|;\s/
       correct_ans = as.shift
 
-      @question = Question.find_by_text q_text
+      @question = Question.find_by(text: q_text)
       #next if @question
 
       @question = @asker.questions.create :text => q_text, :user_id => current_user.id, :hint => q_hint

@@ -92,7 +92,7 @@ Quizmemanager::Application.routes.draw do
   get "questions/:id/:slug" => "questions#show"
   get "questions/new/:asker_id" => "questions#new"
   get "/moderate" => "questions#moderate"
-  get "/moderate/update" => "questions#moderate_update"
+  post "/moderate/update" => "questions#moderate_update"
 
   get "/tags" => 'posts#tags'
 

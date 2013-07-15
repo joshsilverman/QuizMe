@@ -21,14 +21,14 @@ class ModerationsController < ApplicationController
     moderator = current_user.becomes(Moderator)
     
     if params['post_id']
-      moderation = moderator.post_moderations.find_or_initialize_by_post_id params['post_id']
+      moderation = moderator.post_moderations.find_or_initialize_by(post_id: params['post_id'])
       moderation.update_attributes type_id: params['type_id']
 
       Post.trigger_split_test(moderator.id, 'mod request script (=> moderate answer)')
 
       render :json => moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
-      moderation = moderator.question_moderations.find_or_create_by_question_id_and_type_id(params['question_id'], params['type_id'])
+      moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
 
       render :nothing => true
     end

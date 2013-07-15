@@ -33,7 +33,7 @@ class Post < ActiveRecord::Base
   scope :ugc, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
   scope :not_ugc, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
 
-  scope :tutor, -> { includes(:tags).where("tags.name LIKE 'tutor-%'") }
+  scope :tutor, -> { includes(:tags).where("tags.name LIKE 'tutor-%'").references(:tags) }
 
   scope :friend, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
   scope :not_friend, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
@@ -44,7 +44,7 @@ class Post < ActiveRecord::Base
   scope :moderated, -> { joins(:post_moderations).group('posts.id').having('count(moderations.id) > 2') } 
 
   #published asker
-  scope :published, -> { includes(:in_reply_to_user).where("users.published = ?", true) }
+  scope :published, -> { includes(:in_reply_to_user).where("users.published = ?", true).references(:in_reply_to_user) }
 
   scope :autocorrected, -> { where("posts.autocorrect IS NOT NULL") }
   scope :not_autocorrected, -> { where("posts.autocorrect IS NULL") }
@@ -76,7 +76,7 @@ class Post < ActiveRecord::Base
   scope :unlinked_box, -> { requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend }
   scope :moderatable, -> { requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend }
   scope :all_box, -> { requires_action.not_spam.not_retweet }
-  scope :autocorrected_box, -> { includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected }
+  scope :autocorrected_box, -> { includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected.references(:user, :conversation) }
   scope :content_box, -> { requires_action.content }
   scope :friend_box, -> { requires_action.friend }
 
@@ -112,7 +112,7 @@ class Post < ActiveRecord::Base
   end
 
   def is_ugc?
-    tags.include? Tag.find_by_name("ugc")
+    tags.include? Tag.find_by(name: "ugc")
   end
 
   def is_status?
@@ -290,7 +290,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_mention_data m, asker, conversation_id = nil
-    u = User.find_or_initialize_by_twi_user_id(m.user.id)
+    u = User.find_or_initialize_by(twi_user_id: m.user.id)
     u.update_attributes(
       :twi_name => m.user.name,
       :name => m.user.name,
@@ -299,7 +299,7 @@ class Post < ActiveRecord::Base
       :description => m.user.description.present? ? m.user.description : nil
     )
 
-    in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by_provider_post_id(m.in_reply_to_status_id.to_s) : nil)
+    in_reply_to_post = (m.in_reply_to_status_id ? Post.find_by(provider_post_id: m.in_reply_to_status_id.to_s) : nil)
     if in_reply_to_post
       if in_reply_to_post.is_question_post?
         conversation_id = Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
@@ -335,7 +335,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_dm_data d, asker
-    u = User.find_or_initialize_by_twi_user_id(d.sender.id)
+    u = User.find_or_initialize_by(twi_user_id: d.sender.id)
     u.update_attributes(
       twi_name: d.sender.name,
       name: d.sender.name,
@@ -387,10 +387,10 @@ class Post < ActiveRecord::Base
   end
 
   def self.save_retweet_data(r, current_acct, attempts = 0)
-    retweeted_post = Post.find_by_provider_post_id(r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
+    retweeted_post = Post.find_by(provider_post_id: r.id.to_s) || Post.create({:provider_post_id => r.id.to_s, :user_id => current_acct.id, :provider => "twitter", :text => r.text})    
     users = Post.twitter_request { current_acct.twitter.retweeters_of(r.id) } || []
     users.each do |user|
-      u = User.find_or_initialize_by_twi_user_id(user.id)
+      u = User.find_or_initialize_by(twi_user_id: user.id)
       u.update_attributes( 
         :twi_name => user.name,
         :name => user.name,
@@ -428,11 +428,11 @@ class Post < ActiveRecord::Base
     # puts "saving post from stream (#{interaction_type}):"
     # puts "#{tweet.text} (ppid: #{tweet.id.to_s})"
 
-    return if Post.find_by_provider_post_id(tweet.id.to_s)
+    return if Post.find_by(provider_post_id: tweet.id.to_s)
 
     if interaction_type == 4
       twi_user = tweet.sender
-      user = User.find_or_create_by_twi_user_id(tweet.sender.id.to_s)
+      user = User.find_or_create_by(twi_user_id: tweet.sender.id.to_s)
       in_reply_to_post = Post.where("provider = ? and interaction_type = 4 and ((user_id = ? and in_reply_to_user_id = ?) or (user_id = ? and in_reply_to_user_id = ?))", 'twitter', asker_id, user.id, user.id, asker_id)\
         .order("created_at DESC")\
         .limit(1)\
@@ -440,12 +440,12 @@ class Post < ActiveRecord::Base
       learner_level = "dm"
     else
       twi_user = tweet.user
-      user = User.find_or_create_by_twi_user_id(tweet.user.id.to_s)
+      user = User.find_or_create_by(twi_user_id: tweet.user.id.to_s)
       if interaction_type == 2 
-        in_reply_to_post = Post.find_by_provider_post_id(tweet.in_reply_to_status_id.to_s)
+        in_reply_to_post = Post.find_by(provider_post_id: tweet.in_reply_to_status_id.to_s)
         learner_level = "mention"
       else
-        in_reply_to_post = Post.find_by_provider_post_id(tweet.retweeted_status.id.to_s)
+        in_reply_to_post = Post.find_by(provider_post_id: tweet.retweeted_status.id.to_s)
         learner_level = "share"
       end
     end
@@ -659,7 +659,7 @@ class Post < ActiveRecord::Base
 
       if match
         stripped_text = match[1]
-        @asker = Asker.find_by_id in_reply_to_user_id
+        @asker = Asker.find_by(id: in_reply_to_user_id)
         if @asker
           scores = {}
           @asker.questions.each do |q|
@@ -667,7 +667,7 @@ class Post < ActiveRecord::Base
           end
           if scores.keys.count > 0 and scores.keys.max > 0.7
             _in_reply_to_question = scores[scores.keys.max] 
-            Tag.find_or_create_by_name('auto-linked').posts << self
+            Tag.find_or_create_by(name: 'auto-linked').posts << self
 
             #mimic normal conversation
             publication = self.publication || _in_reply_to_question.publications.order('created_at DESC').limit(1).first

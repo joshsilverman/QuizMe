@@ -16,7 +16,7 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def self.enqueue_question(asker_id, question_id)
-    queue = PublicationQueue.find_or_create_by_asker_id(asker_id)
+    queue = PublicationQueue.find_or_create_by(asker_id: asker_id)
     question = Question.find question_id
 
     publication = Publication.create(
@@ -27,7 +27,7 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def self.dequeue_question(asker_id, question_id)
-    queue = PublicationQueue.find_or_create_by_asker_id(asker_id)
+    queue = PublicationQueue.find_or_create_by(asker_id: asker_id)
     question = Question.find question_id
     queued_pubs = question.publications.where("publication_queue_id IS NOT NULL")
 

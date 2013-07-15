@@ -60,15 +60,15 @@ class AuthorizationsController < ApplicationController
 	    	end
 	    else
 				if email # check if we have the email
-					user = find_or_create_oauth_by_email(email)
+					user = find_or_create_oauth_by(email: email)
 				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
-					user = find_or_create_oauth_by_provider_and_uid(provider, uid)# || find_or_create_oauth_by_provider_and_name(provider, name)
+					user = find_or_create_oauth_by(provider: provider, uid: uid)# || find_or_create_oauth_by_provider_and_name(provider, name)
 				else
 					puts 'Provider #{provider} not handled'
 				end
 			end
 
-		  auth = user.authorizations.find_by_provider(provider)
+		  auth = user.authorizations.find_by(provider: provider)
 		  if auth.nil?
 		    auth = user.authorizations.build(:provider => provider)
 		    user.authorizations << auth
@@ -80,7 +80,7 @@ class AuthorizationsController < ApplicationController
 	  end  	
 
 	  def find_or_create_oauth_by_email email
-	    unless user = User.find_by_email(email)
+	    unless user = User.find_by(email: email)
 	      user = User.new(:email => email, :password => Devise.friendly_token[0,20]) 
 	      user.save
 	    end
@@ -90,8 +90,8 @@ class AuthorizationsController < ApplicationController
 	  # In the future, should new users w/out tokens create an authorization?
 	  # Otherwise, we end up storing the uid on the User
 	  def find_or_create_oauth_by_provider_and_uid provider, uid
-	  	user = Authorization.find_by_uid(uid.to_s).try(:user)
-	  	user = User.find_by_twi_user_id(uid) if user.blank? and provider == "twitter" # legacy support for uid on user
+	  	user = Authorization.find_by(uid: uid.to_s).try(:user)
+	  	user = User.find_by(twi_user_id: uid) if user.blank? and provider == "twitter" # legacy support for uid on user
 	    unless user
 	      user = User.new(:twi_user_id => uid, :password => Devise.friendly_token[0,20])
 	      user.save :validate => false
@@ -100,8 +100,8 @@ class AuthorizationsController < ApplicationController
 	  end
 	 
 	  def find_or_create_oauth_by_provider_and_name provider, name
-	  	user = Authorization.find_by_provider_and_name(provider, name).try(:user)
-	  	user = User.where("twi_user_id is not null").find_by_name(name) if user.blank? and provider == "twitter"
+	  	user = Authorization.find_by(provider: name, name: provider).try(:user)
+	  	user = User.where("twi_user_id is not null").find_by(name: name) if user.blank? and provider == "twitter"
 	  	unless user
 	      user = User.new(:name => name, :password => Devise.friendly_token[0,20])
 	      user.save :validate => false
@@ -111,7 +111,7 @@ class AuthorizationsController < ApplicationController
 
 	  def update_twi_asker_attributes provider, asker_id, user_attr, auth_attr
 	  	asker = asker_id.to_i.zero? ? Asker.new : Asker.find(asker_id.to_i)
-		  auth = asker.authorizations.find_by_provider(provider)
+		  auth = asker.authorizations.find_by(provider: provider)
 		  if auth.nil?
 		    auth = asker.authorizations.build(:provider => provider)
 		    asker.authorizations << auth

@@ -63,7 +63,7 @@ class PostsController < ApplicationController
 
         #tag manually hidden posts
         if params['post']['requires_action'].nil? == false and params['post']['requires_action'] == "false"
-          @tag = Tag.find_or_create_by_name('hide-manual')
+          @tag = Tag.find_or_create_by(name: 'hide-manual')
           @post.tags << @tag unless @post.tags.include? @tag
         end
       else
@@ -75,7 +75,7 @@ class PostsController < ApplicationController
 
   def toggle_tag
     post = Post.find(params[:post_id])
-    tag = Tag.find_or_create_by_name(params[:tag_name])
+    tag = Tag.find_or_create_by(name: params[:tag_name])
 
     if post.tags.include? tag
       post.tags.delete(tag)
@@ -88,7 +88,7 @@ class PostsController < ApplicationController
   end
 
   def mark_ugc
-    tag = Tag.find_or_create_by_name "ugc"
+    tag = Tag.find_or_create_by(name: "ugc")
     post = Post.includes(:tags).find(params[:post_id])
     post.update_attribute :intention, 'submit ugc'
 
