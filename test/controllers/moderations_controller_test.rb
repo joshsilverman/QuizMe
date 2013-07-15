@@ -185,16 +185,6 @@ describe ModerationsController do
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 				end
-
-				it 'displays questions for moderation if has written enough questions' do
-					@moderator.update_attribute :moderator_segment, 3
-					@moderator.update_attribute :lifecycle_segment, 4
-					5.times do |i|
-						@moderator.questions << create(:question, status: 1)
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal (i < 4 ? 0 : 1)
-					end
-				end
 			end
 
 			describe 'manage' do

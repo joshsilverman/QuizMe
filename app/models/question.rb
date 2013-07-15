@@ -84,7 +84,7 @@ class Question < ActiveRecord::Base
     moderator = moderator.becomes(Moderator)
     return [] unless moderator.lifecycle_above?(3) # check if user is > regular
     return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
-    return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
+    # return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
 
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
     question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
