@@ -320,13 +320,14 @@ describe ModerationsController do
 					end
 
 					it 'is accepted when admin agrees' do
+						page.all(".post").first.click
 						page.find('.quick-reply-yes').click
-						# sleep 200
 						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 						@moderation.reload.accepted.must_equal true
 					end
 
 					it 'is rejected when admin disagrees' do
+						page.all(".post").first.click
 						page.find('.quick-reply-no').click
 						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 						@moderation.reload.accepted.must_equal false
@@ -341,6 +342,7 @@ describe ModerationsController do
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
+					page.all(".post").first.click
 					page.find('.quick-reply-tell').click
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal true
@@ -354,6 +356,7 @@ describe ModerationsController do
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
+					page.all(".post").first.click
 					page.find('.quick-reply-tell').click
 					page.find(".conversation.dim .post[post_id=\"#{@dm_answer.id}\"]").visible?.must_equal true
 					Delayed::Worker.new.work_off
@@ -368,6 +371,7 @@ describe ModerationsController do
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
+					page.all(".post").first.click
 					page.find('.btn-hide').click
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal true
@@ -381,6 +385,7 @@ describe ModerationsController do
 						@moderation.accepted.must_equal nil
 					end
 					visit '/feeds/manage?filter=moderated'
+					page.all(".post").first.click
 					page.find('.btn-hide').click
 					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
 					@moderation.reload.accepted.must_equal false
