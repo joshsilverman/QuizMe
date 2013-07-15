@@ -229,7 +229,6 @@ class Asker < User
       aggregate_intervals = 0
       ideal_last_reengage_at = nil
       # puts strategy
-      puts "last_active_at: #{last_active_at}"
       strategy.each do |interval|
         # puts interval
         # puts (aggregate_intervals + interval)
@@ -238,13 +237,18 @@ class Asker < User
         # puts last_active_at.class
         # puts last_active_at.time
         # puts last_active_at.time.class
-        puts (last_active_at + (aggregate_intervals + interval).days)
-        puts Time.now
-        puts (last_active_at + (aggregate_intervals + interval).days).utc < Time.now
+        # puts "===="
+        # puts "last_active_at: #{last_active_at} (#{last_active_at.class} #{last_active_at.zone})"
+        # puts "current interval size: #{interval}"
+        # puts "interval: #{(last_active_at + (aggregate_intervals + interval).days)} (#{(last_active_at + (aggregate_intervals + interval).days).class} #{(last_active_at + (aggregate_intervals + interval).days).zone})"
+        # puts "current time: #{Time.now} (#{Time.now.class} #{Time.now.zone})"
+        # puts "comparison: #{(last_active_at + (aggregate_intervals + interval).days) < Time.now}"
+        # puts "===="
+        # puts (last_active_at + (aggregate_intervals + interval).days).utc < Time.now
         ## SOMETHING UP W/ THE TIME COMPARISONS HERE... CHECK VS MASTER
         if (last_active_at + (aggregate_intervals + interval).days) < Time.now
           aggregate_intervals += interval
-          puts "aggregate_intervals: #{aggregate_intervals}"
+          # puts "aggregate_intervals: #{aggregate_intervals}"
           ideal_last_reengage_at = last_active_at + aggregate_intervals.days
         else
           break
@@ -252,13 +256,13 @@ class Asker < User
       end
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
-      puts "last_reengaged_at: #{last_reengaged_at}"
-      puts "ideal_last_reengage_at: #{ideal_last_reengage_at}"
+      # puts "last_reengaged_at: #{last_reengaged_at}"
+      # puts "ideal_last_reengage_at: #{ideal_last_reengage_at}"
       # puts last_reengaged_at.class
       # puts ideal_last_reengage_at.class
       if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
         # puts last_reengaged_at < ideal_last_reengage_at
-        puts 'send tweet!'
+        # puts 'send tweet!'
         Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) 
       end
     end

@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/bernat/best_in_place.git
+  revision: df178520bf9ba405baee9528d5dbb630d6ff760c
+  specs:
+    best_in_place (2.1.0)
+      jquery-rails
+      rails (>= 3.1)
+
+GIT
   remote: https://github.com/bderusha/split
   revision: ebba7abb64510ece709d353d841f3e4464557d9d
   specs:
@@ -54,8 +62,6 @@ GEM
     atomic (1.1.10)
     awesome_print (1.1.0)
     bcrypt-ruby (3.0.1)
-    best_in_place (0.2.3)
-      rails (>= 3.0.0)
     better_errors (0.9.0)
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
@@ -370,7 +376,7 @@ DEPENDENCIES
   amatch
   awesome_print
   bcrypt-ruby (= 3.0.1)
-  best_in_place
+  best_in_place!
   better_errors
   capybara
   capybara_minitest_spec

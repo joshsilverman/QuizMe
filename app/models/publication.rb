@@ -16,11 +16,11 @@ class Publication < ActiveRecord::Base
         .order("posts.created_at DESC")\
         .limit(15)\
         .includes(:question => :answers)\
-        .all
+        .to_a
       posts = Post.select([:id, :created_at, :publication_id])\
         .where("publication_id in (?)", publications.collect(&:id))\
         .order("created_at DESC")\
-        .all
+        .to_a
       [publications, posts]
     end
     return publications, posts
@@ -33,11 +33,11 @@ class Publication < ActiveRecord::Base
         .includes([:asker, :posts, :question => [:answers, :user]])\
         .where("posts.created_at > ? and posts.interaction_type = 1", 1.days.ago)\
         .order("posts.created_at DESC")\
-        .all
+        .to_a
       posts = Post.select([:id, :created_at, :publication_id])\
         .where("publication_id in (?)", publications.collect(&:id))\
         .order("created_at DESC")\
-        .all
+        .to_a
       [publications, posts]
     end
     return publications, posts

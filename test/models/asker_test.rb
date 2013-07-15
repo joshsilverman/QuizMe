@@ -102,7 +102,7 @@ describe Asker do
 			@strategy.sum.times do |i|
 				# puts "day #{i + 1}"
 				Timecop.travel(Time.now + 1.day)
-				puts "current time: #{Time.now}"
+				# puts "current time: #{Time.now}"
 				# puts Time.now
 				Asker.reengage_inactive_users strategy: @strategy
 				# puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).to_json

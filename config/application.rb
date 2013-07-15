@@ -54,5 +54,8 @@ module Quizmemanager
     config.assets.version = '1.0'
 
     config.active_record.whitelist_attributes = false
+
+    # config.active_record.default_timezone = :local
+    # config.active_record.time_zone_aware_attributes = false 
   end
 end

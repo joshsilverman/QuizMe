@@ -144,7 +144,7 @@ class Post < ActiveRecord::Base
   def self.requires_moderations moderator
     moderator = moderator.becomes(Moderator)
     excluded_posts = PostModeration.where('created_at > ?', 30.days.ago)\
-      .select(["post_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("post_id").all
+      .select(["post_id", "array_to_string(array_agg(type_id),',') as type_ids"]).group("post_id").to_a
 
     excluded_posts.reject! do |p|
       type_ids = p.type_ids.split ','
@@ -168,6 +168,7 @@ class Post < ActiveRecord::Base
       .where("posts.id NOT IN (?)", excluded_post_ids)\
       .where('posts.created_at > ?', 30.days.ago)\
       .order('posts.created_at DESC').limit(10)\
+      .references(:in_reply_to_question)\
       .sort_by{|p| p.created_at}.reverse    
   end
 
