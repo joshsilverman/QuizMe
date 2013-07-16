@@ -85,7 +85,7 @@ gem 'redis'
 gem 'unicorn'
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
 
-gem 'd3_rails'
+gem 'd3_rails', '3.2.6'
 
 gem 'protected_attributes'
 gem 'rails-observers'
