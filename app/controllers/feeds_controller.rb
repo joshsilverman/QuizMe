@@ -4,8 +4,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
-  # require 'actionpack/action_caching'
-  # caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
+  caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
 
   def index
     @index = true
@@ -154,12 +153,6 @@ class FeedsController < ApplicationController
           @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
             .where(:id => ACCOUNT_DATA.keys.sample(3)).all
         end
-
-        # contributors = User.find(@asker.questions.approved.ugc.collect { |q| q.user_id }.uniq.sample(3))
-        # contributor_ids_with_count = @asker.questions.approved.ugc.group("user_id").count
-        # contributors += [current_user] if current_user.questions.approved.ugc.where("created_for_asker_id = ?", @asker.id).present? and !contributors.include? current_user
-        # @contributors = []
-        # contributors.sample(3).each { |user| @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}}
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 

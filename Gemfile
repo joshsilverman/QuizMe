@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
-gem 'pg', '0.14.0'#, :require => false
+gem 'pg'
 ruby '1.9.3'
 
-gem 'rails', '4.0.0'
+gem 'rails', '~> 4.0.0'
 gem 'activesupport', '4.0.0'
 
 group :test do
@@ -45,22 +45,22 @@ end
 gem 'sass-rails', '~> 4.0.0'
 gem 'coffee-rails', '~> 4.0.0'
 gem 'uglifier', '>= 2.1.1'
-gem 'therubyracer', '0.10.1'
+gem 'therubyracer'
 gem "less-rails"
 
 gem 'jquery-ui-rails'
-gem 'haml', '3.1.6'
-gem 'twitter-bootstrap-rails', '2.1.1'
+gem 'haml'
+gem 'twitter-bootstrap-rails'
 gem 'jquery-rails'
 
-gem 'devise', '3.0.0.rc'
+gem 'devise'
 gem 'omniauth'
 gem 'omniauth-twitter'
 
-gem 'rabl', '0.6.14'
+gem 'rabl'
 gem 'hirb'
 
-gem 'twitter', '4.5.0'
+gem 'twitter'
 # gem 'tweetstream'
 
 gem 'kaminari'

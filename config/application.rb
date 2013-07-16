@@ -1,11 +1,11 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
-
+require "actionpack/action_caching"
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
-Bundler.require(:default, Rails.env)
+  Bundler.require(:default, Rails.env)
   # If you want your assets lazily compiled in production, use this line
   # Bundler.require(:default, :assets, Rails.env)
 end

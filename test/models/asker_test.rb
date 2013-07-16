@@ -76,85 +76,99 @@ describe Asker do
 	end
 
 	describe "reengages users" do
-		before :each do
-			@strategy = [1, 2, 4, 8]
+		describe "that have" do
+			it "that have answered a question" do
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+				
+				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				Timecop.travel(Time.now + 1.day)
 
-			@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
-			@user_response.update_attributes created_at: (@strategy.first + 1).days.ago, correct: true
-			@user.update_attributes last_answer_at: @user_response.created_at, last_interaction_at: @user_response.created_at, activity_segment: nil
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
+			end	
 
-			create(:post, in_reply_to_user_id: @asker.id, correct: true, interaction_type: 2, in_reply_to_question_id: @question.id)
-		end
+			it "run that are inactive" do
+				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
 
-		it "with a post" do
-			Asker.reengage_inactive_users strategy: @strategy
-			Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
-		end
-
-		it "run on the proper schedule" do 
-			Asker.reengage_inactive_users strategy: @strategy
-			intervals = []
-			@strategy.each_with_index { |e, i| intervals << @strategy[0..i].sum }
-			@strategy.sum.times do |i|
-				puts "i: #{i}"
 				Timecop.travel(Time.now + 1.day)
 				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty if intervals.include?(i + 2)
-			end
-		end		
-
-		it "that have answered a question" do
-			Asker.reengage_inactive_users strategy: @strategy
-			Post.answers.where(:user_id => @user).count.must_equal 1
-		end	
-
-		it "that are inactive" do
-			Asker.reengage_inactive_users strategy: @strategy
-			@user.posts.where("created_at > ?", @strategy.first.days.ago).count.must_equal 0
-		end	
-
-		it "from an asker that they are following" do
-			@asker.followers.delete @user
-			Asker.reengage_inactive_users strategy: @strategy
-			Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty				
+			end	
 		end
 
-		describe "but not" do
-			before :each do 
-				@reengagement_post = create(:post, user_id: @asker.id, created_at: (@user_response.created_at + @strategy.first.days + 1.hour), in_reply_to_user_id: @user.id, intention: 'reengage inactive')
+		describe "who are qualified" do
+			before :each do
+				@strategy = [1, 2, 4, 8]
+
+				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+				@user_response.update_attribute :correct, true
+				@user.update_attributes last_answer_at: @user_response.created_at, last_interaction_at: @user_response.created_at, activity_segment: nil
+
+				create(:post, in_reply_to_user_id: @asker.id, correct: true, interaction_type: 2, in_reply_to_question_id: @question.id)
 			end
 
-			it "if they've already been reengaged" do
+			it "with a post" do
+				Timecop.travel(Time.now + 1.day)
 				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 			end
+
+			it "on the proper schedule" do 
+				intervals = []
+				@strategy.each_with_index { |e, i| intervals << @strategy[0..i].sum }
+				(@strategy.sum + 1).times do |i|
+					Asker.reengage_inactive_users strategy: @strategy
+					Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).present? if intervals.include? i
+					Timecop.travel(Time.now + 1.day)
+				end
+			end	
+
+			it "from an asker that they are following" do
+				Timecop.travel(Time.now + 1.day)
+				@asker.followers.delete @user
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+			end
+
+			it "unless they've already been reengaged" do
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).count.must_equal 0
+				Timecop.travel(Time.now + 1.day)
+				2.times do 
+					Asker.reengage_inactive_users strategy: @strategy
+					Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).count.must_equal 1
+				end
+			end
+
+			describe "with a question" do
+				it "that has been approved" do
+					Timecop.travel(Time.now + 1.day)
+					@unapproved_question = create(:question, created_for_asker_id: @asker.id, status: 0)
+					Asker.reengage_inactive_users strategy: @strategy
+					Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
+				end
+
+				# describe "that hasn't been" do
+				# 	before :each do
+				# 		@new_question = create(:question, created_for_asker_id: @asker.id, status: 1)
+				# 	end
+
+				# 	it "that hasn't been answered before" do
+				# 		@user_response.update_attribute :in_reply_to_question_id, @question.id
+				# 		Asker.reengage_inactive_users strategy: @strategy
+				# 		Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id
+				# 	end
+
+				# 	it "that hasn't been asked before" do
+				# 		@reengagement_post = create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
+				# 		Asker.reengage_inactive_users strategy: @strategy
+				# 		Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
+				# 	end		
+				# end	
+			end				
 		end
-
-		describe "with a question" do
-			it "that has been approved" do
-				@unapproved_question = create(:question, created_for_asker_id: @asker.id, status: 0)
-				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
-			end
-
-			# describe "that hasn't been" do
-			# 	before :each do
-			# 		@new_question = create(:question, created_for_asker_id: @asker.id, status: 1)
-			# 	end
-
-			# 	it "that hasn't been answered before" do
-			# 		@user_response.update_attribute :in_reply_to_question_id, @question.id
-			# 		Asker.reengage_inactive_users strategy: @strategy
-			# 		Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id
-			# 	end
-
-			# 	it "that hasn't been asked before" do
-			# 		@reengagement_post = create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
-			# 		Asker.reengage_inactive_users strategy: @strategy
-			# 		Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
-			# 	end		
-			# end	
-		end				
 	end
 
 	describe "relationships" do

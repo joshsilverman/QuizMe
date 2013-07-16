@@ -197,13 +197,13 @@ class Asker < User
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\
-      .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
+      .group("user_id").map{|p| [p.user_id, p.last_active_at.time]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
       .where('posts.intention' => 'reengage inactive')\
       .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at.time]}.flatten]
 
     @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}
@@ -215,7 +215,7 @@ class Asker < User
       end 
 
       last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || 1000.years.ago
-
+      
       aggregate_intervals = 0
       ideal_last_reengage_at = nil
       strategy.each do |interval|
@@ -228,6 +228,7 @@ class Asker < User
       end
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
+      
       Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
     end
   end 
