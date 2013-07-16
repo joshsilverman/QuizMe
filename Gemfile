@@ -24,6 +24,7 @@ group :production do
   gem 'bcrypt-ruby', '3.0.1'
   gem 'dalli', '2.6.4'
   gem 'memcachier'
+  gem 'rails_12factor'
 end
 
 group :development do
@@ -50,7 +51,7 @@ gem "less-rails"
 
 gem 'jquery-ui-rails'
 gem 'haml'
-gem 'twitter-bootstrap-rails'
+gem 'twitter-bootstrap-rails', '2.1.1'
 gem 'jquery-rails'
 
 gem 'devise'
