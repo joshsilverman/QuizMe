@@ -60,9 +60,9 @@ class AuthorizationsController < ApplicationController
 	    	end
 	    else
 				if email # check if we have the email
-					user = find_or_create_oauth_by(email: email)
+					user = find_or_create_oauth_by_email(email)
 				elsif uid && name # twitter doesn't provide email address, lookup by uid/name
-					user = find_or_create_oauth_by(provider: provider, uid: uid)# || find_or_create_oauth_by_provider_and_name(provider, name)
+					user = find_or_create_oauth_by_provider_and_uid(provider, uid)# || find_or_create_oauth_by_provider_and_name(provider, name)
 				else
 					puts 'Provider #{provider} not handled'
 				end
