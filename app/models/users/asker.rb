@@ -194,30 +194,20 @@ class Asker < User
     strategy = options[:strategy]
     strategy_string = options[:strategy].join "/" if strategy
 
-    # user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
-    #   .select(["user_id", "max(created_at) as last_active_at"])\
-    #   .where("created_at > ?", period.days.ago)\
-    #   .group("user_id").map{|p| [p.user_id, p.last_active_at]}.flatten]
-
-    # user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
-    #   .where('posts.intention' => 'reengage inactive')\
-    #   .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
-    #   .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-    #   .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
-
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_us\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\
-      .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at.to_s)]}.flatten]
+      .group("user_id").map{|p| [p.user_id, Time.parse(p.last_active_at)]}.flatten]
 
     user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
       .where('posts.intention' => 'reengage inactive')\
       .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at.to_s)]}.flatten]
-      
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, Time.parse(p.last_reengaged_at)]}.flatten]
+
     @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}
+
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
         strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
@@ -228,27 +218,9 @@ class Asker < User
 
       aggregate_intervals = 0
       ideal_last_reengage_at = nil
-      # puts strategy
       strategy.each do |interval|
-        # puts interval
-        # puts (aggregate_intervals + interval)
-        # puts Time.now
-        # puts last_active_at
-        # puts last_active_at.class
-        # puts last_active_at.time
-        # puts last_active_at.time.class
-        # puts "===="
-        # puts "last_active_at: #{last_active_at} (#{last_active_at.class} #{last_active_at.zone})"
-        # puts "current interval size: #{interval}"
-        # puts "interval: #{(last_active_at + (aggregate_intervals + interval).days)} (#{(last_active_at + (aggregate_intervals + interval).days).class} #{(last_active_at + (aggregate_intervals + interval).days).zone})"
-        # puts "current time: #{Time.now} (#{Time.now.class} #{Time.now.zone})"
-        # puts "comparison: #{(last_active_at + (aggregate_intervals + interval).days) < Time.now}"
-        # puts "===="
-        # puts (last_active_at + (aggregate_intervals + interval).days).utc < Time.now
-        ## SOMETHING UP W/ THE TIME COMPARISONS HERE... CHECK VS MASTER
         if (last_active_at + (aggregate_intervals + interval).days) < Time.now
           aggregate_intervals += interval
-          # puts "aggregate_intervals: #{aggregate_intervals}"
           ideal_last_reengage_at = last_active_at + aggregate_intervals.days
         else
           break
@@ -256,15 +228,7 @@ class Asker < User
       end
 
       is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
-      # puts "last_reengaged_at: #{last_reengaged_at}"
-      # puts "ideal_last_reengage_at: #{ideal_last_reengage_at}"
-      # puts last_reengaged_at.class
-      # puts ideal_last_reengage_at.class
-      if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
-        # puts last_reengaged_at < ideal_last_reengage_at
-        # puts 'send tweet!'
-        Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) 
-      end
+      Asker.send_reengagement_tweet(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
     end
   end 
 
@@ -741,19 +705,11 @@ class Asker < User
   end
 
   def request_new_question user
-    puts 1
     return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
-    puts 2
-    # puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc'", user.id).to_json
-    puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).to_json#.size > 0 # we haven't asked them in the past two weeks
-    puts Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).first.try(:created_at)
-    puts 2.weeks.ago
     return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).size > 0 # we haven't asked them in the past two weeks
-    puts 3
     
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
-    puts 4
     
     script = Post.create_split_test(user.id, "ugc script v4.0", 
       "You know this material pretty well, how about writing a question or two? Enter it at wisr.com/feeds/{asker_id}?q=1", 

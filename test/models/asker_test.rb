@@ -26,7 +26,6 @@ describe Asker do
 
 		it "with a post" do
 			@asker.app_response @user_response, @correct
-			puts @asker.posts.to_json
 			@asker.posts.where("intention = 'grade' and in_reply_to_user_id = ?", @user.id).wont_be_empty
 		end
 
@@ -92,29 +91,16 @@ describe Asker do
 			Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 		end
 
-		it "on the proper schedule" do 
+		it "run on the proper schedule" do 
 			Asker.reengage_inactive_users strategy: @strategy
-			# puts "========"
-			# puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
 			intervals = []
 			@strategy.each_with_index { |e, i| intervals << @strategy[0..i].sum }
-			# puts intervals.to_json
 			@strategy.sum.times do |i|
-				# puts "day #{i + 1}"
+				puts "i: #{i}"
 				Timecop.travel(Time.now + 1.day)
-				# puts "current time: #{Time.now}"
-				# puts Time.now
 				Asker.reengage_inactive_users strategy: @strategy
-				# puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).to_json
-				# puts Post.reengage_inactive.to_json
-				if intervals.include?(i + 2)
-					# puts "they do"
-					Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty 
-				end
-				# puts "========"
+				Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ? and created_at > ?", @asker.id, @user.id, Time.now.beginning_of_day).wont_be_empty if intervals.include?(i + 2)
 			end
-			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).to_json 
-			puts Post.reengage_inactive.where("user_id = ? and in_reply_to_user_id = ?", @asker.id, @user.id).size
 		end		
 
 		it "that have answered a question" do
@@ -524,10 +510,9 @@ describe Asker do
 				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
 			end
 
-			it 'run with two posts in fifteen days' do
+			it 'with two posts in fifteen days' do
 				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 				16.times do |i|
-					puts "i: #{i}"
 					if i == 0 
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
 					elsif i < 15
@@ -537,8 +522,7 @@ describe Asker do
 					end
 
 					@asker.request_new_question @user.reload
-					Timecop.travel(Time.now + 1.day + 1.minute)
-					puts "========="
+					Timecop.travel(Time.now + 1.day)
 				end
 			end
 
