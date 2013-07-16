@@ -10,7 +10,7 @@ class Asker < User
 
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
-  default_scope { where(role: 'asker') }
+  default_scope -> { where(role: 'asker') }
 
   scope :published, -> { where("published = ?", true) }
 
