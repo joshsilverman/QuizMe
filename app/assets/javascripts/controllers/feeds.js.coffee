@@ -52,14 +52,13 @@ class @Feed
 		$(".post_another").on "click", => @post_another()
 
 		@filtered = $('.tab-content .activity').length > 0
+		@load_follow_buttons_timeouts = []
 
 		check_twttr = =>
 			if (typeof twttr == 'undefined') or !twttr.widgets
 				setTimeout (=> check_twttr()), 100
 			else
 				@load_follow_buttons()
-
-				@load_follow_buttons_timeouts = []
 				$(document).scroll =>
 					$.each feed.load_follow_buttons_timeouts, (i, t) -> clearTimeout(t)
 					feed.load_follow_buttons_timeouts = []
@@ -81,7 +80,7 @@ class @Feed
 						return false unless feed.is_scrolled_into_view(this)
 						return false if $(this).find("iframe").length > 0
 						twttr.widgets.createFollowButton $(this).data('screen-name'), this, ((el) ->
-							console.log "Follow button created."
+							# console.log "Follow button created."
 						),
 							size: "large",
 							'count': "none",
