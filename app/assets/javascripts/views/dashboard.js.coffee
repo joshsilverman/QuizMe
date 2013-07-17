@@ -158,7 +158,7 @@ class Dashboard
       chart_elmnt = $(container + " .daus_graph")[0]
   
     chart = new google.visualization.LineChart(chart_elmnt)
-    chart.draw graph_data, dau_mau_options  
+    chart.draw graph_data, dau_mau_options
 
   draw_timely_response: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
@@ -167,8 +167,8 @@ class Dashboard
 
   draw_quality_response: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
-    chart = new google.visualization.AreaChart($(".quality_response_graph")[0])
-    chart.draw graph_data, revenue_options      
+    chart = new google.visualization.LineChart($(".quality_response_graph")[0])
+    chart.draw graph_data, quality_response_options      
 
   draw_econ_engine: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
@@ -287,6 +287,26 @@ pg_options =
     {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
   isStacked: true
   colors: ['orange', 'green', 'orange', "#1D3880"]
+
+quality_response_options = 
+  width: 425
+  height: 275
+  legend: "none"
+  chartArea:  
+    width: 420
+    left: 30
+    height: 225
+  hAxis:
+    textStyle: 
+      fontSize: 9
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      max: 1.0001
+      min: 0
+  series: [
+    {areaOpacity: 0.2, lineOpacity: 0.3, lineWidth: 0, color:'#1D3880', pointSize:2},
+    {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
 
 learner_levels_options = 
   width: 850

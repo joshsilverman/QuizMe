@@ -213,44 +213,46 @@ class Stat < ActiveRecord::Base
   end
 
 
-  def self.graph_quality_response domain = 30
+  def self.graph_quality_response domain = 30, running_average_day_count = 7
     data = Rails.cache.fetch "stat_quality_response_domain_#{domain}", :expires_in => 19.minutes do
-      data = [["Date", "Quality Response %"]]
+      data = [["Date", "Quality Response %", "#{running_average_day_count} Day Avg"]]
       today_stat = "0%"
       total_stat = []
+      days_ago = (domain + running_average_day_count).days.ago
 
-      moderated_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+      moderated_post_counts_by_date = Post.where("created_at > ?", days_ago)\
         .where("moderation_trigger_type_id is not null")\
         .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
         .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
         .count
-      autocorrected_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+      autocorrected_post_counts_by_date = Post.where("created_at > ?", days_ago)\
         .where("autocorrect is not null")\
         .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
         .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
         .count 
-      autocorrected_and_moderated_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+      autocorrected_and_moderated_post_counts_by_date = Post.where("created_at > ?", days_ago)\
         .where("moderation_trigger_type_id is not null")\
         .where("autocorrect is not null")\
         .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
         .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
         .count
-      correctly_autograded_as_correct_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+      correctly_autograded_as_correct_post_counts_by_date = Post.where("created_at > ?", days_ago)\
         .where("moderation_trigger_type_id is not null")\
         .where("autocorrect = true")\
         .where("correct = true")\
         .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
         .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
         .count
-      correctly_autograded_as_incorrect_post_counts_by_date = Post.where("created_at > ?", domain.days.ago)\
+      correctly_autograded_as_incorrect_post_counts_by_date = Post.where("created_at > ?", days_ago)\
         .where("moderation_trigger_type_id is not null")\
         .where("autocorrect = false")\
         .where("correct = false")\
         .select(["to_char(posts.updated_at, 'YYYY-MM-DD')"])\
         .group("to_char(posts.updated_at, 'YYYY-MM-DD')")\
-        .count      
+        .count
 
-      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
+      percent_quality_history = []
+      ((Date.today - (domain + running_average_day_count).days)..(Date.today - 1.day)).each do |date|
         datef = date.to_s
         moderated_post_count = moderated_post_counts_by_date[datef] || 0
         autocorrected_and_moderated_post_count = (autocorrected_and_moderated_post_counts_by_date[datef] || 0)
@@ -266,9 +268,14 @@ class Stat < ActiveRecord::Base
         end
 
         percent_quality = quality_response_count.to_f / total_post_count.to_f
-        data << [datef, percent_quality]
-        today_stat = sprintf("%.1f%", percent_quality * 100) if date == Date.yesterday
-        total_stat << percent_quality
+        percent_quality_history << percent_quality
+
+        if date >= (Date.today - domain.days)
+          moving_average = percent_quality_history[(-running_average_day_count)..-1].sum / running_average_day_count
+          data << [datef, percent_quality, moving_average]
+          today_stat = sprintf("%.1f%", percent_quality * 100) if date == Date.yesterday
+          total_stat << percent_quality
+        end
       end
       total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
       [data, {today: today_stat, total: total_stat}]
