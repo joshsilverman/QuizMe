@@ -19,7 +19,7 @@ module ManageTwitterRelationships
 
   def autofollow_count max_follows = nil
     target_follow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_follow_count_avg = 7 if target_follow_count_avg > 7
+    target_follow_count_avg = 6 if target_follow_count_avg > 6
     scale = [0.0, 0.0, 1.6, 0.8, 2.0, 0.4, 2.2][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_follows = (target_follow_count_avg * scale).round # scale target avg
     # Check if we should follow today
@@ -35,7 +35,7 @@ module ManageTwitterRelationships
 
   def unfollow_count max_unfollows = nil
     target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_unfollow_count_avg = 7 if target_unfollow_count_avg > 7
+    target_unfollow_count_avg = 6 if target_unfollow_count_avg > 6
     scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
 
@@ -75,6 +75,7 @@ module ManageTwitterRelationships
   end
 
   def send_autofollows twi_user_ids, max_follows, options = {}
+    puts "sending autofollows for #{twi_screen_name}"
     twi_user_ids.sample(max_follows).each do |twi_user_id|
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.present? or options[:force]
