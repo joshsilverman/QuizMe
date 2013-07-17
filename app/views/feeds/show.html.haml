@@ -42,7 +42,7 @@
 							- if current_user
 								= render :partial => "feed"
 							- else
-								- requested_publication_id = (defined? @requested_publication) ? @requested_publication.id : 0
+								- requested_publication_id = (defined? @requested_publication and @requested_publication) ? @requested_publication.id : 0
 
 								- if @query
 									= render :partial => "feed"
