@@ -21,6 +21,7 @@ describe FeedsController do
 			post_elmnt = page.find(".post[post_id=\"#{@question_post.id}\"]")
 			post_elmnt.click
 			post_elmnt.all('.answers h3').first.click
+			sleep 1
 			post_elmnt.all('.tweet_button').first.click
 			page.find(".conversation[asker_id=\"#{@asker.id}\"] .subsidiary.answered")
 		end

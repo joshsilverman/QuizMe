@@ -77,7 +77,7 @@ describe Asker do
 
 	describe "reengages users" do
 		describe "that have" do
-			it "that have answered a question" do
+			it "answered a question" do
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
 				
@@ -88,7 +88,7 @@ describe Asker do
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 			end	
 
-			it "that are inactive" do
+			it "gone inactive" do
 				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
