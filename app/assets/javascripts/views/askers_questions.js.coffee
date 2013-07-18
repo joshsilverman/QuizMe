@@ -46,4 +46,8 @@ class AskersQuestions
 		else
 			return true	
 
-$ -> window.askers_questions = new AskersQuestions if $('#author_dashboard').length > 0
+$ -> 
+	if $('#author_dashboard').length > 0
+		window.askers_questions = new AskersQuestions 
+		target = $(".post[question_id=#{$('#question_id').val()}]")
+		$('html,body').animate({scrollTop: target.offset().top - 10}, 1000) if target.length > 0

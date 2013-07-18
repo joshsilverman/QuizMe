@@ -81,7 +81,7 @@
             - @questions.each do |question|
               - owner = (question.user_id == current_user.id)
               .conversation.border-color
-                .post.parent.answered
+                .post.parent.answered{question_id: question.id}
                   %p.time= time_formatter(question.created_at)
                   .status
                     - if question.status == 0
@@ -113,4 +113,5 @@
 / = render "feeds/question_modal"
 
 = hidden_field_tag :asker_id, @asker.id
+= hidden_field_tag :question_id, @requested_question.id
 = hidden_field_tag :user_id, current_user.id
