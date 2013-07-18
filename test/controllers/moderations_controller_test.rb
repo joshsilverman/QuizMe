@@ -823,6 +823,37 @@ describe ModerationsController do
 						moderation3.reload.accepted.must_equal true					
 					end					
 				end
+
+				describe 'requests question edits' do
+					before :each do 
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+						Capybara.current_driver = :selenium
+						@admin = create(:user, twi_user_id: 1, role: 'admin')
+						login_as @admin
+					end
+
+					it 'if the question is marked as not publishable' do 
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-danger').click
+						sleep 1
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 1
+					end
+					
+					it 'unless question is marked publishable' do
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-success').click
+						sleep 1
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 0
+					end
+				end				
 			end
 		end
 

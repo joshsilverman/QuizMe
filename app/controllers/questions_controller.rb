@@ -100,10 +100,10 @@ class QuestionsController < ApplicationController
 
   def update
     @question = Question.find(params[:id])
+    @question.update inaccurate: nil, ungrammatical: nil
     params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
     # @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
-
     respond_to do |format|
       if @question.update_attributes(params[:question])
         format.html { redirect_to @question, notice: 'Question was successfully updated.' }
@@ -217,6 +217,7 @@ class QuestionsController < ApplicationController
     question = Question.find(params[:question_id])
     question.update_attribute(:status, (params[:accepted].match(/(true|t|yes|y|1)$/i) != nil) ? 1 : -1)
     question.question_moderations.each { |qm| qm.update_attribute(:accepted, ((question.status == 1 and qm.type_id == 7) or (question.status == -1 and qm.type_id != 7))) }
+    question.request_edits if question.status == -1
 
     render :json => question.status, :status => 200
   end

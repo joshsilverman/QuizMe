@@ -21,6 +21,7 @@ class ActiveSupport::TestCase
   include Capybara::DSL
   include Capybara::RSpecMatchers
   include FactoryGirl::Syntax::Methods
+  include BestInPlace::TestHelpers
 
   self.use_transactional_fixtures = false
   self.use_instantiated_fixtures  = true

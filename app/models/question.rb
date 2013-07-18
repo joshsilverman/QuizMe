@@ -156,6 +156,17 @@ class Question < ActiveRecord::Base
     "#{text} (#{answers.shuffle.collect {|a| a.text}.join('; ')})"
   end
 
+  def request_edits
+    puts 'in request_edits'
+    script = [
+      "Your question needs some work before we can publish it, check out the feedback here: <link>",
+      "The question your wrote needs some love before we can publish it, check out the feedback here: <link>",
+      "A question you wrote needs some work, fix it up here: <link>"
+    ].sample
+    script.gsub! '<link>', "/askers/#{asker.id}/questions/#{id}"
+    asker.send_private_message(user, script, {intention: "request question edits"})
+  end
+
   ###THIS IS FOR IMPORTING FROM QB###
 	require 'net/http'
   require 'uri'
