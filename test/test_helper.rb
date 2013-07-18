@@ -8,6 +8,7 @@ require 'database_cleaner'
 require "minitest/rails/capybara"
 
 DatabaseCleaner.strategy = :truncation
+Rails.logger.level = 2
 
 class ControllerTest < MiniTest::Spec
   include Rails.application.routes.url_helpers
