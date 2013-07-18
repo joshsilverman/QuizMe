@@ -72,9 +72,6 @@
                         %h5= "User name"
                         %p= "Conversation history"  
               .modal-footer
-                / #approve_question.btn-group.hide
-                /   %button.btn.reject Reject    
-                /   %button.btn.btn-primary.accept Accept
                 %a#submit_question.btn.btn-primary{:href => "#", "data-loading-text" => "Loading..."} Submit Question
             .header.border-color
               %h3= "Questions"
@@ -83,13 +80,21 @@
               .conversation.border-color
                 .post.parent.answered{question_id: question.id}
                   %p.time= time_formatter(question.created_at)
-                  .status
-                    - if question.status == 0
-                      %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'We will review this question shortly.', "data-placement" => "left"} Pending
-                    - elsif question.status == 1
-                      %span.label.label-success.approved Approved
+                  .status.moderation_type
+                    - if question.status == 1
+                      %span.label.label-success Approved
+                    - elsif question.status == 0
+                      %span.label.pending.has-tooltip{:rel => "tooltip", "data-original-title" => 'This question will be reviewed shortly.', "data-placement" => "left"} Pending                      
                     - elsif question.status == -1
-                      %span.label.label-important.rejected.has-tooltip{:rel => "tooltip", "data-original-title" => 'Something was wrong with this question.', "data-placement" => "left"} Rejected               
+                      - if question.inaccurate or question.ungrammatical or question.bad_answers
+                        - if question.inaccurate
+                          %span.label.label-important Inaccurate
+                        - if question.ungrammatical
+                          %span.label.label-important Ungrammatical
+                        - if question.bad_answers
+                          %span.label.label-important Bad Answers                             
+                      - else
+                        %span.label.label-important Rejected
                   .content
                     = image_tag(question.user.twi_profile_img_url, :class => "rounded")
                     %h5
@@ -101,7 +106,6 @@
                         %p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
                     - question.answers.sort{|a, b| (b.correct ? 1 : 0)  <=> (a.correct ? 1 : 0) }.each_with_index do |answer, i|
                       %p.answer
-                        / %a.delete_answer X
                         %i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
                         - if owner
                           = best_in_place answer, :text, :type => :input
@@ -109,8 +113,6 @@
                           #{answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe}
           .pagination-wrapper
             = paginate @questions
-
-/ = render "feeds/question_modal"
 
 = hidden_field_tag :asker_id, @asker.id
 = hidden_field_tag :question_id, @requested_question.id if @requested_question
