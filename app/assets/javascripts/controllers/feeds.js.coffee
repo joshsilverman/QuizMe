@@ -47,7 +47,7 @@ class @Feed
 			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
-		mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
+		# mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 		$(".post_another").on "click", => @post_another()
 
@@ -301,6 +301,9 @@ class Post
 			if $("#user_name").val() != undefined
 				parent = $(e.target).parents(".answer_container").prev("h3")
 				@respond_to_question(parent.text(), parent.attr("answer_id"), parent.attr "correct")
+			else
+				element = $(e.target)
+				window.location.replace("/users/auth/twitter?answer_id=#{element.attr('answer_id')}&feed_id=#{element.attr('feed_id')}&post_id=#{element.attr('post_id')}&use_authorize=false")
 		answers = @element.find(".answers")
 		answers.accordion({
 			collapsible: true, 

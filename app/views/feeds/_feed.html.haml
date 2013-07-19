@@ -51,7 +51,8 @@
 									%span#account= "@#{@question_asker.twi_screen_name}"
 									%span#answer= answer.tweetable(@question_asker.twi_screen_name).html_safe
 								.answer_controls
-									%a.tweet_button.btn.btn-primary{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => false) unless current_user), :class => ("auth_link" unless current_user)} Tweet
+									.tweet_button.btn.btn-primary{:feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => false} Answer
+									/ {:href => (user_omniauth_authorize_path(:twitter, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => false) unless current_user), :class => ("auth_link" unless current_user)} Tweet
 								.shadow-bottom
 
 			.subsidiaries{:style => "display: none;"}
