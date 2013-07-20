@@ -2,14 +2,14 @@
 
 task :check_for_posts => :environment do
   Asker.published.each do |a|
-    Post.check_for_posts(a)
+    Post.delay.check_for_posts(a)
     sleep(1)
   end
 end
 
 task :collect_retweets => :environment do
   Asker.published.each do |a|
-    Post.collect_retweets(a)
+    Post.delay.collect_retweets(a)
     sleep 1
   end
 end
