@@ -64,6 +64,11 @@ class Question < ActiveRecord::Base
     Question.group('created_for_asker_id').count
   end
 
+  def needs_edits?
+    return true if bad_answers or inaccurate or ungrammatical
+    return false
+  end
+
   def slug_text
     return self.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")[0..69]
   end
@@ -157,7 +162,7 @@ class Question < ActiveRecord::Base
   end
 
   def request_edits
-    puts 'in request_edits'
+    return false unless needs_edits?
     script = [
       "Your question needs some work before we can publish it, check out the feedback here: <link>",
       "The question your wrote needs some love before we can publish it, check out the feedback here: <link>",

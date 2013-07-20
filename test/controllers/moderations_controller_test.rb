@@ -853,6 +853,14 @@ describe ModerationsController do
 						sleep 1
 						@asker.posts.where("intention = 'request question edits'").count.must_equal 0
 					end
+
+					it 'unless no question feedback' do
+						@ugc_question.request_edits
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 0
+						@ugc_question.update bad_answers: true
+						@ugc_question.request_edits
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 1
+					end
 				end				
 			end
 		end
