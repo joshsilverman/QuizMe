@@ -14,7 +14,7 @@ module ManageTwitterRelationships
     end
     
     # Send follow requests
-    send_autofollows(twi_user_ids, max_follows, { force: options[:force], search_term_source: search_term_source })
+    self.delay.send_autofollows(twi_user_ids, max_follows, { force: options[:force], search_term_source: search_term_source })
   end
 
   def autofollow_count max_follows = nil
@@ -93,6 +93,7 @@ module ManageTwitterRelationships
   end
 
   def update_relationships
+    puts "in update_relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
