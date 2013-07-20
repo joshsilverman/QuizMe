@@ -168,7 +168,7 @@ class Question < ActiveRecord::Base
       "The question your wrote needs some love before we can publish it, check out the feedback here: <link>",
       "A question you wrote needs some work, fix it up here: <link>"
     ].sample
-    script.gsub! '<link>', "/askers/#{asker.id}/questions/#{id}"
+    script.gsub! '<link>', "www.wisr.com/askers/#{asker.id}/questions/#{id}"
     asker.send_private_message(user, script, {intention: "request question edits"})
   end
 

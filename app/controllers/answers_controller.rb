@@ -3,10 +3,10 @@ class AnswersController < ApplicationController
 
   def update
     @answer = Answer.find(params[:id])
-    @answer.question.update :bad_answers, nil
+    @answer.question.update bad_answers: nil
+    @answer.question.update(status: 0) unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
     redirect_to "/" unless @answer
     
-    @answer.question.update(:status, 0) unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
 
     respond_to do |format|
       if @answer.update_attributes(params[:answer])
