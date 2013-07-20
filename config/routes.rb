@@ -146,9 +146,9 @@ Quizmemanager::Application.routes.draw do
   root :to => 'feeds#index'
 
   #catch user profiles
-  get ":twi_screen_name" => "users#show"
-  get ":twi_screen_name/badges" => "users#badges"
-  get ":twi_screen_name/badges/:badge_title" => "users#badges"
-  get ":twi_screen_name/badges/story/:badge_title" => "users#badges"
+  # get ":twi_screen_name" => "users#show"
+  # get ":twi_screen_name/badges" => "users#badges"
+  # get ":twi_screen_name/badges/:badge_title" => "users#badges"
+  # get ":twi_screen_name/badges/story/:badge_title" => "users#badges"
 
 end
