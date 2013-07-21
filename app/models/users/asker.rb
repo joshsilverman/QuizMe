@@ -293,7 +293,7 @@ class Asker < User
 
   def self.engage_new_users
     # Send DMs to new users
-    selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).to_i % 2
+    selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).round % 2
     Asker.published.select { |a| a.id % 2 == selector }.each do |asker|
       asker.delay.update_relationships() 
       sleep 1
