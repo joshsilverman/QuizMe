@@ -443,7 +443,6 @@ DEPENDENCIES
   sourcify
   split!
   stuff-classifier!
-  therubyracer
   timecop
   turn
   twitter
