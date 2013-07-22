@@ -7,4 +7,7 @@
 User-agent: *
 Allow: /
 
+# Wait 1 second between successive requests.
+Crawl-delay: 1
+
 Sitemap: https://s3.amazonaws.com/wisr-sitemap/sitemaps/sitemap1.xml.gz
