@@ -1,9 +1,9 @@
 #lib/tasks/cron.rake
 
 task :check_for_posts => :environment do
-  Asker.published.each do |a|
+  selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).round % 2
+  Asker.published.select { |a| a.id % 2 != selector }.each do |a|
     Post.delay.check_for_posts(a)
-    sleep(1)
   end
 end
 
@@ -38,10 +38,6 @@ task :fill_queue => :environment do
   end
 end
 
-# task :reengage_incorrect_answerers => :environment do
-#   Asker.published.each { |asker| asker.delay.reengage_incorrect_answerers }
-# end
-
 task :reengage_inactive_users => :environment do
   Asker.reengage_inactive_users()
   # Asker.send_author_followups()
@@ -71,10 +67,6 @@ end
 task :send_progress_reports => :environment do
   Asker.send_progress_reports() if Time.now.wday == 0
 end
-
-# task :update_followers => :environment do
-  # Asker.all.each { |asker| asker.update_followers() }
-# end
 
 task :retweet_related => :environment do
   if Time.now.hour % 2 == 0

@@ -40,7 +40,6 @@ class QuestionsController < ApplicationController
       redirect_to "/questions/#{params[:id]}/#{@question.slug}"
       return
     end
-
     is_follow_up = params[:lt] == "follow_up"
     @show_answer = true unless is_follow_up #!params[:ans].nil?
 

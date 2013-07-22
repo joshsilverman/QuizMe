@@ -295,8 +295,7 @@ class Asker < User
     # Send DMs to new users
     selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).round % 2
     Asker.published.select { |a| a.id % 2 == selector }.each do |asker|
-      asker.delay.update_relationships() 
-      sleep 1
+      asker.delay.update_relationships()
     end
 
     # Send mentions to new users
