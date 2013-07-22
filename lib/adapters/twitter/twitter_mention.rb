@@ -12,4 +12,8 @@ class TwitterMention
       Mixpanel.track_event "incorrect answer follow up sent", {:distinct_id => @options[:in_reply_to_user_id]}
     end
   end
+
+  def max_attempts
+    return 3
+  end
 end

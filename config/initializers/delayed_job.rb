@@ -1,0 +1,1 @@
+Delayed::Worker.max_attempts = 1 # default for jobs that don't have their own custom jobs where max attempts is overrode
