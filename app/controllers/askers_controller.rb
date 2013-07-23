@@ -159,10 +159,14 @@ class AskersController < ApplicationController
       @question_count = @asker.questions.group("status").count
       [-1, 0, 1].each { |status| @question_count[status] ||= 0 }
       
-      if params[:question_id]
-        @requested_question = @asker.questions.where(id: params[:question_id]).first
-        @questions.reverse!.push(@requested_question).reverse! unless @requested_question.blank? or @questions.include?(@requested_question)
+      if params[:user_id] and (users_questions = @questions.where(user_id: params[:user_id])).present?
+        @questions = users_questions.order("status")
       end
+
+      # if params[:question_id]
+      #   @requested_question = @asker.questions.where(id: params[:question_id]).first
+      #   @questions.reverse!.push(@requested_question).reverse! unless @requested_question.blank? or @questions.include?(@requested_question)
+      # end
 
       @contributors = []
       contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
