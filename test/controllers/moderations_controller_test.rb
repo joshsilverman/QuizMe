@@ -826,7 +826,8 @@ describe ModerationsController do
 
 				describe 'requests question edits' do
 					before :each do 
-						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+						@author = create(:user)
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: @author.id)
 						Capybara.current_driver = :selenium
 						@admin = create(:user, twi_user_id: 1, role: 'admin')
 						login_as @admin
@@ -855,11 +856,26 @@ describe ModerationsController do
 					end
 
 					it 'unless no question feedback' do
+						@ugc_question.update status: -1
 						@ugc_question.request_edits
 						@asker.posts.where("intention = 'request question edits'").count.must_equal 0
 						@ugc_question.update bad_answers: true
 						@ugc_question.request_edits
 						@asker.posts.where("intention = 'request question edits'").count.must_equal 1
+					end
+
+					it 'unless sent an uncompleted edit request recently' do
+						@ugc_question.update bad_answers: true, status: -1
+						@ugc_question.request_edits
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 1
+
+						@new_ugc_question = create(:question, status: -1, created_for_asker_id: @asker.id, user_id: @author.id, bad_answers: true)
+						@new_ugc_question.request_edits
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 1
+
+						Timecop.travel Time.now + 1.day
+						@new_ugc_question.request_edits
+						@asker.posts.where("intention = 'request question edits'").count.must_equal 2						
 					end
 				end				
 			end

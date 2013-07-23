@@ -65,7 +65,7 @@ class Question < ActiveRecord::Base
   end
 
   def needs_edits?
-    return true if bad_answers or inaccurate or ungrammatical
+    return true if (bad_answers or inaccurate or ungrammatical)
     return false
   end
 
@@ -162,7 +162,13 @@ class Question < ActiveRecord::Base
   end
 
   def request_edits
+    return false unless status == -1
     return false unless needs_edits?
+    return false if user.questions.where("id != ? and status = ?", id, -1).present? and asker.posts\
+      .where("in_reply_to_user_id = ?", user.id)\
+      .where("intention = 'request question edits'")\
+      .where("created_at > ?", 1.day.ago).present?
+
     script = [
       "Your question needs some work before we can publish it, check out the feedback here: <link>",
       "The question your wrote needs some love before we can publish it, check out the feedback here: <link>",

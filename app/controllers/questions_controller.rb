@@ -217,7 +217,7 @@ class QuestionsController < ApplicationController
     question = Question.find(params[:question_id])
     question.update_attribute(:status, (params[:accepted].match(/(true|t|yes|y|1)$/i) != nil) ? 1 : -1)
     question.question_moderations.each { |qm| qm.update_attribute(:accepted, ((question.status == 1 and qm.type_id == 7) or (question.status == -1 and qm.type_id != 7))) }
-    question.request_edits if question.status == -1
+    question.request_edits
 
     render :json => question.status, :status => 200
   end
