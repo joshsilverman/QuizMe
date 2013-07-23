@@ -73,8 +73,12 @@
                         %p= "Conversation history"  
               .modal-footer
                 %a#submit_question.btn.btn-primary{:href => "#", "data-loading-text" => "Loading..."} Submit Question
-            .header.border-color
+            .header.border-color{style: 'position: relative;'}
               %h3= "Questions"
+              - if @requested_user_id
+                %a.btn{href: "/askers/#{@asker.id}/questions", style: 'position: absolute; right: 10px; top: 10px;'} Show All
+              - else
+                %a.btn{href: "/askers/#{@asker.id}/questions/#{current_user.id}", style: 'position: absolute; right: 10px; top: 10px;'} Show Mine
             - @questions.each do |question|
               - owner = (question.user_id == current_user.id)
               .conversation.border-color
@@ -115,5 +119,5 @@
             = paginate @questions
 
 = hidden_field_tag :asker_id, @asker.id
-= hidden_field_tag :question_id, @requested_question.id if @requested_question
+/ = hidden_field_tag :question_id, @requested_question.id if @requested_question
 = hidden_field_tag :user_id, current_user.id

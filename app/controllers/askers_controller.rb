@@ -159,7 +159,9 @@ class AskersController < ApplicationController
       @question_count = @asker.questions.group("status").count
       [-1, 0, 1].each { |status| @question_count[status] ||= 0 }
       
+      @requested_user_id = nil
       if params[:user_id] and (users_questions = @questions.where(user_id: params[:user_id])).present?
+        @requested_user_id = params[:user_id]
         @questions = users_questions.order("status")
       end
 
