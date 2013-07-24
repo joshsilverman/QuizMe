@@ -1,5 +1,6 @@
 module ManageTwitterRelationships
-
+  
+  ## Autofollows
   def autofollow options = {}
     # Check if we should follow
     return unless (max_follows = autofollow_count) > 0
@@ -31,29 +32,6 @@ module ManageTwitterRelationships
     # Check if we've already followed enough users today
     return 0 if follow_relationships.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
     max_follows
-  end
-
-  def unfollow_count max_unfollows = nil
-    target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_unfollow_count_avg = 6 if target_unfollow_count_avg > 6
-    scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
-    max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
-
-    # Check if we should unfollow today
-    # max_unfollows ||= [0, 0, 8, 10, 2, 6, 9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
-    return 0 if max_unfollows == 0
-    
-    # Check if we should unfollow during this part of the day
-    return 0 if Time.now.hour <= ((id + Time.now.wday + Time.now.to_date.cweek) % 6)
-    return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
-    
-    # Check if we've already unfollowed enough users today
-    return 0 if follow_relationships.inactive\
-      .where("updated_at > ?", Time.now.beginning_of_day)\
-      .where("created_at < ?", Time.now.beginning_of_day)\
-      .where("type_id is null or type_id != 4").size >= max_unfollows
-
-    max_unfollows
   end
 
   def get_follow_target_twi_users max_follows
@@ -92,6 +70,7 @@ module ManageTwitterRelationships
     end
   end
 
+  ## Update relationships
   def update_relationships
     puts "in update_relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
@@ -104,7 +83,29 @@ module ManageTwitterRelationships
     end
   end
 
-  # FOLLOWS METHODS
+  def unfollow_count max_unfollows = nil
+    target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
+    target_unfollow_count_avg = 3 if target_unfollow_count_avg > 3
+    scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
+    max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
+
+    # Check if we should unfollow today
+    # max_unfollows ||= [0, 0, 8, 10, 2, 6, 9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
+    return 0 if max_unfollows == 0
+    
+    # Check if we should unfollow during this part of the day
+    return 0 if Time.now.hour <= ((id + Time.now.wday + Time.now.to_date.cweek) % 6)
+    return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
+    
+    # Check if we've already unfollowed enough users today
+    return 0 if follow_relationships.inactive\
+      .where("updated_at > ?", Time.now.beginning_of_day)\
+      .where("created_at < ?", Time.now.beginning_of_day)\
+      .where("type_id is null or type_id != 4").size >= max_unfollows
+
+    max_unfollows
+  end
+
   def request_and_update_follows
     twi_follows_ids = Post.twitter_request { twitter.friend_ids.ids }
     update_follows(twi_follows_ids, follows.collect(&:twi_user_id)) if twi_follows_ids.present?
@@ -154,7 +155,6 @@ module ManageTwitterRelationships
     end
   end  
 
-  # FOLLOWER METHODS
   def request_and_update_followers
     twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
     update_followers(twi_follower_ids, followers.collect(&:twi_user_id)) if twi_follower_ids.present?
@@ -227,4 +227,80 @@ module ManageTwitterRelationships
     relationship.update_attribute :active, false if relationship
     user.segment
   end
+
+  ## Targeted mentions
+  def self.send_targeted_mentions
+    Asker.published.each do |asker| 
+      next if asker.search_terms.blank?
+      target_users, search_term_source = asker.get_targeted_mention_twi_user_targets(asker.targeted_mention_count)
+      target_users.each do |target_user|
+        user = User.find_or_initialize_by(twi_user_id: target_user.id)
+        user.update_attributes(
+          :twi_name => target_user.name,
+          :name => target_user.name,
+          :twi_screen_name => target_user.screen_name,
+          :description => target_user.description.present? ? target_user.description : nil,
+          :search_term_topic_id => search_term_source[target_user.id].try(:id)
+        )
+        asker.send_targeted_mention(user)
+        sleep 1
+      end
+    end
+  end
+
+  def send_targeted_mention user
+    script = Post.create_split_test(user.id, 'targeted mention script (joins)', '<just question>', 'Pop quiz:')
+    script = '' if script == '<just question>'
+
+    question = most_popular_question
+    return unless question
+
+    publication = question.publications.order("created_at DESC").first
+    return unless publication
+
+    script = "#{script} #{question.text}".strip
+
+    self.send_public_message(script, { 
+      reply_to: user.twi_screen_name, 
+      intention: 'targeted mention', 
+      question_id: question.id,
+      in_reply_to_user_id: user.id,
+      publication_id: publication.id,
+      long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+      interaction_type: 2
+    })
+    Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
+  end
+
+  def targeted_mention_count
+    if followers.count > 1000
+      count = 4
+    elsif followers.count > 500
+      count = 3
+    else
+      count = 2
+    end
+
+    scale = [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
+    max_mentions = (count * scale).round
+    return max_mentions
+  end
+
+  def get_targeted_mention_twi_user_targets max_count
+    follow_target_twi_users = []
+    search_term_source = {}
+    search_terms.shuffle.each do |search_term|
+      next if follow_target_twi_users.size >= max_count
+      statuses = Post.twitter_request { twitter.search(search_term.name, :count => 100).statuses }
+      twi_users = statuses.select { |s| s.user.present? }.collect { |s| s.user }.uniq
+      wisr_user_ids = User.where(twi_user_id: twi_users.collect(&:id)).collect(&:twi_user_id)
+      twi_users.reject! { |twi_user| wisr_user_ids.include?(twi_user.id) or follow_target_twi_users.include?(twi_user.id) }
+      twi_users.sample(max_count - follow_target_twi_users.size).each do |twi_user| 
+        follow_target_twi_users << twi_user
+        search_term_source[twi_user.id] = search_term
+      end
+    end
+    puts "Too few targeted mention targets found for #{twi_screen_name} (only found #{follow_target_twi_users.size})!" if follow_target_twi_users.size < max_count
+    return follow_target_twi_users, search_term_source  
+  end  
 end
