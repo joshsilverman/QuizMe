@@ -274,7 +274,7 @@ class Stat < ActiveRecord::Base
           moving_average = percent_quality_history[(-running_average_day_count)..-1].sum / running_average_day_count
           data << [datef, percent_quality, moving_average]
           today_stat = sprintf("%.1f%", percent_quality * 100) if date == Date.yesterday
-          total_stat << percent_quality
+          total_stat << percent_quality if (date > (Date.yesterday - 1.week))
         end
       end
       total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
