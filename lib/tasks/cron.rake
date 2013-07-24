@@ -3,13 +3,13 @@
 task :check_for_posts => :environment do
   selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).round % 2
   Asker.published.select { |a| a.id % 2 != selector }.each do |a|
-    Post.delay.check_for_posts(a)
+    Post.check_for_posts(a)
   end
 end
 
 task :collect_retweets => :environment do
   Asker.published.each do |a|
-    Post.delay.collect_retweets(a)
+    Post.collect_retweets(a)
     sleep 1
   end
 end
