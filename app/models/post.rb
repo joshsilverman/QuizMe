@@ -504,7 +504,7 @@ class Post < ActiveRecord::Base
       puts "rate limit exceeded on line '#{source_line}':"
       puts exception.rate_limit.inspect
       raise "Rate limit exceeded"
-    rescue Twitter::Error
+    rescue Twitter::Error => exception
       unless attempts >= max_attempts \
         or exception.message.include? "Status is a duplicate" \
         or exception.message.include? "Bad Authentication data" \
