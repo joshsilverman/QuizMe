@@ -4,7 +4,7 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
-  # caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
+  caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
 
   def index
     @index = true
@@ -151,7 +151,7 @@ class FeedsController < ApplicationController
           @related = subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
         else
           @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-            .where(:id => ACCOUNT_DATA.keys.sample(3)).all
+            .where(:id => ACCOUNT_DATA.keys.sample(3)).to_a
         end
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
