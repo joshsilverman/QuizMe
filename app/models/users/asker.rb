@@ -496,10 +496,8 @@ class Asker < User
 
     if app_post
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
-      learner_level = user_post.posted_via_app ? "feed answer" : "twitter answer"
-      # self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
-      self.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
-      update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
+      self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
+      self.delay.update_metrics(answerer, user_post, publication, {:autoresponse => options[:autoresponse]})
       return app_post
     else
       return false

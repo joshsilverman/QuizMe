@@ -492,6 +492,7 @@ class User < ActiveRecord::Base
 
 	# Lifecycle checks - include UGC reqs?
 	def update_lifecycle_segment
+		@posts = posts
 		if is_superuser?
 			level = 6
 		elsif is_pro?
@@ -514,43 +515,44 @@ class User < ActiveRecord::Base
 	end
 	
 	def is_interested? # has shared or commented
-		posts.not_spam.size > 0
+		@posts.not_spam.size > 0
 	end
 
 	def is_edger? # has answered a new user private message
-		posts.not_spam.answers.dms.size > 0
+		@posts.not_spam.answers.dms.size > 0
 	end
 
 	def is_noob? # has answered socially (wisr or twi mention)
-		posts.social.answers.size > 0
+		@posts.social.answers.size > 0
 	end
 
 	def is_regular?
-		enough_posts = true if posts.answers.size > 3
+		enough_posts = true if @posts.answers.size > 3
 		enough_frequency = true if number_of_weeks_with_answers > 1
 		enough_posts and enough_frequency
 	end
 
 	def is_advanced?
-		enough_posts = true if posts.answers.size > 9
+		enough_posts = true if @posts.answers.size > 9
 		enough_frequency = true if number_of_weeks_with_answers > 1 and number_of_days_with_answers > 2
 		enough_posts and enough_frequency
 	end
 
 	def is_pro?
-		enough_posts = true if posts.answers.size > 19
+		enough_posts = true if @posts.answers.size > 19
 		enough_frequency = true if number_of_weeks_with_answers > 2 and number_of_days_with_answers > 4
 		enough_posts and enough_frequency		
 	end
 
 	def is_superuser?
-		enough_posts = true if posts.answers.size > 29
+		enough_posts = true if @posts.answers.size > 29
 		enough_frequency = true if number_of_weeks_with_answers > 4 and number_of_days_with_answers > 9
 		enough_posts and enough_frequency
 	end
 
 	# Activity checks
 	def update_activity_segment	
+		@posts = posts
 		if is_unfollowed?
 			level = 7
 		elsif is_disengaged?
@@ -575,23 +577,23 @@ class User < ActiveRecord::Base
 	end
 
 	def is_disengaged?
-		posts.blank? or posts.answers.where("created_at > ?", 4.weeks.ago).size < 1
+		@posts.blank? or posts.answers.where("created_at > ?", 4.weeks.ago).size < 1
 	end
 
 	def is_disengaging?
-		posts.answers.where("created_at > ?", 2.weeks.ago).size < 1
+		@posts.answers.where("created_at > ?", 2.weeks.ago).size < 1
 	end
 
 	def is_slipping?
-		posts.answers.where("created_at > ?", 1.weeks.ago).size < 1
+		@posts.answers.where("created_at > ?", 1.weeks.ago).size < 1
 	end
 
 	def is_engaging?
-		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 1
+		number_of_days_with_answers(:posts => @posts.where("created_at > ?", 1.week.ago)) > 1
 	end
 
 	def is_engaged?
-		number_of_days_with_answers(:posts => posts.where("created_at > ?", 1.week.ago)) > 2
+		number_of_days_with_answers(:posts => @posts.where("created_at > ?", 1.week.ago)) > 2
 	end
 
 

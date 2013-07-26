@@ -266,7 +266,7 @@ class FeedsController < ApplicationController
   def respond_to_question
     publication = Publication.find(params[:publication_id])
     @question_asker = Asker.find(params[:asker_id])
-    answer = Answer.find(params[:answer_id])
+    answer = Answer.includes(:question).find(params[:answer_id])
 
     if params[:publication_id] == session[:reengagement_publication_id] and session[:referring_user] and referring_user = User.find_by_twi_screen_name(session[:referring_user])
       post = @question_asker.posts.reengage_inactive.where("publication_id = ? and in_reply_to_user_id = ?", params[:publication_id], referring_user.id).order("created_at DESC").limit(1).first
