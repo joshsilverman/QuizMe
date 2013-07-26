@@ -3,7 +3,7 @@
 task :check_for_posts => :environment do
   selector = (((Time.now - Time.now.beginning_of_hour) / 60) / 10).round % 2
   Asker.published.select { |a| a.id % 2 != selector }.each do |a|
-    Post.check_for_posts(a)
+    Post.delay.check_for_posts(a)
   end
 end
 
