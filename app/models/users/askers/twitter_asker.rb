@@ -44,6 +44,8 @@ class TwitterAsker < Asker
         :question_id => options[:question_id],
         :in_reply_to_question_id => options[:in_reply_to_question_id]
       )
+      Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
+      
       if options[:publication_id]
         publication = Publication.find(options[:publication_id])
         publication.posts << post
@@ -82,7 +84,7 @@ class TwitterAsker < Asker
         :nudge_type_id => options[:nudge_type_id],
         :question_id => options[:question_id]
       )
-      # recipient.segment
+      Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message
