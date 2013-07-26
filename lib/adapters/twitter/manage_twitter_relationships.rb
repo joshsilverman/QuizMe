@@ -53,7 +53,6 @@ module ManageTwitterRelationships
   end
 
   def send_autofollows twi_user_ids, max_follows, options = {}
-    puts "sending autofollows for #{twi_screen_name}"
     twi_user_ids.sample(max_follows).each do |twi_user_id|
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.present? or options[:force]
@@ -72,7 +71,6 @@ module ManageTwitterRelationships
 
   ## Update relationships
   def update_relationships
-    puts "in update_relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 

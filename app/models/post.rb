@@ -270,7 +270,6 @@ class Post < ActiveRecord::Base
   end
 
   def self.check_for_posts current_acct
-    puts "in check_for_posts for #{current_acct.twi_screen_name}"
     client = current_acct.twitter
 
     # Get mentions, de-dupe, and save
