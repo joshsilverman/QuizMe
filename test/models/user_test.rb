@@ -25,15 +25,16 @@ describe User do
 				end
 				30.times do |i|
 					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					Delayed::Worker.new.work_off
 
 					if i >= 28 
-						@user.is_superuser?.must_equal true
+						@user.reload.lifecycle_above? 5
 					elsif i >= 14
-						@user.is_pro?.must_equal true
+						@user.reload.lifecycle_above? 4
 					elsif i >= 7
-						@user.is_advanced?.must_equal true
+						@user.reload.lifecycle_above? 3
 					else
-						@user.is_interested?.must_equal true
+						@user.reload.lifecycle_segment.must_equal 7
 					end
 
 					Timecop.travel(Time.now + 1.day)

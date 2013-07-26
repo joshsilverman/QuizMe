@@ -874,6 +874,7 @@ describe Asker do
 
 			it 'who have responded to recent followups' do
 				@asker.app_response @user_response, false
+				Delayed::Worker.new.work_off
 				while Delayed::Job.all.size > 0
 					Delayed::Worker.new.work_off
 					Timecop.travel(Time.now + 1.day)
@@ -885,6 +886,7 @@ describe Asker do
 				user_post = FactoryGirl.create(:post, text: 'the correct answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_post_id: followup.id, in_reply_to_question_id: new_question.id)
 				conversation.posts << user_post
 				@asker.app_response(user_post, false)
+				Delayed::Worker.new.work_off
 				Delayed::Job.count.must_equal 1
 			end
 
