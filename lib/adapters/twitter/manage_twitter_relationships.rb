@@ -66,7 +66,7 @@ module ManageTwitterRelationships
         end
         add_follow(user, 2)
       end 
-      sleep((5..60).to_a.sample) unless options[:force] # avoids sleep in tests
+      sleep((1..3).to_a.sample) unless options[:force] # avoids sleep in tests
     end
   end
 
