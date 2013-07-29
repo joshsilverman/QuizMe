@@ -1069,6 +1069,25 @@ class Asker < User
     end
   end
 
+  def self.send_targeted_mentions
+    Asker.published.each do |asker| 
+      next if asker.search_terms.blank?
+      target_users, search_term_source = asker.get_targeted_mention_twi_user_targets(asker.targeted_mention_count)
+      target_users.each do |target_user|
+        user = User.find_or_initialize_by(twi_user_id: target_user.id)
+        user.update_attributes(
+          :twi_name => target_user.name,
+          :name => target_user.name,
+          :twi_screen_name => target_user.screen_name,
+          :description => target_user.description.present? ? target_user.description : nil,
+          :search_term_topic_id => search_term_source[target_user.id].try(:id)
+        )
+        asker.send_targeted_mention(user)
+        sleep 1
+      end
+    end
+  end
+
   def most_popular_question options = {}
     options.reverse_merge!(:since => 99.years.ago, :character_limit => 9999)
     if options[:exclude_strings]
