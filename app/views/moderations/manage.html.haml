@@ -105,7 +105,7 @@
 												%p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 											.answer_area.hide
 												- question.answers.sort{|a, b| (b.correct ? 1 : 0)  <=> (a.correct ? 1 : 0) }.each_with_index do |answer, i|
-													%p.answer
+													%p.answer{answer_id: answer.id}
 														/ %a.delete_answer X
 														%i.correct_indicator{:class => (answer.correct ? "icon-ok-sign" : "icon-remove-sign")}
 														- if owner
@@ -120,6 +120,7 @@
 							- else
 								= link_to 'Moderate more answers here.', '/moderations/manage'
 
+= render :partial => "feeds/question_modal"
 
 = hidden_field_tag :feed_id, @asker.id
 = hidden_field_tag :feed_name, @asker.twi_screen_name

@@ -6,6 +6,7 @@ class QuestionModeration < Moderation
 	scope :inaccurate, -> { where(type_id: 8) }
 	scope :ungrammatical, -> { where(type_id: 9) }
 	scope :bad_answers, -> { where(type_id: 10) }
+  scope :needs_edits, -> { where(type_id: 11) }
 
 	def respond_with_type_id
     return false if question.status != 0

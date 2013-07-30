@@ -53,7 +53,7 @@
 
 	.actions {
 		background: #efefef;
-		padding:12px 10px 40px 57px;
+		padding: 12px 10px 40px 57px;
 		margin: 8px -10px -10px -10px;
 		height: 0px;
 		
@@ -61,7 +61,6 @@
 			padding:12px 10px 40px 10px;
 
 			&.post_moderation_actions, &.question_moderation_actions {
-				height: 32px;
 				padding:12px 10px 40px 10px;
 
 				.replies {
@@ -73,6 +72,9 @@
 					position: relative;
 					top: 7px;
 				}
+			}
+			&.post_moderation_actions {
+				height: 32px;
 			}
 		}
 

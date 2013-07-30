@@ -88,6 +88,7 @@ Quizmemanager::Application.routes.draw do
   get "questions/asker/:asker_id/import" => "questions#import"
 
   post "questions/save_question_and_answers"
+  post 'questions/update_question_and_answers'
   get "questions/:id" => "questions#show"
   get "questions/:id/:slug" => "questions#show"
   get "questions/new/:asker_id" => "questions#new"

@@ -126,6 +126,20 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def update_question_and_answers
+    question = Question.includes(:answers).find(params[:question_id])
+    question.update(text: params[:text])
+    # clear feedback
+    params[:answers].each do |answer_params|
+      if answer_params[1][:id].present?
+        question.answers.find(answer_params[1][:id].to_i).update(text: answer_params[1][:text])
+      else
+        question.answers.create(text: answer_params[1][:text], correct: answer_params[1][:correct])
+      end
+    end
+    render nothing: true, status: 200
+  end
+
   # this method turned into a clusterf*ck because it combines update/create actions
   # @amateur-hour
   def save_question_and_answers
@@ -189,15 +203,15 @@ class QuestionsController < ApplicationController
     [:ianswer1, :ianswer2, :ianswer3].each do |answer_key|
       if !params[answer_key].nil? and !params[answer_key].blank?
         @answer = nil
-        @answer = Answer.find(params[answer_key.to_s + "_id"]) unless params[answer_key.to_s + "_id"].nil?
+        @answer = @question.answers.find(params[answer_key.to_s + "_id"]) unless params[answer_key.to_s + "_id"].nil?
         if @answer
           @answer.update_attributes(:text => params[answer_key], :correct => false)
         else
-          @answer = Answer.create :text => params[answer_key], :correct => false
-          @question.answers << @answer
+          @answer = @question.answers.create :text => params[answer_key], :correct => false
+          # @question.answers << @answer
         end
       elsif !params[answer_key.to_s + "_id"].nil?
-        Answer.find(params[answer_key.to_s + "_id"]).destroy
+        @question.answers.find(params[answer_key.to_s + "_id"]).destroy
       end
     end
 
