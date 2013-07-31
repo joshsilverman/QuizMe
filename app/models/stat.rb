@@ -389,6 +389,15 @@ class Stat < ActiveRecord::Base
     return graph_data
 	end
 
+  def self.graph_users_per_day(domain = 60)
+    domain = 75
+    User.where('created_at > ?', domain.days.ago)\
+      .group("to_char(created_at, 'MM/DD')")\
+      .count\
+      .sort\
+      .insert(["Date", "New users"])
+  end
+
   def self.graph_questions_answered(domain = 60)
     # Median
     graph_data = [["Date", "Wisr answers", "Twitter answers"]]

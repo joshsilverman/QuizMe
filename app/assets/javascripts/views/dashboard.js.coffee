@@ -29,7 +29,7 @@ class Dashboard
 
   update_tabs: (e, target, domain) =>
     target ||= $(e.target).tab().attr 'href'
-    target = "#users-answer_source" if target == '#users'
+    target = "#users-users_per_day" if target == '#users'
     target = "#askers-handle_activity" if target == '#askers'
     target = "#authors-ugc" if target == '#authors'
     target = "#moderators-user_moderated_posts" if target == '#moderators'
@@ -67,6 +67,7 @@ class Dashboard
           if draw_func
             draw_func()
           else
+            this[graph] = $.parseJSON($("#data").val())
             this.draw_generic this[graph], 'ColumnChart'
 
           $(".dashboard .nav a").parent().removeClass "active"

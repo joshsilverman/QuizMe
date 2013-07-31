@@ -2,6 +2,13 @@
   %ul.nav.nav-tabs.nav-stacked.span3
     %li
       %a.heading
+        General  
+    %li.users_per_day
+      %a{:href => "#users-users_per_day"} 
+        New users by day
+        %span.loading.hide= image_tag "ajax-loader.gif"        
+    %li
+      %a.heading
         Platforms
     %li 
       %a{:href => "#users-answer_source"} 
