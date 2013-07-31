@@ -39,26 +39,26 @@ class Moderator < User
 
 	def is_super_mod?
 		enough_mods = post_moderations.where('accepted is not null').count > 50
-		enough_acceptance_rate = acceptance_rate > 0.9
+		enough_acceptance_rate = post_moderation_acceptance_rate > 0.9
 		is_above_regular = lifecycle_above?(4)
 		enough_mods and enough_acceptance_rate and is_above_regular
 	end
 
 	def is_advanced_mod?
 		enough_mods = post_moderations.where('accepted is not null').count > 20
-		enough_acceptance_rate = acceptance_rate > 0.8
+		enough_acceptance_rate = post_moderation_acceptance_rate > 0.8
 		enough_mods and enough_acceptance_rate
 	end
 
 	def is_regular_mod?
 		enough_mods = post_moderations.where('accepted is not null').count > 10
-		enough_acceptance_rate = acceptance_rate > 0.65
+		enough_acceptance_rate = post_moderation_acceptance_rate > 0.65
 		enough_mods and enough_acceptance_rate
 	end
 
 	def is_noob_mod?
 		enough_mods = post_moderations.where('accepted is not null').count > 2
-		enough_acceptance_rate = acceptance_rate > 0.5
+		enough_acceptance_rate = post_moderation_acceptance_rate > 0.5
 		enough_mods and enough_acceptance_rate
 	end
 
@@ -66,10 +66,24 @@ class Moderator < User
 		post_moderations.count > 0
 	end
 
-	def acceptance_rate
+	def is_question_super_mod?
+		enough_acceptance_rate = question_moderation_acceptance_rate > 0.9 
+		enough_mods = question_moderations.where('accepted is not null').count > 29
+		return true if enough_acceptance_rate and enough_mods
+		return false
+	end
+
+	def post_moderation_acceptance_rate
 		accepted = post_moderations.where(accepted: true).count
 		not_accepted = post_moderations.where(accepted: false).count
 		total = accepted + not_accepted
 		total == 0 ? 0 : (accepted.to_f / total.to_f)
+	end
+
+	def question_moderation_acceptance_rate
+		accepted = question_moderations.where(accepted: true).count
+		not_accepted = question_moderations.where(accepted: false).count
+		total = accepted + not_accepted
+		total == 0 ? 0 : (accepted.to_f / total.to_f)		
 	end
 end

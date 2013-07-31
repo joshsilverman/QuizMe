@@ -2,15 +2,16 @@ class ModerationsManage
 	constructor: ->
 		@askers = $.parseJSON($("#askers").val())
 		@display_notifications = $('#display_notifications').val()
+		@is_question_supermod = $('#is_question_supermod').val()
+		puts @is_question_supermod
+
 		$(".quick-reply").on "click", @quick_reply
 
 		$('.replies .btn').on 'click', (e) =>
 			element = $(e.target)
 			e.stopImmediatePropagation() if element.hasClass 'active'
-			if element.hasClass('btn-danger') #and admin
-				@edit_question(element)
-			else
-				@submit_question_feedback(element)
+			# @submit_question_feedback(element)
+			@edit_question(element) if element.hasClass('btn-danger') and @is_question_supermod == 'false'
 
 		# # toggle open post
 		$('.conversation').first().addClass 'active'

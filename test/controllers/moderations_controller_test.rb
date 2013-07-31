@@ -152,6 +152,7 @@ describe ModerationsController do
 
 			describe 'filter' do
 				before :each do 
+					@moderator = @moderator.becomes(Moderator)
 					@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
 				end
 
@@ -185,6 +186,31 @@ describe ModerationsController do
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 				end
+
+				it "doesn't display questions requiring edits to non-supermods" do
+					@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
+
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+
+					@ugc_question.update(publishable: true)
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+				end
+
+				it "run displays questions requiring edits and not requiring edits to supermods" do 
+					@new_ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+					@ugc_question.update(publishable: true)
+
+					@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
+					30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+
+					visit '/moderations/manage'
+					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+					page.all(".post[question_id=\"#{@new_ugc_question.id}\"]").count.must_equal 1
+				end
+
+				it "displays questions moderated by supermods but not edited to other supermods"
 			end
 
 			describe 'manage' do

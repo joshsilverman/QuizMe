@@ -94,14 +94,30 @@ class Question < ActiveRecord::Base
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
     question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
 
-    Question.where('status = 0')\
-      .where('moderation_trigger_type_id is null')\
-      .where("questions.user_id <> ?", moderator.id)\
-      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
-      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-      .order('questions.created_at DESC')\
-      .limit(5)\
-      .sort_by{|p| p.created_at}.reverse
+    is_supermod = moderator.is_question_super_mod?
+    requires_edit_count = 
+    requires_moderation_count = 
+
+    if 
+      return Question.where('status = 0')\
+        .where('needs_edits is not null or publishable is not null')\
+        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+        .where("questions.user_id <> ?", moderator.id)\
+        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+        .order('questions.created_at DESC')\
+        .limit(5)\
+        .sort_by{|p| p.created_at}.reverse
+    else # return questions still lacking consensus
+      return Question.where('status = 0')\
+        .where('moderation_trigger_type_id is null')\
+        .where('needs_edits is null and publishable is null')\
+        .where("questions.user_id <> ?", moderator.id)\
+        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+        .order('questions.created_at DESC')\
+        .limit(5)\
+        .sort_by{|p| p.created_at}.reverse
+    end
   end
 
   def self.recently_published_ugc domain_start = 7, domain_end = 3

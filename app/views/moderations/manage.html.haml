@@ -135,6 +135,7 @@
 = hidden_field_tag :asker_twi_screen_names, @asker_twi_screen_names.to_json
 = hidden_field_tag :is_admin, admin
 = hidden_field_tag :askers, @askers_by_id.to_json
+= hidden_field_tag :is_question_supermod, @is_question_supermod
 
 - if defined? @display_notifications
 	= hidden_field_tag :display_notifications, @display_notifications
