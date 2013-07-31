@@ -95,9 +95,10 @@ class Question < ActiveRecord::Base
     question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
 
     is_supermod = moderator.is_question_super_mod?
-    requires_edit_count = 
-    requires_moderation_count = 
+    requires_edit_count = is_supermod ? 2 : 0
+    requires_moderation_count = is_supermod ? 3 : 5
 
+    
     if 
       return Question.where('status = 0')\
         .where('needs_edits is not null or publishable is not null')\
