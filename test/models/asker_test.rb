@@ -268,6 +268,17 @@ describe Asker do
 				@asker.send_autofollows(twi_user_ids, 5, { force: true })
 				@asker.reload.follows.count.must_equal 6
 			end
+
+			it 'takes into account previous follows from today when calculating autofollow count' do
+				autofollow_count = 0
+				while autofollow_count < 3
+					Timecop.travel(Time.now + 1.hour)
+					autofollow_count = @asker.autofollow_count
+				end
+				@asker.autofollow_count.must_equal(autofollow_count)
+				@asker.add_follow(create(:user), 2)
+				@asker.reload.autofollow_count.must_equal(autofollow_count - 1)
+			end
 		end
 
 		describe "updates followers" do

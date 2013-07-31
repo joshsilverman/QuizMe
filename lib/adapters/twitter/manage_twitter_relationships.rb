@@ -20,18 +20,23 @@ module ManageTwitterRelationships
 
   def autofollow_count max_follows = nil
     target_follow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_follow_count_avg = 6 if target_follow_count_avg > 6
+    target_follow_count_avg = 7 if target_follow_count_avg > 7 
     scale = [0.0, 0.0, 1.6, 0.8, 2.0, 0.4, 2.2][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_follows = (target_follow_count_avg * scale).round # scale target avg
     # Check if we should follow today
     # max_follows ||= [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
+
     return 0 if max_follows == 0
     # Check if we should follow during this part of the day
     return 0 if Time.now.hour <= ((id + Time.now.wday + Time.now.to_date.cweek) % 6)
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
     # Check if we've already followed enough users today
-    return 0 if follow_relationships.where("created_at > ?", Time.now.beginning_of_day).size >= max_follows
-    max_follows
+    
+    follows_count_today = follow_relationships.where("created_at > ?", Time.now.beginning_of_day).where("type_id is null or type_id = ?", 2).count
+    max_follows = max_follows - follows_count_today
+    return 0 if max_follows < 1
+
+    return max_follows
   end
 
   def get_follow_target_twi_users max_follows
@@ -97,10 +102,17 @@ module ManageTwitterRelationships
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
     
     # Check if we've already unfollowed enough users today
-    return 0 if follow_relationships.inactive\
+    unfollows_count_today = follow_relationships.inactive\
       .where("updated_at > ?", Time.now.beginning_of_day)\
       .where("created_at < ?", Time.now.beginning_of_day)\
-      .where("type_id is null or type_id != 4").size >= max_unfollows
+      .where("type_id is null or type_id != 4").count
+    max_unfollows = max_unfollows - unfollows_count_today
+    return 0 if max_unfollows < 1
+
+    # return 0 if follow_relationships.inactive\
+    #   .where("updated_at > ?", Time.now.beginning_of_day)\
+    #   .where("created_at < ?", Time.now.beginning_of_day)\
+    #   .where("type_id is null or type_id != 4").size >= max_unfollows
 
     max_unfollows
   end
