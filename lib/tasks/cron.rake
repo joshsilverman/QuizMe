@@ -119,8 +119,8 @@ task :email_supporters => :environment do
   end
 end
 
-task :send_targeted_mentions => :environment do
-  Asker.send_targeted_mentions()
+task :schedule_targeted_mentions => :environment do
+  Asker.published.each { |asker| asker.schedule_targeted_mentions }
 end
 
 task :autofollow => :environment do

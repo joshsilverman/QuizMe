@@ -448,7 +448,77 @@ describe Asker do
  		end
 	end
 
-	# describe 'sends targeted mentions'
+	describe 'sends targeted mentions' do
+		before :each do 
+			Delayed::Worker.delay_jobs = true
+			Timecop.travel(Time.now.beginning_of_day)
+			300.times { @asker.followers << create(:user) }
+		end
+
+		it 'sends targeted mentions 5 days a week' do 
+			mention_counts = []
+			@asker.stub :followers, 1..10000 do
+				7.times do 
+					Timecop.travel(Time.now + 1.day)
+					mention_counts << @asker.targeted_mention_count
+				end
+			end
+			mention_counts.count(0).must_equal 2
+		end
+
+		it 'sends the proper number of mentions per day' do
+			mention_count = @asker.targeted_mention_count
+			while (mention_count < 1) do 
+				Timecop.travel(Time.now + 1.day)
+				mention_count = @asker.targeted_mention_count
+			end
+			@asker.posts.where("intention = ?", 'targeted mention').count.must_equal 0
+
+			target_users = []
+			10.times { target_users << create(:user) }
+			@asker.schedule_targeted_mentions({ target_users: target_users })
+			24.times do
+				Timecop.travel(Time.now + 1.hour)
+				Delayed::Worker.new.work_off
+			end
+
+			@asker.reload.posts.where("intention = ?", 'targeted mention').count.must_equal mention_count
+		end
+
+		it 'on proper schedule' do 
+			mention_count = @asker.targeted_mention_count
+			while (mention_count < 1) do 
+				Timecop.travel(Time.now + 1.day)
+				mention_count = @asker.targeted_mention_count
+			end
+			target_users = []
+			10.times { target_users << create(:user) }
+			@asker.schedule_targeted_mentions({ target_users: target_users })
+			interval = (24 / mention_count.to_f)
+			count = 0
+			24.times do |i|
+				Delayed::Worker.new.work_off
+				count += 1 if (i % interval == 0)
+				@asker.posts.where("intention = ?", 'targeted mention').count.must_equal count
+				Timecop.travel(Time.now + 1.hour)
+			end			
+		end
+
+		it "doesn't exceed daily max if jobs are mistakenly scheduled" do
+			mention_count = @asker.targeted_mention_count
+			while (mention_count < 1) do 
+				Timecop.travel(Time.now + 1.day)
+				mention_count = @asker.targeted_mention_count
+			end
+			mention_count.times { create(:post, intention: 'targeted mention') }
+      Delayed::Job.enqueue(
+        TargetedMention.new(@asker, create(:user)),
+        :run_at => Time.now
+      )  
+      Delayed::Worker.new.work_off
+      @asker.posts.where("intention = ?", 'targeted mention').count.must_equal mention_count
+		end
+	end
 
 	describe "requests after answer" do
 		describe 'unless' do

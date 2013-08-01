@@ -240,6 +240,38 @@ module ManageTwitterRelationships
   end
 
   ## Targeted mentions
+  def schedule_targeted_mentions options = {}
+    target_count = targeted_mention_count
+    return false if target_count < 1
+
+    if options[:target_users].present? # for tests
+      target_users = options[:target_users].sample(target_count)
+    else
+      return false if search_terms.blank?
+      target_users, search_term_source = get_targeted_mention_twi_user_targets(target_count)
+    end
+
+    interval = (24 / target_users.size.to_f)
+    target_users.each_with_index do |target_user, i|
+      if options[:target_users]
+        user = target_user
+      else
+        user = User.find_or_initialize_by(twi_user_id: target_user.id)
+        user.update(
+          twi_name: target_user.name,
+          name: target_user.name,
+          twi_screen_name: target_user.screen_name,
+          description: target_user.description.present? ? target_user.description : nil,
+          search_term_topic_id: search_term_source[target_user.id].try(:id)
+        )
+      end
+      Delayed::Job.enqueue(
+        TargetedMention.new(self, user),
+        :run_at => (Time.now + (interval * i).hours)
+      )    
+    end
+  end
+
   def send_targeted_mention user
     script = Post.create_split_test(user.id, 'targeted mention script (joins)', '<just question>', 'Pop quiz:')
     script = '' if script == '<just question>'
@@ -265,17 +297,24 @@ module ManageTwitterRelationships
   end
 
   def targeted_mention_count
-    if followers.count > 1000
-      count = 4
-    elsif followers.count > 500
+    follower_count = followers.count
+    if follower_count > 3000
+      count = 8
+    elsif follower_count > 2000
+      count = 7
+    elsif follower_count > 1000
+      count = 6
+    elsif follower_count > 500
+      count = 5
+    elsif follower_count > 250
       count = 3
+    elsif follower_count > 100
+      count = 2      
     else
-      count = 2
+      count = 1
     end
-
     scale = [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
-    max_mentions = (count * scale).round
-    return max_mentions
+    return (count * scale).round
   end
 
   def get_targeted_mention_twi_user_targets max_count
