@@ -197,6 +197,8 @@ class Post < ActiveRecord::Base
           :question_id => question.id
         })
         publication.update_attribute(:published, true)
+        Rails.cache.delete "publications_recent_by_asker_#{asker.id}"
+        
         if via.present? and question.priority
           option = Post.create_split_test(question.user_id, 'UGC published notification type (follower joins)', 
             'Simple notification',

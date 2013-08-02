@@ -28,6 +28,7 @@ task :post_question => :environment do
     asker.publish_question()
     sleep 6
   end
+  Rails.cache.delete 'publications_recent'
 end
 
 task :fill_queue => :environment do

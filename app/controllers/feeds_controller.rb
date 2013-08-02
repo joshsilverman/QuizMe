@@ -43,7 +43,8 @@ class FeedsController < ApplicationController
         render 'index_with_activity' 
       else # logged in user, old homepage
         @wisr = User.find(8765)
-        @publications, posts = Publication.recently_published
+        @publications = Publication.recent
+        posts = Publication.recent_publication_posts(@publications)
 
         @responses = []
         @directory = {}
@@ -65,7 +66,8 @@ class FeedsController < ApplicationController
     else
       if ab_test("New Landing Page", 'index', 'index_with_search') == 'index' # logged out user, old homepage
         @wisr = User.find(8765)
-        @publications, posts = Publication.recently_published
+        @publications = Publication.recent
+        posts = Publication.recent_publication_posts(@publications)
 
         @responses = []
         @directory = {}
@@ -123,7 +125,9 @@ class FeedsController < ApplicationController
       if @asker = Asker.find(params[:id])
 
         # publications, posts and user responses
-        @publications, posts = Publication.recently_published_by_asker(@asker)
+        @publications = Publication.recent_by_asker(@asker)
+        posts = Publication.recent_publication_posts(@publications)
+
         actions = Publication.recent_responses_by_asker(@asker, posts)
 
         # user specific responses
