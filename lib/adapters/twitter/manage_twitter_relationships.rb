@@ -2,6 +2,7 @@ module ManageTwitterRelationships
   
   ## Autofollows
   def autofollow options = {}
+    puts "in autofollow for #{twi_screen_name}"
     # Check if we should follow
     return unless (max_follows = autofollow_count) > 0
 
@@ -21,7 +22,7 @@ module ManageTwitterRelationships
   def autofollow_count max_follows = nil
     target_follow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
     target_follow_count_avg = 7 if target_follow_count_avg > 7 
-    scale = [0.0, 0.0, 1.6, 0.8, 2.0, 0.4, 2.2][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
+    scale = [0.0, 0.0, 1.6, 1.0, 1.8, 0.7, 1.9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_follows = (target_follow_count_avg * scale).round # scale target avg
     # Check if we should follow today
     # max_follows ||= [0, 0, 9, 4, 12, 2, 11][((id + Time.now.wday + Time.now.to_date.cweek) % 7)]
@@ -77,6 +78,7 @@ module ManageTwitterRelationships
 
   ## Update relationships
   def update_relationships
+    puts "in update_relationships for #{twi_screen_name}"
     twi_follows_ids = request_and_update_follows
     twi_follower_ids = request_and_update_followers
 
