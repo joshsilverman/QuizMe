@@ -8,12 +8,14 @@ class QuestionModeration < Moderation
 	scope :bad_answers, -> { where(type_id: 10) }
   scope :needs_edits, -> { where(type_id: 11) }
 
+  scope :active, -> { where(active: true) }
+
 	def respond_with_type_id
     return false if question.status != 0
 
-    greater_than_one_moderator = question.question_moderations.collect(&:user_id).uniq.count > 1
-    agreement_on_type_id = question.question_moderations.select { |qm| qm.type_id == type_id  }.count > 1
-    three_mods = question.question_moderations.collect(&:user_id).uniq.count == 3
+    greater_than_one_moderator = question.question_moderations.active.collect(&:user_id).uniq.count > 1
+    agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id  }.count > 1
+    three_mods = question.question_moderations.active.collect(&:user_id).uniq.count == 3
     
     if greater_than_one_moderator and agreement_on_type_id
       question.update_attributes moderation_trigger_type_id: 1
@@ -34,6 +36,8 @@ class QuestionModeration < Moderation
       attribute = :ungrammatical
     when 10
     	attribute = :bad_answers
+    when 11
+      attribute = :needs_edits
     end
     question.update_attribute(attribute, true)
   end	

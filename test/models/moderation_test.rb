@@ -2,5 +2,548 @@ require 'test_helper'
 
 describe Moderation do	
 	before :each do 
+		@user = create(:user, twi_user_id: 1, role: 'user')
+		@moderator = create(:user, twi_user_id: 1, role: 'moderator')
+		login_as(@moderator, :scope => :user)
+
+		@wisr_asker = create(:asker, id: 8765)
+		@asker = create(:asker)
+		@user = create(:user, twi_user_id: 1)
+
+		@asker.followers << [@user, @moderator]
+
+		@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+		@publication = create(:publication, question: @question, asker: @asker)
+		@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+		@conversation = create(:conversation, post: @post_question, publication: @publication)
+		@post = create :post, 
+			user: @user, 
+			requires_action: true, 
+			in_reply_to_post_id: @post_question.id,
+			in_reply_to_user_id: @asker.id,
+			in_reply_to_question_id: @question.id,
+			interaction_type: 2, 
+			conversation: @conversation
+
+		@initial_question_dm = create(:dm, :initial_question_dm, user_id: @asker.id, question: @question)
+		@conversation = create(:conversation, post: @initial_question_dm)
+		@initial_question_dm.update_attributes conversation: @conversation
+		@dm_answer = create :dm, 
+			user: @user, 
+			requires_action: true, 
+			in_reply_to_post_id: @initial_question_dm.id,
+			in_reply_to_user_id: @asker.id,
+			in_reply_to_question_id: @question.id,
+			conversation: @conversation
+
+		@dm_from_asker = create(:dm, user_id: @asker.id, conversation: @conversation)
+		@dm_reply = create :dm, 
+			user: @user, 
+			requires_action: true, 
+			in_reply_to_post_id: @dm_from_asker.id,
+			in_reply_to_user_id: @asker.id,
+			conversation: @conversation		
 	end
+
+	describe 'observer' do
+		before :each do 
+			@user = create(:user, twi_user_id: 1)
+			@moderator = create(:user, twi_user_id: 1, role: 'moderator')
+			@asker = create(:asker)
+			@asker.followers << [@user, @moderator]
+			@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+			@question.answers << create(:answer, correct: true)
+			@publication = create(:publication, question: @question, asker: @asker)
+			@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+			@conversation = create(:conversation, post: @post_question, publication: @publication)
+			@post = create :post, 
+				user: @user, 
+				requires_action: true, 
+				in_reply_to_post_id: @post_question.id,
+				in_reply_to_user_id: @asker.id,
+				in_reply_to_question_id: @question.id,
+				interaction_type: 2, 
+				conversation: @conversation
+
+			Delayed::Worker.new.work_off
+		end
+
+		describe 'triggers response' do
+			describe 'on posts' do
+				describe 'if greater than one moderation and greater than noob and consensus' do
+					describe "for public response" do
+						it 'as correct' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							@post.reload.correct.must_equal true
+							Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+						end
+
+						it 'as incorrect' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+							@post.reload.correct.must_equal false
+							Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+						end
+
+						it 'as tell' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							@post.reload.correct.must_equal false
+							@response_post = Post.where(in_reply_to_post_id: @post.id, intention: 'grade').first
+							@response_post.wont_be_nil
+							@response_post.text.include?("I was looking for").must_equal true
+						end
+
+						it 'as hide' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+							@post.reload.correct.must_be_nil
+							Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+						end
+
+						after :each do 
+							@post.requires_action.must_equal false
+							@post.moderation_trigger_type_id.must_equal 1
+						end					
+					end
+
+					describe "for private response" do
+						it 'as correct' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @dm_answer.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @dm_answer.id)
+
+							@dm_answer.reload.requires_action.must_equal false
+							@dm_answer.correct.must_equal true
+							@dm_answer.moderation_trigger_type_id.must_equal 1
+							Delayed::Worker.new.work_off
+							Post.where(in_reply_to_user_id: @dm_answer.user_id, intention: 'grade').count.must_equal 1
+						end
+					end
+				end
+
+				describe 'if at least one moderation from super mod' do
+					it 'as correct' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+						@post.reload.correct.must_equal true
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+					end
+
+					it 'as incorrect' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+						@post.reload.correct.must_equal false
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+					end					
+
+					it 'as tell' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+						@post.reload.correct.must_equal false
+						@response_post = Post.where(in_reply_to_post_id: @post.id, intention: 'grade').first
+						@response_post.wont_be_nil
+						@response_post.text.include?("I was looking for").must_equal true
+					end
+
+					it 'as hide' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+						@post.reload.correct.must_be_nil
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+					end
+
+					after :each do 
+						@post.requires_action.must_equal false
+						@post.moderation_trigger_type_id.must_equal 2
+					end
+				end
+
+				describe 'if three moderations and partial consensus and at least one consensus mod above noob' do
+					it 'as correct' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+						2.times do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+						end
+
+						@post.reload.correct.must_equal true
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+						# Post.where(in_reply_to_post_id: @post.id, intention: 'grade').first.moderation_trigger_type_id.must_equal 2
+					end			
+
+					it 'as incorrect' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+						2.times do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+						end
+
+						@post.reload.correct.must_equal false
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1					
+					end		
+
+					it 'as tell' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+						2.times do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+						end
+
+						@post.reload.correct.must_equal false
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1					
+					end		
+
+					it 'as hide' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+						2.times do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+						end
+
+						@post.reload.correct.must_be_nil
+						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+					end	
+
+					after :each do 
+						@post.requires_action.must_equal false
+						@post.moderation_trigger_type_id.must_equal 3
+					end									
+				end
+
+				describe 'and accepts/rejects other moderations' do
+					describe 'if greater than one moderation and greater than noob and consensus' do
+						it 'by marking consensus moderations as accepted' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							moderation1 = create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							moderation2 = create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							moderation1.reload.accepted.must_equal true
+							moderation2.reload.accepted.must_equal true
+						end
+					end
+
+					describe 'if at least one moderation from super mod' do
+						it 'by marking supermod moderation as accepted' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+							moderation = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							moderation.reload.accepted.must_equal true
+						end
+
+						it 'by marking non-supermod agreeing moderations as accepted' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							moderation = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+							moderation2 = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							
+							moderation.reload.accepted.must_equal true
+							moderation2.reload.accepted.must_equal true
+						end
+
+						it 'by marking non-supermod non-agreeing moderations as rejected' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+							moderation2 = create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+							
+							moderation.reload.accepted.must_equal false
+							moderation2.reload.accepted.must_equal true
+						end					
+					end
+
+					describe 'if three moderations and partial consensus and at least one consensus mod above noob' do
+						it 'by marking consensus moderations as accepted, non-consensus as rejected' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+							moderation = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							moderation2 = create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+							moderation3 = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+
+							moderation.reload.accepted.must_equal true
+							moderation2.reload.accepted.must_equal false
+							moderation3.reload.accepted.must_equal true
+						end
+					end				
+				end
+			end
+
+			describe 'on questions' do
+				describe 'and triggers response' do
+					before :each do 
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+					end
+
+					it 'as publishable by consensus' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.reload.publishable.must_equal true
+					end
+
+					it 'as needs edits by tiebreaker' do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.reload.needs_edits.must_equal nil
+
+						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+						create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
+						@ugc_question.reload.needs_edits.must_equal true
+					end	
+				end
+
+				describe 'and accepts/rejects other moderations' do
+					before :each do 
+						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+						Capybara.current_driver = :selenium
+						@admin = create(:user, twi_user_id: 1, role: 'admin')
+						login_as @admin
+					end
+
+					it 'wont accept moderations before admin accepts/rejects' do
+						10.times do
+							create(:question_moderation, user_id: create(:moderator).id, type_id: [7, 8, 9, 10].sample, question_id: @ugc_question.id)
+							@ugc_question.reload.question_moderations.select { |qm| !qm.accepted.nil? }.count.must_equal 0
+						end
+					end
+
+					it 'accepts publishable + rejects non-publishable moderations when published by admin' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-success').click
+						sleep 1 # capybara isn't waiting for ajax to return...
+
+						moderation.reload.accepted.must_equal true
+						moderation2.reload.accepted.must_equal false
+						moderation3.reload.accepted.must_equal true
+					end
+
+					it 'rejects publishable + accepts non-publishable when question rejected by admin' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						
+						visit '/questions/manage'
+						page.find('.btn-danger').click
+						sleep 1
+						
+						moderation.reload.accepted.must_equal false
+						moderation2.reload.accepted.must_equal true
+						moderation3.reload.accepted.must_equal false
+					end
+
+					it 'properly accepts/rejects when admin changes mind' do
+						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+
+						visit '/questions/manage'
+						page.find('.btn-danger').click
+						sleep 1
+						moderation.reload.accepted.must_equal false
+						moderation2.reload.accepted.must_equal true
+						moderation3.reload.accepted.must_equal false
+
+						page.find('.btn-success').click
+						sleep 1
+						moderation.reload.accepted.must_equal true
+						moderation2.reload.accepted.must_equal false	
+						moderation3.reload.accepted.must_equal true					
+					end					
+				end		
+			end
+		end
+
+		describe "won't trigger response" do
+			describe 'on posts' do
+				it 'if less than one moderation' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					@post.reload.requires_action.must_equal true
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+				end
+
+				it 'if no consensus' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)				
+					@post.reload.requires_action.must_equal true
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+				end
+
+				it 'if no moderator above noob' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 2)
+					create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)				
+					@post.reload.requires_action.must_equal true
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0		
+				end
+
+				it 'if moderators don\'t know how to handle' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+					create(:post_moderation, user_id: moderator.id, type_id: 6, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 2)
+					create(:post_moderation, user_id: moderator.id, type_id: 6, post_id: @post.id)
+					@post.reload.requires_action.must_equal true
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0		
+				end
+
+				it 'and won\'t accept/reject moderations' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
+					moderation1 = create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					moderation2 = create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					moderation3 = create(:post_moderation, user_id: moderator.id, type_id: 3, post_id: @post.id)
+					
+					moderation1.reload.accepted.must_equal nil
+					moderation2.reload.accepted.must_equal nil
+					moderation3.reload.accepted.must_equal nil
+				end			
+
+				it "if consensus and post was already graded" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)				
+					@post.reload.requires_action.must_equal false
+					@post.correct.must_equal true
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+				end
+
+				it "if consensus and post was hidden" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)				
+					@post.reload.requires_action.must_equal false
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)		
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+				end		
+
+				it "if supermod moderates and post was already graded" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)				
+					@post.reload.requires_action.must_equal false
+					@post.correct.must_equal true
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+				end
+
+				it "if supermod moderates and post was hidden" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
+					create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)				
+					@post.reload.requires_action.must_equal false
+					@post.correct.must_equal nil
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+					create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)		
+					Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
+				end
+			end
+
+			describe 'on questions' do
+				before :each do 
+					@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+				end
+
+				it 'if less than one moderation' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+					@ugc_question.reload.status.must_equal 0
+					@ugc_question.inaccurate.must_equal nil
+				end
+
+				it 'if no consensus' do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)					
+					@ugc_question.reload.status.must_equal 0
+					@ugc_question.inaccurate.must_equal nil
+					@ugc_question.ungrammatical.must_equal nil
+				end
+				
+				it "if consensus and question was already approved" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+					@ugc_question.update_attribute :status, 1
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+					@ugc_question.reload.status.must_equal 1
+					@ugc_question.bad_answers.must_equal nil
+				end
+
+				it "if consensus and question was already rejected" do
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
+					@ugc_question.update_attribute :status, -1
+
+					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+					@ugc_question.reload.status.must_equal -1
+					@ugc_question.bad_answers.must_equal nil					
+				end
+
+				# it "if supermod moderates and post was approved" do
+				# 	@ugc_question.update_attribute :status, 1
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal 1
+				# 	@ugc_question.bad_answers.must_equal nil		
+				# end
+
+				# it "if supermod moderates and post was rejected" do
+				# 	@ugc_question.update_attribute :status, -1
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 6)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal -1
+				# 	@ugc_question.bad_answers.must_equal nil		
+				# end
+			end
+		end
+	end	
 end

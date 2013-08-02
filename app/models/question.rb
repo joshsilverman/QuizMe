@@ -98,27 +98,23 @@ class Question < ActiveRecord::Base
     requires_edit_count = is_supermod ? 2 : 0
     requires_moderation_count = is_supermod ? 3 : 5
 
-    
-    if 
-      return Question.where('status = 0')\
-        .where('needs_edits is not null or publishable is not null')\
-        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
-        .where("questions.user_id <> ?", moderator.id)\
-        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at DESC')\
-        .limit(5)\
-        .sort_by{|p| p.created_at}.reverse
-    else # return questions still lacking consensus
-      return Question.where('status = 0')\
-        .where('moderation_trigger_type_id is null')\
-        .where('needs_edits is null and publishable is null')\
-        .where("questions.user_id <> ?", moderator.id)\
-        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
-        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at DESC')\
-        .limit(5)\
-        .sort_by{|p| p.created_at}.reverse
-    end
+    questions = []
+    questions << Question.where('status = 0')\
+      .where('needs_edits is not null or publishable is not null')\
+      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+      .where("questions.user_id <> ?", moderator.id)\
+      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+      .order('questions.created_at DESC')\
+      .limit(requires_edit_count)
+    questions << Question.where('status = 0')\
+      .where('moderation_trigger_type_id is null')\
+      .where('needs_edits is null and publishable is null')\
+      .where("questions.user_id <> ?", moderator.id)\
+      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+      .order('questions.created_at DESC')\
+      .limit(requires_moderation_count)
+    questions.flatten.sort_by{|p| p.created_at}.reverse
   end
 
   def self.recently_published_ugc domain_start = 7, domain_end = 3
@@ -176,23 +172,6 @@ class Question < ActiveRecord::Base
 
   def text_with_answers
     "#{text} (#{answers.shuffle.collect {|a| a.text}.join('; ')})"
-  end
-
-  def request_edits
-    return false unless status == -1
-    return false unless needs_edits?
-    return false if user.questions.where("id != ? and status = ?", id, -1).present? and asker.posts\
-      .where("in_reply_to_user_id = ?", user.id)\
-      .where("intention = 'request question edits'")\
-      .where("created_at > ?", 1.day.ago).present?
-
-    script = [
-      "Your question needs some work before we can publish it, check out the feedback here: <link>",
-      "The question your wrote needs some love before we can publish it, check out the feedback here: <link>",
-      "A question you wrote needs some work, fix it up here: <link>"
-    ].sample
-    script.gsub! '<link>', "www.wisr.com/askers/#{asker.id}/questions/#{user.id}"
-    asker.send_private_message(user, script, {intention: "request question edits"})
   end
 
   ###THIS IS FOR IMPORTING FROM QB###

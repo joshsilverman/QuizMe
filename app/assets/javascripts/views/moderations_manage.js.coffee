@@ -3,15 +3,13 @@ class ModerationsManage
 		@askers = $.parseJSON($("#askers").val())
 		@display_notifications = $('#display_notifications').val()
 		@is_question_supermod = $('#is_question_supermod').val()
-		puts @is_question_supermod
 
 		$(".quick-reply").on "click", @quick_reply
 
-		$('.replies .btn').on 'click', (e) =>
+		$('.question_element .replies .btn').on 'click', (e) =>
 			element = $(e.target)
-			e.stopImmediatePropagation() if element.hasClass 'active'
-			# @submit_question_feedback(element)
-			@edit_question(element) if element.hasClass('btn-danger') and @is_question_supermod == 'false'
+			e.stopImmediatePropagation()# if element.hasClass 'active'
+			@submit_question_feedback(element)
 
 		# # toggle open post
 		$('.conversation').first().addClass 'active'
@@ -31,16 +29,18 @@ class ModerationsManage
 
 		if element.hasClass 'btn-success'
 			return if element.hasClass 'disabled'
+			element.addClass 'active'
 			conversation.find('.btn').addClass('disabled')
 		else
 			return if element.hasClass 'disabled'
 			return if element.hasClass 'active'
+			element.addClass 'active'
 			conversation.find('.btn-success').addClass('disabled')
-
+			
 		params =
 			type_id: element.data 'type_id'
 			question_id: element.closest(".post").attr 'question_id'
-		@create_moderation(params, conversation, false)
+		@create_moderation('question', params, conversation, false)
 
 	quick_reply: ->
 		elem = $(this)
@@ -52,13 +52,15 @@ class ModerationsManage
 		params =
 			type_id: selected_type_id
 			post_id: elem.closest(".post").attr 'post_id'
-		window.moderations_manage.create_moderation(params, conversation)
+		window.moderations_manage.create_moderation('post', params, conversation, true)
 		window.moderations_manage.notify(conversation, selected_type_id) if selected_type_id == 5 or selected_type_id == 6
 	
-	create_moderation: (params, conversation, notify = true) =>
-		$.post '/moderations', params, (type_id) ->
+	create_moderation: (moderation_type, params, conversation, notify) =>
+		$.post '/moderations', params, (response) ->
 			conversation.addClass('moderated')
-			window.moderations_manage.notify(conversation, type_id) unless params['type_id'] == 5 or params['type_id'] == 6 or notify == false
+			window.moderations_manage.notify(conversation, response) unless params['type_id'] == 5 or params['type_id'] == 6 or notify == false
+			window.moderations_manage.edit_question(conversation) if moderation_type == 'question' and response == true
+				
 
 	notify: (conversation, type_id) =>
 		return if type_id == false
@@ -77,8 +79,8 @@ class ModerationsManage
 			image: @askers[conversation.attr('asker_id')]['twi_profile_img_url']
 			time: 5000
 
-	edit_question: (element) =>
-		conversation = element.parents('.conversation')
+	edit_question: (conversation) =>
+		puts 'edit!!'
 		question_id = conversation.find('.post').attr 'question_id'
 		$('#question_input').attr('question_id', question_id).val(conversation.find('.question p').text())
 		answers = conversation.find('.answer')
@@ -95,6 +97,7 @@ class ModerationsManage
 				clone.attr 'answer_id', $(answer).attr 'answer_id'
 		$("#add_answer").show() if answers.length < 4
 		$('#post_question_modal .modal-header h3').html "Edit Question"
+		$('#post_question_modal #submit_question').text('Submit Edit')
 		$("#post_question_modal").modal()
 		$("#post_question_modal").css("top", $(window).scrollTop() + 10) if $(window).width() < 480
 

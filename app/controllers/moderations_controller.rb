@@ -8,7 +8,6 @@ class ModerationsController < ApplicationController
     @questions = Question.requires_moderations(moderator)
     @moderatables = (@posts + @questions).sort_by {|m| m.created_at }.reverse
 
-    @questions = []
     @engagements, @conversations = [@posts.map{|p|[p.id, p]}, []] #Post.grouped_as_conversations @posts
     @asker = User.find 8765
     @oneinbox = true
@@ -25,14 +24,12 @@ class ModerationsController < ApplicationController
     if params['post_id']
       moderation = moderator.post_moderations.find_or_initialize_by(post_id: params['post_id'])
       moderation.update_attributes type_id: params['type_id']
-
       Post.trigger_split_test(moderator.id, 'mod request script (=> moderate answer)')
-
-      render :json => moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
+      response = moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
       moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
-
-      render :nothing => true
+      response = (moderator.is_question_super_mod? and (moderation.question.needs_edits == true))
     end
+    render json: response
   end
 end

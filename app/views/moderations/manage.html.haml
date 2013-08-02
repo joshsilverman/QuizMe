@@ -92,7 +92,7 @@
 							- elsif moderatable.is_a? Question
 								- question = moderatable
 								- owner = (question.user_id == current_user.id)
-								.conversation.border-color{asker_id: question.created_for_asker_id}
+								.conversation.border-color.question_element{asker_id: question.created_for_asker_id}
 									.post.parent.answered{:question_id => question.id}
 										%p.time= time_formatter(question.created_at)            
 										.content

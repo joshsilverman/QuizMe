@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130731203606) do
+ActiveRecord::Schema.define(version: 20130802204223) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -109,9 +109,10 @@ ActiveRecord::Schema.define(version: 20130731203606) do
     t.integer  "user_id"
     t.integer  "type_id"
     t.boolean  "accepted"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
     t.integer  "question_id"
+    t.boolean  "active",      default: true
   end
 
   create_table "nudge_types", force: true do |t|
