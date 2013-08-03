@@ -128,13 +128,12 @@ class FeedsController < ApplicationController
         @publications = Publication.recent_by_asker(@asker)
         posts = Publication.recent_publication_posts(@publications)
 
-        actions = Publication.recent_responses_by_asker(@asker, posts)
-
         # user specific responses
         @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
 
         # question activity
-        @actions = Post.recent_activity_on_posts(posts, actions)
+        actions = Publication.recent_responses_by_asker(@asker, posts)
+        @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
 
         # inject requested publication from params, render twi card
         if params[:post_id]
