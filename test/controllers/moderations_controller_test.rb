@@ -47,8 +47,17 @@ describe ModerationsController do
 	end
 
 	describe 'manage' do
+		before :each do 
+			visit '/moderations/manage'
+		end
+
 		describe 'displays' do
 			describe 'posts' do
+				before :each do 
+					login_as @moderator
+					visit '/moderations/manage'
+				end
+
 				it 'mention for moderation' do
 					page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
 				end
@@ -146,6 +155,11 @@ describe ModerationsController do
 			end
 
 			describe 'questions' do
+				before :each do 
+					login_as @moderator
+					visit '/moderations/manage'
+				end	
+							
 				it "unless user is unqualified" do
 					visit '/moderations/manage'
 					page.all(".post[post_id=\"#{@post.id}\"]").count.must_equal 1
@@ -354,7 +368,6 @@ describe ModerationsController do
 				describe 'edit modal' do
 					before :each do
 						Capybara.current_driver = :selenium
-						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
 						@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
 					end
 
@@ -398,13 +411,17 @@ describe ModerationsController do
 			describe 'for posts' do
 				describe 'correct grade' do
 					before :each do
+						Capybara.current_driver = :selenium
+						@admin = create(:user, twi_user_id: 1, role: 'admin')
+						login_as @admin
+
 						2.times do
 							moderator = create(:user, twi_user_id: 1, role: 'moderator')
 							create(:post_moderation, user_id: moderator.id, post: @post)
 							@moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post: @post)
 							@moderation.accepted.must_equal nil
 						end
-						visit '/feeds/manage?filter=moderated'
+						visit '/feeds/manage'
 					end
 
 					it 'is accepted when admin agrees' do
@@ -414,7 +431,7 @@ describe ModerationsController do
 						@moderation.reload.accepted.must_equal true
 					end
 
-					it 'is rejected when admin disagrees' do
+					it 'run is rejected when admin disagrees' do
 						page.all(".post").first.click
 						page.find('.quick-reply-no').click
 						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
@@ -514,7 +531,6 @@ describe ModerationsController do
 		end
 
 		it 'with correct type id for questions' do
-			@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
 			5.times { @moderator.questions << create(:question, status: 1) }
 			@moderator.update_attribute :lifecycle_segment, 4
 			@moderator.update_attribute :moderator_segment, 3
