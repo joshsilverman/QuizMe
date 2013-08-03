@@ -20,15 +20,6 @@ class Publication < ActiveRecord::Base
     end
   end
 
-  def self.recent_publication_posts publications
-    Rails.cache.fetch 'publications_posts_recent', :expires_in => 5.minutes do
-      Post.select([:id, :created_at, :publication_id])\
-        .where("publication_id in (?)", publications.collect(&:id))\
-        .order("created_at DESC")\
-        .to_a
-    end
-  end
-
   def self.recent_by_asker asker
     Rails.cache.fetch "publications_recent_by_asker_#{asker.id}" do
       asker.publications\
@@ -39,6 +30,24 @@ class Publication < ActiveRecord::Base
         .to_a
     end
   end
+
+  def self.recent_publication_posts publications
+    Rails.cache.fetch 'publications_posts_recent', :expires_in => 5.minutes do
+      Post.select([:id, :created_at, :publication_id])\
+        .where("publication_id in (?)", publications.collect(&:id))\
+        .order("created_at DESC")\
+        .to_a
+    end
+  end
+
+  def self.recent_publication_posts_by_asker asker, publications
+    Rails.cache.fetch "publications_posts_recent_#{asker.id}", :expires_in => 5.minutes do
+      Post.select([:id, :created_at, :publication_id])\
+        .where("publication_id in (?)", publications.collect(&:id))\
+        .order("created_at DESC")\
+        .to_a
+    end
+  end  
 
   def self.recent_responses posts
     Rails.cache.fetch 'publications_recent_responses', :expires_in => 5.minutes do
