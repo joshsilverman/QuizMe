@@ -4,9 +4,14 @@ class ModerationsController < ApplicationController
 
   def manage
     moderator = current_user.becomes(Moderator)
-    @posts = Post.requires_moderations(moderator)
-    @questions = Question.requires_moderations(moderator)
-    @moderatables = (@posts + @questions).sort_by {|m| m.created_at }.reverse
+    if params[:edits] == 'true'
+      @posts = []
+      @moderatables = Question.requires_moderations(moderator, {needs_edits_only: true}).sort_by {|m| m.created_at }.reverse
+    else
+      @posts = Post.requires_moderations(moderator)
+      @questions = Question.requires_moderations(moderator)
+      @moderatables = (@posts + @questions).sort_by {|m| m.created_at }.reverse
+    end
 
     @engagements, @conversations = [@posts.map{|p|[p.id, p]}, []] #Post.grouped_as_conversations @posts
     @asker = User.find 8765
@@ -28,7 +33,7 @@ class ModerationsController < ApplicationController
       response = moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
       moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
-      response = (moderator.is_question_super_mod? and (moderation.question.needs_edits == true))
+      response = ((moderator.is_question_super_mod? or ADMINS.include?(moderator.id)) and (moderation.question.needs_edits == true))
     end
     render json: response
   end

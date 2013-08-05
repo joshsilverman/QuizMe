@@ -130,7 +130,6 @@ class QuestionsController < ApplicationController
     question = Question.includes(:answers).find(params[:question_id])
     question.update(text: params[:text], publishable: nil, needs_edits: nil)
     question.question_moderations.each { |qm| qm.update(active: false) }
-    # clear feedback
     params[:answers].each do |answer_params|
       if answer_params[1][:id].present?
         question.answers.find(answer_params[1][:id].to_i).update(text: answer_params[1][:text])

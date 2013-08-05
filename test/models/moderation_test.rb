@@ -289,22 +289,15 @@ describe Moderation do
 					end
 
 					it 'as publishable by consensus' do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 1)
-						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 3)
-						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.publishable.must_equal nil
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
 						@ugc_question.reload.publishable.must_equal true
 					end
 
-					it 'as needs edits by tiebreaker' do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
-						create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
-						create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
+					it 'as needs edits by consensus' do
 						@ugc_question.reload.needs_edits.must_equal nil
-
-						moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
-						create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
+						create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 						@ugc_question.reload.needs_edits.must_equal true
 					end	
 				end
@@ -312,64 +305,78 @@ describe Moderation do
 				describe 'and accepts/rejects other moderations' do
 					before :each do 
 						@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
-						Capybara.current_driver = :selenium
-						@admin = create(:user, twi_user_id: 1, role: 'admin')
-						login_as @admin
+						@supermod = create(:moderator, moderator_segment: 4, lifecycle_segment: 4)
+						30.times { create(:question_moderation, accepted: true, user_id: @supermod.id, question_id: @question.id) }
 					end
 
-					it 'wont accept moderations before admin accepts/rejects' do
-						10.times do
-							create(:question_moderation, user_id: create(:moderator).id, type_id: [7, 8, 9, 10].sample, question_id: @ugc_question.id)
-							@ugc_question.reload.question_moderations.select { |qm| !qm.accepted.nil? }.count.must_equal 0
-						end
+					it 'wont accept/reject moderations on consensus' do
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@ugc_question.question_moderations.each { |qm| qm.accepted.must_equal nil } 
 					end
 
-					it 'accepts publishable + rejects non-publishable moderations when published by admin' do
+					it 'wont accept/reject moderations when supermod votes before consensus' do
+						2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
+						@ugc_question.question_moderations.each { |qm| qm.accepted.must_equal nil } 
+					end
+
+					it 'accepts publishable + rejects non-publishable when accepted by supermod after consensus' do
 						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id)
 						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						
-						visit '/questions/manage'
-						page.find('.btn-success').click
-						sleep 1 # capybara isn't waiting for ajax to return...
+						moderation4 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						supermod = create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
 
 						moderation.reload.accepted.must_equal true
 						moderation2.reload.accepted.must_equal false
 						moderation3.reload.accepted.must_equal true
+						moderation4.reload.accepted.must_equal true
+						supermod.reload.accepted.must_equal true
 					end
 
-					it 'rejects publishable + accepts non-publishable when question rejected by admin' do
+					it 'rejects publishable + accepts non-publishable when rejected by supermod after consensus' do
 						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
+						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id)
 						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						
-						visit '/questions/manage'
-						page.find('.btn-danger').click
-						sleep 1
+						moderation4 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+						supermod = create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
 						
 						moderation.reload.accepted.must_equal false
 						moderation2.reload.accepted.must_equal true
 						moderation3.reload.accepted.must_equal false
+						moderation4.reload.accepted.must_equal false
+						supermod.reload.accepted.must_equal true
 					end
 
-					it 'properly accepts/rejects when admin changes mind' do
-						moderation = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						moderation2 = create(:question_moderation, user_id: create(:moderator).id, type_id: 8, question_id: @ugc_question.id)
-						moderation3 = create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
+					describe 'and updates feedback attributes' do
+						it 'when needs edits and supermod agrees' do
+							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							@ugc_question.reload.needs_edits.must_equal true
+							create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
+							@ugc_question.reload.needs_edits.must_equal true
+						end
 
-						visit '/questions/manage'
-						page.find('.btn-danger').click
-						sleep 1
-						moderation.reload.accepted.must_equal false
-						moderation2.reload.accepted.must_equal true
-						moderation3.reload.accepted.must_equal false
+						it 'when publishable and supermod agrees' do
+							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+							@ugc_question.reload.publishable.must_equal true
+							create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
+							@ugc_question.reload.publishable.must_equal true
+						end
 
-						page.find('.btn-success').click
-						sleep 1
-						moderation.reload.accepted.must_equal true
-						moderation2.reload.accepted.must_equal false	
-						moderation3.reload.accepted.must_equal true					
-					end					
+						it 'when needs edits and supermod disagrees' do 
+							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							@ugc_question.reload.needs_edits.must_equal true
+							create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
+							@ugc_question.reload.needs_edits.must_equal nil
+						end
+
+						it 'when publishable and supermod disagrees' do
+							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+							@ugc_question.reload.publishable.must_equal true
+							create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
+							@ugc_question.reload.publishable.must_equal nil
+						end
+					end
 				end		
 			end
 		end

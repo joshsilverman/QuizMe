@@ -56,6 +56,10 @@ class Question < ActiveRecord::Base
     queue
   end
 
+  def clear_feedback
+    update(publishable: nil, inaccurate: nil, ungrammatical: nil, bad_answers: nil, needs_edits: nil)
+  end
+
   def self.unmoderated_counts
     Question.where(:status => 0).group('created_for_asker_id').count
   end
@@ -85,11 +89,15 @@ class Question < ActiveRecord::Base
     answers.select{|a| a.correct != true} || []
   end
 
-  def self.requires_moderations moderator
+  def self.requires_moderations moderator, options = {}
     moderator = moderator.becomes(Moderator)
-    return [] unless moderator.lifecycle_above?(3) # check if user is > regular
-    return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
-    # return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
+    is_admin = ADMINS.include?(moderator.id)
+
+    unless is_admin
+      return [] unless moderator.lifecycle_above?(3) # check if user is > regular
+      return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
+      # return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
+    end
 
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
     question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
@@ -99,21 +107,33 @@ class Question < ActiveRecord::Base
     requires_moderation_count = is_supermod ? 3 : 5
 
     questions = []
-    questions << Question.where('status = 0')\
-      .where('needs_edits is not null or publishable is not null')\
-      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
-      .where("questions.user_id <> ?", moderator.id)\
-      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-      .order('questions.created_at DESC')\
-      .limit(requires_edit_count)
-    questions << Question.where('status = 0')\
-      .where('moderation_trigger_type_id is null')\
-      .where('needs_edits is null and publishable is null')\
-      .where("questions.user_id <> ?", moderator.id)\
-      .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
-      .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-      .order('questions.created_at DESC')\
-      .limit(requires_moderation_count)
+    if options[:needs_edits_only] == true
+      return [] unless is_admin
+      questions << Question.where('status = 0')\
+        .where('needs_edits is not null or publishable is not null')\
+        .where('moderation_trigger_type_id is null')\
+        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+        .where("questions.user_id <> ?", moderator.id)\
+        .order('questions.created_at DESC')
+    else
+      questions << Question.where('status = 0')\
+        .where('needs_edits is not null or publishable is not null')\
+        .where('moderation_trigger_type_id is null')\
+        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+        .where("questions.user_id <> ?", moderator.id)\
+        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+        .order('questions.created_at DESC')\
+        .limit(requires_edit_count)
+      questions << Question.where('status = 0')\
+        .where('moderation_trigger_type_id is null')\
+        .where('needs_edits is null and publishable is null')\
+        .where("questions.user_id <> ?", moderator.id)\
+        .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
+        .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+        .order('questions.created_at DESC')\
+        .limit(requires_moderation_count)
+    end
+
     questions.flatten.sort_by{|p| p.created_at}.reverse
   end
 

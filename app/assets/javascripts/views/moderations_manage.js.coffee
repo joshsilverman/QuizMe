@@ -80,7 +80,6 @@ class ModerationsManage
 			time: 5000
 
 	edit_question: (conversation) =>
-		puts 'edit!!'
 		question_id = conversation.find('.post').attr 'question_id'
 		$('#question_input').attr('question_id', question_id).val(conversation.find('.question p').text())
 		answers = conversation.find('.answer')
@@ -98,6 +97,7 @@ class ModerationsManage
 		$("#add_answer").show() if answers.length < 4
 		$('#post_question_modal .modal-header h3').html "Edit Question"
 		$('#post_question_modal #submit_question').text('Submit Edit')
+		$('#post_question_modal .cancel').css('float', 'left').addClass('btn-danger').text("It's Beyond Repair")
 		$("#post_question_modal").modal()
 		$("#post_question_modal").css("top", $(window).scrollTop() + 10) if $(window).width() < 480
 

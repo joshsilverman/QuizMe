@@ -157,7 +157,6 @@ describe ModerationsController do
 			describe 'questions' do
 				before :each do 
 					login_as @moderator
-					visit '/moderations/manage'
 				end	
 							
 				it "unless user is unqualified" do
@@ -228,12 +227,11 @@ describe ModerationsController do
 				end
 
 				it "unless requires edits and non supermod" do
-					login_as @moderator
+					@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
 					@ugc_question.update(needs_edits: true)
-					login_as @moderator
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 				end
@@ -270,49 +268,39 @@ describe ModerationsController do
 					end
 
 					it 'twice-moderated without consensus' do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 10)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 10)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9)
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1	
 
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
+						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9) }
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
 
 					it 'until consensus' do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 7)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 9)
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 10)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 10)
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 						
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 7)
+						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7) }
 						
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
 
 					it 'unless consensus reached' do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8)
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: moderator.id, question: @ugc_question, type_id: 8)
+						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8) }
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
@@ -358,11 +346,45 @@ describe ModerationsController do
 						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
 						fill_in 'question_input', with: "new question this is?"
 						page.find('#submit_question').click
+						sleep 1
 
 						login_as @moderator
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 					end
+
+					it 'unless supermod rejected and didnt provide edits' do
+						Capybara.current_driver = :selenium
+						@ugc_question.update(needs_edits: true)
+						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+
+						login_as @moderator
+						visit '/moderations/manage'
+						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+						page.find('.cancel').click
+
+						@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
+						30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
+						login_as @moderator2
+						visit '/moderations/manage'
+						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+					end
+
+					it 'unless is supermod, requires edits, and already voted' do
+						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+						2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						create(:question_moderation, user_id: @moderator.id, type_id: 11, question_id: @ugc_question.id)
+						login_as @moderator
+						visit '/moderations/manage'
+						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+
+						@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
+						30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
+						login_as @moderator2
+						visit '/moderations/manage'
+						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+					end
+					# it 'unless is supermod who just edited question'
 				end
 
 				describe 'edit modal' do
@@ -409,21 +431,21 @@ describe ModerationsController do
 
 		describe 'updates moderations' do
 			describe 'for posts' do
-				describe 'correct grade' do
-					before :each do
-						Capybara.current_driver = :selenium
-						@admin = create(:user, twi_user_id: 1, role: 'admin')
-						login_as @admin
+				before :each do
+					Capybara.current_driver = :selenium
+					@admin = create(:user, twi_user_id: 1, role: 'admin')
+					login_as @admin
 
-						2.times do
-							moderator = create(:user, twi_user_id: 1, role: 'moderator')
-							create(:post_moderation, user_id: moderator.id, post: @post)
-							@moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post: @post)
-							@moderation.accepted.must_equal nil
-						end
-						visit '/feeds/manage'
+					2.times do
+						moderator = create(:user, twi_user_id: 1, role: 'moderator')
+						create(:post_moderation, user_id: moderator.id, post: @post)
+						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post: @post)
+						@moderation.accepted.must_equal nil
 					end
+					visit '/feeds/manage'
+				end
 
+				describe 'correct grade' do
 					it 'is accepted when admin agrees' do
 						page.all(".post").first.click
 						page.find('.quick-reply-yes').click
@@ -431,7 +453,7 @@ describe ModerationsController do
 						@moderation.reload.accepted.must_equal true
 					end
 
-					it 'run is rejected when admin disagrees' do
+					it 'is rejected when admin disagrees' do
 						page.all(".post").first.click
 						page.find('.quick-reply-no').click
 						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
@@ -498,8 +520,11 @@ describe ModerationsController do
 			end
 
 			describe 'for questions' do
-				it 'marks previous moderations as inactive after question is edited' do
+				before :each do 
 					Capybara.current_driver = :selenium
+				end
+
+				it 'marks previous moderations as inactive after question is edited' do
 					@moderator.update(lifecycle_segment: 4, moderator_segment: 3)
 					30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 
@@ -511,8 +536,9 @@ describe ModerationsController do
 					visit '/moderations/manage'
 					page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
 					fill_in 'question_input', with: "new question this is?"
-					page.find('#submit_question').click		
-					moderation1.reload.active.must_equal(true) and moderation2.reload.active.must_equal(true)
+					page.find('#submit_question').click	
+					sleep 1
+					moderation1.reload.active.must_equal(false) and moderation2.reload.active.must_equal(false)
 				end
 			end
 		end

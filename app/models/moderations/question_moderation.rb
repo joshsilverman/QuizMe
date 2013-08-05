@@ -13,15 +13,16 @@ class QuestionModeration < Moderation
 	def respond_with_type_id
     return false if question.status != 0
 
-    greater_than_one_moderator = question.question_moderations.active.collect(&:user_id).uniq.count > 1
-    agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id  }.count > 1
-    three_mods = question.question_moderations.active.collect(&:user_id).uniq.count == 3
-    
-    if greater_than_one_moderator and agreement_on_type_id
-      question.update_attributes moderation_trigger_type_id: 1
+    greater_than_two_moderators = question.question_moderations.active.collect(&:user_id).uniq.count > 2
+    agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 2
+    previous_consensus = (!question.publishable.nil? or !question.needs_edits.nil?)
+
+    if previous_consensus and (moderator.is_question_super_mod? or ADMINS.include?(moderator.id))
+      question.clear_feedback
+      question.update(moderation_trigger_type_id: 2)
+      accept_and_reject_moderations
       return type_id
-    elsif three_mods and agreement_on_type_id
-      question.update_attributes moderation_trigger_type_id: 3
+    elsif greater_than_two_moderators and agreement_on_type_id
       return type_id
     end
 	end
@@ -39,18 +40,10 @@ class QuestionModeration < Moderation
     when 11
       attribute = :needs_edits
     end
-    question.update_attribute(attribute, true)
+    question.update(attribute => true)
   end	
 
-  # def accept_and_reject_moderations
-  #   post.post_moderations.each do |moderation|
-  #     if type_id == moderation.type_id
-  #       moderation.update_attribute :accepted, true
-  #       next if moderation.moderator.post_moderations.count > 1
-  #       Post.trigger_split_test(moderation.user_id, "show moderator q & a or answer (-> accepted grade)")
-  #     else
-  #       moderation.update_attribute :accepted, false
-  #     end
-  #   end
-  # end  
+  def accept_and_reject_moderations
+    question.question_moderations.each { |m| m.update(accepted: (type_id == m.type_id)) }
+  end  
 end
