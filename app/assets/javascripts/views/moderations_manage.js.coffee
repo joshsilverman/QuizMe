@@ -58,7 +58,7 @@ class ModerationsManage
 		$.post '/moderations', params, (response) ->
 			conversation.addClass('moderated')
 			window.moderations_manage.notify(conversation, response) unless params['type_id'] == 5 or params['type_id'] == 6 or notify == false
-			window.moderations_manage.edit_question(conversation) if moderation_type == 'question' and response == true
+			window.moderations_manage.edit_question(conversation) if moderation_type == 'question' and response == true and params['type_id'] != 7
 				
 
 	notify: (conversation, type_id) =>

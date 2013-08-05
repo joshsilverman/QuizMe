@@ -114,7 +114,7 @@ class Question < ActiveRecord::Base
         .where('moderation_trigger_type_id is null')\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
-        .order('questions.created_at DESC')
+        .order('questions.created_at ASC')
     else
       questions << Question.where('status = 0')\
         .where('needs_edits is not null or publishable is not null')\
@@ -122,7 +122,7 @@ class Question < ActiveRecord::Base
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at DESC')\
+        .order('questions.created_at ASC')\
         .limit(requires_edit_count)
       questions << Question.where('status = 0')\
         .where('moderation_trigger_type_id is null')\
@@ -130,7 +130,7 @@ class Question < ActiveRecord::Base
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at DESC')\
+        .order('questions.created_at ASC')\
         .limit(requires_moderation_count)
     end
 

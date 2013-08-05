@@ -128,7 +128,7 @@ class QuestionsController < ApplicationController
 
   def update_question_and_answers
     question = Question.includes(:answers).find(params[:question_id])
-    question.update(text: params[:text], publishable: nil, needs_edits: nil)
+    question.update(text: params[:text], publishable: nil, needs_edits: nil, status: 0)
     question.question_moderations.each { |qm| qm.update(active: false) }
     params[:answers].each do |answer_params|
       if answer_params[1][:id].present?

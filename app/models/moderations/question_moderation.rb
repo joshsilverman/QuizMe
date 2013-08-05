@@ -19,7 +19,7 @@ class QuestionModeration < Moderation
 
     if previous_consensus and moderator.is_question_super_mod?
       question.clear_feedback
-      question.update(moderation_trigger_type_id: 2)
+      question.update(moderation_trigger_type_id: 2, status: (type_id == 7 ? 1 : -1))
       accept_and_reject_moderations
       return type_id
     elsif greater_than_two_moderators and agreement_on_type_id

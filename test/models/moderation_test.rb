@@ -348,6 +348,18 @@ describe Moderation do
 						supermod.reload.accepted.must_equal true
 					end
 
+					it 'sets question status to published when accepted by supermod' do
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
+						@ugc_question.reload.status.must_equal(1)
+					end
+
+					it 'sets question status to rejected when rejected by supermod' do
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+						create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
+						@ugc_question.reload.status.must_equal(-1)
+					end
+
 					describe 'and updates feedback attributes' do
 						it 'when needs edits and supermod agrees' do
 							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }

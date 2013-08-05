@@ -425,6 +425,22 @@ describe ModerationsController do
 						post.find('.btn-danger').click
 						page.find('#post_question_modal', visible: false).visible?.must_equal false
 					end
+
+					it 'run sets question status to pending on edit' do
+						@ugc_question.status.must_equal(0)
+						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						# login_as @moderator
+						visit '/moderations/manage'
+						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+						sleep 1
+						@ugc_question.reload.status.must_equal(-1)
+
+						fill_in 'question_input', with: "new question this is?"
+						page.find('#submit_question').click
+						sleep 1
+						@ugc_question.reload.status.must_equal(0)
+					end
 				end
 			end
 		end
