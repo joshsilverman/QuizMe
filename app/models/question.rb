@@ -57,7 +57,7 @@ class Question < ActiveRecord::Base
   end
 
   def clear_feedback
-    update(publishable: nil, inaccurate: nil, ungrammatical: nil, bad_answers: nil, needs_edits: nil)
+    update(moderation_trigger_type_id: nil, publishable: nil, inaccurate: nil, ungrammatical: nil, bad_answers: nil, needs_edits: nil)
   end
 
   def self.unmoderated_counts
