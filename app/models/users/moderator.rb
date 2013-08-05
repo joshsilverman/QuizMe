@@ -67,6 +67,7 @@ class Moderator < User
 	end
 
 	def is_question_super_mod?
+		return true if (ADMINS.include?(id))
 		enough_acceptance_rate = question_moderation_acceptance_rate > 0.9 
 		enough_mods = question_moderations.where('accepted is not null').count > 29
 		return true if enough_acceptance_rate and enough_mods

@@ -2,7 +2,6 @@ class ModerationsManage
 	constructor: ->
 		@askers = $.parseJSON($("#askers").val())
 		@display_notifications = $('#display_notifications').val()
-		@is_question_supermod = $('#is_question_supermod').val()
 
 		$(".quick-reply").on "click", @quick_reply
 

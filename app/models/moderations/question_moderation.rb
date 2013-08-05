@@ -17,7 +17,7 @@ class QuestionModeration < Moderation
     agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 2
     previous_consensus = (!question.publishable.nil? or !question.needs_edits.nil?)
 
-    if previous_consensus and (moderator.is_question_super_mod? or ADMINS.include?(moderator.id))
+    if previous_consensus and moderator.is_question_super_mod?
       question.clear_feedback
       question.update(moderation_trigger_type_id: 2)
       accept_and_reject_moderations
