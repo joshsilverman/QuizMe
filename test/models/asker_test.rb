@@ -451,19 +451,19 @@ describe Asker do
 	describe 'sends targeted mentions' do
 		before :each do 
 			Delayed::Worker.delay_jobs = true
-			Timecop.travel(Time.now.beginning_of_week)
+			Timecop.travel(Time.now.beginning_of_week + 1.minute)
 			300.times { @asker.followers << create(:user) }
 		end
 
-		it 'run sends targeted mentions 5 days a week' do 
+		it 'sends targeted mentions 5 days a week' do 
 			mention_counts = []
 			@asker.stub :followers, 1..10000 do
-				7.times do 
-					Timecop.travel(Time.now + 1.day)
+				14.times do 
 					mention_counts << @asker.targeted_mention_count
+					Timecop.travel(Time.now + 1.day)
 				end
 			end
-			mention_counts.count(0).must_equal 2
+			mention_counts.count(0).must_equal 4
 		end
 
 		it 'sends the proper number of mentions per day' do

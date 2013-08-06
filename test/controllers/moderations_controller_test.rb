@@ -268,23 +268,23 @@ describe ModerationsController do
 					end
 
 					it 'twice-moderated without consensus' do
-						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 10)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1	
 
-						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9) }
+						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
 
 					it 'until consensus' do
-						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 9)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 10)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
+						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
@@ -296,11 +296,11 @@ describe ModerationsController do
 					end
 
 					it 'unless consensus reached' do
-						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8)
+						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
-						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 8) }
+						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
@@ -426,7 +426,7 @@ describe ModerationsController do
 						page.find('#post_question_modal', visible: false).visible?.must_equal false
 					end
 
-					it 'run sets question status to pending on edit' do
+					it 'sets question status to pending on edit' do
 						@ugc_question.status.must_equal(0)
 						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
@@ -546,6 +546,7 @@ describe ModerationsController do
 
 					moderation1 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
 					moderation2 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
+					moderation3 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
 					moderation1.active.must_equal(true) and moderation2.active.must_equal(true)
 					
 					login_as @moderator
@@ -554,7 +555,7 @@ describe ModerationsController do
 					fill_in 'question_input', with: "new question this is?"
 					page.find('#submit_question').click	
 					sleep 1
-					moderation1.reload.active.must_equal(false) and moderation2.reload.active.must_equal(false)
+					moderation1.reload.active.must_equal(false) and moderation2.reload.active.must_equal(false) and moderation3.reload.active.must_equal(false)
 				end
 			end
 		end
