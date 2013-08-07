@@ -136,9 +136,12 @@ class FeedsController < ApplicationController
         @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
 
         # inject requested publication from params, render twi card
+        @request_mod = false
         if params[:post_id]
           @requested_publication = @asker.publications.where(id: params[:post_id]).first
           @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
+          question = @requested_publication.question
+          @request_mod = true if question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
         end
 
         # stats
@@ -158,6 +161,8 @@ class FeedsController < ApplicationController
         end
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
+
+        @after_answer_actions = {}
 
         respond_to do |format|
           format.html { render :show }

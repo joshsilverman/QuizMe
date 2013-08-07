@@ -7,7 +7,7 @@
 			- correct = (@responses[publication.id].first.posts.where("correct is not null").present? ? @responses[publication.id].first.posts.where("correct is not null").first.correct : nil)
 			- @conversation = @responses[publication.id].first
 			- responded = true
-		.conversation.border-color{:asker_id => @question_asker.id}
+		.conversation.border-color{asker_id: @question_asker.id, question_id: publication.question.id}
 			.post.parent{:class => ("answered" if responded), :post_id => publication.id}
 				- if first = publication.posts.first
 					- if first.created_at < 1.day.ago

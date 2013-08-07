@@ -11,7 +11,7 @@ class QuestionModeration < Moderation
   scope :active, -> { where(active: true) }
 
 	def respond_with_type_id
-    return false if question.status != 0
+    # return false if question.status != 0
 
     greater_than_two_moderators = question.question_moderations.active.collect(&:user_id).uniq.count > 2
     agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 2

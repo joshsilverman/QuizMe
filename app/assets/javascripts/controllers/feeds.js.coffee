@@ -13,6 +13,7 @@ class @Feed
 		@user_image = $("#user_img").val()
 		@name = $("#feed_name").val()
 		@id = $("#feed_id").val()
+		@requested_publication_id = $("#requested_publication").val()
 		@answered_count = 0
 
 		# @conversations = $.parseJSON($("#conversations").val())
@@ -316,7 +317,7 @@ class Post
 				$(e.target).find("h3").removeClass("active_next")
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
-				$(e.target).find("h3").removeClass("active_next")		
+				$(e.target).find("h3").removeClass("active_next")
 	expand: =>
 		if @element.hasClass("active")
 			@expanded = false
@@ -374,12 +375,17 @@ class Post
 							loading.delay(1000).fadeOut(500, => 
 								first_post.next().fadeIn(500, => 
 									@show_activity()
-									if window.feed.answered == 5
+									if window.feed.requested_publication_id == @id
+										@element.find('.feedback .btn').on 'click', (e) =>
+											element = $(e.target)
+											e.stopImmediatePropagation()
+											@submit_question_feedback(element)
+										conversation.find(".after_answer.feedback").fadeIn(500)
+									else if window.feed.answered == 5
 										$(".next_question").on "click", (e) => $(".post_question").click()
-										conversation.find(".after_answer").fadeIn(500)
+										conversation.find(".after_answer.new_question").fadeIn(500)
 								)
 								icon.fadeIn(250)
-								
 							)
 						)
 					)
@@ -393,12 +399,24 @@ class Post
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
 		@element.find(".quiz_container").fadeIn(500)
-	jump_to_next_question: (e) =>
-		posts = window.feed.posts
-		@expand()
-		next_post = posts[posts.indexOf(@) + 1]
-		next_post.expand() unless next_post.expanded == true
-		$('html,body').animate({scrollTop: next_post.element.offset().top - 20}, 1000);
+	submit_question_feedback: (element) =>
+		conversation = element.closest('.conversation')
+		if element.hasClass 'btn-success'
+			return if element.hasClass 'disabled'
+			element.addClass 'active'
+			conversation.find('.btn').addClass('disabled')
+		else
+			return if element.hasClass 'disabled'
+			return if element.hasClass 'active'
+			element.addClass 'active'
+			conversation.find('.btn-success').addClass('disabled')		
+		params =
+			type_id: element.attr 'type_id'
+			question_id: conversation.attr 'question_id'
+		@create_moderation('question', params)
+
+	create_moderation: (moderation_type, params) =>
+		$.post '/moderations', params
 
 $ -> 
 	if $("#post_feed").length > 0

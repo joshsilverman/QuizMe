@@ -117,12 +117,16 @@
 			.tweet_button.btn.btn-primary Tweet!
 		.shadow-bottom
 
-- unless @query
-	= hidden_field_tag :feed_name, @asker.twi_screen_name
-	= hidden_field_tag :feed_id, @asker.id
-
 = hidden_field_tag :post_id, @post_id
 = hidden_field_tag :answer_id, @answer_id
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
 = hidden_field_tag :question_form, @question_form
+= hidden_field_tag :request_mod, @request_mod
+
+- unless @query
+	= hidden_field_tag :feed_name, @asker.twi_screen_name
+	= hidden_field_tag :feed_id, @asker.id
+
+- if @request_mod
+	= hidden_field_tag :requested_publication, @requested_publication.id

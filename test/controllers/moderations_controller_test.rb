@@ -332,59 +332,87 @@ describe ModerationsController do
 						page.all(".post[question_id=\"#{@new_ugc_question.id}\"]").count.must_equal 1					
 					end
 
-					it 'after decided then edited by a supermod' do
-						@ugc_question.update(needs_edits: true)
-						Capybara.current_driver = :selenium
-						login_as @moderator
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+					describe 'supermod' do
+						before :each do 
+							Capybara.current_driver = :selenium
+							login_as @moderator
+						end
+						
+						it 'that are published, but need edits' do
+							@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+							@ugc_question.update(status: 1, needs_edits: true)
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+						end
 
-						@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
-						30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
-						login_as @moderator2
-						visit '/moderations/manage'
-						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
-						fill_in 'question_input', with: "new question this is?"
-						page.find('#submit_question').click
-						sleep 1
+						it 'unless published and moderated as publishable' do 
+							@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+							@ugc_question.update(status: 1, publishable: true)
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0						
+						end
 
-						login_as @moderator
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+						it 'unpublishes published questions if supermod rejects' do
+							@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+							@ugc_question.update(status: 1, needs_edits: true)
+							visit '/moderations/manage'
+							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							sleep 1
+							@ugc_question.reload.status.must_equal(-1)
+						end
+
+						it 'after decided then edited by a supermod' do
+							@ugc_question.update(needs_edits: true)
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+
+							@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
+							login_as @moderator2
+							visit '/moderations/manage'
+							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							fill_in 'question_input', with: "new question this is?"
+							page.find('#submit_question').click
+							sleep 1
+
+							login_as @moderator
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+						end
+
+						it 'unless supermod rejected and didnt provide edits' do
+							@ugc_question.update(needs_edits: true)
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+
+							visit '/moderations/manage'
+							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							page.find('.cancel').click
+
+							@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
+							login_as @moderator2
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+						end
+
+						it 'unless is supermod, requires edits, and already voted' do
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
+							2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							create(:question_moderation, user_id: @moderator.id, type_id: 11, question_id: @ugc_question.id)
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
+
+							@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
+							30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
+							login_as @moderator2
+							visit '/moderations/manage'
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
+						end
+						# it 'unless is supermod who just edited question'
 					end
-
-					it 'unless supermod rejected and didnt provide edits' do
-						Capybara.current_driver = :selenium
-						@ugc_question.update(needs_edits: true)
-						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-
-						login_as @moderator
-						visit '/moderations/manage'
-						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
-						page.find('.cancel').click
-
-						@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
-						30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
-						login_as @moderator2
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
-					end
-
-					it 'unless is supermod, requires edits, and already voted' do
-						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-						2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
-						create(:question_moderation, user_id: @moderator.id, type_id: 11, question_id: @ugc_question.id)
-						login_as @moderator
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
-
-						@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
-						30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
-						login_as @moderator2
-						visit '/moderations/manage'
-						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
-					end
-					# it 'unless is supermod who just edited question'
 				end
 
 				describe 'edit modal' do

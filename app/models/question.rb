@@ -56,6 +56,11 @@ class Question < ActiveRecord::Base
     queue
   end
 
+  def needs_feedback?
+    return false if (publishable == true or inaccurate == true or ungrammatical == true or bad_answers == true or needs_edits == true)
+    return true
+  end
+
   def clear_feedback
     update(moderation_trigger_type_id: nil, publishable: nil, inaccurate: nil, ungrammatical: nil, bad_answers: nil, needs_edits: nil)
   end
@@ -109,16 +114,14 @@ class Question < ActiveRecord::Base
     questions = []
     if options[:needs_edits_only] == true
       return [] unless is_admin
-      questions << Question.where('status = 0')\
-        .where('needs_edits is not null or publishable is not null')\
-        .where('moderation_trigger_type_id is null')\
+      questions << Question.where('moderation_trigger_type_id is null')\
+        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .order('questions.created_at ASC')
     else
-      questions << Question.where('status = 0')\
-        .where('needs_edits is not null or publishable is not null')\
-        .where('moderation_trigger_type_id is null')\
+      questions << Question.where('moderation_trigger_type_id is null')\
+        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
