@@ -18,7 +18,7 @@
 		%p.cta_message How was this question?
 		%a.btn.btn-danger{type_id: 11} Needs Work
 		%a.btn.btn-success{type_id: 7} It's Good!
-- if current_user and Post.create_split_test(current_user.id, "ugc cta after five answers on site (adds question)", "false", "true"
+- if current_user and Post.create_split_test(current_user.id, "ugc cta after five answers on site (adds question)", "false", "true") == 'true'
 	.subsidiary.post.after_answer.hide
 		.subsidiary.post.after_answer.new_question.hide
 			.content
