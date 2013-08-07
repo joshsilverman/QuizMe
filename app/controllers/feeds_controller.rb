@@ -141,7 +141,7 @@ class FeedsController < ApplicationController
           @requested_publication = @asker.publications.where(id: params[:post_id]).first
           @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
           question = @requested_publication.question
-          @request_mod = true if question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
+          @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
         end
 
         # stats
