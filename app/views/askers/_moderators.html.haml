@@ -13,6 +13,11 @@
         Moderators per day
         %span.loading.hide= image_tag "ajax-loader.gif"
 
+    %li 
+      %a{:href => "#moderators-timely_response_by_handle"} 
+        Timely response by handle
+        %span.loading.hide= image_tag "ajax-loader.gif"        
+
   .graphs
     .user_moderated_posts.panel
       #data_row.row
@@ -26,3 +31,7 @@
       #data_row.row
         #graph.graph
       = hidden_field_tag :data, @data.to_json if @data
+    .timely_response_by_handle.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data      

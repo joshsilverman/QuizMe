@@ -8,7 +8,7 @@ class Moderator < User
   scope :noob_mod, -> { where(:moderator_segment => 2) }
   scope :regular_mod, -> { where(:moderator_segment => 3) }
   scope :advanced_mod, -> { where(:moderator_segment => 4) }
-  scope :super_mod, -> { where(:moderator_segment => 5)	 }
+  scope :super_mod, -> { where(:moderator_segment => 5) }
 
   def moderator_segment_above? segment_id
 		return false if moderator_segment.nil?

@@ -274,6 +274,10 @@ class Dashboard
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options  
     
+  draw_timely_response_by_handle: =>
+    graph_data = google.visualization.arrayToDataTable(@timely_response_by_handle)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, timely_response_by_handle_options  
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -458,6 +462,7 @@ questions_options =
     viewWindow:
       min: 0
 
+<<<<<<< HEAD
 moderations_count_options = 
   width: 850
   height: 450
@@ -470,6 +475,32 @@ moderations_count_options =
     "#9EB0F7", 
   ]
   focusTarget: 'category'
+=======
+timely_response_by_handle_options = 
+  width: 850
+  height: 450
+  # legend: "none"
+  pointSize: 5
+  lineWidth: 2
+  # colors : [
+  #   'red', 
+  #   'green', 
+  #   'blue',
+  #   'black',
+  #   'purple'
+  # ]
+  focusTarget: 'category'
+  colors: [
+    "#C9D4FF",
+    "#9EB0F7", 
+    "#6A82DE",
+    "#3F58BA",
+    "#213996",
+    "#0E2066",
+    "#000C3B",
+    "#000000"
+  ]
+>>>>>>> add timely response by handle graph
   chartArea:  
     left: 42
     height:400
