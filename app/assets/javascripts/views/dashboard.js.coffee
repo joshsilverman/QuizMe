@@ -255,12 +255,20 @@ class Dashboard
   draw_moderations_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderations_count)
     chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, questions_options
+    chart.draw graph_data, moderations_count_options
 
   draw_moderators_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderators_count)
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options  
+
+  draw_average_time_to_publish: =>
+    puts 'in draw_average_time_to_publish'
+    puts @average_time_to_publish
+    graph_data = google.visualization.arrayToDataTable(@average_time_to_publish)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options  
+    
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -432,6 +440,31 @@ questions_options =
     "#1D3880",
     "#E01B6A"
   ]
+  chartArea:  
+    left: 42
+    height:400
+    width: 780
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
+
+moderations_count_options = 
+  width: 850
+  height: 450
+  legend: "none"
+  pointSize: 5
+  lineWidth: 2
+  colors: [
+    "#E01B6A",
+    "#6A82DE"
+    "#9EB0F7", 
+  ]
+  focusTarget: 'category'
   chartArea:  
     left: 42
     height:400

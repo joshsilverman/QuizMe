@@ -728,15 +728,21 @@ class Stat < ActiveRecord::Base
   end
 
   def self.graph_moderations_count domain = 30
-    moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
-      .group("to_char(updated_at, 'YYYY-MM-DD')").count
+    post_moderations_by_date = Moderation.where('post_id is not null')\
+      .where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count      
 
-    data = [['Date', 'Count']]
+    question_moderations_by_date = Moderation.where('question_id is not null')\
+      .where('created_at > ?', (Date.today - (domain + 1).days))\
+      .group("to_char(updated_at, 'YYYY-MM-DD')").count      
+
+    data = [['Date', 'Total', 'Post', 'Question']]
     (Date.today - (domain + 1).days..Date.today).each do |date|
       datef = Time.parse(date.to_s).strftime("%m-%d")
       date = date.to_s
-      moderations_count = moderations_by_date[date] || 0
-      data << [datef, moderations_count]
+      post_moderations_count = post_moderations_by_date[date] || 0
+      question_moderations_count = question_moderations_by_date[date] || 0
+      data << [datef, (post_moderations_count + question_moderations_count), post_moderations_count, question_moderations_count]
     end
     data
   end
@@ -756,25 +762,43 @@ class Stat < ActiveRecord::Base
     data
   end
 
-  def self.experiment_summary experiment_name
-    case experiment_name
-    when "post aggregate activity"
-      Stat.post_aggregate_activity_summary()  
+  def self.graph_average_time_to_publish domain = 60
+    data = [['Date', 'Avg. Days to Publish']]
+    domain = 60; period = 7
+    user_submitted_questions = Question.not_us\
+      .where('updated_at > ?', (domain + period).days.ago)\
+      .approved
+
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      questions = user_submitted_questions.select { |q| (q.updated_at < date) and (q.updated_at > (date - period.days)) }
+      days_to_publish_questions = questions.collect { |q| (q.updated_at - q.created_at) / 60 / 60 / 24 } 
+      data << [date.to_s, (days_to_publish_questions.sum / days_to_publish_questions.count)]
     end
-  end
 
-  def self.post_aggregate_activity_summary
-    experiment_data = Stat.get_alternative_grouped_user_ids_by_experiment "post aggregate activity"
-    aggregate_post_ids = Post.where("intention = 'post aggregate activity'")\
-      .where("created_at > ? and in_reply_to_user_id in (?)", experiment_data[:start_time], experiment_data[:alternatives]["true"]).collect(&:id)
-    grade_post_ids = Post.where("intention = 'grade'")\
-      .where("created_at > ? and in_reply_to_user_id in (?)", experiment_data[:start_time], experiment_data[:alternatives]["false"]).collect(&:id)
+    data
+    
+    # get all posts w/ updated_at in period
+    # for each date in range
+    #   select questions w/ updated at in current - period to current
+    #   take difference in created + updated in questions + average
 
-    aggregate_count = Post.retweet.where("in_reply_to_post_id in (?) and created_at > ?", aggregate_post_ids, experiment_data[:start_time]).size
-    grade_count = Post.retweet.where("in_reply_to_post_id in (?) and created_at > ?", grade_post_ids, experiment_data[:start_time]).size
 
-    puts "aggregate post retweets = #{aggregate_count}"
-    puts "grade post retweets = #{grade_count}"
+    # for each day, create array w/ number of days between question created and updated 
+
+
+
+    # moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
+    #   .select([:updated_at])\
+    #   .group("to_char(updated_at, 'YYYY-MM-DD')").count('distinct(user_id)')
+
+    # data = [['Date', 'Count']]
+    # (Date.today - (domain + 1).days..Date.today).each do |date|
+    #   datef = Time.parse(date.to_s).strftime("%m-%d")
+    #   date = date.to_s
+    #   moderations_count = moderations_by_date[date] || 0
+    #   data << [datef, moderations_count]
+    # end
+    # data
   end
 
   def self.get_alternative_grouped_user_ids_by_experiment experiment_name, experiment_data = {:alternatives => {}}

@@ -5,13 +5,22 @@
         Questions / day
         %span.loading.hide= image_tag "ajax-loader.gif"
     %li 
+      %a{href: '#authors-average_time_to_publish'}
+        /{:href => "#users-socactions"} 
+        Average time to publish
+        %span.loading.hide= image_tag "ajax-loader.gif"
+    %li 
       %a
         /{:href => "#users-socactions"} 
         Questions / day / handle (soon)
-        %span.loading.hide= image_tag "ajax-loader.gif"
+        %span.loading.hide= image_tag "ajax-loader.gif"        
 
   .graphs
     .ugc.panel
       #data_row.row
         #graph.graph
       = hidden_field_tag :data, @data.to_json if @data
+    .average_time_to_publish.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data      

@@ -13,7 +13,7 @@ class Question < ActiveRecord::Base
   has_many :badges, :through => :requirements
   has_many :requirements
 
-  scope :not_us, -> { where('user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS) }
+  scope :not_us, -> { where('questions.user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS) }
   scope :ugc, -> { where('questions.user_id not in (?)', Asker.all.collect(&:id) + ADMINS) }
 
   scope :priority, -> { where('priority = ?', true) }
