@@ -463,7 +463,7 @@ questions_options =
 timely_response_by_handle_options = 
   width: 850
   height: 450
-  # legend: "none"
+  legend: "none"
   pointSize: 5
   lineWidth: 2
   focusTarget: 'category'

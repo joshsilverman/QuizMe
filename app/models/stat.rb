@@ -340,6 +340,68 @@ class Stat < ActiveRecord::Base
     data
   end
 
+  def self.graph_timely_response_by_handle domain = 30
+    graph_data = Rails.cache.fetch "stat_graph_timely_response_by_handle_#{domain}", :expires_in => 19.minutes do
+      # group_size = 500
+      group_size = 5
+
+      follower_counts_by_asker_id = Asker.includes(:follower_relationships)\
+        .published\
+        .references(:follower_relationships)\
+        .group('relationships.followed_id')\
+        .count('relationships.id')\
+        .sort_by {|k, v| v }.reverse
+
+      follower_count_grouped_askers = {}
+      follower_count_grouped_askers[0] = follower_counts_by_asker_id[0..group_size]
+      follower_count_grouped_askers[1] = follower_counts_by_asker_id[-group_size..-1]
+
+      # follower_count_grouped_askers = Asker.includes(:follower_relationships)\
+      #   .published\
+      #   .references(:follower_relationships)\
+      #   .group('relationships.followed_id')\
+      #   .count('relationships.id')\
+      #   .group_by {|e| (e[1]/group_size.to_f).to_i}
+
+      # follower_count_grouped_askers.each { |k, v| follower_count_grouped_askers.delete(k) if (k > 0 and k < (follower_count_grouped_askers.keys.max)) }
+      # follower_count_grouped_askers.each { |k, v| follower_count_grouped_askers.delete(k) if k > 4 }
+
+      title_row = ["Date"]
+      # follower_count_grouped_askers.keys.sort.each {|k| title_row << "#{k * group_size} - #{(k + 1) * group_size}" }
+      title_row << "Smallest #{group_size} handles"
+      title_row << "Largest #{group_size} handles"
+      data = [title_row]
+
+      follower_count_grouped_askers = follower_count_grouped_askers.sort
+      asker_ids_by_group = {}
+      follower_count_grouped_askers.each {|asker_group| asker_group[1].each { |asker| asker_ids_by_group[asker[0]] = asker_group[0] }}
+
+      replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+        .where('in_reply_to_user_id in (?)', asker_ids_by_group.keys)\
+        .where('requires_action = ?', false)\
+        .where("posts.created_at > ?", Date.today - domain.days)\
+        .where("posts.created_at < ?", Date.today)
+
+      replies_by_date = replies.group_by { |p| p.created_at.strftime("%Y-%m-%d") }
+      ok_replies_by_date = replies.where("(posts.updated_at - posts.created_at < interval '12 hours')").group_by{ |p| p.created_at.strftime("%Y-%m-%d") }
+
+      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
+        row = []
+        datef = date.to_s
+        row << datef
+        follower_count_grouped_askers.each do |asker_group|
+          asker_ids = asker_group[1].collect {|e| e[0]}
+          reply_count_for_group = replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
+          ok_reply_count_for_group = ok_replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
+          row << (reply_count_for_group > 0 ? ((ok_reply_count_for_group.to_f / reply_count_for_group) * 100) : 100)
+        end
+        data << row
+      end
+      data
+    end
+    graph_data
+  end
+
   def self.graph_handle_activity domain = 30, handle_activity = {}, graph_data = []
     # y axis label
     # revert active
@@ -745,52 +807,6 @@ class Stat < ActiveRecord::Base
       data << [datef, post_moderations_count, question_moderations_count]
     end
     data
-  end
-
-  def self.graph_timely_response_by_handle domain = 30
-    graph_data = Rails.cache.fetch "stat_graph_timely_response_by_handle_#{domain}", :expires_in => 19.minutes do
-      group_size = 250
-      follower_count_grouped_askers = Asker.includes(:follower_relationships)\
-        .published\
-        .references(:follower_relationships)\
-        .group('relationships.followed_id')\
-        .count('relationships.id')\
-        .group_by {|e| (e[1]/group_size.to_f).to_i}
-
-      follower_count_grouped_askers.each { |k, v| follower_count_grouped_askers.delete(k) if k > 4 }
-
-      title_row = ["Date"]
-      follower_count_grouped_askers.keys.sort.each {|k| title_row << "#{k * group_size} - #{(k + 1) * group_size}" }
-      data = [title_row]
-
-      follower_count_grouped_askers = follower_count_grouped_askers.sort
-      asker_ids_by_group = {}
-      follower_count_grouped_askers.each {|asker_group| asker_group[1].each { |asker| asker_ids_by_group[asker[0]] = asker_group[0] }}
-
-      replies = Post.not_spam.not_us.where("posts.posted_via_app = ?", false)\
-        .where('in_reply_to_user_id in (?)', asker_ids_by_group.keys)\
-        .where('requires_action = ?', false)\
-        .where("posts.created_at > ?", Date.today - domain.days)\
-        .where("posts.created_at < ?", Date.today)
-
-      replies_by_date = replies.group_by { |p| p.created_at.strftime("%Y-%m-%d") }
-      ok_replies_by_date = replies.where("(posts.updated_at - posts.created_at < interval '3 hours')").group_by{ |p| p.created_at.strftime("%Y-%m-%d") }
-
-      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
-        row = []
-        datef = date.to_s
-        row << datef
-        follower_count_grouped_askers.each do |asker_group|
-          asker_ids = asker_group[1].collect {|e| e[0]}
-          reply_count_for_group = replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
-          ok_reply_count_for_group = ok_replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
-          row << (reply_count_for_group > 0 ? ((ok_reply_count_for_group.to_f / reply_count_for_group) * 100) : 100)
-        end
-        data << row
-      end
-      data
-    end
-    graph_data
   end
 
   def self.graph_moderators_count domain = 30
