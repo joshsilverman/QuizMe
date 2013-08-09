@@ -254,8 +254,8 @@ class Dashboard
 
   draw_moderations_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderations_count)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, moderations_count_options
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
+    chart.draw graph_data, cohort_options
 
   draw_moderators_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderators_count)
@@ -268,8 +268,6 @@ class Dashboard
     chart.draw graph_data, questions_options      
 
   draw_average_time_to_publish: =>
-    puts 'in draw_average_time_to_publish'
-    puts @average_time_to_publish
     graph_data = google.visualization.arrayToDataTable(@average_time_to_publish)
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options  
@@ -462,33 +460,12 @@ questions_options =
     viewWindow:
       min: 0
 
-<<<<<<< HEAD
-moderations_count_options = 
-  width: 850
-  height: 450
-  legend: "none"
-  pointSize: 5
-  lineWidth: 2
-  colors: [
-    "#E01B6A",
-    "#6A82DE"
-    "#9EB0F7", 
-  ]
-  focusTarget: 'category'
-=======
 timely_response_by_handle_options = 
   width: 850
   height: 450
   # legend: "none"
   pointSize: 5
   lineWidth: 2
-  # colors : [
-  #   'red', 
-  #   'green', 
-  #   'blue',
-  #   'black',
-  #   'purple'
-  # ]
   focusTarget: 'category'
   colors: [
     "#C9D4FF",
@@ -500,7 +477,6 @@ timely_response_by_handle_options =
     "#000C3B",
     "#000000"
   ]
->>>>>>> add timely response by handle graph
   chartArea:  
     left: 42
     height:400
@@ -538,6 +514,7 @@ cohort_options =
     viewWindowMode: 'explicit'
     viewWindow:
       min: 0
+  focusTarget: 'category'
 
 age_v_reengagement_v_response_rate_graph_options = 
   width: 850

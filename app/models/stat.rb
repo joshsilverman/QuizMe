@@ -736,20 +736,20 @@ class Stat < ActiveRecord::Base
       .where('created_at > ?', (Date.today - (domain + 1).days))\
       .group("to_char(updated_at, 'YYYY-MM-DD')").count      
 
-    data = [['Date', 'Total', 'Post', 'Question']]
+    data = [['Date', 'Post', 'Question']]
     (Date.today - (domain + 1).days..Date.today).each do |date|
       datef = Time.parse(date.to_s).strftime("%m-%d")
       date = date.to_s
       post_moderations_count = post_moderations_by_date[date] || 0
       question_moderations_count = question_moderations_by_date[date] || 0
-      data << [datef, (post_moderations_count + question_moderations_count), post_moderations_count, question_moderations_count]
+      data << [datef, post_moderations_count, question_moderations_count]
     end
     data
   end
 
   def self.graph_timely_response_by_handle domain = 30
     graph_data = Rails.cache.fetch "stat_graph_timely_response_by_handle_#{domain}", :expires_in => 19.minutes do
-      group_size = 1000
+      group_size = 250
       follower_count_grouped_askers = Asker.includes(:follower_relationships)\
         .published\
         .references(:follower_relationships)\
@@ -757,7 +757,7 @@ class Stat < ActiveRecord::Base
         .count('relationships.id')\
         .group_by {|e| (e[1]/group_size.to_f).to_i}
 
-      # follower_count_grouped_askers.each { |k, v| follower_count_grouped_askers.delete(k) if k > 4 }
+      follower_count_grouped_askers.each { |k, v| follower_count_grouped_askers.delete(k) if k > 4 }
 
       title_row = ["Date"]
       follower_count_grouped_askers.keys.sort.each {|k| title_row << "#{k * group_size} - #{(k + 1) * group_size}" }
