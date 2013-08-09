@@ -768,37 +768,26 @@ class Stat < ActiveRecord::Base
     user_submitted_questions = Question.not_us\
       .where('updated_at > ?', (domain + period).days.ago)\
       .approved
-
     (Date.today - (domain + 1).days..Date.today).each do |date|
       questions = user_submitted_questions.select { |q| (q.updated_at < date) and (q.updated_at > (date - period.days)) }
       days_to_publish_questions = questions.collect { |q| (q.updated_at - q.created_at) / 60 / 60 / 24 } 
       data << [date.to_s, (days_to_publish_questions.sum / days_to_publish_questions.count)]
     end
-
     data
-    
-    # get all posts w/ updated_at in period
-    # for each date in range
-    #   select questions w/ updated at in current - period to current
-    #   take difference in created + updated in questions + average
+  end
 
-
-    # for each day, create array w/ number of days between question created and updated 
-
-
-
-    # moderations_by_date = Moderation.where('created_at > ?', (Date.today - (domain + 1).days))\
-    #   .select([:updated_at])\
-    #   .group("to_char(updated_at, 'YYYY-MM-DD')").count('distinct(user_id)')
-
-    # data = [['Date', 'Count']]
-    # (Date.today - (domain + 1).days..Date.today).each do |date|
-    #   datef = Time.parse(date.to_s).strftime("%m-%d")
-    #   date = date.to_s
-    #   moderations_count = moderations_by_date[date] || 0
-    #   data << [datef, moderations_count]
-    # end
-    # data
+  def self.graph_percent_published domain = 60
+    data = [['Date', 'Percent handled', 'Percent published']]
+    domain = 60; period = 30
+    user_submitted_questions = Question.not_us\
+      .where('created_at > ?', (domain + period).days.ago)
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      questions = user_submitted_questions.select { |q| (q.created_at < date) and (q.created_at > (date - period.days)) }
+      published_count = questions.count { |q| q.status == 1 }
+      handled_count = questions.count { |q| q.status == 1 or q.status == -1 }
+      data << [date.to_s, ((handled_count / questions.count.to_f) * 100), ((published_count / questions.count.to_f) * 100)]
+    end
+    data
   end
 
   def self.get_alternative_grouped_user_ids_by_experiment experiment_name, experiment_data = {:alternatives => {}}

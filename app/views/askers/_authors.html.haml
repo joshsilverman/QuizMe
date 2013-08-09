@@ -10,6 +10,11 @@
         Average time to publish
         %span.loading.hide= image_tag "ajax-loader.gif"
     %li 
+      %a{href: '#authors-percent_published'}
+        /{:href => "#users-socactions"} 
+        Percent published
+        %span.loading.hide= image_tag "ajax-loader.gif"        
+    %li 
       %a
         /{:href => "#users-socactions"} 
         Questions / day / handle (soon)
@@ -23,4 +28,8 @@
     .average_time_to_publish.panel
       #data_row.row
         #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data      
+      = hidden_field_tag :data, @data.to_json if @data 
+    .percent_published.panel
+      #data_row.row
+        #graph.graph
+      = hidden_field_tag :data, @data.to_json if @data            

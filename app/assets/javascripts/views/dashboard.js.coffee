@@ -262,6 +262,11 @@ class Dashboard
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options  
 
+  draw_percent_published: =>
+    graph_data = google.visualization.arrayToDataTable(@percent_published)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, questions_options      
+
   draw_average_time_to_publish: =>
     puts 'in draw_average_time_to_publish'
     puts @average_time_to_publish
