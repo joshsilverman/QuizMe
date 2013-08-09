@@ -178,7 +178,7 @@ class Dashboard
 
   draw_handle_activity: =>
     graph_data = google.visualization.arrayToDataTable(@handle_activity)
-    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
+    chart = new google.visualization.BarChart(document.getElementById("graph"))
     chart.draw graph_data, handle_activity_options  
 
   draw_cohort: =>
@@ -424,7 +424,7 @@ revenue_options =
 
 handle_activity_options = 
   width: 850
-  height: 520
+  height: 1600
   legend: "none"
   pointSize: 3
   lineWidth: 2
@@ -432,13 +432,17 @@ handle_activity_options =
   chartArea:  
     width: 820
     left: 42
-    height: 380
+    height: 1520
     top: 15
   hAxis:
     textStyle: 
       fontSize: 11
-    slantedTextAngle: 90
+    # slantedTextAngle: 90
   vAxis:
+    slantedText: true
+    textStyle: 
+      fontSize: 11
+    # slantedTextAngle: 45  
     viewWindowMode: 'explicit'
     viewWindow:
       min: 0
