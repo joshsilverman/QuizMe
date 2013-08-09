@@ -276,6 +276,12 @@ class Dashboard
     graph_data = google.visualization.arrayToDataTable(@timely_response_by_handle)
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, timely_response_by_handle_options  
+  
+  draw_content_audit: =>
+    graph_data = google.visualization.arrayToDataTable(@content_audit)
+    chart = new google.visualization.AreaChart(document.getElementById("graph"))
+    chart.draw graph_data, content_audit_options  
+
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -489,6 +495,33 @@ timely_response_by_handle_options =
     viewWindowMode: 'explicit'
     viewWindow:
       min: 0
+
+content_audit_options = 
+  width: 850
+  height: 450
+  legend: "none"
+  pointSize: 0
+  lineWidth: 0.25
+  isStacked: true
+  colors: [
+    "#B1C2F0", 
+    "#5E79C4",
+    "#1D3880"
+  ]
+  chartArea:  
+    width: 1170
+    left: 42
+    height: 400
+  hAxis:
+    textStyle: 
+      fontSize: 9
+    slantedText: true
+  vAxis:
+    viewWindowMode: 'explicit'
+    viewWindow:
+      min: 0
+      # max: 100   
+  focusTarget: 'category'
 
 cohort_options = 
   width: 850

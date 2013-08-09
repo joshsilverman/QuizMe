@@ -402,6 +402,22 @@ class Stat < ActiveRecord::Base
     graph_data
   end
 
+  def self.graph_content_audit domain = 30
+    data = [['Date', 'Publishable', 'Needs Edits']]
+    domain = 30
+    question_count = Question.where('created_at < ?', domain.days.ago).count
+    questions_added_per_day = Question.where('created_at > ?', domain.days.ago).group("to_char(created_at, 'YYYY-MM-DD')").count  
+    audited_questions = Question.where('publishable is not null or needs_edits is not null')
+    (Date.today - (domain + 1).days..Date.today).each do |date|
+      datef = date.to_s
+      question_count += questions_added_per_day[datef] || 0
+      publishable_count = (audited_questions.select { |q| (q.updated_at < date and q.publishable == true) }.count / question_count.to_f) * 100
+      needs_edits_count = (audited_questions.select { |q| (q.updated_at < date and q.needs_edits == true) }.count / question_count.to_f) * 100
+      data << [datef, publishable_count, needs_edits_count]
+    end
+    data
+  end
+
   def self.graph_handle_activity domain = 30, handle_activity = {}, graph_data = []
     # y axis label
     # revert active
@@ -423,7 +439,6 @@ class Stat < ActiveRecord::Base
     handle_activity.each { |k, v| graph_data << v }
     graph_data.sort! { |a, b| b.drop(1).sum <=> a.drop(1).sum }
     graph_data.insert 0, title_row
-    # puts graph_data.to_json
     return graph_data
   end
 
