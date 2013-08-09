@@ -422,7 +422,7 @@ class Stat < ActiveRecord::Base
     # y axis label
     # revert active
     title_row = ['Handle']
-    User.askers.select([:id, :twi_screen_name]).all.each { |asker| handle_activity[asker.id] = [asker.twi_screen_name.gsub('QuizMe', '').gsub('Quiz', '')] }
+    User.askers.select([:id, :twi_screen_name]).all.each { |asker| handle_activity[asker.id] = [asker.twi_screen_name.gsub('QuizMe', '').gsub('PrepMe', '').gsub('SAThabit_', '').gsub('sathabit_', '').gsub('Quiz', '')] }
     user_grouped_posts = Post.joins(:user).not_spam.not_us.social\
       .where("posts.in_reply_to_user_id IN (?)", User.askers.collect(&:id))\
       .where("posts.created_at > ?", 1.week.ago)\
