@@ -31,8 +31,9 @@ class ModerationsController < ApplicationController
       response = moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
       question = Question.find(params['question_id'])
-      response = (moderator.is_question_super_mod? and (question.needs_edits == true))
+      previous_consensus = (question.needs_edits == true or question.publishable == true)
       moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
+      response = (previous_consensus and moderator.is_question_super_mod? and (moderation.type_id != 7))
     end
     render json: response
   end
