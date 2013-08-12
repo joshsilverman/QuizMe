@@ -97,7 +97,7 @@ Quizmemanager::Application.routes.draw do
 
   get "/tags" => 'posts#tags'
 
-  get "/newsletter" => "users#newsletter"
+  # get "/newsletter" => "users#newsletter"
   get '/progress_report' => 'users#progress_report'
 
   resources :questions

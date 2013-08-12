@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default :from => "Wisr <app6915090@heroku.com>"
+  default :css => 'application', :from => "Wisr <app6915090@heroku.com>"
   
   def newsletter(user, jason, josh)
 
