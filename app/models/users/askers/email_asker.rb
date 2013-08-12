@@ -10,7 +10,7 @@ class EmailAsker < Asker
 
 	def send_private_message recipient, text, options = {}
     text, url = choose_format_and_send recipient, text, options
-    post = Post.create(
+    Post.create(
       :user_id => self.id,
       :provider => 'twitter',
       :text => text,
@@ -23,7 +23,9 @@ class EmailAsker < Asker
       :interaction_type => 5,
       :intention => options[:intention],
       :nudge_type_id => options[:nudge_type_id],
-      :question_id => options[:question_id])
+      :question_id => options[:question_id], 
+      :is_reengagement => options[:is_reengagement]
+    )
 	end
 
   def choose_format_and_send recipient, text, options

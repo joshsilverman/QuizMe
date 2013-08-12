@@ -61,7 +61,7 @@ class Post < ActiveRecord::Base
   scope :not_dm, -> { where("posts.interaction_type <> 4") }
   scope :email, -> { where("posts.interaction_type = 5") }
 
-  scope :reengage_inactive, -> { where("posts.intention = 'reengage inactive'") }
+  scope :reengage_inactive, -> { where("posts.intention = 'reengage inactive' or posts.is_reengagement = ?", true) }
   scope :followup, -> { where("posts.intention = 'incorrect answer followup'") }
 
   scope :linked, -> { where('posts.in_reply_to_question_id IS NOT NULL') }

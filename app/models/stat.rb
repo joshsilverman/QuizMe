@@ -591,10 +591,10 @@ class Stat < ActiveRecord::Base
 
   def self.graph_age_v_reengagement_v_response_rate domain = 30
     #post.where(intention: 'reengage inactive').select(['id']).collect &:id
-    reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
+    reengagement_ids = Post.reengage_inactive.select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
     reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
 
-    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+    user_ids_to_reengagement_dates = Hash[*Post.reengage_inactive\
       .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at || '--' || id),',') AS created_ats"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
 
@@ -629,9 +629,9 @@ class Stat < ActiveRecord::Base
   end
 
   def self.graph_days_since_active_when_reengaged_v_response_rate domain = 30
-    reengagement_ids = Post.where(intention: 'reengage inactive').select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
+    reengagement_ids = Post.reengage_inactive.select(["array_to_string(array_agg(id),',') AS ids"]).group('').first.ids.split ","
     reengagement_ids_to_child_ids = Hash[*Post.select(['id', 'in_reply_to_post_id']).where('in_reply_to_post_id IN (?)', reengagement_ids).map{|p| [p.in_reply_to_post_id, p.id]}.flatten]
-    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+    user_ids_to_reengagement_dates = Hash[*Post.reengage_inactive\
       .select(["in_reply_to_user_id", "array_to_string(array_agg(EXTRACT(EPOCH FROM created_at) :: bigint || '--' || id),',') AS created_ats"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
 
@@ -672,7 +672,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.graph_days_since_active_v_number_of_reengagement_attempts domain = 30
-    user_ids_to_reengagement_dates = Hash[*Post.where(intention: 'reengage inactive')\
+    user_ids_to_reengagement_dates = Hash[*Post.reengage_inactive\
       .select(["in_reply_to_user_id", "array_to_string(array_agg(created_at),',') AS created_ats"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.created_ats]}.flatten]
 

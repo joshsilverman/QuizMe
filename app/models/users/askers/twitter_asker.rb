@@ -42,7 +42,8 @@ class TwitterAsker < Asker
         :correct => options[:correct],
         :intention => options[:intention],
         :question_id => options[:question_id],
-        :in_reply_to_question_id => options[:in_reply_to_question_id]
+        :in_reply_to_question_id => options[:in_reply_to_question_id],
+        :is_reengagement => options[:is_reengagement]
       )
       Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
       
@@ -82,7 +83,8 @@ class TwitterAsker < Asker
         :interaction_type => 4,
         :intention => options[:intention],
         :nudge_type_id => options[:nudge_type_id],
-        :question_id => options[:question_id]
+        :question_id => options[:question_id],
+        :is_reengagement => options[:is_reengagement]
       )
       Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
     rescue Exception => exception

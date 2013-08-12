@@ -410,6 +410,8 @@ class User < ActiveRecord::Base
 		Post.trigger_split_test(id, 'send link to activity feed (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 		Post.trigger_split_test(id, 'link to activity feed script (=> pro)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(4)
 		Post.trigger_split_test(id, 'grading on mod manage displays actions via growl (mod => regular)') if transition.segment_type == 5 and transition.is_positive? and transition.is_above?(2)
+		Post.trigger_split_test(id, 'include solicitations as reengagements (=> advanced)') if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3)
+
 		if transition.segment_type == 1 and transition.is_positive? and transition.is_above?(3) and search_term
 			search_term.askers.each { |asker| Post.trigger_split_test(id, "#{asker.twi_screen_name} search terms (=> advanced)") }
 		end
@@ -651,6 +653,18 @@ class User < ActiveRecord::Base
 
 		# select question from highest scoring question group
 		return asker, Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
+  end
+
+  def pick_reengagement_type last_active_at # can be further personalized in the future
+  	question_prevalence_by_sent_count = { 0 => 1.0, 1 => 0.8, 2 => 0.7, 3 => 0.6, 4 => 0.5, 5 => 0.33 }
+  	valid_non_question_types = [:moderation, :author]
+  	reengagements_sent = Post.reengage_inactive.where("in_reply_to_user_id = ? and created_at > ?", id, last_active_at).count
+  	valid_non_question_types.delete(:moderation) unless Post.requires_moderations(self).present?
+  	if rand < (question_prevalence_by_sent_count[reengagements_sent] || 1 )
+  		return :question
+  	else
+  		return valid_non_question_types.sample
+  	end
   end
 
   def questions_answered_ids_by_asker asker_id, question_ids = []

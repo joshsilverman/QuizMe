@@ -25,21 +25,21 @@ describe EmailAsker do
 
 	describe 'public send' do
 		it 'degrades to private send' do
-			@asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer).first.interaction_type.must_equal 5
+			@asker.posts.reengage_inactive.where(in_reply_to_user_id: @emailer).first.interaction_type.must_equal 5
 		end
 	end
 
 	describe 'private send' do
 		it 'is used when communication preference is set for email' do
 			@emailer.communication_preference.must_equal 2
-			@asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer.reload).first.interaction_type.must_equal 5
+			@asker.posts.reengage_inactive.where(in_reply_to_user_id: @emailer.reload).first.interaction_type.must_equal 5
 		end
 
 		it 'is not used when communication preference is set for Twitter' do
 			@emailer.update_attributes communication_preference: 1
 			Timecop.travel 3.days
 			Asker.reengage_inactive_users strategy: @strategy
-			posts = @asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer)
+			posts = @asker.posts.reengage_inactive.where(in_reply_to_user_id: @emailer)
 			posts.count.must_equal 2
 			posts.last.interaction_type.must_equal 2
 			ActionMailer::Base.deliveries.count.must_equal 1

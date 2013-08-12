@@ -2,4 +2,18 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  reengagements: 
+    moderation: [
+      "Would you be interested in moderating a question or two? Check it out: <link>",
+      "Could you moderate a question or two at <link>",
+      "Interested in grading some responses? Go here: <link>",
+      "Want to grade some responses? Go here: <link>",
+      "I could use your help grading a few responses here: <link>"
+    ]
+    author: [
+      "Would you be interested in writing a question or two? Check it out: <link>",
+      "Could you write a question or two at <link>",
+      "Interested in writing some questions? Go here: <link>",
+      "Want to write some questions? Go here: <link>",
+      "I could use your help writing a few new questions here: <link>"
+    ]

@@ -142,6 +142,33 @@ describe Asker do
 				end
 			end
 
+      it 'with a question' do
+        Timecop.travel(Time.now + 1.day)
+        Asker.reengage_inactive_users strategy: @strategy, type: :question
+        posts = Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+        posts.count.must_equal 1
+        post = posts.first
+        post.question_id.wont_be_nil and post.intention.must_equal 'reengage inactive'
+      end
+
+      it 'with a moderation request' do
+        Timecop.travel(Time.now + 1.day)
+        Asker.reengage_inactive_users strategy: @strategy, type: :moderation
+        posts = Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+        posts.count.must_equal 1
+        post = posts.first
+        post.question_id.must_be_nil and post.intention.must_equal 'request mod'
+      end
+
+      it 'with an author request' do
+        Timecop.travel(Time.now + 1.day)
+        Asker.reengage_inactive_users strategy: @strategy, type: :author
+        posts = Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+        posts.count.must_equal 1
+        post = posts.first
+        post.question_id.must_be_nil and post.intention.must_equal 'solicit ugc'
+      end
+
 			describe "with a question" do
 				it "that has been approved" do
 					Timecop.travel(Time.now + 1.day)
