@@ -13,12 +13,12 @@ describe FeedsController do
 	end
 
 	describe 'routing' do
-		it 'run loads show when logged in' do
+		it 'loads show when logged in' do
 			login_as @user
 			visit "/feeds/#{@asker.id}/#{@publication.id}"
 		end
 
-		it 'run loads show when not logged in'
+		it 'loads show when not logged in' do
 			visit "/feeds/#{@asker.id}/#{@publication.id}"
 		end
 	end
