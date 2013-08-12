@@ -71,6 +71,7 @@ gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
 gem 'carrierwave'
 gem 'fog'
+gem 'roadie'
 gem 'best_in_place', github: 'bernat/best_in_place'
 
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
