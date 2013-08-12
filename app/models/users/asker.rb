@@ -243,6 +243,7 @@ class Asker < User
       case reengagement_type
       when :question
         asker, question = user.select_reengagement_asker_and_question(@scored_questions)
+        return false unless asker and question
         text = question.text
         publication = question.publications.order("created_at DESC").first
         long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"

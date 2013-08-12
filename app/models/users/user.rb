@@ -632,8 +632,8 @@ class User < ActiveRecord::Base
       .group("in_reply_to_user_id")\
       .count
 
-    return if answer_count_by_asker.empty?
-    asker = Asker.find answer_count_by_asker.max_by{|k,v| v}.first
+    asker = (answer_count_by_asker.empty? ? follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
+    return unless asker
 
 		reengagement_question_ids = asker.posts\
 			.reengage_inactive\
@@ -652,7 +652,8 @@ class User < ActiveRecord::Base
 		score_grouped_question_ids = question_ids.group_by { |question_id| scored_questions[question_id] }
 
 		# select question from highest scoring question group
-		return asker, Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
+		question = Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
+		return asker, question
   end
 
   def pick_reengagement_type last_active_at # can be further personalized in the future
