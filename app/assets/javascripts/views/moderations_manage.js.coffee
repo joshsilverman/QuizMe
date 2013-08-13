@@ -127,6 +127,7 @@ class ModerationsManage
 			$.post '/questions/update_question_and_answers', params, ->
 				$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
 				$("#post_question_modal").modal('hide')	
+				$("#submit_question").button("reset")
 
 	validate_form: =>
 		if $("#question_input").val() == ""

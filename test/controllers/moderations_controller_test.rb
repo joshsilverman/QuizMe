@@ -216,7 +216,7 @@ describe ModerationsController do
 				it "moderated but not edited by a supermod to other supermods" do
 					@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
 					30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-					create(:question_moderation, question_id: @ugc_question.id, type_id: 7, user_id: @moderator)
+					create(:question_moderation, question_id: @ugc_question.id, type_id: 7, user_id: @moderator.id)
 
 					@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4)
 					@asker.followers << @moderator2
