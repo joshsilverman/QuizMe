@@ -2,8 +2,7 @@ source 'https://rubygems.org'
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg'
-# ruby '2.0.0'
-ruby '1.9.3'
+ruby '2.0.0'
 
 gem 'rails', '~> 4.0.0'
 gem 'activesupport', '4.0.0'
