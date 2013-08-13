@@ -632,7 +632,7 @@ class User < ActiveRecord::Base
       .group("in_reply_to_user_id")\
       .count
 
-    asker = (answer_count_by_asker.empty? ? follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
+    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
     return unless asker
 
 		reengagement_question_ids = asker.posts\
