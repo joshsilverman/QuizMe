@@ -346,6 +346,7 @@ class Stat < ActiveRecord::Base
       group_size = 5
 
       follower_counts_by_asker_id = Asker.includes(:follower_relationships)\
+        .where("relationships.active = ?", true)\
         .published\
         .references(:follower_relationships)\
         .group('relationships.followed_id')\
