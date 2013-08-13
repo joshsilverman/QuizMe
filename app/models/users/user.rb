@@ -99,6 +99,10 @@ class User < ActiveRecord::Base
   	self.find_by(twi_screen_name: name)
   end
 
+  def is_admin? 
+  	ADMINS.include?(id)
+  end
+
   def twi_profile_img_med_url
   	twi_profile_img_url.sub("_normal.", "_reasonably_small.")
   end

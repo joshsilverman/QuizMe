@@ -7,6 +7,9 @@ class ModerationsController < ApplicationController
     if params[:edits] == 'true'
       @posts = []
       @moderatables = Question.requires_moderations(moderator, {needs_edits_only: true}).sort_by {|m| m.created_at }.reverse
+    elsif params[:all] == 'true' and moderator.is_admin?
+      @posts = []
+      @moderatables = Question.where('status = 0').where('needs_edits is null and publishable is null').order('created_at ASC').limit(25)
     else
       @posts = Post.requires_moderations(moderator)
       @questions = Question.requires_moderations(moderator)
@@ -33,7 +36,7 @@ class ModerationsController < ApplicationController
       question = Question.find(params['question_id'])
       previous_consensus = (question.needs_edits == true or question.publishable == true)
       moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
-      response = (previous_consensus and moderator.is_question_super_mod? and (moderation.type_id != 7))
+      response = (moderator.is_admin? or (previous_consensus and moderator.is_question_super_mod? and (moderation.type_id != 7)))
     end
     render json: response
   end

@@ -17,7 +17,7 @@ class QuestionModeration < Moderation
     agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 2
     previous_consensus = (!question.publishable.nil? or !question.needs_edits.nil?)
 
-    if previous_consensus and moderator.is_question_super_mod?
+    if (previous_consensus and moderator.is_question_super_mod?) or moderator.is_admin?
       question.clear_feedback
       question.update(moderation_trigger_type_id: 2, status: (type_id == 7 ? 1 : -1))
       accept_and_reject_moderations
@@ -44,6 +44,6 @@ class QuestionModeration < Moderation
   end	
 
   def accept_and_reject_moderations
-    question.question_moderations.each { |m| m.update(accepted: (type_id == m.type_id)) }
+    question.question_moderations.active.each { |m| m.update(accepted: (type_id == m.type_id)) }
   end  
 end
