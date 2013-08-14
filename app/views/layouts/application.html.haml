@@ -9,7 +9,7 @@
 			= javascript_include_tag "https://www.google.com/jsapi"
 			= javascript_include_tag "http://code.jquery.com/jquery-migrate-1.2.1.min.js"
 		= csrf_meta_tags
-		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
+		%meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"}
 		%meta{:name => "description", :content => "Wisr teaches anything from Chemistry to Algebra through Twitter/chat/SMS/email. Learn by answering questions in the communication channel where you are most comfortable."}
 	%body{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
 			

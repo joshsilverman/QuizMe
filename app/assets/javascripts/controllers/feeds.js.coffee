@@ -281,7 +281,7 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.on "click", (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
+		@element.tappable (e) => @expand(e) unless $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
@@ -421,8 +421,9 @@ class Post
 $ -> 
 	if $("#post_feed").length > 0
 		window.feed = new Feed 
-		target = $(".post[post_id=#{$('#post_id').val()}]")
+		publication_id = $('#post_id').val()
+		target = $(".post[post_id=#{publication_id}]")
 		if target.length > 0
-			target.click()
+			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand()
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 			$('html,body').animate({scrollTop: target.offset().top - 10}, 1000);
