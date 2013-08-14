@@ -260,6 +260,7 @@ class Asker < User
         intention = 'solicit ugc'
       end
     else
+      reengagement_type = :question
       asker, question = user.select_reengagement_asker_and_question(@scored_questions)
       text = question.text
       publication = question.publications.order("created_at DESC").first
@@ -274,21 +275,33 @@ class Asker < User
 
     # puts "send reengagement: '#{text}' to #{user.twi_screen_name}" 
 
-    asker.send_public_message(text, {
-      reply_to: user.twi_screen_name,
-      long_url: long_url ? "http://wisr.com/feeds/#{asker.id}/#{publication.id}" : nil,
-      in_reply_to_user_id: user.id,
-      posted_via_app: true,
-      requires_action: false,
-      interaction_type: 2,
-      link_to_parent: false,
-      link_type: "reengage",
-      intention: intention,
-      include_answers: true,
-      publication_id: (publication ? publication.id : nil),  
-      question_id: (question ? question.id : nil),
-      is_reengagement: true
-    })
+    if reengagement_type == :question
+      asker.send_public_message(text, {
+        reply_to: user.twi_screen_name,
+        long_url: long_url ? "http://wisr.com/feeds/#{asker.id}/#{publication.id}" : nil,
+        in_reply_to_user_id: user.id,
+        posted_via_app: true,
+        requires_action: false,
+        interaction_type: 2,
+        link_to_parent: false,
+        link_type: "reengage",
+        intention: intention,
+        include_answers: true,
+        publication_id: (publication ? publication.id : nil),  
+        question_id: (question ? question.id : nil),
+        is_reengagement: true
+      })
+    else
+      asker.send_private_message(user, text, {
+        posted_via_app: true,
+        requires_action: false,
+        interaction_type: 4,
+        link_type: "reengage",
+        intention: intention,
+        include_answers: true,
+        is_reengagement: true
+      })
+    end
 
     Mixpanel.track_event "reengage inactive", {
       distinct_id: user.id, 
