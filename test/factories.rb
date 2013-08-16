@@ -5,7 +5,7 @@ FactoryGirl.define do
     email 'joshs.silverman@gmail.com'
 		password "password"
 		twi_profile_img_url 'abc.jpg'
-		twi_screen_name 'scottie p.'
+		twi_screen_name 'ScottiePippen'
 		sequence(:twi_user_id) {|n| n}
 
 		factory :admin do
@@ -29,7 +29,14 @@ FactoryGirl.define do
 		published true
 		twi_profile_img_url 'abc.jpg'
 		twi_screen_name 'QuizMeBio'
-	end	
+	end
+
+	factory :email_asker do
+		role 'asker'
+		published true
+		twi_profile_img_url 'abc.jpg'
+		twi_screen_name 'QuizMeBio'
+	end
 
 	factory :post do
 		user_id 1

@@ -73,6 +73,7 @@ gem 'carrierwave'
 gem 'fog'
 gem 'roadie'
 gem 'best_in_place', github: 'bernat/best_in_place'
+gem 'mail'
 
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'

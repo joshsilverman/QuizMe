@@ -6,14 +6,18 @@ require "minitest/rails"
 require "capybara/rails"
 require 'database_cleaner'
 require "minitest/rails/capybara"
+require 'active_support/testing/setup_and_teardown'
 
 DatabaseCleaner.strategy = :truncation
 Rails.logger.level = 2
 
-class ControllerTest < MiniTest::Spec
-  include Rails.application.routes.url_helpers
-  register_spec_type(/controller/, self)
-end
+# class ControllerTest < MiniTest::Spec
+  # register_spec_type(/Controller$/, self)
+
+#   before :each do
+#     puts 'yo'
+#   end
+# end
 
 class ActiveSupport::TestCase
   include Warden::Test::Helpers
@@ -22,6 +26,10 @@ class ActiveSupport::TestCase
   include Capybara::RSpecMatchers
   include FactoryGirl::Syntax::Methods
   include BestInPlace::TestHelpers
+
+  # controller test methods
+  include ActiveSupport::Testing::SetupAndTeardown # for get/post/put/delete methods
+  include Rails.application.routes.url_helpers
 
   self.use_transactional_fixtures = false
   self.use_instantiated_fixtures  = true

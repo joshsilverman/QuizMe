@@ -425,6 +425,7 @@ DEPENDENCIES
   launchy
   less-rails
   m
+  mail
   memcachier
   meta_request
   minitest-rails-capybara

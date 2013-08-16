@@ -48,5 +48,7 @@ describe EmailAsker do
 		it 'will cause email delivery' do
 			ActionMailer::Base.deliveries.wont_be_empty
 		end
+
+		it 'sends a clickable link'
 	end
 end
