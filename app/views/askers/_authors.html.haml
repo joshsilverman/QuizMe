@@ -1,35 +1,16 @@
+- party = "authors"
+- graphs = [{name: 'ugc', display_name: 'Questions / day'}, {name: 'average_time_to_publish', display_name: 'Average time to publish'}, {name: 'percent_published', display_name: 'Percent published'}]
+
 .row
   %ul.nav.nav-tabs.nav-stacked.span3
-    %li 
-      %a{:href => "#authors-ugc"} 
-        Questions / day
-        %span.loading.hide= image_tag "ajax-loader.gif"
-    %li 
-      %a{href: '#authors-average_time_to_publish'}
-        /{:href => "#users-socactions"} 
-        Average time to publish
-        %span.loading.hide= image_tag "ajax-loader.gif"
-    %li 
-      %a{href: '#authors-percent_published'}
-        /{:href => "#users-socactions"} 
-        Percent published
-        %span.loading.hide= image_tag "ajax-loader.gif"               
-    %li 
-      %a
-        /{:href => "#users-socactions"} 
-        Questions / day / handle (soon)
-        %span.loading.hide= image_tag "ajax-loader.gif"        
-
+    - graphs.each do |graph_data|
+      %li
+        %a{href: "##{party}-#{graph_data[:name]}"}
+          #{graph_data[:display_name]}
+          %span.loading.hide= image_tag "ajax-loader.gif"
   .graphs
-    .ugc.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
-    .average_time_to_publish.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data 
-    .percent_published.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
+    - graphs.each do |graph_data|
+      .panel{class: graph_data[:name]}
+        #data_row.row
+          #graph.graph
+        = hidden_field_tag :data, @data.to_json if @data

@@ -20,6 +20,8 @@ class Question < ActiveRecord::Base
   scope :not_priority, -> { where('priority = ?', false) }
 
   scope :approved, -> { where('status = 1') }
+  scope :pending, -> { where('status = 0') }
+  scope :not_pending, -> { where('status != 0') }
 
   scope :moderated_by_consensus, -> { where(moderation_trigger_type_id: 1) }
   scope :moderated_by_above_advanced, -> { where(moderation_trigger_type_id: 2) }

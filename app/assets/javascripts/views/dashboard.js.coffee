@@ -103,7 +103,7 @@ class Dashboard
     qs += "&domain=#{domain}"
 
     party = 'core'
-    $.each ['paulgraham', 'dau_mau', 'quality_response', 'timely_response'], (i, graph) =>
+    $.each ['paulgraham', 'dau_mau', 'timely_publish', 'timely_response'], (i, graph) =>
       url = "/graph/#{ party }/#{ graph }#{qs}"
       $.ajax url,
         success: (data) =>
@@ -166,10 +166,10 @@ class Dashboard
     chart = new google.visualization.AreaChart($(".timely_response_graph")[0])
     chart.draw graph_data, revenue_options  
 
-  draw_quality_response: (data) =>
+  draw_timely_publish: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
-    chart = new google.visualization.LineChart($(".quality_response_graph")[0])
-    chart.draw graph_data, quality_response_options      
+    chart = new google.visualization.AreaChart($(".timely_publish_graph")[0])
+    chart.draw graph_data, revenue_options      
 
   draw_econ_engine: (data) =>
     graph_data = google.visualization.arrayToDataTable(data)
@@ -282,6 +282,11 @@ class Dashboard
     chart = new google.visualization.AreaChart(document.getElementById("graph"))
     chart.draw graph_data, content_audit_options  
 
+  draw_quality_response: =>
+    graph_data = google.visualization.arrayToDataTable(@quality_response)
+    chart = new google.visualization.LineChart(document.getElementById("graph"))
+    chart.draw graph_data, quality_response_options     
+
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -311,13 +316,13 @@ pg_options =
   colors: ['orange', 'green', 'orange', "#1D3880"]
 
 quality_response_options = 
-  width: 425
-  height: 275
+  width: 850
+  height: 450
   legend: "none"
   chartArea:  
-    width: 420
-    left: 30
-    height: 225
+    width: 1170
+    left: 42
+    height: 400
   hAxis:
     textStyle: 
       fontSize: 9
@@ -402,13 +407,15 @@ revenue_options =
   width: 425
   height: 275
   legend: "none"
+  focusTarget: 'category'
   pointSize: 0
   lineWidth: 2
   isStacked: true
   colors: [
-    "#B1C2F0", 
+    "#C9D4FF", 
     "#5E79C4",
-    "#1D3880"
+    "#1D3880",
+    "#000C3B"
   ]
   chartArea:  
     width: 420

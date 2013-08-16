@@ -279,6 +279,7 @@ class Stat < ActiveRecord::Base
       end
       total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
       [data, {today: today_stat, total: total_stat}]
+      data
     end
   end
 
@@ -392,8 +393,8 @@ class Stat < ActiveRecord::Base
         row << datef
         follower_count_grouped_askers.each do |asker_group|
           asker_ids = asker_group[1].collect {|e| e[0]}
-          reply_count_for_group = replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
-          ok_reply_count_for_group = ok_replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) }
+          reply_count_for_group = replies_by_date[datef].present? ? replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) } : 0
+          ok_reply_count_for_group = ok_replies_by_date[datef].present? ? ok_replies_by_date[datef].count {|p| asker_ids.include?(p.in_reply_to_user_id) } : 0
           row << (reply_count_for_group > 0 ? ((ok_reply_count_for_group.to_f / reply_count_for_group) * 100) : 100)
         end
         data << row
@@ -402,6 +403,49 @@ class Stat < ActiveRecord::Base
     end
     graph_data
   end
+
+  def self.graph_timely_publish domain = 30
+    graph_data = Rails.cache.fetch "stat_timely_publish_#{domain}", :expires_in => 19.minutes do
+      data = [["Date", "Good reply (<1 day)", "Ok reply (<3 days)", "Slow reply (>3)", "No reply"]]
+      total_stat = []
+      today_stat = 0
+      questions = Question.ugc.where("questions.created_at > ?", domain.days.ago)
+      good_replies = questions.not_pending.where("(questions.updated_at - questions.created_at < interval '1 day')")\
+        .select(["to_char(questions.created_at, 'YYYY-MM-DD')"]).group("to_char(questions.created_at, 'YYYY-MM-DD')").count
+      ok_replies = questions.not_pending.where("(questions.updated_at - questions.created_at > interval '1 day')")\
+        .where("(questions.updated_at - questions.created_at < interval '3 days')")\
+        .select(["to_char(questions.created_at, 'YYYY-MM-DD')"]).group("to_char(questions.created_at, 'YYYY-MM-DD')").count
+      slow_replies = questions.not_pending.where("(questions.updated_at - questions.created_at > interval '3 days')")\
+        .select(["to_char(questions.created_at, 'YYYY-MM-DD')"]).group("to_char(questions.created_at, 'YYYY-MM-DD')").count
+      no_replies = questions.pending.select(["to_char(questions.created_at, 'YYYY-MM-DD')"]).group("to_char(questions.created_at, 'YYYY-MM-DD')").count
+
+      ((Date.today - domain.days)..(Date.today - 1.day)).each do |date|
+        datef = date.to_s
+
+        good_replies[datef] ||= 0
+        ok_replies[datef] ||= 0
+        slow_replies[datef] ||= 0
+        no_replies[datef] ||= 0
+
+        total = (good_replies[datef] + ok_replies[datef] + slow_replies[datef]  + no_replies[datef] ).to_f
+        total = 1 if total < 1
+        good_normalized = good_replies[datef] / total
+        ok_normalized = ok_replies[datef] / total
+        slow_normalized = slow_replies[datef] / total
+        no_normalized = no_replies[datef] / total
+
+        data << [datef, good_normalized, ok_normalized, slow_normalized, no_normalized]
+        today_stat = sprintf "%.1f%", good_normalized * 100 if date == Date.today
+        total_stat << good_normalized if date > Date.today - 7.days
+      end
+
+      today_stat = good_replies.values.sum / (good_replies.values.sum  + ok_replies.values.sum + slow_replies.values.sum  + no_replies.values.sum ).to_f
+      today_stat = sprintf "%.1f%", today_stat * 100
+      total_stat = sprintf "%.1f%", (total_stat.sum / total_stat.size) * 100
+      
+      [data, {today: today_stat, total: total_stat}]
+    end
+  end    
 
   def self.graph_content_audit domain = 30
     data = [['Date', 'Publishable', 'Needs Edits']]

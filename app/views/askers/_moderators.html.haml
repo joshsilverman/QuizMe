@@ -1,46 +1,16 @@
+- party = "moderators"
+- graphs = [{name: 'user_moderated_posts', display_name: 'Moderated posts by type'}, {name: 'moderations_count', display_name: 'Moderations per day'}, {name: 'moderators_count', display_name: 'Moderators per day'}, {name: 'timely_response_by_handle', display_name: 'Timely response by handle'}, {name: 'content_audit', display_name: 'Content audit progress'}, {name: 'quality_response', display_name: 'Quality Reply'}]
+
 .row
   %ul.nav.nav-tabs.nav-stacked.span3
-    %li 
-      %a{:href => "#moderators-user_moderated_posts"} 
-        Moderated posts by type
-        %span.loading.hide= image_tag "ajax-loader.gif"
-    %li 
-      %a{:href => "#moderators-moderations_count"} 
-        Moderations per day
-        %span.loading.hide= image_tag "ajax-loader.gif"
-    %li 
-      %a{:href => "#moderators-moderators_count"} 
-        Moderators per day
-        %span.loading.hide= image_tag "ajax-loader.gif"
-
-    %li 
-      %a{:href => "#moderators-timely_response_by_handle"} 
-        Timely response by handle
-        %span.loading.hide= image_tag "ajax-loader.gif"   
-    %li 
-      %a{href: '#moderators-content_audit'}
-        /{:href => "#users-socactions"} 
-        Content audit progress
-        %span.loading.hide= image_tag "ajax-loader.gif"                
-
+    - graphs.each do |graph_data|
+      %li
+        %a{href: "##{party}-#{graph_data[:name]}"}
+          #{graph_data[:display_name]}
+          %span.loading.hide= image_tag "ajax-loader.gif"
   .graphs
-    .user_moderated_posts.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
-    .moderations_count.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
-    .moderators_count.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
-    .timely_response_by_handle.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data
-    .content_audit.panel
-      #data_row.row
-        #graph.graph
-      = hidden_field_tag :data, @data.to_json if @data      
+    - graphs.each do |graph_data|
+      .panel{class: graph_data[:name]}
+        #data_row.row
+          #graph.graph
+        = hidden_field_tag :data, @data.to_json if @data
