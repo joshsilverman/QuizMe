@@ -116,14 +116,14 @@ class Question < ActiveRecord::Base
     questions = []
     if options[:needs_edits_only] == true
       return [] unless is_admin
-      questions << Question.where('moderation_trigger_type_id is null')\
-        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')
+      questions << Question.where('moderation_trigger_type_id != 2')\
+        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .order('questions.created_at ASC')
     else
       questions << Question.where('moderation_trigger_type_id is null')\
-        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')
+        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
