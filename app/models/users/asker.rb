@@ -263,6 +263,7 @@ class Asker < User
       reengagement_type = :question
       asker, question = user.select_reengagement_asker_and_question(@scored_questions)
       text = question.text
+      intention = 'reengage inactive'
       publication = question.publications.order("created_at DESC").first
       long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
     end

@@ -18,7 +18,7 @@ class EmailAsker < Asker
       :in_reply_to_user_id => recipient.id,
       :conversation_id => options[:conversation_id],
       :url => url,
-      :posted_via_app => false, # i don't know what this means
+      :posted_via_app => true,
       :requires_action => false,
       :interaction_type => 5,
       :intention => options[:intention],
@@ -64,7 +64,7 @@ class EmailAsker < Asker
     return unless post.conversation.posts.grade.blank?
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
-    private_send answerer, text, {
+    send_private_message answerer, text, {
       :user_id => id,
       :provider => 'email',
       :in_reply_to_post_id => post.id,
@@ -81,7 +81,7 @@ class EmailAsker < Asker
   end
 
   def choose_format_and_send recipient, text, options
-    if options[:intention] == 'reengage inactive'
+    if options[:is_reengagement] and options[:question_id]
       question = Question.includes(:answers).find(options[:question_id])
       mail, text, url = EmailAskerMailer.question(self, recipient, text, question, options)
       mail.deliver

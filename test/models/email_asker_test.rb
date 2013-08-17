@@ -49,6 +49,6 @@ describe EmailAsker do
 			ActionMailer::Base.deliveries.wont_be_empty
 		end
 
-		it 'sends a clickable link'
+		# it 'sends a clickable link'
 	end
 end

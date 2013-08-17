@@ -1,4 +1,4 @@
-require 'minitest_helper'
+require 'test_helper'
 
 describe EmailAskersController do
 
@@ -47,7 +47,7 @@ describe EmailAskersController do
 			@email_answer.in_reply_to_question_id.wont_be_nil
 		end
 
-		it 'run and succedes in autograding correct' do
+		it 'and succedes in autograding correct' do
 			@email_answer.reload.autocorrect.must_equal true
 		end
 
@@ -55,8 +55,7 @@ describe EmailAskersController do
 			@email_response_to_answer.wont_be_nil
 		end
 
-		it 'and fails if format cannot be interpreted'
-		it 'and does not appear in moderations/manage on failure'
+		# it 'and fails if format cannot be interpreted'
+		# it 'and does not appear in moderations/manage on failure'
 	end
-
 end
