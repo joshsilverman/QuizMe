@@ -38,7 +38,7 @@ class EmailAsker < Asker
     end
     conversation_id ||= nil
 
-    post = Post.create(
+    Post.create(
       :text => params[:text],
       :provider => 'email',
       :user_id => u.id,

@@ -1,5 +1,6 @@
 class EmailAskerMailer < ActionMailer::Base
-  default :from => "Wisr <wisr@app.wisr.com>"
+  # default :from => "Wisr <wisr@app.wisr.com>"
+  default from: "Wisr <app6915090@heroku.com>"
 
   def question sender, recipient, text, question, options = {}
     short_url = nil
