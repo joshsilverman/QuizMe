@@ -3,21 +3,17 @@ class EmailAskersController < ApplicationController
 	skip_before_filter :referrer_data, :split_user
 
   def save_private_response
-    puts 'in save_private_response'
   	handle =  Mail::Address.new(params[:to]).local
-    puts handle
     user = User.find_by_email Mail::Address.new(params[:from]).address
-    puts user.to_json
     
     asker = EmailAsker.tfind(handle)
     post = asker.save params, user
-    puts asker.to_json
+
     Post.classifier.classify post
     Post.grader.grade post.reload
 
     asker.auto_respond post.reload, user, params
 
-    # render text: nil
     render text: nil, status: 200
   end
 end

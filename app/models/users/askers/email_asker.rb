@@ -38,8 +38,10 @@ class EmailAsker < Asker
     end
     conversation_id ||= nil
 
+    text = params[:text].split(/(\r|\n)/)[0]
+
     Post.create(
-      :text => params[:text],
+      :text => text,
       :provider => 'email',
       :user_id => u.id,
       :in_reply_to_post_id => in_reply_to_post_id,
