@@ -104,6 +104,7 @@ class @Feed
 		).delay(250).slideToggle(250, => $("#question_input").focus())
 	initialize_stream: =>
 		return unless $("#activity_stream_content").length > 0
+		return unless $("#activity_stream_content").is(":visible")
 		$.ajax '/feeds/stream',
 			type: 'GET'
 			success: (e) => 
