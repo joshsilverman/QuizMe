@@ -120,14 +120,14 @@ class Question < ActiveRecord::Base
         .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
-        .order('questions.created_at ASC')
+        .order('questions.created_at DESC')
     else
       questions << Question.where('moderation_trigger_type_id is null')\
         .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at ASC')\
+        .order('questions.created_at DESC')\
         .limit(requires_edit_count)
       questions << Question.where('status = 0')\
         .where('moderation_trigger_type_id is null')\
@@ -135,7 +135,7 @@ class Question < ActiveRecord::Base
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.id NOT IN (?)", question_ids_moderated_by_current_user)\
         .where("questions.created_for_asker_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
-        .order('questions.created_at ASC')\
+        .order('questions.created_at DESC')\
         .limit(requires_moderation_count)
     end
 
