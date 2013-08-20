@@ -7,6 +7,11 @@ class EmailAskersController < ApplicationController
     user = User.find_by_email Mail::Address.new(params[:from]).address
     
     asker = EmailAsker.tfind(handle)
+
+    puts 'in save_private_response'
+    puts params
+    puts user.to_json
+    
     post = asker.save params, user
 
     Post.classifier.classify post
