@@ -30,18 +30,16 @@ class EmailAsker < Asker
 	end
 
   def save params, u
-    in_reply_to_post_id = detect_in_reply_to_post_id params[:text], u
+    in_reply_to_post_id = detect_in_reply_to_post_id(params[:text], u)
 
+    conversation_id = nil
     if in_reply_to_post_id
       in_reply_to_post = Post.find in_reply_to_post_id
       conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
     end
-    conversation_id ||= nil
-
-    text = params[:text].split(/(\r|\n)/)[0]
 
     Post.create(
-      :text => text,
+      :text => params[:text].split(/(\r|\n)/)[0],
       :provider => 'email',
       :user_id => u.id,
       :in_reply_to_post_id => in_reply_to_post_id,
@@ -113,8 +111,8 @@ class EmailAsker < Asker
   def detect_in_reply_to_post_id text, user
     if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)\?s=[a-zA-Z]+&lt=reengage/)
       url, asker_id, pub_id = match.to_a
-      post_id = Publication.find(pub_id.to_i).posts.where(in_reply_to_user_id: user.id).last.id
-      return post_id if id == asker_id.to_i
+      post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
+      return (id == asker_id.to_i and post_id) ? post_id : nil
     else
     end
   end
