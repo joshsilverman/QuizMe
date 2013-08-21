@@ -27,6 +27,8 @@ class EmailAsker < Asker
       :publication_id => options[:publication_id],
       :is_reengagement => options[:is_reengagement]
     )
+    
+    Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
 	end
 
   def save params, u
