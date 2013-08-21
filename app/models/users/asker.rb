@@ -194,7 +194,7 @@ class Asker < User
     strategy = options[:strategy]
     strategy_string = options[:strategy].join "/" if strategy
 
-    user_ids_to_last_active_at = Hash[*Post.not_spam.answers.social.not_asker\
+    user_ids_to_last_active_at = Hash[*Post.not_spam.answers.not_asker.where('posts.interaction_type IN (2,3,5)')\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\
       .group("user_id").map{|p| [p.user_id, p.last_active_at.time]}.flatten]
