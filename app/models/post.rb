@@ -514,7 +514,8 @@ class Post < ActiveRecord::Base
         or exception.message.include? "Your account is suspended" \
         or exception.message.include? "that page does not exist" \
         or exception.message.include? "execution expired" \
-        or exception.message.include? "You cannot send messages to users who are not following you"
+        or exception.message.include? "You cannot send messages to users who are not following you" \
+        or exception.message.include? "Not authorized"
 
         puts "twitter error (#{exception}), retrying"
         retry
