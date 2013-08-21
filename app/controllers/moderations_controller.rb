@@ -26,6 +26,7 @@ class ModerationsController < ApplicationController
 
   def create
     moderator = current_user.becomes(Moderator)
+    status = nil
     
     if params['post_id']
       moderation = moderator.post_moderations.find_or_initialize_by(post_id: params['post_id'])
@@ -34,10 +35,17 @@ class ModerationsController < ApplicationController
       response = moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
       question = Question.find(params['question_id'])
+      status = question.status
       previous_consensus = (question.needs_edits == true or question.publishable == true)
       moderation = moderator.question_moderations.find_or_create_by(question_id: params['question_id'], type_id: params['type_id'])
       response = (moderator.is_admin? or (previous_consensus and moderator.is_question_super_mod? and (moderation.type_id != 7)))
     end
+
+    Mixpanel.track_event "moderated", {
+      distinct_id: moderator.id,
+      type: (params['post_id'].present? ? "post" : "question"),
+      question_status: status
+    }
     render json: response
   end
 end
