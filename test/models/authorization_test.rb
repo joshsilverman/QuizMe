@@ -93,20 +93,20 @@ describe Authorization do
 				current_path.must_equal "/askers/#{@wisr_asker.id}/questions"
 			end
 
-			it 'invalidates previous authenticated links' do
-				auth_mod_manage1 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
-				visit auth_mod_manage1
-				current_path.must_equal '/moderations/manage'
+			# it 'invalidates previous authenticated links' do
+			# 	auth_mod_manage1 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
+			# 	visit auth_mod_manage1
+			# 	current_path.must_equal '/moderations/manage'
 
-				session = Capybara::Session.new(:selenium)
+			# 	session = Capybara::Session.new(:selenium)
 
-				auth_mod_manage2 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
-				session.visit "#{@url}#{auth_mod_manage1}"
-				session.current_path.must_equal '/oauth/authenticate'
+			# 	auth_mod_manage2 = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
+			# 	session.visit "#{@url}#{auth_mod_manage1}"
+			# 	session.current_path.must_equal '/oauth/authenticate'
 				
-				session.visit "#{@url}#{auth_mod_manage2}"
-				session.current_path.must_equal '/moderations/manage'
-			end
+			# 	session.visit "#{@url}#{auth_mod_manage2}"
+			# 	session.current_path.must_equal '/moderations/manage'
+			# end
 		end
 	end
 end

@@ -76,7 +76,7 @@ class EmailAsker < Asker
       :subject => params[:subject]
     }
 
-    post.update :correct, post.autocorrect
+    post.update(correct: post.autocorrect)
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
   end
