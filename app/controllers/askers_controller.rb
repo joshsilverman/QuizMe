@@ -1,4 +1,5 @@
 class AskersController < ApplicationController
+  prepend_before_filter :check_for_authentication_token, :only => [:questions]
   before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph, :questions]
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 

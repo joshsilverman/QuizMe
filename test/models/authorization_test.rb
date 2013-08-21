@@ -17,11 +17,23 @@ describe Authorization do
 		end
 
 		describe 'logs user in' do
-			it 'to proper page' do
+			it 'to proper page for moderator' do
 				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 1.week))
 				visit auth_mod_manage
 				current_path.must_equal '/moderations/manage'
 			end
+
+			it 'to proper page for first time author' do
+				auth_mod_manage = authenticated_link("/feeds/#{@wisr_asker.id}?q=1", @user, (Time.now + 1.week))
+				visit auth_mod_manage
+				current_path.must_equal "/u/feeds/#{@wisr_asker.id}"
+			end
+
+			it 'to proper page for return author' do
+				auth_mod_manage = authenticated_link("/askers/#{@wisr_asker.id}/questions", @user, (Time.now + 1.week))
+				visit auth_mod_manage
+				current_path.must_equal "/askers/#{@wisr_asker.id}/questions"
+			end						
 
 			it 'maintains other url parameters' do
 				auth_mod_manage = authenticated_link("/moderations/manage?s=twi&t=user_name", @user, (Time.now + 1.week))			
