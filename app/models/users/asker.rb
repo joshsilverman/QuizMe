@@ -755,7 +755,7 @@ class Asker < User
         ].sample
       end
 
-      request_type = Post.create_split_test(user.id, 'followup ugc request type ()', 'mention', 'dm', 'dm with auth link')
+      request_type = Post.create_split_test(user.id, 'followup ugc request type (=> superuser)', 'mention', 'dm', 'dm with auth link')
       link = "www.wisr.com/askers/#{id}/questions"
     else
       request_type = Post.create_split_test(user.id, 'first ugc request type (writes a question)', 'mention', 'dm', 'dm with auth link')
