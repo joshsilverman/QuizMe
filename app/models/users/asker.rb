@@ -685,7 +685,6 @@ class Asker < User
       schedule_incorrect_answer_followup(user_post) 
     end
     after_answer_action(answerer)
-    ask_question(answerer) if user_post.is_email? and answerer.prefers_email?
   end 
 
   def after_answer_action answerer

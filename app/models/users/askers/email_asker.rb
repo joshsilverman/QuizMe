@@ -81,6 +81,7 @@ class EmailAsker < Asker
     post.update(correct: post.autocorrect)
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
+    ask_question(answerer) if post.is_email? and answerer.prefers_email?
   end
 
   def choose_format_and_send recipient, text, options
