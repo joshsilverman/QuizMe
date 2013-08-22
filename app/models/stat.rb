@@ -143,45 +143,18 @@ class Stat < ActiveRecord::Base
   end
 
   def self.month_summary asker_id = nil, domain = 30
-    graph_data, display_data = Rails.cache.fetch "stat_daus_asker_id_#{asker_id}_domain_#{domain}", :expires_in => 17.minutes do
-      asker_ids = User.askers.collect(&:id)
+    display_data = {}
+    user_ids_by_date = Post.social.not_spam.not_us\
+        .select(["to_char(posts.created_at, 'MM/DD') as created_at", "user_id", "interaction_type", "correct"])\
+        .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
+        .order("created_at ASC")\
+        .group_by { |post| post.created_at }
+    display_data[:today] = Post.social.not_spam.not_us.where("created_at > ?", 24.hours.ago).count("distinct user_id")
+    display_data[:total] = Post.social.not_spam.not_us.where("created_at > ?", (24*domain).hours.ago).count("distinct user_id")
 
-      display_data = {}
-      if asker_id
-        user_ids_by_date = Post.social.not_spam.not_us\
-            .where('posts.in_reply_to_user_id = ?', asker_id)\
-            .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
-            .order("created_at ASC")\
-            .group_by { |post| post.created_at.to_date }
-        display_data[:today] = Post.social.not_spam.not_us\
-            .where('posts.in_reply_to_user_id = ?', asker_id)\
-            .where("created_at > ?", 24.hours.ago)\
-            .order("created_at ASC")\
-            .group_by { |post| post.user_id }.keys.count
-        display_data[:total] = Post.social.not_spam.not_us\
-            .where('posts.in_reply_to_user_id = ?', asker_id)\
-            .where("created_at > ?", (24*domain).hours.ago)\
-            .collect(&:user_id).uniq.count
-      else
-        user_ids_by_date = Post.social.not_spam.not_us\
-            .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
-            .order("created_at ASC")\
-            .group_by { |post| post.created_at.to_date }
-        display_data[:today] = Post.social.not_spam.not_us\
-            .where("created_at > ?", 24.hours.ago)\
-            .order("created_at ASC")\
-            .group_by { |post| post.user_id }.keys.count
-        display_data[:total] = Post.social.not_spam.not_us\
-            .where("created_at > ?", (24*domain).hours.ago)\
-            .collect(&:user_id).uniq.count
-      end
-
-      graph_data = {}
-      user_ids_by_date.each do |date, posts|
-        graph_data[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.count
-      end
-
-      [graph_data, display_data]
+    graph_data = {}
+    user_ids_by_date.each do |date, posts|
+      graph_data[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.count
     end
     return graph_data, display_data
   end
