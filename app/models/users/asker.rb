@@ -353,18 +353,17 @@ class Asker < User
 
   def select_question user
     scored_questions = Question.score_questions
+    scored_questions = scored_questions[id]
 
     reengagement_question_ids = posts\
       .reengage_inactive\
       .where("in_reply_to_user_id = ?", user.id)\
       .where("question_id is not null")\
       .collect(&:question_id)\
-      .uniq
-
-    scored_questions = scored_questions[id]
+      .uniq    
 
     # filter out answered and recently sent question ids if possible
-    question_ids = scored_questions.keys - questions_answered_ids_by_asker(id) # get unanswered questions
+    question_ids = scored_questions.keys - user.questions_answered_ids_by_asker(id) # get unanswered questions
     question_ids = scored_questions.keys if question_ids.blank? # degrade to using answered questions
     question_ids = question_ids.reject { |id| reengagement_question_ids.include? user.id } if (question_ids - reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
 
