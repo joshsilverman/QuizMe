@@ -38,7 +38,7 @@ class TwitterAsker < Asker
         :url => options[:long_url] ? short_url : nil,
         :posted_via_app => true, 
         :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
-        :interaction_type => options[:interaction_type],
+        :interaction_type => 2,
         :correct => options[:correct],
         :intention => options[:intention],
         :question_id => options[:question_id],

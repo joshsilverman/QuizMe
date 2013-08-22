@@ -132,6 +132,10 @@ class Post < ActiveRecord::Base
     interaction_type == 4
   end
 
+  def is_email?
+    interaction_type == 5
+  end
+
   def is_moderatable?
     return false unless correct.nil?
     return false if is_retweet?

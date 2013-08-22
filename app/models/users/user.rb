@@ -103,6 +103,14 @@ class User < ActiveRecord::Base
   	ADMINS.include?(id)
   end
 
+  def prefers_twitter?
+  	communication_preference == 1
+  end
+
+  def prefers_email?
+  	communication_preference == 2
+  end
+
   def twi_profile_img_med_url
   	twi_profile_img_url.sub("_normal.", "_reasonably_small.")
   end
@@ -629,37 +637,15 @@ class User < ActiveRecord::Base
     ((Time.now - posts.order('created_at ASC').first.created_at)/60/60/24).round
   end
 
-  def select_reengagement_asker_and_question scored_questions
+  def select_reengagement_asker
     answer_count_by_asker = posts\
       .answers\
       .where("in_reply_to_user_id in (?)", follows.collect(&:id))\
       .where("in_reply_to_user_id in (?)", Asker.published_ids)\
       .select(["user_id", "count(in_reply_to_user_id) as count"])\
       .group("in_reply_to_user_id")\
-      .count
-
-    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
-    return unless asker
-
-		reengagement_question_ids = asker.posts\
-			.reengage_inactive\
-			.where("in_reply_to_user_id = ?", id)\
-			.where("question_id is not null")\
-			.collect(&:question_id)\
-			.uniq
-
-		scored_questions = scored_questions[asker.id]
-
-		# filter out answered and recently sent question ids if possible
-		question_ids = scored_questions.keys - questions_answered_ids_by_asker(asker.id) # get unanswered questions
-		question_ids = scored_questions.keys if question_ids.blank? # degrade to using answered questions
-		question_ids = question_ids.reject { |id| reengagement_question_ids.include? id } if (question_ids - reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
-
-		score_grouped_question_ids = question_ids.group_by { |question_id| scored_questions[question_id] }
-
-		# select question from highest scoring question group
-		question = Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
-		return asker, question
+      .count  
+    (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))  
   end
 
   def pick_reengagement_type last_active_at # can be further personalized in the future
