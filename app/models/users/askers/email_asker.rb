@@ -1,6 +1,7 @@
 class EmailAsker < Asker
 
 	def send_public_message text, options = {}, recipient = nil
+    recipient ||= User.where(id: options[:in_reply_to_user_id]).first
     if recipient
       send_private_message recipient, text, options
     else
@@ -81,37 +82,33 @@ class EmailAsker < Asker
     post.update(correct: post.autocorrect)
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
+    ask_question(answerer) if post.is_email? and answerer.prefers_email?
   end
 
   def choose_format_and_send recipient, text, options
-    if options[:is_reengagement] and options[:question_id]
+    short_url = nil
+    if options[:short_url]
+      short_url = options[:short_url]
+    elsif options[:long_url]
+      short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
+    end      
+
+    if options[:intention] == 'grade'
+      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
+      mail.deliver
+      return text, short_url
+    elsif options[:question_id]
       question = Question.includes(:answers).find(options[:question_id])
-      short_url = nil
-      if options[:short_url]
-        short_url = options[:short_url]
-      elsif options[:long_url]
-        short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-      end      
-      mail, text, url = EmailAskerMailer.question(self, recipient, text, question, short_url, options)
+      mail = EmailAskerMailer.question(self, recipient, text, question, short_url, options)
       mail.deliver
-      return text, url
-    elsif options[:intention] == 'grade'
-      short_url = nil
-      if options[:short_url]
-        short_url = options[:short_url]
-      elsif options[:long_url]
-        short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-      end
-      mail, text, url = EmailAskerMailer.generic(self, recipient, text, short_url, options)
-      mail.deliver
-      return text, url
+      return text, short_url
     else
       false
     end
   end
 
   def detect_in_reply_to_post_id text, user
-    if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)\?s=[a-zA-Z]+&lt=reengage/)
+    if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)/)
       url, asker_id, pub_id = match.to_a
       post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
       return (id == asker_id.to_i and post_id) ? post_id : nil

@@ -205,7 +205,6 @@ class Asker < User
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at.time]}.flatten]
 
-    @scored_questions = Question.score_questions
     @question_sent_by_asker_counts = {}
 
     user_ids_to_last_active_at.each do |user_id, last_active_at|
@@ -242,8 +241,9 @@ class Asker < User
       reengagement_type = options[:type] || user.pick_reengagement_type(options[:last_active_at])
       case reengagement_type
       when :question
-        asker, question = user.select_reengagement_asker_and_question(@scored_questions)
-        return false unless asker and question
+        return false unless asker = user.select_reengagement_asker
+        return false unless question = asker.select_question(user)
+
         text = question.text
         publication = question.publications.order("created_at DESC").first
         long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
@@ -261,7 +261,8 @@ class Asker < User
       end
     else
       reengagement_type = :question
-      asker, question = user.select_reengagement_asker_and_question(@scored_questions)
+      return false unless asker = user.select_reengagement_asker
+      return false unless question = asker.select_question(user)      
       text = question.text
       intention = 'reengage inactive'
       publication = question.publications.order("created_at DESC").first
@@ -317,6 +318,63 @@ class Asker < User
     
     return true
   end
+
+  def ask_question user, options = {}
+    question = select_question(user)
+    publication = question.publications.order("created_at DESC").first
+    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
+    if options[:type] == :private # Not tested yet...
+      self.send_private_message(user, question.text, {
+        posted_via_app: true,
+        requires_action: false,
+        link_type: options[:link_type],
+        intention: options[:intention],
+        in_reply_to_user_id: user.id,
+        include_answers: true,
+        is_reengagement: true,
+        publication_id: (publication ? publication.id : nil),  
+        question_id: (question ? question.id : nil),
+        long_url: long_url
+      })
+    else
+      self.send_public_message(question.text, {
+        reply_to: user.twi_screen_name,
+        long_url: options[:long_url],
+        in_reply_to_user_id: user.id,
+        posted_via_app: true,
+        requires_action: false,
+        link_to_parent: false,
+        link_type: options[:link_type],
+        intention: options[:intention],
+        include_answers: true,
+        publication_id: (publication ? publication.id : nil),  
+        question_id: (question ? question.id : nil),
+        long_url: long_url
+      })
+    end   
+  end
+
+  def select_question user
+    scored_questions = Question.score_questions
+    scored_questions = scored_questions[id]
+
+    reengagement_question_ids = posts\
+      .reengage_inactive\
+      .where("in_reply_to_user_id = ?", user.id)\
+      .where("question_id is not null")\
+      .collect(&:question_id)\
+      .uniq    
+
+    # filter out answered and recently sent question ids if possible
+    question_ids = scored_questions.keys - user.questions_answered_ids_by_asker(id) # get unanswered questions
+    question_ids = scored_questions.keys if question_ids.blank? # degrade to using answered questions
+    question_ids = question_ids.reject { |id| reengagement_question_ids.include? user.id } if (question_ids - reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
+
+    score_grouped_question_ids = question_ids.group_by { |question_id| scored_questions[question_id] }
+
+    # select question from highest scoring question group
+    Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
+  end  
 
   def self.engage_new_users
     # Send DMs to new users
