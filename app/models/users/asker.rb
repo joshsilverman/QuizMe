@@ -322,6 +322,7 @@ class Asker < User
   def ask_question user, options = {}
     question = select_question(user)
     publication = question.publications.order("created_at DESC").first
+    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
     if options[:type] == :private # Not tested yet...
       self.send_private_message(user, question.text, {
         posted_via_app: true,
@@ -332,7 +333,8 @@ class Asker < User
         include_answers: true,
         is_reengagement: true,
         publication_id: (publication ? publication.id : nil),  
-        question_id: (question ? question.id : nil)
+        question_id: (question ? question.id : nil),
+        long_url: long_url
       })
     else
       self.send_public_message(question.text, {
@@ -346,7 +348,8 @@ class Asker < User
         intention: options[:intention],
         include_answers: true,
         publication_id: (publication ? publication.id : nil),  
-        question_id: (question ? question.id : nil)
+        question_id: (question ? question.id : nil),
+        long_url: long_url
       })
     end   
   end
