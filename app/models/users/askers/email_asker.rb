@@ -63,13 +63,10 @@ class EmailAsker < Asker
   end
 
   def auto_respond post, answerer, params
-    puts 'in auto_respond'
     return unless !post.autocorrect.nil? and post.requires_action
     return unless post.conversation.posts.grade.blank?
-    puts 'through filters'
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
-    puts text
     send_private_message answerer, text, {
       :user_id => id,
       :provider => 'email',
@@ -81,13 +78,10 @@ class EmailAsker < Asker
       :publication_id => post.conversation.post.publication.id,
       :subject => params[:subject]
     }
-    puts 'after send_private_message'
 
     post.update(correct: post.autocorrect)
-    puts '1'
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
-    puts '2'
     ask_question(answerer) if post.is_email? and answerer.prefers_email?
   end
 
