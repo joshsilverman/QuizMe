@@ -108,6 +108,8 @@ class EmailAsker < Asker
   end
 
   def detect_in_reply_to_post_id text, user
+    puts 'in detect_in_reply_to_post_id'
+    puts text
     if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)/)
       url, asker_id, pub_id = match.to_a
       post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
