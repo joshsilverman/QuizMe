@@ -86,25 +86,20 @@ class EmailAsker < Asker
   end
 
   def choose_format_and_send recipient, text, options
-    if options[:question_id]
-      question = Question.includes(:answers).find(options[:question_id])
-      short_url = nil
-      if options[:short_url]
-        short_url = options[:short_url]
-      elsif options[:long_url]
-        short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-      end      
-      mail = EmailAskerMailer.question(self, recipient, text, question, short_url, options)
+    short_url = nil
+    if options[:short_url]
+      short_url = options[:short_url]
+    elsif options[:long_url]
+      short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
+    end      
+
+    if options[:intention] == 'grade'
+      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
       mail.deliver
       return text, short_url
-    elsif options[:intention] == 'grade'
-      short_url = nil
-      if options[:short_url]
-        short_url = options[:short_url]
-      elsif options[:long_url]
-        short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-      end
-      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
+    elsif options[:question_id]
+      question = Question.includes(:answers).find(options[:question_id])
+      mail = EmailAskerMailer.question(self, recipient, text, question, short_url, options)
       mail.deliver
       return text, short_url
     else
