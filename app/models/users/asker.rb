@@ -328,6 +328,7 @@ class Asker < User
         requires_action: false,
         link_type: options[:link_type],
         intention: options[:intention],
+        in_reply_to_user_id: user.id,
         include_answers: true,
         is_reengagement: true,
         publication_id: (publication ? publication.id : nil),  

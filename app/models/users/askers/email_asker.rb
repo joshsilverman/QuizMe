@@ -1,6 +1,7 @@
 class EmailAsker < Asker
 
 	def send_public_message text, options = {}, recipient = nil
+    recipient ||= User.where(id: options[:in_reply_to_user_id]).first
     if recipient
       send_private_message recipient, text, options
     else
