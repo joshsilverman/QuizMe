@@ -33,7 +33,6 @@ class EmailAsker < Asker
 	end
 
   def save params, u
-    puts params[:text]
     in_reply_to_post_id = detect_in_reply_to_post_id(params[:text], u)
 
     conversation_id = nil
