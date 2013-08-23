@@ -54,7 +54,7 @@
 									.tweet_button.btn.btn-primary{:feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => false} Answer
 								.shadow-bottom
 
-			.subsidiaries{:style => "display: none;"}
+			.subsidiaries{:style => "display: none;"}		
 				- if @conversation
 					- count = @conversation.posts.size
 					- @conversation.posts.order("created_at ASC").each_with_index do |response, i|
@@ -70,7 +70,12 @@
 										%a.answer_link{:target => "_blank", :href => formatted_response[1]}= formatted_response[1]
 								- else
 									%p= formatted_response[0].html_safe
-
+				/ .subsidiary.post.after_answer.email_request
+				/ 	.content
+				/ 		%p.cta_message Want a progress report?
+				/ 		.input-append{style: 'display: inline;'}
+				/ 			%input.span2{type: "text", placeholder: ['john@example.com', 'susan@example.com'].sample}
+				/ 			%button.btn.btn-warning{type: "button", style: 'margin-left: -6px;'} Submit	
 				.loading{:style => "display: none;"}
 					Loading...	
 

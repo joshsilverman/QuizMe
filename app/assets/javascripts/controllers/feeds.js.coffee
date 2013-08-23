@@ -282,7 +282,7 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.tappable (e) => @expand(e) unless $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
+		@element.tappable (e) => @expand(e) unless $(e.target).parents('.after_answer').length > 0 or $(e.target).is("input") or $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
@@ -376,6 +376,7 @@ class Post
 							loading.delay(1000).fadeOut(500, => 
 								first_post.next().fadeIn(500, => 
 									@show_activity()
+									puts window.feed.request_email
 									if window.feed.requested_publication_id == @id
 										@element.find('.feedback .btn').on 'click', (e) =>
 											element = $(e.target)
@@ -385,6 +386,10 @@ class Post
 									else if window.feed.answered == 5
 										$(".next_question").on "click", (e) => $(".post_question").click()
 										conversation.find(".after_answer.new_question").fadeIn(500)
+									else if conversation.find('#request_email').val() == 'true'
+										@element.find('.request_email .btn').on 'click', (e) =>
+											console.log "bro"
+										conversation.find(".after_answer.request_email").fadeIn(500)
 								)
 								icon.fadeIn(250)
 							)

@@ -138,6 +138,7 @@ class FeedsController < ApplicationController
 
         # inject requested publication from params, render twi card
         @request_mod = false
+
         if params[:post_id]
           @requested_publication = @asker.publications.where(id: params[:post_id]).first
           if @requested_publication.present?
@@ -295,6 +296,12 @@ class FeedsController < ApplicationController
     
     user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
     @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
+
+    @request_email = false
+    if (current_user.last_email_request_at.nil? or current_user.last_email_request_at < 1.month.ago)
+      @request_email = true
+      current_user.touch(:last_email_request_at)
+    end
 
     render :partial => "conversation"
   end
