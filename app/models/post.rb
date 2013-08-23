@@ -382,6 +382,12 @@ class Post < ActiveRecord::Base
       :requires_action => true
     )
 
+    if (in_reply_to_post.try(:intention) == 'request email') and (email_address = post.extract_email_address)
+      u.update(email: email_address)
+      asker.send_private_message(u, 'Thanks!', {intention: "thank", in_reply_to_post_id: post.id})
+      Mixpanel.track_event "added email address", { distinct_id: u.id }
+    end
+
     u.update_user_interactions({
       :learner_level => "dm", 
       :last_interaction_at => post.created_at
@@ -430,6 +436,10 @@ class Post < ActiveRecord::Base
     end
   end
 
+  def extract_email_address
+    email_address = text.downcase.match(/[a-zA-Z0-9\_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+/)
+    return (email_address ? email_address.to_s : nil)
+  end
 
   def self.save_post(interaction_type, tweet, asker_id, conversation_id = nil)
     # puts "saving post from stream (#{interaction_type}):"

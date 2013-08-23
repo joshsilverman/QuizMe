@@ -439,14 +439,14 @@ class User < ActiveRecord::Base
     return nil if asker.nil?
 
     #default no comment
+    intention = nil
     no_comment = "No comment"
 
     to_seg_test_name = {
       1 => "to edger lifecycle transition comment (=> noob)",
       2 => "to noob lifecycle transition comment (=> regular)",
-      # 3 => "to regular lifecycle transition comment (=> advanced)",
-      3 => "to regular growth comment (=> advanced)",
-      4 => "to advanced lifecycle transition comment v2 (=> pro)",
+      3 => "email solicitation script (=> advanced)",
+      4 => "to advanced lifecycle transition comment v3 (=> pro)",
       5 => "to pro lifecycle transition comment (=> superuser)"
     }
 
@@ -456,25 +456,18 @@ class User < ActiveRecord::Base
     when 2 #to noob
       comment = no_comment
     when 3 #to regular
-    	if self.is_teacher?
-    		comment = 'Are you a teacher? Would this tool be useful in any of your classes?'
-    	else
-	      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-	        "Is there anything specific I can quiz you on?",
-	        "Any other topics you would be interested in learning about?",
-	        "Do you have any friends that I could quiz?"
-	      )
-	    end
-    when 4 #to advanced 
-      # suggestions?
       comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
         no_comment, 
-        "You're off to a strong start. How can I make this better?",
         "I'm going to start sending a weekly progress report, what's your email address?"
       )
+    	intention = 'request email'
+    when 4 #to advanced - suggestions?
+      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
+        no_comment, 
+        "You're off to a strong start. How can I make this better?"
+      )
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
-    when 5 #to pro
-      # great commitment
+    when 5 #to pro - great commitment
       comment = "Fantastic dedication to this material."
       Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
@@ -482,7 +475,7 @@ class User < ActiveRecord::Base
     end
 
     unless comment == no_comment or comment.nil?
-      asker.send_private_message(self, comment, {:intention => "lifecycle+"})
+      asker.send_private_message(self, comment, {:intention => (intention || "lifecycle+")})
       return comment
     end
 
