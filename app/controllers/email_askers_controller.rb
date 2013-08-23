@@ -11,6 +11,8 @@ class EmailAskersController < ApplicationController
 
     post = asker.save params, user
 
+    asker.ask_question(user) if post.text.downcase.strip == 'next'
+
     Post.classifier.classify post
     Post.grader.grade post.reload
 
