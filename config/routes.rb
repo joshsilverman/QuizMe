@@ -35,8 +35,8 @@ Quizmemanager::Application.routes.draw do
   get "askers/:id/import" => "askers#import"
 
   post "feeds/search"
-  get "feeds/:id(/:post_id(/:answer_id))" => "feeds#unauth_show"
-  get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
 
   get '/search' => 'feeds#index_with_search'
 

@@ -23,7 +23,6 @@ class @Feed
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
 		@initialize_fix_position_listener() unless $(".index").length > 0
-		@initialize_stream()
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
@@ -69,7 +68,8 @@ class @Feed
 						, 500
 				twttr.events.bind 'follow', (e) => @afterfollow(e)
 
-		check_twttr()	
+		check_twttr()
+		setTimeout @initialize_stream, 500
 
 	load_follow_buttons: ->
 		$('a.twitter-follow-button').filter(->
