@@ -120,7 +120,7 @@ class FeedsController < ApplicationController
         publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
         if publication.present?
           # include request mod?
-          question = @requested_publication.question
+          question = publication.question
           @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
 
           post_render_content = render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
@@ -480,6 +480,19 @@ class FeedsController < ApplicationController
       # question activity
       actions = Publication.recent_responses_by_asker(@asker, posts)
       @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
+
+      # inject requested publication from params, render twi card
+      @request_mod = false
+      if params[:post_id]
+        @post_id = params[:post_id]
+        @answer_id = params[:answer_id]
+        @requested_publication = @asker.publications.where(id: params[:post_id]).first
+        if @requested_publication.present?
+          @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
+          question = @requested_publication.question
+          @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
+        end
+      end
 
       # stats
       @question_count, @questions_answered, @followers = @asker.get_stats
