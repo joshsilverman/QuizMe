@@ -653,9 +653,15 @@ body {
 			margin-right: 5px !important;
 		}
 
-		.next_question {
-			/*background: purple;*/
-		}	
+		&.request_email {
+			.input-append { 
+				display: inline; 
+
+				input { width: 139px; }
+				.btn { margin-left: -6px; }
+			}
+
+		}
 	}
 
 	.subsidiaries {

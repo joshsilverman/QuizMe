@@ -122,6 +122,7 @@ Quizmemanager::Application.routes.draw do
   delete "users/:id" => "users#destroy_supporter"
   get "/user/supporters/:id/touch" => "users#touch_supporter"
   get '/users/activity_feed'
+  post '/users/add_email'
 
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'

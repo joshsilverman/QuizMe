@@ -376,7 +376,6 @@ class Post
 							loading.delay(1000).fadeOut(500, => 
 								first_post.next().fadeIn(500, => 
 									@show_activity()
-									puts window.feed.request_email
 									if window.feed.requested_publication_id == @id
 										@element.find('.feedback .btn').on 'click', (e) =>
 											element = $(e.target)
@@ -387,9 +386,8 @@ class Post
 										$(".next_question").on "click", (e) => $(".post_question").click()
 										conversation.find(".after_answer.new_question").fadeIn(500)
 									else if conversation.find('#request_email').val() == 'true'
-										@element.find('.request_email .btn').on 'click', (e) =>
-											console.log "bro"
-										conversation.find(".after_answer.request_email").fadeIn(500)
+										@element.find('.request_email .btn').on 'click', (e) => @submit_email($(e.target))
+										conversation.find(".after_answer.request_email").fadeIn(500, => @element.find('#email_input').focus())
 								)
 								icon.fadeIn(250)
 							)
@@ -423,6 +421,22 @@ class Post
 
 	create_moderation: (moderation_type, params) =>
 		$.post '/moderations', params
+	submit_email: (element) =>
+		element = element.parents('.request_email')
+		params = 
+			email: element.find("input").val()
+		$.ajax '/users/add_email',
+			type: 'POST'
+			data: params
+			success: (e) => 
+				if e == true
+					element.find('.content').fadeOut(500, => 
+						element.find(".input-append").hide()
+						element.find(".cta_message").css('position', 'relative').css('top', '4px').text("Thanks, you'll receive one this week!")
+						element.find('.content').fadeIn()
+					)
+				else
+					$(".request_email input").css('border-color', 'red')
 
 $ -> 
 	if $("#post_feed").length > 0

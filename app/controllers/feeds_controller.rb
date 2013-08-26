@@ -166,8 +166,6 @@ class FeedsController < ApplicationController
 
         @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
 
-        @after_answer_actions = {}
-
         respond_to do |format|
           format.html { render :show }
           format.json { render json: @posts }
@@ -298,7 +296,7 @@ class FeedsController < ApplicationController
     @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
 
     @request_email = false
-    if (current_user.last_email_request_at.nil? or current_user.last_email_request_at < 1.month.ago)
+    if (current_user.email.blank? and (current_user.last_email_request_at.nil? or current_user.last_email_request_at < (Time.now - 30.days)))
       @request_email = true
       current_user.touch(:last_email_request_at)
     end

@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed]
+  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :add_email]
 
   def supporters
     @supporters = User.supporters
@@ -71,6 +71,14 @@ class UsersController < ApplicationController
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def add_email
+    if status = current_user.update(email: params[:email])
+      Post.trigger_split_test(current_user.id, 'request email after answer script (provides email address)')
+    end
+    
+    render :json => status
   end
 
   def create_supporter
