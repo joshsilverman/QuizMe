@@ -461,10 +461,9 @@ class Asker < User
       :question_id => question.id      
     })
 
-    interval = Post.create_split_test(user.id, "incorrect answer followup interval in hours (answers followup)", '24', '18', '6', '3')
     Delayed::Job.enqueue(
       followup_post,
-      :run_at => interval.to_i.hours.from_now
+      :run_at => 1.day.from_now
     )
   end
 
@@ -934,7 +933,6 @@ class Asker < User
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication.id).order("created_at DESC").limit(1).first
         if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication.id).blank?
           in_reply_to = "incorrect answer follow up" 
-          Post.trigger_split_test(answerer.id, "incorrect answer followup interval in hours (answers followup)") unless user_post.correct.nil?
         end
       end
 
@@ -963,7 +961,6 @@ class Asker < User
           in_reply_to = "reengage inactive"
         elsif parent_post.intention == 'incorrect answer follow up'
           in_reply_to = "incorrect answer follow up" 
-          Post.trigger_split_test(answerer.id, "incorrect answer followup interval in hours (answers followup)") unless user_post.correct.nil?
         elsif parent_post.intention == 'new user question mention'
           in_reply_to = "new follower question mention"
         end
