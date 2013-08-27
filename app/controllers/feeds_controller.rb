@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
-  prepend_before_filter :check_for_authentication_token, :only => [:unauth_show]
-  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :stream, :more, :search] 
+  prepend_before_filter :check_for_authentication_token, :only => [:show]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :search] 
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
 
@@ -111,25 +111,21 @@ class FeedsController < ApplicationController
 
   def show
     if current_user
-      _show
+      show_template
     elsif !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     else # post_yield
-      content = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) { _show true }
+      template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) { show_template true }
       if params[:post_id]
         publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
         if publication.present?
-          # include request mod?
-          question = publication.question
-          @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
-
-          post_render_content = render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
-          content = content.sub("<!--post_yield-->", post_render_content)
-          render text: content
+          post_yield_template = render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
+          template = template.sub("<!--post_yield-->", post_yield_template)
+          render text: template
           return
         end
       end
-      render text: content
+      render text: template
     end
   end
 
@@ -468,7 +464,7 @@ class FeedsController < ApplicationController
   private
 
     # generates html generic feed - ie. /feeds/18
-    def _show as_string = false
+    def show_template as_string = false
       # publications, posts and user responses
       @asker = Asker.find(params[:id])
       @publications = Publication.recent_by_asker(@asker)

@@ -32,7 +32,7 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_by_asker_and_id asker_id, id
-    Rails.cache.fetch "publication_recent_by_asker_and_id#{asker_id}-#{id}" do
+    Rails.cache.fetch "publication_recent_by_asker_and_id#{asker_id}-#{id}", :expires_in => 5.minutes do
       Publication.published.where(id: id, asker_id: asker_id)\
         .includes([:asker, :posts, :question => [:answers, :user]]).first
     end

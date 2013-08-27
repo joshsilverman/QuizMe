@@ -319,13 +319,13 @@ class Post
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
 				$(e.target).find("h3").removeClass("active_next")
-	expand: =>
+	expand: (duration = 200) =>
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
 			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.find(".subsidiaries, .loading, .answers").hide()
-			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", 200)
+			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", duration)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
 			@element.find(".answered_indicator").css("opacity", ".4")
@@ -342,9 +342,9 @@ class Post
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
 			else
-				@element.find(".answers").slideToggle(200)
-				@element.find(".subsidiaries").slideToggle(200, => 
-					@element.toggleClass("active", 200)
+				@element.find(".answers").slideToggle(duration)
+				@element.find(".subsidiaries").slideToggle(duration, => 
+					@element.toggleClass("active", duration)
 					@element.next(".conversation").addClass("active_next")
 					@element.prev(".conversation").addClass("active_prev")
 				)
@@ -421,10 +421,15 @@ class Post
 
 $ -> 
 	if $("#post_feed").length > 0
-		window.feed = new Feed 
 		publication_id = $('#post_id').val()
 		target = $(".post[post_id=#{publication_id}]")
+		if target.length > 1
+			$(target[0]).parents('.conversation').remove()
+			target = $(".post[post_id=#{publication_id}]")
+
+		window.feed = new Feed
 		if target.length > 0
-			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand()
+			target.parents('.conversation').removeClass('hidden')
+			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand(0)
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-			$('html,body').animate({scrollTop: target.offset().top - 10}, 1000);
+			$('html,body').animate({scrollTop: target.offset().top - 10}, 0);

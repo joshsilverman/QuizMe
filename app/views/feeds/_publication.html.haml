@@ -1,7 +1,11 @@
-- @responses ||= {}
-- @actions ||= {}
-= hidden_field_tag :post_id, post_id if defined? post_id
-= hidden_field_tag :answer_id, answer_id if defined? answer_id
+/ variables for rendering publication directly from action
+- start_hidden = ''
+- if defined? post_id
+	- @responses ||= {}
+	- @actions ||= {}
+	= hidden_field_tag :post_id, post_id
+	= hidden_field_tag :answer_id, answer_id if defined? answer_id
+	- start_hidden = 'hidden'
 
 - @question_asker = publication.asker
 - @conversation = nil
@@ -10,7 +14,7 @@
 	- correct = (@responses[publication.id].first.posts.where("correct is not null").present? ? @responses[publication.id].first.posts.where("correct is not null").first.correct : nil)
 	- @conversation = @responses[publication.id].first
 	- responded = true
-.conversation.border-color{asker_id: @question_asker.id, question_id: publication.question.id}
+.conversation.border-color{asker_id: @question_asker.id, question_id: publication.question.id, class: start_hidden}
 	.post.parent{:class => ("answered" if responded), :post_id => publication.id}
 		- if first = publication.posts.first
 			- if first.created_at < 1.day.ago
