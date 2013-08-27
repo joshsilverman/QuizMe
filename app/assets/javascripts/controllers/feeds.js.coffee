@@ -282,7 +282,7 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.tappable (e) => @expand(e) unless $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
+		@element.tappable (e) => @expand(e) unless $(e.target).parents('.after_answer').length > 0 or $(e.target).is("input") or $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
@@ -385,6 +385,9 @@ class Post
 									else if window.feed.answered == 5
 										$(".next_question").on "click", (e) => $(".post_question").click()
 										conversation.find(".after_answer.new_question").fadeIn(500)
+									else if conversation.find('#request_email').val() == 'true'
+										@element.find('.request_email .btn').on 'click', (e) => @submit_email($(e.target))
+										conversation.find(".after_answer.request_email").fadeIn(500, => @element.find('#email_input').focus())
 								)
 								icon.fadeIn(250)
 							)
@@ -418,6 +421,22 @@ class Post
 
 	create_moderation: (moderation_type, params) =>
 		$.post '/moderations', params
+	submit_email: (element) =>
+		element = element.parents('.request_email')
+		params = 
+			email: element.find("input").val()
+		$.ajax '/users/add_email',
+			type: 'POST'
+			data: params
+			success: (e) => 
+				if e == true
+					element.find('.content').fadeOut(500, => 
+						element.find(".input-append").hide()
+						element.find(".cta_message").css('position', 'relative').css('top', '4px').text("Thanks, you'll receive one this week!")
+						element.find('.content').fadeIn()
+					)
+				else
+					$(".request_email input").css('border-color', 'red')
 
 $ -> 
 	if $("#post_feed").length > 0

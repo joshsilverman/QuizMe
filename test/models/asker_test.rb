@@ -998,7 +998,6 @@ describe Asker do
 				Delayed::Job.count.must_equal 1
 			end
 
-
 			it 'unless we already followed up on the question this month' do
 				2.times do 
 					@asker.app_response @user_response, false

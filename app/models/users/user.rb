@@ -47,6 +47,8 @@ class User < ActiveRecord::Base
 
   belongs_to :search_term, foreign_key: :search_term_topic_id, class_name: 'Topic'
 
+  validates_format_of :email, :with => /[a-zA-Z0-9\_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+/, :if => Proc.new { |user| user.email.present? }
+
   scope :supporters, -> { where("users.role == 'supporter'") }
   scope :not_asker, -> { where("users.role != 'asker'") }
   scope :not_asker_not_us, -> { where("users.id not in (?) and users.role != 'asker'" , ADMINS) }

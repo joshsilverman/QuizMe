@@ -18,9 +18,18 @@
 		%p.cta_message How was this question?
 		%a.btn.btn-danger{type_id: 11} Needs Work
 		%a.btn.btn-success{type_id: 7} It's Good!
+.subsidiary.post.after_answer.request_email.hide
+	.content
+		- request_email_copy = Post.create_split_test(current_user.id, 'request email after answer script (provides email address)', 'Want an email progress report?', 'Receive a progress report:', 'Want a weekly progress report?', 'Receive a weekly activity summary:', 'Want a weekly activity summary?', 'Enter your email for a weekly report:')
+		%p.cta_message= 'Enter your email for a weekly report:'
+		.input-append
+			%input#email_input.span2{type: "text", placeholder: ['john@example.com', 'susan@example.com'].sample}
+			%button.btn.btn-warning{type: "button"} Submit	
 - if current_user and Post.create_split_test(current_user.id, "ugc cta after five answers on site (adds question)", "false", "true") == "true"
 	.subsidiary.post.after_answer.hide
 		.subsidiary.post.after_answer.new_question.hide
 			.content
 				%p.cta_message Want to contribute a question?
 				%a.btn.btn-warning.next_question Write One
+
+= hidden_field_tag :request_email, @request_email
