@@ -11,14 +11,6 @@ require 'active_support/testing/setup_and_teardown'
 DatabaseCleaner.strategy = :truncation
 Rails.logger.level = 2
 
-# class ControllerTest < MiniTest::Spec
-  # register_spec_type(/Controller$/, self)
-
-#   before :each do
-#     puts 'yo'
-#   end
-# end
-
 class ActiveSupport::TestCase
   include Warden::Test::Helpers
   Warden.test_mode!
@@ -34,6 +26,8 @@ class ActiveSupport::TestCase
   self.use_transactional_fixtures = false
   self.use_instantiated_fixtures  = true
   fixtures :all
+
+  Capybara.default_wait_time = 5
 
   before :each do
     DatabaseCleaner.clean

@@ -1,6 +1,21 @@
 require 'test_helper'
 
 describe FeedsController do
+
+	def answer_question id = nil
+		if id 
+			post = page.find(".conversation[question_id=\"#{id}\"]")
+		else
+			post = page.find('.conversation')
+		end
+		post.click unless post[:class].split(' ').include?('active')
+		assert post.has_selector?('.bottom_border')
+		post.all('h3').first.click
+		post.find('.tweet_button').click
+		assert post.has_selector?('.interactions')
+		return post
+	end
+
 	before :each do 
 		@user = create :user
 		@admin = create :admin
@@ -32,12 +47,7 @@ describe FeedsController do
 		describe 'user answers question' do
 			before :each do 
 				visit "/feeds/#{@asker.id}"
-				post_elmnt = page.find(".post[post_id=\"#{@publication.id}\"]")
-				post_elmnt.click
-				post_elmnt.all('.answers h3').first.click
-				sleep 1
-				post_elmnt.all('.tweet_button').first.click
-				page.find(".conversation[asker_id=\"#{@asker.id}\"] .subsidiary.answered")
+				answer_question
 			end
 			
 			it 'creates user post' do
@@ -55,41 +65,24 @@ describe FeedsController do
 			describe 'question moderation' do
 				it 'unless not requested publication' do
 					visit "/feeds/#{@asker.id}"
-					page.find('.post').click
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.all('.after_answer').count.must_equal 0
+					assert answer_question.has_no_selector?('.feedback')
 				end
 
 				it 'if requested publication' do
 					visit "/feeds/#{@asker.id}/#{@publication.id}"
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.find('.after_answer').visible?.must_equal true
+					assert answer_question.has_selector?('.feedback')
 				end
 
 				it 'unless question already has feedback' do
 					@question.update(needs_edits: true)
 					visit "/feeds/#{@asker.id}/#{@publication.id}"
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.all('.after_answer').count.must_equal 0
+					assert answer_question.has_no_selector?('.feedback')
 				end
 
 				it 'if user hasnt already provided a moderation' do
 					create(:question_moderation, user_id: @user.id, question_id: @question.id, type_id: 7)
 					visit "/feeds/#{@asker.id}/#{@publication.id}"
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.all('.after_answer').count.must_equal 0
+					assert answer_question.has_no_selector?('.feedback')
 				end
 			end
 
@@ -101,51 +94,32 @@ describe FeedsController do
 				it 'unless user has an email address' do
 					@user.update(email: 'jason@jason.jason')
 					visit "/feeds/#{@asker.id}"
-					page.find('.post').click
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.all('.after_answer').count.must_equal 0
+					assert answer_question.has_no_selector?('.request_email')					
 				end
 
 				it "if user doesn't have an email address" do
 					visit "/feeds/#{@asker.id}"
-					page.find('.post').click
-					page.all('.answers h3').first.click
-					sleep 1
-					page.find('.tweet_button').click
-					sleep 4
-					page.all('.after_answer').count.must_equal 1
+					assert answer_question.has_selector?('.request_email')
 				end
 
 				it "once per session" do 
-					@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
-					@publication = create(:publication, question: @question, asker: @asker)
-					@question_post = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)
-					visit "/feeds/#{@asker.id}"
+					question2 = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
+					publication2 = create(:publication, question: question2, asker: @asker)
+					create(:post, user_id: @asker.id, interaction_type: 1, question: question2, publication: publication2)
 
-					page.all('.post').each do |post|
-						post.click
-						post.all('.answers h3').first.click
-						sleep 1
-						post.find('.tweet_button').click
-						sleep 4
-						page.all('.after_answer').count.must_equal 1
-					end
+					visit "/feeds/#{@asker.id}"
+					answer_question(question2.id)
+					answer_question(@question.id)
+
+					page.all('.after_answer').count.must_equal 1
 				end
 
 				it "once a month" do
 					3.times do |i|
 						visit "/feeds/#{@asker.id}"
-						post_elmnt = page.find(".post[post_id=\"#{@publication.id}\"]")
-						post_elmnt.click
-						post_elmnt.all('.answers h3').first.click
-						sleep 1
-						post_elmnt.find('.tweet_button').click
-						sleep 4
+						answer_question(@question.id)
 						page.all('.after_answer').count.must_equal ((i + 1) % 2)
-
+						
 						Timecop.travel(Time.now + (2.5).weeks)
 						@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
 						@publication = create(:publication, question: @question, asker: @asker)
@@ -156,15 +130,16 @@ describe FeedsController do
 
 				it "and updates user record properly" do
 					visit "/feeds/#{@asker.id}"
-					post_elmnt = page.find(".post[post_id=\"#{@publication.id}\"]")
-					post_elmnt.click
-					post_elmnt.all('.answers h3').first.click; sleep 1
-					post_elmnt.find('.tweet_button').click; sleep 4
+					post = answer_question
+
 					fill_in 'email_input', with: "This is my email"
-					page.find('.request_email .btn').click; sleep 1
+					post.find('.request_email .btn').click
+					assert post.find('.request_email input').visible?
 					@user.reload.email.must_be_nil
+
 					fill_in 'email_input', with: "jason@jason.jason"
-					page.find('.request_email .btn').click; sleep 1
+					page.find('.request_email .btn').click
+					assert post.has_no_selector?('.request_email input')
 					@user.reload.email.must_equal "jason@jason.jason"
 				end
 			end
