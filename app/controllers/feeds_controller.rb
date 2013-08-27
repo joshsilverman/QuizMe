@@ -117,7 +117,7 @@ class FeedsController < ApplicationController
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     else # post_yield
       puts "cache: query - /feeds/#{params[:id]}"
-      template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) do
+      template = Rails.cache.fetch("wisr.com/feeds/#{params[:id]}", expires_in: 15.minutes, race_condition_ttl: 2.minutes) do
         puts "cache: miss - /feeds/#{params[:id]} (new gen: #{Time.now.to_s})"
         show_template true 
       end

@@ -40,7 +40,7 @@ group :development do
   # gem "guard-livereload"
   # gem 'binding_of_caller'
   # gem 'oink'
-  # gem 'ruby-prof'
+  gem 'ruby-prof'
 end
 
 gem 'sass-rails', '~> 4.0.0'
