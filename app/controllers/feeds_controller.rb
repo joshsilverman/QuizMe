@@ -111,12 +111,14 @@ class FeedsController < ApplicationController
 
   def show
     if current_user
+      puts "cache: miss (authed) - /feeds/#{params[:id]}"
       show_template
     elsif !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     else # post_yield
+      puts "cache: query - /feeds/#{params[:id]}"
       template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) do
-        puts "cache miss on /feeds/#{params[:id]}"
+        puts "cache: miss - /feeds/#{params[:id]} (new gen: #{Time.now.to_s})"
         show_template true 
       end
 
