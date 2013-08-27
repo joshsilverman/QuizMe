@@ -23,7 +23,6 @@ class @Feed
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
 		@initialize_fix_position_listener() unless $(".index").length > 0
-		@initialize_stream()
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
@@ -69,7 +68,8 @@ class @Feed
 						, 500
 				twttr.events.bind 'follow', (e) => @afterfollow(e)
 
-		check_twttr()	
+		check_twttr()
+		setTimeout @initialize_stream, 500
 
 	load_follow_buttons: ->
 		$('a.twitter-follow-button').filter(->
@@ -282,7 +282,7 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.tappable (e) => @expand(e) unless $(e.target).parents('.after_answer').length > 0 or $(e.target).is("input") or $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
+		@element.tappable (e) => @expand() unless $(e.target).parents('.after_answer').length > 0 or $(e.target).is("input") or $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
@@ -319,13 +319,13 @@ class Post
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
 				$(e.target).find("h3").removeClass("active_next")
-	expand: =>
+	expand: (duration = 200) =>
 		if @element.hasClass("active")
 			@expanded = false
 			@element.find(".expand").text("Answer")
 			@element.find(".subsidiaries, .loading, .answers").hide()
 			@element.find(".subsidiaries, .loading, .answers").hide()
-			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", 200)
+			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", duration)
 			@element.next(".conversation").removeClass("active_next")
 			@element.prev(".conversation").removeClass("active_prev")	
 			@element.find(".answered_indicator").css("opacity", ".4")
@@ -342,9 +342,9 @@ class Post
 				@element.next(".conversation").addClass("active_next")
 				@element.prev(".conversation").addClass("active_prev")
 			else
-				@element.find(".answers").slideToggle(200)
-				@element.find(".subsidiaries").slideToggle(200, => 
-					@element.toggleClass("active", 200)
+				@element.find(".answers").slideToggle(duration)
+				@element.find(".subsidiaries").slideToggle(duration, => 
+					@element.toggleClass("active", duration)
 					@element.next(".conversation").addClass("active_next")
 					@element.prev(".conversation").addClass("active_prev")
 				)
@@ -440,10 +440,15 @@ class Post
 
 $ -> 
 	if $("#post_feed").length > 0
-		window.feed = new Feed 
 		publication_id = $('#post_id').val()
 		target = $(".post[post_id=#{publication_id}]")
+		if target.length > 1
+			$(target[0]).parents('.conversation').remove()
+			target = $(".post[post_id=#{publication_id}]")
+
+		window.feed = new Feed
 		if target.length > 0
-			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand()
+			target.parents('.conversation').removeClass('hidden')
+			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand(0)
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
-			$('html,body').animate({scrollTop: target.offset().top - 10}, 1000);
+			$('html,body').animate({scrollTop: target.offset().top - 10}, 0);

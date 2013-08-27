@@ -26,7 +26,7 @@ describe Authorization do
 			it 'to proper page for first time author' do
 				auth_mod_manage = authenticated_link("/feeds/#{@wisr_asker.id}?q=1", @user, (Time.now + 1.week))
 				visit auth_mod_manage
-				current_path.must_equal "/u/feeds/#{@wisr_asker.id}"
+				current_path.must_equal "/feeds/#{@wisr_asker.id}"
 			end
 
 			it 'to proper page for return author' do

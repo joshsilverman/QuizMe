@@ -1,11 +1,8 @@
 class FeedsController < ApplicationController
-  prepend_before_filter :check_for_authentication_token, :only => [:unauth_show]
-  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :unauth_show, :stream, :more, :search] 
-  before_filter :unauthenticated_user!, :only => [:unauth_show] 
+  prepend_before_filter :check_for_authentication_token, :only => [:show]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :search] 
   before_filter :admin?, :only => [:manage, :manager_response]
   before_filter :set_session_variables, :only => [:show]
-
-  caches_action :unauth_show, :expires_in => 15.minutes, :cache_path => Proc.new { |c| c.params.except(:s, :lt, :c, :t) }
 
   def index
     @index = true
@@ -112,67 +109,23 @@ class FeedsController < ApplicationController
     render json: @suggested_askers.to_json
   end
 
-  def unauth_show
-    show true
-  end
-
-  def show force = false
-    if !current_user and params[:q] == "1" and params[:id]
+  def show
+    if current_user
+      show_template
+    elsif !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
-    elsif current_user.nil? and force == false
-      redirect_to request.fullpath.gsub(/^\/u/, ""), params
-      # redirect_to "/u#{request.fullpath}", params
-    else
-      if @asker = Asker.find(params[:id])
-
-        # publications, posts and user responses
-        @publications = Publication.recent_by_asker(@asker)
-        posts = Publication.recent_publication_posts_by_asker(@asker, @publications)
-
-        # user specific responses
-        @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
-
-        # question activity
-        actions = Publication.recent_responses_by_asker(@asker, posts)
-        @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
-
-        # inject requested publication from params, render twi card
-        @request_mod = false
-
-        if params[:post_id]
-          @requested_publication = @asker.publications.where(id: params[:post_id]).first
-          if @requested_publication.present?
-            @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
-            question = @requested_publication.question
-            @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
-          end
+    else # post_yield
+      template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) { show_template true }
+      if params[:post_id]
+        publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
+        if publication.present?
+          post_yield_template = render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
+          template = template.sub("<!--post_yield-->", post_yield_template)
+          render text: template
+          return
         end
-
-        # stats
-        @question_count, @questions_answered, @followers = @asker.get_stats
-        
-        # misc
-        @post_id = params[:post_id]
-        @answer_id = params[:answer_id]
-        @author = User.find @asker.author_id if @asker.author_id
-
-        if current_user and Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'true'
-          subscribed = current_user.asker_follows.includes(:related_askers)
-          @related = subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
-        else
-          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-            .where(:id => ACCOUNT_DATA.keys.sample(3)).to_a
-        end
-
-        @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
-
-        respond_to do |format|
-          format.html { render :show }
-          format.json { render json: @posts }
-        end
-      else
-        redirect_to "/"
       end
+      render text: template
     end
   end
 
@@ -513,4 +466,51 @@ class FeedsController < ApplicationController
     human_res = res.nil? ? 'Error- could not complete action' : res ? "New Finish" : "Already Completed"
     render :text => human_res, :status => 200
   end
+
+  private
+
+    # generates html generic feed - ie. /feeds/18
+    def show_template as_string = false
+      # publications, posts and user responses
+      @asker = Asker.find(params[:id])
+      @publications = Publication.recent_by_asker(@asker)
+      posts = Publication.recent_publication_posts_by_asker(@asker, @publications)
+
+      # user specific responses
+      @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
+
+      # question activity
+      actions = Publication.recent_responses_by_asker(@asker, posts)
+      @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
+
+      # inject requested publication from params, render twi card
+      @request_mod = false
+      if params[:post_id]
+        @post_id = params[:post_id]
+        @answer_id = params[:answer_id]
+        @requested_publication = @asker.publications.where(id: params[:post_id]).first
+        if @requested_publication.present?
+          @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
+          question = @requested_publication.question
+          @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
+        end
+      end
+
+      # stats
+      @question_count, @questions_answered, @followers = @asker.get_stats
+      
+      # misc
+      @author = User.find @asker.author_id if @asker.author_id
+
+      if current_user and Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'true'
+        subscribed = current_user.asker_follows.includes(:related_askers)
+        @related = subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
+      else
+        @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
+          .where(:id => ACCOUNT_DATA.keys.sample(3)).to_a
+      end
+
+      @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
+      as_string ? (return render_to_string(:show)) : render(:show)
+    end
 end

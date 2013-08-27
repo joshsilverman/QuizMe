@@ -4,13 +4,6 @@ class ApplicationController < ActionController::Base
   before_filter :split_user
   before_filter :preload_models
 
-  def unauthenticated_user!
-    if current_user
-      # redirect_to request.fullpath.gsub(/^\/u/, ""), params
-      redirect_to "/u#{request.fullpath}", params
-    end
-  end
-
   def check_for_authentication_token
     if !current_user and params["a"]
       auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params["a"]))
