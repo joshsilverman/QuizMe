@@ -115,7 +115,11 @@ class FeedsController < ApplicationController
     elsif !current_user and params[:q] == "1" and params[:id]
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     else # post_yield
-      template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) { show_template true }
+      template = Rails.cache.fetch("feed/#{params[:id]}", expires_in: [3,5,7,11].sample.minutes) do
+        puts "cache miss on /feeds/#{params[:id]}"
+        show_template true 
+      end
+
       if params[:post_id]
         publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
         if publication.present?

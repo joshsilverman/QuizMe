@@ -33,6 +33,7 @@ class Publication < ActiveRecord::Base
 
   def self.recent_by_asker_and_id asker_id, id
     Rails.cache.fetch "publication_recent_by_asker_and_id#{asker_id}-#{id}", :expires_in => 5.minutes do
+      puts "cache miss on recent_by_asker_and_id for /feeds/#{asker_id}/#{id}"
       Publication.published.where(id: id, asker_id: asker_id)\
         .includes([:asker, :posts, :question => [:answers, :user]]).first
     end
