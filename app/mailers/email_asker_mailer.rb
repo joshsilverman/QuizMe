@@ -2,12 +2,6 @@ class EmailAskerMailer < ActionMailer::Base
   default from: "Wisr <wisr@app.wisr.com>"
 
   def question sender, recipient, text, question, short_url, options = {}
-    puts 'in EmailAskerMailer question:'
-    puts "sender: #{sender.to_json}"
-    puts "recipient: #{recipient.to_json}"
-    puts "text: #{text.to_json}"
-    puts "question: #{question.to_json}"
-    puts "short_url: #{short_url}"
     @question = question
     @text = text
     @url = short_url
@@ -18,5 +12,12 @@ class EmailAskerMailer < ActionMailer::Base
     @text = text
     @url = short_url
     mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: options[:subject], template_name: 'message')
+  end
+
+  def grade_and_followup sender, recipient, text, question, short_url, options = {}
+    @question = question
+    @grade = text
+    @url = short_url
+    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'question')    
   end
 end

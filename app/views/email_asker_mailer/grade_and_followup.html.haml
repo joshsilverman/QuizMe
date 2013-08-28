@@ -1,0 +1,19 @@
+%html
+	%head
+	%body
+		= @grade
+		%br
+		%br
+
+		Next question: #{@question.text}
+		
+		%br
+		- abc = ('a'..'z').to_a
+		- @question.answers.shuffle.each_with_index do |a, i|
+			.answer #{abc[i]}) #{a.text}
+
+		%br
+		Reply to this email with your answer...
+
+		%br
+		Or answer here: #{@url}
