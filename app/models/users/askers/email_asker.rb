@@ -82,7 +82,7 @@ class EmailAsker < Asker
       :intention => 'grade',
       :in_reply_to_question_id => post.in_reply_to_question_id,
       :question_id => question.id,
-      :publication_id => post.conversation.post.publication.id,
+      :publication_id => publication.id,
       :subject => params[:subject],
       :long_url => long_url
     }
