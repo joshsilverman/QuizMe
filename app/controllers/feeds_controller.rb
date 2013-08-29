@@ -117,19 +117,21 @@ class FeedsController < ApplicationController
       redirect_to user_omniauth_authorize_path(:twitter, :feed_id => params[:id], :q => 1, :use_authorize => false)
     else # post_yield
       puts "cache: query - /feeds/#{params[:id]}"
-      template = Rails.cache.fetch("wisr.com/feeds/#{params[:id]}", expires_in: [14,15,16].sample.minutes, race_condition_ttl: 2.minutes) do
+      template = Rails.cache.fetch("wisr.com/feeds/#{params[:id]}", expires_in: [14,15,16].sample.minutes, race_condition_ttl: 60) do
         puts "cache: miss - /feeds/#{params[:id]} (new gen: #{Time.now.to_s})"
         show_template true 
       end
 
       if params[:post_id]
-        publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
-        if publication.present?
-          post_yield_template = render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
-          template = template.sub("<!--post_yield-->", post_yield_template)
-          render text: template
-          return
+        puts "cache: query - /feeds/_publication/#{params[:post_id]}"
+        post_yield_template = Rails.cache.fetch("feeds/_publication/#{params[:post_id]}", expires_in: 24.hours, race_condition_ttl: 60) do
+          puts "cache: miss - /feeds/_publication/#{params[:post_id]} (new gen: #{Time.now.to_s})"
+          publication = Publication.recent_by_asker_and_id params[:id], params[:post_id]
+          render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
         end
+        template = template.sub("<!--post_yield-->", post_yield_template)
+        render text: template
+        return
       end
       render text: template
     end
