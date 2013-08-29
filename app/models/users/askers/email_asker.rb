@@ -64,7 +64,7 @@ class EmailAsker < Asker
 
   def auto_respond post, answerer, params
     return unless !post.autocorrect.nil? and post.requires_action
-    return unless post.conversation.posts.grade.blank?
+    # return unless post.conversation.posts.grade.blank?
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
 
