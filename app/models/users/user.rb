@@ -644,7 +644,7 @@ class User < ActiveRecord::Base
   end
 
   def pick_reengagement_type last_active_at # can be further personalized in the future
-  	question_prevalence_by_sent_count = { 0 => 1.0, 1 => 0.8, 2 => 0.7, 3 => 0.6, 4 => 0.5, 5 => 0.33 }
+  	question_prevalence_by_sent_count = { 0 => 0.8, 1 => 0.6, 2 => 0.5, 3 => 0.4, 4 => 0.3, 5 => 0.25 }
   	valid_non_question_types = [:moderation, :author]
   	reengagements_sent = Post.reengage_inactive.where("in_reply_to_user_id = ? and created_at > ?", id, last_active_at).count
   	valid_non_question_types.delete(:moderation) unless Post.requires_moderations(self).present?

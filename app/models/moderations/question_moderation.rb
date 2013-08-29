@@ -13,8 +13,8 @@ class QuestionModeration < Moderation
 	def respond_with_type_id
     # return false if question.status != 0
 
-    greater_than_two_moderators = question.question_moderations.active.collect(&:user_id).uniq.count > 2
-    agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 2
+    greater_than_one_moderator = question.question_moderations.active.collect(&:user_id).uniq.count > 1
+    agreement_on_type_id = question.question_moderations.active.select { |qm| qm.type_id == type_id }.count > 1
     previous_consensus = (!question.publishable.nil? or !question.needs_edits.nil?)
 
     if (previous_consensus and moderator.is_question_super_mod?) or moderator.is_admin?
@@ -22,7 +22,7 @@ class QuestionModeration < Moderation
       question.update(moderation_trigger_type_id: 2, status: (type_id == 7 ? 1 : -1))
       accept_and_reject_moderations
       return type_id
-    elsif greater_than_two_moderators and agreement_on_type_id
+    elsif greater_than_one_moderator and agreement_on_type_id
       return type_id
     end
 	end
