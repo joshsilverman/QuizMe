@@ -18,6 +18,6 @@ class EmailAskerMailer < ActionMailer::Base
     @question = question
     @grade = text
     @url = short_url
-    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'grade_and_followup')    
+    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Re: Next question:', template_name: 'grade_and_followup')    
   end
 end
