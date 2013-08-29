@@ -1,7 +1,11 @@
 %html
 	%head
 	%body
-		= @text
+		= @grade
+		%br
+		%br
+
+		Next question: #{@question.text}
 		
 		%br
 		- abc = ('a'..'z').to_a

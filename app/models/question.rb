@@ -117,7 +117,7 @@ class Question < ActiveRecord::Base
     if options[:needs_edits_only] == true
       return [] unless is_admin
       questions << Question.where('moderation_trigger_type_id != 2 or moderation_trigger_type_id is null')\
-        .where('(status = 0 and (needs_edits is not null or publishable is not null)) or (status = 1 and needs_edits is not null)')\
+        .where('needs_edits is not null or publishable is not null')\
         .order('questions.created_at DESC')
     else
       questions << Question.where('moderation_trigger_type_id is null')\

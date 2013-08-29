@@ -5,12 +5,19 @@ class EmailAskerMailer < ActionMailer::Base
     @question = question
     @text = text
     @url = short_url
-    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: @text, template_name: 'question')
+    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'question')
   end
 
   def generic sender, recipient, text, short_url, options = {}
     @text = text
     @url = short_url
     mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: options[:subject], template_name: 'message')
+  end
+
+  def grade_and_followup sender, recipient, text, question, short_url, options = {}
+    @question = question
+    @grade = text
+    @url = short_url
+    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Re: Next question:', template_name: 'grade_and_followup')    
   end
 end

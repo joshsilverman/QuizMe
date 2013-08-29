@@ -7,16 +7,16 @@ class EmailAskersController < ApplicationController
   	handle =  Mail::Address.new(params[:to]).local
     user = User.find_by_email Mail::Address.new(params[:from]).address
     
-    asker = EmailAsker.tfind(handle)
+    if asker = EmailAsker.tfind(handle)
+      post = asker.save params, user
 
-    post = asker.save params, user
+      asker.ask_question(user) if post.text.downcase.strip == 'next'
 
-    asker.ask_question(user) if post.text.downcase.strip == 'next'
+      Post.classifier.classify post
+      Post.grader.grade post.reload
 
-    Post.classifier.classify post
-    Post.grader.grade post.reload
-
-    asker.auto_respond post.reload, user, params
+      asker.auto_respond post.reload, user, params
+    end
 
     render text: nil, status: 200
   end

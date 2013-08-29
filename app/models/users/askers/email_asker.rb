@@ -64,9 +64,15 @@ class EmailAsker < Asker
 
   def auto_respond post, answerer, params
     return unless !post.autocorrect.nil? and post.requires_action
-    return unless post.conversation.posts.grade.blank?
+    # return unless post.conversation.posts.grade.blank?
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
+
+    # select followup question
+    question = select_question(answerer)
+    publication = question.publications.order("created_at DESC").first
+    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
+
     send_private_message answerer, text, {
       :user_id => id,
       :provider => 'email',
@@ -74,15 +80,17 @@ class EmailAsker < Asker
       :in_reply_to_user_id => answerer.id,
       :conversation_id => post.conversation.id,
       :intention => 'grade',
-      :question_id => post.in_reply_to_question_id,
-      :publication_id => post.conversation.post.publication.id,
-      :subject => params[:subject]
+      :in_reply_to_question_id => post.in_reply_to_question_id,
+      :question_id => question.id,
+      :publication_id => publication.id,
+      :subject => params[:subject],
+      :long_url => long_url
     }
 
     post.update(correct: post.autocorrect)
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
-    ask_question(answerer) if post.is_email? and answerer.prefers_email?
+    # ask_question(answerer) if post.is_email? and answerer.prefers_email?
   end
 
   def choose_format_and_send recipient, text, options
@@ -91,9 +99,14 @@ class EmailAsker < Asker
       short_url = options[:short_url]
     elsif options[:long_url]
       short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-    end      
+    end
 
-    if options[:intention] == 'grade'
+    if options[:question_id] and options[:intention] == 'grade'
+      question = Question.includes(:answers).find(options[:question_id])
+      mail = EmailAskerMailer.grade_and_followup(self, recipient, text, question, short_url, options)
+      mail.deliver
+      return text, short_url
+    elsif options[:intention] == 'grade'
       mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
       mail.deliver
       return text, short_url
