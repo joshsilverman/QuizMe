@@ -95,7 +95,12 @@
 								- owner = (question.user_id == current_user.id)
 								.conversation.border-color.question_element{asker_id: question.created_for_asker_id}
 									.post.parent.answered{:question_id => question.id}
-										%p.time= time_formatter(question.created_at)            
+										%p.time= time_formatter(question.created_at)
+										- if admin
+											- if question.needs_edits
+												%span.label.label-danger{style: 'float: right; position: relative; right: 5px; bottom: 3px;'} Needs Edits
+											- else
+												%span.label.label-success{style: 'float: right; position: relative; right: 5px; bottom: 3px;'} Publishable
 										.content
 											%i.question_icon.icon-pencil
 											/ %i.question_icon.icon-question-sign										
