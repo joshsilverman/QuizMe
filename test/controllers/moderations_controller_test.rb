@@ -345,12 +345,12 @@ describe ModerationsController do
 							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 						end
 
-						it 'unless published and moderated as publishable' do 
+						it 'when published and moderated as publishable' do 
 							@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
 							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 							@ugc_question.update(status: 1, publishable: true)
 							visit '/moderations/manage'
-							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0						
+							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1			
 						end
 
 						it 'unpublishes published questions if supermod rejects' do
