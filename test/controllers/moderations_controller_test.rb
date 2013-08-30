@@ -44,6 +44,7 @@ describe ModerationsController do
 			in_reply_to_user_id: @asker.id,
 			conversation: @conversation
 		@ugc_question = create(:question, status: 0, created_for_asker_id: @asker.id, user_id: create(:user).id)
+		@qm_consensus_count = 2
 	end
 
 	describe 'manage' do
@@ -274,7 +275,7 @@ describe ModerationsController do
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1	
 
-						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
+						(@qm_consensus_count - 1).times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
@@ -282,14 +283,12 @@ describe ModerationsController do
 
 					it 'until consensus' do
 						@ugc_question.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11)
-						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
 						@ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7)
 
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 						
-						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7) }
+						(@qm_consensus_count - 1).times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 7) }
 						
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
@@ -300,7 +299,7 @@ describe ModerationsController do
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 
-						2.times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
+						(@qm_consensus_count - 1).times { @ugc_question.reload.question_moderations << create(:question_moderation, user_id: create(:moderator).id, question: @ugc_question, type_id: 11) }
 						visit '/moderations/manage'
 						page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 					end
@@ -359,7 +358,9 @@ describe ModerationsController do
 							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 							@ugc_question.update(status: 1, needs_edits: true)
 							visit '/moderations/manage'
-							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+							post.click
+							post.find(".btn-danger").click
 							sleep 1
 							@ugc_question.reload.status.must_equal(-1)
 						end
@@ -373,7 +374,9 @@ describe ModerationsController do
 							30.times { create(:question_moderation, accepted: true, user_id: @moderator2.id, question_id: @question.id) }
 							login_as @moderator2
 							visit '/moderations/manage'
-							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+							post.click
+							post.find(".btn-danger").click
 							fill_in 'question_input', with: "new question this is?"
 							page.find('#submit_question').click
 							sleep 1
@@ -388,7 +391,9 @@ describe ModerationsController do
 							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 
 							visit '/moderations/manage'
-							page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+							post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+							post.click
+							post.find(".btn-danger").click
 							page.find('.cancel').click
 
 							@asker.followers << (@moderator2 = create(:moderator, lifecycle_segment: 4, moderator_segment: 4))
@@ -400,7 +405,7 @@ describe ModerationsController do
 
 						it 'unless is supermod, requires edits, and already voted' do
 							30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-							2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							(@qm_consensus_count - 1).times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 							create(:question_moderation, user_id: @moderator.id, type_id: 11, question_id: @ugc_question.id)
 							visit '/moderations/manage'
 							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
@@ -425,6 +430,7 @@ describe ModerationsController do
 						login_as @moderator
 						visit '/moderations/manage'
 						post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+						post.click
 						post.find('.btn-danger').click
 						page.find('#post_question_modal', visible: false).visible?.must_equal false
 					
@@ -435,6 +441,7 @@ describe ModerationsController do
 						login_as @moderator2
 						visit '/moderations/manage'
 						post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+						post.click
 						post.find('.btn-danger').click
 						page.find('#post_question_modal').visible?.must_equal true
 					end
@@ -444,11 +451,13 @@ describe ModerationsController do
 						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 						login_as @moderator
 						visit '/moderations/manage'
-						page.find(".post[question_id=\"#{@new_ugc_question.id}\"] .btn-danger").click
+						post = page.find(".post[question_id=\"#{@new_ugc_question.id}\"]")
+						post.click
+						post.find(".btn-danger").click
 						page.find('#post_question_modal').visible?.must_equal true
 						page.find('#post_question_modal .cancel').click
 
-						post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+						post = page.find(".post[question_id=\"#{@new_ugc_question.id}\"]")
 						post.click
 						post.find('.btn-danger').click
 						page.find('#post_question_modal', visible: false).visible?.must_equal false
@@ -457,10 +466,12 @@ describe ModerationsController do
 					it 'sets question status to pending on edit' do
 						@ugc_question.status.must_equal(0)
 						30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 						# login_as @moderator
 						visit '/moderations/manage'
-						page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+						post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+						post.click
+						post.find(".btn-danger").click
 						sleep 1
 						@ugc_question.reload.status.must_equal(-1)
 
@@ -579,7 +590,9 @@ describe ModerationsController do
 					
 					login_as @moderator
 					visit '/moderations/manage'
-					page.find(".post[question_id=\"#{@ugc_question.id}\"] .btn-danger").click
+					post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+					post.click
+					post.find(".btn-danger").click
 					fill_in 'question_input', with: "new question this is?"
 					page.find('#submit_question').click	
 					sleep 1

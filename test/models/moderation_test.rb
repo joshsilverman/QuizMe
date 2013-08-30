@@ -1,6 +1,7 @@
 require 'test_helper'
 
 describe Moderation do	
+
 	before :each do 
 		@user = create(:user, twi_user_id: 1, role: 'user')
 		@moderator = create(:user, twi_user_id: 1, role: 'moderator')
@@ -43,6 +44,7 @@ describe Moderation do
 			in_reply_to_post_id: @dm_from_asker.id,
 			in_reply_to_user_id: @asker.id,
 			conversation: @conversation		
+		@qm_consensus_count = 2
 	end
 
 	describe 'observer' do
@@ -290,14 +292,14 @@ describe Moderation do
 
 					it 'as publishable by consensus' do
 						@ugc_question.publishable.must_equal nil
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
 						@ugc_question.reload.publishable.must_equal true
 					end
 
 					it 'as needs edits by consensus' do
 						@ugc_question.reload.needs_edits.must_equal nil
 						create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id)
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 						@ugc_question.reload.needs_edits.must_equal true
 					end	
 				end
@@ -310,12 +312,13 @@ describe Moderation do
 					end
 
 					it 'wont accept/reject moderations on consensus' do
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@ugc_question.reload.needs_edits.must_equal true
 						@ugc_question.question_moderations.each { |qm| qm.accepted.must_equal nil } 
 					end
 
 					it 'wont accept/reject moderations when supermod votes before consensus' do
-						2.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						(@qm_consensus_count - 1).times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 						create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
 						@ugc_question.question_moderations.each { |qm| qm.accepted.must_equal nil } 
 					end
@@ -349,41 +352,41 @@ describe Moderation do
 					end
 
 					it 'sets question status to published when accepted by supermod' do
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 						create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
 						@ugc_question.reload.status.must_equal(1)
 					end
 
 					it 'sets question status to rejected when rejected by supermod' do
-						3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+						@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
 						create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
 						@ugc_question.reload.status.must_equal(-1)
 					end
 
 					describe 'and updates feedback attributes' do
 						it 'when needs edits and supermod agrees' do
-							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 							@ugc_question.reload.needs_edits.must_equal true
 							create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
 							@ugc_question.reload.needs_edits.must_equal true
 						end
 
 						it 'when publishable and supermod agrees' do
-							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+							@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
 							@ugc_question.reload.publishable.must_equal true
 							create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
 							@ugc_question.reload.publishable.must_equal true
 						end
 
 						it 'when needs edits and supermod disagrees' do 
-							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
+							@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 11, question_id: @ugc_question.id) }
 							@ugc_question.reload.needs_edits.must_equal true
 							create(:question_moderation, user_id: @supermod.id, type_id: 7, question_id: @ugc_question.id)
 							@ugc_question.reload.needs_edits.must_equal nil
 						end
 
 						it 'when publishable and supermod disagrees' do
-							3.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
+							@qm_consensus_count.times { create(:question_moderation, user_id: create(:moderator).id, type_id: 7, question_id: @ugc_question.id) }
 							@ugc_question.reload.publishable.must_equal true
 							create(:question_moderation, user_id: @supermod.id, type_id: 11, question_id: @ugc_question.id)
 							@ugc_question.reload.publishable.must_equal nil
@@ -510,42 +513,43 @@ describe Moderation do
 
 				it 'if less than one moderation' do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+					create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
 					@ugc_question.reload.status.must_equal 0
-					@ugc_question.inaccurate.must_equal nil
+					@ugc_question.needs_edits.must_equal nil
 				end
 
 				it 'if no consensus' do
 					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 8, question_id: @ugc_question.id)
+					create(:question_moderation, user_id: moderator.id, type_id: 7, question_id: @ugc_question.id)
 					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 9, question_id: @ugc_question.id)					
+					create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)					
 					@ugc_question.reload.status.must_equal 0
-					@ugc_question.inaccurate.must_equal nil
-					@ugc_question.ungrammatical.must_equal nil
+					@ugc_question.needs_edits.must_equal nil
+					@ugc_question.publishable.must_equal nil
 				end
 				
-				it "if consensus and question was already approved" do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
-					@ugc_question.update_attribute :status, 1
+				# it "if consensus and question was already approved" do
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
+				# 	@ugc_question.update_attribute :status, 1
+				# 	@ugc_question.reload.needs_edits.must_equal nil
 
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
-					@ugc_question.reload.status.must_equal 1
-					@ugc_question.bad_answers.must_equal nil
-				end
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal 1
+				# 	@ugc_question.needs_edits.must_equal nil
+				# end
 
-				it "if consensus and question was already rejected" do
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)
-					@ugc_question.update_attribute :status, -1
+				# it "if consensus and question was already rejected" do
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)
+				# 	@ugc_question.update_attribute :status, -1
 
-					moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
-					create(:question_moderation, user_id: moderator.id, type_id: 10, question_id: @ugc_question.id)					
-					@ugc_question.reload.status.must_equal -1
-					@ugc_question.bad_answers.must_equal nil					
-				end
+				# 	moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 4)
+				# 	create(:question_moderation, user_id: moderator.id, type_id: 11, question_id: @ugc_question.id)					
+				# 	@ugc_question.reload.status.must_equal -1
+				# 	@ugc_question.needs_edits.must_equal nil					
+				# end
 
 				# it "if supermod moderates and post was approved" do
 				# 	@ugc_question.update_attribute :status, 1
