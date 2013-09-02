@@ -314,7 +314,7 @@ class Post < ActiveRecord::Base
         conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
         in_reply_to_post.update_attribute :conversation_id, conversation_id
       end
-      asker = in_reply_to_post.user.becomes(Asker) if asker.id != in_reply_to_post.user_id
+      # asker = in_reply_to_post.user.becomes(Asker) if asker.id != in_reply_to_post.user_id
     end
 
 
