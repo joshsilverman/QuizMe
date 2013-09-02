@@ -2,7 +2,7 @@ require 'test_helper'
 
 describe EmailAsker do	
 	before :each do
-		@asker = create(:asker)
+		@asker = create(:email_asker)
 		@emailer = create(:emailer, twi_user_id: 1)
 		@asker.followers << @emailer		
 		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
@@ -50,5 +50,22 @@ describe EmailAsker do
 		end
 
 		# it 'sends a clickable link'
+	end
+
+	describe 'follows up on correct answer' do
+		before :each do 
+			@question_email = create(:email, user_id: @asker.id, question_id: @question.id, publication_id: @publication.id, in_reply_to_user_id: @emailer.id)
+			@conversation = create(:conversation, post: @question_email, publication: @publication)
+		end
+
+		it 'run on correct answers' do
+			@conversation.posts << response = create(:email, in_reply_to_question_id: @question.id, in_reply_to_post_id: @question_email.id, autocorrect: true, requires_action: true)
+			@asker.auto_respond(response, @emailer)
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 1
+		end
+
+		it 'one day later'
+		it 'if email version'
+		it 'unless is a followup'
 	end
 end

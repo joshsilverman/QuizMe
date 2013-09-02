@@ -38,7 +38,7 @@ class EmailAsker < Asker
     conversation_id = nil
     if in_reply_to_post_id
       in_reply_to_post = Post.find in_reply_to_post_id
-      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id).id
+      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id, :publication_id => in_reply_to_post.publication_id).id
     end
 
     Post.create(
@@ -62,7 +62,7 @@ class EmailAsker < Asker
     end
   end
 
-  def auto_respond post, answerer, params
+  def auto_respond post, answerer, params = {}
     return unless !post.autocorrect.nil? and post.requires_action
     # return unless post.conversation.posts.grade.blank?
 
@@ -84,7 +84,8 @@ class EmailAsker < Asker
       :question_id => question.id,
       :publication_id => publication.id,
       :subject => params[:subject],
-      :long_url => long_url
+      :long_url => long_url,
+      :include_answers => true
     }
 
     post.update(correct: post.autocorrect)

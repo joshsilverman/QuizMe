@@ -51,6 +51,10 @@ FactoryGirl.define do
 				intention 'initial question dm'
 			end
 		end
+
+		factory :email do
+			interaction_type 5
+		end
 	end
 
 	factory :question do

@@ -434,6 +434,31 @@ class Asker < User
     end
   end
 
+  def schedule_correct_answer_followup user_post
+    return false unless question = user_post.in_reply_to_question and publication = user_post.conversation.try(:publication)
+    return false unless user_post.is_email? # only if email
+    return false if user_post.parent.intention == 'correct answer follow up' # only if post is not already a followup
+
+    user = user_post.user
+    script = question.text
+    followup_post = EmailPrivateMessage.new(self, user, script, {
+      :in_reply_to_user_id => user.id,
+      :intention => 'correct answer follow up',
+      :publication_id => publication.id,
+      :posted_via_app => true, 
+      :requires_action => false,
+      :link_to_parent => false,
+      :link_type => "follow_up",
+      :include_answers => false,
+      :question_id => question.id
+    })  
+
+    Delayed::Job.enqueue(
+      followup_post,
+      :run_at => 1.day.from_now
+    )
+  end
+
   def schedule_incorrect_answer_followup user_post
     return false unless question = user_post.in_reply_to_question and publication = user_post.conversation.try(:publication)
     return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user_post.user_id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month    
@@ -685,6 +710,8 @@ class Asker < User
     nudge(answerer)
     if user_post.correct == false and question = user_post.in_reply_to_question
       schedule_incorrect_answer_followup(user_post) 
+    elsif user_post.correct == true and user_post.in_reply_to_question
+      schedule_correct_answer_followup(user_post)
     end
     after_answer_action(answerer)
   end 
