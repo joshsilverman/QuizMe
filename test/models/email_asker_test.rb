@@ -56,16 +56,55 @@ describe EmailAsker do
 		before :each do 
 			@question_email = create(:email, user_id: @asker.id, question_id: @question.id, publication_id: @publication.id, in_reply_to_user_id: @emailer.id)
 			@conversation = create(:conversation, post: @question_email, publication: @publication)
+			Delayed::Worker.delay_jobs = true
 		end
 
-		it 'run on correct answers' do
+		it 'only on correct answers' do
+			@conversation.posts << response = create(:email, in_reply_to_question_id: @question.id, in_reply_to_post_id: @question_email.id, autocorrect: false, requires_action: true)
+			@asker.auto_respond(response, @emailer)
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 0
+			Timecop.travel(Time.now + 1.day)
+			Delayed::Worker.new.work_off
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 0
+		end
+
+		it 'one day later' do
 			@conversation.posts << response = create(:email, in_reply_to_question_id: @question.id, in_reply_to_post_id: @question_email.id, autocorrect: true, requires_action: true)
 			@asker.auto_respond(response, @emailer)
-			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 1
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 0
+			Timecop.travel(Time.now + 1.day)
+			Delayed::Worker.new.work_off
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 1			
 		end
 
-		it 'one day later'
-		it 'if email version'
-		it 'unless is a followup'
+		it 'only if email version' do
+			@conversation = FactoryGirl.create(:conversation, publication_id: @publication.id)
+			@user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @emailer.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, in_reply_to_post_id: @question_status.id)
+			@conversation.posts << @user_response			
+
+			@asker.posts.where("intention = 'correct answer follow up' and in_reply_to_user_id = ?", @emailer.id).count.must_equal 0
+			@asker.app_response @user_response, true
+			16.times do
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+			@asker.posts.where("intention = 'correct answer follow up' and in_reply_to_user_id = ?", @emailer.id).count.must_equal 0
+		end
+
+		it 'unless is a followup' do
+			@conversation.posts << response = create(:email, in_reply_to_question_id: @question.id, in_reply_to_post_id: @question_email.id, autocorrect: true, requires_action: true)
+			@asker.auto_respond(response, @emailer)
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 0
+			Timecop.travel(Time.now + 1.day)
+			Delayed::Worker.new.work_off
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 1			
+
+			followup = @asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').first
+			@conversation.posts << response = create(:email, in_reply_to_question_id: @question.id, in_reply_to_post_id: followup.id, autocorrect: true, requires_action: true)
+			@asker.auto_respond(response, @emailer)
+			Timecop.travel(Time.now + 1.day)
+			Delayed::Worker.new.work_off
+			@asker.reload.posts.where(question_id: @question.id, intention: 'correct answer follow up').count.must_equal 1
+		end
 	end
 end
