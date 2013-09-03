@@ -184,12 +184,14 @@ class Post < ActiveRecord::Base
   end
 
   def self.publish(provider, asker, publication)
+    puts 'in publish'
     return unless publication and question = publication.question
     via = ((question.user_id == 1 or question.user_id == asker.author_id) ? nil : question.user.twi_screen_name)
     long_url = "#{URL}/feeds/#{asker.id}/#{publication.id}"
     case provider
     when "twitter"
       begin
+        publication.update_attribute(:published, true)
         question_post = asker.send_public_message(question.text, {
           :hashtag => asker.hashtags.sample.try(:name), 
           :long_url => long_url, 
@@ -201,7 +203,6 @@ class Post < ActiveRecord::Base
           :requires_action => false,
           :question_id => question.id
         })
-        publication.update_attribute(:published, true)
         Rails.cache.delete "publications_recent_by_asker_#{asker.id}"
         
         if via.present? and question.priority
@@ -314,7 +315,7 @@ class Post < ActiveRecord::Base
         conversation_id = in_reply_to_post.conversation_id || Conversation.create(:publication_id => in_reply_to_post.publication_id, :post_id => in_reply_to_post.id, :user_id => u.id).id
         in_reply_to_post.update_attribute :conversation_id, conversation_id
       end
-      # asker = in_reply_to_post.user.becomes(Asker) if asker.id != in_reply_to_post.user_id
+      asker = in_reply_to_post.user.becomes(Asker) if asker.id != in_reply_to_post.user_id
     end
 
 

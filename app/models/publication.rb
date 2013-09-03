@@ -32,6 +32,9 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_by_asker_and_id asker_id, id
+    puts 'in recent_by_asker_and_id'
+    puts Publication.where(id: id).to_json
+    puts Publication.published.where(id: id, asker_id: asker_id).to_json
     Publication.published.where(id: id, asker_id: asker_id)\
       .includes([:asker, :posts, :question => [:answers, :user]]).first
   end
