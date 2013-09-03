@@ -32,19 +32,19 @@ class EmailAsker < Asker
     Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
 	end
 
-  def save params, u
-    in_reply_to_post_id = detect_in_reply_to_post_id(params[:text], u)
+  def save_post params, user
+    in_reply_to_post_id = detect_in_reply_to_post_id(params[:text], user)
 
     conversation_id = nil
     if in_reply_to_post_id
       in_reply_to_post = Post.find in_reply_to_post_id
-      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => u.id, :publication_id => in_reply_to_post.publication_id).id
+      conversation_id = in_reply_to_post.conversation_id || Conversation.create(:post_id => in_reply_to_post.id, :user_id => user.id, :publication_id => in_reply_to_post.publication_id).id
     end
 
-    Post.create(
+    post = Post.create(
       :text => params[:text].split(/(\r|\n)/)[0],
       :provider => 'email',
-      :user_id => u.id,
+      :user_id => user.id,
       :in_reply_to_post_id => in_reply_to_post_id,
       :in_reply_to_user_id => id,
       :conversation_id => conversation_id,
@@ -52,6 +52,13 @@ class EmailAsker < Asker
       :interaction_type => 5,
       :requires_action => true
     )
+
+    ask_question(user) if post.text.downcase.strip == 'next'
+
+    Post.classifier.classify post
+    Post.grader.grade post.reload
+
+    auto_respond post.reload, user, params   
   end
 
   def email pretty = true
