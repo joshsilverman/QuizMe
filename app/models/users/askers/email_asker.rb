@@ -117,7 +117,9 @@ class EmailAsker < Asker
       mail.deliver
       return text, short_url
     else
-      false
+      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
+      mail.deliver
+      return text, short_url
     end
   end
 

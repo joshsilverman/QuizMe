@@ -104,7 +104,16 @@ class Asker < User
   end
   
   def send_private_message recipient, text, options = {}
-    self.becomes(TwitterAsker).send_private_message(recipient, text, options)
+    recipient ||= User.where(id: options[:in_reply_to_user_id]).first
+    communication_preference = recipient.blank? ? 1 : recipient.communication_preference
+    case communication_preference
+    when 1
+      self.becomes(TwitterAsker).send_private_message(recipient, text, options)
+    when 2
+      self.becomes(EmailAsker).send_private_message(recipient, text, options)
+    else
+      raise 'no private send method for that communication preference'
+    end
   end
 
   def publish_question
@@ -809,7 +818,7 @@ class Asker < User
     script.gsub! '<link>', link
 
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
-    self.send_private_message(user, script, {intention: 'request mod'})
+    self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
   end
 
@@ -853,18 +862,21 @@ class Asker < User
         :reply_to => user.twi_screen_name,
         :in_reply_to_user_id => user.id,
         :intention => 'solicit ugc',
-        :interaction_type => 2
+        :interaction_type => 2,
+        :subject => 'Write a question?'
       })      
     when 'dm'
       script.gsub! "<link>", link
       self.send_private_message(user, script, {
-        :intention => "solicit ugc"
+        :intention => "solicit ugc",
+        :subject => 'Write a question?'
       })
     when 'dm with auth link'
       link = authenticated_link(link, user, (Time.now + 1.week))
       script.gsub! "<link>", link
       self.send_private_message(user, script, {
-        :intention => "solicit ugc"
+        :intention => "solicit ugc",
+        :subject => 'Write a question?'
       })
     end
     
@@ -908,7 +920,7 @@ class Asker < User
     script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
     script.gsub! '<new handle>', in_progress_asker.twi_screen_name
 
-    self.send_private_message(user, script, {intention: 'request new handle ugc'})
+    self.send_private_message(user, script, {intention: 'request new handle ugc', subject: 'Write a question?'})
     Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
