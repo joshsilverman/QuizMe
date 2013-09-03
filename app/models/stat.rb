@@ -91,21 +91,44 @@ class Stat < ActiveRecord::Base
 
   def self.graph_dau_mau domain = 30
     graph_data, display_data = Rails.cache.fetch "stat_dau_mau_domain_#{domain}", :expires_in => 13.minutes do
-
-      user_ids_by_date_raw = Post.social.not_us.not_spam\
+      post_user_ids_by_date_raw = Post.social.not_us.not_spam\
         .where("created_at > ?", Date.today - (domain + 31).days)\
         .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all
 
-      user_ids_last_24_raw = Post.social.not_us.not_spam\
+      moderation_user_ids_by_date_raw = Moderation.where("created_at > ?", Date.today - (domain + 31).days)\
+        .select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(moderations.created_at, 'YY/MM/DD')").all
+
+      question_ids_by_date_raw = Question.not_us\
+        .where("created_at > ?", Date.today - (domain + 31).days)\
+        .select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(questions.created_at, 'YY/MM/DD')").all        
+
+      user_ids_by_date = {}
+      ((Date.today - (domain + 31).days)..(Date.today - 1)).each do |date|
+        datef = date.strftime("%y/%m/%d")
+        user_ids_by_date[datef] ||= []
+        user_ids_by_date[datef] << post_user_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
+        user_ids_by_date[datef] << moderation_user_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
+        user_ids_by_date[datef] << question_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
+        user_ids_by_date[datef].flatten!.uniq!
+      end
+
+      post_user_ids_last_24_raw = Post.social.not_us.not_spam\
         .where("created_at > ?", 24.hour.ago)\
         .select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
 
-      user_ids_by_date = {}
-      user_ids_by_date_raw.each do |post|
-        user_ids_by_date[post.to_char] = post.array_to_string.split(',').uniq
-      end
+      moderation_user_ids_last_24_raw = Moderation.where("created_at > ?", 24.hour.ago)\
+        .select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(moderations.created_at, 'YY/MM/DD')").all
+
+      question_ids_last_24_raw = Question.not_us\
+        .where("created_at > ?", 24.hour.ago)\
+        .select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(questions.created_at, 'YY/MM/DD')").all        
+
       user_ids_last_24 = []
-      user_ids_last_24 = user_ids_last_24_raw[0].array_to_string.split(',').uniq unless user_ids_last_24_raw.blank?
+      user_ids_last_24 << post_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless post_user_ids_last_24_raw.blank?
+      user_ids_last_24 << moderation_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless moderation_user_ids_last_24_raw.blank?
+      user_ids_last_24 << question_ids_last_24_raw[0].array_to_string.split(',').uniq unless question_ids_last_24_raw.blank?
+      user_ids_last_24.flatten!.uniq!
+
 
       graph_data = {}
       mau = []
