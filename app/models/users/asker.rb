@@ -451,15 +451,16 @@ class Asker < User
     user = user_post.user
     script = question.text
     followup_post = EmailPrivateMessage.new(self, user, script, {
-      :in_reply_to_user_id => user.id,
-      :intention => 'correct answer follow up',
-      :publication_id => publication.id,
-      :posted_via_app => true, 
-      :requires_action => false,
-      :link_to_parent => false,
-      :link_type => "follow_up",
-      :include_answers => false,
-      :question_id => question.id
+      in_reply_to_user_id: user.id,
+      intention: 'correct answer follow up',
+      long_url: "http://wisr.com/feeds/#{id}/#{publication.id}",
+      publication_id: publication.id,
+      posted_via_app: true, 
+      requires_action: false,
+      link_to_parent: false,
+      link_type: "follow_up",
+      include_answers: false,
+      question_id: question.id
     })  
 
     Delayed::Job.enqueue(
