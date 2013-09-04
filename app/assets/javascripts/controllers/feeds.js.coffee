@@ -440,14 +440,16 @@ class Post
 
 $ -> 
 	if $("#post_feed").length > 0
-		publication_id = $('#post_id').val()
-		target = $(".post[post_id=#{publication_id}]")
-		if target.length > 1
-			$(target[0]).parents('.conversation').remove()
+		open_publication = /feeds\/[0-9]+\/[0-9]+/.test(window.location.href)
+		if open_publication
+			publication_id = $('#post_id').val()
 			target = $(".post[post_id=#{publication_id}]")
+			if target.length > 1
+				$(target[0]).parents('.conversation').remove()
+				target = $(".post[post_id=#{publication_id}]")
 
 		window.feed = new Feed
-		if target.length > 0
+		if open_publication and target.length > 0
 			target.parents('.conversation').removeClass('hidden')
 			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand(0)
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
