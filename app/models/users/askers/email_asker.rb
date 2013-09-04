@@ -10,6 +10,7 @@ class EmailAsker < Asker
 	end
 
 	def send_private_message recipient, text, options = {}
+    return unless EmailAsker.should_send_as_email? options[:intention]
     text, url = choose_format_and_send recipient, text, options
     Post.create(
       :user_id => self.id,
@@ -31,6 +32,11 @@ class EmailAsker < Asker
     
     Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
 	end
+
+  def self.should_send_as_email? intention
+    benned_intention_types = ['post aggregate activity']
+    !benned_intention_types.include? intention
+  end
 
   def save_post params, user
     in_reply_to_post_id = detect_in_reply_to_post_id(params[:text], user)
