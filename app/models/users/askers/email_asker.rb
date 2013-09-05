@@ -83,7 +83,7 @@ class EmailAsker < Asker
 
     # select followup question
     question = select_question(answerer)
-    publication = question.publications.order("created_at DESC").first
+    publication = question.publications.published.order("created_at DESC").first
     long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
 
     send_private_message answerer, text, {

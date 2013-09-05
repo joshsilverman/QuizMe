@@ -254,7 +254,7 @@ class Asker < User
         return false unless question = asker.select_question(user)
 
         text = question.text
-        publication = question.publications.order("created_at DESC").first
+        publication = question.publications.published.order("created_at DESC").first
         long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
         intention = 'reengage inactive'
       when :moderation
@@ -274,7 +274,7 @@ class Asker < User
       return false unless question = asker.select_question(user)      
       text = question.text
       intention = 'reengage inactive'
-      publication = question.publications.order("created_at DESC").first
+      publication = question.publications.published.order("created_at DESC").first
       long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
     end
 

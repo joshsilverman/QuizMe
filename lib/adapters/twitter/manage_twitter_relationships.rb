@@ -281,7 +281,7 @@ module ManageTwitterRelationships
     question = most_popular_question
     return unless question
 
-    publication = question.publications.order("created_at DESC").first
+    publication = question.publications.published.order("created_at DESC").first
     return unless publication
 
     script = "#{script} #{question.text}".strip
