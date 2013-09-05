@@ -460,7 +460,8 @@ class Asker < User
       link_to_parent: false,
       link_type: "follow_up",
       include_answers: false,
-      question_id: question.id
+      question_id: question.id,
+      subject: 'Followup'
     })  
 
     Delayed::Job.enqueue(
