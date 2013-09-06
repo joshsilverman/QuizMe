@@ -24,7 +24,7 @@ class ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
 
   self.use_transactional_fixtures = false
-  self.use_instantiated_fixtures  = true
+  self.use_instantiated_fixtures  = false
   fixtures :all
 
   Capybara.default_wait_time = 5
