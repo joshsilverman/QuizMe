@@ -81,17 +81,44 @@ describe Asker do
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
 				
-				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
 				Timecop.travel(Time.now + 1.day)
 
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
 			end	
 
+			it "moderated a post" do
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).must_be_empty
+
+				create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
+				Timecop.travel(Time.now + 1.day)
+
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).wont_be_empty				
+			end
+
+			it "written a question" do
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).must_be_empty
+
+				create(:question, user_id: @user.id)
+				Timecop.travel(Time.now + 1.day)
+
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).wont_be_empty
+			end
+
 			it "gone inactive" do
-				@user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+
+				Timecop.travel(Time.now + 1.day)
+				create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
+				Asker.reengage_inactive_users strategy: @strategy
+				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty				
 
 				Timecop.travel(Time.now + 1.day)
 				Asker.reengage_inactive_users strategy: @strategy
