@@ -664,4 +664,27 @@ class User < ActiveRecord::Base
   	questions.each { |q| question_ids << q.id } # don't ask users questions that they wrote
   	question_ids.uniq
   end
+
+  def self.get_ids_to_last_active_at period
+    user_ids_to_last_active_at = Hash[*Post.not_spam.answers.not_asker.where('posts.interaction_type IN (2,3,5)')\
+      .select(["user_id", "max(created_at) as last_active_at"])\
+      .where("created_at > ?", period.days.ago)\
+      .group("user_id").map{|p| [p.user_id, p.last_active_at.time]}.flatten]
+
+    moderation_user_ids_to_last_active_at = Hash[*Moderation.select(["user_id", "max(created_at) as last_active_at"])\
+      .where("created_at > ?", period.days.ago)\
+      .group("user_id").map{|p| [p.user_id, p.last_active_at.time]}.flatten]
+
+    question_user_ids_to_last_active_at = Hash[*Question.not_us\
+      .select(["user_id", "max(created_at) as last_active_at"])\
+      .where("created_at > ?", period.days.ago)\
+      .group("user_id").map{|p| [p.user_id, p.last_active_at.time]}.flatten]
+
+    user_ids_to_last_active_at.reverse_merge!(moderation_user_ids_to_last_active_at)\
+      .reverse_merge!(question_user_ids_to_last_active_at)
+    user_ids_to_last_active_at.merge!(moderation_user_ids_to_last_active_at) { |key, v1, v2| v1 > v2 ? v1 : v2 }\
+      .merge!(question_user_ids_to_last_active_at) { |key, v1, v2| v1 > v2 ? v1 : v2 }
+
+    return user_ids_to_last_active_at
+  end  
 end
