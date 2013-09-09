@@ -142,7 +142,7 @@ class QuestionsController < ApplicationController
   end
 
   # this method turned into a clusterf*ck because it combines update/create actions
-  # @amateur-hour
+  # #amateur-hour
   def save_question_and_answers
     return if params[:question].blank? or params[:canswer].blank?
 
@@ -182,7 +182,10 @@ class QuestionsController < ApplicationController
       ## Trigger UGC events
       Post.trigger_split_test(user_id, 'ugc request type')
       Post.trigger_split_test(user_id, 'ugc script v4.0')
-      Post.trigger_split_test(user_id, 'author followup type (return ugc submission)') if author.questions.size > 1
+      if author.questions.size > 1
+        Post.trigger_split_test(user_id, 'author followup type (return ugc submission)') 
+        Post.trigger_split_test(user_id, "request immediate feedback on author's questions (return submission)") 
+      end
       Post.trigger_split_test(user_id, 'ugc cta after five answers on site (adds question)')
       Post.trigger_split_test(user_id, 'new handle ugc request script v2 (=> add question)')
       Post.trigger_split_test(user_id, 'first ugc request type (writes a question)')

@@ -168,7 +168,7 @@ describe ModerationsController do
 
 				it 'if lifecycle_segment > regular' do
 					@moderator.update_attribute :moderator_segment, 3
-					5.times { @moderator.questions << create(:question, status: 1) }
+					5.times { @moderator.questions << create(:question, status: 1, created_for_asker_id: @asker.id) }
 					@moderator.update_attribute :lifecycle_segment, 3
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
@@ -182,7 +182,7 @@ describe ModerationsController do
 					@moderator.update_attribute :lifecycle_segment, 4
 					@moderator.update_attribute :moderator_segment, 2
 					
-					5.times { @moderator.questions << create(:question, status: 1) }
+					5.times { @moderator.questions << create(:question, status: 1, created_for_asker_id: @asker.id) }
 					visit '/moderations/manage'
 					page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 0
 
@@ -615,7 +615,7 @@ describe ModerationsController do
 		end
 
 		it 'with correct type id for questions' do
-			5.times { @moderator.questions << create(:question, status: 1) }
+			5.times { @moderator.questions << create(:question, status: 1, created_for_asker_id: @asker.id) }
 			@moderator.update_attribute :lifecycle_segment, 4
 			@moderator.update_attribute :moderator_segment, 3
 

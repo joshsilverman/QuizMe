@@ -103,7 +103,7 @@ describe Asker do
 				Asker.reengage_inactive_users strategy: @strategy
 				Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).must_be_empty
 
-				create(:question, user_id: @user.id)
+				create(:question, user_id: @user.id, created_for_asker_id: @asker.id)
 				Timecop.travel(Time.now + 1.day)
 
 				Asker.reengage_inactive_users strategy: @strategy
@@ -574,549 +574,562 @@ describe Asker do
 		end
 	end
 
-	describe "requests after answer" do
-		describe 'unless' do
-			before :each do 
-				# qualify user for all solicitations
-				50.times { @question = create(:question, created_for_asker_id: @asker.id, status: 1) }
-				@new_asker = create(:asker, published: nil)
-				@new_asker.related_askers << @asker
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 4
-				Timecop.travel(Time.now + 2.hours)
-
-				@answerer = create(:user)
-				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
-				@publication = create(:publication, question: @question, asker: @asker)
-				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
-				@conversation = create(:conversation, post: @post_question, publication: @publication)
-				@post = create :post, 
-					user: @answerer, 
-					requires_action: true, 
-					in_reply_to_post_id: @post_question.id,
-					in_reply_to_user_id: @asker.id,
-					in_reply_to_question_id: @question.id,
-					interaction_type: 2, 
-					conversation: @conversation				
-			end
-			
-			it 'already requested in the past four hours' do
-				@asker.after_answer_action @user
-				Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
-				Timecop.travel(Time.now + 5.minutes)
-				4.times do |i|
-					Timecop.travel(Time.now + 1.hour)
-					@asker.after_answer_action @user
-					if i < 3
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
-					else
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
-					end
-				end
-			end
-
-			it 'more than one unresponded request in past week' do
-				14.times do |i|
-					@asker.after_answer_action @user
-					Timecop.travel(Time.now + 1.day)
-					if i == 0
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
-					elsif i == 1
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
-					elsif i == 7
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
-					elsif i > 7
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
-					else
-						Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
-					end
-				end
-			end
-		end
-
-		describe 'ugc' do
-			it 'with a post' do
-				30.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-			end
-
-			it 'unless user has less than 10 answers' do
-				8.times do |i|
-					create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
-					@asker.request_new_question @user
-					Timecop.travel(Time.now + 1.day)
-				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-			end
-
-			it 'if user has greater than 10 answers' do
-				10.times do |i|
-					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					@asker.request_new_question @user
-				end
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-			end
-
-			it 'with two posts in fifteen days' do
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				16.times do |i|
-					if i == 0 
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-					elsif i < 15
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
-					else
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
-					end
-
-					@asker.request_new_question @user.reload
-					Timecop.travel(Time.now + 1.day)
-				end
-			end
-
-			it 'uses correct script' do
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				7.times do |i|
-					question = nil
-					new_question_post = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').order('created_at DESC').first
-					case i
-					when 0
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-					when 1
-						new_question_post.text.include?("more").must_equal false						
-						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
-					when 2
-						new_question_post.text.include?("more").must_equal true
-						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
-					else						
-						new_question_post.text.include?("more").must_equal true
-						new_question_post.text.include?("last week").must_equal true
-						question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
-					end
-
-					@asker.request_new_question @user.reload
-					Timecop.travel(Time.now + 15.days)
-					10.times { create(:post, text: 'the correct answer, yo', user_id: create(:user).id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: question.id, correct: true) } if question
-				end
-			end			
-
-			describe 'through age progression' do
-				it 'with no contributions' do
-					Timecop.travel(Time.now.beginning_of_week)
+	describe 'requests' do
+		describe 'after answer' do
+			describe 'unless' do
+				before :each do 
+					# qualify user for all solicitations
+					50.times { @question = create(:question, created_for_asker_id: @asker.id, status: 1) }
+					@new_asker = create(:asker, published: nil)
+					@new_asker.related_askers << @asker
 					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-					30.times do
+					@user.update_attribute :lifecycle_segment, 4
+					Timecop.travel(Time.now + 2.hours)
+
+					@answerer = create(:user)
+					@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+					@publication = create(:publication, question: @question, asker: @asker)
+					@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+					@conversation = create(:conversation, post: @post_question, publication: @publication)
+					@post = create :post, 
+						user: @answerer, 
+						requires_action: true, 
+						in_reply_to_post_id: @post_question.id,
+						in_reply_to_user_id: @asker.id,
+						in_reply_to_question_id: @question.id,
+						interaction_type: 2, 
+						conversation: @conversation				
+				end
+				
+				it 'already requested in the past four hours' do
+					@asker.after_answer_action @user
+					Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+					Timecop.travel(Time.now + 5.minutes)
+					4.times do |i|
+						Timecop.travel(Time.now + 1.hour)
+						@asker.after_answer_action @user
+						if i < 3
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+						else
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+						end
+					end
+				end
+
+				it 'more than one unresponded request in past week' do
+					14.times do |i|
+						@asker.after_answer_action @user
+						Timecop.travel(Time.now + 1.day)
+						if i == 0
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
+						elsif i == 1
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+						elsif i == 7
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
+						elsif i > 7
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
+						else
+							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+						end
+					end
+				end
+			end
+
+			describe 'ugc' do
+				it 'with a post' do
+					30.times do |i|
 						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+				end
+
+				it 'unless user has less than 10 answers' do
+					8.times do |i|
+						create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+						@asker.request_new_question @user
 						Timecop.travel(Time.now + 1.day)
 					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
 				end
 
-				it 'with regular contributions' do
+				it 'if user has greater than 10 answers' do
+					10.times do |i|
+						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						@asker.request_new_question @user
+					end
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+				end
+
+				it 'with two posts in fifteen days' do
 					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-					45.times do
-						create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)		
+					16.times do |i|
+						if i == 0 
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+						elsif i < 15
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
+						else
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
+						end
+
 						@asker.request_new_question @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 4
-				end
-			end		
-		end
-
-		describe 'mod' do
-			before :each do 
-				@answerer = create(:user)
-				@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
-				@publication = create(:publication, question: @question, asker: @asker)
-				@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
-				@conversation = create(:conversation, post: @post_question, publication: @publication)
-				@post = create :post, 
-					user: @answerer, 
-					requires_action: true, 
-					in_reply_to_post_id: @post_question.id,
-					in_reply_to_user_id: @asker.id,
-					in_reply_to_question_id: @question.id,
-					interaction_type: 2, 
-					conversation: @conversation
-			end
-
-			it 'with a post' do
-				@user.update_attribute :lifecycle_segment, 3
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-				@asker.request_mod @user.reload
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
-			end
-
-			it 'with two posts in 5 days' do
-				@user.update_attribute :lifecycle_segment, 3
-				7.times do |i|
-					if i == 0 
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-					elsif i < 6
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
-					else
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
-					end
-
-					@asker.request_mod @user.reload
-					Timecop.travel(Time.now + 1.day)
-				end
-			end
-
-			it 'unless lifecycle less than regular' do
-				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-					user = create(:user, twi_user_id: 1)
-					@asker.followers << user
-					user.update_attribute :lifecycle_segment, lifecycle_segment
-					
-					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
-					@asker.request_mod user.reload
-
-					if SEGMENT_HIERARCHY[1].slice(0,3).include? lifecycle_segment
-						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
-					else
-						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
-					end
-				end
-			end
-
-			it 'unless no posts to moderate' do
-				@user.update_attribute :lifecycle_segment, 3
-				@post.destroy
-				@asker.request_mod @user.reload
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-			end
-
-			it 'uses correct script' do
-				@user.update_attribute :lifecycle_segment, 3
-				7.times do |i|
-					if i == 0 
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-					elsif i < 6
-						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
-						create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
-						request_mod.text.include?("more").must_equal false
-					else
-						request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
-						request_mod.text.include?("more").must_equal true
-					end
-					@asker.request_mod @user.reload
-					Timecop.travel(Time.now + 1.day)
-				end
-			end
-				
-			it 'sets role to moderator' do
-				@user.update_attribute :lifecycle_segment, 3
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-				@asker.request_mod @user.reload
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
-				@user.is_role?('moderator').must_equal true
-			end
-
-			describe 'through age progression' do
-				it 'with no mods' do
-					Timecop.travel(Time.now.beginning_of_week)
-					5.times do
-						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					end
-					30.times do |i|
-						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-						Timecop.travel(Time.now + 1.day)
-					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
 				end
 
-				it 'with regular mods' do
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				it 'uses correct script' do
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					7.times do |i|
+						question = nil
+						new_question_post = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').order('created_at DESC').first
+						case i
+						when 0
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+						when 1
+							new_question_post.text.include?("more").must_equal false						
+							question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+						when 2
+							new_question_post.text.include?("more").must_equal true
+							question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+						else						
+							new_question_post.text.include?("more").must_equal true
+							new_question_post.text.include?("last week").must_equal true
+							question = create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)
+						end
+
+						@asker.request_new_question @user.reload
+						Timecop.travel(Time.now + 15.days)
+						10.times { create(:post, text: 'the correct answer, yo', user_id: create(:user).id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: question.id, correct: true) } if question
+					end
+				end			
+
+				describe 'through age progression' do
+					it 'with no contributions' do
+						Timecop.travel(Time.now.beginning_of_week)
+						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+						30.times do
+							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
+					end
+
+					it 'with regular contributions' do
+						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
+						45.times do
+							create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)		
+							@asker.request_new_question @user.reload
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 4
+					end
+				end		
+			end
+
+			describe 'mod' do
+				before :each do 
+					@answerer = create(:user)
+					@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
+					@publication = create(:publication, question: @question, asker: @asker)
+					@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
+					@conversation = create(:conversation, post: @post_question, publication: @publication)
+					@post = create :post, 
+						user: @answerer, 
+						requires_action: true, 
+						in_reply_to_post_id: @post_question.id,
+						in_reply_to_user_id: @asker.id,
+						in_reply_to_question_id: @question.id,
+						interaction_type: 2, 
+						conversation: @conversation
+				end
+
+				it 'with a post' do
 					@user.update_attribute :lifecycle_segment, 3
-					30.times do |i|
-						create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					@asker.request_mod @user.reload
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+				end
+
+				it 'with two posts in 5 days' do
+					@user.update_attribute :lifecycle_segment, 3
+					7.times do |i|
+						if i == 0 
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+						elsif i < 6
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+						else
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
+						end
+
 						@asker.request_mod @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 6
-				end
-			end
-
-			it 'unless just transitioned' do
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-				@user.update_attribute :lifecycle_segment, nil
-				@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-				@asker.request_mod @user
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
-			end
-		end
-
-		describe 'new handle ugc' do
-			before :each do 
-				50.times do 
-					@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
 				end
 
-				@new_asker = create(:asker, published: nil)
-				@new_asker.related_askers << @asker
-			end
+				it 'unless lifecycle less than regular' do
+					SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
+						user = create(:user, twi_user_id: 1)
+						@asker.followers << user
+						user.update_attribute :lifecycle_segment, lifecycle_segment
+						
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
+						@asker.request_mod user.reload
 
-			it 'with a post' do
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 3
-				@asker.request_new_handle_ugc @user
-				@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
-			end
-
-			it 'unless lifecycle less than regular' do
-				SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-					user = create(:user, twi_user_id: 1)
-					15.times { create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-					user.update_attribute :lifecycle_segment, lifecycle_segment
-					
-					@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					@asker.request_new_handle_ugc user.reload
-
-					if SEGMENT_HIERARCHY[1].slice(0, 3).include? lifecycle_segment
-						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					else
-						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 1
+						if SEGMENT_HIERARCHY[1].slice(0,3).include? lifecycle_segment
+							@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 0
+						else
+							@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request mod').count.must_equal 1
+						end
 					end
 				end
-			end			
 
-			it 'if enough answers on related handle' do
-				@user.update_attribute :lifecycle_segment, 3
-				12.times do |i|
-					if i > 10
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
-					else
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					end
-
-					create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				it 'unless no posts to moderate' do
 					@user.update_attribute :lifecycle_segment, 3
-					@asker.request_new_handle_ugc @user
+					@post.destroy
+					@asker.request_mod @user.reload
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
 				end
-			end
 
-			it 'with two posts in eight days' do
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 3
-				8.times do |i|
-					if i == 0 
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					elsif i < 8
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
-					else
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
-					end
-
-					@asker.request_new_handle_ugc @user.reload
-					Timecop.travel(Time.now + 1.day)
-				end
-			end
-
-			it 'uses correct script' do
-				15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-				@user.update_attribute :lifecycle_segment, 3
-				7.times do |i|
-					new_handle_ugc = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').order('created_at DESC').first
-					case i
-					when 0
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
-					when 1
-						new_handle_ugc.text.include?("more").must_equal false						
-						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
-					else
-						new_handle_ugc.text.include?("more").must_equal true
-						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
-					end
-
-					@asker.request_new_handle_ugc @user.reload
-					Timecop.travel(Time.now + 8.days)
-				end
-			end			
-
-			describe 'through age progression' do
-				it 'with no contributions' do
-					Timecop.travel(Time.now.beginning_of_week)
-					5.times do
-						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-					end
-					30.times do
-						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+				it 'uses correct script' do
+					@user.update_attribute :lifecycle_segment, 3
+					7.times do |i|
+						if i == 0 
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+						elsif i < 6
+							request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
+							create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
+							request_mod.text.include?("more").must_equal false
+						else
+							request_mod = @asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').order('created_at DESC').first
+							request_mod.text.include?("more").must_equal true
+						end
+						@asker.request_mod @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+				end
+					
+				it 'sets role to moderator' do
+					@user.update_attribute :lifecycle_segment, 3
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					@asker.request_mod @user.reload
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 1
+					@user.is_role?('moderator').must_equal true
 				end
 
-				it 'with regular contributions' do
-					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+				describe 'through age progression' do
+					it 'with no mods' do
+						Timecop.travel(Time.now.beginning_of_week)
+						5.times do
+							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						end
+						30.times do |i|
+							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
+					end
+
+					it 'with regular mods' do
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+						@user.update_attribute :lifecycle_segment, 3
+						30.times do |i|
+							create(:post_moderation, user_id: @user.id, type_id: 1, post: create(:post))
+							@asker.request_mod @user.reload
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 6
+					end
+				end
+
+				it 'unless just transitioned' do
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+					@user.update_attribute :lifecycle_segment, nil
+					@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					@asker.request_mod @user
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 0
+				end
+			end
+
+			describe 'new handle ugc' do
+				before :each do 
+					50.times do 
+						@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
+					end
+
+					@new_asker = create(:asker, published: nil)
+					@new_asker.related_askers << @asker
+				end
+
+				it 'with a post' do
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 					@user.update_attribute :lifecycle_segment, 3
-					30.times do
-						create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
+					@asker.request_new_handle_ugc @user
+					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
+				end
+
+				it 'unless lifecycle less than regular' do
+					SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
+						user = create(:user, twi_user_id: 1)
+						15.times { create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+						user.update_attribute :lifecycle_segment, lifecycle_segment
+						
+						@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						@asker.request_new_handle_ugc user.reload
+
+						if SEGMENT_HIERARCHY[1].slice(0, 3).include? lifecycle_segment
+							@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						else
+							@asker.posts.where(in_reply_to_user_id: user.id).where(intention: 'request new handle ugc').count.must_equal 1
+						end
+					end
+				end			
+
+				it 'if enough answers on related handle' do
+					@user.update_attribute :lifecycle_segment, 3
+					12.times do |i|
+						if i > 10
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
+						else
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						end
+
+						create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+						@user.update_attribute :lifecycle_segment, 3
+						@asker.request_new_handle_ugc @user
+					end
+				end
+
+				it 'with two posts in eight days' do
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					@user.update_attribute :lifecycle_segment, 3
+					8.times do |i|
+						if i == 0 
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						elsif i < 8
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 1
+						else
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+						end
+
 						@asker.request_new_handle_ugc @user.reload
 						Timecop.travel(Time.now + 1.day)
 					end
-					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 5
 				end
-			end		
+
+				it 'uses correct script' do
+					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					@user.update_attribute :lifecycle_segment, 3
+					7.times do |i|
+						new_handle_ugc = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').order('created_at DESC').first
+						case i
+						when 0
+							@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						when 1
+							new_handle_ugc.text.include?("more").must_equal false						
+							create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
+						else
+							new_handle_ugc.text.include?("more").must_equal true
+							create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)
+						end
+
+						@asker.request_new_handle_ugc @user.reload
+						Timecop.travel(Time.now + 8.days)
+					end
+				end			
+
+				describe 'through age progression' do
+					it 'with no contributions' do
+						Timecop.travel(Time.now.beginning_of_week)
+						5.times do
+							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+						end
+						30.times do
+							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+					end
+
+					it 'with regular contributions' do
+						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
+						@user.update_attribute :lifecycle_segment, 3
+						30.times do
+							create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
+							@asker.request_new_handle_ugc @user.reload
+							Timecop.travel(Time.now + 1.day)
+						end
+						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 5
+					end
+				end		
+			end
 		end
 
-		describe "follows up with incorrect answerers" do
+		describe 'question feedback' do
 			before :each do 
-				@conversation = FactoryGirl.create(:conversation, publication_id: @publication.id)
-				@user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
-				@conversation.posts << @user_response
-
-				Delayed::Worker.delay_jobs = true
+				@moderator = create(:moderator)
+				@author = create(:user)
 			end
 
 			it 'with a post' do
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
-				@asker.app_response @user_response, false
-				16.times do
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
-				end
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+				@asker.followers << @moderator
+				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
+				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
 			end
 
-			it 'after an interval' do
-				@asker.app_response @user_response, false
-				Delayed::Worker.new.work_off
-
-				number_of_days_until_followup = (((Delayed::Job.first.run_at - Time.now) / 60 / 60 / 24).to_i + 1)
-				number_of_days_until_followup.times do |i|
-					Delayed::Worker.new.work_off
-					@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
-					Timecop.travel(Time.now + 1.day)
-				end
-				Delayed::Worker.new.work_off
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+			it 'only when question created' do
+				@asker.followers << @moderator
+				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
+				@question.update(text: 'updated some text?')
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
+				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
 			end
 
-			it 'unless they answered correctly' do
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
-				@asker.app_response @user_response, true
-				16.times do
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
-				end
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+			it 'from users who are question moderators for that asker' do
+				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
+				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
 			end
 
-			it 'who have responded to recent followups' do
-				@asker.app_response @user_response, false
-				Delayed::Worker.new.work_off
-				while Delayed::Job.all.size > 0
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
+			describe 'unless' do
+				before :each do 
+					@asker.followers << @moderator
+					create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
 				end
-				followup = @asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).first
-				new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)
-				publication = FactoryGirl.create(:publication, question_id: new_question.id)
-				conversation = FactoryGirl.create(:conversation, publication_id: publication.id)
-				user_post = FactoryGirl.create(:post, text: 'the correct answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_post_id: followup.id, in_reply_to_question_id: new_question.id)
-				conversation.posts << user_post
-				@asker.app_response(user_post, false)
-				Delayed::Worker.new.work_off
-				Delayed::Job.count.must_equal 1
-			end
 
-			it 'unless we already followed up on the question this month' do
-				2.times do 
-					@asker.app_response @user_response, false
-					16.times do |i|
-						Delayed::Worker.new.work_off
-						Timecop.travel(Time.now + 1.day)
-					end
+				it 'moderator wrote the question' do
+					create(:question, text: 'Hey man, sup?', user_id: @moderator.id, created_for_asker_id: @asker.id)
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
 				end
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
-			end
 
-			it "unless we've already scheduled a followup for the user" do 
-				@asker.app_response @user_response, false
-				while Delayed::Job.all.size > 0
-					new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
-					@asker.app_response FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id), false
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
+				it 'moderator hasnt been active in the past week' do
+					Timecop.travel(Time.now + 8.days)
+					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
 				end
-				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
-			end 
 
-			it 'unless there is another unresponded to followup from the past week' do
-				FactoryGirl.create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
-				9.times do |i|
-					if i < 8
-						Delayed::Job.count.must_equal 0
-					else
-						Delayed::Job.count.must_equal 1
-					end
+				it 'moderator received a feedback request in the past week' do
+					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
+					Timecop.travel(Time.now + 5.days)
+					create(:question, text: 'Hey bro, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
+				end
 
-					new_question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1)		
-					publication = FactoryGirl.create(:publication, question_id: new_question.id)
-					conversation = FactoryGirl.create(:conversation, publication_id: publication.id)
-					user_post = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id)
-					conversation.posts << user_post
-					@asker.app_response(user_post, false)
-					Delayed::Worker.new.work_off
-					Timecop.travel(Time.now + 1.day)
+				it 'moderator received a request in the past three days' do
+					create(:post, text: 'Want to mod??', user_id: @asker.id, in_reply_to_user_id: @moderator.id, interaction_type: 4, intention: 'request mod')
+					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
 				end
 			end
 		end		
-
-		# describe 'send link to activity feed' do
-		# 	before :each do 
-		# 		@intention = 'send link to activity feed'
-		# 	end
-
-		# 	it 'with a post' do
-		# 		30.times do |i|
-		# 			@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-		# 			@asker.send_link_to_activity_feed(@user.reload, true)
-		# 			Timecop.travel(Time.now + 1.day)
-		# 		end
-		# 		@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
-		# 	end
-
-		# 	it 'unless already sent' do
-		# 		create(:post, in_reply_to_user_id: @user.id, intention: @intention)
-		# 		@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
-		# 		30.times do |i|
-		# 			@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-		# 			@asker.send_link_to_activity_feed(@user.reload, true)
-		# 			Timecop.travel(Time.now + 1.day)
-		# 		end
-		# 		@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: @intention).count.must_equal 1
-		# 	end
-
-		# 	it 'if appropriate lifecycle' do
-		# 		SEGMENT_HIERARCHY[1].each do |lifecycle_segment|
-		# 			user = create(:user, twi_user_id: 1)
-		# 			15.times { create(:post, text: 'the correct answer, yo', user_id: user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-		# 			user.update_attribute :lifecycle_segment, lifecycle_segment
-		# 			@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 0
-		# 			@asker.send_link_to_activity_feed user.reload, true
-
-		# 			if SEGMENT_HIERARCHY[1].slice(0, 4).include? lifecycle_segment
-		# 				@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 0
-		# 			else
-		# 				@asker.posts.where(in_reply_to_user_id: user.id).where(intention: @intention).count.must_equal 1
-		# 			end
-		# 		end
-		# 	end	
-		# end
-
-		# describe 'nudge'  do
-		# 	it 'with a post'
-		# 	it 'unless already nudged'
-		# 	it 'unless no client'
-		# 	it 'unless no active/automatic nudge_type'
-		# 	it 'unless fewer than 3 answers'
-		# 	it 'unless does not follow asker'
-		# end
 	end
+
+	describe "follows up with incorrect answerers" do
+		before :each do 
+			@conversation = create(:conversation, publication_id: @publication.id)
+			@user_response = create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+			@conversation.posts << @user_response
+
+			Delayed::Worker.delay_jobs = true
+			Delayed::Worker.new.work_off
+		end
+
+		it 'with a post' do
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+			@asker.app_response @user_response, false
+			16.times do
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+		end
+
+		it 'after an interval' do
+			@asker.app_response @user_response, false
+			Delayed::Worker.new.work_off
+
+			number_of_days_until_followup = (((Delayed::Job.first.run_at - Time.now) / 60 / 60 / 24).to_i + 1)
+			number_of_days_until_followup.times do |i|
+				Delayed::Worker.new.work_off
+				@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+				Timecop.travel(Time.now + 1.day)
+			end
+			Delayed::Worker.new.work_off
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+		end
+
+		it 'unless they answered correctly' do
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+			@asker.app_response @user_response, true
+			16.times do
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 0
+		end
+
+		it 'who have responded to recent followups' do
+			@asker.app_response @user_response, false
+			Delayed::Worker.new.work_off
+			while Delayed::Job.all.size > 0
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+			followup = @asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).first
+			new_question = create(:question, created_for_asker_id: @asker.id, status: 1)
+			publication = create(:publication, question_id: new_question.id)
+			conversation = create(:conversation, publication_id: publication.id)
+			user_post = create(:post, text: 'the correct answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_post_id: followup.id, in_reply_to_question_id: new_question.id)
+			conversation.posts << user_post
+			@asker.app_response(user_post, false)
+			Delayed::Worker.new.work_off
+			Delayed::Job.count.must_equal 1
+		end
+
+		it 'unless we already followed up on the question this month' do
+			2.times do 
+				@asker.app_response @user_response, false
+				16.times do |i|
+					Delayed::Worker.new.work_off
+					Timecop.travel(Time.now + 1.day)
+				end
+			end
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+		end
+
+		it "unless we've already scheduled a followup for the user" do 
+			@asker.app_response @user_response, false
+			while Delayed::Job.all.size > 0
+				new_question = create(:question, created_for_asker_id: @asker.id, status: 1)		
+				@asker.app_response create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id), false
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
+		end 
+
+		it 'run unless there is another unresponded to followup from the past week' do
+			create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
+			9.times do |i|
+				if i < 8
+					Delayed::Job.count.must_equal 0
+				else
+					Delayed::Job.count.must_equal 1
+				end
+
+				new_question = create(:question, created_for_asker_id: @asker.id, status: 1)		
+				publication = create(:publication, question_id: new_question.id)
+				conversation = create(:conversation, publication_id: publication.id)
+				user_post = create(:post, text: 'the incorrect answer', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: new_question.id)
+				conversation.posts << user_post
+				@asker.app_response(user_post, false)
+				Delayed::Worker.new.work_off
+				Timecop.travel(Time.now + 1.day)
+			end
+		end
+	end		
 end

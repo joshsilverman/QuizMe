@@ -8,6 +8,8 @@ class Asker < User
   
   has_and_belongs_to_many :related_askers, -> { uniq }, class_name: 'Asker', join_table: :related_askers, foreign_key: :asker_id, association_foreign_key: :related_asker_id
 
+  has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
+  
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
   default_scope -> { where(role: 'asker') }
@@ -753,7 +755,7 @@ class Asker < User
 
     recent_requests.each do |request|
       if request.intention == 'request mod'
-        return true if user.becomes(Moderator).post_moderations.where('created_at > ?', last_request_time).present?
+        return true if user.becomes(Moderator).moderations.where('created_at > ?', last_request_time).present?
       elsif request.intention == 'solicit ugc' or request.intention == 'request new handle ugc'
         return true if user.questions.where('created_at > ?', last_request_time).present?
       end
@@ -819,6 +821,38 @@ class Asker < User
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
     self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
+  end
+
+  def request_feedback_on_question question
+    # find mods who have been active recently
+    recently_active_user_ids = Asker.get_ids_to_last_active_at(7).keys
+    recently_active_moderators = moderators.where('users.id != ?', question.user_id || 0).select { |moderator| recently_active_user_ids.include?(moderator.id) }
+    recently_active_question_moderators = Moderator.where(id: recently_active_moderators.collect(&:id)).joins(:question_moderations).uniq
+
+    # exclude mods who recently received a feedback request in the past week
+    user_ids_with_recent_feedback_requests = posts.where(intention: 'request question feedback')\
+      .where('created_at > ?', 1.week.ago)\
+      .select([:intention, :in_reply_to_user_id, :created_at])\
+      .collect(&:in_reply_to_user_id)
+    recently_active_question_moderators.reject! { |moderator| user_ids_with_recent_feedback_requests.include?(moderator.id) }
+
+    # exclude mods who have received any type of request in the past three days
+    user_ids_with_recent_requests = posts.where("created_at > ?", 3.days.ago)\
+      .where("intention like ? or intention like ?", '%request%', '%solicit%')\
+      .order("created_at DESC")\
+      .collect(&:in_reply_to_user_id)
+    recently_active_question_moderators.reject! { |moderator| user_ids_with_recent_requests.include?(moderator.id) }
+
+    link = "http://www.wisr.com/moderations/manage?question_id=#{question.id}"
+
+    recently_active_question_moderators.sample(3).each do |moderator|
+      script = "We just got a new question, could you see if it needs edits? <link>"
+      script.gsub! "<link>", link
+      self.send_private_message(moderator, script, {
+        :intention => "request question feedback"
+      })
+      Mixpanel.track_event "request question feedback", { :distinct_id => moderator.id, :account => twi_screen_name }
+    end
   end
 
   def request_new_question user
