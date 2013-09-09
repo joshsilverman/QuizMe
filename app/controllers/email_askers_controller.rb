@@ -3,6 +3,8 @@ class EmailAskersController < ApplicationController
 	skip_before_filter :referrer_data, :split_user
 
   def save_private_response
+    puts 'in save_private_response:'
+    puts params['text']
     params['text'] = params['text'].encode('utf-8', 'iso-8859-1')
   	handle =  Mail::Address.new(params[:to]).local
     user = User.find_by_email Mail::Address.new(params[:from]).address
