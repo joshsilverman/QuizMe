@@ -5,7 +5,8 @@ class EmailAskersController < ApplicationController
   def save_private_response
     puts 'in save_private_response:'
     puts params['text']
-    params['text'] = params['text'].encode('utf-8', 'iso-8859-1')
+    # params['text'] = params['text'].encode('utf-8', 'iso-8859-1')
+    params['text'] = params['text'].force_encoding('utf-8')
   	handle =  Mail::Address.new(params[:to]).local
     user = User.find_by_email Mail::Address.new(params[:from]).address
     asker = EmailAsker.tfind(handle)
