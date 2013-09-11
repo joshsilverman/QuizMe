@@ -141,6 +141,8 @@ class EmailAsker < Asker
       url, asker_id, pub_id = match.to_a
       post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
       return (id == asker_id.to_i and post_id) ? post_id : nil
+    elsif match = text.match(/http:\/\/wisr.com\/questions\/([0-9]+)/)
+      return Post.email.where(question_id: match[1], in_reply_to_user_id: user.id).last.try(:id)
     else
     end
   end
