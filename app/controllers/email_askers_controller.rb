@@ -7,7 +7,8 @@ class EmailAskersController < ApplicationController
     puts params['text']
     # params['text'] = params['text'].encode('utf-8', 'iso-8859-1')
     # params['text'] = params['text'].force_encoding('utf-8')
-    params['text'] = params['text'].encode('UTF-8', 'UTF-8', :invalid => :replace)
+    params['text'] = params['text'].encode('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
+    params['text'] = params['text'].encode('UTF-8', 'UTF-16')
   	handle =  Mail::Address.new(params[:to]).local
     user = User.find_by_email Mail::Address.new(params[:from]).address
     asker = EmailAsker.tfind(handle)
