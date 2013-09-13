@@ -3,16 +3,14 @@ class EmailAskersController < ApplicationController
 	skip_before_filter :referrer_data, :split_user
 
   def save_private_response
-    puts 'in save_private_response'
-    puts params['text']
-
-    params['text'] = params['text'].encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
-    params['text'] = params['text'].gsub('é', 'e').gsub('ó', 'o').gsub('á', 'a').gsub('í', 'i').gsub('å', 'a')
-
-  	handle =  Mail::Address.new(params[:to]).local
-    user = User.find_by_email Mail::Address.new(params[:from]).address
-    asker = EmailAsker.tfind(handle)
-    asker.delay.save_post(params, user) if asker
+    begin
+    	handle =  Mail::Address.new(params[:to]).local
+      user = User.find_by_email Mail::Address.new(params[:from]).address
+      asker = EmailAsker.tfind(handle)
+      asker.delay.save_post(params, user) if asker
+    rescue ArgumentError => exception
+      puts "argument error in save_private_response: #{exception}"
+    end
 
     render text: nil, status: 200
   end
