@@ -145,18 +145,6 @@ class Asker < User
     }
   end
 
-  def send_backlog_new_user_dms limit = 1
-    engaged_user_ids = posts.select(:in_reply_to_user_id).group(:in_reply_to_user_id)\
-      .where("in_reply_to_user_id IS NOT NULL")\
-      .collect(&:in_reply_to_user_id)
-    backlog_users = followers.not_asker\
-      .where('relationships.follower_id NOT IN (?)', engaged_user_ids).order("follower_id DESC").limit limit
-    backlog_users.each do |u|
-      send_new_user_question(u, { backlog: true })
-    end
-  end
-
-
   def self.post_aggregate_activity
     current_cache = (Rails.cache.read("aggregate activity") ? Rails.cache.read("aggregate activity").dup : {})
     current_cache.keys.each do |user_id|
@@ -393,14 +381,6 @@ class Asker < User
 
     # Send mentions to new users
     Asker.mention_new_users
-
-    # Engage backlog
-    # Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
-  end
-
-  # tmp function - move to engage_new_users
-  def self.engage_backlog
-    Asker.published.each { |asker| asker.send_backlog_new_user_dms() }
   end
 
   def self.mention_new_users
