@@ -3,6 +3,7 @@ class EmailAskersController < ApplicationController
 	skip_before_filter :referrer_data, :split_user
 
   def save_private_response
+    puts 'in save_private_response'
     puts params['text']
     puts params['text'].include?('�')
     params['text'] = params['text'].gsub('é', 'e').gsub('ó', 'o').gsub('á', 'a').gsub('í', 'i').gsub('å', 'a')
