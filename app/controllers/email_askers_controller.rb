@@ -3,12 +3,8 @@ class EmailAskersController < ApplicationController
 	skip_before_filter :referrer_data, :split_user
 
   def save_private_response
-    puts 'in save_private_response:'
-    puts params['text']
-    # params['text'] = params['text'].encode('utf-8', 'iso-8859-1')
-    # params['text'] = params['text'].force_encoding('utf-8')
-    params['text'] = params['text'].encode('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
-    params['text'] = params['text'].encode('UTF-8', 'UTF-16')
+    params['text'] = params['text'].gsub('é', 'e').gsub('ó', 'o').gsub('á', 'a').gsub('í', 'i').gsub('å', 'a')
+
   	handle =  Mail::Address.new(params[:to]).local
     user = User.find_by_email Mail::Address.new(params[:from]).address
     asker = EmailAsker.tfind(handle)
