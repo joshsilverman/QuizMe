@@ -5,7 +5,8 @@ class EmailAskersController < ApplicationController
   def save_private_response
     puts 'in save_private_response'
     puts params['text']
-    puts params['text'].include?('�')
+
+    params['text'] = params['text'].encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
     params['text'] = params['text'].gsub('é', 'e').gsub('ó', 'o').gsub('á', 'a').gsub('í', 'i').gsub('å', 'a')
 
   	handle =  Mail::Address.new(params[:to]).local
