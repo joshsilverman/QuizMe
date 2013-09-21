@@ -17,5 +17,4 @@ class Topic < ActiveRecord::Base
 	def askers
 		users
 	end
-
 end
