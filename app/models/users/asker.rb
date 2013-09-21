@@ -315,7 +315,9 @@ class Asker < User
     return true
   end
 
-  def ask_question user, options = {}
+  # @todo route all question through this method -- including reengage user
+  # @todo add test coverage for this method -- currently none
+  def next_question user, options = {}
     question = select_question(user)
     publication = question.publications.order("created_at DESC").first
     long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
@@ -370,7 +372,7 @@ class Asker < User
 
     # select question from highest scoring question group
     Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
-  end  
+  end
 
   def self.engage_new_users
     # Send DMs to new users

@@ -59,7 +59,7 @@ class EmailAsker < Asker
       :requires_action => true
     )
 
-    ask_question(user) if post.text.downcase.strip == 'next'
+    next_question(user) if post.text.downcase.strip == 'next'
 
     Post.classifier.classify post
     Post.grader.grade post.reload
