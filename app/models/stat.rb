@@ -172,12 +172,25 @@ class Stat < ActiveRecord::Base
         .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
         .order("created_at ASC")\
         .group_by { |post| post.created_at }
+
+    moderation_user_ids_by_date = Moderation.where("created_at > ?", domain.days.ago)\
+      .select(["to_char(moderations.created_at, 'MM/DD') as created_at", "array_to_string(array_agg(user_id),',') as user_ids"])\
+      .group("to_char(moderations.created_at, 'MM/DD')").all.group_by{ |m| m.created_at }
+
+    question_user_ids_by_date = Question.not_us.where("created_at > ?", domain.days.ago)\
+      .select(["to_char(questions.created_at, 'MM/DD') as created_at", "array_to_string(array_agg(user_id),',') as user_ids"])\
+      .group("to_char(questions.created_at, 'MM/DD')").all.group_by{ |q| q.created_at }
+
+
     display_data[:today] = Post.social.not_spam.not_us.where("created_at > ?", 24.hours.ago).count("distinct user_id")
     display_data[:total] = Post.social.not_spam.not_us.where("created_at > ?", (24*domain).hours.ago).count("distinct user_id")
 
     graph_data = {}
     user_ids_by_date.each do |date, posts|
-      graph_data[date] = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id).uniq.count
+       ids = posts.select{ |p| !p.correct.nil? or [2, 3, 4].include? p.interaction_type }.collect(&:user_id)
+       ids += moderation_user_ids_by_date[date].first.user_ids.split(',').map { |a| a.to_i } if moderation_user_ids_by_date[date]
+       ids += question_user_ids_by_date[date].first.user_ids.split(',').map { |a| a.to_i } if question_user_ids_by_date[date]
+       graph_data[date] = ids.uniq.count
     end
     return graph_data, display_data
   end
