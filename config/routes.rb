@@ -1,5 +1,4 @@
 Quizmemanager::Application.routes.draw do
-  
   # temporarily disallow basic auth
   get "/users/sign_up" => redirect("/")
   get "/users/sign_in" => redirect("/")
@@ -32,14 +31,12 @@ Quizmemanager::Application.routes.draw do
   get "feeds/stream" => "feeds#stream"
   
   get "askers/:id/hide_all/:post_ids" => "askers#hide_all"
-  get "askers/:id/import" => "askers#import"
 
   post "feeds/search"
   get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
   get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
 
   get '/search' => 'feeds#index_with_search'
-
 
   get "/ask" => "feeds#ask"
   post "/respond_to_question" => "feeds#respond_to_question"
@@ -79,13 +76,9 @@ Quizmemanager::Application.routes.draw do
   get "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
 
   get "/questions/answers/:question_id" => "questions#display_answers"
-  # match "/questions/answers/:question_id" => "questions#display_answers", :constraints => { :protocol => "https" }
-  # match "/questions/answers(/*path)", :to => redirect { |_, request|
-    # "https://" + request.host_with_port + request.fullpath }
 
   get "questions/manage" => "questions#manage"
   get "questions/asker/:asker_id" => "questions#index"
-  get "questions/asker/:asker_id/import" => "questions#import"
 
   post "questions/save_question_and_answers"
   post 'questions/update_question_and_answers'
@@ -103,13 +96,8 @@ Quizmemanager::Application.routes.draw do
   resources :questions
   resources :answers
 
-  # match 'auth/:provider/callback' => 'services#create'
-  # resources :services, :only => [:index, :create, :destroy]
-
-  # match "/signout" => "sessions#destroy", :as => :signout
   get "/confirm_js" => "sessions#confirm_js"
 
-  get 'questions/import_data_from_qmm' => 'questions#import_data_from_qmm'
   get '/stats' => 'accounts#stats'
   
   get '/askers/edit_graph' => 'askers#edit_graph'
@@ -126,8 +114,6 @@ Quizmemanager::Application.routes.draw do
 
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
-  # match '/users/:id/questions/:asker_id' => 'users#asker_questions'
-  # match '/users/:id/questions' => 'users#questions'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
   get "clients/:id/report" => "clients#report"
@@ -146,11 +132,4 @@ Quizmemanager::Application.routes.draw do
   resources :askers
 
   root :to => 'feeds#index'
-
-  #catch user profiles
-  # get ":twi_screen_name" => "users#show"
-  # get ":twi_screen_name/badges" => "users#badges"
-  # get ":twi_screen_name/badges/:badge_title" => "users#badges"
-  # get ":twi_screen_name/badges/story/:badge_title" => "users#badges"
-
 end

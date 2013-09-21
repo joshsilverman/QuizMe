@@ -6,7 +6,9 @@ class Question < ActiveRecord::Base
   has_many :publications
   has_many :question_moderations
   
-  belongs_to :topic
+  # belongs_to :topic
+  has_and_belongs_to_many :topics
+
   belongs_to :user
   belongs_to :asker, :foreign_key => :created_for_asker_id
 
@@ -204,6 +206,44 @@ class Question < ActiveRecord::Base
 
   # @qb = Rails.env.production? ? 'http://questionbase.studyegg.com' : 'http://localhost:3001'
   @qb = 'http://questionbase.studyegg.com'
+
+  def self.import_course_from_questionbase course_id
+    url = URI.parse("#{@qb}/api-V1/JKD673890RTSDFG45FGHJSUY/get_book_details/#{course_id}.json")
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    course = JSON.parse(res.body)
+    course_topic = Topic.find_or_create_by(name: course['name'], type_id: 5)
+    course['chapters'].each do |chapter|
+      url = URI.parse("#{@qb}/api-V1/JKD673890RTSDFG45FGHJSUY/get_all_lesson_questions/#{chapter['id']}.json")
+      req = Net::HTTP::Get.new(url.path)
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.request(req)
+      }
+      lesson = JSON.parse(res.body)
+      lesson_topic = Topic.find_or_create_by(name: lesson['name'], type_id: 6)
+      yt_video_id = lesson['media_url'].split("?v=")[1]
+      lesson['questions'].each do |question|
+        if question['resources'] and resource = question['resources'].select { |resource| resource['begin'] }.first
+          url = "http://www.youtube.com/embed/#{yt_video_id}?start=#{resource['begin']}&end=#{resource['end']}"
+          question = Question.find_by(resource_url: url)
+          if question
+            question.topics << lesson_topic unless question.topics.include?(lesson_topic)
+            question.topics << course_topic unless question.topics.include?(course_topic)
+          else
+            puts "couldnt find question from URL"
+            puts question
+            puts "\n\n"
+          end
+        else
+          puts "couldnt find resource for question"
+          puts question
+          puts "\n\n"          
+        end
+      end
+    end
+  end
 
   def self.import_video_urls_from_qb
     egg_ids = {13 => 18, 14 => 19, 30 => 22, 28 => 374}

@@ -266,36 +266,4 @@ class QuestionsController < ApplicationController
     @moderated_count = @questions.count
     @pending_count = all_questions.count - @questions.count
   end
-
-  def import
-    return unless params[:questions]
-
-    @asker = Asker.find params[:asker_id]
-    questions = params[:questions].split "\n"
-    questions.each do |q|
-      q_matchdata = /(.*)\s+(\([^\)]*\))(?:\s<<([^>]*)>>|)/.match q
-
-      if q_matchdata.nil?
-        puts "couldn't process:"
-        puts q
-        next
-      end
-
-      q_text = q_matchdata[1]
-      q_ans = q_matchdata[2]
-      q_hint = q_matchdata[3]
-
-      as = q_ans.gsub(/^\(|\)$/, '').split /\sor\s|;\s/
-      correct_ans = as.shift
-
-      @question = Question.find_by(text: q_text)
-      #next if @question
-
-      @question = @asker.questions.create :text => q_text, :user_id => current_user.id, :hint => q_hint
-      @question.answers.create :text => correct_ans, :correct => true
-      as.each{|a| @question.answers.create :text => a, :correct => false}
-    end
-
-    render :text => questions.to_yaml
-  end
 end

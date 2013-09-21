@@ -145,12 +145,6 @@ class AskersController < ApplicationController
     render :nothing => true
   end
 
-  def import
-    @asker = Asker.find params[:id]
-    @asker.seeder_import params[:seeder_id]
-    redirect_to :back
-  end
-
   def questions
     if !current_user
       redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
