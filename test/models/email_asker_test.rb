@@ -10,7 +10,7 @@ describe EmailAsker do
     @question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)   
 
     @strategy = [1, 2, 4, 8]
-    @emailer_response = create(:post, text: 'the correct answer, yo', user_id: @emailer.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+    @emailer_response = create(:post, text: 'the correct answer, yo', user_id: @emailer.id, in_reply_to_user_id: @asker.id, interaction_type: 5, in_reply_to_question_id: @question.id)
     @emailer_response.update_attributes created_at: (@strategy.first + 1).days.ago, correct: true
     @emailer.update_attributes last_answer_at: @emailer_response.created_at, last_interaction_at: @emailer_response.created_at, activity_segment: nil
     create(:post, in_reply_to_user_id: @asker.id, correct: true, interaction_type: 2, in_reply_to_question_id: @question.id)
@@ -111,15 +111,25 @@ describe EmailAsker do
   describe 'select question' do
 
     let(:course) {create(:course, :with_lessons)}
+    let(:asker) { course.users.first }
     let(:emailer) {create(:emailer)}
     let(:non_emailer) {create(:user)}
 
     describe 'when enrolled in course' do
       it 'selects correct course'
+
       it 'selects next lesson in course' do
-        
+        lessons = course.lessons.sort
+        lessons.first.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
+        create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: lessons[1].questions.first, correct: true)
+        asker.becomes(EmailAsker).select_lesson(emailer, course).must_equal(lessons.first)
       end
-      it 'selects next question in lesson'
+
+      it 'selects next question in lesson' do
+        lesson = course.lessons.sort.first
+        lesson.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }        
+        asker.becomes(EmailAsker).select_question(emailer).must_equal(lesson.questions.last)
+      end
     end
 
     describe 'when not enrolled in course' do

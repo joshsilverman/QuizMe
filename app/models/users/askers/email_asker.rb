@@ -140,16 +140,31 @@ class EmailAsker < Asker
     if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)/)
       url, asker_id, pub_id = match.to_a
       post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
-      return (id == asker_id.to_i and post_id) ? post_id : nil†
+      return (id == asker_id.to_i and post_id) ? post_id : nil
     elsif match = text.match(/http:\/\/wisr.com\/questions\/([0-9]+)/)
       return Post.email.where(question_id: match[1], in_reply_to_user_id: user.id).last.try(:id)
     else
     end
   end
 
-  def select_lesson user, course
+  def select_question user
+    # @todo TEMPORARY, ADD APPROPRIATE FIND
+    question_ids_answered = get_question_ids_answered user
+    course = Topic.courses.first 
+    lesson = select_lesson(user, course)
+    lesson_question_ids = lesson.questions.sort.collect(&:id)
+    return Question.find((lesson_question_ids - question_ids_answered).first)
   end
 
-  # def select_question user, lesson
-  # end
+  def select_lesson user, course
+    question_ids_answered = get_question_ids_answered user
+    course.lessons.sort.each do |lesson|
+      lessons_questions_ids = lesson.questions.collect(&:id)
+      return lesson if (lessons_questions_ids - question_ids_answered).present?
+    end
+  end
+
+  def get_question_ids_answered user
+    @question_ids_answered ||= user.posts.answers.where(in_reply_to_user: self).collect(&:in_reply_to_question_id).uniq
+  end
 end
