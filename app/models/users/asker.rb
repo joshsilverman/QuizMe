@@ -202,7 +202,6 @@ class Asker < User
       .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at.time]}.flatten]
 
     @question_sent_by_asker_counts = {}
-
     user_ids_to_last_active_at.each do |user_id, last_active_at|
       unless options[:strategy]
         strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
@@ -242,7 +241,11 @@ class Asker < User
 
         text = question.text
         publication = question.publications.published.order("created_at DESC").first
-        long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
+        if asker and publication
+          long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
+        else
+          long_url = "http://wisr.com/questions/#{question.id}"
+        end
         intention = 'reengage inactive'
       when :moderation
         asker = user.asker_follows.sample
@@ -276,7 +279,7 @@ class Asker < User
     if reengagement_type == :question
       asker.send_public_message(text, {
         reply_to: user.twi_screen_name,
-        long_url: long_url ? "http://wisr.com/feeds/#{asker.id}/#{publication.id}" : nil,
+        long_url: long_url ? long_url : nil,
         in_reply_to_user_id: user.id,
         posted_via_app: true,
         requires_action: false,
@@ -355,6 +358,7 @@ class Asker < User
   def select_question user
     scored_questions = Question.score_questions
     scored_questions = scored_questions[id]
+    return nil if scored_questions.nil?
 
     reengagement_question_ids = posts\
       .reengage_inactive\
