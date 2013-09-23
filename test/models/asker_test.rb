@@ -1112,7 +1112,7 @@ describe Asker do
 			@asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", @user.id).count.must_equal 1
 		end 
 
-		it 'run unless there is another unresponded to followup from the past week' do
+		it 'unless there is another unresponded to followup from the past week' do
 			create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
 			9.times do |i|
 				if i < 8

@@ -1,6 +1,11 @@
 %html
 	%head
 	%body
+		- if @grade
+			= @grade
+			%br
+			%br
+
 		= @text
 		
 		%br
@@ -10,7 +15,8 @@
 				.answer #{abc[i]}) #{a.text}
 
 		%br
-		Reply to this email with your answer...
+		Reply to this email with your answer or answer at #{@url}
 
-		%br
-		Or answer here: #{@url}
+		- if @question.resource_url
+			%br
+			Watch the full video at #{@question.resource_url}
