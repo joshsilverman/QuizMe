@@ -84,7 +84,7 @@ class EmailAsker < Asker
     # select followup question
     question = select_question(answerer)
     publication = question.publications.published.order("created_at DESC").first
-    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
+    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : "http://wisr.com/questions/#{question.id}/"
 
     send_private_message answerer, text, {
       :user_id => id,
@@ -95,7 +95,7 @@ class EmailAsker < Asker
       :intention => 'grade',
       :in_reply_to_question_id => post.in_reply_to_question_id,
       :question_id => question.id,
-      :publication_id => publication.id,
+      :publication_id => publication.try(:id),
       :subject => params[:subject],
       :long_url => long_url,
       :include_answers => true
@@ -135,7 +135,7 @@ class EmailAsker < Asker
 
   def select_question user
     # @todo TEMPORARY, ADD APPROPRIATE FIND
-    question_ids_answered = get_question_ids_answered user
+    question_ids_answered = get_question_ids_answered(user)
     course = Topic.courses.first 
     lesson = select_lesson(user, course)
     lesson_question_ids = lesson.questions.sort.collect(&:id)
@@ -143,7 +143,7 @@ class EmailAsker < Asker
   end
 
   def select_lesson user, course
-    question_ids_answered = get_question_ids_answered user
+    question_ids_answered = get_question_ids_answered(user)
     course.lessons.sort.each do |lesson|
       lessons_questions_ids = lesson.questions.collect(&:id)
       return lesson if (lessons_questions_ids - question_ids_answered).present?
