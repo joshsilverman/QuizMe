@@ -64,6 +64,8 @@ FactoryGirl.define do
   factory :question do
     sequence(:text) {|n| "#{n}Where on the myosin does ATP bond to?"}
 
+    trait(:approved) {status 1}
+
     after(:create) do |question|
       create :correct_answer, question: question
       create :incorrect_answer, question: question
@@ -117,7 +119,7 @@ FactoryGirl.define do
 
       trait :with_questions do
         after(:create) do |lesson|
-          3.times {lesson.questions << create(:question, asker: lesson.users.first)}
+          3.times {lesson.questions << create(:question, :approved, asker: lesson.users.first.becomes(Asker))}
         end
       end
     end
@@ -125,7 +127,6 @@ FactoryGirl.define do
     factory :course do
       type_id 5
       sequence(:name) {|n| "course #{n}" }
-      users [FactoryGirl.create(:asker)]
 
       trait :with_lessons do
         after(:create) do |course|
@@ -134,6 +135,10 @@ FactoryGirl.define do
             lesson.questions.each {|q| course.questions << q}
           end
         end
+      end
+
+      after(:create) do |course|
+        course.users << create(:asker).becomes(User)
       end
     end
 

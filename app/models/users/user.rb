@@ -640,7 +640,14 @@ class User < ActiveRecord::Base
       .select(["user_id", "count(in_reply_to_user_id) as count"])\
       .group("in_reply_to_user_id")\
       .count  
-    (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))  
+    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
+
+    # change Asker subclass according to communication preference
+    case communication_preference
+    when 1 then return asker.becomes(TwitterAsker)
+    when 2 then return asker.becomes(EmailAsker)
+    else return asker
+    end
   end
 
   def pick_reengagement_type last_active_at
