@@ -1,8 +1,10 @@
 require 'test_helper'
 
 describe EmailAsker do  
+  let(:course) {create(:course, :with_lessons)}
+
   before :each do
-    @asker = create(:email_asker)
+    @asker = course.users.first.becomes(EmailAsker)
     @emailer = create(:emailer, twi_user_id: 1)
     @asker.followers << @emailer    
     @question = create(:question, created_for_asker_id: @asker.id, status: 1)   
