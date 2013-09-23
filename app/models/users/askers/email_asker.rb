@@ -11,7 +11,7 @@ class EmailAsker < Asker
 
 	def send_private_message recipient, text, options = {}
     return unless EmailAsker.should_send_as_email? options[:intention]
-    text, url = choose_format_and_send recipient, text, options
+    text, url = choose_format_and_send(recipient, text, options)
     Post.create(
       :user_id => self.id,
       :provider => 'email',
@@ -108,31 +108,17 @@ class EmailAsker < Asker
   end
 
   def choose_format_and_send recipient, text, options
-    short_url = nil
-    if options[:short_url]
-      short_url = options[:short_url]
-    elsif options[:long_url]
-      short_url = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) 
-    end
+    options[:short_url] = Post.format_url(options[:long_url], 'email', options[:link_type], twi_screen_name, recipient.twi_screen_name) if options[:short_url].blank? and options[:long_url]
 
-    if options[:question_id] and options[:intention] == 'grade'
+    if options[:question_id]
       question = Question.includes(:answers).find(options[:question_id])
-      mail = EmailAskerMailer.grade_and_followup(self, recipient, text, question, short_url, options)
+      mail = EmailAskerMailer.question(self, recipient, text, question, options[:short_url], options)
       mail.deliver
-      return text, short_url
-    elsif options[:intention] == 'grade'
-      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
-      mail.deliver
-      return text, short_url
-    elsif options[:question_id]
-      question = Question.includes(:answers).find(options[:question_id])
-      mail = EmailAskerMailer.question(self, recipient, text, question, short_url, options)
-      mail.deliver
-      return text, short_url
+      return text, options[:short_url]
     else
-      mail = EmailAskerMailer.generic(self, recipient, text, short_url, options)
+      mail = EmailAskerMailer.generic(self, recipient, text, options[:short_url], options)
       mail.deliver
-      return text, short_url
+      return text, options[:short_url]
     end
   end
 

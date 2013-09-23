@@ -6,7 +6,15 @@ class EmailAskerMailer < ActionMailer::Base
     @text = text
     @url = short_url
     @include_answers = options[:include_answers]
-    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'question')
+    @grade = nil
+
+    if options[:intention] == 'grade'
+      @grade = text
+      @text = "Next question: #{question.text}"
+      mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Re: Next question:', template_name: 'question')
+    else
+      mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'question')
+    end
   end
 
   def generic sender, recipient, text, short_url, options = {}
@@ -20,6 +28,7 @@ class EmailAskerMailer < ActionMailer::Base
     @grade = text
     @url = short_url
     @include_answers = options[:include_answers]
+
     mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Re: Next question:', template_name: 'grade_and_followup')    
   end
 end

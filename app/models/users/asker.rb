@@ -229,7 +229,7 @@ class Asker < User
 
   def self.reengage_user user_id, options = {}
     user = User.find user_id
-    return false unless (Asker.published_ids & user.follows.collect(&:id)).present? # make sure there are published askers to reengage from
+    return false unless (Asker.published_ids & user.asker_follows.collect(&:id)).present? # make sure there are published askers to reengage from
 
     if options[:type].present? or Post.create_split_test(user.id, 'include solicitations as reengagements (=> advanced)', 'false', 'true') == 'true'
       asker, question, publication, text, long_url = nil, nil, nil, nil, nil
@@ -238,14 +238,8 @@ class Asker < User
       when :question
         return false unless asker = user.select_reengagement_asker
         return false unless question = asker.select_question(user)
-
         text = question.text
         publication = question.publications.published.order("created_at DESC").first
-        if asker and publication
-          long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
-        else
-          long_url = "http://wisr.com/questions/#{question.id}"
-        end
         intention = 'reengage inactive'
       when :moderation
         asker = user.asker_follows.sample
@@ -265,8 +259,15 @@ class Asker < User
       text = question.text
       intention = 'reengage inactive'
       publication = question.publications.published.order("created_at DESC").first
-      long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
     end
+
+    if reengagement_type == :question 
+      if asker and publication
+        long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
+      else
+        long_url = "http://wisr.com/questions/#{question.id}"
+      end
+    end    
 
     return false unless asker and text
 

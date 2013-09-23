@@ -116,8 +116,6 @@ describe EmailAsker do
     let(:non_emailer) {create(:user)}
 
     describe 'when enrolled in course' do
-      it 'selects correct course'
-
       it 'selects next lesson in course' do
         lessons = course.lessons.sort
         lessons.first.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
@@ -130,10 +128,6 @@ describe EmailAsker do
         lesson.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }        
         asker.becomes(EmailAsker).select_question(emailer).must_equal(lesson.questions.last)
       end
-    end
-
-    describe 'when not enrolled in course' do
-      it 'uses default question selection algorithm' # integration test?
     end
   end
 end
