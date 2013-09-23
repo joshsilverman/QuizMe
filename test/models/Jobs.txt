@@ -1,0 +1,33 @@
+CoachUp - wanted full-time, not great whiteboard session, may have hired full-timer
+Gameface - wanted someone more senior
+MatchBox - part time offer, really wanted full-time, 105K FT salary
+DMC - final round, wanted someone full time, maybe good option in future
+achvr - want full-time, get back in touch
+Toptal - final round 9/20
+LevelUp - 2nd round 9/26
+Salsify - pre
+Panorama - pre
+Lagoa - pre
+Harvard - pre
+Hickory Ground Solutions - pre
+Rallypoint - pre
+backupify - pre
+evertrue - pre
+
+
+Marketing myself:
+	- 3 years working in Rails full-stack
+	- my experience
+		- lean product development
+		- Rails 4 upgrade
+		- caching strategies
+		- dealing with external APIs
+		- maintaining good testing practices + coverage
+		- keeping gems up to date
+		- deploying + scaling w/ Heroku
+		- A/B testing
+		- background task processing
+		- sticking to rails best practices
+			- DRY
+			- skinny controllers
+			- using indices

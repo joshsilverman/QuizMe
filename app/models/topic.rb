@@ -17,4 +17,8 @@ class Topic < ActiveRecord::Base
 	def askers
 		users
 	end
+
+	def lessons
+		questions.includes(:topics).collect { |q| q.topics.select { |t| t.type_id == 6 } }.flatten.uniq
+	end	
 end

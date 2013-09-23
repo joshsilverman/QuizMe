@@ -54,6 +54,10 @@ FactoryGirl.define do
 
     factory :email do
       interaction_type 5
+
+      factory :email_response do
+        text 'the correct answer, yo'
+      end
     end
   end
 
