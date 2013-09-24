@@ -96,7 +96,8 @@ class User < ActiveRecord::Base
   # scope :whatsappers, -> { where(:communication_preference => 4) }
 
   def self.tfind name
-  	self.find_by(twi_screen_name: name)
+  	self.where('lower(twi_screen_name) = ?', name.downcase).first
+  	# self.find_by(twi_screen_name: name)
   end
 
   def is_admin? 
