@@ -62,6 +62,7 @@ FactoryGirl.define do
   end
 
   factory :question do
+    resource_url 'http://www.youtube.com/watch?v=ClHfQk87Ltk'
     sequence(:text) {|n| "#{n}Where on the myosin does ATP bond to?"}
 
     trait(:approved) {status 1}

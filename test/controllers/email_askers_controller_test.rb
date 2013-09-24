@@ -4,7 +4,7 @@ describe EmailAskersController do
 	let(:course) {create(:course, :with_lessons)}
 
 	before :each do
-		@email_asker = course.users.first.becomes(EmailAsker)
+		@email_asker = course.askers.first.becomes(EmailAsker)
 		@emailer = create(:emailer, twi_user_id: 1)
 		@email_asker.followers << @emailer		
 		@question = @email_asker.questions.first
@@ -25,7 +25,12 @@ describe EmailAskersController do
 		post "save_private_response", @email_answer_params
 		@email_answer = @emailer.posts.where(in_reply_to_user_id: @email_asker.id).last
 		@email_response_to_answer = @email_asker.posts.where(in_reply_to_user_id: @emailer.id, intention: 'grade').first
-		# binding.pry
+	end
+
+	describe 'asks a question' do
+    it 'and includes a link to the original video' do
+      ActionMailer::Base.deliveries.first.body.raw_source.include?("Watch the full video at #{@question.resource_url}")
+    end    
 	end
 
 	describe 'saves private response' do
@@ -43,6 +48,14 @@ describe EmailAskersController do
 			@email_question_post.wont_be_nil
 			@email_answer.in_reply_to_post_id.must_equal @email_question_post.id
 		end
+
+		describe 'and responds' do
+      it 'includes a followup question on grade' do
+        text = "#{@question.answers.correct.text}\r\nhttp://wisr.com/questions/#{@question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
+        post "save_private_response", {to: @email_asker.email, from: @emailer.email, text: text}
+        ActionMailer::Base.deliveries.last.body.raw_source.include?("Next question:")
+      end		
+    end
 	end
 
 	describe 'attempts to grade and send reply' do

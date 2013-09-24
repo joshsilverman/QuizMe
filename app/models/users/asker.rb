@@ -6,8 +6,7 @@ class Asker < User
   belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
 
   has_many :questions, :foreign_key => :created_for_asker_id
-  has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
-  has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
+  has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower
   
   has_and_belongs_to_many :related_askers, -> { uniq }, class_name: 'Asker', join_table: :related_askers, foreign_key: :asker_id, association_foreign_key: :related_asker_id
   has_and_belongs_to_many :topics, -> { uniq }, join_table: :askers_topics
