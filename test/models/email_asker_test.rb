@@ -118,11 +118,17 @@ describe EmailAsker do
     let(:non_emailer) {create(:user)}
 
     describe 'when enrolled in course' do
-      it 'selects next lesson in course' do
+      it 'selects correct lesson from course' do
         lessons = course.lessons.sort
         lessons.first.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
         create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: lessons[1].questions.first, correct: true)
         asker.becomes(EmailAsker).select_lesson(emailer, course).must_equal(lessons.first)
+      end
+
+      it 'selects next lesson when last is completed' do
+        lessons = course.lessons.sort
+        lessons.first.questions.each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
+        asker.becomes(EmailAsker).select_lesson(emailer, course).must_equal(lessons[1])
       end
 
       it 'selects next question in lesson' do

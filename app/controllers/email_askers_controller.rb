@@ -4,7 +4,7 @@ class EmailAskersController < ApplicationController
 
   def save_private_response
     begin
-    	handle =  Mail::Address.new(params[:to]).local
+    	handle = Mail::Address.new(params[:to]).local
       user = User.find_by_email Mail::Address.new(params[:from]).address
       asker = EmailAsker.tfind(handle)
       asker.delay.save_post(params, user) if asker

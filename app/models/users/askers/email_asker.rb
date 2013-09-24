@@ -63,7 +63,6 @@ class EmailAsker < Asker
 
     Post.classifier.classify post
     Post.grader.grade post.reload
-
     auto_respond post.reload, user, params   
   end
 
