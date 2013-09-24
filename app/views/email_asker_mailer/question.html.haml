@@ -19,4 +19,4 @@
 
 		- if @question.resource_url
 			%br
-			Watch the full video at #{@question.resource_url}
+			Watch the full video at #{@question.resource_url.gsub(/\/embed\/([^\?]*)\?start=[0-9]+&end=[0-9]+/,'/watch?v=\\1')}
