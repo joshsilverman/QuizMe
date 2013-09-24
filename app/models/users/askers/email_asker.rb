@@ -77,7 +77,7 @@ class EmailAsker < Asker
   def auto_respond post, answerer, params = {}
     return unless !post.autocorrect.nil? and post.requires_action
     # return unless post.conversation.posts.grade.blank?
-    
+
     post.update(correct: post.autocorrect)
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
@@ -100,7 +100,7 @@ class EmailAsker < Asker
       :subject => params[:subject],
       :long_url => long_url,
       :include_answers => true
-    }
+    })
 
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
