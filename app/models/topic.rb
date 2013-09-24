@@ -11,7 +11,13 @@ class Topic < ActiveRecord::Base
 	scope :courses, -> { where("type_id = 5") }
 	scope :lessons, -> { where("type_id = 6") }
 
-	def lessons
+	def lessons # returns a course's lessons
+		return nil unless type_id == 5
 		questions.includes(:topics).collect { |q| q.topics.select { |t| t.type_id == 6 } }.flatten.uniq
 	end	
+
+	def courses # returns courses to which a lesson belongs
+		return nil unless type_id == 6
+		questions.includes(:topics).collect { |q| q.topics.select { |t| t.type_id == 5 } }.flatten.uniq
+	end
 end

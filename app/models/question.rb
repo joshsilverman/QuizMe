@@ -31,6 +31,14 @@ class Question < ActiveRecord::Base
 
   before_save :generate_slug
 
+  def lessons
+    topics.where(type_id: 6)
+  end
+
+  def courses
+    topics.where(type_id: 5)
+  end
+
   def self.select_questions_to_post(asker, num_days_back_to_exclude, queue = [], priority_questions = [])
     user_grouped_priority_questions = asker.questions.approved.priority\
       .order("created_at ASC")\
