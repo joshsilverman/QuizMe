@@ -3,7 +3,7 @@ require 'test_helper'
 describe AskersController do
 
   let(:course) {create(:course, :with_lessons)}
-  let(:asker) { course.users.first.becomes(Asker) }
+  let(:asker) { course.askers.first }
   let(:strategy) {[1, 2, 4, 8]}
   let(:emailer) do 
     emailer = create(:emailer)
