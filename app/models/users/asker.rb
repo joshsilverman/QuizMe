@@ -3,21 +3,20 @@ class Asker < User
   include AuthorizationsHelper
 
   belongs_to :client
+  belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
+
   has_many :questions, :foreign_key => :created_for_asker_id
+  has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
   has_one :new_user_question, :foreign_key => :new_user_q_id, :class_name => 'Question'
   
   has_and_belongs_to_many :related_askers, -> { uniq }, class_name: 'Asker', join_table: :related_askers, foreign_key: :asker_id, association_foreign_key: :related_asker_id
-
-  has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
-  
-  belongs_to :new_user_question, :class_name => 'Question', :foreign_key => :new_user_q_id
+  has_and_belongs_to_many :topics, -> { uniq }, join_table: :askers_topics
 
   default_scope -> { where(role: 'asker') }
 
   scope :published, -> { where("published = ?", true) }
 
   # cached queries
-
   def get_stats
     question_count, questions_answered, follower_count = Rails.cache.fetch "stats_by_asker_#{id}", :expires_in => 1.day, :race_condition_ttl => 15 do
       question_count = publications.select(:id).where(:published => true).size

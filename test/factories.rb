@@ -115,11 +115,10 @@ FactoryGirl.define do
     factory :lesson do
       sequence(:name) {|n| "lesson #{n}" }
       type_id 6
-      # users [asker = FactoryGirl.create(:asker)]
 
       trait :with_questions do
         after(:create) do |lesson|
-          3.times {lesson.questions << create(:question, :approved, asker: lesson.users.first.becomes(Asker))}
+          3.times {lesson.questions << create(:question, :approved, asker: lesson.askers.first)}
         end
       end
     end
@@ -131,14 +130,14 @@ FactoryGirl.define do
       trait :with_lessons do
         after(:create) do |course|
           3.times do 
-            lesson = create(:lesson, :with_questions, users: course.users)
+            lesson = create(:lesson, :with_questions, askers: course.askers)
             lesson.questions.each {|q| course.questions << q}
           end
         end
       end
 
       after(:create) do |course|
-        course.users << create(:asker).becomes(User)
+        course.askers << create(:asker)
       end
     end
 

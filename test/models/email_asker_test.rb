@@ -4,7 +4,7 @@ describe EmailAsker do
   let(:course) {create(:course, :with_lessons)}
 
   before :each do
-    @asker = course.users.first.becomes(EmailAsker)
+    @asker = course.askers.first.becomes(EmailAsker)
     @emailer = create(:emailer, twi_user_id: 1)
     @asker.followers << @emailer    
     @question = create(:question, created_for_asker_id: @asker.id, status: 1)   
@@ -113,7 +113,7 @@ describe EmailAsker do
   describe 'select question' do
 
     let(:course) {create(:course, :with_lessons)}
-    let(:asker) { course.users.first }
+    let(:asker) { course.askers.first }
     let(:emailer) {create(:emailer)}
     let(:non_emailer) {create(:user)}
 
