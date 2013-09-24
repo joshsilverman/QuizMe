@@ -77,6 +77,8 @@ class EmailAsker < Asker
   def auto_respond post, answerer, params = {}
     return unless !post.autocorrect.nil? and post.requires_action
     # return unless post.conversation.posts.grade.blank?
+    
+    post.update(correct: post.autocorrect)
 
     text = generate_response post.autocorrect, post.in_reply_to_question, true
 
@@ -85,7 +87,7 @@ class EmailAsker < Asker
     publication = question.publications.published.order("created_at DESC").first
     long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : "http://wisr.com/questions/#{question.id}/"
 
-    send_private_message answerer, text, {
+    send_private_message(answerer, text, {
       :user_id => id,
       :provider => 'email',
       :in_reply_to_post_id => post.id,
@@ -100,7 +102,6 @@ class EmailAsker < Asker
       :include_answers => true
     }
 
-    post.update(correct: post.autocorrect)
     learner_level = "twitter answer"
     after_answer_filter(answerer, post, :learner_level => learner_level)
     # ask_question(answerer) if post.is_email? and answerer.prefers_email?
