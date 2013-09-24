@@ -314,7 +314,7 @@ class Asker < User
       type: reengagement_type
     }
 
-    sleep(1)
+    sleep(1) if !Rails.env.test?
     
     return true
   end

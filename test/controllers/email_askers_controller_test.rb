@@ -1,12 +1,13 @@
 require 'test_helper'
 
 describe EmailAskersController do
+	let(:course) {create(:course, :with_lessons)}
 
 	before :each do
-		@email_asker = create(:email_asker)
+		@email_asker = course.users.first.becomes(EmailAsker)
 		@emailer = create(:emailer, twi_user_id: 1)
 		@email_asker.followers << @emailer		
-		@question = create(:question, created_for_asker_id: @email_asker.id, status: 1)		
+		@question = @email_asker.questions.first
 		@publication = create(:publication, question_id: @question.id)
 
 		@strategy = [1, 2, 4, 8]
@@ -18,11 +19,13 @@ describe EmailAskersController do
 		Asker.reengage_inactive_users strategy: @strategy
 		@email_question_post = @email_asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer.id).first
 
-		text = "the correct answer\r\nhttp://wisr.com/feeds/#{@email_asker.id}/#{@publication.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
+		@next_question = @email_question_post.question
+		text = "#{@next_question.answers.correct.text}\r\nhttp://wisr.com/questions/#{@next_question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
 		@email_answer_params = {to: @email_asker.email, from: @emailer.email, text: text}
 		post "save_private_response", @email_answer_params
 		@email_answer = @emailer.posts.where(in_reply_to_user_id: @email_asker.id).last
 		@email_response_to_answer = @email_asker.posts.where(in_reply_to_user_id: @emailer.id, intention: 'grade').first
+		# binding.pry
 	end
 
 	describe 'saves private response' do
