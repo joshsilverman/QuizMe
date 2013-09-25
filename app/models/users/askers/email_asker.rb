@@ -137,7 +137,7 @@ class EmailAsker < Asker
   def select_question user
     # @todo TEMPORARY, ADD APPROPRIATE FIND
     question_ids_answered = get_question_ids_answered(user)
-    course = Topic.courses.first 
+    course = Topic.where(name: "Evolution and natural selection").first || Topic.courses.first
     lesson = select_lesson(user, course)
     lesson_question_ids = lesson.questions.sort.collect(&:id)
     return Question.find((lesson_question_ids - question_ids_answered).first)

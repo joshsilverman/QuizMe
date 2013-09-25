@@ -131,8 +131,8 @@ describe EmailAsker do
 
       it 'selects next question in lesson' do
         lesson = course.lessons.sort.first
-        lesson.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }        
-        asker.becomes(EmailAsker).select_question(emailer).must_equal(lesson.questions.last)
+        lesson.questions.sort[0..1].each { |question| create(:email_response, user: emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
+        asker.becomes(EmailAsker).select_question(emailer).must_equal(lesson.questions.sort.last)
       end
     end
   end
