@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
   has_many :question_moderations
   
   # belongs_to :topic
-  has_and_belongs_to_many :topics
+  has_and_belongs_to_many :topics, -> { uniq }
 
   belongs_to :user
   belongs_to :asker, :foreign_key => :created_for_asker_id
