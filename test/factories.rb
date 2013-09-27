@@ -126,7 +126,7 @@ FactoryGirl.define do
 
     factory :course do
       type_id 5
-      sequence(:name) {|n| "course #{n}" }
+      sequence(:name) {|n| "Evolution and natural selection (#{n})" }
 
       trait :with_lessons do
         after(:create) do |course|

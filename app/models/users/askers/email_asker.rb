@@ -135,9 +135,8 @@ class EmailAsker < Asker
   end
 
   def select_question user
-    # @todo TEMPORARY, ADD APPROPRIATE FIND
     question_ids_answered = get_question_ids_answered(user)
-    course = Topic.where(name: "Evolution and natural selection").first || Topic.courses.first
+    course = select_course(user)
     lesson = select_lesson(user, course)
     lesson_question_ids = lesson.questions.sort.collect(&:id)
     return Question.find((lesson_question_ids - question_ids_answered).first)
@@ -149,6 +148,11 @@ class EmailAsker < Asker
       lessons_questions_ids = lesson.questions.collect(&:id)
       return lesson if (lessons_questions_ids - question_ids_answered).present?
     end
+  end
+
+  # @todo TEMPORARY, ADD APPROPRIATE FIND
+  def select_course user
+    Topic.where(name: "Evolution and natural selection").first || Topic.courses.first
   end
 
   def get_question_ids_answered user

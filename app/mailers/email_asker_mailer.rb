@@ -7,6 +7,9 @@ class EmailAskerMailer < ActionMailer::Base
     @url = short_url
     @include_answers = options[:include_answers]
     @grade = nil
+    @course = sender.select_course recipient
+    @lessons = @course.lessons.sort
+    @recipient = recipient
 
     if options[:intention] == 'grade'
       @grade = text

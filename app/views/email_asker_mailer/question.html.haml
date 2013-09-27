@@ -6,7 +6,7 @@
 			%br
 			%br
 
-		= @text
+		%strong= @text
 		
 		%br
 		- if @include_answers
@@ -14,6 +14,15 @@
 			- @question.answers.shuffle.each_with_index do |a, i|
 				.answer #{abc[i]}) #{a.text}
 
+		- if @course
+			
+			%br
+			%strong #{@course.name}
+			- @lessons.each do |lesson|
+				%br
+				\- #{lesson.name} (#{number_to_percentage(lesson.percentage_completed_by_user(@recipient) * 100, :precision => 0)})
+
+		%br
 		%br
 		Reply to this email with your answer or answer at #{@url}
 
