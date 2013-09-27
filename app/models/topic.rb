@@ -20,4 +20,14 @@ class Topic < ActiveRecord::Base
 		return nil unless type_id == 6
 		questions.includes(:topics).collect { |q| q.topics.select { |t| t.type_id == 5 } }.flatten.uniq
 	end
+
+	# intended only for use with lesson/course/category types
+	def percentage_completed_by_user user
+		question_ids = questions.collect &:id
+		return 1.0 if question_ids.count == 0
+		
+		question_count = question_ids.count
+		correctly_answered_questions = Question.joins(:in_reply_to_posts).where('questions.id' => question_ids).where('posts.user_id' => user.id, 'posts.correct' => true).group('questions.id')
+		correctly_answered_questions.to_a.count / question_count.to_f
+	end
 end
