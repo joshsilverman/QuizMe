@@ -36,4 +36,8 @@ class ActiveSupport::TestCase
     Capybara.current_driver = :rack_test
     ActionMailer::Base.deliveries = []
   end
+
+  after :each do
+    Timecop.return
+  end
 end
