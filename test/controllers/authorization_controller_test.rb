@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Authorization do	
+describe AuthorizationsController do	
   
 	before :each do 
 		Rails.cache.clear
