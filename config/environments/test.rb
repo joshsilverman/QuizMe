@@ -11,7 +11,7 @@ Quizmemanager::Application.configure do
   # config.serve_static_assets = true
   # config.static_cache_control = "public, max-age=3600"
   config.assets.compress = false
-  config.action_controller.asset_host = "localhost:5000"
+  # config.action_controller.asset_host = "localhost:5000"
 
   config.eager_load = false
 

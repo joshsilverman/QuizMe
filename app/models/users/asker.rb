@@ -719,7 +719,9 @@ class Asker < User
       Proc.new {|answerer| request_mod(answerer)}, # recurring
       Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
       # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
-    ].shuffle
+    ]
+    # this is a hack to cut down on extremely slow tests
+    actions = actions.shuffle unless Rails.env.test?
 
     actions.each do |action|
       break if action.call answerer

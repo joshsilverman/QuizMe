@@ -608,9 +608,9 @@ describe Asker do
 					4.times do |i|
 						Timecop.travel(Time.now + 1.hour)
 						@asker.after_answer_action @user
-						if i < 3
+						if i == 2
 							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 1
-						else
+						elsif i == 4
 							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
 						end
 					end
@@ -626,10 +626,8 @@ describe Asker do
 							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
 						elsif i == 7
 							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 3
-						elsif i > 7
-							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 4
-						else
-							Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count.must_equal 2
+						elsif i == 14
+							[4,5].must_include Post.where("in_reply_to_user_id = ? and (intention like ? or intention like ?)", @user.id, '%request%', '%solicit%').count
 						end
 					end
 				end
@@ -637,7 +635,9 @@ describe Asker do
 
 			describe 'ugc' do
 				it 'with a post' do
-					30.times do |i|
+					Timecop.travel(Time.now + 7.days)
+					12.times do |i|
+						Timecop.travel(Time.now + 1.day)
 						@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 					end
 					@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 1
@@ -677,8 +677,8 @@ describe Asker do
 				end
 
 				it 'uses correct script' do
-					15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-					7.times do |i|
+					11.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
+					4.times do |i|
 						question = nil
 						new_question_post = @asker.reload.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').order('created_at DESC').first
 						case i
@@ -706,9 +706,9 @@ describe Asker do
 					it 'with no contributions' do
 						Timecop.travel(Time.now.beginning_of_week)
 						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
-						30.times do
+						6.times do
 							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-							Timecop.travel(Time.now + 1.day)
+							Timecop.travel(Time.now + 7.day)
 						end
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 2
 					end
@@ -716,10 +716,10 @@ describe Asker do
 					it 'with regular contributions' do
 						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 0
-						45.times do
+						10.times do
 							create(:question, created_for_asker_id: @asker.id, user_id: @user.id, status: 0)		
 							@asker.request_new_question @user.reload
-							Timecop.travel(Time.now + 1.day)
+							Timecop.travel(Time.now + 5.days)
 						end
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'solicit ugc').count.must_equal 4
 					end
@@ -822,9 +822,9 @@ describe Asker do
 						5.times do
 							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 						end
-						30.times do |i|
+						6.times do |i|
 							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-							Timecop.travel(Time.now + 1.day)
+							Timecop.travel(Time.now + 5.day)
 						end
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
 					end
@@ -944,9 +944,9 @@ describe Asker do
 						5.times do
 							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
 						end
-						30.times do
+						9.times do
+							Timecop.travel(Time.now + 7.day)
 							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
-							Timecop.travel(Time.now + 1.day)
 						end
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
 					end
@@ -955,10 +955,10 @@ describe Asker do
 						15.times { create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true) }
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 0
 						@user.update_attribute :lifecycle_segment, 3
-						30.times do
+						15.times do
 							create(:question, created_for_asker_id: @new_asker.id, user_id: @user.id, status: 0)		
 							@asker.request_new_handle_ugc @user.reload
-							Timecop.travel(Time.now + 1.day)
+							Timecop.travel(Time.now + 3.day)
 						end
 						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 5
 					end
@@ -1114,8 +1114,8 @@ describe Asker do
 
 		it 'unless there is another unresponded to followup from the past week' do
 			create(:post, user_id: @asker.id, in_reply_to_user_id: @user.id, intention: 'incorrect answer follow up')
-			9.times do |i|
-				if i < 8
+			4.times do |i|
+				if i < 3
 					Delayed::Job.count.must_equal 0
 				else
 					Delayed::Job.count.must_equal 1
@@ -1128,7 +1128,7 @@ describe Asker do
 				conversation.posts << user_post
 				@asker.app_response(user_post, false)
 				Delayed::Worker.new.work_off
-				Timecop.travel(Time.now + 1.day)
+				Timecop.travel(Time.now + 4.day)
 			end
 		end
 	end		
