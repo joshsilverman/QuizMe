@@ -1,0 +1,400 @@
+/Users/joshsilverman/Dropbox/Apps/QuizMe4/config/initializers/mixpanel.rb:2: warning: already initialized constant Mixpanel
+/Users/joshsilverman/.rvm/gems/ruby-2.0.0-p247/gems/mixpanel-1.1.3/lib/mixpanel/tracker/middleware.rb:3: warning: previous definition of Mixpanel was here
+Loaded Suite test,test/controllers,test/models
+
+Started at 2013-09-28 13:41:49 -0400 w/ seed 61428.
+
+Asker::follows up with incorrect answerers
+     PASS (0:00:02.827) test_0001_with a post
+     PASS (0:00:03.863) test_0002_after an interval
+     PASS (0:00:05.868) test_0003_unless they answered correctly
+     PASS (0:00:07.360) test_0004_who have responded to recent followups
+     PASS (0:00:08.722) test_0005_unless we already followed up on the question this month
+     PASS (0:00:10.938) test_0006_unless we've already scheduled a followup for the user
+     PASS (0:00:15.148) test_0007_unless there is another unresponded to followup from the past week
+
+Asker::reengages users::that have
+     PASS (0:00:16.012) test_0001_answered a question
+     PASS (0:00:16.808) test_0002_moderated a post
+     PASS (0:00:17.291) test_0003_written a question
+     PASS (0:00:18.291) test_0004_gone inactive
+
+Asker::reengages users::who are qualified
+     PASS (0:00:19.163) test_0001_with a post
+     PASS (0:00:21.088) test_0002_on the proper schedule
+     PASS (0:00:21.753) test_0003_from an asker that they are following
+     PASS (0:00:22.591) test_0004_unless they've already been reengaged
+     PASS (0:00:23.373) test_0005_with a question
+     PASS (0:00:24.202) test_0006_with a moderation request
+     PASS (0:00:24.937) test_0007_with an author request
+
+Asker::reengages users::who are qualified::with a question
+     PASS (0:00:26.298) test_0001_that has been approved
+
+Asker::relationships
+     PASS (0:00:26.673) test_0001_links users to search terms they were followed through
+
+Asker::relationships::autofollow
+     PASS (0:00:27.301) test_0001_sends follows five days a week and during 18 hour periods
+     PASS (0:00:27.623) test_0002_obeys maximum daily follow limit on small handles
+     PASS (0:00:27.864) test_0003_obeys maximum daily follow limit on large handles
+     PASS (0:00:29.141) test_0004_obeys maximum daily unfollow limit on large handles
+     PASS (0:00:29.386) test_0005_follows proper number of users per day and week
+     PASS (0:00:31.224) test_0006_doesn't include followbacks in max follows per day
+     PASS (0:00:31.646) test_0007_takes into account previous follows from today when calculating autofollow count
+
+Asker::relationships::updates followers
+     PASS (0:00:32.074) test_0001_adds new follower
+     PASS (0:00:32.682) test_0002_follows new follower back
+     PASS (0:00:33.062) test_0003_sets correct type_id for user followback
+     PASS (0:00:34.150) test_0004_follows new follower back with pending requests
+     PASS (0:00:34.816) test_0005_updates converted pending users to not pending
+     PASS (0:00:35.194) test_0006_removes unfollowers
+
+Asker::relationships::updates follows
+     PASS (0:00:35.901) test_0001_adds new follows
+     PASS (0:00:36.285) test_0002_removes unfollows
+     PASS (0:00:36.909) test_0003_sets correct type_id for asker followback
+     PASS (0:00:37.908) test_0004_unfollows non-reciprocal follows after one month
+     PASS (0:00:38.895) test_0005_unfollows non-reciprocal pending follows after one month
+     PASS (0:00:39.601) test_0006_does not unfollow reciprocal follow after one month
+     PASS (0:00:40.137) test_0007_doesn't followback inactive unfollows
+     PASS (0:00:40.665) test_0008_sets unfollows to inactive
+
+Asker::requests::after answer::mod
+     PASS (0:00:42.533) test_0001_with a post
+     PASS (0:00:44.291) test_0002_with two posts in 5 days
+     PASS (0:00:46.140) test_0003_unless lifecycle less than regular
+     PASS (0:00:46.716) test_0004_unless no posts to moderate
+     PASS (0:00:48.256) test_0005_uses correct script
+     PASS (0:00:49.067) test_0006_sets role to moderator
+     PASS (0:00:50.233) test_0007_unless just transitioned
+
+Asker::requests::after answer::mod::through age progression
+     PASS (0:00:55.796) test_0001_with no mods
+     PASS (1:00:00.268) test_0002_with regular mods
+
+Asker::requests::after answer::new handle ugc
+     PASS (1:00:03.721) test_0001_with a post
+     PASS (1:00:12.177) test_0002_unless lifecycle less than regular
+     PASS (1:00:15.492) test_0003_if enough answers on related handle
+     PASS (1:00:19.222) test_0004_with two posts in eight days
+     PASS (1:00:25.672) test_0005_uses correct script
+
+Asker::requests::after answer::new handle ugc::through age progression
+     PASS (1:00:33.431) test_0001_with no contributions
+     PASS (1:00:39.853) test_0002_with regular contributions
+
+Asker::requests::after answer::ugc
+     PASS (1:00:44.153) test_0001_with a post
+     PASS (1:00:45.033) test_0002_unless user has less than 10 answers
+     PASS (1:00:48.502) test_0003_if user has greater than 10 answers
+     PASS (1:00:50.512) test_0004_with two posts in fifteen days
+     PASS (2:00:00.571) test_0005_uses correct script
+
+Asker::requests::after answer::ugc::through age progression
+     PASS (2:00:04.257) test_0001_with no contributions
+     PASS (2:00:06.336) test_0002_with regular contributions
+
+Asker::requests::after answer::unless
+     PASS (2:00:10.186) test_0001_already requested in the past four hours
+     PASS (2:00:15.947) test_0002_more than one unresponded request in past week
+
+Asker::requests::question feedback
+     PASS (2:00:16.692) test_0001_with a post
+     PASS (2:00:17.349) test_0002_only when question created
+     PASS (2:00:17.797) test_0003_from users who are question moderators for that asker
+
+Asker::requests::question feedback::unless
+     PASS (2:00:18.241) test_0001_moderator wrote the question
+     PASS (2:00:18.674) test_0002_moderator hasnt been active in the past week
+     PASS (2:00:19.397) test_0003_moderator received a feedback request in the past week
+     PASS (2:00:19.903) test_0004_moderator received a request in the past three days
+
+Asker::responds to user answer
+     PASS (2:00:21.260) test_0001_with a post
+     PASS (2:00:22.127) test_0002_and marks the user's post as responded to
+     PASS (2:00:23.245) test_0003_and marks the user's post as correct/incorrect
+     PASS (2:00:25.240) test_0004_and quotes the right answer when incorrect
+
+Asker::responds to user answer::from autoresponse
+     PASS (2:00:26.134) test_0001_automatically responds to autocorrected posts
+     PASS (2:00:26.646) test_0002_won't response to un-autocorrected posts
+
+Asker::responds to user answer::from the manager
+     PASS (2:00:27.491) test_0001_and doesn't overwrite response text
+     PASS (2:00:28.322) test_0002_and quotes the user's post when they are correct
+
+Asker::sends targeted mentions
+     PASS (2:00:31.460) test_0001_sends targeted mentions 5 days a week
+     PASS (2:00:36.782) test_0002_sends the proper number of mentions per day
+     PASS (2:00:40.849) test_0003_on proper schedule
+     PASS (2:00:44.096) test_0004_doesn't exceed daily max if jobs are mistakenly scheduled
+
+EmailAsker
+     PASS (2:00:45.442) test_0001_is not the default communication preference
+
+EmailAsker::course
+     PASS (2:00:46.715) test_0001_contains course name
+     PASS (2:00:48.120) test_0002_contains lesson list
+     PASS (2:00:49.963) test_0003_shows completed lessons
+     PASS (2:00:51.893) test_0004_shows progress on current lesson
+
+EmailAsker::follows up on correct answer
+     PASS (2:00:53.632) test_0001_only on correct answers
+     PASS (2:00:56.055) test_0002_one day later
+     PASS (2:00:58.281) test_0003_only if email version
+     PASS (3:00:00.617) test_0004_unless is a followup
+
+EmailAsker::private send
+     PASS (3:00:02.120) test_0001_is used when communication preference is set for email
+     PASS (3:00:03.523) test_0002_is not used when communication preference is set for Twitter
+     PASS (3:00:04.701) test_0003_will cause email delivery
+
+EmailAsker::public send
+     PASS (3:00:05.879) test_0001_degrades to private send
+
+EmailAsker::select question::when enrolled in course
+     PASS (3:00:07.628) test_0001_selects correct lesson from course
+     PASS (3:00:09.287) test_0002_selects next lesson when last is completed
+     PASS (3:00:10.894) test_0003_selects next question in lesson
+
+Moderation::observer::triggers response::on posts::and accepts/rejects other moderations::if at least one moderation from super mod
+     PASS (3:00:13.373) test_0001_by marking supermod moderation as accepted
+     PASS (3:00:15.419) test_0002_by marking non-supermod agreeing moderations as accepted
+     PASS (3:00:17.477) test_0003_by marking non-supermod non-agreeing moderations as rejected
+
+Moderation::observer::triggers response::on posts::and accepts/rejects other moderations::if greater than one moderation and greater than noob and consensus
+     PASS (3:00:19.727) test_0001_by marking consensus moderations as accepted
+
+Moderation::observer::triggers response::on posts::and accepts/rejects other moderations::if three moderations and partial consensus and at least one consensus mod above noob
+     PASS (3:00:21.639) test_0001_by marking consensus moderations as accepted, non-consensus as rejected
+
+Moderation::observer::triggers response::on posts::if at least one moderation from super mod
+     PASS (3:00:23.072) test_0001_as correct
+     PASS (3:00:24.903) test_0002_as incorrect
+     PASS (3:00:26.550) test_0003_as tell
+     PASS (3:00:27.771) test_0004_as hide
+
+Moderation::observer::triggers response::on posts::if greater than one moderation and greater than noob and consensus::for private response
+     PASS (3:00:29.477) test_0001_as correct
+
+Moderation::observer::triggers response::on posts::if greater than one moderation and greater than noob and consensus::for public response
+     PASS (3:00:31.433) test_0001_as correct
+     PASS (3:00:34.732) test_0002_as incorrect
+     PASS (3:00:37.076) test_0003_as tell
+     PASS (3:00:38.480) test_0004_as hide
+
+Moderation::observer::triggers response::on posts::if three moderations and partial consensus and at least one consensus mod above noob
+     PASS (3:00:40.134) test_0001_as correct
+     PASS (3:00:41.984) test_0002_as incorrect
+     PASS (3:00:43.838) test_0003_as tell
+     PASS (3:00:45.254) test_0004_as hide
+
+Moderation::observer::triggers response::on questions::and accepts/rejects other moderations
+     PASS (3:00:47.007) test_0001_wont accept/reject moderations on consensus
+     PASS (3:00:49.055) test_0002_wont accept/reject moderations when supermod votes before consensus
+     PASS (3:00:51.251) test_0003_accepts publishable + rejects non-publishable when accepted by supermod after consensus
+     PASS (3:00:53.092) test_0004_rejects publishable + accepts non-publishable when rejected by supermod after consensus
+     PASS (3:00:55.158) test_0005_sets question status to published when accepted by supermod
+     PASS (3:00:56.981) test_0006_sets question status to rejected when rejected by supermod
+
+Moderation::observer::triggers response::on questions::and accepts/rejects other moderations::and updates feedback attributes
+     PASS (3:00:58.713) test_0001_when needs edits and supermod agrees
+     PASS (4:00:00.260) test_0002_when publishable and supermod agrees
+     PASS (4:00:01.863) test_0003_when needs edits and supermod disagrees
+     PASS (4:00:03.584) test_0004_when publishable and supermod disagrees
+
+Moderation::observer::triggers response::on questions::and triggers response
+     PASS (4:00:04.701) test_0001_as publishable by consensus
+     PASS (4:00:06.183) test_0002_as needs edits by consensus
+
+Moderation::observer::won't trigger response::on posts
+     PASS (4:00:07.720) test_0001_if less than one moderation
+     PASS (4:00:09.208) test_0002_if no consensus
+     PASS (4:00:10.773) test_0003_if no moderator above noob
+     PASS (4:00:12.162) test_0004_if moderators don't know how to handle
+     PASS (4:00:13.555) test_0005_and won't accept/reject moderations
+     PASS (4:00:15.326) test_0006_if consensus and post was already graded
+     PASS (4:00:16.841) test_0007_if consensus and post was hidden
+     PASS (4:00:18.566) test_0008_if supermod moderates and post was already graded
+     PASS (4:00:20.079) test_0009_if supermod moderates and post was hidden
+
+Moderation::observer::won't trigger response::on questions
+     PASS (4:00:21.425) test_0001_if less than one moderation
+     PASS (4:00:22.706) test_0002_if no consensus
+
+Stat::calculates w-o-w weekly users
+     PASS (4:00:32.245) test_0001_with correct daus
+     PASS (4:00:42.472) test_0002_with correct waus
+
+Stat::calculates w-o-w weekly users::with correct ratios
+     PASS (4:00:53.278) test_0001_without repeat users
+     PASS (5:00:05.173) test_0002_with repeated users
+
+Topic::.percentage_completed_by_user
+     PASS (5:00:05.973) test_0001_is 0 when no questions have been answered correctly
+     PASS (5:00:07.028) test_0002_is 1 when all questions have been answered correctly
+     PASS (5:00:07.972) test_0003_is .33 when one question has been answered correctly
+     PASS (5:00:08.865) test_0004_is .33 when one question has been answered correctly twice
+     PASS (5:00:10.033) test_0005_is .33 when one question has been answered correctly once and incorrectly once
+
+User::transitions::lifecycle
+     PASS (5:00:23.302) test_0001_between noob => superuser
+
+User::transitions::post moderation
+     PASS (5:00:31.002) test_0001_to supermod only if high enough lifecycle segment
+     PASS (5:00:38.955) test_0002_segment between edger => super mod with enough posts
+     PASS (5:00:48.754) test_0003_segment between edger => super mod with enough acceptance
+
+Finished in 348.754914 seconds.
+
+155 tests, 155 passed, 0 failures, 0 errors, 0 skips, 1074 assertions
+
+
+ruby -v: ruby 2.0.0p247 (2013-06-27 revision 41674) [x86_64-darwin12.3.0]
+/Users/joshsilverman/Dropbox/Apps/QuizMe4/config/initializers/mixpanel.rb:2: warning: already initialized constant Mixpanel
+/Users/joshsilverman/.rvm/gems/ruby-2.0.0-p247/gems/mixpanel-1.1.3/lib/mixpanel/tracker/middleware.rb:3: warning: previous definition of Mixpanel was here
+Loaded Suite test,test/controllers,test/models
+
+Started at 2013-09-28 13:47:44 -0400 w/ seed 36665.
+
+AskersController::reengages inactive
+     PASS (0:00:02.032) test_0001_emailer with correct question
+     PASS (0:00:03.035) test_0002_non emailer with correct question
+
+AuthorizationsController::by token authentication::logs user in
+     PASS (0:00:17.404) test_0001_to proper page for moderator
+     PASS (0:00:19.677) test_0002_to proper page for first time author
+     PASS (0:00:20.496) test_0003_to proper page for return author
+     PASS (0:00:21.578) test_0004_maintains other url parameters
+I, [2013-09-28T13:48:06.596898 #21683]  INFO -- omniauth: (twitter) Request phase initiated.
+     PASS (0:00:23.267) test_0005_unless no token authentication information passed
+I, [2013-09-28T13:48:08.284376 #21683]  INFO -- omniauth: (twitter) Request phase initiated.
+     PASS (0:00:24.190) test_0006_unless no user with authentication token found
+I, [2013-10-01T13:48:19.752408 #21683]  INFO -- omniauth: (twitter) Request phase initiated.
+     PASS (0:00:35.225) test_0007_unless link is expired
+I, [2015-09-28T13:48:21.524729 #21683]  INFO -- omniauth: (twitter) Request phase initiated.
+     PASS (0:00:37.063) test_0008_cookie isn't expired after successful authentication
+     PASS (0:00:38.371) test_0009_retains authentication for other pages that require authentication
+
+EmailAskersController::asks a question
+     PASS (0:00:40.632) test_0001_and includes a link to the original video
+
+EmailAskersController::attempts to grade and send reply
+     PASS (0:00:42.335) test_0001_successfully detects question
+     PASS (0:00:44.008) test_0002_and succedes in autograding correct
+     PASS (0:00:46.188) test_0003_and succedes in sending
+
+EmailAskersController::saves private response
+     PASS (0:00:47.785) test_0001_with correct to/from
+     PASS (0:00:50.152) test_0002_with correct conversation
+     PASS (0:00:52.262) test_0003_with correct in_reply_to_post
+
+EmailAskersController::saves private response::and responds
+     PASS (0:00:53.847) test_0001_includes a followup question on grade
+
+FeedsController::routing
+     PASS (0:00:54.179) test_0001_loads show when logged in
+     PASS (0:00:54.606) test_0002_loads show when not logged in
+
+FeedsController::show::after answer requests::email address
+     PASS (0:00:57.353) test_0001_unless user has an email address
+     PASS (1:00:00.598) test_0002_if user doesn't have an email address
+     PASS (1:00:05.362) test_0003_once per session
+     PASS (1:00:14.560) test_0004_once a month
+     PASS (1:00:18.160) test_0005_and updates user record properly
+
+FeedsController::show::after answer requests::question moderation
+     PASS (1:00:21.230) test_0001_unless not requested publication
+     PASS (1:00:24.294) test_0002_if requested publication
+     PASS (1:00:26.884) test_0003_unless question already has feedback
+     PASS (1:00:29.873) test_0004_if user hasnt already provided a moderation
+
+FeedsController::show::user answers question
+     PASS (1:00:32.970) test_0001_creates user post
+     PASS (1:00:35.988) test_0002_responds to user post
+
+ModerationsController::creates moderation
+     PASS (1:00:37.893) test_0001_with correct type id for posts
+     PASS (1:00:39.959) test_0002_with correct type id for questions
+
+ModerationsController::manage::displays::posts
+     PASS (1:00:40.864) test_0001_mention for moderation
+     PASS (1:00:41.665) test_0002_dm for moderation
+     PASS (1:00:42.613) test_0003_only if in reply to post has question
+     PASS (1:00:43.930) test_0004_unless graded with consensus
+     PASS (1:00:45.195) test_0005_twice-moderated without consensus to > noob moderators
+     PASS (1:00:46.233) test_0006_unless more than two grades
+     PASS (1:00:47.180) test_0007_unless hidden by admin
+     PASS (1:00:48.210) test_0008_unless previous moderated by user
+     PASS (1:00:49.458) test_0009_from only askers the user follows
+     PASS (1:00:50.435) test_0010_solicits grades for posts with moderator_id
+
+ModerationsController::manage::displays::questions
+     PASS (1:00:51.354) test_0001_unless user is unqualified
+     PASS (1:00:52.551) test_0002_if lifecycle_segment > regular
+     PASS (1:00:53.720) test_0003_if moderator_segment > noob
+     PASS (1:00:54.660) test_0004_not requiring edits to non-supermods
+     PASS (1:00:56.134) test_0005_both in need of edits and not to supermods
+     PASS (1:00:58.160) test_0006_moderated but not edited by a supermod to other supermods
+     PASS (1:00:59.222) test_0007_unless requires edits and non supermod
+
+ModerationsController::manage::displays::questions::edit modal
+     PASS (2:00:02.435) test_0001_only to super mods
+     PASS (2:00:05.110) test_0002_only for questions requiring edits
+     PASS (2:00:09.273) test_0003_sets question status to pending on edit
+
+ModerationsController::manage::displays::questions::for users who are qualified
+     PASS (2:00:10.243) test_0001_unless already moderated by the user
+     PASS (2:00:11.108) test_0002_unless already decided
+     PASS (2:00:11.804) test_0003_if multiple moderations from only one user
+     PASS (2:00:12.875) test_0004_twice-moderated without consensus
+     PASS (2:00:15.036) test_0005_until consensus
+     PASS (2:00:16.191) test_0006_unless consensus reached
+     PASS (2:00:17.479) test_0007_unless already approved/rejected questions
+     PASS (2:00:18.605) test_0008_from only askers that the user follows
+
+ModerationsController::manage::displays::questions::for users who are qualified::supermod
+     PASS (2:00:20.582) test_0001_that are published, but need edits
+     PASS (2:00:22.468) test_0002_when published and moderated as publishable
+     PASS (2:00:25.396) test_0003_unpublishes published questions if supermod rejects
+     PASS (2:00:30.007) test_0004_after decided then edited by a supermod
+     PASS (2:00:33.718) test_0005_unless supermod rejected and didnt provide edits
+     PASS (2:00:36.719) test_0006_unless is supermod, requires edits, and already voted
+
+ModerationsController::manage::updates moderations::for posts
+     PASS (2:00:40.434) test_0001_public tell is accepted when admin agrees
+     PASS (2:00:43.446) test_0002_private tell is accepted when admin agrees
+     PASS (2:00:46.749) test_0003_hide is accepted when admin agrees
+     PASS (2:00:49.883) test_0004_yes is rejected when admin hides
+
+ModerationsController::manage::updates moderations::for posts::correct grade
+     PASS (2:00:52.375) test_0001_is accepted when admin agrees
+     PASS (2:00:55.035) test_0002_is rejected when admin disagrees
+
+ModerationsController::manage::updates moderations::for questions
+     PASS (2:00:58.563) test_0001_marks previous moderations as inactive after question is edited
+
+ModerationsController::routing
+     PASS (2:00:59.678) test_0001_gives access to new moderators
+     PASS (3:00:00.273) test_0002_allows moderators access
+
+QuestionsController::update
+     PASS (3:00:02.184) test_0001_sets question to pending when edited
+     PASS (3:00:04.368) test_0002_clears question feedback when question edited
+     PASS (3:00:06.630) test_0003_clears answer feedback when answers edited
+
+Finished in 186.631392 seconds.
+
+80 tests, 80 passed, 0 failures, 0 errors, 0 skips, 183 assertions
+
+
+ruby -v: ruby 2.0.0p247 (2013-06-27 revision 41674) [x86_64-darwin12.3.0]
+Loaded Suite test,test/controllers,test/models
+
+Started at 2013-09-28 13:50:55 -0400 w/ seed 64871.
+
+Finished in 0.000252 seconds.
+
+0 tests, 0 passed, 0 failures, 0 errors, 0 skips, 0 assertions
