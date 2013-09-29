@@ -25,6 +25,7 @@ group :production do
   gem 'dalli', '2.6.4'
   gem 'memcachier'
   gem 'rails_12factor'
+  gem "non-stupid-digest-assets"
 end
 
 group :development do
