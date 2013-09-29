@@ -23,6 +23,7 @@ Quizmemanager::Application.configure do
   config.assets.compile = false
 
   # Generate digests for assets URLs
+  config.static_cache_control = "public, max-age=2592000"
   config.assets.digest = true
 
   # Defaults to Rails.root.join("public/assets")
@@ -46,6 +47,7 @@ Quizmemanager::Application.configure do
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
+  config.action_controller.asset_host = ENV['CDN_SUMO_URL']
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
