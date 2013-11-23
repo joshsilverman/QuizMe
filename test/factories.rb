@@ -59,6 +59,10 @@ FactoryGirl.define do
         text 'the correct answer, yo'
       end
     end
+
+    factory :correct_response do
+      correct true
+    end
   end
 
   factory :question do

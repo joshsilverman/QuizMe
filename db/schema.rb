@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130925134300) do
+ActiveRecord::Schema.define(version: 20131123210829) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,17 @@ ActiveRecord::Schema.define(version: 20130925134300) do
     t.integer "asker_id"
     t.integer "topic_id"
   end
+
+  create_table "askertopics", force: true do |t|
+    t.integer  "asker_id"
+    t.integer  "topic_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "askertopics", ["asker_id", "topic_id"], name: "index_askertopics_on_asker_id_and_topic_id", using: :btree
+  add_index "askertopics", ["asker_id"], name: "index_askertopics_on_asker_id", using: :btree
+  add_index "askertopics", ["topic_id"], name: "index_askertopics_on_topic_id", using: :btree
 
   create_table "authorizations", force: true do |t|
     t.integer  "user_id"
@@ -324,13 +335,13 @@ ActiveRecord::Schema.define(version: 20130925134300) do
   create_table "users", force: true do |t|
     t.string   "twi_name"
     t.string   "twi_screen_name"
-    t.integer  "twi_user_id"
+    t.integer  "twi_user_id",              limit: 8
     t.text     "twi_profile_img_url"
     t.string   "twi_oauth_token"
     t.string   "twi_oauth_secret"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "role",                     default: "user"
+    t.string   "role",                               default: "user"
     t.string   "name"
     t.integer  "fb_user_id"
     t.string   "fb_oauth_token"
@@ -345,7 +356,7 @@ ActiveRecord::Schema.define(version: 20130925134300) do
     t.string   "bg_image"
     t.boolean  "published"
     t.integer  "author_id"
-    t.string   "learner_level",            default: "unengaged"
+    t.string   "learner_level",                      default: "unengaged"
     t.datetime "last_interaction_at"
     t.datetime "last_answer_at"
     t.integer  "client_id"
@@ -356,20 +367,20 @@ ActiveRecord::Schema.define(version: 20130925134300) do
     t.integer  "interaction_segment"
     t.integer  "author_segment"
     t.string   "email"
-    t.string   "encrypted_password",       default: "",          null: false
+    t.string   "encrypted_password",                 default: "",          null: false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",            default: 0
+    t.integer  "sign_in_count",                      default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.boolean  "subscribed",               default: true
+    t.boolean  "subscribed",                         default: true
     t.integer  "moderator_segment"
     t.integer  "search_term_topic_id"
     t.string   "authentication_token"
-    t.integer  "communication_preference", default: 1
+    t.integer  "communication_preference",           default: 1
     t.datetime "last_email_request_at"
   end
 

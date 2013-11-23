@@ -1,5 +1,15 @@
 require 'test_helper'
 
+describe User, 'CRUD' do
+	describe '#save' do
+		it 'saves records with large :twi_user_id' do
+			user = User.find_or_create_by(twi_user_id: 2210874654)
+
+			user.valid?.must_equal true
+		end
+	end
+end
+
 describe User do	
 	before :each do 
 		Rails.cache.clear
@@ -21,10 +31,11 @@ describe User do
 			it 'between noob => superuser' do
 				Timecop.travel(Time.now.beginning_of_week)
 				5.times do
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					create(:correct_response, user: @user)
+
 				end
 				30.times do |i|
-					@asker.app_response FactoryGirl.create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+					create(:correct_response, user: @user)
 					Delayed::Worker.new.work_off
 
 					if i >= 28 
