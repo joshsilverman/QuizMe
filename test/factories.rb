@@ -44,6 +44,10 @@ FactoryGirl.define do
     interaction_type 1
     text 'Leroy\'s my boy'
 
+    factory :retweet do
+      interaction_type 3
+    end
+
     factory :dm do
       interaction_type 4
 

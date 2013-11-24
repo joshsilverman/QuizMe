@@ -36,10 +36,6 @@ describe Stat do
 				calculated_ratios_rounded.must_equal @ratios
 			end
 
-			# it 'and averages' do
-			# 	Stat.pg_ratios_with_running_avg Stat.ratios
-			# end
-
 			it 'with repeated users' do
 				user = Post.last.user
 				user.posts << create(:post, interaction_type: 3, created_at: 2.day.ago)
@@ -48,5 +44,12 @@ describe Stat do
 				calculated_ratios_rounded[-2].wont_equal @ratios[-2]
 			end
 		end
+	end
+end
+
+describe Stat, '#graph_dau_mau' do
+	it 'returns array' do
+		data = Stat.graph_dau_mau 1
+		data.must_be_kind_of Array
 	end
 end

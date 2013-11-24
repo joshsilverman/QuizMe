@@ -93,11 +93,8 @@ class AskersController < ApplicationController
     @domain = params[:domain] || 30
     @domain = @domain.to_i
 
-    begin
-      name = "graph_#{params[:graph]}"
-      @data = Stat.send name, @domain
-    rescue
-    end
+    name = "graph_#{params[:graph]}"
+    @data = Stat.send name, @domain
     
     if params[:party] == 'core'
       render json: @data

@@ -54,14 +54,16 @@ class Stat < ActiveRecord::Base
   end
 
   def self.dau_ids_by_date domain = 30
-    user_ids_by_date_raw = Post.social.not_us.not_spam\
-      .where("created_at > ?", Date.today - (domain + 31).days)\
-      .where("created_at < ?", Date.today)\
-      .select(["to_char(posts.created_at, 'YYYY-MM-DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").to_a
+    user_ids_by_date_raw = Post.social.not_us.not_spam.
+      where("created_at > ?", Date.today - (domain + 31).days).
+      where("created_at < ?", Date.today).
+      select(["to_char(posts.created_at, 'YYYY-MM-DD') as date_str", 
+               "array_to_string(array_agg(user_id),',') as user_ids_str"]).
+      group("date_str").to_a
 
     user_ids_by_date = {}
     user_ids_by_date_raw.each do |post|
-      user_ids_by_date[post.to_char] = post.array_to_string.split(',').uniq
+      user_ids_by_date[post.date_str] = post.user_ids_str.split(',').uniq
     end
     user_ids_by_date
   end
@@ -91,55 +93,19 @@ class Stat < ActiveRecord::Base
 
   def self.graph_dau_mau domain = 30
     graph_data, display_data = Rails.cache.fetch "stat_dau_mau_domain_#{domain}", :expires_in => 13.minutes do
-      post_user_ids_by_date_raw = Post.social.not_us.not_spam\
-        .where("created_at > ?", Date.today - (domain + 31).days)\
-        .select(["to_char(posts.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY/MM/DD')").all
-
-      moderation_user_ids_by_date_raw = Moderation.where("created_at > ?", Date.today - (domain + 31).days)\
-        .select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(moderations.created_at, 'YY/MM/DD')").all
-
-      question_ids_by_date_raw = Question.not_us\
-        .where("created_at > ?", Date.today - (domain + 31).days)\
-        .select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(questions.created_at, 'YY/MM/DD')").all        
-
-      user_ids_by_date = {}
-      ((Date.today - (domain + 31).days)..(Date.today - 1)).each do |date|
-        datef = date.strftime("%y/%m/%d")
-        user_ids_by_date[datef] ||= []
-        user_ids_by_date[datef] << post_user_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
-        user_ids_by_date[datef] << moderation_user_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
-        user_ids_by_date[datef] << question_ids_by_date_raw.select {|e| e.to_char == datef }.first.array_to_string.split(',').uniq
-        user_ids_by_date[datef].flatten!.uniq!
-      end
-
-      post_user_ids_last_24_raw = Post.social.not_us.not_spam\
-        .where("created_at > ?", 24.hour.ago)\
-        .select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).group("to_char(posts.created_at, 'YY')").all
-
-      moderation_user_ids_last_24_raw = Moderation.where("created_at > ?", 24.hour.ago)\
-        .select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(moderations.created_at, 'YY/MM/DD')").all
-
-      question_ids_last_24_raw = Question.not_us\
-        .where("created_at > ?", 24.hour.ago)\
-        .select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).group("to_char(questions.created_at, 'YY/MM/DD')").all        
-
-      user_ids_last_24 = []
-      user_ids_last_24 << post_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless post_user_ids_last_24_raw.blank?
-      user_ids_last_24 << moderation_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless moderation_user_ids_last_24_raw.blank?
-      user_ids_last_24 << question_ids_last_24_raw[0].array_to_string.split(',').uniq unless question_ids_last_24_raw.blank?
-      user_ids_last_24.flatten!.uniq!
-
+      user_ids_by_date = Stat.dau_ids_by_date domain
+      user_ids_last_24 = Stat.active_user_during_period 1.day.ago
 
       graph_data = {}
       mau = []
       ((Date.today - (domain + 1))..(Date.today - 1)).each do |date|
-        datef = date.strftime("%y/%m/%d")
+        datef = date.strftime("%Y-%m-%d")
         graph_data[datef] = 0
         dau = 0
         dau = user_ids_by_date[datef].count if user_ids_by_date[datef]
         mau = []
         ((date - 30)..date).each do |ddate|
-          ddatef = ddate.strftime("%y/%m/%d")
+          ddatef = ddate.strftime("%Y-%m-%d")
           mau += user_ids_by_date[ddatef] unless user_ids_by_date[ddatef].blank?
         end
         mau = mau.uniq.count
@@ -149,7 +115,7 @@ class Stat < ActiveRecord::Base
       display_data = {}
       display_data[:today] = user_ids_last_24.count.to_f / mau #0.99 #graph_data[Date.today]
 
-      last_7_days = graph_data.reject{|k,v| 8.days.ago > Date.strptime(k, '%y/%m/%d')}.values
+      last_7_days = graph_data.reject{|k,v| 8.days.ago > Date.strptime(k, '%Y-%m-%d')}.values
       if last_7_days.size > 0
         display_data[:total] = last_7_days.sum / last_7_days.size
       else
@@ -163,6 +129,28 @@ class Stat < ActiveRecord::Base
       [graph_data, display_data]
     end
     return graph_data, display_data
+  end
+
+  def self.active_user_during_period start_time, end_time = Time.now
+    post_user_ids_last_24_raw = Post.social.not_us.not_spam.
+      where("created_at > ?", 24.hour.ago).
+      select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).
+      group("to_char(posts.created_at, 'YY')").all
+
+    moderation_user_ids_last_24_raw = Moderation.where("created_at > ?", 24.hour.ago).
+      select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).
+      group("to_char(moderations.created_at, 'YY/MM/DD')").all
+
+    question_ids_last_24_raw = Question.not_us.
+      where("created_at > ?", 24.hour.ago).
+      select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',') as user_ids"]).
+      group("to_char(questions.created_at, 'YY/MM/DD')").all        
+
+    user_ids_last_24 = []
+    user_ids_last_24 << post_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless post_user_ids_last_24_raw.blank?
+    user_ids_last_24 << moderation_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless moderation_user_ids_last_24_raw.blank?
+    user_ids_last_24 << question_ids_last_24_raw[0].user_ids.split(',').uniq unless question_ids_last_24_raw.blank?
+    user_ids_last_24.flatten.uniq
   end
 
   def self.month_summary asker_id = nil, domain = 30
