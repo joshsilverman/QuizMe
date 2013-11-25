@@ -1,0 +1,85 @@
+Asker::follows up with incorrect answerers, test_0001_with a post, 2.788, 2.788, PASS
+Asker::follows up with incorrect answerers, test_0002_after an interval, 4.009, 1.2210000000000005, PASS
+Asker::follows up with incorrect answerers, test_0003_unless they answered correctly, 4.833, 0.8239999999999998, PASS
+Asker::follows up with incorrect answerers, test_0004_who have responded to recent followups, 6.498, 1.665, PASS
+Asker::follows up with incorrect answerers, test_0005_unless we already followed up on the question this month, 9.188, 2.6900000000000004, PASS
+Asker::follows up with incorrect answerers, test_0006_unless we, 12.634, 3.4459999999999997, PASS
+Asker::follows up with incorrect answerers, test_0007_unless there is another unresponded to followup from the past week, 16.499, 3.8649999999999984, PASS
+Asker::reengages users::that have, test_0001_answered a question, 18.354, 1.8550000000000004, PASS
+Asker::reengages users::that have, test_0002_moderated a post, 19.937, 1.583000000000002, PASS
+Asker::reengages users::that have, test_0003_written a question, 20.645, 0.7079999999999984, PASS
+Asker::reengages users::that have, test_0004_gone inactive, 21.461, 0.815999999999999, PASS
+Asker::reengages users::who are qualified, test_0001_with a post, 22.364, 0.9030000000000022, PASS
+Asker::reengages users::who are qualified, test_0002_on the proper schedule, 25.982, 3.6179999999999986, PASS
+Asker::reengages users::who are qualified, test_0003_from an asker that they are following, 27.53, 1.5480000000000018, PASS
+Asker::reengages users::who are qualified, test_0004_unless they, 28.664, 1.1340000000000003, PASS
+Asker::reengages users::who are qualified, test_0005_with a question, 29.61, 0.945999999999998, PASS
+Asker::reengages users::who are qualified, test_0006_with a moderation request, 30.407, 0.7970000000000006, PASS
+Asker::reengages users::who are qualified, test_0007_with an author request, 31.291, 0.8840000000000003, PASS
+Asker::reengages users::who are qualified::with a question, test_0001_that has been approved, 32.253, 0.9619999999999997, PASS
+Asker::relationships, test_0001_links users to search terms they were followed through, 32.969, 0.7160000000000011, PASS
+Asker::relationships::autofollow, test_0001_sends follows five days a week and during 18 hour periods, 33.987, 1.0180000000000007, PASS
+Asker::relationships::autofollow, test_0002_obeys maximum daily follow limit on small handles, 34.3, 0.3129999999999953, PASS
+Asker::relationships::autofollow, test_0003_obeys maximum daily follow limit on large handles, 34.742, 0.44200000000000017, PASS
+Asker::relationships::autofollow, test_0004_obeys maximum daily unfollow limit on large handles, 37.19, 2.4480000000000004, PASS
+Asker::relationships::autofollow, test_0005_follows proper number of users per day and week, 37.66, 0.46999999999999886, PASS
+Asker::relationships::autofollow, test_0006_doesn, 40.572, 2.912000000000006, PASS
+Asker::relationships::autofollow, test_0007_takes into account previous follows from today when calculating autofollow count, 41.114, 0.5419999999999945, PASS
+Asker::relationships::updates followers, test_0001_adds new follower, 41.725, 0.6110000000000042, PASS
+Asker::relationships::updates followers, test_0002_follows new follower back, 42.518, 0.7929999999999993, PASS
+Asker::relationships::updates followers, test_0003_sets correct type_id for user followback, 43.043, 0.5249999999999986, PASS
+Asker::relationships::updates followers, test_0004_follows new follower back with pending requests, 44.047, 1.0039999999999978, PASS
+Asker::relationships::updates followers, test_0005_updates converted pending users to not pending, 44.677, 0.6300000000000026, PASS
+Asker::relationships::updates followers, test_0006_removes unfollowers, 45.026, 0.34900000000000375, PASS
+Asker::relationships::updates follows, test_0001_adds new follows, 45.705, 0.6789999999999949, PASS
+Asker::relationships::updates follows, test_0002_removes unfollows, 46.173, 0.4680000000000035, PASS
+Asker::relationships::updates follows, test_0003_sets correct type_id for asker followback, 46.823, 0.6499999999999986, PASS
+Asker::relationships::updates follows, test_0004_unfollows non, 47.885, 1.0619999999999976, PASS
+Asker::relationships::updates follows, test_0005_unfollows non, 48.923, 1.0380000000000038, PASS
+Asker::relationships::updates follows, test_0006_does not unfollow reciprocal follow after one month, 49.971, 1.0479999999999947, PASS
+Asker::relationships::updates follows, test_0007_doesn, 50.52, 0.5490000000000066, PASS
+Asker::relationships::updates follows, test_0008_sets unfollows to inactive, 51.098, 0.5779999999999959, PASS
+Asker::requests::after answer::mod, test_0001_with a post, 52.219, 1.1210000000000022, PASS
+Asker::requests::after answer::mod, test_0002_with two posts in 5 days, 53.448, 1.2289999999999992, PASS
+Asker::requests::after answer::mod, test_0003_unless lifecycle less than regular, 55.369, 1.9209999999999994, PASS
+Asker::requests::after answer::mod, test_0004_unless no posts to moderate, 56.266, 0.8969999999999985, PASS
+Asker::requests::after answer::mod, test_0005_uses correct script, 58.907, 2.6409999999999982, PASS
+Asker::requests::after answer::mod, test_0006_sets role to moderator, 59.852, 0.9450000000000003, PASS
+Asker::requests::after answer::mod, test_0007_unless just transitioned, 61.179, 1.3270000000000053, PASS
+Asker::requests::after answer::mod::through age progression, test_0001_with no mods, 68.404, 7.224999999999994, PASS
+Asker::requests::after answer::mod::through age progression, test_0002_with regular mods, 72.32900000000001, 3.9250000000000114, PASS
+Asker::requests::after answer::new handle ugc, test_0001_with a post, 76.673, 4.343999999999994, PASS
+Asker::requests::after answer::new handle ugc, test_0002_unless lifecycle less than regular, 88.827, 12.153999999999996, PASS
+Asker::requests::after answer::new handle ugc, test_0003_if enough answers on related handle, 93.297, 4.469999999999999, PASS
+Asker::requests::after answer::new handle ugc, test_0004_with two posts in eight days, 98.015, 4.7180000000000035, PASS
+Asker::requests::after answer::new handle ugc, test_0005_uses correct script, 105.339, 7.323999999999998, PASS
+Asker::requests::after answer::new handle ugc::through age progression, test_0001_with no contributions, 115.211, 9.872, PASS
+Asker::requests::after answer::new handle ugc::through age progression, test_0002_with regular contributions, 128.988, 13.777000000000001, PASS
+Asker::requests::after answer::ugc, test_0001_with a post, 137.46, 8.472000000000008, PASS
+Asker::requests::after answer::ugc, test_0002_unless user has less than 10 answers, 138.711, 1.2510000000000048, PASS
+Asker::requests::after answer::ugc, test_0003_if user has greater than 10 answers, 144.414, 5.7029999999999745, PASS
+Asker::requests::after answer::ugc, test_0004_with two posts in fifteen days, 146.456, 2.0420000000000016, PASS
+Asker::requests::after answer::ugc, test_0005_uses correct script, 156.553, 10.097000000000008, PASS
+Asker::requests::after answer::ugc::through age progression, test_0001_with no contributions, 163.353, 6.800000000000011, PASS
+Asker::requests::after answer::ugc::through age progression, test_0002_with regular contributions, 165.902, 2.548999999999978, PASS
+Asker::requests::after answer::unless, test_0001_already requested in the past four hours, 171.777, 5.875, PASS
+Asker::requests::after answer::unless, test_0002_more than one unresponded request in past week, 177.257, 5.480000000000018, PASS
+Asker::requests::question feedback, test_0001_with a post, 178.129, 0.8719999999999857, PASS
+Asker::requests::question feedback, test_0002_only when question created, 178.784, 0.6550000000000011, PASS
+Asker::requests::question feedback, test_0003_from users who are question moderators for that asker, 179.285, 0.5010000000000048, PASS
+Asker::requests::question feedback::unless, test_0001_moderator wrote the question, 179.804, 0.5190000000000055, PASS
+Asker::requests::question feedback::unless, test_0002_moderator hasnt been active in the past week, 180.453, 0.6490000000000009, PASS
+Asker::requests::question feedback::unless, test_0003_moderator received a feedback request in the past week, 181.276, 0.8230000000000075, PASS
+Asker::requests::question feedback::unless, test_0004_moderator received a request in the past three days, 181.799, 0.5229999999999961, PASS
+Asker::responds to user answer, test_0001_with a post, 182.879, 1.079999999999984, PASS
+Asker::responds to user answer, test_0002_and marks the user, 183.766, 0.8870000000000005, PASS
+Asker::responds to user answer, test_0003_and marks the user, 184.581, 0.8149999999999977, PASS
+Asker::responds to user answer, test_0004_and quotes the right answer when incorrect, 185.61, 1.0290000000000248, PASS
+Asker::responds to user answer::from autoresponse, test_0001_automatically responds to autocorrected posts, 186.557, 0.9469999999999743, PASS
+Asker::responds to user answer::from autoresponse, test_0002_won, 187.088, 0.5310000000000059, PASS
+Asker::responds to user answer::from the manager, test_0001_and doesn, 187.981, 0.8930000000000007, PASS
+Asker::responds to user answer::from the manager, test_0002_and quotes the user, 189.906, 1.9250000000000114, PASS
+Asker::sends targeted mentions, test_0001_sends targeted mentions 5 days a week, 195.421, 5.514999999999986, PASS
+Asker::sends targeted mentions, test_0002_sends the proper number of mentions per day, 201.56, 6.13900000000001, PASS
+Asker::sends targeted mentions, test_0003_on proper schedule, 206.956, 5.395999999999987, PASS
+Asker::sends targeted mentions, test_0004_doesn, 211.40800000000002, 4.452000000000027, PASS
