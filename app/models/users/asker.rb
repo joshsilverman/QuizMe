@@ -844,7 +844,14 @@ class Asker < User
     link = "http://www.wisr.com/moderations/manage?question_id=#{question.id}"
 
     recently_active_question_moderators.sample(3).each do |moderator|
-      script = "We just got a new question, could you see if it needs edits? <link>"
+      script = [
+        "Somebody wrote a question, could you edit it? <link>",
+        "Another user just authored a question, could you check it? <link>",
+        "Could you see if one of our new questions needs to be edited? <link>",
+        "Would you mind taking a look at a new question we'd like to add? <link>",
+        "Do you mind looking at a question one of our users recently wrote? <link>"
+      ].sample
+
       script.gsub! "<link>", link
       self.send_private_message(moderator, script, {
         :intention => "request question feedback"

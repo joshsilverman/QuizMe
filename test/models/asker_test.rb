@@ -203,24 +203,6 @@ describe Asker do
 					Asker.reengage_inactive_users strategy: @strategy
 					Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
 				end
-
-				# describe "that hasn't been" do
-				# 	before :each do
-				# 		@new_question = create(:question, created_for_asker_id: @asker.id, status: 1)
-				# 	end
-
-				# 	it "that hasn't been answered before" do
-				# 		@user_response.update_attribute :in_reply_to_question_id, @question.id
-				# 		Asker.reengage_inactive_users strategy: @strategy
-				# 		Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id
-				# 	end
-
-				# 	it "that hasn't been asked before" do
-				# 		@reengagement_post = create(:post, user_id: @asker.id, created_at: (@strategy.first + 5).days.ago, in_reply_to_user_id: @user.id, intention: 'reengage inactive', question_id: @question.id)
-				# 		Asker.reengage_inactive_users strategy: @strategy
-				# 		Post.reengage_inactive.where("created_at > ?", @reengagement_post.created_at).where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question_id.must_equal @new_question.id		
-				# 	end		
-				# end	
 			end				
 		end
 	end
