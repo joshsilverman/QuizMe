@@ -780,10 +780,21 @@ class Asker < User
     return false unless (Post.requires_moderations(user).present? or Question.requires_moderations(user).present?)
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
-    script = Post.create_split_test(user.id, 'mod request script (=> moderate answer)', 
-      "I'd love some help grading my followers... if you would, grade a few responses at <link>", 
-      "You're pretty good with this material... would you help grade a few responses at <link>"
-    )
+    script = [
+      "If you would, grade a few answers here <link>", 
+      "Have a look at a few answers here from other users: <link>", 
+      "Help grade other users here: <link>", 
+      "Could you help grade a few from other users? <link>",
+      "Would you mind grading a few from others? <link>",
+
+      "I'm a bit behind grading... could you help? <link>",
+      "I'm a bit behind replying to answer... could you help? <link>",
+
+      "You seem to know your stuff -- could you help me grade? <link>",
+      "You're good at this -- could you help me grade? <link>",
+      "You're doing well with these questions -- would you help me grade? <link>",
+      "You're doing well at this -- can you help grade? <link>"
+    ].sample
 
     # overwrite script if user has mod'ed before
     ## ALL MUST CONTAIN MORE FOR TEST TO PASS

@@ -32,7 +32,6 @@ class ModerationsController < ApplicationController
     if params['post_id']
       moderation = moderator.post_moderations.find_or_initialize_by(post_id: params['post_id'])
       moderation.update_attributes type_id: params['type_id']
-      Post.trigger_split_test(moderator.id, 'mod request script (=> moderate answer)')
       response = moderation.reload.post.moderation_trigger_type_id.present? ? moderation.type_id : nil
     elsif params['question_id']
       question = Question.find(params['question_id'])
