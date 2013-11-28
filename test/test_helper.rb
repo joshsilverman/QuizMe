@@ -41,3 +41,5 @@ class ActiveSupport::TestCase
     Timecop.return
   end
 end
+
+require "mocha/setup"

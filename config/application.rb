@@ -16,6 +16,8 @@ module Quizmemanager
     config.autoload_paths += %W(#{config.root}/lib/classifiers)
     config.autoload_paths += %W(#{config.root}/lib/adapters/twitter)
     config.autoload_paths += %W(#{config.root}/lib/adapters/email)
+    config.autoload_paths += %W(#{config.root}/lib/adapters/wisr_feed/*.rb)
+    
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', 'users', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', 'moderations', '{**}')]

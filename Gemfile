@@ -18,6 +18,7 @@ group :test do
   gem 'timecop'
   gem 'm'
   gem 'selenium-webdriver'
+  gem 'mocha'
 end
 
 group :production do
