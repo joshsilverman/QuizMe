@@ -23,7 +23,7 @@ describe Adapters::WisrFeed::Post, ".build_request" do
     post = FactoryGirl.create :post
     request = Adapters::WisrFeed::Post::build_request post
 
-    request.path.must_equal "api/users"
+    request.path.must_equal '/api/posts/create_or_update'
     request.must_be_kind_of Net::HTTP::Post
   end
 
@@ -54,6 +54,16 @@ describe Adapters::WisrFeed::Post, ".send_request" do
     Adapters::WisrFeed::Post::http.expects(:request).with(request)
 
     response = Adapters::WisrFeed::Post::send_request request
+  end
+end
+
+describe Adapters::WisrFeed::Post, ".post_params" do
+  it "should returns hash with appropriate keys" do
+    disable_after_save_post_observer
+    post = FactoryGirl.create :post, text: 'abc'
+    params = Adapters::WisrFeed::Post::post_params post
+    
+    params["post[text]"].must_equal "abc"
   end
 end
 

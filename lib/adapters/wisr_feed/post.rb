@@ -10,17 +10,26 @@ module Adapters::WisrFeed::Post
   end
 
   def self.http
-    @@_http ||= Net::HTTP.new("feed.wisr.com")
+    @@_http ||= Net::HTTP.new("feed.wisrdev.com", 4000)
   end
 
   def self.build_request post
-    request = Net::HTTP::Post.new("api/users")
-    request.set_form_data(post: post.attributes)
+    request = Net::HTTP::Post.new("/api/posts/create_or_update")
+    request.set_form_data(post_params(post))
 
     request
   end
 
   def self.send_request request
     http.request(request)
+  end
+
+  def self.post_params post
+    post_params = {auth_token: 'VvzYYzJ36puS5GP4yG7m'}
+    post.attributes.map do |key, value|
+      post_params["post[#{key}]"] = value
+    end
+
+    post_params
   end
 end
