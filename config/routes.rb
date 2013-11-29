@@ -13,28 +13,22 @@ Quizmemanager::Application.routes.draw do
   get "answer/index"
   get "answer/show"
 
-  get "badges/load"  
-  get "badges/issuable"
-  post "badges/issue"  
-  resources :badges
-
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   get "feeds/:id/scores" => "feeds#scores"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
   get "feeds/:id/manage" => "feeds#manage"
   get "feeds/manage" => "feeds#manage"
-
-  resource :moderations
-  get "moderations/manage"
-
   get "feeds/stream" => "feeds#stream"
-  
-  get "askers/:id/hide_all/:post_ids" => "askers#hide_all"
 
   post "feeds/search"
   get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
   get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
+
+  resource :moderations
+  get "moderations/manage"
+
+  get "askers/:id/hide_all/:post_ids" => "askers#hide_all"
 
   get '/search' => 'feeds#index_with_search'
 
@@ -90,15 +84,10 @@ Quizmemanager::Application.routes.draw do
 
   get "/tags" => 'posts#tags'
 
-  # get "/newsletter" => "users#newsletter"
   get '/progress_report' => 'users#progress_report'
 
-  resources :questions
-  resources :answers
 
   get "/confirm_js" => "sessions#confirm_js"
-
-  get '/stats' => 'accounts#stats'
   
   get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
@@ -116,19 +105,16 @@ Quizmemanager::Application.routes.draw do
   post '/unsubscribe' => 'users#unsubscribe'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
-  get "clients/:id/report" => "clients#report"
-  post "clients/nudge" => "clients#nudge"
-
   post '/askers/nudge' => 'askers#send_nudge'
   post "/email_askers/save_private_response"
 
   get '/tutor' => 'askers#tutor'
 
-  resources :rate_sheets
+  resources :questions
+  resources :answers
   resources :users
   resources :posts
   resources :mentions
-  resources :exams
   resources :askers
 
   root :to => 'feeds#index'

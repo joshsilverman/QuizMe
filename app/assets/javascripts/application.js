@@ -70,13 +70,3 @@ function confirm_js(){
 puts = function(o) {console.log(o)}
 
 js_check();
-	//$.ajax '/confirm_js',
-	//		type: 'POST'
-	//		data: responseHash
-	//		beforeSend: ()->
-	//			console.log "beforeSend"
-	//		error: (jqXHR, textStatus, errorThrown) ->
-	//			console.log "AJAX Error: #{errorThrown}"
-	//		success: (data, textStatus, jqXHR) =>
-	//			console.log "Success"
-	//			console.log data

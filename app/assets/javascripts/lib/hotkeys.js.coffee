@@ -20,9 +20,8 @@ class window.Hotkeys
 					when 114 then active_post.retweet() if active_post
 
 					when 113 then window.feed.post_question(active_post.active_record.text, active_post.id)
-					when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle') #@toggle_scripts_panel()
+					when 115 then active_post.element.find('.scripts .dropdown-toggle').dropdown('toggle')
 
-					# when 101 then @toggle_exam_panel()
 					when 101 then e.preventDefault(); @toggle_email_panel()
 					when 98 then @hide_panel()
 
@@ -37,22 +36,9 @@ class window.Hotkeys
 			$('.active .sub').hide()
 			$('.active .actions').css overflow: 'inherit'
 
-	toggle_scripts_panel: ->
-		@_before_toggle_panel()
-		$('.active .scripts').show()
-
 	toggle_question_feedback_panel: ->
 		@_before_toggle_panel()
 		$('.active .question_feedback_actions').show()
-
-	toggle_exam_panel: ->
-		@_before_toggle_panel()
-		$('.active .new-exam').show()
-
-		$('.new-exam form').unbind 'ajax:success'
-		$('.active .new-exam form').on 'ajax:success', -> 
-			user_id = $(this).find('input[name="exam[user_id]"]').attr("value")
-			$(this).html("Success: <a href='/tutor?user_id=#{user_id}'>see tutor nudge</a>.").addClass("alert alert-success")
 
 	toggle_email_panel: ->
 		@_before_toggle_panel()
