@@ -3,6 +3,8 @@ require 'test_helper'
 describe Moderation do	
 
 	before :each do 
+		ActiveRecord::Base.observers.enable :post_moderation_observer, :question_moderation_observer
+
 		@user = create(:user, twi_user_id: 1, role: 'user')
 		@moderator = create(:user, twi_user_id: 1, role: 'moderator')
 		login_as(@moderator, :scope => :user)

@@ -76,7 +76,7 @@ class Stat < ActiveRecord::Base
       catch :missing_day do
         ids = []
         start_date_formated = Date.parse(date)
-        ((start_date_formated - (period - 1).days)..start_date_formated).to_a.each do |rdate|
+        ((start_date_formated - (period-1).days)..start_date_formated).to_a.each do |rdate|
           rdate_formatted = rdate.strftime
           throw :missing_day if daus[rdate_formatted].nil?
           ids += daus[rdate_formatted] unless daus[rdate_formatted].empty?

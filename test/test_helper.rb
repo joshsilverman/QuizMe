@@ -1,45 +1,59 @@
-ENV["RAILS_ENV"] = "test"
-require File.expand_path("../../config/environment", __FILE__)
-require "rails/test_help"
-require "minitest/autorun"
-require "minitest/rails"
-require "capybara/rails"
-require 'database_cleaner'
-require "minitest/rails/capybara"
-require 'active_support/testing/setup_and_teardown'
+require 'rubygems'
+require 'spork'
+#uncomment the following line to use spork with the debugger
+#require 'spork/ext/ruby-debug'
 
-DatabaseCleaner.strategy = :truncation
-Rails.logger.level = 2
+Spork.prefork do
+  ENV["RAILS_ENV"] = "test"
+  require File.expand_path("../../config/environment", __FILE__)
+  require "rails/test_help"
+  require "minitest/autorun"
+  require "minitest/rails"
+  require "capybara/rails"
+  require 'database_cleaner'
+  require "minitest/rails/capybara"
+  require 'active_support/testing/setup_and_teardown'
 
-class ActiveSupport::TestCase
-  include Warden::Test::Helpers
-  Warden.test_mode!
-  include Capybara::DSL
-  include Capybara::RSpecMatchers
-  include FactoryGirl::Syntax::Methods
-  include BestInPlace::TestHelpers
+  DatabaseCleaner.strategy = :truncation
+  Rails.logger.level = 2
 
-  # controller test methods
-  include ActiveSupport::Testing::SetupAndTeardown # for get/post/put/delete methods
-  include Rails.application.routes.url_helpers
+  class ActiveSupport::TestCase
+    include Warden::Test::Helpers
+    Warden.test_mode!
+    include Capybara::DSL
+    include Capybara::RSpecMatchers
+    include FactoryGirl::Syntax::Methods
+    include BestInPlace::TestHelpers
 
-  self.use_transactional_fixtures = false
-  self.use_instantiated_fixtures  = false
-  fixtures :all
+    # controller test methods
+    include ActiveSupport::Testing::SetupAndTeardown # for get/post/put/delete methods
+    include Rails.application.routes.url_helpers
 
-  Capybara.default_wait_time = 5
+    self.use_transactional_fixtures = false
+    self.use_instantiated_fixtures  = false
+    fixtures :all
 
-  before :each do
-    DatabaseCleaner.clean
-    Rails.cache.clear
-    Timecop.return
-    Capybara.current_driver = :rack_test
-    ActionMailer::Base.deliveries = []
+    Capybara.default_wait_time = 5
+
+    before :each do
+      DatabaseCleaner.clean
+      Rails.cache.clear
+      Timecop.return
+      Capybara.current_driver = :rack_test
+      ActionMailer::Base.deliveries = []
+
+      # disable all observers
+      ActiveRecord::Base.observers.disable :all
+    end
+
+    after :each do
+      Timecop.return
+    end
   end
 
-  after :each do
-    Timecop.return
-  end
+  require "mocha/setup"
+
 end
 
-require "mocha/setup"
+Spork.each_run do
+end

@@ -6,6 +6,7 @@ class PostObserver < ActiveRecord::Observer
 
   def segment_user post
   	return if Asker.ids.include? post.user_id
+    return if post.user.nil?
     post.user.delay.segment
   end
 

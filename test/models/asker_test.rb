@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Asker do	
+describe Asker do
 	before :each do 
 		Rails.cache.clear
 		@asker = create(:asker)
@@ -18,6 +18,7 @@ describe Asker do
 		before :each do 
 			@conversation = create(:conversation, post: @question_status, publication: @publication)
 			@conversation.posts << @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+
 
 			@correct = [1, 2].sample == 1
 			@incorrect_answer = create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
@@ -802,13 +803,25 @@ describe Asker do
 					it 'with no mods' do
 						Timecop.travel(Time.now.beginning_of_week)
 						5.times do
-							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							@asker.app_response create(:post, 
+												in_reply_to_question_id: @question.id, 
+												in_reply_to_user_id: @asker.id, 
+												user_id: @user.id
+											), true
+							@user.segment
 						end
 						6.times do |i|
-							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							@asker.app_response create(:post, 
+												in_reply_to_question_id: @question.id, 
+												in_reply_to_user_id: @asker.id, 
+												user_id: @user.id
+											), true
+							@user.segment
 							Timecop.travel(Time.now + 5.day)
 						end
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request mod').count.must_equal 2
+
+						@asker.posts.where(in_reply_to_user_id: @user.id).
+										where(intention: 'request mod').count.must_equal 2
 					end
 
 					it 'with regular mods' do
@@ -921,16 +934,29 @@ describe Asker do
 				end			
 
 				describe 'through age progression' do
-					it 'with no contributions' do
+					it 'with no contributions asdfasdf' do
 						Timecop.travel(Time.now.beginning_of_week)
 						5.times do
-							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							@asker.app_response create(:post, 
+												in_reply_to_question_id: @question.id, 
+												in_reply_to_user_id: @asker.id, 
+												user_id: @user.id
+											), true
+							@user.segment
 						end
 						9.times do
 							Timecop.travel(Time.now + 7.day)
-							@asker.app_response create(:post, in_reply_to_question_id: @question.id, in_reply_to_user_id: @asker.id, user_id: @user.id), true
+							@asker.app_response create(:post, 
+												in_reply_to_question_id: @question.id, 
+												in_reply_to_user_id: @asker.id, 
+												user_id: @user.id
+											), true
+							@user.segment
 						end
-						@asker.posts.where(in_reply_to_user_id: @user.id).where(intention: 'request new handle ugc').count.must_equal 2
+
+						@asker.posts.where(in_reply_to_user_id: @user.id).
+										where(intention: 'request new handle ugc').
+										count.must_equal 2
 					end
 
 					it 'with regular contributions' do
@@ -948,7 +974,7 @@ describe Asker do
 			end
 		end
 
-		describe 'question feedback' do
+		describe '#request_feedback_on_question' do
 			before :each do 
 				@moderator = create(:moderator)
 				@author = create(:user)
@@ -956,21 +982,43 @@ describe Asker do
 
 			it 'with a post' do
 				@asker.followers << @moderator
-				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
-				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
-				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
+				create(:question_moderation, 
+								user_id: @moderator.id, 
+								question_id: @question.id)
+				create(:question, text: 'Hey man, sup?', 
+								user_id: @author.id, 
+								created_for_asker_id: @asker.id)
+
+				@question.asker.request_feedback_on_question(@question)
+
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, 
+									intention: 'request question feedback').
+								count.must_equal(1)
 			end
 
-			it 'only when question created' do
+			it 'only when question created asdfasdf' do
 				@asker.followers << @moderator
-				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
+				create(:question_moderation, 
+								user_id: @moderator.id, 
+								question_id: @question.id)
 				@question.update(text: 'updated some text?')
-				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
-				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
-				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
+
+				@asker.posts.where(
+									in_reply_to_user_id: @moderator.id, 
+									intention: 'request question feedback').
+								count.must_equal(0)
+
+				create(:question, text: 'Hey man, sup?', 
+								user_id: @author.id, 
+								created_for_asker_id: @asker.id)
+				@question.asker.request_feedback_on_question(@question)
+
+				@asker.posts.where(in_reply_to_user_id: @moderator.id, 
+									intention: 'request question feedback').
+								count.must_equal(1)
 			end
 
-			it 'from users who are question moderators for that asker' do
+			it 'from users who are question moderators for that asker asdfasdf' do
 				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
 				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
 				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
@@ -979,32 +1027,71 @@ describe Asker do
 			describe 'unless' do
 				before :each do 
 					@asker.followers << @moderator
-					create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
+					create(:question_moderation, 
+									user_id: @moderator.id, 
+									question_id: @question.id)
 				end
 
 				it 'moderator wrote the question' do
-					create(:question, text: 'Hey man, sup?', user_id: @moderator.id, created_for_asker_id: @asker.id)
-					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
+					question = create(:question, text: 'Hey man, sup?', 
+									user_id: @moderator.id, 
+									created_for_asker_id: @asker.id)
+					question.asker.request_feedback_on_question(question)
+
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, 
+										intention: 'request question feedback').
+									count.must_equal(0)
 				end
 
 				it 'moderator hasnt been active in the past week' do
 					Timecop.travel(Time.now + 8.days)
-					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
-					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
+					create(:question, text: 'Hey man, sup?', 
+									user_id: @author.id, 
+									created_for_asker_id: @asker.id)
+					@question.asker.request_feedback_on_question(@question)
+
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, 
+										intention: 'request question feedback').
+									count.must_equal(0)
 				end
 
-				it 'moderator received a feedback request in the past week' do
-					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
-					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
+				it 'moderator received a feedback request in the past week asdfasdf' do
+					create(:question, 
+									text: 'Hey man, sup?', 
+									user_id: @author.id, 
+									created_for_asker_id: @asker.id)
+					@question.asker.request_feedback_on_question(@question)
+
+					@asker.posts.where(
+										in_reply_to_user_id: @moderator.id, 
+										intention: 'request question feedback').
+									count.must_equal(1)
+
 					Timecop.travel(Time.now + 5.days)
-					create(:question, text: 'Hey bro, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
+
+					create(:question, text: 'Hey bro, sup?', 
+									user_id: @author.id, 
+									created_for_asker_id: @asker.id)
+					@question.asker.request_feedback_on_question(@question)
+
 					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(1)
 				end
 
 				it 'moderator received a request in the past three days' do
-					create(:post, text: 'Want to mod??', user_id: @asker.id, in_reply_to_user_id: @moderator.id, interaction_type: 4, intention: 'request mod')
-					create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
-					@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
+					create(:post, text: 'Want to mod??', 
+									user_id: @asker.id, 
+									in_reply_to_user_id: @moderator.id, 
+									interaction_type: 4, 
+									intention: 'request mod')
+
+					create(:question, text: 'Hey man, sup?', 
+									user_id: @author.id, 
+									created_for_asker_id: @asker.id)
+					@question.asker.request_feedback_on_question(@question)
+
+					@asker.posts.where(in_reply_to_user_id: @moderator.id, 
+										intention: 'request question feedback').
+									count.must_equal(0)
 				end
 			end
 		end		

@@ -341,6 +341,9 @@ GEM
       ruby2ruby (>= 1.2.5)
       ruby_parser (>= 2.0.5)
       sexp_processor (>= 3.0.5)
+    spork (1.0.0rc4)
+    spork-minitest (0.0.3)
+      spork
     sprockets (2.10.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -450,6 +453,8 @@ DEPENDENCIES
   sitemap_generator
   sourcify
   split!
+  spork (~> 1.0rc)
+  spork-minitest (~> 0.0.3)
   stuff-classifier!
   timecop
   turn

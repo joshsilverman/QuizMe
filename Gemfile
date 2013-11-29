@@ -19,6 +19,9 @@ group :test do
   gem 'm'
   gem 'selenium-webdriver'
   gem 'mocha'
+  
+  gem 'spork', '~> 1.0rc'
+  gem "spork-minitest", "~> 0.0.3"
 end
 
 group :production do

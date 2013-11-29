@@ -13,6 +13,7 @@ end
 describe User do	
 	before :each do 
 		Rails.cache.clear
+		ActiveRecord::Base.observers.enable :post_moderation_observer
 
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
@@ -32,11 +33,12 @@ describe User do
 				Timecop.travel(Time.now.beginning_of_week)
 				5.times do
 					create(:correct_response, user: @user)
+					@user.segment
 
 				end
 				30.times do |i|
 					create(:correct_response, user: @user)
-					Delayed::Worker.new.work_off
+					@user.segment
 
 					if i >= 28 
 						@user.reload.lifecycle_above? 5
@@ -116,6 +118,8 @@ describe User do
 						in_reply_to_question_id: @question.id,
 						interaction_type: 2, 
 						conversation: @conversation
+					@user.segment
+
 					FactoryGirl.create(:post_moderation, type_id:1, accepted: false, user_id: @moderator.id, post_id: post.id)
 				end
 
