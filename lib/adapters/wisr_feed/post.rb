@@ -21,7 +21,7 @@ module Adapters::WisrFeed::Post
   end
 
   def self.send_request request
-    http.request(request)
+    http.request(request) unless Rails.env.test?
   end
 
   def self.post_params post

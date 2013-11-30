@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'spork'
-#uncomment the following line to use spork with the debugger
-#require 'spork/ext/ruby-debug'
 
 Spork.prefork do
   ENV["RAILS_ENV"] = "test"
@@ -13,6 +11,7 @@ Spork.prefork do
   require 'database_cleaner'
   require "minitest/rails/capybara"
   require 'active_support/testing/setup_and_teardown'
+  require 'webmock/minitest'
 
   DatabaseCleaner.strategy = :truncation
   Rails.logger.level = 2
@@ -42,6 +41,10 @@ Spork.prefork do
       Capybara.current_driver = :rack_test
       ActionMailer::Base.deliveries = []
 
+      # default mock settings
+      WebMock.disable_net_connect!(:allow => [/127\.0\.0\.1/, /twitter/])
+      stub_request(:get, /mixpanel/)
+      
       # disable all observers
       ActiveRecord::Base.observers.disable :all
     end

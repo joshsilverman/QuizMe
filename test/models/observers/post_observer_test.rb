@@ -3,6 +3,9 @@ require 'test_helper'
 describe PostObserver, '#after_save' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
+    Delayed::Worker.delay_jobs = false
+    stub_request(:post, Adapters::WisrFeed::URL)
+    stub_request(:get, /mixpanel/)
   end
 
   it "should call send_to_feed with post" do
@@ -24,32 +27,30 @@ end
 
 describe PostObserver, '#send_to_feed' do
   it "should call send_to_feed on post object" do
-    post = FactoryGirl.create :post
+    post = FactoryGirl.build :post
 
     post.expects(:send_to_feed)
-    Delayed::Worker.delay_jobs = false
+    PostObserver.any_instance.stubs(:segment_user)
 
-    PostObserver.send(:new).send_to_feed(post)
+    post.save
   end
 end
 
 describe PostObserver, '#segment_user' do
   it "should call segment on user object" do
     user = FactoryGirl.create :user
-    post = FactoryGirl.create :post, user: user
+    post = FactoryGirl.build :post, user: user
 
     User.any_instance.expects(:segment)
-    Delayed::Worker.delay_jobs = false
 
-    PostObserver.send(:new).segment_user(post)
+    post.save
   end
 
   it "wont error if post has no user" do
-    post = FactoryGirl.create :post, user: nil
+    post = FactoryGirl.build :post, user: nil
 
     User.any_instance.expects(:segment).never
-    Delayed::Worker.delay_jobs = false
 
-    PostObserver.send(:new).segment_user(post)
+    post.save
   end
 end

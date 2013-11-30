@@ -819,6 +819,8 @@ class Asker < User
     user.update_attribute :role, "moderator" unless user.is_role?('admin')
     self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
+
+    true
   end
 
   def request_feedback_on_question question

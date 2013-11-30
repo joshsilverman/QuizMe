@@ -18,7 +18,9 @@ group :test do
   gem 'timecop'
   gem 'm'
   gem 'selenium-webdriver'
+  
   gem 'mocha'
+  gem 'webmock'
   
   gem 'spork', '~> 1.0rc'
   gem "spork-minitest", "~> 0.0.3"
