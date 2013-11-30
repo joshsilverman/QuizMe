@@ -10,7 +10,7 @@ module Adapters::WisrFeed::Post
   end
 
   def self.http
-    @@_http ||= Net::HTTP.new("feed.wisrdev.com", 4000)
+    @@_http ||= Net::HTTP.new(Adapters::WisrFeed::URL, Adapters::WisrFeed::PORT)
   end
 
   def self.build_request post
@@ -25,7 +25,7 @@ module Adapters::WisrFeed::Post
   end
 
   def self.post_params post
-    post_params = {auth_token: 'VvzYYzJ36puS5GP4yG7m'}
+    post_params = {auth_token: Adapters::WisrFeed::AUTH_TOKEN}
     post.attributes.map do |key, value|
       post_params["post[#{key}]"] = value
     end
