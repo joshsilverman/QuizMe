@@ -23,7 +23,7 @@ describe Adapters::WisrFeed::Post, ".build_request" do
     post = FactoryGirl.create :post
     request = Adapters::WisrFeed::Post::build_request post
 
-    request.path.must_equal '/api/posts/create_or_update'
+    request.path.must_equal '/api/asker_feeds'
     request.must_be_kind_of Net::HTTP::Post
   end
 
@@ -46,7 +46,7 @@ describe Adapters::WisrFeed::Post, ".build_request" do
 end
 
 describe Adapters::WisrFeed::Post, ".send_request" do
-  it "should hit /api/posts/save_or_update endpoint" do
+  it "should hit /api/posts/create_or_update endpoint" do
     disable_after_save_post_observer
     post = FactoryGirl.create :post
     request = Adapters::WisrFeed::Post::build_request post
@@ -64,6 +64,15 @@ describe Adapters::WisrFeed::Post, ".post_params" do
     params = Adapters::WisrFeed::Post::post_params post
     
     params["post[text]"].must_equal "abc"
+  end
+
+  it "should include user details" do
+    disable_after_save_post_observer
+    user = User.new twi_name: 'Bubba'
+    post = FactoryGirl.create :post, text: 'abc', user: user
+    params = Adapters::WisrFeed::Post::post_params post
+    
+    params["user[twi_name]"].must_equal "Bubba"
   end
 end
 

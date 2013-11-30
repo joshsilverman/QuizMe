@@ -14,20 +14,27 @@ module Adapters::WisrFeed::Post
   end
 
   def self.build_request post
-    request = Net::HTTP::Post.new("/api/posts/create_or_update")
+    request = Net::HTTP::Post.new("/api/asker_feeds")
     request.set_form_data(post_params(post))
 
     request
   end
 
   def self.send_request request
-    http.request(request) unless Rails.env.test?
+    http.request(request)
   end
 
   def self.post_params post
     post_params = {auth_token: Adapters::WisrFeed::AUTH_TOKEN}
+
+    # post attrs
     post.attributes.map do |key, value|
       post_params["post[#{key}]"] = value
+    end
+
+    # user attrs
+    post.user.attributes.map do |key, value|
+      post_params["user[#{key}]"] = value
     end
 
     post_params
