@@ -33,8 +33,10 @@ module Adapters::WisrFeed::Post
     end
 
     # user attrs
-    post.user.attributes.map do |key, value|
-      post_params["user[#{key}]"] = value
+    if post.user
+      post.user.attributes.map do |key, value|
+        post_params["user[#{key}]"] = value
+      end
     end
 
     post_params

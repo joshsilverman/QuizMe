@@ -4,7 +4,7 @@ describe PostObserver, '#after_save' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
     Delayed::Worker.delay_jobs = false
-    stub_request(:post, Adapters::WisrFeed::URL)
+    stub_request(:post, /#{Adapters::WisrFeed::URL}/)
     stub_request(:get, /mixpanel/)
   end
 
@@ -37,11 +37,17 @@ describe PostObserver, '#send_to_feed' do
 end
 
 describe PostObserver, '#segment_user' do
+  before :all do
+    ActiveRecord::Base.observers.enable :post_observer
+    stub_request(:post, /#{Adapters::WisrFeed::URL}/)
+  end
+
   it "should call segment on user object" do
     user = FactoryGirl.create :user
     post = FactoryGirl.build :post, user: user
 
     User.any_instance.expects(:segment)
+    PostObserver.any_instance.stubs(:send_to_feed)
 
     post.save
   end
@@ -50,6 +56,7 @@ describe PostObserver, '#segment_user' do
     post = FactoryGirl.build :post, user: nil
 
     User.any_instance.expects(:segment).never
+    PostObserver.any_instance.stubs(:send_to_feed)
 
     post.save
   end
