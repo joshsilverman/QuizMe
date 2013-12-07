@@ -39,7 +39,7 @@ FactoryGirl.define do
   end
 
   factory :post do
-    user_id 1
+    user { create :user }
     spam false
     interaction_type 1
     text 'Leroy\'s my boy'

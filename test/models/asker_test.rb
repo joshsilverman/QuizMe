@@ -2,7 +2,6 @@ require 'test_helper'
 
 describe Asker do
 	before :each do 
-		Rails.cache.clear
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
 
@@ -80,13 +79,21 @@ describe Asker do
 		describe "that have" do
 			it "answered a question" do
 				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
+				Post.reengage_inactive.where(:user_id => @asker.id, 
+					:in_reply_to_user_id => @user.id).must_be_empty
 				
-				create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+				create(:post, text: 'the correct answer, yo', 
+					user: @user, 
+					in_reply_to_user_id: @asker.id, 
+					interaction_type: 2, 
+					in_reply_to_question_id: @question.id, 
+					correct: true)
+
 				Timecop.travel(Time.now + 1.day)
 
 				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
+				Post.reengage_inactive.where(:user_id => @asker.id, 
+					:in_reply_to_user_id => @user.id).wont_be_empty
 			end	
 
 			it "moderated a post" do
@@ -543,17 +550,24 @@ describe Asker do
 
 		it "doesn't exceed daily max if jobs are mistakenly scheduled" do
 			mention_count = @asker.targeted_mention_count
+
+			# advance to day of week where mentions sent
 			while (mention_count < 1) do 
 				Timecop.travel(Time.now + 1.day)
 				mention_count = @asker.targeted_mention_count
 			end
-			mention_count.times { create(:post, intention: 'targeted mention') }
+
+			mention_count.times do 
+				create(:post, intention: 'targeted mention', user: @asker) 
+			end
+
       Delayed::Job.enqueue(
         TargetedMention.new(@asker, create(:user)),
         :run_at => Time.now
       )  
       Delayed::Worker.new.work_off
-      @asker.posts.where("intention = ?", 'targeted mention').count.must_equal mention_count
+      @asker.posts.where("intention = ?", 'targeted mention').count
+      	.must_equal mention_count
 		end
 	end
 
