@@ -76,7 +76,7 @@ module Adapters::WisrFeed::Post
   end
 
   def self.set_post_created_at_param post, post_params
-    post_params << ["asker_feed[post][created_at]",post.created_at]
+    post_params << ["asker_feed[post][created_at]", post.created_at]
   end
 
   def self.set_post_user_profile_image_urls_param post, post_params

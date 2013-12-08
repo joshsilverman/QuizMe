@@ -98,7 +98,7 @@ Quizmemanager::Application.routes.draw do
 
   get "/confirm_js" => "sessions#confirm_js"
 
-  get '/stats' => 'accounts#stats'
+  get '/sitemap' => 'pages#sitemap'
   
   get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
