@@ -170,7 +170,8 @@ describe Post, ".post_params" do
     params = Adapters::WisrFeed::Post::post_params post
     
     params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
-    params_hash["asker_feed[post][false_answers]"].must_equal incorrect_answers_text
+    params_hash["asker_feed[post][false_answers][]"]
+      .must_equal incorrect_answers_text
   end
 
   it "should returns hash with publication id set as wisr_id" do
@@ -213,6 +214,21 @@ describe Post, ".post_params" do
     
     params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
     params_hash["asker_feed[wisr_id]"].first.must_equal user.id
+  end
+
+  it "should include created_at" do
+    user = User.create twi_name: 'Bubba', role: 'asker'
+    question = FactoryGirl.create :question
+    publication = FactoryGirl.create :publication
+    post = FactoryGirl.create :post, user: user, 
+                                     question: question, 
+                                     publication: publication
+
+    params = Adapters::WisrFeed::Post::post_params post
+    
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[post][created_at]"].first.to_i
+      .must_equal post.created_at.to_i
   end
 
   it "should raise non asker exception if user nil" do
