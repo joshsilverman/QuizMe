@@ -26,7 +26,7 @@ class ActiveSupport::TestCase
   # controller test methods
   include ActiveSupport::Testing::SetupAndTeardown # for get/post/put/delete methods
   include Rails.application.routes.url_helpers
-  Rails.logger.level = 2
+  Rails.logger.level = 0
 
 
   DatabaseCleaner.clean_with :truncation

@@ -638,7 +638,10 @@ describe ModerationsController do
 			@mod_path = '/moderations/manage'
 		end
 		it 'gives access to new moderators' do
+			create(:studyegg)
+
 			visit @mod_path
+
 			current_path.wont_equal @mod_path
 		end
 
