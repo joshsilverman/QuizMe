@@ -138,7 +138,8 @@ describe Post, ".post_params" do
                                      user: user
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[post][question]"].must_equal "what?"
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[post][question]"].first.must_equal "what?"
   end
 
   it "should returns hash with correct answer" do
@@ -152,7 +153,8 @@ describe Post, ".post_params" do
 
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[post][correct_answer]"].must_equal "ans"
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[post][correct_answer]"].first.must_equal "ans"
   end
 
   it "should returns hash with false answers" do
@@ -167,7 +169,8 @@ describe Post, ".post_params" do
 
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[post][false_answers]"].must_equal incorrect_answers_text
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[post][false_answers]"].must_equal incorrect_answers_text
   end
 
   it "should returns hash with publication id set as wisr_id" do
@@ -180,7 +183,8 @@ describe Post, ".post_params" do
 
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[post][wisr_id]"].must_equal publication.id
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[post][wisr_id]"].first.must_equal publication.id
   end
 
   it "should include user details" do
@@ -193,7 +197,8 @@ describe Post, ".post_params" do
 
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[twi_name]"].must_equal "Bubba"
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[twi_name]"].first.must_equal "Bubba"
   end
 
   it "should include user id" do
@@ -206,7 +211,8 @@ describe Post, ".post_params" do
 
     params = Adapters::WisrFeed::Post::post_params post
     
-    params["asker_feed[wisr_id]"].must_equal user.id
+    params_hash = Hash[params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] }]
+    params_hash["asker_feed[wisr_id]"].first.must_equal user.id
   end
 
   it "should raise non asker exception if user nil" do

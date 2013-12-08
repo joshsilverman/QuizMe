@@ -4,6 +4,6 @@ if Rails.env.production?
   Adapters::WisrFeed::PORT = nil
 else
   Adapters::WisrFeed::URL = 'feed.wisrdev.com'
-  Adapters::WisrFeed::AUTH_TOKEN = 'VvzYYzJ36puS5GP4yG7m'
+  Adapters::WisrFeed::AUTH_TOKEN = 'qdaReK1JCSTMnzJGCKWT'
   Adapters::WisrFeed::PORT = 4000
 end

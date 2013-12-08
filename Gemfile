@@ -53,6 +53,7 @@ end
 group :development, :test do
   gem 'pry'
   gem 'pry-nav'
+  gem 'pry-stack_explorer'
 end
 
 gem 'sass-rails', '~> 4.0.0'
