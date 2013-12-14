@@ -41,7 +41,6 @@ group :development do
   gem 'better_errors'
   gem 'meta_request'
   gem 'awesome_print'
-  gem 'heroku'
 
   # gem "guard"
   # gem "guard-livereload"
