@@ -71,6 +71,8 @@ module ManageTwitterRelationships
           end
         end
         add_follow(user, 2)
+      else
+        puts "Twitter Error: Could not autofollow user #{twi_user_id} from #{id}"
       end 
       sleep((1..3).to_a.sample) unless options[:force] # avoids sleep in tests
     end
@@ -227,6 +229,7 @@ module ManageTwitterRelationships
 
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil? # possible suspended acct, setting relationship to suspended
+        puts "Twitter Error: Could not followback user #{twi_user_id} from #{id}"
         follow_relationships.find_or_initialize_by(followed_id: user.id).update_attributes(type_id: 4, active: false) 
         next
       end
