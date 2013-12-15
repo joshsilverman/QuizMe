@@ -465,7 +465,7 @@ describe Asker do
 				@asker.unfollow_oldest_inactive_user
 				@asker.follows.count.must_equal 1
 
-				Timecop.travel(Time.now + 3.months)
+				Timecop.travel(Time.now + 91.days)
 				@asker.reload.unfollow_oldest_inactive_user
 				@asker.reload.followback [@inactive_user1.twi_user_id]
 				@asker.reload.follows.count.must_equal 0
