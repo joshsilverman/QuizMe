@@ -93,7 +93,7 @@ module ManageTwitterRelationships
 
   def unfollow_count max_unfollows = nil
     target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_unfollow_count_avg = 3 if target_unfollow_count_avg > 5
+    target_unfollow_count_avg = 6 if target_unfollow_count_avg > 6
     scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
 
