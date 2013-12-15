@@ -17,7 +17,7 @@ group :test do
   gem "database_cleaner"
   gem 'timecop'
   gem 'm'
-  gem 'selenium-webdriver'
+  gem 'selenium-webdriver', "~> 2.38.0"
   
   gem 'mocha'
   gem 'webmock'
