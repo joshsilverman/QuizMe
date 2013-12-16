@@ -229,8 +229,11 @@ module ManageTwitterRelationships
 
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil? # possible suspended acct, setting relationship to suspended
-        puts "Twitter Error: Could not followback user #{twi_user_id} from #{id}"
+        puts "Twitter Error: Could not follow (suspended?) user #{twi_user_id} from #{id}"
         follow_relationships.find_or_initialize_by(followed_id: user.id).update_attributes(type_id: 4, active: false) 
+        next
+      elsif response.empty?
+        puts "Twitter Error: Could not followback user #{twi_user_id} from #{id}"
         next
       end
       add_follow(user, 1)
