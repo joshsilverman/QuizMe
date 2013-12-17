@@ -16,7 +16,7 @@
       %th
       %th
       %th Handle
-      %th Engagements
+      %th Follow/Followers
       %th UGC posts
       %th Unapproved Qs
       %th Questions
@@ -28,7 +28,6 @@
       %td= link_to 'All handles', "/"
       %td 
         %a{:href => "/feeds/manage"}
-          .td_container= @unresponded_counts.values.sum
       %td
         %a{:href => "/feeds/manage?filter=ugc"}
           .td_container= @ugc_post_counts.values.sum
@@ -45,7 +44,7 @@
         %td= link_to asker.twi_name, "/feeds/#{asker.id}"
         %td 
           %a{:href => "/feeds/#{asker.id}/manage"}
-            .td_container= @unresponded_counts[asker.id]
+            .td_container= "%.2f" % @follow_ratios[asker.id]
         %td
           %a{:href => "/feeds/#{asker.id}/manage?filter=ugc"}
             .td_container= @ugc_post_counts[asker.id]    

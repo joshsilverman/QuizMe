@@ -72,9 +72,13 @@ class Asker < User
   end    
 
   def unresponded_count
-    posts = Post.where("posts.requires_action = ? AND posts.in_reply_to_user_id = ? AND (posts.spam is null or posts.spam = ?) AND posts.user_id not in (?)", true, id, false, Asker.ids)
+    posts = Post.where("posts.requires_action = ? 
+      AND posts.in_reply_to_user_id = ? 
+      AND (posts.spam is null or posts.spam = ?) 
+      AND posts.user_id not in (?)", true, id, false, Asker.ids)
     count = posts.not_spam.where("interaction_type = 2").count
-    count += posts.not_spam.where("interaction_type = 4").count :user_id, :distinct => true
+    count += posts.not_spam.where("interaction_type = 4")
+      .count(:user_id, :distinct => true)
 
     count
   end
@@ -88,6 +92,26 @@ class Asker < User
     counts = counts.merge(mention_counts)
     counts = counts.merge(dm_counts){|key, v1, v2| v1 + v2}
     counts
+  end
+
+  def self.follow_ratios
+    followed_counts = Relationship.where(followed_id: Asker.ids)
+      .where(active:true)
+      .group(:followed_id).count
+
+    follow_counts = Relationship.where(follower_id: Asker.ids)
+      .where(active:true)
+      .group(:follower_id).count
+
+    ratios = {}
+    Asker.ids.each do |asker_id|
+      follows = follow_counts[asker_id] || 1
+      followers = followed_counts[asker_id] || 0
+
+      ratios[asker_id] = follows.to_f / followers
+    end
+
+    ratios
   end
 
   def send_public_message text, options = {}
