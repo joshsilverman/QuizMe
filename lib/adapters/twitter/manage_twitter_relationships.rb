@@ -204,7 +204,9 @@ module ManageTwitterRelationships
 
     twi_ids_to_followback = (twi_follower_ids - follows.collect(&:twi_user_id))
     existing_users = User.where("twi_user_id in (?)", twi_ids_to_followback)
-    asker_follow_relationships = follow_relationships.where("followed_id in (?)", existing_users.collect(&:id)).group_by(&:followed_id)
+    asker_follow_relationships = follow_relationships
+      .where("followed_id in (?)", existing_users.collect(&:id))
+      .group_by(&:followed_id)
 
     twi_ids_to_followback.each do |twi_user_id| # should be doing the following instead, tests need to be updated: (followers - follows).each do |user|
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
