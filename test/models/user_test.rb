@@ -85,14 +85,14 @@ describe User do
 				@moderator.is_super_mod?.must_equal true		
 			end
 
-			it 'segment between edger => super mod with enough posts' do
+			it 'segment between edger => super mod with enough posts asdf' do
 				55.times do |i|
 					i < 1 ? @moderator.reload.moderator_segment.must_equal(nil) : @moderator.reload.moderator_segment.wont_be_nil
 					i > 0 ? @moderator.is_edger_mod?.must_equal(true) : @moderator.is_edger_mod?.must_equal(false)
 					i > 2 ? @moderator.is_noob_mod?.must_equal(true) : @moderator.is_noob_mod?.must_equal(false)
 					i > 10 ? @moderator.is_regular_mod?.must_equal(true) : @moderator.is_regular_mod?.must_equal(false)
-					i > 20 ? @moderator.is_advanced_mod?.must_equal(true) : @moderator.is_advanced_mod?.must_equal(false)
-					i > 50 ? @moderator.is_super_mod?.must_equal(true) : @moderator.is_super_mod?.must_equal(false)
+					i > 15 ? @moderator.is_advanced_mod?.must_equal(true) : @moderator.is_advanced_mod?.must_equal(false)
+					i > 30 ? @moderator.is_super_mod?.must_equal(true) : @moderator.is_super_mod?.must_equal(false)
 
 					post = create :post, 
 						user: @user, 

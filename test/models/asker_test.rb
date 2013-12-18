@@ -205,11 +205,13 @@ describe Asker do
       end
 
 			describe "with a question" do
-				it "that has been approved" do
+				it "that has been approved asdf" do
 					Timecop.travel(Time.now + 1.day)
 					@unapproved_question = create(:question, created_for_asker_id: @asker.id, status: 0)
 					Asker.reengage_inactive_users strategy: @strategy
-					Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).first.question.status.must_equal 1
+					Post.reengage_inactive
+						.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+						.first.question.status.must_equal 1
 				end
 			end				
 		end
@@ -671,7 +673,7 @@ describe Asker do
 				end			
 
 				describe 'through age progression' do
-					it 'with no contributions asdfasdf' do
+					it 'with no contributions' do
 						Timecop.travel(Time.now.beginning_of_week)
 						5.times do
 							@asker.app_response create(:post, 
@@ -733,7 +735,7 @@ describe Asker do
 								count.must_equal(1)
 			end
 
-			it 'only when question created asdfasdf' do
+			it 'only when question created' do
 				@asker.followers << @moderator
 				create(:question_moderation, 
 								user_id: @moderator.id, 
@@ -755,7 +757,7 @@ describe Asker do
 								count.must_equal(1)
 			end
 
-			it 'from users who are question moderators for that asker asdfasdf' do
+			it 'from users who are question moderators for that asker' do
 				create(:question_moderation, user_id: @moderator.id, question_id: @question.id)
 				create(:question, text: 'Hey man, sup?', user_id: @author.id, created_for_asker_id: @asker.id)
 				@asker.posts.where(in_reply_to_user_id: @moderator.id, intention: 'request question feedback').count.must_equal(0)
@@ -792,7 +794,7 @@ describe Asker do
 									count.must_equal(0)
 				end
 
-				it 'moderator received a feedback request in the past week asdfasdf' do
+				it 'moderator received a feedback request in the past week' do
 					create(:question, 
 									text: 'Hey man, sup?', 
 									user_id: @author.id, 
