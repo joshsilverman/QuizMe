@@ -10,14 +10,12 @@ class AskersController < ApplicationController
     @new_posts = {}
     @submitted_questions = {}
     asker_ids = Asker.ids
-    
-    @follow_ratios = Asker.follow_ratios
+
     @unmoderated_counts = Question.unmoderated_counts
     @ugc_post_counts = Post.ugc_post_counts
     @question_counts = Question.counts
     
     @askers = Asker.all
-    @askers = @askers.sort{|a,b| (@follow_ratios[a.id] or 0) <=> (@follow_ratios[b.id] or 0)}.reverse
     @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 

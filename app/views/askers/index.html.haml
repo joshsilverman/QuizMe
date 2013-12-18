@@ -16,18 +16,16 @@
       %th
       %th
       %th Handle
-      %th Follow/Followers
       %th UGC posts
       %th Unapproved Qs
       %th Questions
       %th Actions
+      %th Warnings
 
     %tr.asker-row
       %td
       %td= image_tag(User.find(8765).twi_profile_img_url)
       %td= link_to 'All handles', "/"
-      %td 
-        %a{:href => "/feeds/manage"}
       %td
         %a{:href => "/feeds/manage?filter=ugc"}
           .td_container= @ugc_post_counts.values.sum
@@ -36,15 +34,13 @@
           .td_container= @unmoderated_counts.values.sum
       %td= @question_counts.values.sum
       %td
+      %td
 
     - @askers.each_with_index do |asker, i|
       %tr.asker-row
         %td= i + 1
         %td= image_tag(asker.twi_profile_img_url)
         %td= link_to asker.twi_name, "/feeds/#{asker.id}"
-        %td 
-          %a{:href => "/feeds/#{asker.id}/manage"}
-            .td_container= "%.2f" % @follow_ratios[asker.id]
         %td
           %a{:href => "/feeds/#{asker.id}/manage?filter=ugc"}
             .td_container= @ugc_post_counts[asker.id]    
@@ -56,3 +52,9 @@
           %a{:href => "/askers/#{asker.id}/edit"} Edit
           &nbsp;|&nbsp;
           %a{:style => 'cursor:pointer;'}= best_in_place asker, :published, :type => :checkbox, :collection => ["Publish", "Unpublish"]
+        %td 
+          .td_container
+            - if asker.last_followback_failure and asker.last_followback_failure > 1.day.ago
+              .label.label-warning
+                Followback: 
+                = asker.last_followback_failure.strftime '%FT%R'

@@ -94,26 +94,6 @@ class Asker < User
     counts
   end
 
-  def self.follow_ratios
-    followed_counts = Relationship.where(followed_id: Asker.ids)
-      .where(active:true)
-      .group(:followed_id).count
-
-    follow_counts = Relationship.where(follower_id: Asker.ids)
-      .where(active:true)
-      .group(:follower_id).count
-
-    ratios = {}
-    Asker.ids.each do |asker_id|
-      follows = follow_counts[asker_id] || 1
-      followers = followed_counts[asker_id] || 0
-
-      ratios[asker_id] = follows.to_f / followers
-    end
-
-    ratios
-  end
-
   def send_public_message text, options = {}
     recipient = User.where(id: options[:in_reply_to_user_id]).first
     communication_preference = recipient.blank? ? 1 : recipient.communication_preference
@@ -162,7 +142,7 @@ class Asker < User
     self.send_private_message(user, dm_text, {
       :question_id => question.id, 
       :intention => "initial question dm"})
-    
+
     Mixpanel.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name,
