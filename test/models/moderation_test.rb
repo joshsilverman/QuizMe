@@ -142,6 +142,9 @@ describe Moderation do
 						create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @post.id)
 						@post.reload.correct.must_equal true
 						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+
+						@post.requires_action.must_equal false
+						@post.moderation_trigger_type_id.must_equal 2
 					end
 
 					it 'as incorrect' do
@@ -149,6 +152,9 @@ describe Moderation do
 						create(:post_moderation, user_id: moderator.id, type_id: 2, post_id: @post.id)
 						@post.reload.correct.must_equal false
 						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 1
+
+						@post.requires_action.must_equal false
+						@post.moderation_trigger_type_id.must_equal 2
 					end					
 
 					it 'as tell' do
@@ -158,6 +164,9 @@ describe Moderation do
 						@response_post = Post.where(in_reply_to_post_id: @post.id, intention: 'grade').first
 						@response_post.wont_be_nil
 						@response_post.text.include?("I was looking for").must_equal true
+
+						@post.requires_action.must_equal false
+						@post.moderation_trigger_type_id.must_equal 2
 					end
 
 					it 'as hide' do
@@ -165,11 +174,24 @@ describe Moderation do
 						create(:post_moderation, user_id: moderator.id, type_id: 5, post_id: @post.id)
 						@post.reload.correct.must_be_nil
 						Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
-					end
 
-					after :each do 
 						@post.requires_action.must_equal false
 						@post.moderation_trigger_type_id.must_equal 2
+					end
+
+					describe "for private response" do
+						it 'as correct' do
+							moderator = create(:user, twi_user_id: 1, role: 'moderator', moderator_segment: 5)
+							@dm_answer.reload.correct.must_be_nil
+							create(:post_moderation, user_id: moderator.id, type_id: 1, post_id: @dm_answer.id)
+							Post.where(in_reply_to_post_id: @dm_answer.id, intention: 'grade').count.must_equal 0
+
+							@dm_answer.reload.requires_action.must_equal false
+							@dm_answer.correct.must_equal true
+							@dm_answer.moderation_trigger_type_id.must_equal 2
+							Delayed::Worker.new.work_off
+							Post.where(in_reply_to_user_id: @dm_answer.user_id, intention: 'grade').count.must_equal 1
+						end
 					end
 				end
 

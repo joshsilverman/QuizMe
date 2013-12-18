@@ -6,14 +6,18 @@ class ModerationsController < ApplicationController
     moderator = current_user.becomes(Moderator)
     @posts = []
     if params[:edits] == 'true'
-      @moderatables = Question.requires_moderations(moderator, {needs_edits_only: true}).sort_by {|m| m.created_at }.reverse
+      @moderatables = Question
+        .requires_moderations(moderator, {needs_edits_only: true})
+        .sort_by {|m| m.created_at }.reverse
     elsif params[:all] == 'true' and moderator.is_admin?
-      @moderatables = Question.where('status = 0').where('needs_edits is null and publishable is null').order('created_at ASC').limit(25)
+      @moderatables = Question.where('status = 0')
+        .where('needs_edits is null and publishable is null')
+        .order('created_at ASC').limit(25)
     elsif params[:question_id].present?
       question = Question.where(id: params[:question_id]).first
       @moderatables = (question and question.needs_feedback?) ? [question] : []
     else
-      @moderatables = Post.requires_moderations(moderator).sort_by {|m| m.created_at }.reverse
+      @moderatables = Post.dms.requires_moderations(moderator).sort_by {|m| m.created_at }.reverse
       Question.requires_moderations(moderator).each { |question| @moderatables.insert(rand(@moderatables.length), question) }
     end
 
