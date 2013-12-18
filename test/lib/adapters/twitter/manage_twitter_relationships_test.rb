@@ -316,7 +316,6 @@ describe Asker, 'ManageTwitterRelationships#followback' do
   end
 
   it 'wont call add_follow if follow request returns empty' do
-
     @asker.follows.must_be_empty
     twi_follower_ids = [@new_user.twi_user_id]
     wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
@@ -328,5 +327,31 @@ describe Asker, 'ManageTwitterRelationships#followback' do
 
     @asker.followback(twi_follower_ids)
     @asker.reload.follows.wont_include @new_user
+  end
+
+  it 'sets asker.last_followback_failure to datetime' do
+    @asker.follows.must_be_empty
+    twi_follower_ids = [@new_user.twi_user_id]
+    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+
+    Post.stubs(:twitter_request).returns([])
+    Timecop.freeze(Time.now)
+    @asker.followback(twi_follower_ids)
+
+    @asker.reload.last_followback_failure.to_i.must_equal Time.now.to_i
+  end
+
+  it 'wont set asker.last_followback_failure if follow succeeds' do
+    @asker.follows.must_be_empty
+    twi_follower_ids = [@new_user.twi_user_id]
+    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+
+    Post.stubs(:twitter_request).returns([:not_empty])
+    Timecop.freeze(Time.now)
+    @asker.followback(twi_follower_ids)
+
+    @asker.reload.last_followback_failure.must_equal nil
   end
 end

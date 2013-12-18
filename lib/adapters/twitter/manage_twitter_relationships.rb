@@ -236,6 +236,7 @@ module ManageTwitterRelationships
         next
       elsif response.empty?
         puts "Twitter Error: Could not followback user #{twi_user_id} from #{id}"
+        update(last_followback_failure: Time.now)
         next
       end
       add_follow(user, 1)
