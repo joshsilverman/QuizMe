@@ -144,7 +144,7 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.reload.follows.must_include @new_user
     end
 
-    it "sets correct type_id for user followback asdf" do
+    it "sets correct type_id for user followback" do
       @asker.follows.must_be_empty
       twi_follower_ids = [@user.twi_user_id]
       wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
@@ -297,5 +297,36 @@ describe Asker, 'ManageTwitterRelationships' do
     twi_user_ids = [@new_user.twi_user_id]
     @asker.send_autofollows(twi_user_ids, 5, { force: true, search_term_source: { @new_user.twi_user_id => search_term } })
     @new_user.reload.search_term_topic_id.must_equal search_term.id
+  end
+end
+
+describe Asker, 'ManageTwitterRelationships#followback' do
+  before :each do
+    @asker = create(:asker)
+    @user = create(:user, twi_user_id: 1)
+
+    @asker.followers << @user   
+
+    @question = create(:question, created_for_asker_id: @asker.id, status: 1)   
+    @publication = create(:publication, question_id: @question.id)
+    @question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)   
+    Delayed::Worker.delay_jobs = false
+
+    @new_user = create(:user, twi_user_id: 2)
+  end
+
+  it 'wont call add_follow if follow request returns empty' do
+
+    @asker.follows.must_be_empty
+    twi_follower_ids = [@new_user.twi_user_id]
+    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+
+    Post.stubs(:twitter_request).returns([])
+
+    @asker.expects(:add_follow).never
+
+    @asker.followback(twi_follower_ids)
+    @asker.reload.follows.wont_include @new_user
   end
 end
