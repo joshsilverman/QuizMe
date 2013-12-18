@@ -39,24 +39,24 @@ class Moderator < User
 
 	def is_super_mod?
 
-		_50_mods = post_moderations.where('accepted is not null').count > 50
-		_90_acceptance_rate = post_moderation_acceptance_rate > 0.9
-		enough_mods_and_acceptance_rate = (_50_mods and _90_acceptance_rate)
+		mod_quantity = post_moderations.where('accepted is not null').count > 30
+		acceptance_rate = post_moderation_acceptance_rate > 0.9
+		enough_mods_and_acceptance_rate = (mod_quantity and acceptance_rate)
 
-		_100_mods = post_moderations.where('accepted is not null').count > 100
-		_875_acceptance_rate = post_moderation_acceptance_rate > 0.875
-		enough_mods_and_acceptance_rate ||= (_100_mods and _875_acceptance_rate)
+		mod_quantity = post_moderations.where('accepted is not null').count > 40
+		acceptance_rate = post_moderation_acceptance_rate > 0.875
+		enough_mods_and_acceptance_rate ||= (mod_quantity and acceptance_rate)
 
-		_200_mods = post_moderations.where('accepted is not null').count > 200
-		_85_acceptance_rate = post_moderation_acceptance_rate > 0.85
-		enough_mods_and_acceptance_rate ||= (_200_mods and _85_acceptance_rate)
+		mod_quantity = post_moderations.where('accepted is not null').count > 50
+		acceptance_rate = post_moderation_acceptance_rate > 0.85
+		enough_mods_and_acceptance_rate ||= (mod_quantity and acceptance_rate)
 
 		is_above_regular = lifecycle_above?(4)
 		enough_mods_and_acceptance_rate and is_above_regular
 	end
 
 	def is_advanced_mod?
-		enough_mods = post_moderations.where('accepted is not null').count > 20
+		enough_mods = post_moderations.where('accepted is not null').count > 15
 		enough_acceptance_rate = post_moderation_acceptance_rate > 0.8
 		enough_mods and enough_acceptance_rate
 	end
