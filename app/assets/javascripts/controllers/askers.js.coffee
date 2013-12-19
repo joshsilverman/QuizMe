@@ -4,6 +4,8 @@ class Asker
 		$('.pay').click @pay
 		$('#import').click @import
 
+		$("abbr.timeago").timeago();
+
 	pay: (e) =>
 		mixpanel.track "tutor-submit-payment-form",
 			distinct_id: @user_id

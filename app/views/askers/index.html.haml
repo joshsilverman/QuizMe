@@ -57,4 +57,5 @@
             - if asker.last_followback_failure and asker.last_followback_failure > 1.day.ago
               .label.label-warning
                 Followback: 
-                = asker.last_followback_failure.strftime '%FT%R'
+                %abbr.timeago{title: asker.last_followback_failure.iso8601}
+                ago
