@@ -17,7 +17,7 @@ class ModerationsController < ApplicationController
       question = Question.where(id: params[:question_id]).first
       @moderatables = (question and question.needs_feedback?) ? [question] : []
     else
-      @moderatables = Post.dms.requires_moderations(moderator).sort_by {|m| m.created_at }.reverse
+      @moderatables = Post.requires_moderations(moderator).sort_by {|m| m.created_at }.reverse
       Question.requires_moderations(moderator).each { |question| @moderatables.insert(rand(@moderatables.length), question) }
     end
 

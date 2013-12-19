@@ -13,6 +13,7 @@ describe FeedsController do
 		post.all('h3').first.click
 		post.find('.tweet_button').click
 		assert post.has_selector?('.interactions')
+		sleep 1
 		return post
 	end
 
