@@ -144,8 +144,12 @@ module ManageTwitterRelationships
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
     follow_relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).sample(max_unfollows).each do |nonreciprocal_relationship|
       user = nonreciprocal_followers.select { |u| u.id == nonreciprocal_relationship.followed_id }.first
-      Post.twitter_request { twitter.unfollow(user.twi_user_id) }
-      remove_follow(user)
+      response = Post.twitter_request { twitter.unfollow(user.twi_user_id) }
+      if response.present?
+        remove_follow(user)
+      else
+        "Twitter Error: Could not unfollow user #{user.twi_user_id} from #{id}"
+      end
     end
   end 
 

@@ -229,6 +229,9 @@ describe Asker, 'ManageTwitterRelationships' do
     it "unfollows non-reciprocal follows after one month" do
       @asker.follows << @new_user
       twi_follows_ids = [@new_user.twi_user_id]
+
+      Post.stubs(:twitter_request).returns([:not_empty])
+
       34.times do |i|
         Timecop.travel(Time.now + 1.day)
         @asker.unfollow_nonreciprocal(twi_follows_ids, 10)
@@ -245,6 +248,9 @@ describe Asker, 'ManageTwitterRelationships' do
       relationship = @asker.follow_relationships.find_or_create_by(followed_id: @new_user.id)
       relationship.update_attribute :pending, true
       twi_follows_ids = [@new_user.twi_user_id]
+
+      Post.stubs(:twitter_request).returns([:not_empty])
+
       31.times do |i|
         Timecop.travel(Time.now + 1.day)
         @asker.unfollow_nonreciprocal(twi_follows_ids, 10)
@@ -285,6 +291,9 @@ describe Asker, 'ManageTwitterRelationships' do
       twi_follows_ids = [@new_user.twi_user_id]
       Timecop.travel(Time.now + 32.days)
       rel_count = @asker.reload.follow_relationships.count
+
+      Post.stubs(:twitter_request).returns([:not_empty])
+
       @asker.unfollow_nonreciprocal(twi_follows_ids, 10)
       @asker.reload.follow_relationships.active.count.must_equal 0
       @asker.reload.follow_relationships.count.must_equal rel_count
