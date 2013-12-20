@@ -205,7 +205,7 @@ describe Asker do
       end
 
 			describe "with a question" do
-				it "that has been approved asdf" do
+				it "that has been approved" do
 					Timecop.travel(Time.now + 1.day)
 					@unapproved_question = create(:question, created_for_asker_id: @asker.id, status: 0)
 					Asker.reengage_inactive_users strategy: @strategy

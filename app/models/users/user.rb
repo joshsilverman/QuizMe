@@ -482,7 +482,7 @@ class User < ActiveRecord::Base
   end
 
 	def self.update_segments
-		User.find_in_batches(:conditions => ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS]) do |group| 
+		User.find_in_batches(conditions: ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS], batch_size: 500) do |group| 
 			group.each { |user| user.segment }
 		end
 	end

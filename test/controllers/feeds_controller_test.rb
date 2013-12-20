@@ -103,18 +103,6 @@ describe FeedsController do
 					assert answer_question.has_selector?('.request_email')
 				end
 
-				it "once per session" do 
-					question2 = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
-					publication2 = create(:publication, question: question2, asker: @asker)
-					create(:post, user_id: @asker.id, interaction_type: 1, question: question2, publication: publication2)
-
-					visit "/feeds/#{@asker.id}"
-					answer_question(question2.id)
-					answer_question(@question.id)
-
-					page.all('.after_answer').count.must_equal 1
-				end
-
 				it "once a month" do
 					3.times do |i|
 						visit "/feeds/#{@asker.id}"
