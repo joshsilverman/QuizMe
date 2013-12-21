@@ -19,12 +19,6 @@ class AskersController < ApplicationController
     @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 
-  def show
-    @asker = Asker.find(params[:id])
-    redirect_to root_url unless @asker.is_role? 'asker'
-    @posts = @asker.engagements.where(:requires_action => true).order('created_at DESC')
-  end
-
   def edit
     @asker = Asker.find(params[:id])
     @linked = true

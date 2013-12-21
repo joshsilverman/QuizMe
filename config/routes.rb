@@ -129,7 +129,7 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   resources :exams
-  resources :askers
+  resources :askers, except: [:show]
 
   root :to => 'feeds#index'
 end
