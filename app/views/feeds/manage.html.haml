@@ -31,8 +31,6 @@
 						%li{:class => "#{'active' if params[:filter] == 'spam'}"}= link_to "Spam", '?filter=spam'
 						%li{:class => "#{'active' if params[:filter] == 'content'}"}= link_to "Content Suggestions", '?filter=content'
 						%li{:class => "#{'active' if params[:filter] == 'friend'}"}= link_to "Ask a Friend", '?filter=friend'
-						- if @oneinbox
-							%li{:class => "#{'active' if params[:filter] == 'tutor'}"}= link_to "Tutor", '?filter=tutor'
 
 				#right_column.span6
 					#posts.rounded
@@ -48,7 +46,7 @@
 							- if params[:filter] != 'ugc' and question = post.in_reply_to_question
 								- correct = question.answers.reject{|a| a.correct != true}[0]
 
-							.conversation.border-color{class: ('dim' if params[:filter] == 'tutor' and Asker.ids.include?(post.user_id)), asker_id: post.in_reply_to_user_id}
+							.conversation.border-color{asker_id: post.in_reply_to_user_id}
 								.post.parent.answered{:post_id => post.id, :interaction_type => post.interaction_type}
 									%p.time= time_formatter(post.created_at)
 									%i.icon-share-alt{:style => "display: none;"}

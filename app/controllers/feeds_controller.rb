@@ -381,8 +381,6 @@ class FeedsController < ApplicationController
       @posts = @posts.ugc_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'feedback'
       @posts = @posts.feedback_box.not_spam.order("posts.created_at DESC")
-    elsif params[:filter] == 'tutor'
-      @posts = @posts.tutor_box.not_spam.order("posts.created_at DESC")
     elsif params[:filter] == 'linked'
       @posts = @posts.linked_box.not_spam.order("posts.created_at ASC")
     elsif params[:filter] == 'unlinked'

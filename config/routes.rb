@@ -122,8 +122,6 @@ Quizmemanager::Application.routes.draw do
   post '/askers/nudge' => 'askers#send_nudge'
   post "/email_askers/save_private_response"
 
-  get '/tutor' => 'askers#tutor'
-
   resources :rate_sheets
   resources :users
   resources :posts

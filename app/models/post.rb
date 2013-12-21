@@ -34,8 +34,6 @@ class Post < ActiveRecord::Base
   scope :ugc, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
   scope :not_ugc, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
 
-  scope :tutor, -> { includes(:tags).where("tags.name LIKE 'tutor-%'").references(:tags) }
-
   scope :friend, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
   scope :not_friend, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ask a friend')) }
 
@@ -68,7 +66,6 @@ class Post < ActiveRecord::Base
   scope :linked, -> { where('posts.in_reply_to_question_id IS NOT NULL') }
   scope :unlinked, -> { where('posts.in_reply_to_question_id IS NULL') }
 
-  scope :tutor_box, -> { tutor }
   scope :retweet_box, -> { requires_action.retweet.not_ugc }
   scope :spam_box, -> { spam.not_ugc }
   scope :moderated_box, -> { requires_action.moderated }

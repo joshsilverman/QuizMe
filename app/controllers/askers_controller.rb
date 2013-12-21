@@ -1,6 +1,6 @@
 class AskersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:questions]
-  before_filter :admin?, :except => [:tutor, :dashboard, :get_core_metrics, :graph, :questions]
+  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions]
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
@@ -103,13 +103,6 @@ class AskersController < ApplicationController
     nudge_type.send_to(asker, user)
 
     render :nothing => true
-  end
-
-  def tutor
-    # Query to create NudgeType in db:
-    # NudgeType.create({:client_id => 29210, :url => "http://www.wisr.com/tutor?user_id={user_id}", :text => "We provide a tutoring service, check it out: {link}", :active => true, :automatic => false})
-    @exams = User.find(params[:user_id]).exams
-    @exam = @exams.last || Exam.new
   end
 
   def edit_graph
