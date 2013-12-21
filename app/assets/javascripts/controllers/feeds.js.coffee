@@ -102,6 +102,7 @@ class @Feed
 			modal.find(".message").hide()
 			modal.find(".question_form").show()
 		).delay(250).slideToggle(250, => $("#question_input").focus())
+
 	initialize_stream: =>
 		return unless $("#activity_stream_content").length > 0
 		return unless $("#activity_stream_content").is(":visible")
@@ -118,6 +119,7 @@ class @Feed
 				)
 			complete: => 
 				$("#activity_stream h4 img").hide()
+
 	initialize_fix_position_listener: =>
 		offset = 204
 		$(window).on "scroll", => 
@@ -125,6 +127,7 @@ class @Feed
 				$("#left_column_container").css("position", "fixed").css("top", "15px")
 			else
 				$("#left_column_container").css("position", "").css("top", "auto")
+
 	initialize_infinite_scroll: =>
 		window.appending = false
 		$(window).on "scroll", => 
@@ -135,10 +138,13 @@ class @Feed
 		$("#posts_more").on "click", (e) => 
 			e.preventDefault()
 			@show_more()	
+
 	initialize_tooltips: =>
 		$(".interaction").tooltip()
 		$("#directory img").tooltip()
+
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
+
 	retweet: (e) =>
 		id = e.attr 'publication_id'
 		params = 
@@ -154,6 +160,7 @@ class @Feed
 				post.find(".icon-retweet").fadeIn()	
 				post.find(".retweet").remove()
 				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
+
 	post_question: (text = null, post_id = null) =>
 		# return unless window.feed.correct > 9 or $('.is_author').length > 0
 		$("#question_input").val(text) if text
@@ -184,12 +191,14 @@ class @Feed
 		$("#submit_question").on "click", (e) => 
 			e.preventDefault()
 			submit()
+
 		add_answer = ->
 			count = $(".answer").length
 			return if count > 3
 			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
 			$("#add_answer").hide() if count == 3
+			
 		submit = ->
 			if validate_form()
 				$("#submit_question").button("loading")

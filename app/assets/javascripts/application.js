@@ -9,6 +9,7 @@
 //= require jquery.ui.autocomplete
 //= require jquery.ui.datepicker
 //= require lib/jquery.cookie
+//= require lib/knockout-3.0.0.min
 
 //= require twitter/bootstrap
 //= require best_in_place
