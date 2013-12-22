@@ -54,13 +54,7 @@
 							%a{:href => "#"} Load more
 				#left_column.span3.hidden-phone
 					#left_column_container
-						#activity_stream.rounded.border-color
-							.header
-								%h4
-									Activity	
-									=image_tag "ajax-loader.gif"
-							%ul.unstyled	
-								#activity_stream_content
+						#activity_stream.rounded.border-color= render partial: "stream"
 						.clr
 						- if defined?(@contributors)
 							- unless @contributors.blank?			

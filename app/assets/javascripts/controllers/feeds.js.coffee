@@ -69,7 +69,6 @@ class @Feed
 				twttr.events.bind 'follow', (e) => @afterfollow(e)
 
 		check_twttr()
-		setTimeout @initialize_stream, 500
 
 	load_follow_buttons: ->
 		$('a.twitter-follow-button').filter(->
@@ -102,23 +101,6 @@ class @Feed
 			modal.find(".message").hide()
 			modal.find(".question_form").show()
 		).delay(250).slideToggle(250, => $("#question_input").focus())
-
-	initialize_stream: =>
-		return unless $("#activity_stream_content").length > 0
-		return unless $("#activity_stream_content").is(":visible")
-		$.ajax '/feeds/stream',
-			type: 'GET'
-			success: (e) => 
-				container = $("#activity_stream_content")
-				container.empty().append(e)
-				container.find("#stream_list").hide().slideToggle(500, => 
-					$("#activity_stream p").show()
-					$("#activity_stream .content").dotdotdot({height: 55})
-					mixpanel.track_links(".stream_item", "stream click", {"account" : @name, "source": source})					
-					$(".timeago").timeago()
-				)
-			complete: => 
-				$("#activity_stream h4 img").hide()
 
 	initialize_fix_position_listener: =>
 		offset = 204
@@ -198,7 +180,7 @@ class @Feed
 			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
 			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
 			$("#add_answer").hide() if count == 3
-			
+
 		submit = ->
 			if validate_form()
 				$("#submit_question").button("loading")

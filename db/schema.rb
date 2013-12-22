@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131218171352) do
+ActiveRecord::Schema.define(version: 20131222175129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -162,7 +162,9 @@ ActiveRecord::Schema.define(version: 20131218171352) do
   add_index "posts", ["conversation_id"], name: "index_posts_on_conversation_id", using: :btree
   add_index "posts", ["created_at"], name: "index_posts_on_created_at", using: :btree
   add_index "posts", ["in_reply_to_post_id"], name: "index_posts_on_in_reply_to_post_id", using: :btree
+  add_index "posts", ["in_reply_to_question_id"], name: "index_posts_on_in_reply_to_question_id", using: :btree
   add_index "posts", ["in_reply_to_user_id"], name: "index_posts_on_in_reply_to_user_id", using: :btree
+  add_index "posts", ["intention"], name: "index_posts_on_intention", using: :btree
   add_index "posts", ["interaction_type"], name: "index_posts_on_interaction_type", using: :btree
   add_index "posts", ["provider_post_id"], name: "index_posts_on_provider_post_id", using: :btree
   add_index "posts", ["publication_id"], name: "index_posts_on_publication_id", using: :btree
@@ -392,5 +394,6 @@ ActiveRecord::Schema.define(version: 20131218171352) do
   add_index "users", ["published"], name: "index_users_on_published", using: :btree
   add_index "users", ["rate_sheet_id"], name: "index_users_on_rate_sheet_id", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["role"], name: "index_users_on_role", using: :btree
 
 end

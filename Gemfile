@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
+ruby '2.0.0'
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg'
-ruby '2.0.0'
 
 gem 'rails', '~> 4.0.0'
 gem 'activesupport', '4.0.0'
@@ -13,10 +13,9 @@ group :test do
   gem 'capybara_minitest_spec'
   gem 'launchy'
   gem 'factory_girl_rails'
-  gem 'turn'#, :require => false
+  gem 'turn'
   gem "database_cleaner"
   gem 'timecop'
-  gem 'm'
   gem 'selenium-webdriver', "~> 2.38.0"
   
   gem 'mocha'
@@ -35,24 +34,18 @@ group :production do
 end
 
 group :development do
-  gem 'rack-mini-profiler'
   gem 'awesome_print'
   gem 'quiet_assets'
   gem 'better_errors'
   gem 'meta_request'
   gem 'awesome_print'
-
-  # gem "guard"
-  # gem "guard-livereload"
-  # gem 'binding_of_caller'
-  # gem 'oink'
   gem 'ruby-prof'
+  gem 'hirb'
 end
 
 group :development, :test do
   gem 'pry'
   gem 'pry-nav'
-  gem 'pry-stack_explorer'
 end
 
 gem 'sass-rails', '~> 4.0.0'
@@ -69,11 +62,9 @@ gem 'devise'
 gem 'omniauth'
 gem 'omniauth-twitter'
 
-gem 'rabl'
-gem 'hirb'
+gem 'oj'
 
 gem 'twitter'
-# gem 'tweetstream'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'

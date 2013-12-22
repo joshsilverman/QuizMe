@@ -133,44 +133,37 @@ class FeedsController < ApplicationController
   end
 
   def stream(user_followers = [])
-    asker_ids = User.askers.collect(&:id)
-    if current_user
-      unless (user_followers = (Rails.cache.read("follower_ids:#{current_user.id}") || [])).present?
-        user_followers = Post.twitter_request { Asker.published.sample.twitter.follower_ids(current_user.twi_user_id).ids }
-        Rails.cache.write("follower_ids:#{current_user.id}", user_followers, :timeToLive => 2.days)
-      end
+    posts = Post.includes(:user, :in_reply_to_question, :in_reply_to_user)
+      .where('in_reply_to_question_id IS NOT NULL')
+      .where(intention: 'respond to question')
+      .where(in_reply_to_user_id: Asker.ids)
+      .order(id: :desc).limit(25).to_a
+
+    filtered_posts = []
+    posts.each_with_index do |post, i|
+      prev_post_user_id = posts[i - 1].try(:user_id)
+      next if prev_post_user_id == post.user_id
+
+      filtered_posts << {
+        id: post.id,
+        created_at: post.created_at,
+        in_reply_to_question: {
+          id: post.in_reply_to_question.id,
+          text: post.in_reply_to_question.text
+        },
+        user: {
+          twi_screen_name: post.user.twi_screen_name,
+          twi_profile_img_url: post.user.twi_profile_img_url
+        },
+        in_reply_to_user: {
+          twi_screen_name: post.in_reply_to_user.id
+        }
+      }
+
+      break if filtered_posts.count == 5
     end
 
-    @stream = []
-    time_ago = 8.hours
-    if user_followers.present?
-      recent_posts = Post.not_spam.joins(:user)\
-        .where("users.twi_user_id in (?) and users.id not in (?) and (posts.interaction_type = 3 or (posts.interaction_type = 2)) and posts.created_at > ? and conversation_id is not null", user_followers, asker_ids, time_ago.ago)\
-        .order("created_at DESC")\
-        .limit(5)\
-        .includes(:conversation => {:publication => :question})
-      recent_posts.group_by(&:user_id).each do |user_id, posts|
-        next if posts.empty?
-        post = posts.first
-        next unless post.conversation and post.conversation.publication
-        @stream << posts.shift
-      end
-    end
-    if @stream.size < 5
-      users = User.where("users.last_answer_at is not null and users.id not in (?)", (asker_ids))\
-        .order("users.last_answer_at DESC").limit(10)
-        
-      users = users.reject{|u| user_followers.include? u.id} if user_followers.present?
-
-      users.each do |user| 
-        post = user.posts.not_spam.includes(:conversation => :publication).where("posts.interaction_type = 2").order("created_at DESC").limit(1).first
-        next unless post and post.conversation and post.conversation.publication
-        @stream << post unless post.blank?
-        break if @stream.size >= 5
-      end
-    end
-    @stream.sort! { |a, b| b.created_at <=> a.created_at }
-    render :partial => "stream"
+    render json: filtered_posts
   end
 
   def more
