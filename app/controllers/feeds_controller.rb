@@ -137,7 +137,7 @@ class FeedsController < ApplicationController
       .where('in_reply_to_question_id IS NOT NULL')
       .where(intention: 'respond to question')
       .where(in_reply_to_user_id: Asker.ids)
-      .order(id: :desc).limit(25).to_a
+      .order(id: :desc).limit(50).to_a
 
     filtered_posts = []
     posts.each_with_index do |post, i|
