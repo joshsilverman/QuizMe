@@ -163,6 +163,8 @@ module ManageTwitterRelationships
     if oldest_inactive_user
       Post.twitter_request { twitter.unfollow(oldest_inactive_user.twi_user_id) }
       remove_follow(oldest_inactive_user)
+    else
+      puts 'Twitter Error: no oldest_inactive_user to unfollow'
     end
   end 
 
