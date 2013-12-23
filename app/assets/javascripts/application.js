@@ -14,6 +14,7 @@
 //= require twitter/bootstrap
 //= require best_in_place
 //= require d3
+//= require lib/pusher-2.1.min
 
 //= require_tree .
 

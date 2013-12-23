@@ -34,4 +34,6 @@ Quizmemanager::Application.configure do
   )  
 end
 
-ENV['REDISTOGO_URL'] = 'redis://localhost:6379'
+Pusher.app_id = '62264'
+Pusher.key    = '95a6d252b4fb7089dd2a'
+Pusher.secret = 'ed3d0f22ffc0669b3a8d'

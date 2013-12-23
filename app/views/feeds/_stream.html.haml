@@ -7,9 +7,9 @@
 
 %ul.unstyled	
 	#activity_stream_content
-		#stream_list{'data-bind' => "foreach: streamPosts, visible: streamPosts().length > 0", style: 'display:none;'}
+		#stream_list{'data-bind' => "foreach: streamPosts, visible: (streamPosts().length > 0)"}
 			%a.stream_item{"data-bind" => "attr: {href: href}"}
-				%li
+				%li{"data-bind" => "fadeIn: questionText"}
 					.content
 						%image.rounded.profile{"data-bind" => "attr: {src: user_twi_profile_img_url}"}
 						%p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: created_at"}

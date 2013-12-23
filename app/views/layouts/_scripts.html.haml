@@ -1,4 +1,5 @@
-- cache("_scripts", :expires_in => 1.hour) do	
-	= render :partial => "layouts/google_analytics"
-	= render :partial => "layouts/mixpanel"
-	= render :partial => "layouts/referral"
+- cache("_scripts", :expires_in => 1.hour) do
+  = render :partial => "layouts/google_analytics"
+  = render :partial => "layouts/mixpanel"
+  = render :partial => "layouts/referral"
+  = render :partial => "layouts/pusher"
