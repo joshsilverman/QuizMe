@@ -20,9 +20,6 @@ group :test do
   
   gem 'mocha'
   gem 'webmock'
-  
-  gem 'spork', '~> 1.0rc'
-  gem "spork-minitest", "~> 0.0.3"
 end
 
 group :production do
@@ -82,7 +79,7 @@ gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
 
 gem 'amatch'
-gem 'sourcify'
+gem 'sourcify', "~> 0.6.0.rc4"
 gem 'google_drive'
 gem 'redis'
 

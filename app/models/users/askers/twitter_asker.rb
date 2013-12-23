@@ -19,11 +19,13 @@ class TwitterAsker < Asker
       :sender_id => sender.id
     })
 
+    failure_message = "Tweet from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
+
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id]) 
-      twitter_response = Post.twitter_request { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
+      twitter_response = Post.twitter_request(failure_message) { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
-      twitter_response = Post.twitter_request { sender.twitter.update(tweet) }
+      twitter_response = Post.twitter_request(failure_message) { sender.twitter.update(tweet) }
     end
     if twitter_response
       post = Post.create(
@@ -68,6 +70,8 @@ class TwitterAsker < Asker
     text = "#{text} #{short_url}" if options[:include_url] and short_url
 
     begin
+      failure_message = "DM from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
+
       res = Post.twitter_request { sender.twitter.direct_message_create(recipient.twi_user_id, text) }
       post = Post.create(
         :user_id => sender.id,

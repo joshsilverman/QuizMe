@@ -502,7 +502,8 @@ class Post < ActiveRecord::Base
     Post.grader.grade post
   end
 
-  def self.twitter_request(&block) # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
+  # Note: when passing text to twi 'update' method, must pass var, not raw str. May only pass single quote strs.
+  def self.twitter_request(failure_message = nil, &block)
     return [] if Rails.env.test?
 
     source_line = block.to_source(:strip_enclosure => true)
@@ -511,7 +512,6 @@ class Post < ActiveRecord::Base
     value = nil
     max_attempts = 3
     attempts = 0
-
     begin
       attempts += 1
       value = block.call()
@@ -537,8 +537,8 @@ class Post < ActiveRecord::Base
       end
       puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts"
     rescue Exception => exception
-      puts "error (#{exception})"
-    end 
+      puts "error (#{exception}) with message: #{failure_message}"
+    end
     return value   
   end
   
