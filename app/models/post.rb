@@ -516,7 +516,7 @@ class Post < ActiveRecord::Base
       attempts += 1
       value = block.call()
     rescue Twitter::Error::TooManyRequests => exception
-      puts "rate limit exceeded on line '#{source_line}':"
+      puts "Twitter Error: rate limit exceeded on line '#{source_line}':"
       puts exception.rate_limit.inspect
       raise "Rate limit exceeded"
     rescue Twitter::Error => exception
@@ -530,14 +530,14 @@ class Post < ActiveRecord::Base
         or exception.message.include? "You cannot send messages to users who are not following you" \
         or exception.message.include? "Not authorized"
 
-        puts "twitter error (#{exception}), retrying"
+        puts "Twitter Error: (#{exception}), retrying: #{failure_message}"
         retry
       else
-        puts "twitter error (#{exception})"
+        puts "Twitter Error: (#{exception}): #{failure_message}"
       end
-      puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts"
+      puts "Failed to run #{block} ('#{source_line}') after #{attempts} attempts: #{failure_message}"
     rescue Exception => exception
-      puts "error (#{exception}) with message: #{failure_message}"
+      puts "Twitter Error (#{exception}) with message: #{failure_message}"
     end
     return value   
   end
