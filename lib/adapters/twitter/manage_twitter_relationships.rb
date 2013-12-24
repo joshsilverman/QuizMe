@@ -147,8 +147,9 @@ module ManageTwitterRelationships
       response = Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       if response.present?
         remove_follow(user)
+        puts "Unfollowed user #{user.twi_user_id} from #{id}"
       else
-        "Twitter Error: Could not unfollow user #{user.twi_user_id} from #{id}"
+        puts "Twitter Error: Could not unfollow user #{user.twi_user_id} from #{id}"
       end
     end
   end 
