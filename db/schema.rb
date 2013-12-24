@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131222175129) do
+ActiveRecord::Schema.define(version: 20131224141947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -230,18 +230,6 @@ ActiveRecord::Schema.define(version: 20131222175129) do
     t.integer "topic_id"
   end
 
-  create_table "rate_sheets", force: true do |t|
-    t.float    "tweet"
-    t.float    "retweet"
-    t.float    "lead"
-    t.float    "conversion"
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "logo_image"
-    t.float    "monthly_cap"
-  end
-
   create_table "related_askers", id: false, force: true do |t|
     t.integer "asker_id"
     t.integer "related_asker_id"
@@ -362,8 +350,6 @@ ActiveRecord::Schema.define(version: 20131222175129) do
     t.datetime "last_interaction_at"
     t.datetime "last_answer_at"
     t.integer  "client_id"
-    t.integer  "rate_sheet_id"
-    t.boolean  "client_nudge"
     t.integer  "lifecycle_segment"
     t.integer  "activity_segment"
     t.integer  "interaction_segment"
@@ -392,7 +378,6 @@ ActiveRecord::Schema.define(version: 20131222175129) do
   add_index "users", ["learner_level"], name: "index_users_on_learner_level", using: :btree
   add_index "users", ["new_user_q_id"], name: "index_users_on_new_user_q_id", using: :btree
   add_index "users", ["published"], name: "index_users_on_published", using: :btree
-  add_index "users", ["rate_sheet_id"], name: "index_users_on_rate_sheet_id", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["role"], name: "index_users_on_role", using: :btree
 

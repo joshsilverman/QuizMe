@@ -113,11 +113,6 @@ module ManageTwitterRelationships
     max_unfollows = max_unfollows - unfollows_count_today
     return 0 if max_unfollows < 1
 
-    # return 0 if follow_relationships.inactive\
-    #   .where("updated_at > ?", Time.now.beginning_of_day)\
-    #   .where("created_at < ?", Time.now.beginning_of_day)\
-    #   .where("type_id is null or type_id != 4").size >= max_unfollows
-
     max_unfollows
   end
 

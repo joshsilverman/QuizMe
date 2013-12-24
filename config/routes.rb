@@ -116,13 +116,9 @@ Quizmemanager::Application.routes.draw do
   post '/unsubscribe' => 'users#unsubscribe'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
-  get "clients/:id/report" => "clients#report"
-  post "clients/nudge" => "clients#nudge"
-
   post '/askers/nudge' => 'askers#send_nudge'
   post "/email_askers/save_private_response"
 
-  resources :rate_sheets
   resources :users
   resources :posts
   resources :mentions
