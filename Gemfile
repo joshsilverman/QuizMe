@@ -72,7 +72,7 @@ gem 'omniauth-twitter'
 
 gem 'oj'
 
-gem 'twitter'
+gem 'twitter', '4.8.1'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
