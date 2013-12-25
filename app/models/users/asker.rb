@@ -204,7 +204,7 @@ class Asker < User
       .reengage_inactive\
       .where('posts.in_reply_to_user_id in (?)', user_ids_to_last_active_at.keys)\
       .select(["in_reply_to_user_id", "max(created_at) as last_reengaged_at"])\
-      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at.time]}.flatten]
+      .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
 
     @question_sent_by_asker_counts = {}
     user_ids_to_last_active_at.each do |user_id, last_active_at|

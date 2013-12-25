@@ -5,8 +5,8 @@ gem 'pg'
 gem 'redis'
 
 gem 'unicorn'
-gem 'rails', '~> 4.0.0'
-gem 'activesupport', '4.0.0'
+gem 'rails', '~> 4.0.2'
+gem 'activesupport', '4.0.2'
 
 gem 'protected_attributes'
 gem 'rails-observers'
@@ -56,8 +56,8 @@ group :development, :test do
   gem 'pry-nav'
 end
 
-gem 'sass-rails', '~> 4.0.0'
-gem 'coffee-rails', '~> 4.0.0'
+gem 'sass-rails', '~> 4.0.1'
+gem 'coffee-rails', '~> 4.0.1'
 gem 'uglifier', '>= 2.1.1'
 gem "less-rails"
 
@@ -66,7 +66,7 @@ gem 'haml'
 gem 'twitter-bootstrap-rails', '2.1.1'
 gem 'jquery-rails'
 
-gem 'devise'
+gem 'devise', '3.0.4'
 gem 'omniauth'
 gem 'omniauth-twitter'
 
@@ -76,7 +76,7 @@ gem 'twitter'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
-gem 'actionmailer', '~> 4.0.0'
+gem 'actionmailer', '~> 4.0.2'
 gem 'newrelic_rpm'
 gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
