@@ -447,7 +447,7 @@ body {
 					height: 0px;
 					opacity: 0;
 
-					transition: height 1s, opacity 1s, padding 1s;
+					transition: height 1s, opacity 1500ms, padding 500ms;
 
 					&.appear {
 						padding-top: 10px !important;
