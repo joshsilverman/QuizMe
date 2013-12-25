@@ -1,7 +1,7 @@
 class FeedsController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:show]
   before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :search] 
-  before_filter :admin?, :only => [:manage, :manager_response]
+  before_filter :admin?, :only => [:manager_response]
   before_filter :set_session_variables, :only => [:show]
 
   def index
@@ -249,77 +249,6 @@ class FeedsController < ApplicationController
     render :partial => "conversation"
   end
 
-  def manager_response
-    asker = Asker.find(params[:asker_id])
-    user_post = Post.find(params[:in_reply_to_post_id])
-    user = user_post.user
-    correct = (params[:correct].nil? ? nil : params[:correct].match(/(true|t|yes|y|1)$/i) != nil)
-    tell = (params[:tell].nil? ? nil : params[:tell].match(/(true|t|yes|y|1)$/i) != nil)
-
-    unless conversation = user_post.conversation
-      post_id = user_post.parent.try(:id) || user_post.id
-      conversation = Conversation.create(:post_id => post_id, :user_id => asker.id, :publication_id => params[:publication_id])
-      conversation.posts << user_post
-    end
-    root_post = conversation.post
-
-    if params[:interaction_type] == "4"
-      response_post = asker.private_response user_post, correct, 
-        tell: tell,
-        message: params[:message],
-        username: params[:username],
-        in_reply_to_user_id: params[:in_reply_to_user_id],
-        conversation: conversation
-    else
-      response_text = (params[:message].present? ? params[:message].gsub("@#{params[:username]}", "") : nil)
-      if correct.nil?
-        response_post = asker.delay.send_public_message(response_text, {
-          :reply_to => params[:username], 
-          :interaction_type => 2, 
-          :conversation_id => conversation.id,
-          :in_reply_to_post_id => params[:in_reply_to_post_id], 
-          :in_reply_to_user_id => params[:in_reply_to_user_id], 
-          :link_to_parent => true
-        })
-      else
-        response_post = asker.delay.app_response(user_post, correct, { 
-          :response_text => response_text,
-          :link_to_parent => root_post.is_question_post? ? false : true,
-          :tell => tell,
-          :conversation_id => conversation.id,
-          :post_to_twitter => true,
-          :manager_response => true,
-          :quote_user_answer => root_post.is_question_post? ? true : false,
-          :intention => 'grade'
-        })
-      end
-    end
-
-    user_post.update_attributes({:requires_action => (['new content', 'ask a friend', 'ugc'] & user_post.tags.collect(&:name)).present?, :conversation_id => conversation.id}) if response_post
-
-    if params[:message].present?
-      accepted_moderation_type_id = 6
-    elsif tell == true
-      accepted_moderation_type_id = 3
-    elsif correct == true
-      accepted_moderation_type_id = 1
-    elsif correct == false
-      accepted_moderation_type_id = 2
-    end
-        
-    user_post.post_moderations.each do |moderation|
-      if accepted_moderation_type_id == moderation.type_id
-        moderation.update_attribute :accepted, true
-        next if moderation.moderator.post_moderations.count > 1
-        Post.trigger_split_test(moderation.user_id, "show moderator q & a or answer (-> accepted grade)")
-      else
-        moderation.update_attribute :accepted, false
-      end
-    end
-
-    render :json => response_post.present?
-  end
-
   def link_to_post
     if params[:link_to_pub_id] == "0"
       post = Post.find(params[:post_id])
@@ -347,102 +276,6 @@ class FeedsController < ApplicationController
       tag.posts << post_to_link
 
       render :json => [post_to_link, post_to_link_to]
-    end
-  end
-
-  def manage
-    @linked_box_count = Post.linked_box.count
-    @unlinked_box_count = Post.unlinked_box.count
-    @autocorrected_box_count = Post.autocorrected_box.count
-    @moderated_box_count = Post.moderated_box.to_a.count
-    @email_count = Post.requires_action.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id)).count
-
-    #filters
-    @posts = Post.includes(:tags, :user, :parent, [:conversation => [:publication => [:question => :answers], :post => [:user], :posts => [:user]]])
-    # @posts = Post.includes(:tags, :conversation)
-    if params[:filter] == 'retweets'
-      @posts = @posts.retweet_box.not_spam.order("posts.created_at DESC")
-    elsif params[:filter] == 'spam'
-      @posts = @posts.spam_box.order("posts.created_at DESC")
-    elsif params[:filter] == 'autocorrected'
-      @posts = @posts.autocorrected_box.not_spam.order("posts.created_at ASC")
-    elsif params[:filter] == 'ugc'
-      @posts = @posts.ugc_box.not_spam.order("posts.created_at DESC")
-    elsif params[:filter] == 'feedback'
-      @posts = @posts.feedback_box.not_spam.order("posts.created_at DESC")
-    elsif params[:filter] == 'linked'
-      @posts = @posts.linked_box.not_spam.order("posts.created_at ASC")
-    elsif params[:filter] == 'unlinked'
-      @posts = @posts.unlinked_box.not_spam.order("posts.created_at ASC")
-    elsif params[:filter] == 'content'
-      @posts = @posts.content_box.not_spam.order("posts.created_at ASC")
-    elsif params[:filter] == 'friend'
-      @posts = @posts.friend_box.not_spam.order("posts.created_at ASC")            
-    elsif params[:filter] == 'email'
-      @posts = @posts.requires_action.where(in_reply_to_post_id: Post.where("user_id in (?) and text like ?", Asker.ids, '%your email address%').collect(&:id))   
-    elsif params[:filter] == 'all'
-      @posts = @posts.all_box.not_spam.order("posts.created_at DESC")
-    else
-      @posts = @posts.moderated_box.order("posts.created_at DESC")
-    end
-
-    @tags = Tag.all
-    @asker_twi_screen_names = Asker.askers_with_id_and_twi_screen_name.sort_by! { |a| a.twi_screen_name.downcase }.each { |a| a.twi_screen_name = a.twi_screen_name.downcase }
-    @nudge_types = NudgeType.all
-    @posts = @posts.page(params[:page]).per(25)
-
-    if @asker
-      @questions = @asker.publications.where(:published => true)\
-        .order("created_at DESC").includes(:question => :answers).limit(100)
-      @engagements, @conversations = Post.grouped_as_conversations @posts, @asker
-    else
-      @questions = []
-      @engagements, @conversations = Post.grouped_as_conversations @posts
-      @asker = User.find 8765
-      @oneinbox = true
-      @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name, :twi_profile_img_url]).map{|a| [a.id, {twi_screen_name: a.twi_screen_name, twi_profile_img_url: a.twi_profile_img_url}]}.flatten]
-    end
-  end
-
-  def refer_a_friend
-    asker = Asker.find(params[:asker_id])
-    twitter_user = Post.twitter_request { asker.twitter.user(params[:user_twi_screen_name]) }
-    user = User.find_or_initialize_by(twi_user_id: twitter_user.id)
-    user.update_attributes( 
-      :twi_name => twitter_user.name,
-      :name => twitter_user.name,
-      :twi_screen_name => twitter_user.screen_name,
-      :twi_profile_img_url => twitter_user.profile_image_url,
-      :description => twitter_user.description.present? ? twitter_user.description : nil
-    )
-
-    if params[:type] == 'popular' and Post.where("intention = 'quiz a friend' and in_reply_to_user_id = ?", user.id).blank?
-      question = asker.most_popular_question
-      publication = question.publications.order("created_at DESC").first
-    elsif params[:type] == 'ugc'
-      question = User.find_by(twi_screen_name: params[:via]).questions.where("created_for_asker_id = ?", params[:asker_id]).last
-      publication = question.publications.order("created_at DESC").first
-    end    
-
-    if question and publication
-      response_post = asker.send_public_message(question.text, {
-        :reply_to => params[:user_twi_screen_name], 
-        :interaction_type => 2,
-        :intention => 'quiz a friend',
-        :via => params[:via],
-        :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}",
-        :in_reply_to_user_id => user.id,
-        :publication_id => publication.id,
-        :question_id => question.id
-      })  
-      Mixpanel.track_event "quiz a friend", {
-        :distinct_id => user.id,
-        :asker => asker.twi_screen_name,
-        :type => params[:type]
-      }      
-      render :json => response_post
-    else
-      render :nothing => true, :status => 403
     end
   end
 

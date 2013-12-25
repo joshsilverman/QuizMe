@@ -41,13 +41,9 @@ class Post < ActiveRecord::Base
   scope :not_content, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('new content')) }
 
   scope :moderated, -> { joins(:post_moderations).group('posts.id').having('count(moderations.id) > 2') } 
-
-  #published asker
   scope :published, -> { includes(:in_reply_to_user).where("users.published = ?", true).references(:in_reply_to_user) }
-
   scope :autocorrected, -> { where("posts.autocorrect IS NOT NULL") }
   scope :not_autocorrected, -> { where("posts.autocorrect IS NULL") }
-
   scope :tagged, -> { joins(:tags).uniq }
 
   scope :grade, -> { where("posts.intention = ? or posts.intention = ?", 'grade', 'dm autoresponse') }
@@ -66,17 +62,7 @@ class Post < ActiveRecord::Base
   scope :linked, -> { where('posts.in_reply_to_question_id IS NOT NULL') }
   scope :unlinked, -> { where('posts.in_reply_to_question_id IS NULL') }
 
-  scope :retweet_box, -> { requires_action.retweet.not_ugc }
-  scope :spam_box, -> { spam.not_ugc }
-  scope :moderated_box, -> { requires_action.moderated }
-  scope :ugc_box, -> { requires_action.ugc }
-  scope :linked_box, -> { requires_action.not_autocorrected.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend }
-  scope :unlinked_box, -> { requires_action.not_autocorrected.unlinked.not_ugc.not_spam.not_retweet.not_us.published.not_content.not_friend }
   scope :moderatable, -> { requires_action.linked.not_spam.not_retweet.published.not_ugc.not_content.not_friend }
-  scope :all_box, -> { requires_action.not_spam.not_retweet }
-  scope :autocorrected_box, -> { includes(:user, :conversation => {:publication => :question, :post => {:asker => :new_user_question}}, :parent => {:publication => :question}).requires_action.not_ugc.not_spam.not_retweet.autocorrected.references(:user, :conversation) }
-  scope :content_box, -> { requires_action.content }
-  scope :friend_box, -> { requires_action.friend }
 
   scope :nudge, -> { where("posts.nudge_type_id is not null") }
 

@@ -22,8 +22,6 @@ Quizmemanager::Application.routes.draw do
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   get "feeds/:id/scores" => "feeds#scores"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
-  get "feeds/:id/manage" => "feeds#manage"
-  get "feeds/manage" => "feeds#manage"
 
   resource :moderations
   get "moderations/manage"
@@ -40,9 +38,7 @@ Quizmemanager::Application.routes.draw do
 
   get "/ask" => "feeds#ask"
   post "/respond_to_question" => "feeds#respond_to_question"
-  post "/manager_response" => "feeds#manager_response"
   post "/manager_post" => "feeds#manager_post"
-  post '/refer_a_friend' => 'feeds#refer_a_friend'
   post "/link_to_post" => "feeds#link_to_post"
   post "/create_split_test" => "feeds#create_split_test"
   post "/trigger_split_test" => "feeds#trigger_split_test"
@@ -68,9 +64,6 @@ Quizmemanager::Application.routes.draw do
   post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
-  post "posts/manager_retweet"
-  post "/posts/mark_ugc" => "posts#mark_ugc"
-  post "/posts/toggle_tag" => "posts#toggle_tag"
 
   get "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
   get "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
@@ -116,7 +109,6 @@ Quizmemanager::Application.routes.draw do
   post '/unsubscribe' => 'users#unsubscribe'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
-  post '/askers/nudge' => 'askers#send_nudge'
   post "/email_askers/save_private_response"
 
   resources :users

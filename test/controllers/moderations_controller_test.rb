@@ -418,7 +418,6 @@ describe ModerationsController do
 							visit '/moderations/manage'
 							page.all(".post[question_id=\"#{@ugc_question.id}\"]").count.must_equal 1
 						end
-						# it 'unless is supermod who just edited question'
 					end
 				end
 
@@ -428,7 +427,7 @@ describe ModerationsController do
 						@moderator.update(lifecycle_segment: 4, moderator_segment: 4)
 					end
 
-					it 'only to super mods' do
+					it 'only to supermods' do
 						login_as @moderator
 						visit '/moderations/manage'
 						post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
@@ -486,120 +485,29 @@ describe ModerationsController do
 			end
 		end
 
-		describe 'updates moderations' do
-			describe 'for posts' do
-				before :each do
-					Capybara.current_driver = :selenium
-					@admin = create(:user, twi_user_id: 1, role: 'admin')
-					login_as @admin
-
-					2.times do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						create(:post_moderation, user_id: moderator.id, post: @post)
-						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post: @post)
-						@moderation.accepted.must_equal nil
-					end
-					visit '/feeds/manage'
-				end
-
-				describe 'correct grade' do
-					it 'is accepted when admin agrees' do
-						page.all(".post").first.click
-						page.find('.quick-reply-yes').click
-						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
-						@moderation.reload.accepted.must_equal true
-					end
-
-					it 'is rejected when admin disagrees' do
-						page.all(".post").first.click
-						page.find('.quick-reply-no').click
-						page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
-						@moderation.reload.accepted.must_equal false
-					end
-				end
-
-				it 'public tell is accepted when admin agrees' do
-					2.times do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						create(:post_moderation, user_id: moderator.id, post: @post)
-						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 3, post: @post)
-						@moderation.accepted.must_equal nil
-					end
-					visit '/feeds/manage?filter=moderated'
-					page.all(".post").first.click
-					page.find('.quick-reply-tell').click
-					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
-					@moderation.reload.accepted.must_equal true
-				end
-
-				it 'private tell is accepted when admin agrees' do
-					2.times do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						create(:post_moderation, user_id: moderator.id, post: @dm_answer)
-						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 3, post: @dm_answer)
-						@moderation.accepted.must_equal nil
-					end
-					visit '/feeds/manage?filter=moderated'
-					page.all(".post").first.click
-					page.find('.quick-reply-tell').click
-					page.find(".conversation.dim .post[post_id=\"#{@dm_answer.id}\"]").visible?.must_equal true
-					Delayed::Worker.new.work_off
-					@asker.posts.where(in_reply_to_user_id: @user.id, intention: 'grade').count.must_equal 1
-				end
-
-				it 'hide is accepted when admin agrees' do
-					2.times do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						create(:post_moderation, user_id: moderator.id, post: @post)
-						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 5, post: @post)
-						@moderation.accepted.must_equal nil
-					end
-					visit '/feeds/manage?filter=moderated'
-					page.all(".post").first.click
-					page.find('.btn-hide').click
-					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
-					@moderation.reload.accepted.must_equal true
-				end
-
-				it 'yes is rejected when admin hides' do
-					2.times do
-						moderator = create(:user, twi_user_id: 1, role: 'moderator')
-						create(:post_moderation, user_id: moderator.id, post: @post)
-						@moderation = create(:post_moderation, user_id: moderator.id, type_id: 1, post: @post)
-						@moderation.accepted.must_equal nil
-					end
-					visit '/feeds/manage?filter=moderated'
-					page.all(".post").first.click
-					page.find('.btn-hide').click
-					page.find(".conversation.dim .post[post_id=\"#{@post.id}\"]").visible?.must_equal true
-					@moderation.reload.accepted.must_equal false
-				end
+		describe 'updates moderations for questions' do
+			before :each do 
+				Capybara.current_driver = :selenium
 			end
 
-			describe 'for questions' do
-				before :each do 
-					Capybara.current_driver = :selenium
-				end
+			it 'marks previous moderations as inactive after question is edited' do
+				@moderator.update(lifecycle_segment: 4, moderator_segment: 3)
+				30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
 
-				it 'marks previous moderations as inactive after question is edited' do
-					@moderator.update(lifecycle_segment: 4, moderator_segment: 3)
-					30.times { create(:question_moderation, accepted: true, user_id: @moderator.id, question_id: @question.id) }
-
-					moderation1 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
-					moderation2 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
-					moderation3 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
-					moderation1.active.must_equal(true) and moderation2.active.must_equal(true)
-					
-					login_as @moderator
-					visit '/moderations/manage'
-					post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
-					post.click
-					post.find(".btn-danger").click
-					fill_in 'question_input', with: "new question this is?"
-					page.find('#submit_question').click	
-					sleep 1
-					moderation1.reload.active.must_equal(false) and moderation2.reload.active.must_equal(false) and moderation3.reload.active.must_equal(false)
-				end
+				moderation1 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
+				moderation2 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
+				moderation3 = create(:question_moderation, user_id: create(:moderator).id, question_id: @ugc_question.id, type_id: 11)
+				moderation1.active.must_equal(true) and moderation2.active.must_equal(true)
+				
+				login_as @moderator
+				visit '/moderations/manage'
+				post = page.find(".post[question_id=\"#{@ugc_question.id}\"]")
+				post.click
+				post.find(".btn-danger").click
+				fill_in 'question_input', with: "new question this is?"
+				page.find('#submit_question').click	
+				sleep 1
+				moderation1.reload.active.must_equal(false) and moderation2.reload.active.must_equal(false) and moderation3.reload.active.must_equal(false)
 			end
 		end
 	end

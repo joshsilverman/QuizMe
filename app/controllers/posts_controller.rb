@@ -1,22 +1,6 @@
 class PostsController < ApplicationController
   before_filter :admin?, :except => [:nudge_redirect, :refer, :retweet]
 
-  def manager_retweet
-    post = Post.find(params[:post_id])
-    asker = Asker.find(params[:asker_id])
-    Post.create({
-      :user_id => params[:asker_id],
-      :provider => "twitter",
-      :in_reply_to_post_id => post.id, 
-      :in_reply_to_user_id => post.user_id,
-      :posted_via_app => true, 
-      :interaction_type => 3
-    })
-    retweet = Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
-    post.update_attribute :requires_action, false if retweet
-    render :json => retweet
-  end
-
 	def retweet
 		return unless params[:publication_id]
 		post = Publication.find(params[:publication_id]).posts.last
@@ -73,49 +57,9 @@ class PostsController < ApplicationController
     end		
 	end
 
-  def toggle_tag
-    post = Post.find(params[:post_id])
-    tag = Tag.find_or_create_by(name: params[:tag_name])
-
-    if post.tags.include? tag
-      post.tags.delete(tag)
-      render :json => false
-    else
-      post.tags << tag
-      render :json => true
-    end
-  end
-
-  def mark_ugc
-    tag = Tag.find_or_create_by(name: "ugc")
-    post = Post.includes(:tags).find(params[:post_id])
-    post.update_attribute :intention, 'submit ugc'
-
-    if post.tags.include? tag
-      post_with_tags = Post.includes(:tags).where('tags.name = ?', tag.name).find(params[:post_id])
-      post_with_tags.tags.clear
-      post_with_tags.update_attribute :requires_action, false
-    else
-      user = post.user
-      Post.trigger_split_test(user.id, 'ugc request type')
-      # Post.trigger_split_test(user.id, 'ugc script v3.0')
-
-      tag.posts << post
-    end
-
-    render :nothing => true
-  end
-
   def tags
     @posts = Post.tagged.order("posts.created_at DESC")
     @posts = @posts.page(params[:page]).per(50)
-    # params[:filter] = "week" unless params[:filter].present?
-
-    # if params[:filter] == "week"
-    #   @posts = @posts.where("posts.created_at > ?", 1.week.ago)
-    # elsif params[:filter] == "month"
-    #   @posts = @posts.where("posts.created_at > ?", 1.month.ago)
-    # end
         
     @tags = Tag.all
     @engagements, @conversations = Post.grouped_as_conversations @posts
