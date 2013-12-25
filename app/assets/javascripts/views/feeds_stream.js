@@ -40,7 +40,9 @@ if ($('#activity_stream:visible').length > 0) {
         var streamPost = new StreamPostModel(post); 
         streamViewModel.streamPosts.unshift(streamPost);
 
-        streamViewModel.streamPosts.pop();
+        setTimeout(function() {
+            streamViewModel.streamPosts.pop();
+          }, 1000);
       });
     }
 
@@ -78,7 +80,9 @@ if ($('#activity_stream:visible').length > 0) {
 
     ko.bindingHandlers.fadeIn = {
       init: function(element, valueAccessor) {
-        setTimeout(function() {$(element).animate('show');}, 500);
+        setTimeout(function() {
+            $(element).addClass('appear');
+          }, 150);
       }
     };
 

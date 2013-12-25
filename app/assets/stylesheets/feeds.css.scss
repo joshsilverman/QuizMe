@@ -441,22 +441,19 @@ body {
 				}
 
 				li {
-					// height: 0px;
-					// padding-top: 0px !important;
-					// padding-bottom: 0px !important;
-					// overflow:hidden;
+					padding-top: 0px !important;
+					padding-bottom: 0px !important;
+					overflow:hidden;
+					height: 0px;
 					opacity: 0;
 
-					// transition: height 5000ms;
-					transition: opacity 2s;
-					// -webkit-transition:height 2s; /* Safari */
+					transition: height 1s, opacity 1s, padding 1s;
 
-					&.show {
-						// height: 150px;
-						// transition: height 2s;
-						// padding-top: 10px !important;
-						// padding-bottom: 10px !important;
+					&.appear {
+						padding-top: 10px !important;
+						padding-bottom: 10px !important;
 						opacity: 1;
+						height: 54px;
 					}
 
 					.content {
