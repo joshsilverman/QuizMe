@@ -320,12 +320,8 @@ GEM
       rubyzip (~> 1.0)
       websocket (~> 1.0.4)
     sequel (4.1.1)
-<<<<<<< HEAD
-    sexp_processor (3.2.0)
-=======
     sexp_processor (4.3.0)
     signature (0.1.7)
->>>>>>> live-stream
     simple_oauth (0.2.0)
     sinatra (1.4.3)
       rack (~> 1.4)
