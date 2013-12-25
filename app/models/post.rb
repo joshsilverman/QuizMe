@@ -726,4 +726,18 @@ class Post < ActiveRecord::Base
   def send_to_feed
     Adapters::WisrFeed::Post::save_or_update self
   end
+
+  def send_to_stream
+    Pusher['stream'].trigger('answer', {
+        "created_at" => created_at,
+        "in_reply_to_question" => {
+          "id" => in_reply_to_question.id,
+          "text" => in_reply_to_question.text
+          },
+        "user" => {
+          "twi_screen_name" => user.twi_screen_name,
+          "twi_profile_img_url" => user.twi_profile_img_url
+        }
+      })
+  end
 end

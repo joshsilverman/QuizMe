@@ -70,6 +70,7 @@ FactoryGirl.define do
     end
 
     factory :correct_response do
+      intention 'respond to question'
       correct true
     end
   end
