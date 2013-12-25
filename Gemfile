@@ -1,11 +1,22 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 ruby '2.0.0'
 
-gem "rspec-rails",'2.8.1', :group => [:test, :development]
 gem 'pg'
+gem 'redis'
 
+gem 'unicorn'
 gem 'rails', '~> 4.0.0'
 gem 'activesupport', '4.0.0'
+
+gem 'protected_attributes'
+gem 'rails-observers'
+gem 'actionpack-page_caching'
+gem 'actionpack-action_caching'
+gem 'activerecord-deprecated_finders'
+
+gem 'rails_12factor', group: :production
+
+gem "rspec-rails",'2.8.1', :group => [:test, :development]
 
 group :test do
   gem 'capybara'
@@ -81,17 +92,8 @@ gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/d
 gem 'amatch'
 gem 'sourcify', "~> 0.6.0.rc4"
 gem 'google_drive'
-gem 'redis'
+gem 'pusher'
 
-gem 'unicorn'
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
 
 gem 'd3_rails', '3.2.6.a'
-
-gem 'protected_attributes'
-gem 'rails-observers'
-gem 'actionpack-page_caching'
-gem 'actionpack-action_caching'
-gem 'activerecord-deprecated_finders'
-
-gem 'rails_12factor', group: :production

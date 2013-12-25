@@ -440,38 +440,55 @@ body {
 					background: none;
 				}
 
-				.content {
-					height: 48px;
-					margin-left: 46px !important;
+				li {
+					padding-top: 0px !important;
+					padding-bottom: 0px !important;
+					overflow:hidden;
+					height: 0px;
+					opacity: 0;
 
-					.time_ago {
-						position: absolute;
-						right: 10px;
-						top: 6px;
+					transition: height 1s, opacity 1s, padding 1s;
+
+					&.appear {
+						padding-top: 10px !important;
+						padding-bottom: 10px !important;
+						opacity: 1;
+						height: 54px;
 					}
 
-					img {
-						height: 38px !important;
-					}
+					.content {
+						margin-left: 46px !important;
 
-					.text_content{
-						position: relative;
-						bottom: 3px;
-
-						h5 {
-							height: 18px;
-							overflow: hidden;
-							white-space: nowrap;
-							text-overflow: ellipsis;
+						.time_ago {
+							position: absolute;
+							right: 10px;
+							top: 6px;
 						}
 
-						p {
-							white-space: normal !important;
-							overflow: default !important;
-							text-overflow: default !important;
-						}		
+						img {
+							height: 38px !important;
+						}
+
+						.text_content{
+							position: relative;
+							bottom: 3px;
+
+							h5 {
+								height: 18px;
+								overflow: hidden;
+								white-space: nowrap;
+								text-overflow: ellipsis;
+							}
+
+							p {
+								white-space: normal !important;
+								overflow: default !important;
+								text-overflow: default !important;
+							}		
+						}
 					}
 				}
+
 			}
 
 			#ask {

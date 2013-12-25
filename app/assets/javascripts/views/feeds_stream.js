@@ -1,17 +1,20 @@
 if ($('#activity_stream:visible').length > 0) {
   $(function() {
+    var streamViewModel;
 
     function init() {
-      var streamViewModel = new StreamViewModel();
+      streamViewModel = new StreamViewModel();
 
       ko.applyBindings(streamViewModel);
 
       $.getJSON("/feeds/stream", function(posts) {
         posts.forEach(function(post) {
-          var streamPost = new StreamPostModel(post)
+          var streamPost = new StreamPostModel(post);
           streamViewModel.streamPosts.push(streamPost);
         });
       })
+
+      subscribeToStream();
     }
 
     function StreamPostModel(post) {
@@ -23,14 +26,24 @@ if ($('#activity_stream:visible').length > 0) {
       self.user_twi_profile_img_url = post.user.twi_profile_img_url;
 
       self.href = "/questions/" + post.in_reply_to_question.id;
-
-      $("#activity_stream .content").dotdotdot({height: 55});
     }
 
     function StreamViewModel() {
       var self = this;
 
       self.streamPosts = ko.observableArray([]);
+    }
+
+    function subscribeToStream() {
+      var channel = pusher.subscribe('stream');
+      channel.bind('answer', function(post) {
+        var streamPost = new StreamPostModel(post); 
+        streamViewModel.streamPosts.unshift(streamPost);
+
+        setTimeout(function() {
+            streamViewModel.streamPosts.pop();
+          }, 1000);
+      });
     }
 
     ko.bindingHandlers.timeago = {
@@ -62,6 +75,14 @@ if ($('#activity_stream:visible').length > 0) {
 
         $this.text(value);
         $this.parent().dotdotdot({height: 55})
+      }
+    };
+
+    ko.bindingHandlers.fadeIn = {
+      init: function(element, valueAccessor) {
+        setTimeout(function() {
+            $(element).addClass('appear');
+          }, 150);
       }
     };
 

@@ -145,7 +145,6 @@ class FeedsController < ApplicationController
       next if prev_post_user_id == post.user_id
 
       filtered_posts << {
-        id: post.id,
         created_at: post.created_at,
         in_reply_to_question: {
           id: post.in_reply_to_question.id,
@@ -154,9 +153,6 @@ class FeedsController < ApplicationController
         user: {
           twi_screen_name: post.user.twi_screen_name,
           twi_profile_img_url: post.user.twi_profile_img_url
-        },
-        in_reply_to_user: {
-          twi_screen_name: post.in_reply_to_user.id
         }
       }
 

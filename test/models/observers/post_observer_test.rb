@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe PostObserver, '#after_save' do
+describe Post, 'PostObserver#after_save' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
     Delayed::Worker.delay_jobs = false
@@ -11,7 +11,19 @@ describe PostObserver, '#after_save' do
   it "should call send_to_feed with post" do
     post = FactoryGirl.build :post
 
+    PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:segment_user)
     PostObserver.any_instance.expects(:send_to_feed).with(post)
+
+    post.save
+  end
+
+  it "should call send_to_stream with post" do
+    post = FactoryGirl.build :post
+
+    PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.expects(:send_to_stream).with(post)
 
     post.save
   end
@@ -19,24 +31,64 @@ describe PostObserver, '#after_save' do
   it "should call segment_user with post" do
     post = FactoryGirl.build :post
 
+    PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.expects(:segment_user).with(post)
 
     post.save
   end
 end
 
-describe PostObserver, '#send_to_feed' do
+describe Post, 'PostObserver#send_to_feed' do
   it "should call send_to_feed on post object" do
-    post = FactoryGirl.build :post
+    post = FactoryGirl.create :post
 
     post.expects(:send_to_feed)
-    PostObserver.any_instance.stubs(:segment_user)
 
-    post.save
+    PostObserver.send(:new).send_to_feed post
   end
 end
 
-describe PostObserver, '#segment_user' do
+describe Post, 'PostObserver#send_to_stream' do
+  it "should call send_to_stream on post mention with in_reply_to_question" do
+    post = FactoryGirl.create :post
+    post.update in_reply_to_question_id: 123,
+      intention: 'respond to question'
+
+    post.expects(:send_to_stream)
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if post is private" do
+    post = FactoryGirl.create :dm
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if post is not in reply to a question" do
+    post = FactoryGirl.create :post
+    post.update in_reply_to_question: nil
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if intention not corrent" do
+    post = FactoryGirl.create :post
+    post.update in_reply_to_question_id: 123,
+      intention: 'asdf'
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
+end
+
+describe Post, 'PostObserver#segment_user' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
     stub_request(:post, /#{Adapters::WisrFeed::URL}/)
@@ -48,6 +100,7 @@ describe PostObserver, '#segment_user' do
 
     User.any_instance.expects(:segment)
     PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:send_to_stream)
 
     post.save
   end
@@ -57,6 +110,7 @@ describe PostObserver, '#segment_user' do
 
     User.any_instance.expects(:segment).never
     PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:send_to_stream)
 
     post.save
   end
