@@ -211,6 +211,7 @@ class @Feed
 							modal.find(".question_form").hide()
 							modal.find(".message").show()
 							modal.find(".modal-body").slideToggle(250)
+
 		validate_form = ->
 			if $("#question_input").val() == ""
 				alert "Please enter a question!"
@@ -220,6 +221,7 @@ class @Feed
 				return false
 			else
 				return true	
+
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
 		if last_post_id == undefined
@@ -241,6 +243,7 @@ class @Feed
 						$('.interaction').tooltip()
 					window.appending = false
 					$(".timeago").timeago()
+
 	shuffle: (arr) ->
 		x = arr.length
 		if x is 0 then return false
@@ -266,6 +269,7 @@ class Post
 	asker_id: null
 	image_url: null
 	asker_name: null
+
 	constructor: (element) ->
 		@element = $(element)
 		@id = @element.find(".post").attr "post_id"
@@ -310,6 +314,7 @@ class Post
 				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
 			else
 				$(e.target).find("h3").removeClass("active_next")
+
 	expand: (duration = 200) =>
 		if @element.hasClass("active")
 			@expanded = false
@@ -339,6 +344,7 @@ class Post
 					@element.next(".conversation").addClass("active_next")
 					@element.prev(".conversation").addClass("active_prev")
 				)
+
 	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
 		loading = @element.find(".loading").text("Posting your answer...")
@@ -412,6 +418,7 @@ class Post
 
 	create_moderation: (moderation_type, params) =>
 		$.post '/moderations', params
+		
 	submit_email: (element) =>
 		element = element.parents('.request_email')
 		params = 

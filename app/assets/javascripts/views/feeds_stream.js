@@ -51,7 +51,6 @@ if ($('#activity_stream:visible').length > 0) {
         var value = ko.utils.unwrapObservable(valueAccessor());
 
         var $this = $(element);
-
         $this.attr('title', value);
 
         if ($this.data('timeago')) {
