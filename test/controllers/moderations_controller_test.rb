@@ -8,7 +8,6 @@ describe ModerationsController do
 		@moderator = create(:moderator, twi_user_id: 1)
 		login_as(@moderator, :scope => :user)
 
-		@wisr_asker = create(:asker, id: 8765)
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
 

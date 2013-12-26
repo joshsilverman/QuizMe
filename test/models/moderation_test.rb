@@ -9,7 +9,6 @@ describe Moderation do
 		@moderator = create(:user, twi_user_id: 1, role: 'moderator')
 		login_as(@moderator, :scope => :user)
 
-		@wisr_asker = create(:asker, id: 8765)
 		@asker = create(:asker)
 		@user = create(:user, twi_user_id: 1)
 

@@ -1,3 +1,5 @@
 wisr:
   id: 8765
   twi_screen_name: wisr
+  role: asker
+  twi_profile_img_url: 'http://smileyface.com.notadomainyet'
