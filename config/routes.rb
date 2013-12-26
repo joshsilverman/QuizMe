@@ -4,6 +4,7 @@ Quizmemanager::Application.routes.draw do
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
+  resources :answers
   get "answer/new"
   get "answer/create"
   get "answer/update"
@@ -72,28 +73,26 @@ Quizmemanager::Application.routes.draw do
   get "questions/manage" => "questions#manage"
   get "questions/asker/:asker_id" => "questions#index"
 
+  resources :questions
   post "questions/save_question_and_answers"
   post 'questions/update_question_and_answers'
   get "questions/:id" => "questions#show"
   get "questions/:id/:slug" => "questions#show"
   get "questions/new/:asker_id" => "questions#new"
+
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
 
   get "/tags" => 'posts#tags'
-
   get '/progress_report' => 'users#progress_report'
-
-  resources :questions
-  resources :answers
-
   get "/confirm_js" => "sessions#confirm_js"
-
   get '/sitemap' => 'pages#sitemap'
   
+  resources :askers, except: [:show]
   get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
   post '/askers/remove_related' => 'askers#remove_related'
+  get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
   get '/users/:id/activity' => 'users#activity'
   get "users/supporters" => "users#supporters"
@@ -105,7 +104,6 @@ Quizmemanager::Application.routes.draw do
 
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
-  get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
   post "/email_askers/save_private_response"
 
@@ -113,7 +111,6 @@ Quizmemanager::Application.routes.draw do
   resources :posts
   resources :mentions
   resources :exams
-  resources :askers, except: [:show]
 
   root :to => 'feeds#index'
 end
