@@ -1,15 +1,13 @@
 class Stat < ActiveRecord::Base
-  belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
+  include ActiveModel::Validations
+  include ActiveModel::Conversion
+  extend ActiveModel::Naming
 
   def self.followers_count
     Rails.cache.fetch "stats_followers count", :expires_in => 1.hour do
       Asker.all.collect {|a| a.followers.collect(&:id) }.flatten.uniq.size
     end
   end
-
-  ##
-  ## Growth functions
-  ##
 
   def self.graph_paulgraham domain = 30
     ratios_running_avg, display_data = Rails.cache.fetch "stat_paulgraham_domain_#{domain}", :expires_in => 17.minutes do
