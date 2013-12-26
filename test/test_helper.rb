@@ -15,6 +15,8 @@ require 'webmock/minitest'
 class ActiveSupport::TestCase
   include Warden::Test::Helpers
   Warden.test_mode!
+  include Devise::TestHelpers
+
   include Capybara::DSL
   include Capybara::RSpecMatchers
   Capybara.default_wait_time = 5
@@ -27,6 +29,7 @@ class ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
   Rails.logger.level = 0
 
+  fixtures :all
 
   DatabaseCleaner.clean_with :truncation
   DatabaseCleaner.strategy = :transaction
