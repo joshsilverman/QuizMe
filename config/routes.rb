@@ -1,5 +1,4 @@
 Quizmemanager::Application.routes.draw do
-  # temporarily disallow basic auth
   get "/users/sign_up" => redirect("/")
   get "/users/sign_in" => redirect("/")
   
@@ -13,10 +12,12 @@ Quizmemanager::Application.routes.draw do
   get "answer/index"
   get "answer/show"
 
-  get "badges/load"  
-  get "badges/issuable"
-  post "badges/issue"  
-  resources :badges
+  resources :badges, only: [:update, :index] do
+    collection do
+      get :load
+      post :issue
+    end
+  end
 
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"

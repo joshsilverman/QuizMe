@@ -5,30 +5,6 @@ class BadgesController < ApplicationController
   def index
     @badges = Badge.all
     @badges_by_asker = @badges.group_by{|b| b.asker_id}
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @badges }
-    end
-  end
-
-  def issuable
-    @posts = Post.not_spam.joins(:user)\
-      .includes(:user => :badges, :parent => {:user => {}, :publication => {:question => :badges}})\
-      .where("correct IS NOT NULL")\
-      .order('posts.created_at DESC')\
-      .page(params[:page]).per(25)
-
-    @users_with_posts = []
-    user = nil
-    @posts.each do |post|
-      if user and user == post.user
-        @users_with_posts[@users_with_posts.count - 1][1] << post
-      else
-        user = post.user
-        @users_with_posts << [user, [post]]
-      end
-    end
   end
 
   def issue
@@ -54,42 +30,6 @@ class BadgesController < ApplicationController
     end
   end
 
-  # def show
-  #   @badge = Badge.find(params[:id])
-
-  #   respond_to do |format|
-  #     format.html # show.html.erb
-  #     format.json { render json: @badge }
-  #   end
-  # end
-
-  # def new
-  #   @badge = Badge.new
-
-  #   respond_to do |format|
-  #     format.html # new.html.erb
-  #     format.json { render json: @badge }
-  #   end
-  # end
-
-  # def edit
-  #   @badge = Badge.find(params[:id])
-  # end
-
-  # def create
-  #   @badge = Badge.new(params[:badge])
-
-  #   respond_to do |format|
-  #     if @badge.save
-  #       format.html { redirect_to @badge, notice: 'Badge was successfully created.' }
-  #       format.json { render json: @badge, status: :created, location: @badge }
-  #     else
-  #       format.html { render action: "new" }
-  #       format.json { render json: @badge.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
-
   def update
     @badge = Badge.find(params[:id])
 
@@ -103,16 +43,6 @@ class BadgesController < ApplicationController
       end
     end
   end
-
-  # def destroy
-  #   @badge = Badge.find(params[:id])
-  #   @badge.destroy
-
-  #   respond_to do |format|
-  #     format.html { redirect_to badges_url }
-  #     format.json { head :ok }
-  #   end
-  # end
 
   def load
     path = "#{Rails.root}/app/assets/images/badges"
