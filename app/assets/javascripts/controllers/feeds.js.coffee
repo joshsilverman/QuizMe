@@ -16,9 +16,6 @@ class @Feed
 		@requested_publication_id = $("#requested_publication").val()
 		@answered_count = 0
 
-		# @conversations = $.parseJSON($("#conversations").val())
-		# @engagements = $.parseJSON($("#engagements").val())
-
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
@@ -34,22 +31,14 @@ class @Feed
 		$(".activity img").tooltip()
 		$(".timeago").timeago()
 
-		$(".post_question").on "click", (e) =>
-			if $("#user_name").val() != undefined
-				e.preventDefault()
-				@post_question()
-
-		@post_question() if $("#question_form").val() == "true"
-
 		$("#retweet_question").on "click", (e) => 
 			e.preventDefault()
 			$("#retweet_question").button("loading")
 			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
-		# mixpanel.track_links(".tweet_button", "redirected to authorize", {"account" : @name, "source": source}) if @user_name == null or @user_name == undefined
+		
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
-		$(".post_another").on "click", => @post_another()
 
 		@filtered = $('.tab-content .activity').length > 0
 		@load_follow_buttons_timeouts = []
@@ -87,6 +76,7 @@ class @Feed
 							text: "follow",
 							"showScreenName": 'false'
 					, 220*(i-1) + Math.floor(((i-1)/4))*900)
+
 	is_scrolled_into_view: (elem) ->
 		docViewTop = $(window).scrollTop()
 		docViewBottom = docViewTop + $(window).height()
@@ -94,13 +84,7 @@ class @Feed
 		elemBottom = elemTop + $(elem).height()
 		(elemBottom <= docViewBottom) and (elemTop >= docViewTop)	
 
-	post_another: =>
-		modal = $("#post_question_modal")
-		$('#submit_question').button('reset')
-		modal.find(".modal-body").slideToggle(250, =>
-			modal.find(".message").hide()
-			modal.find(".question_form").show()
-		).delay(250).slideToggle(250, => $("#question_input").focus())
+
 
 	initialize_fix_position_listener: =>
 		offset = 204
@@ -142,85 +126,6 @@ class @Feed
 				post.find(".icon-retweet").fadeIn()	
 				post.find(".retweet").remove()
 				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
-
-	post_question: (text = null, post_id = null) =>
-		# return unless window.feed.correct > 9 or $('.is_author').length > 0
-		$("#question_input").val(text) if text
-		$("#post_question_modal").modal()
-		$("#question_input").focus() unless $("#manager").length > 0
-		$("#add_answer, #submit_question").off "click"
-		$("#add_answer").on "click", => add_answer()
-		
-		if post_id? # displays conversation history when mgr
-			$(".modal_conversation_history").show()
-			convo =  window.feed.conversations[post_id]
-			$('.modal_conversation_history > .conversation').html('')
-			user_post = window.feed.engagements[@id]
-			$.each convo['posts'], (i, p) ->
-				subsidiary = $("#subsidiary_template").clone().addClass("subsidiary").removeAttr("id")
-				subsidiary.find("p").text("#{p['text']}") 
-				subsidiary.find("h5").text("#{convo['users'][p['user_id']]['twi_screen_name']}")
-				image = convo['users'][p['user_id']]['twi_profile_img_url']
-				subsidiary.find("img").attr("src", image) unless image == null
-				$('.modal_conversation_history').find(".conversation").append(subsidiary.show())
-				if i == 0 and convo['answers'].length > 0
-					html = "<div class='subsidiary post'>"
-					$.each convo['answers'], (j, a) ->
-						html+= "<div class='answers rounded border'><h3 style='#{'color: green;' if a['correct']}'>#{a['text']}</h3></div>"
-					html += "</div>"
-					$('.modal_conversation_history').find(".conversation").append(html)		
-
-		$("#submit_question").on "click", (e) => 
-			e.preventDefault()
-			submit()
-
-		add_answer = ->
-			count = $(".answer").length
-			return if count > 3
-			clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
-			clone.find("input").attr("name", "ianswer#{count}").val("").focus()
-			$("#add_answer").hide() if count == 3
-
-		submit = ->
-			if validate_form()
-				$("#submit_question").button("loading")
-				data =
-					"question" : $("#question_input").val()
-					"asker_id" : window.feed.id
-					"status" : $("#status").val()
-					"canswer" : $("#canswer input").val()
-					"ianswer1" : $("#ianswer1 input").val()
-					"ianswer2" : $("#ianswer2 input").val()
-					"ianswer3" : $("#ianswer3 input").val()
-				data["post_id"] = post_id if post_id
-				$("#submit_question").button("loading")
-				modal = $("#post_question_modal")
-				modal.find(".modal-body").slideToggle(250)
-				$.ajax
-					url: "/questions/save_question_and_answers",
-					type: "POST",
-					data: data,
-					error: => alert "Sorry, something went wrong!",
-					success: (e) => 
-						$("#question_input, #canswer input, #ianswer1 input, #ianswer2 input, #ianswer3 input").val("")
-						if post_id
-							window.feed.post_another()
-							modal.modal('hide')	
-							$(".post[post_id=#{post_id}]").parent().css("opacity", 0.8)
-						else
-							modal.find(".question_form").hide()
-							modal.find(".message").show()
-							modal.find(".modal-body").slideToggle(250)
-
-		validate_form = ->
-			if $("#question_input").val() == ""
-				alert "Please enter a question!"
-				return false
-			else if $("#canswer input").val().length == 0 or $("#ianswer1 input").val().length == 0
-				alert "Please enter at least one correct and incorrect answer!"
-				return false
-			else
-				return true	
 
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
@@ -379,9 +284,6 @@ class Post
 											e.stopImmediatePropagation()
 											@submit_question_feedback(element)
 										conversation.find(".after_answer.feedback").fadeIn(500)
-									else if window.feed.answered == 5
-										$(".next_question").on "click", (e) => $(".post_question").click()
-										conversation.find(".after_answer.new_question").fadeIn(500)
 									else if conversation.find('#request_email').val() == 'true'
 										@element.find('.request_email .btn').on 'click', (e) => @submit_email($(e.target))
 										conversation.find(".after_answer.request_email").fadeIn(500, => @element.find('#email_input').focus())
