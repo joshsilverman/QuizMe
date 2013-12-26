@@ -23,13 +23,11 @@ Quizmemanager::Application.routes.draw do
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   get "feeds/:id/scores" => "feeds#scores"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
+  get "feeds/stream" => "feeds#stream"
 
   resource :moderations
   get "moderations/manage"
 
-  get "feeds/stream" => "feeds#stream"
-  
-  get "askers/:id/hide_all/:post_ids" => "askers#hide_all"
 
   post "feeds/search"
   get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
@@ -84,7 +82,6 @@ Quizmemanager::Application.routes.draw do
 
   get "/tags" => 'posts#tags'
 
-  # get "/newsletter" => "users#newsletter"
   get '/progress_report' => 'users#progress_report'
 
   resources :questions

@@ -62,19 +62,11 @@ class AskersController < ApplicationController
 		redirect_to askers_url
   end
 
-  def hide_all
-    ids = params[:post_ids].split "+"
-    @posts = Post.where("id IN (?)", ids)
-    @posts.each{|post| post.update_attribute :requires_action, false}
-    redirect_to "/feeds/#{params[:id]}/manage"
-  end
-
   def account_rts
     @asker = Asker.find(params[:id])
     redirect_to root_url unless @asker.is_role? 'asker'
 
     @rts = @asker.twitter.retweets_of_me({:count => 100})
-    #raise @rts.first.to_yaml
   end
 
   def dashboard
@@ -131,11 +123,6 @@ class AskersController < ApplicationController
         @requested_user_id = params[:user_id]
         @questions = users_questions.order("status")
       end
-
-      # if params[:question_id]
-      #   @requested_question = @asker.questions.where(id: params[:question_id]).first
-      #   @questions.reverse!.push(@requested_question).reverse! unless @requested_question.blank? or @questions.include?(@requested_question)
-      # end
 
       @contributors = []
       contributors = User.find(@asker.questions.approved.collect { |q| q.user_id }.uniq)
