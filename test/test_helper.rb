@@ -15,7 +15,6 @@ require 'webmock/minitest'
 class ActiveSupport::TestCase
   include Warden::Test::Helpers
   Warden.test_mode!
-  include Devise::TestHelpers
 
   include Capybara::DSL
   include Capybara::RSpecMatchers
@@ -24,26 +23,23 @@ class ActiveSupport::TestCase
   include FactoryGirl::Syntax::Methods
   include BestInPlace::TestHelpers
 
-  # controller test methods
-  include ActiveSupport::Testing::SetupAndTeardown # for get/post/put/delete methods
+  include ActiveSupport::Testing::SetupAndTeardown
   include Rails.application.routes.url_helpers
-  Rails.logger.level = 0
 
-  fixtures :all
+  Rails.logger.level = 0
 
   DatabaseCleaner.clean_with :truncation
   DatabaseCleaner.strategy = :transaction
+  fixtures :all
 
   before :each do
     DatabaseCleaner.start
     Capybara.current_driver = :rack_test
     ActionMailer::Base.deliveries = []
 
-    # default mock settings
     WebMock.disable_net_connect!(:allow => [/127\.0\.0\.1/, /twitter/])
     stub_request(:get, /mixpanel/)
     
-    # disable all observers
     ActiveRecord::Base.observers.disable :all
   end
 
@@ -53,7 +49,10 @@ class ActiveSupport::TestCase
   end
 end
 
-# force single threaded test execution
+class ActionController::TestCase
+  include Devise::TestHelpers
+end
+
 class ActiveRecord::Base
   mattr_accessor :shared_connection
   @@shared_connection = nil
