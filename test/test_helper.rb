@@ -29,7 +29,7 @@ class ActiveSupport::TestCase
   Rails.logger.level = 0
 
   DatabaseCleaner.clean_with :truncation
-  DatabaseCleaner.strategy = :truncation
+  DatabaseCleaner.strategy = :transaction
   fixtures :all
 
   before :each do
