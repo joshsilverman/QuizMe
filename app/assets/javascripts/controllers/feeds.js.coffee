@@ -41,50 +41,6 @@ class @Feed
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 
 		@filtered = $('.tab-content .activity').length > 0
-		@load_follow_buttons_timeouts = []
-
-		check_twttr = =>
-			if (typeof twttr == 'undefined') or !twttr.widgets
-				setTimeout (=> check_twttr()), 100
-			else
-				@load_follow_buttons()
-				$(document).scroll =>
-					$.each feed.load_follow_buttons_timeouts, (i, t) -> clearTimeout(t)
-					feed.load_follow_buttons_timeouts = []
-
-					feed.load_follow_buttons_timeouts.push setTimeout ->
-							feed.load_follow_buttons()
-						, 500
-				twttr.events.bind 'follow', (e) => @afterfollow(e)
-
-		check_twttr()
-
-	load_follow_buttons: ->
-		$('a.twitter-follow-button').filter(->
-				return false unless feed.is_scrolled_into_view(this)
-				return false if $(this).find("iframe").length > 0
-				return true
-			).each (i) ->
-				feed.load_follow_buttons_timeouts.push(setTimeout =>
-						return false unless feed.is_scrolled_into_view(this)
-						return false if $(this).find("iframe").length > 0
-						twttr.widgets.createFollowButton $(this).data('screen-name'), this, ((el) ->
-							# console.log "Follow button created."
-						),
-							size: "large",
-							'count': "none",
-							text: "follow",
-							"showScreenName": 'false'
-					, 220*(i-1) + Math.floor(((i-1)/4))*900)
-
-	is_scrolled_into_view: (elem) ->
-		docViewTop = $(window).scrollTop()
-		docViewBottom = docViewTop + $(window).height()
-		elemTop = $(elem).offset().top
-		elemBottom = elemTop + $(elem).height()
-		(elemBottom <= docViewBottom) and (elemTop >= docViewTop)	
-
-
 
 	initialize_fix_position_listener: =>
 		offset = 204
@@ -159,11 +115,6 @@ class @Feed
 		$.each arr, (i) ->
 			if arr[i].text.indexOf("of the above") > -1 or arr[i].text.indexOf("all of these") > -1
 				[arr[bottomAnswer], arr[i]] = [arr[i], arr[bottomAnswer]]
-
-	afterfollow: (e) ->
-		$.ajax '/experiments/trigger',
-			type: 'post'
-			data: {experiment: "New Landing Page"}
 
 class Post
 	id: null
@@ -294,6 +245,7 @@ class Post
 					)
 				)
 			error: => loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
+
 	show_activity: =>
 		if @element.find(".activity_container:visible").length > 0
 			@element.find(".user_answered").fadeIn(500)
@@ -302,6 +254,7 @@ class Post
 			@element.find(".activity_container").fadeIn(500)
 		$(".interaction").tooltip()
 		@element.find(".quiz_container").fadeIn(500)
+
 	submit_question_feedback: (element) =>
 		conversation = element.closest('.conversation')
 		if element.hasClass 'btn-success'
