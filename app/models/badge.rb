@@ -1,7 +1,5 @@
 class Badge < ActiveRecord::Base
-  has_many :questions, :through => :requirements
   has_many :users, -> { uniq }, :through => :issuances
-  has_many :requirements
   has_many :issuances
   belongs_to :asker, :class_name => 'User'
 

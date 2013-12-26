@@ -6,14 +6,10 @@ class Question < ActiveRecord::Base
   has_many :publications
   has_many :question_moderations
   
-  # belongs_to :topic
   has_and_belongs_to_many :topics, -> { uniq }
 
   belongs_to :user
   belongs_to :asker, :foreign_key => :created_for_asker_id
-
-  has_many :badges, :through => :requirements
-  has_many :requirements
 
   scope :not_us, -> { where('questions.user_id NOT IN (?)', Asker.all.collect(&:id) + ADMINS) }
   scope :ugc, -> { where('questions.user_id not in (?)', Asker.all.collect(&:id) + ADMINS) }
