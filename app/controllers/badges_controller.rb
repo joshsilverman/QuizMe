@@ -7,29 +7,6 @@ class BadgesController < ApplicationController
     @badges_by_asker = @badges.group_by{|b| b.asker_id}
   end
 
-  def issue
-    @user = User.find params[:user_id]
-    @badge = Badge.find params[:badge_id]
-    if @user and @badge
-      if @user.badges.include? @badge
-        render :nothing => true, :status => 304
-      else  
-        @user.badges << @badge
-
-        #tweet = params[:tweet].gsub('\n', '').strip
-        # @bug the shortening script is removing way too much
-        tweet = "@#{@user.twi_screen_name} You earned the #{@badge.title} badge"
-        
-        long_url = "#{URL}/#{@user.twi_screen_name}/badges/story/#{@badge.title.parameterize}"
-        @badge.asker.send_public_message(tweet, :long_url => long_url)
-
-        render :nothing => true, :status => 200
-      end
-    else
-      render :nothing => true, :status => 400
-    end
-  end
-
   def update
     @badge = Badge.find(params[:id])
 
