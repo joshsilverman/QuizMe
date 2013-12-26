@@ -8,6 +8,7 @@ describe FeedsController do
 		else
 			post = page.find('.conversation')
 		end
+
 		post.click unless post[:class].split(' ').include?('active')
 		assert post.has_selector?('.bottom_border')
 		post.all('h3').first.click
@@ -43,7 +44,7 @@ describe FeedsController do
 	describe 'show' do
 		before :each do
 			Capybara.current_driver = :selenium
-			login_as(@user, :scope => :user)	
+			login_as(@user, :scope => :user)
 		end
 
 		describe 'user answers question' do
