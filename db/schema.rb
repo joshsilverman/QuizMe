@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131224141947) do
+ActiveRecord::Schema.define(version: 20131226045613) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -259,40 +259,6 @@ ActiveRecord::Schema.define(version: 20131224141947) do
   add_index "relationships", ["followed_id"], name: "index_relationships_on_followed_id", using: :btree
   add_index "relationships", ["follower_id", "followed_id"], name: "index_relationships_on_follower_id_and_followed_id", unique: true, using: :btree
   add_index "relationships", ["follower_id"], name: "index_relationships_on_follower_id", using: :btree
-
-  create_table "reps", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "post_id"
-    t.boolean  "correct"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "question_id"
-    t.integer  "publication_id"
-  end
-
-  create_table "requirements", force: true do |t|
-    t.integer  "badge_id"
-    t.integer  "question_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "stats", force: true do |t|
-    t.date     "date"
-    t.integer  "followers",          default: 0
-    t.integer  "total_followers",    default: 0
-    t.integer  "retweets",           default: 0
-    t.integer  "mentions",           default: 0
-    t.integer  "questions_answered", default: 0
-    t.integer  "internal_answers",   default: 0
-    t.integer  "twitter_answers",    default: 0
-    t.integer  "active_users",       default: 0
-    t.text     "active_user_ids",    default: ""
-    t.integer  "asker_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "click_throughs",     default: 0
-  end
 
   create_table "tags", force: true do |t|
     t.string   "name"
