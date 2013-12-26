@@ -24,26 +24,6 @@
           %img.badge-image{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename}"}
           .caption= best_in_place badge, :title, :type => :input, :nil => "No title", :path => ""
 
-        .modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", :id => "modal[#{badge.id}]"}
-          .modal-header
-            %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
-            %h3#myModalLabel= badge.title
-          .modal-body
-            %p.badge-image-wrapper
-              %img.badge-image{:src => "/assets/badges/#{asker.twi_screen_name.downcase}/#{badge.filename}"}
-
-          .modal-footer
-            %dl.dl-horizontal
-              %dt Badge id
-              %dd= badge.id
-              %dt Description
-              %dd= best_in_place badge, :description, :type => :textarea, :nil => "No description", :path => ""
-              %dt Questions
-              %dd 
-                %ol
-                  - badge.questions.each do |q|
-                    %li= q.text[0,40] + '...'
-
       .clr
       %br
       %br
