@@ -1,10 +1,5 @@
 $stdout.sync = true
 Quizmemanager::Application.configure do
-  # Settings specified here will take precedence over those in config/application.rb
-  
-  # In the development environment your application's code is reloaded on
-  # every request.  This slows down response time but is perfect for development
-  # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
   config.eager_load = false
@@ -34,6 +29,6 @@ Quizmemanager::Application.configure do
   )  
 end
 
-Pusher.app_id = '62264'
-Pusher.key    = '95a6d252b4fb7089dd2a'
-Pusher.secret = 'ed3d0f22ffc0669b3a8d'
+Pusher.app_id = '62265'
+Pusher.key    = 'f10076f83cadd6eb2b0d'
+Pusher.secret = 'cb6ea075a82c13cb4986'
