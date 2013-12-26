@@ -43,3 +43,13 @@ describe AskersController do
     end
   end
 end
+
+describe AskersController, '#index' do
+  it "renders with status 200" do
+    admin = create :admin
+    sign_in admin
+
+    get :index
+    response.status.must_equal 200
+  end
+end
