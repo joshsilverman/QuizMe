@@ -62,13 +62,6 @@ class AskersController < ApplicationController
 		redirect_to askers_url
   end
 
-  def account_rts
-    @asker = Asker.find(params[:id])
-    redirect_to root_url unless @asker.is_role? 'asker'
-
-    @rts = @asker.twitter.retweets_of_me({:count => 100})
-  end
-
   def dashboard
     @askers = User.askers
   end 
