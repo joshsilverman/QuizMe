@@ -80,12 +80,6 @@
 
 											%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 
-											- if show_answer
-												- if correct
-													%p.hide
-														%span{style: 'opacity:0.6;'}
-															Correct: 
-															= correct.text
 										= render :partial => "post_moderation_actions", :locals => {:post => post, :question => question}
 							- elsif moderatable.is_a? Question
 								- question = moderatable
