@@ -941,3 +941,16 @@ describe Asker do
 		end
 	end		
 end
+
+describe Asker, "#notify_badge_issued" do
+  it "must call send_private_message with user and test" do
+    asker = Asker.new
+    user = User.new
+    badge = Badge.new(title:'badger', description:'Excellence in badgering')
+    message = "You earned the #{badge.title} for '#{badge.description}'"
+
+    asker.expects(:send_private_message).with(user, message)
+
+    asker.notify_badge_issued(user, badge)
+  end
+end

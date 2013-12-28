@@ -1272,4 +1272,10 @@ class Asker < User
     question_id = posts.max{|a,b| a[1] <=> b[1]}.try(:first) || new_user_q_id || questions.first.id
     Question.find(question_id)
   end
+
+  def notify_badge_issued user, badge
+    message = "You earned the #{badge.title} for '#{badge.description}'"
+
+    send_private_message user, message
+  end
 end

@@ -35,4 +35,10 @@ class Transition < ActiveRecord::Base
 		end
 	end
 
+	def issue_badge
+		case segment_type
+    when 5
+      self.becomes(ModeratorTransition).issue_badge
+    end
+	end
 end
