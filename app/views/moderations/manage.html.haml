@@ -71,15 +71,12 @@
 											%i{:class => interaction_icon(post.interaction_type)}
 											%h5
 												%span= "#{post.user.twi_screen_name} → #{post.in_reply_to_user.twi_screen_name}"
-											- show_answer = true if admin == true
-											- show_answer ||= ("answer" == ab_test("show moderator q & a or answer (-> accepted grade)", "answer", "q & a"))
-											- unless show_answer
-												.question.hide
-													%i 
-														Q. #{question.text}
-														- if correct.present?
-															%br
-															A. #{correct.text}
+											.question.hide
+												%i 
+													Q. #{question.text}
+													- if correct.present?
+														%br
+														A. #{correct.text}
 
 											%p= post.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 
