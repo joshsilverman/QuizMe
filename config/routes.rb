@@ -4,6 +4,15 @@ Quizmemanager::Application.routes.draw do
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
+
+  resources :badges, only: [:update, :index] do
+    collection do
+      get :load
+    end
+  end
+
+  resources :issuances, only: [:show]
+
   resources :answers
   get "answer/new"
   get "answer/create"
@@ -12,13 +21,6 @@ Quizmemanager::Application.routes.draw do
   get "answer/destroy"
   get "answer/index"
   get "answer/show"
-
-  resources :badges, only: [:update, :index] do
-    collection do
-      get :load
-      post :issue
-    end
-  end
 
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"

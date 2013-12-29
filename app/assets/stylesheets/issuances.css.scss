@@ -1,0 +1,27 @@
+.issuance-container {
+
+  .issuance {
+    .issuance-inner {
+      margin-bottom: 25px;
+
+      .content {
+        h5 {
+          text-decoration: none;
+          font-weight: normal;
+        }
+        .badge-title {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+      }
+
+      .badge-image {
+        text-align: center;
+        img {
+          margin:30px;
+          width:200px;
+        }
+      }
+    }
+  }
+}

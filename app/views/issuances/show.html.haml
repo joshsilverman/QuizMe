@@ -1,0 +1,19 @@
+/ - content_for :title, "#{@asker.twi_screen_name} - #{@question.text}"
+
+.outer-wrapper.span10{:style => "float: none !important;"}
+  #wrapper{:style => "background: none !important;"}
+    .issuance-container.span6
+      .issuance{issuance_id: params[:id]}
+        .issuance-inner
+          .content.hidden
+            %image.rounded{'data-bind' => 'attr: {src: user_twi_profile_img_url}'}
+            %h5
+              %span{'data-bind' => 'text: user_twi_screen_name'}
+              earned the
+              %span.badge-title{'data-bind' => 'text: title'}
+              badge!
+            .created-at{'data-bind' => 'text: created_at'}
+
+          .badge-image
+            %img{'data-bind' => 'attr: {src: source}'}
+          %p.description{'data-bind' => 'text: description'}

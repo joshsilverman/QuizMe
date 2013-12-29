@@ -191,12 +191,12 @@
 	}
 }
 
-#question {
+#question, .issuance-container {
 	margin: auto !important;
 	float: none !important;	
 	margin-top: 20px !important;
 
-	.conversation {
+	.conversation, .issuance {
 		//min-height: 140px;
 		background: white;
 		border: 1px solid #ddd;
@@ -286,7 +286,7 @@
 			}
 		}
 
-		.post.parent {
+		.post.parent, .issuance-inner {
 			/*padding: 10px;*/
 			padding: 25px 40px;
 			padding-bottom: 10px;
@@ -340,7 +340,7 @@
 					@media (max-width:768px) { left: 25px; }
 				}
 
-				.twi_link {
+				.twi_link, .created-at {
 					color: #999;
 					font-size: 14px;
 					position: relative;

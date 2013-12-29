@@ -19,8 +19,7 @@ module Quizmemanager
     config.autoload_paths += %W(#{config.root}/lib/adapters/wisr_feed/*.rb)
     
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
-    config.autoload_paths += Dir[Rails.root.join('app', 'models', 'users', '{**}')]
-    config.autoload_paths += Dir[Rails.root.join('app', 'models', 'moderations', '{**}')]
+    config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}', '{**}')]
 
     config.assets.initialize_on_precompile = false
     
