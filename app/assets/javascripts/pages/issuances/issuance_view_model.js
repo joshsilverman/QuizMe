@@ -6,20 +6,20 @@ if ($('.issuance-container').length > 0) {
       issuanceViewModel = new IssuanceViewModel();
       ko.applyBindings(issuanceViewModel);
 
-      $.getJSON("/issuances/" + id, function(issuance) {
-        issuanceViewModel.created_at(
-          moment(issuance.created_at).format("MMMM Do YYY")
-        );
+      var issuance = $.parseJSON($('#issuance_json').val());
 
-        issuanceViewModel.title(issuance.badge.title);
-        issuanceViewModel.source("/assets/" + issuance.badge.filename);
-        issuanceViewModel.description(issuance.badge.description);
+      issuanceViewModel.created_at(
+        moment(issuance.created_at).format("MMMM Do YYY")
+      );
 
-        issuanceViewModel.user_twi_profile_img_url(issuance.user.twi_profile_img_url);
-        issuanceViewModel.user_twi_screen_name("@" + issuance.user.twi_screen_name);
+      issuanceViewModel.title(issuance.badge.title);
+      issuanceViewModel.source("/assets/" + issuance.badge.filename);
+      issuanceViewModel.description(issuance.badge.description);
 
-        $('.issuance .content').removeClass('hidden');
-      })
+      issuanceViewModel.user_twi_profile_img_url(issuance.user.twi_profile_img_url);
+      issuanceViewModel.user_twi_screen_name("@" + issuance.user.twi_screen_name);
+
+      $('.issuance .content').removeClass('hidden');
     }
 
     function IssuanceViewModel() {

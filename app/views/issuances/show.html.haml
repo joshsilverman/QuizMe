@@ -1,4 +1,13 @@
 / - content_for :title, "#{@asker.twi_screen_name} - #{@question.text}"
+- content_for :meta do
+  %meta{name: "twitter:card", content: "photo"}
+  %meta{name: "twitter:title", content: "#{@issuance.badge.title}"}
+  %meta{name: "twitter:site", content: "@wisr"}
+  %meta{name: "twitter:creator", content: "@#{@issuance.asker.twi_screen_name}"}
+  %meta{name: "twitter:image", content: "#{@issuance.badge.filename}"}
+  %meta{name: "twitter:image:width",  content: "200"}
+  %meta{name: "twitter:image:height",  content: "200"}
+
 
 .outer-wrapper.span10{:style => "float: none !important;"}
   #wrapper{:style => "background: none !important;"}
@@ -17,3 +26,5 @@
           .badge-image
             %img{'data-bind' => 'attr: {src: source}'}
           %p.description{'data-bind' => 'text: description'}
+
+= hidden_field :issuance, :json, value: @json
