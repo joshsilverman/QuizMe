@@ -2,6 +2,7 @@
 - content_for :meta do
   %meta{name: "twitter:card", content: "photo"}
   %meta{name: "twitter:title", content: "#{@issuance.badge.title}"}
+  %meta{name: "twitter:description", content: "#{@issuance.badge.description}"}
   %meta{name: "twitter:site", content: "@wisr"}
   %meta{name: "twitter:creator", content: "@#{@issuance.asker.twi_screen_name}"}
   %meta{name: "twitter:image", content: "#{@issuance.badge.filename}"}
