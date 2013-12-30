@@ -30,6 +30,7 @@ describe User do
 	describe "transitions" do
 		describe 'lifecycle' do
 			it 'between noob => superuser' do
+				Timecop.travel(Time.now.beginning_of_year + 7.days)
 				Timecop.travel(Time.now.beginning_of_week)
 				5.times do
 					create(:correct_response, user: @user)
