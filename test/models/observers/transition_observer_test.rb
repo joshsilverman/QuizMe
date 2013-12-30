@@ -9,9 +9,16 @@ describe Transition, "TransitionObserver#after_create" do
     transition.save
   end
 
-  it "must call transition.issue_badge " do
+  # it "must call transition.issue_badge " do
+  #   transition = Transition.create(segment_type: 5)
+  #   Transition.any_instance.expects(:issue_badge)
+
+  #   TransitionObserver.send(:new).after_create(transition)
+  # end
+
+  it "wont call transition.issue_badge " do
     transition = Transition.create(segment_type: 5)
-    Transition.any_instance.expects(:issue_badge)
+    Transition.any_instance.expects(:issue_badge).never
 
     TransitionObserver.send(:new).after_create(transition)
   end
