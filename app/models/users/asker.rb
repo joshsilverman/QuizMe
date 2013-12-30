@@ -7,7 +7,8 @@ class Asker < User
 
   has_many :questions, :foreign_key => :created_for_asker_id
   has_many :moderators, -> { where("relationships.active = ? and role = 'moderator'", true) }, :through => :follower_relationships, :source => :follower
-  
+  has_many :issuances
+
   has_and_belongs_to_many :related_askers, -> { uniq }, class_name: 'Asker', join_table: :related_askers, foreign_key: :asker_id, association_foreign_key: :related_asker_id
   has_and_belongs_to_many :topics, -> { uniq }, join_table: :askers_topics
 
