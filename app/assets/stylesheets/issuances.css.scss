@@ -3,6 +3,7 @@
   .issuance {
     .issuance-inner {
       margin-bottom: 25px;
+      cursor: arrow;
 
       .content {
         h5 {
@@ -18,7 +19,7 @@
       .badge-image {
         text-align: center;
         img {
-          margin:30px;
+          margin:30px auto;
           width:200px;
         }
       }
