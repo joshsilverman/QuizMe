@@ -14,8 +14,6 @@ gem 'actionpack-page_caching'
 gem 'actionpack-action_caching'
 gem 'activerecord-deprecated_finders'
 
-gem 'rails_12factor', group: :production
-
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 
 group :test do
