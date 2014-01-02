@@ -5,7 +5,7 @@
   %meta{name: "twitter:description", content: "#{@issuance.badge.try :description}"}
   %meta{name: "twitter:site", content: "@wisr"}
   %meta{name: "twitter:creator", content: "@#{@issuance.asker.try :twi_screen_name}"}
-  %meta{name: "twitter:image", content: "#{request.env['HTTP_HOST']}/assets/#{@issuance.badge.try :filename}"}
+  %meta{name: "twitter:image", content: "http://#{request.env['HTTP_HOST']}/assets/#{@issuance.badge.try :filename}"}
   %meta{name: "twitter:image:width",  content: "200"}
   %meta{name: "twitter:image:height",  content: "200"}
 
