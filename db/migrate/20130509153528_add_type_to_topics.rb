@@ -6,16 +6,16 @@ class AddTypeToTopics < ActiveRecord::Migration
     ACCOUNT_DATA.each do |asker_id, data|
     	if data[:hashtags]
 	    	data[:hashtags].each do |name|
-	    		Asker.find(asker_id).topics << Topic.find_or_create_by_name_and_type_id(name, 2) 
+	    		Asker.find_or_create_by(id: asker_id).topics << Topic.find_or_create_by_name_and_type_id(name, 2) 
 	    	end
 	    end
     	if data[:search_terms]
 	    	data[:search_terms].each do |name|
-	    		Asker.find(asker_id).topics << Topic.find_or_create_by_name_and_type_id(name, 3) 
+	    		Asker.find_or_create_by(id: asker_id).topics << Topic.find_or_create_by_name_and_type_id(name, 3) 
 	    	end
     	end
     	if data[:category]
-	    	Asker.find(asker_id).topics << Topic.find_or_create_by_name_and_type_id(data[:category], 4)  
+	    	Asker.find_or_create_by(id: asker_id).topics << Topic.find_or_create_by_name_and_type_id(data[:category], 4)  
 	    end
     end
   end
