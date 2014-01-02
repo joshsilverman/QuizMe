@@ -35,15 +35,17 @@ if ($('#activity_stream:visible').length > 0) {
     }
 
     function subscribeToStream() {
-      var channel = pusher.subscribe('stream');
-      channel.bind('answer', function(post) {
-        var streamPost = new StreamPostModel(post); 
-        streamViewModel.streamPosts.unshift(streamPost);
+      try {
+        var channel = pusher.subscribe('stream');
+        channel.bind('answer', function(post) {
+          var streamPost = new StreamPostModel(post); 
+          streamViewModel.streamPosts.unshift(streamPost);
 
-        setTimeout(function() {
-            streamViewModel.streamPosts.pop();
-          }, 1000);
-      });
+          setTimeout(function() {
+              streamViewModel.streamPosts.pop();
+            }, 1000);
+        });
+      } catch(err) {}
     }
 
     ko.bindingHandlers.timeago = {

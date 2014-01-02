@@ -11,7 +11,6 @@ require "minitest/rails/capybara"
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
 
-
 class ActiveSupport::TestCase
   include Warden::Test::Helpers
   Warden.test_mode!
@@ -28,39 +27,43 @@ class ActiveSupport::TestCase
 
   Rails.logger.level = 0
 
+  self.use_transactional_fixtures = false
+  self.use_instantiated_fixtures = false
   DatabaseCleaner.clean_with :truncation
   DatabaseCleaner.strategy = :transaction
+
   fixtures :all
 
   before :each do
-    DatabaseCleaner.start
+    if !self.class.ancestors.include? ActionController::TestCase
+      DatabaseCleaner.start 
+    end
+
     Capybara.current_driver = :rack_test
     ActionMailer::Base.deliveries = []
 
     WebMock.disable_net_connect!(:allow => [/127\.0\.0\.1/, /twitter/])
     stub_request(:get, /mixpanel/)
+    Mixpanel.stubs :track_event
     
     ActiveRecord::Base.observers.disable :all
   end
 
   after :each do
     Timecop.return
-    DatabaseCleaner.clean
+
+    if !self.class.ancestors.include? ActionController::TestCase
+      DatabaseCleaner.clean
+    end
   end
 end
 
 class ActionController::TestCase
   include Devise::TestHelpers
-end
 
-class ActiveRecord::Base
-  mattr_accessor :shared_connection
-  @@shared_connection = nil
-
-  def self.connection
-    @@shared_connection || retrieve_connection
+  after :each do
+    DatabaseCleaner.clean_with :truncation
   end
 end
-ActiveRecord::Base.shared_connection = ActiveRecord::Base.connection
 
 require "mocha/setup"
