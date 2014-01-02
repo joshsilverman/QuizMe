@@ -40,8 +40,13 @@ group :production do
 end
 
 group :development do
+  gem 'awesome_print'
   gem 'quiet_assets'
+  gem 'better_errors'
+  gem 'meta_request'
+  gem 'awesome_print'
   gem 'ruby-prof'
+  gem 'hirb'
 end
 
 group :development, :test do
