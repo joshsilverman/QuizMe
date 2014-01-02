@@ -9,7 +9,7 @@ if ($('.issuance-container').length > 0) {
       var issuance = $.parseJSON($('#issuance_json').val());
 
       issuanceViewModel.created_at(
-        moment(issuance.created_at).format("MMMM Do YYY")
+        moment(issuance.created_at).format("MMMM Do YYYY")
       );
 
       issuanceViewModel.title(issuance.badge.title);
