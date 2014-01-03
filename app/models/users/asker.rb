@@ -1275,8 +1275,8 @@ class Asker < User
   end
 
   def notify_badge_issued user, badge, options
-    message = "You earned the #{badge.title} for '#{badge.description}'"
-
+    message = "You earned the #{badge.title} badge, congratulations! #{options[:long_url]}"
+    
     send_private_message user, message, options
   end
 end

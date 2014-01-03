@@ -10,7 +10,11 @@ ADMINS = (Rails.env.test? ? [999999999999999999] : [1, 3, 4, 11])
 
 AUTOFOLLOW_ASKER_IDS = [32588, 36605, 35106] # Neuro, AmericanRev, Respiratory
 
-URL = (Rails.env.production? ? "http://wisr.com" : "http://wisr-stag.herokuapp.com")
+if Rails.env.production?
+  URL = "http://wisr.com"
+else
+  URL = "http://localhost:3000"
+end
 
 TWI_DEV_SAFE_API_CALLS = [
   'mentions',

@@ -947,10 +947,11 @@ describe Asker, "#notify_badge_issued" do
     asker = Asker.new
     badge = Badge.new(title:'badger', description:'Excellence in badgering')
     issuance = Issuance.create
+    url = URL + issuance_path(issuance)
 
     user = User.new
-    message = "You earned the #{badge.title} for '#{badge.description}'"
-    options = {long_url: issuance_path(issuance)}
+    message = "You earned the #{badge.title} badge, congratulations! #{url}"
+    options = {long_url: url}
 
     asker.expects(:send_private_message).with(user, message, options)
 
