@@ -48,7 +48,7 @@ describe EmailAsker do
       Asker.reengage_inactive_users strategy: strategy
       posts = asker.posts.reengage_inactive.where(in_reply_to_user_id: emailer).sort
       posts.count.must_equal 2
-      posts.last.interaction_type.must_equal 2
+      posts.last.interaction_type.wont_equal 5
       ActionMailer::Base.deliveries.count.must_equal 1
     end
 
