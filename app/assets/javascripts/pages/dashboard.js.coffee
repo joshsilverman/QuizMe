@@ -5,7 +5,6 @@ class Dashboard
   active: []
   dau_mau: null
   paulgraham: null
-  handle_activity: null
   constructor: -> 
     # @active.push("0") 
     $('#tabs li a').click (e) =>
@@ -29,8 +28,6 @@ class Dashboard
 
   update_tabs: (e, target, domain) =>
     target ||= $(e.target).tab().attr 'href'
-    target = "#users-users_per_day" if target == '#users'
-    target = "#askers-handle_activity" if target == '#askers'
     target = "#authors-ugc" if target == '#authors'
     target = "#moderators-user_moderated_posts" if target == '#moderators'
     target = "#core" if target == '#' or target == ''
@@ -176,72 +173,6 @@ class Dashboard
     chart = new google.visualization.LineChart($(".econ_engine_graph")[0])
     chart.draw graph_data, econ_engine_options
 
-  draw_handle_activity: =>
-    graph_data = google.visualization.arrayToDataTable(@handle_activity)
-    chart = new google.visualization.BarChart(document.getElementById("graph"))
-    chart.draw graph_data, handle_activity_options  
-
-  draw_cohort: =>
-    graph_data = google.visualization.arrayToDataTable(@cohort)
-    chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options      
-
-  draw_ugc: => 
-    graph_data = google.visualization.arrayToDataTable(@ugc)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, questions_options 
-
-  draw_questions_answered: =>
-    graph_data = google.visualization.arrayToDataTable(@questions_answered)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, questions_options          
-
-  draw_learner_levels: =>
-    graph_data = google.visualization.arrayToDataTable(@learner_levels)
-    chart = new google.visualization.PieChart(document.getElementById("graph"))
-    chart.draw graph_data, learner_levels_options 
-
-  draw_answer_source: =>
-    graph_data = google.visualization.arrayToDataTable(@answer_source)
-    chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options 
-
-  draw_lifecycle: =>
-    graph_data = google.visualization.arrayToDataTable(@lifecycle)
-    chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options 
-
-  draw_age_v_reengagement_v_response_rate: =>
-    graph_data = google.visualization.arrayToDataTable(@age_v_reengagement_v_response_rate)
-    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
-    chart.draw graph_data, age_v_reengagement_v_response_rate_graph_options
-
-  draw_days_since_active_when_reengaged_v_response_rate: =>
-    graph_data = google.visualization.arrayToDataTable(@days_since_active_when_reengaged_v_response_rate)
-    chart = new google.visualization.ColumnChart(document.getElementById("graph"))
-    chart.draw graph_data, generic_ColumnChart_options 
-
-  draw_days_since_active_v_number_of_reengagement_attempts: =>
-    graph_data = new google.visualization.DataTable()
-    graph_data.addColumn 'number', 'Days'
-    graph_data.addColumn 'number', 'Reengagements'
-    graph_data.addColumn type: 'number', role: 'tooltip'
-    graph_data.addColumn 'number', 'Reengagements (inactive user)'
-    graph_data.addColumn type: 'number', role: 'tooltip'
-    graph_data.addRows @days_since_active_v_number_of_reengagement_attempts
-    chart = new google.visualization.ScatterChart(document.getElementById("graph"))
-    chart.draw graph_data, days_since_active_v_number_of_reengagement_attempts_graph_options 
-  
-  draw_age_v_days_since_active: =>
-    graph_data = google.visualization.arrayToDataTable(@age_v_days_since_active)
-    chart = new google.visualization.ScatterChart(document.getElementById("graph"))
-    chart.draw graph_data, age_v_days_since_active_graph_options 
-
-  draw_viral_actions_v_new_users: =>
-    graph_data = google.visualization.arrayToDataTable(@viral_actions_v_new_users)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, age_v_days_since_active_graph_options
-
   draw_generic: (data, type) =>
     data = google.visualization.arrayToDataTable(data)
     chart = new google.visualization[type](document.getElementById("graph"))
@@ -250,43 +181,22 @@ class Dashboard
   draw_user_moderated_posts: =>
     graph_data = google.visualization.arrayToDataTable(@user_moderated_posts)
     chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options
+    chart.draw graph_data, area_plot_options
 
   draw_moderations_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderations_count)
     chart = new google.visualization.AreaChart(document.getElementById("graph"))
-    chart.draw graph_data, cohort_options
+    chart.draw graph_data, area_plot_options
 
   draw_moderators_count: =>
     graph_data = google.visualization.arrayToDataTable(@moderators_count)
     chart = new google.visualization.LineChart(document.getElementById("graph"))
     chart.draw graph_data, questions_options  
 
-  draw_percent_published: =>
-    graph_data = google.visualization.arrayToDataTable(@percent_published)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, questions_options      
-
-  draw_average_time_to_publish: =>
-    graph_data = google.visualization.arrayToDataTable(@average_time_to_publish)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, questions_options  
-    
-  draw_timely_response_by_handle: =>
-    graph_data = google.visualization.arrayToDataTable(@timely_response_by_handle)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, timely_response_by_handle_options  
-  
   draw_content_audit: =>
     graph_data = google.visualization.arrayToDataTable(@content_audit)
     chart = new google.visualization.AreaChart(document.getElementById("graph"))
     chart.draw graph_data, content_audit_options  
-
-  draw_quality_response: =>
-    graph_data = google.visualization.arrayToDataTable(@quality_response)
-    chart = new google.visualization.LineChart(document.getElementById("graph"))
-    chart.draw graph_data, quality_response_options     
-
 
 $ -> window.dashboard = new Dashboard if $(".core, .dashboard").length > 0
 
@@ -314,53 +224,6 @@ pg_options =
     {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
   isStacked: true
   colors: ['orange', 'green', 'orange', "#1D3880"]
-
-quality_response_options = 
-  width: 850
-  height: 450
-  legend: "none"
-  chartArea:  
-    width: 1170
-    left: 42
-    height: 400
-  hAxis:
-    textStyle: 
-      fontSize: 9
-  vAxis:
-    viewWindowMode: 'explicit'
-    viewWindow:
-      max: 1.0001
-      min: 0
-  series: [
-    {areaOpacity: 0.2, lineOpacity: 0.3, lineWidth: 0, color:'#1D3880', pointSize:2},
-    {areaOpacity: 0, pointSize: 0, color:'#1D3880', curveType: "function"}]
-
-learner_levels_options = 
-  width: 850
-  height: 450
-  pointSize: 3
-  lineWidth: 3
-  chartArea:  
-    height: 520
-    width: 620
-    left: 195
-    top:35
-  hAxis:
-    textStyle: 
-      fontSize: 9
-  vAxis:
-    viewWindowMode: 'explicit'
-    viewWindow:
-      min: 0
-  colors: [
-    "#C9D4FF",
-    "#9EB0F7", 
-    "#6A82DE",
-    "#3F58BA",
-    "#213996",
-    "#0E2066",
-    "#000C3B"
-  ]
 
 dau_mau_options = 
   width: 425
@@ -429,31 +292,6 @@ revenue_options =
     viewWindow:
       min: 0
 
-handle_activity_options = 
-  width: 850
-  height: 1600
-  legend: "none"
-  pointSize: 3
-  lineWidth: 2
-  isStacked: true
-  chartArea:  
-    width: 820
-    left: 42
-    height: 1520
-    top: 15
-  hAxis:
-    textStyle: 
-      fontSize: 11
-    # slantedTextAngle: 90
-  vAxis:
-    slantedText: true
-    textStyle: 
-      fontSize: 11
-    # slantedTextAngle: 45  
-    viewWindowMode: 'explicit'
-    viewWindow:
-      min: 0
-
 questions_options = 
   width: 850
   height: 450
@@ -463,36 +301,6 @@ questions_options =
   colors: [
     "#1D3880",
     "#E01B6A"
-  ]
-  chartArea:  
-    left: 42
-    height:400
-    width: 780
-  hAxis:
-    textStyle: 
-      fontSize: 9
-    slantedText: true
-  vAxis:
-    viewWindowMode: 'explicit'
-    viewWindow:
-      min: 0
-
-timely_response_by_handle_options = 
-  width: 850
-  height: 450
-  legend: "none"
-  pointSize: 5
-  lineWidth: 2
-  focusTarget: 'category'
-  colors: [
-    "#C9D4FF",
-    "#9EB0F7", 
-    "#6A82DE",
-    "#3F58BA",
-    "#213996",
-    "#0E2066",
-    "#000C3B",
-    "#000000"
   ]
   chartArea:  
     left: 42
@@ -534,7 +342,7 @@ content_audit_options =
       # max: 100   
   focusTarget: 'category'
 
-cohort_options = 
+area_plot_options = 
   width: 850
   height: 450
   legend: "none"
@@ -559,40 +367,6 @@ cohort_options =
     viewWindow:
       min: 0
   focusTarget: 'category'
-
-age_v_reengagement_v_response_rate_graph_options = 
-  width: 850
-  height: 500
-  legend: "none"
-  pointSize: 0
-  lineWidth: 0.25
-  colors: [
-    "#B1C2F0", 
-    "#5E79C4",
-    "#1D3880"
-  ]
-  chartArea:  
-    width: 780
-    left: 42
-    height: 450
-  hAxis:
-    textStyle: 
-      fontSize: 9
-    slantedText: true
-    direction:1
-  vAxis:
-    0: 
-      logScale: false
-    1: 
-      logScale: false
-      maxValue: 1
-  series:
-     0:
-      targetAxisIndex:0
-     1:
-      targetAxisIndex:1
-     2:
-      targetAxisIndex:1
 
 window.generic_ColumnChart_options =
   width: 860
@@ -627,52 +401,6 @@ window.generic_ColumnChart_options =
       targetAxisIndex:1
      2:
       targetAxisIndex:1
-
-days_since_active_v_number_of_reengagement_attempts_graph_options = 
-  width: 860
-  height: 500
-  legend: "none"
-  pointSize: 0.5
-  colors: [
-    "blue",
-    "red"
-  ]
-  chartArea:  
-    width: 770
-    left: 55
-    height: 450
-  hAxis:
-    textStyle: 
-      fontSize: 9
-    slantedText: true
-    direction:1
-    minorGridlines:
-      count: 7
-      color: "#eee"
-  #  viewWindow:
-  #    max: 120
-  #vAxis:
-  #  viewWindow:
-  #    max: 4
-
-age_v_days_since_active_graph_options = 
-  width: 860
-  height: 500
-  legend: "none"
-  pointSize: 0.1
-  colors: [
-    "#5E79C4",
-    "#1D3880"
-  ]
-  chartArea:  
-    width: 770
-    left: 55
-    height: 450
-  hAxis:
-    textStyle: 
-      fontSize: 9
-    slantedText: true
-    direction:1
 
 options = 
   width: 425
