@@ -7,8 +7,9 @@ describe ModeratorTransition, "#issue_badge" do
     transition = ModeratorTransition.create(user:user, to_segment:1)
     expected_badge = Badge.create(to_segment:1, segment_type:5)
 
+    issuance_stub = Issuance.create
     Issuance.expects(:create).with(user:user, badge:expected_badge)
-      .returns(Issuance.new)
+      .returns(issuance_stub)
     transition.stubs(:last_active_asker).returns(asker)
 
     transition.issue_badge
@@ -54,7 +55,7 @@ describe ModeratorTransition, "#issue_badge" do
     moderation_transition = ModeratorTransition.new(user:user, to_segment:1)
     badge = Badge.create(to_segment:1, segment_type:5)
 
-    Asker.any_instance.expects(:notify_badge_issued).with(user, badge).once
+    Asker.any_instance.expects(:notify_badge_issued).once
 
     moderation_transition.issue_badge
     moderation_transition.issue_badge
