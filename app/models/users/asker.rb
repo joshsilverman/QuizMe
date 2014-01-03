@@ -1277,6 +1277,8 @@ class Asker < User
   def notify_badge_issued user, badge, options
     message = "@#{user.twi_screen_name} You earned the #{badge.title} badge, congratulations!"
 
-    send_public_message message, options
+    post = send_public_message message, options
+    Mixpanel.track_event "badge", {distinct_id: user.id, badge: badge.title}  
+    post
   end
 end
