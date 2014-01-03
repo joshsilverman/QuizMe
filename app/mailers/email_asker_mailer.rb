@@ -14,10 +14,12 @@ class EmailAskerMailer < ActionMailer::Base
     if options[:intention] == 'grade'
       @grade = text
       @text = "Next question: #{question.text}"
-      mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Re: Next question:', template_name: 'question')
+      subject = 'Re: Next question:'
     else
-      mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: 'Next question:', template_name: 'question')
+      subject = 'Next question:'
     end
+    
+    mail(to: "#{recipient.twi_name} <#{recipient.email}>", from: sender.email, subject: subject, template_name: 'question')
   end
 
   def generic sender, recipient, text, short_url, options = {}
