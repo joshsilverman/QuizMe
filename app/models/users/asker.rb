@@ -1276,7 +1276,7 @@ class Asker < User
 
   def notify_badge_issued user, badge, options
     message = "@{user.twi_screen_name} You earned the #{badge.title} badge, congratulations! #{options[:long_url]}"
-    
-    send_public_message user, message, options
+
+    send_public_message message, options
   end
 end

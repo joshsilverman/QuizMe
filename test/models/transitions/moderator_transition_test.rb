@@ -15,7 +15,7 @@ describe ModeratorTransition, "#issue_badge" do
     transition.issue_badge
   end
 
-  it "wont issuance twice" do
+  it "wont issue twice" do
     user = User.create
     asker = Asker.create(role: 'asker')
     transition = ModeratorTransition.create(user:user, to_segment:1)
@@ -40,7 +40,10 @@ describe ModeratorTransition, "#issue_badge" do
     Issuance.expects(:create).returns(issuance)
 
     badge = Badge.create(to_segment:1, segment_type:5)
-    options = {long_url: URL + issuance_path(issuance)}
+    options = {
+      long_url: URL + issuance_path(issuance), 
+      in_reply_to_user_id: user.id
+    }
 
     Asker.any_instance.expects(:notify_badge_issued).with(user, badge, options)
     

@@ -951,9 +951,9 @@ describe Asker, "#notify_badge_issued" do
 
     user = create :user
     message = "@{user.twi_screen_name} You earned the #{badge.title} badge, congratulations! #{url}"
-    options = {long_url: url}
+    options = {long_url: url, in_reply_to_user_id: user.id}
 
-    asker.expects(:send_public_message).with(user, message, options)
+    asker.expects(:send_public_message).with(message, options)
 
     asker.notify_badge_issued(user, badge, options)
   end
