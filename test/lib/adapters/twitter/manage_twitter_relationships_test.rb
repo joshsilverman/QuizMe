@@ -59,7 +59,7 @@ describe Asker, 'ManageTwitterRelationships' do
           end
           total_follows << follows_today
         end
-        (total_follows.sum < 50).must_equal true
+        total_follows.sum.must_equal 42
       end
     end     
 
@@ -77,7 +77,7 @@ describe Asker, 'ManageTwitterRelationships' do
           end
           total_unfollows << unfollows_today
         end
-        (total_unfollows.sum < 50).must_equal true
+        total_unfollows.sum.must_equal 49
       end       
     end     
 
@@ -102,7 +102,7 @@ describe Asker, 'ManageTwitterRelationships' do
     it "doesn't include followbacks in max follows per day" do
       @asker.follows.count.must_equal 0
       twi_user_ids = (5..10).to_a
-
+      
       Post.stubs(:twitter_request).returns([1])
 
       @asker.followback(@asker.followers.collect(&:twi_user_id))

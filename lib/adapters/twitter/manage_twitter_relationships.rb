@@ -62,6 +62,7 @@ module ManageTwitterRelationships
   def send_autofollows twi_user_ids, max_follows, options = {}
     twi_user_ids.sample(max_follows).each do |twi_user_id|
       response = Post.twitter_request { twitter.follow(twi_user_id) }
+
       if response.present? or options[:force]
         user = User.find_or_create_by(twi_user_id: (twi_user_id))
         if options[:search_term_source] and search_term = options[:search_term_source][twi_user_id]
@@ -92,8 +93,8 @@ module ManageTwitterRelationships
   end
 
   def unfollow_count max_unfollows = nil
-    target_unfollow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_unfollow_count_avg = 6 if target_unfollow_count_avg > 6
+    target_unfollow_count_avg = (followers.count / 150).floor + 3 # number of follows per day to shoot for
+    target_unfollow_count_avg = 7 if target_unfollow_count_avg > 7
     scale = [0.0, 0.0, 1.6, 2.0, 0.4, 1.2, 1.8][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_unfollows = (target_unfollow_count_avg * scale).round # scale target avg
 
