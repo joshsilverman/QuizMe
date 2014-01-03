@@ -6,7 +6,7 @@ class ModeratorTransition < Transition
 		issuance = Issuance.create(badge:badge, user:user)
 
 		return unless issuance.valid?
-		options = {long_url: issuance_path(issuance)}
+		options = {long_url: URL + issuance_path(issuance)}
 		last_active_asker.notify_badge_issued(user, badge, options)
 	end
 

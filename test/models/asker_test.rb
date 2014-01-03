@@ -949,11 +949,11 @@ describe Asker, "#notify_badge_issued" do
     issuance = Issuance.create
     url = URL + issuance_path(issuance)
 
-    user = User.new
-    message = "You earned the #{badge.title} badge, congratulations! #{url}"
+    user = create :user
+    message = "@{user.twi_screen_name} You earned the #{badge.title} badge, congratulations! #{url}"
     options = {long_url: url}
 
-    asker.expects(:send_private_message).with(user, message, options)
+    asker.expects(:send_public_message).with(user, message, options)
 
     asker.notify_badge_issued(user, badge, options)
   end
