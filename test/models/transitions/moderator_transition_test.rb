@@ -34,9 +34,14 @@ describe ModeratorTransition, "#issue_badge" do
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(post_id:post.id, user_id:user.id)
     moderation_transition = ModeratorTransition.new(user:user, to_segment:1)
-    badge = Badge.create(to_segment:1, segment_type:5)
 
-    Asker.any_instance.expects(:notify_badge_issued) #.with(user, badge)
+    issuance = Issuance.create
+    Issuance.expects(:create).returns(issuance)
+
+    badge = Badge.create(to_segment:1, segment_type:5)
+    options = {long_url: issuance_path(issuance)}
+
+    Asker.any_instance.expects(:notify_badge_issued).with(user, badge, options)
     
     moderation_transition.issue_badge
   end

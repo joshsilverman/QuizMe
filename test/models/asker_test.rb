@@ -943,14 +943,17 @@ describe Asker do
 end
 
 describe Asker, "#notify_badge_issued" do
-  it "must call send_private_message with user and test" do
+  it 'must call send_private_message with user and message with link' do
     asker = Asker.new
-    user = User.new
     badge = Badge.new(title:'badger', description:'Excellence in badgering')
+    issuance = Issuance.create
+
+    user = User.new
     message = "You earned the #{badge.title} for '#{badge.description}'"
+    options = {long_url: issuance_path(issuance)}
 
-    asker.expects(:send_private_message).with(user, message)
+    asker.expects(:send_private_message).with(user, message, options)
 
-    asker.notify_badge_issued(user, badge)
+    asker.notify_badge_issued(user, badge, options)
   end
 end

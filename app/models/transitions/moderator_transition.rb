@@ -1,10 +1,13 @@
 class ModeratorTransition < Transition
+	include Rails.application.routes.url_helpers
 
 	def issue_badge
 		badge = select_badge
-		
-		return unless Issuance.create(badge:badge, user:user).valid?
-		last_active_asker.notify_badge_issued(user, badge)
+		issuance = Issuance.create(badge:badge, user:user)
+
+		return unless issuance.valid?
+		options = {long_url: issuance_path(issuance)}
+		last_active_asker.notify_badge_issued(user, badge, options)
 	end
 
 	private

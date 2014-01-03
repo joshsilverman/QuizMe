@@ -1274,9 +1274,9 @@ class Asker < User
     Question.find(question_id)
   end
 
-  def notify_badge_issued user, badge
+  def notify_badge_issued user, badge, options
     message = "You earned the #{badge.title} for '#{badge.description}'"
 
-    send_private_message user, message
+    send_private_message user, message, options
   end
 end
