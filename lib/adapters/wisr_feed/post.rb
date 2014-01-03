@@ -91,9 +91,6 @@ module Adapters::WisrFeed::Post
   end
 
   def self.set_feed_twi_name_param post, post_params
-    raise ArgumentError, 'no_user' if post.user.nil?
-    raise ArgumentError, 'non_asker' if post.user.role != 'asker'
-
     post_params << ["asker_feed[twi_name]", post.user.twi_name]
   end
 end
