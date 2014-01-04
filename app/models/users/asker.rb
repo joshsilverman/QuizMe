@@ -824,7 +824,7 @@ class Asker < User
     link = authenticated_link('http://wisr.com/moderations/manage', user, (Time.now + 1.week))
     script.gsub! '<link>', link
 
-    user.update_attribute :role, "moderator" unless user.is_role?('admin')
+    user.update role: "moderator" unless user.is_role?('admin')
     self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
     Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
 
@@ -862,7 +862,8 @@ class Asker < User
         "Do you mind looking at a question one of our users recently wrote? <link>"
       ].sample
 
-      script.gsub! "<link>", link
+      link_with_token = authenticated_link(link, moderator, (Time.now + 1.week))
+      script.gsub! "<link>", link_with_token
       self.send_private_message(moderator, script, {
         :intention => "request question feedback"
       })
