@@ -3,14 +3,17 @@ class ModeratorTransition < Transition
 
 	def issue_badge
 		badge = select_badge
-		issuance = Issuance.create(badge:badge, user:user)
+		asker = last_active_asker
+		return unless asker
 
+		issuance = Issuance.create(badge:badge, user:user, asker:asker)
 		return unless issuance.valid?
+
 		options = {
 			long_url: URL + issuance_path(issuance),
 			in_reply_to_user_id: user.id
 		}
-		last_active_asker.notify_badge_issued(user, badge, options)
+		asker.notify_badge_issued(user, badge, options)
 	end
 
 	private
