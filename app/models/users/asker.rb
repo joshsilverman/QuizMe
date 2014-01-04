@@ -834,8 +834,13 @@ class Asker < User
   def request_feedback_on_question question
     # find mods who have been active recently
     recently_active_user_ids = Asker.get_ids_to_last_active_at(7).keys
-    recently_active_moderators = moderators.where('users.id != ?', question.user_id || 0).select { |moderator| recently_active_user_ids.include?(moderator.id) }
-    recently_active_question_moderators = Moderator.where(id: recently_active_moderators.collect(&:id)).joins(:question_moderations).uniq
+    recently_active_moderators = moderators
+      .where('users.id != ?', question.user_id || 0)
+      .select { |moderator| recently_active_user_ids.include?(moderator.id) }
+    recently_active_question_moderators = Moderator
+      .where(id: recently_active_moderators.collect(&:id))
+      .joins(:question_moderations)
+      .readonly(false).uniq
 
     # exclude mods who recently received a feedback request in the past week
     user_ids_with_recent_feedback_requests = posts.where(intention: 'request question feedback')\
