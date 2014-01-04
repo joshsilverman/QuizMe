@@ -1,6 +1,5 @@
 class ExperimentsController < ApplicationController
   before_filter :admin?, :except => [:index, :trigger]
-  before_filter :yc_admin?, :only => :index
 
   def index
     @experiments = Split::Experiment.all.reject { |e| e.blank? or e.name.include? 'search term' }
