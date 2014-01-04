@@ -107,13 +107,6 @@ class ApplicationController < ActionController::Base
   end
 
   private
-  
-  # def current_user
-    # @current_user ||= User.find(session[:user_id]) if session[:user_id]
-    #temporary fix until devise
-    # return unless cookies.signed[:permanent_user_id] || session[:user_id]
-    # @current_user ||= User.find(cookies.signed[:permanent_user_id] || session[:user_id])
-  # end
 
     def split_user 
       session[:user_agent] = request.user_agent
