@@ -92,11 +92,34 @@ describe ModeratorTransition, "#select_badge" do
 end
 
 describe ModeratorTransition, "#last_active_asker" do
-  it "returns the last asker that the user moderated for" do
+  it "returns nil if no last asker if no post associated with last mod" do
+    moderator = Moderator.create
+    asker = Asker.create(role: 'asker')
+    post = Post.create(in_reply_to_user: asker)
+    moderation = Moderation.create(user_id:moderator.id)
+    moderation_transition = ModeratorTransition.new(user:moderator)
+
+    moderation_transition.send(:last_active_asker).must_equal nil
+  end
+
+  it "returns the last asker that the user moderated for if post moderation" do
     moderator = Moderator.create
     asker = Asker.create(role: 'asker')
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(post_id:post.id, user_id:moderator.id)
+    moderation_transition = ModeratorTransition.new(user:moderator)
+
+    moderation_transition.send(:last_active_asker).must_equal asker
+  end
+
+  it "returns the last asker that the user moderated for if question mod" do
+    moderator = Moderator.create
+    asker = Asker.create(role: 'asker')
+    question = Question.create created_for_asker_id: asker.id
+    moderation = Moderation.create(
+      question_id:question.id, 
+      user_id:moderator.id)
+
     moderation_transition = ModeratorTransition.new(user:moderator)
 
     moderation_transition.send(:last_active_asker).must_equal asker
