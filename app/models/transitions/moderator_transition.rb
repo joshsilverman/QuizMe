@@ -23,10 +23,10 @@ class ModeratorTransition < Transition
 		moderator = user.becomes(Moderator)
 
 		asker = moderator.moderations.order(created_at: :desc)
-			.last.post.try :in_reply_to_user
+			.last.try(:post).try :in_reply_to_user
 
 		asker ||= moderator.question_moderations.order(created_at: :desc)
-			.last.question.asker
+			.last.try(:question).try :asker
 
 		return unless asker
 		return unless asker.role == 'asker'
