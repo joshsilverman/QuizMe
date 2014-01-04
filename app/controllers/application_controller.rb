@@ -64,6 +64,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def yc_admin?
+    if current_user
+      redirect_to '/' unless current_user.is_role? "admin"
+    else
+      redirect_to '/' unless params['yc'] == 'c43fd33b93c52207b118ce0150c55b3c'
+    end
+  end
+
   def client?
     if current_user
       redirect_to '/' unless current_user.is_role? "client" or current_user.is_role? "admin"
