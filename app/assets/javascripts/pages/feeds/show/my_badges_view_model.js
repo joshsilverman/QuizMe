@@ -9,6 +9,7 @@ if ($('#my_badges:visible').length > 0) {
       ko.applyBindings(myBadgesViewModel, $('#my_badges')[0]);
 
       $.getJSON("/issuances.json", function(issuances) {
+        issuances = addNullBadge(issuances);
         issuances.forEach(function(issuance) {
           var badge = new BadgeModel(issuance);
           myBadgesViewModel.badges.push(badge);
@@ -32,6 +33,16 @@ if ($('#my_badges:visible').length > 0) {
       var self = this;
 
       self.badges = ko.observableArray([]);
+    }
+
+    function addNullBadge(issuances) {
+      if (issuances.length > 0) return issuances;
+
+      return [{badge: {
+        title: 'Start earning badges',
+        description: 'Ask, answer, and grade questions!',
+        filename: 'badges/moderators/mod-badges_05.png'
+      }}];
     }
 
     ko.bindingHandlers.dotdotdot = {
