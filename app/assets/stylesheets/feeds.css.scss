@@ -105,10 +105,22 @@ body {
 	#header {
 		background: white;
 		margin-bottom: 15px;
-		// margin-left: 0px;
 		min-height: 148px;
 		border-style: solid;
 		border-width: 1px;
+
+
+		@media (max-width: 1199px) {
+			width: 508px;
+		}
+
+		@media (max-width: 979px) {
+			width: 464px !important;
+		}
+
+		@media (max-width: 767px) {
+			width: inherit !important;
+		}
 
 		#account_information {
 			height: inherit;
@@ -230,10 +242,10 @@ body {
 
 		#left_column {
 			float:right;
+			margin-left: 5px;
 
 			@media (min-width: 1200px) {
 				width: 285px;
-				margin-left: 5px;
 			}
 
 			.header {
@@ -366,7 +378,7 @@ body {
 				img {
 					height: 32px !important;
 					width: 32px;
-					@media (min-width: 480px) and (max-width: 977px) { display: none; }
+					@media (min-width: 480px) and (max-width: 979px) { display: none; }
 				}
 
 				.content {
@@ -385,7 +397,7 @@ body {
 						position: relative;
 						bottom: 8px;
 					}
-					@media (min-width: 480px) and (max-width: 977px) { margin-left: 5px !important; }
+					@media (min-width: 480px) and (max-width: 979px) { margin-left: 5px !important; }
 				}
 			}
 
@@ -566,7 +578,12 @@ body {
 				}
 			}
 
-			@media (min-width: 768px) and (max-width: 980px) {
+			// @media (min-width: 481px) and (max-width: 767px) {
+			// 	// width: 454px !important;
+			// 	// margin: -16px 0 0 26px;
+			// }
+
+			@media (min-width: 768px) and (max-width: 979px) {
 				width: 454px !important;
 				margin: -16px 0 0 26px;
 			}
@@ -1499,8 +1516,8 @@ body {
 							position: relative;
 							top: 1px;
 
-							@media (min-width: 978px) { width: 65%; }
-							@media (min-width: 768px) and (max-width: 977px) { width: 58%; }
+							@media (min-width: 980px) { width: 65%; }
+							@media (min-width: 768px) and (max-width: 979px) { width: 58%; }
 							@media (min-width: 480px) and (max-width: 767px) { width: 58%; }
 							@media (max-width: 479px) { width: 40%; }
 						}
