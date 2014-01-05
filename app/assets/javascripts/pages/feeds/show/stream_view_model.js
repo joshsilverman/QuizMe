@@ -5,7 +5,7 @@ if ($('#activity_stream:visible').length > 0) {
     function init() {
       streamViewModel = new StreamViewModel();
 
-      ko.applyBindings(streamViewModel);
+      ko.applyBindings(streamViewModel, $('#activity_stream')[0]);
 
       $.getJSON("/feeds/stream", function(posts) {
         posts.forEach(function(post) {

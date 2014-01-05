@@ -11,7 +11,24 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :issuances, only: [:show]
+  resources :askers, except: [:show]
+  get '/askers/edit_graph' => 'askers#edit_graph'
+  post '/askers/add_related' => 'askers#add_related'
+  post '/askers/remove_related' => 'askers#remove_related'
+  get '/askers/:id/questions(/:user_id)' => 'askers#questions'
+
+  get '/users/:id/activity' => 'users#activity'
+  get "users/supporters" => "users#supporters"
+  post "users/supporters" => "users#create_supporter"
+  delete "users/:id" => "users#destroy_supporter"
+  get "/user/supporters/:id/touch" => "users#touch_supporter"
+  get '/users/activity_feed'
+  post '/users/add_email'
+
+  get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
+  post '/unsubscribe' => 'users#unsubscribe'
+
+  resources :issuances, only: [:show, :index]
 
   resources :answers
   get "answer/new"
@@ -88,27 +105,9 @@ Quizmemanager::Application.routes.draw do
   get '/progress_report' => 'users#progress_report'
   get "/confirm_js" => "sessions#confirm_js"
   get '/sitemap' => 'pages#sitemap'
-  
-  resources :askers, except: [:show]
-  get '/askers/edit_graph' => 'askers#edit_graph'
-  post '/askers/add_related' => 'askers#add_related'
-  post '/askers/remove_related' => 'askers#remove_related'
-  get '/askers/:id/questions(/:user_id)' => 'askers#questions'
-
-  get '/users/:id/activity' => 'users#activity'
-  get "users/supporters" => "users#supporters"
-  post "users/supporters" => "users#create_supporter"
-  delete "users/:id" => "users#destroy_supporter"
-  get "/user/supporters/:id/touch" => "users#touch_supporter"
-  get '/users/activity_feed'
-  post '/users/add_email'
-
-  get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
-  post '/unsubscribe' => 'users#unsubscribe'
 
   post "/email_askers/save_private_response"
 
-  resources :users
   resources :posts
   resources :mentions
   resources :exams

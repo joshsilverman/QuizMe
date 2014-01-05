@@ -7,6 +7,15 @@
 			#feed.row
 				= render :partial => "account_info"
 
+				#left_column.span3.hidden-phone
+					#left_column_container
+						#activity_stream.rounded.border-color= render partial: "stream"
+						.clr
+						- if current_user
+							= render partial: "my_badges"
+						- else
+							= render partial: "related"
+
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
@@ -27,12 +36,6 @@
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
-
-				#left_column.span3.hidden-phone
-					#left_column_container
-						#activity_stream.rounded.border-color= render partial: "stream"
-						.clr
-						= render partial: "related"
 
 = render :partial => "question_modal"
 = render :partial => "retweet_modal"

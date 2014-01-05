@@ -16,4 +16,19 @@ class IssuancesController < ApplicationController
       format.json { render json: @json }
     end
   end
+
+  def index
+    @user = User.where(id: current_user.id)
+      .includes(issuances: [:badge]).first
+
+    @json = @user.issuances.to_json(
+      only: [:id],
+      include: {
+        badge: {only: [:title, :description, :filename]}
+    })
+
+    respond_to do |format|
+      format.json { render json: @json }
+    end
+  end
 end

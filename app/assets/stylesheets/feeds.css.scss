@@ -95,7 +95,6 @@ body {
 	background: url(https://twimg0-a.akamaihd.net/a/1345161153/t1/img/wash-white-30.png);
 
 	.border-color {
-		/*border-color: rgba(0,0,0,.21);*/
 		border-color: #ddd;
 	}
 
@@ -106,7 +105,7 @@ body {
 	#header {
 		background: white;
 		margin-bottom: 15px;
-		margin-left: 0px;
+		// margin-left: 0px;
 		min-height: 148px;
 		border-style: solid;
 		border-width: 1px;
@@ -126,15 +125,12 @@ body {
 
 			.account_image {
 				img {
-					/*height: 128px;*/
 					position: absolute;
 					float: left;
 				}					
 			}
 
 			.account_text {
-				/*margin: 0px 0px 0px 138px;*/
-
 				.name-wrapper {
 					clear:both;
 
@@ -219,41 +215,6 @@ body {
 			}					
 		}
 
-		#account_stats {
-			margin-left: 0px;
-			min-height: inherit;
-			float: right;
-			position: relative;
-
-			.twitter-follow-button {
-				position: absolute;
-				right: 10px;
-				top: 10px;
-			}
-
-			ul {
-				list-style: none;
-				width: 140px;
-				position: absolute;
-				right: 10px;
-				top: 48px;
-				margin: 0px;
-				cursor: default;
-
-				li {
-					border-top: 1px solid #E8E8E8;
-					padding: 5px;
-					color: #999;
-					float: right;
-
-					b {
-						font-size: 14px;
-						color: #333;
-					}
-				}
-			}
-		}
-
 		.post_question {
 			margin-top: 4px;
 		}
@@ -268,10 +229,11 @@ body {
 		}
 
 		#left_column {
-			
+			float:right;
+
 			@media (min-width: 1200px) {
 				width: 285px;
-				margin-left: 15px;
+				margin-left: 5px;
 			}
 
 			.header {
@@ -287,7 +249,7 @@ body {
 				width: inherit;
 			}
 
-			#related, #scoreboard, #directory, #activity_stream, #ask, #subscribed {
+			#related, #my_badges, #directory, #activity_stream, #ask, #subscribed {
 				background: white;
 				border-style: solid;
 				border-width: 1px;	

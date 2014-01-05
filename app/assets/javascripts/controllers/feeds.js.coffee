@@ -43,10 +43,10 @@ class @Feed
 		@filtered = $('.tab-content .activity').length > 0
 
 	initialize_fix_position_listener: =>
-		offset = 204
+		offset = 40
 		$(window).on "scroll", => 
 			if $(window).scrollTop() >= offset
-				$("#left_column_container").css("position", "fixed").css("top", "15px")
+				$("#left_column_container").css("position", "fixed").css("top", "13px")
 			else
 				$("#left_column_container").css("position", "").css("top", "auto")
 

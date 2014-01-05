@@ -1,0 +1,15 @@
+#my_badges.rounded.border-color
+  .header
+    %h4
+      My Badges
+
+      %span{'data-bind' => "visible: badges().length < 1"}
+        =image_tag "ajax-loader.gif"
+
+  %ul.unstyled
+    %a.related_feed{'data-bind' => "foreach: badges(), visible: (badges().length > 0)"}
+      %li
+        .content
+          %image.rounded.profile{"data-bind" => "attr: {src: href}"}
+          %h5{"data-bind" => "text: title"}
+          %p{"data-bind" => "dotdotdot: description"}
