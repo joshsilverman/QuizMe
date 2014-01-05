@@ -50,27 +50,12 @@
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
+
 				#left_column.span3.hidden-phone
 					#left_column_container
 						#activity_stream.rounded.border-color= render partial: "stream"
 						.clr
-						- if defined?(@contributors)
-							- unless @contributors.blank?			
-								= render :partial => "contributors"
-						- else
-							- unless @related.blank?
-								#related.rounded.border-color
-									.header
-										%h4
-											Other Feeds
-									%ul.unstyled
-										- @related.each_with_index do |related, i|
-											%a.related_feed{:href => "/feeds/#{related.id}"}
-												%li{:class => ("border_bottom" if i < 2)}
-													.content
-														= image_tag(related.twi_profile_img_url, :class => "rounded")
-														%h5= related.twi_name
-														%p= related.description
+						= render partial: "related"
 
 = render :partial => "question_modal"
 = render :partial => "retweet_modal"
@@ -103,8 +88,6 @@
 		.tweet
 			%span#account= "@#{@asker.twi_screen_name}"
 			%span#answer= " Answer text"
-			/ %span#url= " URL"
-			/ %span#additional{:contenteditable => true}
 		.answer_controls
 			.tweet_button.btn.btn-primary Tweet!
 		.shadow-bottom

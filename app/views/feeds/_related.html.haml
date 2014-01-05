@@ -1,14 +1,13 @@
-- unless @related.blank?
-  #related.rounded.border-color
-    .header
-      %h4
-        Other Feeds
-      %a.more.btn{href: '/search'} More
-    %ul.unstyled
-      - @related.each_with_index do |related, i|
-        %a.related_feed{:href => "/feeds/#{related.id}"}
-          %li{:class => ("border_bottom" if i < 2)}
-            .content
-              = image_tag(related.twi_profile_img_url, :class => "rounded")
-              %h5= related.twi_name
-              %p= related.description
+#related.rounded.border-color
+  .header
+    %h4
+      Other Feeds
+    %a.more.btn{href: '/search'} More
+  %ul.unstyled
+    - @related.each_with_index do |related, i|
+      %a.related_feed{:href => "/feeds/#{related.id}"}
+        %li{:class => ("border_bottom" if i < 2)}
+          .content
+            = image_tag(related.twi_profile_img_url, :class => "rounded")
+            %h5= related.twi_name
+            %p= related.description
