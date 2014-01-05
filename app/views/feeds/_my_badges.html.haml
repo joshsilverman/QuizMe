@@ -6,10 +6,10 @@
       %span{'data-bind' => "visible: badges().length < 1"}
         =image_tag "ajax-loader.gif"
 
-  %ul.unstyled
-    %a.related_feed{'data-bind' => "foreach: badges(), visible: (badges().length > 0)"}
+  %ul.unstyled{'data-bind' => "foreach: badges(), visible: (badges().length > 0)"}
+    %a.related_feed{"data-bind" => "attr: {href: href}"}
       %li
         .content
-          %image.rounded.profile{"data-bind" => "attr: {src: href}"}
+          %image.rounded.profile{"data-bind" => "attr: {src: img_href}"}
           %h5{"data-bind" => "text: title"}
           %p{"data-bind" => "dotdotdot: description"}

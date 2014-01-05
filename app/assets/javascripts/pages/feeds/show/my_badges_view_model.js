@@ -19,10 +19,13 @@ if ($('#my_badges:visible').length > 0) {
     function BadgeModel(issuance) {
       var self = this;
 
-      self.issuance_id = issuance.created_at;
+      self.href = ""
+      if (issuance.id)
+        self.href = "/issuances/" + issuance.id;
+
       self.title = issuance.badge.title;
       self.description = issuance.badge.description;
-      self.href = "/assets/" + issuance.badge.filename;
+      self.img_href = "/assets/" + issuance.badge.filename;
     }
 
     function MyBadgesViewModel() {
