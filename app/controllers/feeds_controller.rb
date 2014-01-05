@@ -214,10 +214,6 @@ class FeedsController < ApplicationController
     end
   end
 
-  def scores
-    @scores = User.get_top_scorers(params[:id])
-  end
-
   def respond_to_question
     publication = Publication.find(params[:publication_id])
     @question_asker = Asker.find(params[:asker_id])

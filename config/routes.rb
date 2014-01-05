@@ -24,7 +24,6 @@ Quizmemanager::Application.routes.draw do
 
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
-  get "feeds/:id/scores" => "feeds#scores"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
   get "feeds/stream" => "feeds#stream"
 
