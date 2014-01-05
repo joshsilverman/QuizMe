@@ -71,6 +71,7 @@ class FeedsController < ApplicationController
       @directory = {}
       Asker.where("published = ?", true).each do |asker| 
         next unless ACCOUNT_DATA[asker.id]
+        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
       end
       @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
         question_count = Publication.published.size
