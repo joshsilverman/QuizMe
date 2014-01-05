@@ -38,7 +38,8 @@ class FeedsController < ApplicationController
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)      
         @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
         
-        render 'index_with_activity' 
+        render 'index_with_activity'
+
       else # logged in user, old homepage
         @wisr = User.find(8765)
         @publications = Publication.recent
@@ -50,12 +51,7 @@ class FeedsController < ApplicationController
           next unless ACCOUNT_DATA[asker.id]
           (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
         end
-        @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-          question_count = Publication.published.size
-          questions_answered = Post.answers.size
-          followers = Relationship.select("DISTINCT follower_id").size 
-          [question_count, questions_answered, followers]
-        end  
+         
         @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
         @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
 

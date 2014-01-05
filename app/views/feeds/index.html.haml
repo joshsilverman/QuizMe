@@ -1,8 +1,14 @@
 #post_feed
 	#feed_container.span10
 		#wrapper.span9
-			= render :partial => "home"
 			#feed.row
+				= render :partial => "home"
+
+				#left_column.span3.hidden-phone
+					#left_column_container
+						- cache("_directory", :expires_in => 30.hour) do
+							= render :partial => "directory"
+							
 				#right_column.span6
 					#posts.rounded
 						.header.border-color
@@ -17,10 +23,6 @@
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
-				#left_column.span3.hidden-phone
-					#left_column_container
-						- cache("_directory", :expires_in => 30.hour) do
-							= render :partial => "directory"
 
 %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
 	%img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}

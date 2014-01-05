@@ -1,5 +1,5 @@
-#header.row.rounded.border-color
-	#account_information.span6
+#header.row.rounded.border-color.span6
+	#account_information
 		.container
 			.inner_container
 				.account_image
@@ -23,21 +23,3 @@
 					.clr
 					%h3= "@#{@wisr.twi_screen_name}"
 					%p= "Wisr is a fun way to learn collaboratively."
-
-	#account_stats.span3.hidden-phone
-		%a.twitter-follow-button{:href => "https://twitter.com/#{@wisr.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
-		%script
-			!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-		%ul
-			%li{:style => "border-top: 0px solid #E8E8E8 !important;"}
-				%p
-					%b= @question_count
-					questions
-			%li
-				%p
-					%b= @questions_answered
-					responses
-			%li
-				%p
-					%b= @followers
-					followers
