@@ -2,7 +2,6 @@
   .header
     %h4
       Other Feeds
-    %a.more.btn{href: '/search'} More
   %ul.unstyled
     - @related.each_with_index do |related, i|
       %a.related_feed{:href => "/feeds/#{related.id}"}

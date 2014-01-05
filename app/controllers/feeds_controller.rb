@@ -61,30 +61,26 @@ class FeedsController < ApplicationController
 
         render 'index'        
       end
+
     else
-      if ab_test("New Landing Page", 'index', 'index_with_search') == 'index' # logged out user, old homepage
-        @wisr = User.find(8765)
-        @publications = Publication.recent
-        posts = Publication.recent_publication_posts(@publications)
+      @wisr = User.find(8765)
+      @publications = Publication.recent
+      posts = Publication.recent_publication_posts(@publications)
 
-        @responses = []
-        @directory = {}
-        Asker.where("published = ?", true).each do |asker| 
-          next unless ACCOUNT_DATA[asker.id]
-          (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-        end
-        @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-          question_count = Publication.published.size
-          questions_answered = Post.answers.size
-          followers = Relationship.select("DISTINCT follower_id").size 
-          [question_count, questions_answered, followers]
-        end
-        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-        render 'index'
-      else # logged out user, new homepage
-        render 'index_with_search'
+      @responses = []
+      @directory = {}
+      Asker.where("published = ?", true).each do |asker| 
+        next unless ACCOUNT_DATA[asker.id]
       end
+      @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
+        question_count = Publication.published.size
+        questions_answered = Post.answers.size
+        followers = Relationship.select("DISTINCT follower_id").size 
+        [question_count, questions_answered, followers]
+      end
+      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
+
+      render 'index'
     end
   end
 
