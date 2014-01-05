@@ -33,25 +33,3 @@
 								%i created by
 								= link_to "@#{@author.twi_screen_name}", "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"
 								%a{:href => "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"}= image_tag @author.twi_profile_img_url
-
-
-		#account_stats.span3.hidden-phone
-			%a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}= "Follow"
-			%script
-				!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-			%ul
-				- if @question_count
-					%li{:style => "border-top: 0px solid #E8E8E8 !important;"}
-						%p
-							%b= @question_count 
-							questions
-				- if @questions_answered
-					%li
-						%p
-							%b= @questions_answered
-							responses
-				- if @followers
-					%li
-						%p
-							%b= @followers
-							followers

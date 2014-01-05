@@ -312,9 +312,6 @@ class FeedsController < ApplicationController
         end
       end
 
-      # stats
-      @question_count, @questions_answered, @followers = @asker.get_stats
-      
       # misc
       @author = User.find @asker.author_id if @asker.author_id
 
