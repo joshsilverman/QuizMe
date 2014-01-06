@@ -179,17 +179,6 @@ class QuestionsController < ApplicationController
 
       author = @question.user
 
-      ## Trigger UGC events
-      Post.trigger_split_test(user_id, 'ugc request type')
-      Post.trigger_split_test(user_id, 'ugc script v4.0')
-      if author.questions.size > 1
-        Post.trigger_split_test(user_id, 'author followup type (return ugc submission)') 
-        Post.trigger_split_test(user_id, "request immediate feedback on author's questions (return submission)") 
-      end
-      Post.trigger_split_test(user_id, 'ugc cta after five answers on site (adds question)')
-      Post.trigger_split_test(user_id, 'new handle ugc request script v2 (=> add question)')
-      Post.trigger_split_test(user_id, 'first ugc request type (writes a question)')
-
       Mixpanel.track_event "submitted question", {
         :distinct_id => user_id,
         :time => question_created_at ? question_created_at.to_i : @question.created_at.to_i,
