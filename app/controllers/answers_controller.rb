@@ -7,13 +7,10 @@ class AnswersController < ApplicationController
     @answer.question.update(status: 0) unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
     redirect_to "/" unless @answer
     
-
-    respond_to do |format|
-      if @answer.update_attributes(params[:answer])
-        format.json { head :ok }
-      else
-        format.json { render json: @answer.errors, status: :unprocessable_entity }
-      end
+    if @answer.update_attributes(params[:answer])
+      head :ok
+    else
+      render json: @answer.errors, status: :unprocessable_entity
     end
   end
 end
