@@ -102,7 +102,7 @@ class QuestionsController < ApplicationController
     @question = Question.find(params[:id])
     @question.update inaccurate: nil, ungrammatical: nil
     params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
-    # @question = current_user.questions.find(params[:id])
+
     redirect_to "/" unless @question
     respond_to do |format|
       if @question.update_attributes(params[:question])
