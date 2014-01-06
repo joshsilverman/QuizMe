@@ -101,7 +101,6 @@ Quizmemanager::Application.routes.draw do
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
 
-  get "/tags" => 'posts#tags'
   get '/progress_report' => 'users#progress_report'
   get "/confirm_js" => "sessions#confirm_js"
   get '/sitemap' => 'pages#sitemap'

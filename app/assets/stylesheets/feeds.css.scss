@@ -1268,7 +1268,7 @@ body {
 }
 
 
-#manager, #tags, #author_dashboard {
+#manager, #author_dashboard {
 	.header {
 		border-radius: 3px 3px 0 0;
 
@@ -1434,22 +1434,6 @@ body {
 				}
 			}
 		}
-	}
-}
-
-#tags {
-	.domain_select {
-		float: right;
-
-		a{
-			text-decoration: none;
-		}
-	}
-
-	.checkbox {
-		position: relative; 
-		top: 2px; 
-		cursor: pointer;
 	}
 }
 

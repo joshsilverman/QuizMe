@@ -57,16 +57,6 @@ class PostsController < ApplicationController
     end		
 	end
 
-  def tags
-    @posts = Post.tagged.order("posts.created_at DESC")
-    @posts = @posts.page(params[:page]).per(50)
-        
-    @tags = Tag.all
-    @engagements, @conversations = Post.grouped_as_conversations @posts
-
-    render 'feeds/tags'
-  end
-
   def refer
   	publication = Publication.includes(:question).find(params[:publication_id])
     if publication.question.resource_url
