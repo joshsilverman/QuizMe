@@ -11,10 +11,6 @@ Quizmemanager::Application.routes.draw do
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
   get '/users/:id/activity' => 'users#activity'
-  get "users/supporters" => "users#supporters"
-  post "users/supporters" => "users#create_supporter"
-  delete "users/:id" => "users#destroy_supporter"
-  get "/user/supporters/:id/touch" => "users#touch_supporter"
   get '/users/activity_feed'
   post '/users/add_email'
 

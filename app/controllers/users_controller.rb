@@ -1,9 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :badges, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :add_email]
-
-  def supporters
-    @supporters = User.supporters
-  end
+  before_filter :admin?, :except => [:show, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :add_email]
 
   def show
     @user = User.where("twi_screen_name ILIKE '%#{params[:twi_screen_name]}%'").first
@@ -47,21 +43,6 @@ class UsersController < ApplicationController
     end
     
     render :json => status
-  end
-
-  def create_supporter
-    User.create role: 'supporter', name: params['user']['name'], email: params['user']['email']
-    redirect_to '/users/supporters'
-  end
-
-  def destroy_supporter
-    User.where("role = 'supporter' and id = ?", params['id']).first.destroy
-    redirect_to '/users/supporters'
-  end
-
-  def touch_supporter
-    User.where("role = 'supporter' and id = ?", params['id']).first.touch
-    redirect_to '/users/supporters'
   end
 
   def newsletter
