@@ -68,7 +68,6 @@ Quizmemanager::Application.routes.draw do
   get "/posts/:publication_id/refer" => "posts#refer"
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
 
-  post "posts/update"
   post "posts/respond_to_post"
   post "posts/retweet"
 

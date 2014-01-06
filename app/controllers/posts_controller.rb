@@ -26,36 +26,6 @@ class PostsController < ApplicationController
 		end
 	end
 
-	def update
-    @post = Post.find(params[:id])
-    if params[:post][:requires_action] == 'false'
-      @post.post_moderations.each do |moderation|
-        if moderation.type_id == 5
-          moderation.update_attribute :accepted, true
-          next if moderation.moderator.post_moderations.count > 1
-        else
-          moderation.update_attribute :accepted, false
-        end
-      end
-    end
-
-    respond_to do |format|
-      if @post.update_attributes(params[:post])
-        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
-        format.json { head :ok }
-
-        #tag manually hidden posts
-        if params['post']['requires_action'].nil? == false and params['post']['requires_action'] == "false"
-          @tag = Tag.find_or_create_by(name: 'hide-manual')
-          @post.tags << @tag unless @post.tags.include? @tag
-        end
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
-      end
-    end		
-	end
-
   def refer
   	publication = Publication.includes(:question).find(params[:publication_id])
     if publication.question.resource_url
