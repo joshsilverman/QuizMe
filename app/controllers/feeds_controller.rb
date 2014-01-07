@@ -14,50 +14,21 @@ class FeedsController < ApplicationController
     @askers = Asker.where(published: true).order("id ASC")
     
     if current_user
-      if current_user.follows.present? and ab_test("logged in home page (=> advanced)", 'index', 'filtered index w/ activity') == 'filtered index w/ activity' # logged in user, new homepage
-        @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
-          .published\
-          .where("asker_id in (?)", current_user.follows.collect(&:id))\
-          .where("posts.interaction_type = 1", true)\
-          .where("posts.created_at > ?", 1.days.ago)\
-          .order("posts.created_at DESC")\
-          .limit(15)
-        posts = Post.select([:id, :created_at, :publication_id])\
-          .where("publication_id in (?)", @publications.collect(&:id))\
-          .order("created_at DESC")
+      @wisr = User.find(8765)
+      @publications = Publication.recent
+      posts = Publication.recent_publication_posts(@publications)
 
-        @subscribed = Asker.includes(:related_askers).where("id in (?)", current_user.follows.collect(&:id))
-
-        if Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'false'
-          @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-            .where(:id => ACCOUNT_DATA.keys.sample(3)).all          
-        else
-          @related = @subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| @subscribed.include? a }.sample(3)
-        end 
-        
-        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)      
-        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-        
-        render 'index_with_activity'
-
-      else # logged in user, old homepage
-        @wisr = User.find(8765)
-        @publications = Publication.recent
-        posts = Publication.recent_publication_posts(@publications)
-
-        @responses = []
-        @directory = {}
-        Asker.where("published = ?", true).each do |asker| 
-          next unless ACCOUNT_DATA[asker.id]
-          (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-        end
-         
-        @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
-        @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-        render 'index'        
+      @responses = []
+      @directory = {}
+      Asker.where("published = ?", true).each do |asker| 
+        next unless ACCOUNT_DATA[asker.id]
+        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
       end
+       
+      @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
+      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
 
+      render 'index'
     else
       @wisr = User.find(8765)
       @publications = Publication.recent
