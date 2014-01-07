@@ -12,39 +12,30 @@ class FeedsController < ApplicationController
     @post_id = params[:post_id]
     @answer_id = params[:answer_id]    
     @askers = Asker.where(published: true).order("id ASC")
+    @wisr = User.find(8765)
+    @directory = {}
+    @publications = Publication.recent
+    @responses = []
     
-    if current_user
-      @wisr = User.find(8765)
-      @publications = Publication.recent
-      posts = Publication.recent_publication_posts(@publications)
-
-      @responses = []
-      @directory = {}
-      Asker.where("published = ?", true).each do |asker| 
-        next unless ACCOUNT_DATA[asker.id]
-        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-      end
-       
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id)
-      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-      render 'index'
-    else
-      @wisr = User.find(8765)
-      @publications = Publication.recent
-      posts = Publication.recent_publication_posts(@publications)
-
-      @responses = []
-      @directory = {}
-      Asker.where("published = ?", true).each do |asker| 
-        next unless ACCOUNT_DATA[asker.id]
-        (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-      end
-
-      @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
-
-      render 'index'
+    @askers.each do |asker| 
+      next unless ACCOUNT_DATA[asker.id]
+      (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
     end
+
+    posts = Publication.recent_publication_posts(@publications)
+    @actions = Post.recent_activity_on_posts(
+      posts, 
+      Publication.recent_responses(posts))
+
+    if current_user
+      @responses = Conversation.where(
+          :user_id => current_user.id, 
+          :post_id => posts.collect(&:id))
+        .includes(:posts)
+        .group_by(&:publication_id)
+    end
+
+    render 'index'
   end
 
   def index_with_search 
