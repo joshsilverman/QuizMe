@@ -40,12 +40,7 @@ class FeedsController < ApplicationController
         next unless ACCOUNT_DATA[asker.id]
         (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
       end
-      @question_count, @questions_answered, @followers = Rails.cache.fetch "stats_for_index", :expires_in => 1.day, :race_condition_ttl => 15 do
-        question_count = Publication.published.size
-        questions_answered = Post.answers.size
-        followers = Relationship.select("DISTINCT follower_id").size 
-        [question_count, questions_answered, followers]
-      end
+
       @actions = Post.recent_activity_on_posts(posts, Publication.recent_responses(posts))
 
       render 'index'
