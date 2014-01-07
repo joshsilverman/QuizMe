@@ -726,7 +726,6 @@ class Asker < User
       Proc.new {|answerer| request_new_question(answerer)}, # recurring
       Proc.new {|answerer| request_mod(answerer)}, # recurring
       Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
-      # Proc.new {|answerer| send_link_to_activity_feed(answerer)} # one time
     ]
     # this is a hack to cut down on extremely slow tests
     actions = actions.shuffle unless Rails.env.test?
@@ -756,27 +755,6 @@ class Asker < User
       end
     end
     return false
-  end
-
-  def send_link_to_activity_feed user, force = false
-    return false if Post.exists?(:in_reply_to_user_id => user.id, :intention => 'send link to activity feed')
-    return false unless user.lifecycle_above? 3
-    # return false if posts.where("intention = 'lifecycle+' and in_reply_to_user_id = ? and created_at > ?", user.id, 3.days.ago).present? # buffer after lifecycle transition
-    
-    unless force # used to bypass split for tests
-      return false unless Post.create_split_test(user.id, 'send link to activity feed (=> pro)', 'false', 'true') == 'true'
-    end
-
-    script = Post.create_split_test(user.id, 'link to activity feed script (=> pro)', 
-      "If you're interested, you can see all of your recent activity here: <link>", 
-      "Check out all of your recent activity at <link>",
-      "You can see your recent recent activity at <link>"
-    )
-    script.gsub! '<link>', "http://wisr.com/users/#{user.id}/activity"
-
-    self.send_private_message(user, script, {
-      :intention => "send link to activity feed"
-    })    
   end
 
   def request_mod user
