@@ -24,7 +24,9 @@ class PublicationQueue < ActiveRecord::Base
       }
     )
 
-    question.answers.incorrect.each_with_index do |incorrect_answer, i|
+    incorrect_answers = question.answers.incorrect
+      .sort { |a,b| a.text <=> b.text }
+    incorrect_answers.each_with_index do |incorrect_answer, i|
       publication._question["incorrect_answer_#{i}"] = incorrect_answer.text
     end
 
