@@ -6,24 +6,29 @@ class PublicationQueue < ActiveRecord::Base
     queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
     Question.select_questions_to_post(asker, 7).each do |question_id|
       break if queue.publications.count >= asker.posts_per_day
-      publication = Publication.create(
-        :question_id => question_id,
-        :asker_id => asker.id, 
-        :publication_queue_id => queue.id
-      )
-      puts "Enqueue pub #{publication.id} for #{asker.twi_screen_name} and queue #{queue.id}"
+      self.enqueue_question(asker.id, question_id)
     end
   end
 
   def self.enqueue_question(asker_id, question_id)
     queue = PublicationQueue.find_or_create_by(asker_id: asker_id)
-    question = Question.find question_id
+    question = Question.find(question_id)
 
-    publication = Publication.create(
-      :question_id => question_id,
-      :asker_id => asker_id, 
-      :publication_queue_id => queue.id
+    publication = Publication.new(
+      question_id: question_id,
+      asker_id: asker_id, 
+      publication_queue_id: queue.id,
+      _cache: {
+        question: question.text,
+        correct_answer: question.answers.correct.try(:text)
+      }
     )
+
+    question.answers.incorrect.each_with_index do |incorrect_answer, i|
+      publication._cache["incorrect_answer_#{i}"] = incorrect_answer.text
+    end
+
+    publication.save
   end
 
   def self.dequeue_question(asker_id, question_id)
