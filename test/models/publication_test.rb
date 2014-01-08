@@ -20,9 +20,12 @@ describe Publication, '#update_activity' do
     post2 = Post.create user: user2
 
     publication = Publication.create
+    publication.update_activity post1
 
-    publication = publication.update_activity post1
-    publication = publication.update_activity post2
+    publication = Publication.find(publication.id)
+    publication.reload.update_activity post2
+    
+    publication = Publication.find(publication.id)
 
     publication._activity.keys.count.must_equal 2
     publication._activity[user1.twi_screen_name]

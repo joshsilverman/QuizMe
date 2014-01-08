@@ -9,9 +9,10 @@ class Publication < ActiveRecord::Base
 
   def update_activity post
     user = post.user
-    self._activity ||= {}
-    self._activity[user.twi_screen_name] = user.twi_profile_img_url
-    self.save
+    activity = self._activity || {}
+    activity[user.twi_screen_name] = user.twi_profile_img_url
+    self.update _activity: {} # not sure why this line is required
+    self.update _activity: activity
 
     self
   end
