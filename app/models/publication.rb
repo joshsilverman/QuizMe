@@ -7,6 +7,15 @@ class Publication < ActiveRecord::Base
 
   scope :published, -> { where("publications.published = ?", true) }
 
+  def update_activity post
+    user = post.user
+    self._activity ||= {}
+    self._activity[user.twi_screen_name] = user.twi_profile_img_url
+    self.save
+
+    self
+  end
+
   def self.recent
     Rails.cache.fetch 'publications_recent' do
       Publication.includes([:asker, :posts, :question => [:answers, :user]])\

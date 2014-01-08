@@ -63,5 +63,33 @@ describe Post, '.twitter_request' do
       Post.twitter_request(failure_message) { raise "error" }
     end
   end
+end
 
+describe Post, '#send_to_publication' do
+  it 'calls update activity on correct publication with post' do
+    question = Question.create
+    publication = Publication.create question: question
+    post = Post.create question: question
+
+    Publication.any_instance.expects(:update_activity).with(post)
+
+    post.send_to_publication
+  end
+
+  it 'returns nil if no publication found' do
+    post = Post.create
+    post.send_to_publication.must_equal nil
+  end
+
+  it 'returns the latest publication if multiple publications exist' do
+    question = Question.create
+    publication_0 = Publication.create question: question, created_at: 4.days.ago
+    publication_1 = Publication.create question: question, created_at: 1.day.ago
+    publication_2 = Publication.create question: question, created_at: 2.days.ago
+    post = Post.create question: question
+
+    Publication.any_instance.expects(:update_activity).with(post)
+
+    post.send_to_publication.must_equal publication_1
+  end
 end

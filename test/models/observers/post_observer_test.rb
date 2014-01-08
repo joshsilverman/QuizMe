@@ -13,6 +13,7 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.stubs(:send_to_publication)
     PostObserver.any_instance.expects(:send_to_feed).with(post)
 
     post.save
@@ -23,6 +24,7 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.stubs(:send_to_publication)
     PostObserver.any_instance.expects(:send_to_stream).with(post)
 
     post.save
@@ -33,9 +35,33 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:send_to_publication)
     PostObserver.any_instance.expects(:segment_user).with(post)
 
     post.save
+  end
+
+  it "should call send_to_publication with post" do
+    post = FactoryGirl.build :post
+
+    PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.expects(:send_to_publication).with(post)
+
+    post.save
+  end
+
+  it "should call send_to_publication with post after update too" do
+    post = FactoryGirl.build :post
+
+    PostObserver.any_instance.stubs(:send_to_feed)
+    PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.expects(:send_to_publication).with(post).twice
+
+    post.save
+    post.update text: 'hoot!'
   end
 end
 
@@ -101,6 +127,7 @@ describe Post, 'PostObserver#segment_user' do
     User.any_instance.expects(:segment)
     PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:send_to_publication)
 
     post.save
   end
@@ -111,7 +138,18 @@ describe Post, 'PostObserver#segment_user' do
     User.any_instance.expects(:segment).never
     PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:send_to_publication)
 
     post.save
+  end
+end
+
+describe Post, 'PostObserver#send_to_publication' do
+  it "should call send_to_publication on post object" do
+    post = FactoryGirl.create :post
+
+    post.expects(:send_to_publication)
+
+    PostObserver.send(:new).send_to_publication post
   end
 end

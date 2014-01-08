@@ -3,6 +3,7 @@ class PostObserver < ActiveRecord::Observer
     segment_user post
     send_to_feed post
     send_to_stream post
+    send_to_publication post
   end
 
   def segment_user post
@@ -22,5 +23,9 @@ class PostObserver < ActiveRecord::Observer
     return unless post.intention == 'respond to question'
 
     post.send_to_stream
+  end
+
+  def send_to_publication post
+    post.delay.send_to_publication
   end
 end

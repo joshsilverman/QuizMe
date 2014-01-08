@@ -726,4 +726,13 @@ class Post < ActiveRecord::Base
         }
       })
   end
+
+  def send_to_publication
+    publication = Publication.where(question_id: question_id)
+      .order(created_at: :desc).first
+    return if publication.nil?
+
+    publication.update_activity self
+    publication
+  end
 end
