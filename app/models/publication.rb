@@ -17,6 +17,25 @@ class Publication < ActiveRecord::Base
     self
   end
 
+  def update_question question = nil
+    question ||= Question.find question_id
+
+    assign_attributes(
+      _question: {
+        question: question.text,
+        correct_answer: question.answers.correct.try(:text)
+      }
+    )
+
+    incorrect_answers = question.answers.incorrect
+      .sort { |a,b| a.text <=> b.text }
+    incorrect_answers.each_with_index do |incorrect_answer, i|
+      self._question["incorrect_answer_#{i}"] = incorrect_answer.text
+    end
+
+    save
+  end
+
   def self.recent
     Rails.cache.fetch 'publications_recent' do
       Publication.includes([:asker, :posts, :question => [:answers, :user]])\

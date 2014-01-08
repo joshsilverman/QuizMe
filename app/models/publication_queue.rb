@@ -17,20 +17,10 @@ class PublicationQueue < ActiveRecord::Base
     publication = Publication.new(
       question_id: question_id,
       asker_id: asker_id, 
-      publication_queue_id: queue.id,
-      _question: {
-        question: question.text,
-        correct_answer: question.answers.correct.try(:text)
-      }
+      publication_queue_id: queue.id
     )
 
-    incorrect_answers = question.answers.incorrect
-      .sort { |a,b| a.text <=> b.text }
-    incorrect_answers.each_with_index do |incorrect_answer, i|
-      publication._question["incorrect_answer_#{i}"] = incorrect_answer.text
-    end
-
-    publication.save
+    publication.update_question question
   end
 
   def self.dequeue_question(asker_id, question_id)
@@ -55,15 +45,11 @@ class PublicationQueue < ActiveRecord::Base
   end
 
   def increment_index(posts_per_day)
-    # puts "increment index from:"
-    # puts self.index
     if self.index < (posts_per_day - 1)
       self.increment :index
     else
       self.update_attribute(:index, 0)
     end
     self.save
-    # puts "to:"
-    # puts self.index
   end
 end
