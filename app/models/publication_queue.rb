@@ -18,14 +18,14 @@ class PublicationQueue < ActiveRecord::Base
       question_id: question_id,
       asker_id: asker_id, 
       publication_queue_id: queue.id,
-      _cache: {
+      _question: {
         question: question.text,
         correct_answer: question.answers.correct.try(:text)
       }
     )
 
     question.answers.incorrect.each_with_index do |incorrect_answer, i|
-      publication._cache["incorrect_answer_#{i}"] = incorrect_answer.text
+      publication._question["incorrect_answer_#{i}"] = incorrect_answer.text
     end
 
     publication.save
