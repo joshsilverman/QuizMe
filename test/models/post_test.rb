@@ -69,7 +69,7 @@ describe Post, '#send_to_publication' do
   it 'calls update activity on correct publication with post' do
     question = Question.create
     publication = Publication.create question: question
-    post = Post.create question: question
+    post = Post.create in_reply_to_question: question
 
     Publication.any_instance.expects(:update_activity).with(post)
 
@@ -86,7 +86,7 @@ describe Post, '#send_to_publication' do
     publication_0 = Publication.create question: question, created_at: 4.days.ago
     publication_1 = Publication.create question: question, created_at: 1.day.ago
     publication_2 = Publication.create question: question, created_at: 2.days.ago
-    post = Post.create question: question
+    post = Post.create in_reply_to_question: question
 
     Publication.any_instance.expects(:update_activity).with(post)
 
