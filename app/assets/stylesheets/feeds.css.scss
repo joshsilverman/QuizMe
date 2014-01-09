@@ -248,6 +248,48 @@ body {
 				width: 285px;
 			}
 
+			@media (max-width: 767px) {
+				float:none;
+				margin-left: 0px;
+
+				#my_badges {
+					ul {
+						a {
+							li {
+								h5, p {
+									display: none;
+								}
+								float:left;
+								padding:0px;
+
+								.content {
+									img {
+										height: 36px;
+										top:3px;
+										left:15px;
+									}
+								}
+							}
+						}
+						a:first-child {
+							li {
+								float:none;
+								h5, p {
+									display: block;
+								}
+								padding:10px;
+
+								img {
+									height: 48px;
+										top:10px;
+										left:10px;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			.header {
 				-webkit-border-top-left-radius: 5px;
 				-moz-border-top-left-radius: 5px;

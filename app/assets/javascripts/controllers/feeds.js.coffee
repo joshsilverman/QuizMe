@@ -45,7 +45,7 @@ class @Feed
 	initialize_fix_position_listener: =>
 		offset = 40
 		$(window).on "scroll", => 
-			if $(window).scrollTop() >= offset
+			if $(window).scrollTop() >= offset and $('#left_column').css('float') == 'right'
 				$("#left_column_container").css("position", "fixed").css("top", "13px")
 			else
 				$("#left_column_container").css("position", "").css("top", "auto")

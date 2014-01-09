@@ -7,9 +7,9 @@
 			#feed.row
 				= render :partial => "account_info"
 
-				#left_column.span3.hidden-phone
+				#left_column.span3
 					#left_column_container
-						#activity_stream.rounded.border-color= render partial: "stream"
+						#activity_stream.rounded.border-color.hidden-phone= render partial: "stream"
 						.clr
 						- if current_user
 							= render partial: "my_badges"
