@@ -30,8 +30,6 @@
                       %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
                     %li
                       %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
-                    %li
-                      %a{:href => "/users/supporters", :tabindex => "-1"} Supporters        
 
             - elsif current_user.is_role? 'client'
               %li
