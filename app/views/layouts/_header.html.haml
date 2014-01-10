@@ -8,23 +8,18 @@
             - if current_user.is_role? 'admin'
               %li
                 .dropdown.nav-link
-                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Askers
+                  %a.nav-link{:href => "#", 'data-target' => "#"} Manage
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/askers", :tabindex => "-1"} Status
                     %li
-                      %a{:href => "/askers/edit_graph", :tabindex => "-1"} Graph     
+                      %a{:href => "/askers/edit_graph", :tabindex => "-1"} Asker Graph     
+                    %li
+                      %a{:href => "/moderations/manage?edits=true", :tabindex => "-1"} Questions
+
               %li
                 .dropdown.nav-link
-                  %a.nav-link{:href => "/feeds/manage", 'data-target' => "#"} Users
-                  %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-                    %li
-                      %a{:href => "/feeds/manage", :tabindex => "-1"} Posts
-                    %li
-                      %a{:href => "/moderations/manage?edits=true", :tabindex => "-1"} Questions                   
-              %li
-                .dropdown.nav-link
-                  %a.nav-link{:href => "/dashboard", 'data-target' => "#"} Founders
+                  %a.nav-link{:href => "#", 'data-target' => "#"} Stats
                   %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
                     %li
                       %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
