@@ -10,11 +10,31 @@ Quizmemanager::Application.routes.draw do
   post '/askers/remove_related' => 'askers#remove_related'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
+  resources :users do
+    resources :posts, only: [:answer_count] do
+      collection do
+        get :answer_count
+      end
+    end
+
+    resources :moderations, only: [:count] do
+      collection do
+        get :count
+      end
+    end
+
+    resources :questions, only: [:count] do
+      collection do
+        get :count
+      end
+    end
+  end
+
   get '/users/:id/activity' => 'users#activity'
   get '/users/activity_feed'
   post '/users/add_email'
-
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
+  
   post '/unsubscribe' => 'users#unsubscribe'
   get '/progress_report' => 'users#progress_report'
 
