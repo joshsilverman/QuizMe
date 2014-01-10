@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers]
+  before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers, :count]
   before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
 
@@ -254,5 +254,11 @@ class QuestionsController < ApplicationController
     @questions = all_questions.where('moderation_trigger_type_id is not null').page(params[:page]).per(25)
     @moderated_count = @questions.count
     @pending_count = all_questions.count - @questions.count
+  end
+
+  def count
+    count = Question.where(user_id: params[:user_id]).count
+
+    render json: count
   end
 end

@@ -559,3 +559,14 @@ describe ModerationsController do
 		end
 	end
 end
+
+describe ModerationsController, "#count" do
+  it "must return correct count of moderations" do
+    user = create :user
+    moderation = Moderation.create user_id: user.id
+
+    get :count, user_id: user.id, format: :json
+
+    response.body.must_equal('1')
+  end
+end

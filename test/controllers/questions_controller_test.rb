@@ -39,3 +39,14 @@ describe QuestionsController do
 		end
 	end
 end
+
+describe QuestionsController, "#count" do
+  it "return the number of questions authored" do
+  	user = create :user
+  	question = create :question, user_id: user.id
+
+    get :count, user_id: user.id, format: :json
+    
+    response.body.must_equal('1')
+  end
+end

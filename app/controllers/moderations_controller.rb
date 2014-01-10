@@ -1,6 +1,6 @@
 class ModerationsController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:manage]
-  before_filter :moderator?
+  before_filter :moderator?, except: [:count]
 
   def manage
     moderator = current_user.becomes(Moderator)
@@ -51,5 +51,11 @@ class ModerationsController < ApplicationController
       question_status: status
     }
     render json: response
+  end
+
+  def count
+    count = Moderation.where(user_id: params['user_id']).count
+
+    render json: count
   end
 end

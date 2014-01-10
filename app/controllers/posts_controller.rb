@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :admin?, :except => [:nudge_redirect, :refer, :retweet]
+  before_filter :admin?, :except => [:nudge_redirect, :refer, :retweet, :answer_count]
 
 	def retweet
 		return unless params[:publication_id]
@@ -44,5 +44,13 @@ class PostsController < ApplicationController
     redirect_url = redirect_url.gsub "{user_twi_screen_name}", user.twi_screen_name
     redirect_url = redirect_url.gsub "{user_id}", user.id.to_s
     redirect_to redirect_url
+  end
+
+  def answer_count
+    count = Post.where(user_id: params[:user_id])
+      .where('correct IS NOT NULL')
+      .count
+
+    render json: count
   end
 end
