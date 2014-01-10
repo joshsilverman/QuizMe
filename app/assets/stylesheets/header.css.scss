@@ -1,0 +1,37 @@
+.navbar {
+  .nav {
+
+    a.quick-stats {
+      padding: 6px; 
+      background:#f8f8f8;
+
+      &:hover {background:#f8f8f8;}
+
+      .profile-img {
+        height:25px;
+        width:25px;
+      }
+
+      .answer-count {
+        font-weight: bold;
+      }
+
+      .quick-stat {
+        display: inline-block;
+        padding:4px 3px;
+        cursor: pointer;
+      }
+
+      .circle {
+        border-radius: 50%;
+        width: 0px;
+        height: 0px;
+        display: inline-block;
+        border:solid #555 3px;
+        position:relative;
+        top:-2px;
+        left:-1px;
+      }
+    }
+  }
+}
