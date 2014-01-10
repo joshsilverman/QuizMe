@@ -1,4 +1,4 @@
-if ($('#my_badges:visible').length > 0) {
+if ($('#my_badges.authenticated:visible').length > 0) {
   $(function() {
     var myBadgesViewModel;
 

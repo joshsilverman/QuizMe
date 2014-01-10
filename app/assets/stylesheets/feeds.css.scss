@@ -262,12 +262,10 @@ body {
 								float:left;
 								padding:0px;
 
-								.content {
-									img {
-										height: 36px;
-										top:3px;
-										left:15px;
-									}
+								.content > img {
+									height: 36px;
+									top:3px;
+									left:15px;
 								}
 							}
 						}
@@ -279,10 +277,10 @@ body {
 								}
 								padding:10px;
 
-								img {
+								.content > img {
 									height: 48px;
-										top:10px;
-										left:10px;
+									top:10px;
+									left:10px;
 								}
 							}
 						}
@@ -344,11 +342,16 @@ body {
 								color: #333;
 							}
 							
-							img {			
+							& > img {			
 								position: absolute;
 								top: 10px;
 								left: 10px;
 								height: 48px;
+							}
+
+							a.twitter_sign_in img {
+								margin: 5px 0;
+								height: inherit !important;
 							}
 						}					
 					}
