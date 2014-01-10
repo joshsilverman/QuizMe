@@ -1,16 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:show, :questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :add_email]
-
-  def show
-    @user = User.where("twi_screen_name ILIKE '%#{params[:twi_screen_name]}%'").first
-    if @user.nil?
-      redirect_to "/"
-    elsif @user.is_role? "asker"
-      redirect_to "/feeds/#{@user.id}"
-    else
-      redirect_to "/#{params[:twi_screen_name]}/badges"
-    end
-  end
+  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :add_email]
 
   def activity_feed
     @activity = current_user.activity(since: 1.month.ago)
