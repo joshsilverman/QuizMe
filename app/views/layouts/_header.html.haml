@@ -6,14 +6,8 @@
         %ul.nav{:style => 'float:right;'}     
           - if current_user
             %li
-              %a.quick-stats
-                %img{src: current_user.twi_profile_img_url, class: "rounded profile-img"}
-                .quick-stat.answer-count{'title' => '426 questions answered', 'data-toggle' => 'popover', 'data-placement' => 'bottom'} 426
-                .circle
-                .quick-stat.moderation-count{'title' => '43 answers moderated', 'data-toggle' => 'popover', 'data-placement' => 'bottom'} 43
-                .circle
-                .quick-stat.question-count{'title' => '12 questions authored', 'data-toggle' => 'popover', 'data-placement' => 'bottom'} 12
-
+              = hidden_field :current_user, :id
+              = render partial: 'header/quick_stats'
 
             - if current_user.is_role? 'admin'
               %li
