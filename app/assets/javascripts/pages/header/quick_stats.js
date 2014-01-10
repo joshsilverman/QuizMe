@@ -18,6 +18,7 @@ if ($('.quick-stats').length > 0) {
         quickStatsViewModel.question_count(count);
       })
 
+      $('.quick-stat').tooltip();
     }
 
     function QuickStatsViewModel() {
