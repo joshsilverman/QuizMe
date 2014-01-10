@@ -12,16 +12,6 @@ class UsersController < ApplicationController
     @subscribed = Asker.includes(:related_askers).where("id in (?)", @user.follows.collect(&:id))
   end
 
-  def update
-    @user = User.find(params[:id])
-
-    if @user.update_attributes(params[:user])
-      head :ok
-    else
-      render json: @user.errors, status: :unprocessable_entity
-    end
-  end
-
   def add_email
     if status = current_user.update(email: params[:email])
       Post.trigger_split_test(current_user.id, 'request email after answer script (provides email address)')

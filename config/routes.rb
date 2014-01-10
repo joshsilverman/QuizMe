@@ -16,6 +16,7 @@ Quizmemanager::Application.routes.draw do
 
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   post '/unsubscribe' => 'users#unsubscribe'
+  get '/progress_report' => 'users#progress_report'
 
   resources :issuances, only: [:show, :index]
 
@@ -89,7 +90,6 @@ Quizmemanager::Application.routes.draw do
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
 
-  get '/progress_report' => 'users#progress_report'
   get "/confirm_js" => "sessions#confirm_js"
   get '/sitemap' => 'pages#sitemap'
 
