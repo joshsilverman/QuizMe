@@ -15,6 +15,7 @@
 
       .answer-count {
         font-weight: bold;
+        opacity:0;
       }
 
       .quick-stat {
@@ -22,6 +23,12 @@
         padding:4px 3px;
         cursor: pointer;
         min-height: 10px;
+        opacity: 0;
+
+        &.visible {
+          opacity: 1;
+          transition: opacity 1s;
+        }
       }
 
       .circle {
@@ -33,6 +40,12 @@
         position:relative;
         top:-2px;
         left:-1px;
+        opacity:0;
+
+        &.visible {
+          opacity: 1;
+          transition: opacity 1s;
+        }
       }
     }
   }

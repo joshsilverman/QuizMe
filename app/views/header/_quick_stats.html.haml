@@ -1,7 +1,7 @@
 %a.quick-stats
   %img{src: current_user.twi_profile_img_url, class: "rounded profile-img"}
-  .quick-stat.answer-count{'title' => 'questions answered', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: answer_count'}
+  .quick-stat.answer-count{'title' => 'questions answered', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: answerCount', 'data-source' => "/posts/answer_count", 'data-target' => 'answerCount'}
   .circle
-  .quick-stat.moderation-count{'title' => 'answers moderated', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: moderation_count'}
+  .quick-stat.moderation-count{'title' => 'answers moderated', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: moderationCount', 'data-source' => "/moderations/count", 'data-target' => 'moderationCount'}
   .circle
-  .quick-stat.question-count{'title' => 'questions authored', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: question_count'}
+  .quick-stat.question-count{'title' => 'questions authored', 'data-toggle' => 'popover', 'data-placement' => 'bottom', 'data-bind' => 'text: questionCount', 'data-source' => "/questions/count", 'data-target' => 'questionCount'}
