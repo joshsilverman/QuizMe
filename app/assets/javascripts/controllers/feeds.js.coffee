@@ -244,6 +244,8 @@ class Post
 						)
 					)
 				)
+				$(document).trigger('increment', 'answerCount')
+				
 			error: => loading.text("Something went wrong, sorry!").delay(2000).fadeOut()
 
 	show_activity: =>

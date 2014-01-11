@@ -19,6 +19,7 @@ if ($('.quick-stats').length > 0) {
       });
 
       $('.quick-stat').tooltip();
+      $(document).on('increment', incrementCount);
     }
 
     function QuickStatsViewModel() {
@@ -27,6 +28,13 @@ if ($('.quick-stats').length > 0) {
       self.answerCount = ko.observable();
       self.questionCount = ko.observable();
       self.moderationCount = ko.observable();
+    }
+
+    function incrementCount(e, target) {
+      quickStatsViewModel[target](quickStatsViewModel[target]() + 1);
+
+      $(".quick-stats").addClass("highlight");
+      setTimeout(function() {$(".quick-stats").removeClass("highlight");}, 250);
     }
 
     init($('#current_user_id').val());
