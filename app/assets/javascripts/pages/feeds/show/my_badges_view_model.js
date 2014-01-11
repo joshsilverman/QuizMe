@@ -5,7 +5,6 @@ if ($('#my_badges.authenticated:visible').length > 0) {
     function init() {
       myBadgesViewModel = new MyBadgesViewModel();
 
-
       ko.applyBindings(myBadgesViewModel, $('#my_badges')[0]);
 
       $.getJSON("/issuances.json", function(issuances) {
@@ -14,6 +13,7 @@ if ($('#my_badges.authenticated:visible').length > 0) {
           var badge = new BadgeModel(issuance);
           myBadgesViewModel.badges.push(badge);
         });
+        $('#my_badges ul').removeClass('hidden');
       })
     }
 

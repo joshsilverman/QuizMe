@@ -6,7 +6,7 @@
       %span{'data-bind' => "visible: badges().length < 1"}
         =image_tag "ajax-loader.gif"
 
-  %ul.unstyled{'data-bind' => "foreach: badges(), visible: (badges().length > 0)"}
+  %ul.hidden.unstyled{'data-bind' => "foreach: badges(), visible: (badges().length > 0)"}
     %a.badge-link{"data-bind" => "attr: {href: href}"}
       %li
         .content
