@@ -1,5 +1,21 @@
 .navbar {
+
+  .brand {
+    font-weight: bold;
+    text-shadow: none;
+    color:transparent;
+    background: url(/assets/logo/small.png) no-repeat 10px 8px;
+  }
+
+  .left-nav {
+    margin-left:10px;
+  }
+
   .nav {
+    a, .nav-link, .brand {
+      padding: 12px 8px 9px;
+      cursor:pointer;
+    }
 
     a.quick-stats {
       padding: 6px; 
@@ -22,7 +38,9 @@
 
       .quick-stat {
         display: inline-block;
-        padding:4px 3px;
+        padding:4px 3px 0px;
+        position:relative;
+        top:2px;
         cursor: pointer;
         min-height: 10px;
         opacity: 0;
@@ -38,16 +56,27 @@
         width: 0px;
         height: 0px;
         display: inline-block;
-        border:solid #555 3px;
-        position:relative;
-        top:-2px;
-        left:-1px;
+        border:solid #999 3px;
         opacity:0;
 
         &.visible {
           opacity: 1;
           transition: opacity 1s;
         }
+      }
+    }
+  }
+}
+
+.navbar {
+  .navbar-inner {
+    .container {
+
+      .collapse {overflow: visible !important;}
+
+      .sign_in {
+        float: right;
+        line-height: 38px;
       }
     }
   }
