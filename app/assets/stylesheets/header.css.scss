@@ -5,6 +5,11 @@
     text-shadow: none;
     color:transparent;
     background: url(/assets/logo/small.png) no-repeat 10px 8px;
+    margin:0 auto;
+    display: block;
+    float:none;
+    width:54px;
+    margin-bottom: -40px;
   }
 
   .left-nav {
@@ -77,6 +82,15 @@
       .sign_in {
         float: right;
         line-height: 38px;
+      }
+
+      .logout {
+        padding:0px;
+        margin:10px 16px 0 10px;
+
+        img {
+          height:20px;
+        }
       }
     }
   }
