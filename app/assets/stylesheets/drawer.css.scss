@@ -1,0 +1,23 @@
+.drawer {
+  position:absolute;
+  width:242px;
+
+  ul {
+    padding:50px 0;
+    margin:0;
+    list-style-type: none;
+    width:100%;
+    
+    li {
+      width:100%;
+      padding:12px 12px;
+      color: #ccc;
+      font-size:1.3em;
+      border-bottom: 1px solid rgba(255,255,255, 0.1);
+
+      a {
+        color: #bbb;
+      }
+    }
+  }
+}

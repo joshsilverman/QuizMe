@@ -12,13 +12,13 @@ html {
 
 
 body {
-  background-color: #8e8e8e !important;
+  background-color: #323949 !important;
   padding:0 !important;
   height:100%;
 }
 
 .main-view {
-  background: url("/assets/bg_images/twi/tree.jpg") no-repeat;
+  background: #323949 url("/assets/bg_images/twi/tree.jpg") no-repeat;
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -28,7 +28,8 @@ body {
   top:0px;
   width:100%;
   height:100%;
-  overflow-y: scroll; 
+  overflow-y: scroll;
+  box-shadow: 20px 0px 50px #000
 }
 
 .main-view > .container {
