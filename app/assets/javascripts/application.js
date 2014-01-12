@@ -47,9 +47,7 @@ function readCookie(name) {
 
 
 function js_check(){
-	// console.log('CHECK')
 	var jsconfirm = readCookie('jsconfirm');
-	// console.log(jsconfirm);
 	if(jsconfirm == null){
 		console.log('null... Sending AJAX request')
 		confirm_js();
