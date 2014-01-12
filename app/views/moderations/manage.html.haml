@@ -1,14 +1,9 @@
 - admin = current_user.is_role? "admin"
 - moderator = current_user.is_role? "moderator"
 
-:css
-	body {
-		background-image: url(/assets/bg_images/twi/tree.jpg) !important;
-	}
-
 #manager.moderations_manage
-	#feed_container.span10
-		#wrapper.span9
+	#feed_container
+		#wrapper
 			#feed.row
 				#left_column.span3.hidden-phone
 					%ul.nav.nav-tabs.nav-stacked
