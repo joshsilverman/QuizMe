@@ -9,11 +9,12 @@
     %meta{:name => "description", :content => "Wisr teaches anything from Chemistry to Algebra through Twitter/chat/SMS/email. Learn by answering questions in the communication channel where you are most comfortable."}
     = yield(:meta)
 
-  %body{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
-      
-    = render 'layouts/header'
-    .container.row{:style => "margin: auto;"}
-      = yield
+  %body
+    .main-view{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
+
+      = render 'layouts/header'
+      .container.row{:style => "margin: auto;"}
+        = yield
 
     - cache("_application_css_js", :expires_in => 1.hour) do
       = javascript_include_tag "application"

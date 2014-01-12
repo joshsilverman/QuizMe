@@ -1,4 +1,4 @@
-body {
+.main-view {
 	background-attachment:fixed;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-tap-highlight-color: transparent;
@@ -111,7 +111,7 @@ body {
 
 
 		@media (max-width: 1199px) {
-			width: 508px;
+			width: 528px;
 		}
 
 		@media (max-width: 979px) {
@@ -233,7 +233,9 @@ body {
 	}
 
 	#feed {	
+		margin-top: 60px;
 		margin-bottom: 30px;
+		position:relative;
 
 		.header {
 			background: #F5F5F5;
@@ -243,9 +245,15 @@ body {
 		#left_column {
 			float:right;
 			margin-left: 5px;
+			position:relative;
 
 			@media (min-width: 1200px) {
 				width: 285px;
+
+				#left_column_container {
+					width: inherit;
+					position:fixed;
+				}
 			}
 
 			@media (max-width: 767px) {
@@ -296,10 +304,6 @@ body {
 				-webkit-border-top-right-radius: 5px;
 				-moz-border-top-right-radius: 5px;
 				border-top-right-radius: 5px;
-			}
-
-			#left_column_container {
-				width: inherit;
 			}
 
 			#related, #my_badges, #directory, #activity_stream, #ask, #subscribed {
@@ -623,11 +627,6 @@ body {
 					border-radius: 5px 5px 0 0;
 				}
 			}
-
-			// @media (min-width: 481px) and (max-width: 767px) {
-			// 	// width: 454px !important;
-			// 	// margin: -16px 0 0 26px;
-			// }
 
 			@media (min-width: 768px) and (max-width: 979px) {
 				width: 454px !important;
@@ -1337,11 +1336,6 @@ body {
 		}
 
 		#left_column {
-			//width:170px;
-			//margin-left:15px;
-			//float:left;
-
-
 			.nav {
 				.box {
 					&.top {
@@ -1455,28 +1449,6 @@ body {
 			.pagination-wrapper {
 				.pagination ul {
 					background-color: white;
-				}
-			}
-		}
-	}
-
-	&.mod {
-		#left_column {
-			.box {
-				/*position: fixed;*/
-				/*width: 258px;*/
-				/*top:190px;*/
-			}
-		}
-
-		.conversation {
-			/*margin:12px 0;*/
-
-			.post {
-				/*border-top: 1px solid #ccc;*/
-
-				.actions {
-					/*display: block !important;*/
 				}
 			}
 		}

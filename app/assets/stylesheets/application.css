@@ -6,6 +6,37 @@
  *= require_tree . 
 */
 
+html {
+  height:100%;
+}
+
+
+body {
+  background-color: #8e8e8e !important;
+  padding:0 !important;
+  height:100%;
+}
+
+.main-view {
+  background: url("/assets/bg_images/twi/tree.jpg") no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:100%;
+  height:100%;
+  overflow-y: scroll; 
+}
+
+.main-view > .container {
+  width:100%;
+  height:100%;
+  overflow-y:auto;
+}
+
 .pagination-wrapper {
   text-align: center;
   padding-top: 10px;

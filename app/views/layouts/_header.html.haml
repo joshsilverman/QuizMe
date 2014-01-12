@@ -3,6 +3,10 @@
     .container
       %a.brand{:href => "/"} Wisr
       .in.collapse
+        %ul.nav{:style => 'float:left;'}
+          %li.menu-toggle
+            =image_tag 'icons/mobile-nav.png'
+
         %ul.nav{:style => 'float:right;'}     
           - if current_user
             %li

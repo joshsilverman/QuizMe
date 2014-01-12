@@ -1,4 +1,11 @@
 .navbar {
+  position:fixed;
+  z-index:10;
+  top:0px;
+  left:0px;
+  right:0px;
+  margin:0px;
+  -webkit-backface-visibility: hidden;
 
   .brand {
     font-weight: bold;
@@ -84,9 +91,10 @@
         line-height: 38px;
       }
 
-      .logout {
+      .logout, .menu-toggle {
         padding:0px;
-        margin:10px 16px 0 10px;
+        margin:10px 10px 0 18px;
+        cursor: pointer;
 
         img {
           height:20px;
