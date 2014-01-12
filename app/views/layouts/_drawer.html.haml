@@ -1,0 +1,33 @@
+.drawer
+  %ul
+  - if current_user.is_role? 'admin'
+    %li
+      .dropdown.nav-link
+        %a.nav-link{:href => "#", 'data-target' => "#"} Manage
+        %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+          %li
+            %a{:href => "/askers", :tabindex => "-1"} Status
+          %li
+            %a{:href => "/askers/edit_graph", :tabindex => "-1"} Asker Graph     
+          %li
+            %a{:href => "/moderations/manage?edits=true", :tabindex => "-1"} Questions
+
+    %li
+      .dropdown.nav-link
+        %a.nav-link{:href => "#", 'data-target' => "#"} Stats
+        %ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
+          %li
+            %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
+          %li
+            %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
+
+  - elsif current_user.is_role? 'client'
+    %li
+      %a.nav-link{:href => "/clients/#{current_user.id}/report"} Reporting
+  - elsif current_user.is_role? 'author'
+    %li
+      %a.nav-link{:href => "/questions"} My Questions
+
+  - elsif current_user.is_role? "moderator"
+    %li
+      %a.nav-link{:href => "/moderations/manage"} Moderate

@@ -10,8 +10,9 @@
     = yield(:meta)
 
   %body
-    .main-view{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
+    = render 'layouts/drawer'
 
+    .main-view{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
       = render 'layouts/header'
       .container.row{:style => "margin: auto;"}
         = yield
