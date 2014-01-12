@@ -33,6 +33,7 @@
       padding: 6px; 
       background:#f8f8f8;
       transition: background 0.25s;
+      min-height: 28px;
 
       &:hover {background:#f8f8f8;}
       &.highlight {background:#FFFEB8;}
