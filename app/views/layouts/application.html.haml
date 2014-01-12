@@ -10,11 +10,11 @@
     = yield(:meta)
 
   %body
-    = render 'layouts/drawer'
+    =# render 'layouts/drawer'
 
     .main-view{:style => ("background-image: url(/assets/bg_images/#{@asker.bg_image}); background-size:cover;" if @asker.try(:bg_image))}
       = render 'layouts/header'
-      .container.row{:style => "margin: auto;"}
+      .container.row
         = yield
 
     - cache("_application_css_js", :expires_in => 1.hour) do
