@@ -19,7 +19,6 @@ class @Feed
 		@initialize_posts($(".conversation"))
 		@initialize_infinite_scroll()
 		@initialize_tooltips()
-		@initialize_fix_position_listener() unless $(".index").length > 0
 
 		$('.nav-tabs .activity').on 'click', => 
 			return if $(".tab-content .activity").find(".tab-pane").length > 0
@@ -41,14 +40,6 @@ class @Feed
 		$(".profile").on "click", => mixpanel.track("profile click", {"account" : @name, "source": source, "type": "activity"})
 
 		@filtered = $('.tab-content .activity').length > 0
-
-	initialize_fix_position_listener: =>
-		offset = 40
-		$(window).on "scroll", => 
-			if $(window).scrollTop() >= offset and $('#left_column').css('float') == 'right'
-				$("#left_column_container").css("position", "fixed").css("top", "13px")
-			else
-				$("#left_column_container").css("position", "").css("top", "auto")
 
 	initialize_infinite_scroll: =>
 		window.appending = false
