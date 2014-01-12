@@ -10,13 +10,15 @@
   .brand {
     font-weight: bold;
     text-shadow: none;
-    color:transparent;
-    background: url(/assets/logo/small.png) no-repeat 10px 8px;
+    color:#777;
+    font-size: 25px;
+    font-family: logoFont;
     margin:0 auto;
     display: block;
     float:none;
     width:54px;
-    margin-bottom: -40px;
+    margin-top: 4px;
+    margin-bottom: -49px;
   }
 
   .left-nav {
