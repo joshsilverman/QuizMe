@@ -14,7 +14,7 @@
               = render partial: 'header/quick_stats'
 
             %li
-              %a.nav-link.logout{href: destroy_user_session_path, :method => :delete}
+              %a.nav-link.logout{href: destroy_user_session_path, 'data-method' => :delete, rel: "nofollow"}
                 =image_tag 'icons/logout.png'
           - else
             %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
