@@ -20,11 +20,11 @@
 					#posts.rounded
 						.header.border-color
 							%h3
-								Questions
 								.ugc
 									%a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
 										%i.icon-pencil
 										Post a Question
+								Questions
 						#feed_content
 							- if current_user
 								= render :partial => "feed"
