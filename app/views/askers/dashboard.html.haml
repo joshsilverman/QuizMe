@@ -1,26 +1,13 @@
 :css
-  @media (min-width: 1200px) {
-    .navbar-fixed-top .container {
-      width: 1152px !important;
-    }
-  }
-  @media (max-width: 1199px) and (min-width:980px) {
-    .navbar-fixed-top .container {
-      width: 861px !important;
-    }
-  }
-  @media (max-width: 979px) and (min-width:768px) {
-    .navbar-fixed-top .container {
-      width: 741px !important;
-    }
+  .navbar-fixed-top .container {
+    width: 100% !important;
   }
 
-  body {background:#fff; padding-bottom:0px;}
-  .navbar-inner {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;}
+  .main-view {background:#fff; padding-bottom:0px;}
   .nav-tabs {margin-top:10px;}
   .tab-content {min-height: 618px; margin-left: 30px !important;}
 
-.dashboards
+.dashboards.span12
   %ul#tabs.nav.nav-tabs
     %li.core-metrics
       %a{:href => "#core"} Core
