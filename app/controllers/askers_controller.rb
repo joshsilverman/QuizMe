@@ -7,16 +7,7 @@ class AskersController < ApplicationController
   caches_action :get_handle_metrics, :expires_in => 11.minutes
 
   def index
-    @new_posts = {}
-    @submitted_questions = {}
-    asker_ids = Asker.ids
-
-    @unmoderated_counts = Question.unmoderated_counts
-    @ugc_post_counts = Post.ugc_post_counts
-    @question_counts = Question.counts
-    
     @askers = Asker.all
-    @askers = @askers.reject{|a| !a.published} + @askers.reject{|a| a.published}
   end
 
   def edit
