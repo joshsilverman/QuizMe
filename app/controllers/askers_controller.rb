@@ -8,6 +8,18 @@ class AskersController < ApplicationController
 
   def index
     @askers = Asker.all
+
+    respond_to do |format|
+      format.html { }
+      format.json do 
+        render json: @askers.to_json(only: [
+          :id,
+          :twi_name, :twi_screen_name, :twi_profile_img_url,
+          :description, 
+          :bg_image,
+          :published]) 
+      end
+    end
   end
 
   def edit
