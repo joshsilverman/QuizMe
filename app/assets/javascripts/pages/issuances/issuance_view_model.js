@@ -4,7 +4,7 @@ if ($('.issuance-container').length > 0) {
 
     function init(id) {
       issuanceViewModel = new IssuanceViewModel();
-      ko.applyBindings(issuanceViewModel);
+      ko.applyBindings(issuanceViewModel, $('.issuance-container')[0]);
 
       var issuance = $.parseJSON($('#issuance_json').val());
 
