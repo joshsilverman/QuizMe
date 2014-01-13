@@ -25,3 +25,10 @@
     - elsif current_user.try(:is_role?, "moderator")
       %li
         %a.nav-link{:href => "/moderations/manage"} Moderate
+
+    %li
+      %a Topics
+
+      %ul.askers-index{'data-bind' => "foreach: askers"}
+        %li 
+          %a{'data-bind' => "text: twi_screen_name, attr: {href: href}"}
