@@ -1,6 +1,6 @@
 class AskersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:questions]
-  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions]
+  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index]
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
@@ -10,7 +10,7 @@ class AskersController < ApplicationController
     @askers = Asker.all
 
     respond_to do |format|
-      format.html { }
+      format.html { admin? } # will redirect if not admin
       format.json do 
         render json: @askers.to_json(only: [
           :id,

@@ -60,4 +60,22 @@ describe AskersController, '#index' do
     get :index, format: :json
     response.status.must_equal 200
   end
+
+  it "renders with status 302 to html format when logged in as non admin" do
+    non_admin = create :user
+    sign_in non_admin
+
+    get :index
+    response.status.must_equal 302
+  end
+
+  it "renders with status 302 to html format when not logged in" do
+    get :index
+    response.status.must_equal 302
+  end
+
+  it "renders with status 200 to json format when not logged in" do
+    get :index, format: :json
+    response.status.must_equal 200
+  end
 end
