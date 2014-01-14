@@ -18,7 +18,7 @@ body {
 }
 
 .main-view {
-  background: #323949 url("/assets/bg_images/twi/tree.jpg") no-repeat;
+  background: #C4E0EC url("/assets/bg_images/twi/tree.jpg") no-repeat;
   box-shadow: 20px 0px 50px #000;
   position: relative;
   z-index: 10;
