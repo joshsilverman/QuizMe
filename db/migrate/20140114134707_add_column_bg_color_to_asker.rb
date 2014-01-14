@@ -2,46 +2,46 @@ class AddColumnBgColorToAsker < ActiveRecord::Migration
   def change
     add_column :users, :bg_color, :string
 
-    Asker.find(18).update(bg_color: '#352726')
-    Asker.find(19).update(bg_color: '#012233')
-    Asker.find(22).update(bg_color: '#C4E0EC')
-    Asker.find(31).update(bg_color: '#1B1C20')
-    Asker.find(66).update(bg_color: '#C8E2EF')
-    Asker.find(108).update(bg_color: '#719297')
-    Asker.find(191).update(bg_color: '#EBEBEB')
-    Asker.find(223).update(bg_color: '#1B1C20')
-    Asker.find(227).update(bg_color: '#8B542B')
-    Asker.find(231).update(bg_color: '#012032')
-    Asker.find(284).update(bg_color: '#FFF04D')
-    Asker.find(308).update(bg_color: '#0099B9')
-    Asker.find(322).update(bg_color: '#BADFCD')
-    Asker.find(324).update(bg_color: '#BFDFEC')
-    Asker.find(325).update(bg_color: '#B2DFDA')
-    Asker.find(326).update(bg_color: '#719297')
-    Asker.find(374).update(bg_color: '#EDECE8')
-    Asker.find(7362).update(bg_color: '#BFDFEC')
-    Asker.find(8367).update(bg_color: '#1B1C20')
-    Asker.find(8373).update(bg_color: '#B2DFDA')
-    Asker.find(9217).update(bg_color: '#C4E0EC')
-    Asker.find(10565).update(bg_color: '#008FC4')
-    Asker.find(10567).update(bg_color: '#C7D590')
-    Asker.find(10572).update(bg_color: '#303133')
-    Asker.find(10573).update(bg_color: '#F1F1F1')
-    Asker.find(12640).update(bg_color: '#FEFEFE')
-    Asker.find(12982).update(bg_color: '#1D1815')
-    Asker.find(13588).update(bg_color: '#C4E0EC')
-    Asker.find(14106).update(bg_color: '#E8E0D5')
-    Asker.find(19454).update(bg_color: '#DEEAF7')
-    Asker.find(24740).update(bg_color: '#DEDDE9')
-    Asker.find(26070).update(bg_color: '#012032')
-    Asker.find(26522).update(bg_color: '#C4E0EC')
-    Asker.find(27857).update(bg_color: '#C4E0EC')
-    Asker.find(28064).update(bg_color: '#1B1C20')
-    Asker.find(32575).update(bg_color: '#C4E0EC')
-    Asker.find(32584).update(bg_color: '#C4E0EC')
-    Asker.find(34320).update(bg_color: '#719297')
-    Asker.find(34530).update(bg_color: '#C4E0EC')
-    Asker.find(34534).update(bg_color: '#C4E0EC')
-    Asker.find(34662).update(bg_color: '#EBEBEB')
+    Asker.where(id: 18).first.try :update, {bg_color: '#352726'}
+    Asker.where(id: 19).first.try :update, {bg_color: '#012233'}
+    Asker.where(id: 22).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 31).first.try :update, {bg_color: '#1B1C20'}
+    Asker.where(id: 66).first.try :update, {bg_color: '#C8E2EF'}
+    Asker.where(id: 108).first.try :update, {bg_color: '#719297'}
+    Asker.where(id: 191).first.try :update, {bg_color: '#EBEBEB'}
+    Asker.where(id: 223).first.try :update, {bg_color: '#1B1C20'}
+    Asker.where(id: 227).first.try :update, {bg_color: '#8B542B'}
+    Asker.where(id: 231).first.try :update, {bg_color: '#012032'}
+    Asker.where(id: 284).first.try :update, {bg_color: '#FFF04D'}
+    Asker.where(id: 308).first.try :update, {bg_color: '#0099B9'}
+    Asker.where(id: 322).first.try :update, {bg_color: '#BADFCD'}
+    Asker.where(id: 324).first.try :update, {bg_color: '#BFDFEC'}
+    Asker.where(id: 325).first.try :update, {bg_color: '#B2DFDA'}
+    Asker.where(id: 326).first.try :update, {bg_color: '#719297'}
+    Asker.where(id: 374).first.try :update, {bg_color: '#EDECE8'}
+    Asker.where(id: 7362).first.try :update, {bg_color: '#BFDFEC'}
+    Asker.where(id: 8367).first.try :update, {bg_color: '#1B1C20'}
+    Asker.where(id: 8373).first.try :update, {bg_color: '#B2DFDA'}
+    Asker.where(id: 9217).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 10565).first.try :update, {bg_color: '#008FC4'}
+    Asker.where(id: 10567).first.try :update, {bg_color: '#C7D590'}
+    Asker.where(id: 10572).first.try :update, {bg_color: '#303133'}
+    Asker.where(id: 10573).first.try :update, {bg_color: '#F1F1F1'}
+    Asker.where(id: 12640).first.try :update, {bg_color: '#FEFEFE'}
+    Asker.where(id: 12982).first.try :update, {bg_color: '#1D1815'}
+    Asker.where(id: 13588).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 14106).first.try :update, {bg_color: '#E8E0D5'}
+    Asker.where(id: 19454).first.try :update, {bg_color: '#DEEAF7'}
+    Asker.where(id: 24740).first.try :update, {bg_color: '#DEDDE9'}
+    Asker.where(id: 26070).first.try :update, {bg_color: '#012032'}
+    Asker.where(id: 26522).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 27857).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 28064).first.try :update, {bg_color: '#1B1C20'}
+    Asker.where(id: 32575).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 32584).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 34320).first.try :update, {bg_color: '#719297'}
+    Asker.where(id: 34530).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 34534).first.try :update, {bg_color: '#C4E0EC'}
+    Asker.where(id: 34662).first.try :update, {bg_color: '#EBEBEB'}
   end
 end
