@@ -11,7 +11,7 @@ $ ->
   
   snapper.on('animated', ->
     return if ($('.main-view').css('transform') != 'none')
-    $('.drawer').css('width':0)
+    setTimeout((-> $('.drawer').css('width':0)), 100)
   )
   snapper.on('animating', -> $('.drawer').css('width':266))
   snapper.on('open', -> $('.drawer').css('width':266))
