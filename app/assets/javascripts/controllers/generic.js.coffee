@@ -6,23 +6,21 @@ $ ->
 
   window.snapper = new Snap
     element: $('.main-view')[0],
-    disable: 'right',
-    touchToDrag: false,
+    disable: 'right'
   $('.menu-toggle').on('click', -> snapper.open('left'))
   
   snapper.on('animated', ->
     return if ($('.main-view').css('transform') != 'none')
-    setTimeout((-> $('.drawer').css('left':-500)), 100)
+    $('.drawer').removeClass('show')
   )
 
   setInterval ->
-      return if (   $('.main-view').css('transform') != 'none' \
-                 && $('.main-view').css('transform') != 'matrix(1, 0, 0, 1, 0, 0)')
-      drawer = $('.drawer')
-      drawer.replaceWith(drawer)
-      $('.drawer').css("z-index", "1");
-    , 3000
+      if ($('.main-view').css('transform') != 'none' && $('.main-view').css('transform') != 'matrix(1, 0, 0, 1, 0, 0)')
+          return
 
-  snapper.on('animating', -> $('.drawer').css('left':0))
-  snapper.on('open', -> $('.drawer').css('left':0))
-  snapper.on('drag', -> $('.drawer').css('left':0))
+      $('.drawer').removeClass('show')
+    , 10
+
+  snapper.on('animating', -> $('.drawer').addClass('show'))
+  snapper.on('open', -> $('.drawer').addClass('show'))
+  snapper.on('drag', -> $('.drawer').addClass('show'))

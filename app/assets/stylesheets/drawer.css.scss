@@ -1,10 +1,17 @@
 .drawer {
-  width:266px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 1;
-  position:fixed;
   height:100%;
+  
+  position:absolute;
+  width:0;
+  overflow: none;
+
+  &.show {
+    width:266px;
+    z-index: 1;
+    position:fixed;
+  }
 
   ul {
     padding:50px 0;
