@@ -1,6 +1,7 @@
 .drawer {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  -webkit-backface-visibility: hidden;
   height:100%;
   
   position:absolute;

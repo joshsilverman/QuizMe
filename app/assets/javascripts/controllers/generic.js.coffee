@@ -6,7 +6,8 @@ $ ->
 
   window.snapper = new Snap
     element: $('.main-view')[0],
-    disable: 'right'
+    disable: 'right',
+    touchToDrag: false
   $('.menu-toggle').on('click', -> snapper.open('left'))
   
   snapper.on('animated', ->
