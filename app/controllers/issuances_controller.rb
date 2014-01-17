@@ -1,5 +1,7 @@
 class IssuancesController < ApplicationController
 
+  before_filter :authenticate_user!, except: [:show]
+
   def show
     @issuance = Issuance.includes(:badge, :user, :asker).find(params[:id])
 

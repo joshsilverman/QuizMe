@@ -20,4 +20,13 @@ describe IssuancesController, "#index" do
 
     response.status.must_equal 200
   end
+
+  it "must return unauthorized status if no current_user" do
+    issuance = Issuance.create
+    user = User.create
+
+    get :index, format: :json
+
+    response.status.must_equal 401
+  end
 end
