@@ -12,8 +12,6 @@
         %a{:href => "/moderations/manage?edits=true", :tabindex => "-1"} Questions
       %li
         %a{:href => "/dashboard", :tabindex => "-1"} Dashboard
-      %li
-        %a{:href => "/experiments", :tabindex => "-1"} A/B Tests
 
     - elsif current_user.try(:is_role?, 'client')
       %li
