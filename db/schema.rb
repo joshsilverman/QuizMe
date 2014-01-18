@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140114134707) do
+ActiveRecord::Schema.define(version: 20140118030537) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -305,13 +305,6 @@ ActiveRecord::Schema.define(version: 20140114134707) do
     t.datetime "updated_at"
     t.string   "role",                               default: "user"
     t.string   "name"
-    t.integer  "fb_user_id"
-    t.string   "fb_oauth_token"
-    t.string   "fb_oauth_secret"
-    t.integer  "tum_user_id"
-    t.string   "tum_oauth_token"
-    t.string   "tum_oauth_secret"
-    t.string   "tum_url"
     t.integer  "posts_per_day"
     t.text     "description"
     t.integer  "new_user_q_id"
