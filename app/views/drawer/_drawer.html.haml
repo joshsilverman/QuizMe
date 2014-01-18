@@ -27,8 +27,9 @@
         %a.nav-link{:href => "/moderations/manage"} Moderate
 
     %li
-      %a Topics
+      %a Recent Topics
+      = render partial: 'drawer/askers_recent'
 
-      %ul.askers-index{'data-bind' => "foreach: askers"}
-        %li 
-          %a{'data-bind' => "text: twi_screen_name, attr: {href: href}"}
+    %li
+      %a All Topics
+      = render partial: 'drawer/askers_index'

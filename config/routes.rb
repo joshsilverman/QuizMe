@@ -4,7 +4,12 @@ Quizmemanager::Application.routes.draw do
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
-  resources :askers, except: [:show, :destroy]
+  resources :askers, except: [:show, :destroy] do
+    collection do
+      get :recent
+    end
+  end
+
   get '/askers/edit_graph' => 'askers#edit_graph'
   post '/askers/add_related' => 'askers#add_related'
   post '/askers/remove_related' => 'askers#remove_related'

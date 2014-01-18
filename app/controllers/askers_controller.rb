@@ -1,6 +1,9 @@
 class AskersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:questions]
-  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index]
+
+  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index, :recent]
+  before_filter :authenticate_user!, :only => [:recent]
+  
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
@@ -46,6 +49,17 @@ class AskersController < ApplicationController
       head :ok
     else
       head :bad_request
+    end
+  end
+
+  def recent
+    recent_asker_ids = current_user.posts.order(created_at: :desc)
+      .limit(50).pluck(:in_reply_to_user_id).uniq[0..4]
+
+    recent_askers = Asker.where(id: recent_asker_ids)
+
+    respond_to do |format|
+      format.json { render json: askers_to_json(recent_askers) }
     end
   end
 

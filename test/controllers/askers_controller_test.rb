@@ -79,3 +79,18 @@ describe AskersController, '#index' do
     response.status.must_equal 200
   end
 end
+
+describe AskersController, '#recent' do
+  it "renders with status 302 when not lgged in" do
+    get :recent
+    response.status.must_equal 302
+  end
+
+  it "renders with status 200 to json format when logged in" do
+    admin = create :admin
+    sign_in admin
+
+    get :recent, format: :json
+    response.status.must_equal 200
+  end
+end
