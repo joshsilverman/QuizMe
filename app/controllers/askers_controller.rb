@@ -11,14 +11,7 @@ class AskersController < ApplicationController
 
     respond_to do |format|
       format.html { admin? } # will redirect if not admin
-      format.json do 
-        render json: @askers.to_json(only: [
-          :id,
-          :twi_name, :twi_screen_name, :twi_profile_img_url,
-          :description, 
-          :bg_image,
-          :published]) 
-      end
+      format.json { render json: askers_to_json(@askers) }
     end
   end
 
@@ -119,4 +112,15 @@ class AskersController < ApplicationController
       end      
     end
   end  
+
+  private
+
+  def askers_to_json askers
+    askers.to_json(only: [
+      :id,
+      :twi_name, :twi_screen_name, :twi_profile_img_url,
+      :description, 
+      :bg_image,
+      :published])
+  end
 end
