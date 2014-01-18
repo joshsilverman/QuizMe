@@ -26,9 +26,10 @@
       %li
         %a.nav-link{:href => "/moderations/manage"} Moderate
 
-    %li
-      %a Recent Topics
-      = render partial: 'drawer/askers_recent'
+    - if current_user
+      %li
+        %a Recent Topics
+        = render partial: 'drawer/askers_recent'
 
     %li
       %a All Topics
