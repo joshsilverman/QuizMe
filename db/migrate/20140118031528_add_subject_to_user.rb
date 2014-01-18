@@ -2,59 +2,59 @@ class AddSubjectToUser < ActiveRecord::Migration
   def up
     add_column :users, :subject, :string
 
-    Asker.find(18).update subject: 'Biology'
-    Asker.find(32584).update subject: 'Art History'
-    Asker.find(35127).update subject: 'Immune System'
-    Asker.find(10567).update subject: 'Hunger Games'
-    Asker.find(36144).update subject: 'Constitutional Law'
-    Asker.find(54893).update subject: 'World War II'
-    Asker.find(35213).update subject: 'Genetics'
-    Asker.find(108).update subject: 'Psychology'
-    Asker.find(35685).update subject: 'French Revolution'
-    Asker.find(35448).update subject: 'Stereochemistry'
-    Asker.find(8367).update subject: 'Geography'
-    Asker.find(35459).update subject: 'Spanish Subjunctive'
-    Asker.find(27857).update subject: 'Physics'
-    Asker.find(12640).update subject: 'SAT Math'
-    Asker.find(13588).update subject: 'Beginner Spanish'
-    Asker.find(66).update subject: 'US Presidents'
-    Asker.find(34534).update subject: 'World Capitals'
-    Asker.find(231).update subject: 'History'
-    Asker.find(223).update subject: 'Marketing'
-    Asker.find(35106).update subject: 'Respiratory System'
-    Asker.find(36605).update subject: 'American Revolutionary War'
-    Asker.find(284).update subject: 'Football'
-    Asker.find(322).update subject: 'Economics'
-    Asker.find(22).update subject: 'Cycling'
-    Asker.find(31).update subject: 'Organic Chemistry'
-    Asker.find(34963).update subject: 'Logarithms'
-    Asker.find(32575).update subject: 'Photosynthesis'
-    Asker.find(227).update subject: 'SAT Vocab'
-    Asker.find(325).update subject: 'AP US History'
-    Asker.find(10572).update subject: 'Twilight'
-    Asker.find(19454).update subject: 'SAT Numbers'
-    Asker.find(308).update subject: 'Spanish Verbs'
-    Asker.find(9217).update subject: 'LSAT'
-    Asker.find(34905).update subject: 'Plant Growth'
-    Asker.find(191).update subject: 'Philosophy'
-    Asker.find(28064).update subject: 'Hematology'
-    Asker.find(324).update subject: 'US Capitals'
-    Asker.find(326).update subject: 'Anatomy'
-    Asker.find(10565).update subject: 'Harry Potter and the Prisoner of Azkaban'
-    Asker.find(374).update subject: 'Beer'
-    Asker.find(8373).update subject: 'Thailand'
-    Asker.find(10573).update subject: 'The Hobbit'
-    Asker.find(54892).update subject: 'Cardiology'
-    Asker.find(7362).update subject: 'Weather'
-    Asker.find(24740).update subject: 'SAT Geometry'
-    Asker.find(19).update subject: 'Chemistry'
-    Asker.find(12982).update subject: 'Intermediate Spanish'
-    Asker.find(34662).update subject: 'Lower Limb System'
-    Asker.find(14106).update subject: 'SAT Algebra'
-    Asker.find(26070).update subject: 'NREMT'
-    Asker.find(34320).update subject: 'Dermotomes and Myotomes'
-    Asker.find(26522).update subject: 'Veterinary Medicine'
-    Asker.find(34530).update subject: 'MCAT Biology'
+    Asker.where(id: 18).first.try(:update, {subject: 'Biology'})
+    Asker.where(id: 32584).first.try(:update, {subject: 'Art History'})
+    Asker.where(id: 35127).first.try(:update, {subject: 'Immune System'})
+    Asker.where(id: 10567).first.try(:update, {subject: 'Hunger Games'})
+    Asker.where(id: 36144).first.try(:update, {subject: 'Constitutional Law'})
+    Asker.where(id: 54893).first.try(:update, {subject: 'World War II'})
+    Asker.where(id: 35213).first.try(:update, {subject: 'Genetics'})
+    Asker.where(id: 108).first.try(:update, {subject: 'Psychology'})
+    Asker.where(id: 35685).first.try(:update, {subject: 'French Revolution'})
+    Asker.where(id: 35448).first.try(:update, {subject: 'Stereochemistry'})
+    Asker.where(id: 8367).first.try(:update, {subject: 'Geography'})
+    Asker.where(id: 35459).first.try(:update, {subject: 'Spanish Subjunctive'})
+    Asker.where(id: 27857).first.try(:update, {subject: 'Physics'})
+    Asker.where(id: 12640).first.try(:update, {subject: 'SAT Math'})
+    Asker.where(id: 13588).first.try(:update, {subject: 'Beginner Spanish'})
+    Asker.where(id: 66).first.try(:update, {subject: 'US Presidents'})
+    Asker.where(id: 34534).first.try(:update, {subject: 'World Capitals'})
+    Asker.where(id: 231).first.try(:update, {subject: 'History'})
+    Asker.where(id: 223).first.try(:update, {subject: 'Marketing'})
+    Asker.where(id: 35106).first.try(:update, {subject: 'Respiratory System'})
+    Asker.where(id: 36605).first.try(:update, {subject: 'American Revolutionary War'})
+    Asker.where(id: 284).first.try(:update, {subject: 'Football'})
+    Asker.where(id: 322).first.try(:update, {subject: 'Economics'})
+    Asker.where(id: 22).first.try(:update, {subject: 'Cycling'})
+    Asker.where(id: 31).first.try(:update, {subject: 'Organic Chemistry'})
+    Asker.where(id: 34963).first.try(:update, {subject: 'Logarithms'})
+    Asker.where(id: 32575).first.try(:update, {subject: 'Photosynthesis'})
+    Asker.where(id: 227).first.try(:update, {subject: 'SAT Vocab'})
+    Asker.where(id: 325).first.try(:update, {subject: 'AP US History'})
+    Asker.where(id: 10572).first.try(:update, {subject: 'Twilight'})
+    Asker.where(id: 19454).first.try(:update, {subject: 'SAT Numbers'})
+    Asker.where(id: 308).first.try(:update, {subject: 'Spanish Verbs'})
+    Asker.where(id: 9217).first.try(:update, {subject: 'LSAT'})
+    Asker.where(id: 34905).first.try(:update, {subject: 'Plant Growth'})
+    Asker.where(id: 191).first.try(:update, {subject: 'Philosophy'})
+    Asker.where(id: 28064).first.try(:update, {subject: 'Hematology'})
+    Asker.where(id: 324).first.try(:update, {subject: 'US Capitals'})
+    Asker.where(id: 326).first.try(:update, {subject: 'Anatomy'})
+    Asker.where(id: 10565).first.try(:update, {subject: 'Harry Potter and the Prisoner of Azkaban'})
+    Asker.where(id: 374).first.try(:update, {subject: 'Beer'})
+    Asker.where(id: 8373).first.try(:update, {subject: 'Thailand'})
+    Asker.where(id: 10573).first.try(:update, {subject: 'The Hobbit'})
+    Asker.where(id: 54892).first.try(:update, {subject: 'Cardiology'})
+    Asker.where(id: 7362).first.try(:update, {subject: 'Weather'})
+    Asker.where(id: 24740).first.try(:update, {subject: 'SAT Geometry'})
+    Asker.where(id: 19).first.try(:update, {subject: 'Chemistry'})
+    Asker.where(id: 12982).first.try(:update, {subject: 'Intermediate Spanish'})
+    Asker.where(id: 34662).first.try(:update, {subject: 'Lower Limb System'})
+    Asker.where(id: 14106).first.try(:update, {subject: 'SAT Algebra'})
+    Asker.where(id: 26070).first.try(:update, {subject: 'NREMT'})
+    Asker.where(id: 34320).first.try(:update, {subject: 'Dermotomes and Myotomes'})
+    Asker.where(id: 26522).first.try(:update, {subject: 'Veterinary Medicine'})
+    Asker.where(id: 34530).first.try(:update, {subject: 'MCAT Biology'})
   end
 
   def down
