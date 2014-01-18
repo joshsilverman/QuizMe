@@ -4,10 +4,6 @@ class AuthorizationsController < ApplicationController
   	oauthorize "twitter"
   end
 
-  def facebook
-  	oauthorize "facebook"
-  end  
-
   def failure
   	redirect_to '/'
   end
@@ -49,12 +45,6 @@ class AuthorizationsController < ApplicationController
 	      	twi_user_id: uid,
 	      	description: auth_hash['info']['description']
 	      }
-	    when "facebook"
-	      uid = access_token['uid']
-	      email = access_token['extra']['user_hash']['email']
-	      auth_attr = { :uid => uid, :token => access_token['credentials']['token'], :secret => nil, :name => access_token['extra']['user_hash']['name'], :link => access_token['extra']['user_hash']['link'] }
-	    else
-	      raise 'Unknown provider (#{provider})'
 	    end
 
 	    if user = resource # user is already signed in	    	

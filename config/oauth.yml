@@ -1,9 +1,3 @@
-tumblr:
-  key: "eQMOLI2PSPJ5hVBGkfGXdscYhmgszQdRFCul5ehxWP2GcC64bp"
-  secret: "XwDAtLUQJmKYhTmJtV9si2FL38TCLMQ5YShlitCdKeepG7U4at"
 twitter:
   key: "tPuU2krUmUKdeQ8VQBjN9g"
   secret: "InlkWLx15C5IOKqPBqPKEXHxlEz7ZrrlzKLP2LmVePw"
-facebook:
-  key: "219931781462840"
-  secret: "a5718154303bce56b74af5f5b7b335a3"

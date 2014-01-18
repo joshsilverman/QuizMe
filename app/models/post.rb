@@ -163,7 +163,6 @@ class Post < ActiveRecord::Base
 
   def self.format_url(url, source, lt, campaign, target, show_answer = nil)
     return "#{url}?s=#{source}&lt=#{lt}&c=#{campaign}#{('&t=' + target) if target}#{'&ans=true' if show_answer}"
-    #&sent=#{Time.now.strftime('%H%M')}"
   end
 
   def self.publish(provider, asker, publication)
@@ -221,12 +220,6 @@ class Post < ActiveRecord::Base
         puts "exception while publishing tweet"
         puts exception.message
       end
-    when "tumblr"
-      puts "No Tumblr Post Methods"
-    when "facebook"
-      puts "No Tumblr Post Methods"
-    else  
-      puts "Boo"
     end
   end
 

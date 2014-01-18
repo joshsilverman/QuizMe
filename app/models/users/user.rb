@@ -124,17 +124,7 @@ class User < ActiveRecord::Base
 		    user.twi_name = auth["info"]["name"]
 		    user.twi_profile_img_url = auth["extra"]["raw_info"]["profile_image_url"]
 		    user.twi_oauth_token = auth['credentials']['token']
-			user.twi_oauth_secret = auth['credentials']['secret']
-	    when 'tumblr'
-		    user.tum_user_id = auth["uid"]
-	    	user.tum_oauth_token = auth['credentials']['token']
-				user.tum_oauth_secret = auth['credentials']['secret']
-	    when 'facebook'
-		    user.fb_user_id = auth["uid"]
-	    	user.fb_oauth_token = auth['credentials']['token']
-				user.fb_oauth_secret = auth['credentials']['secret']
-	    else
-	      puts "provider unknown: #{provider}"
+			  user.twi_oauth_secret = auth['credentials']['secret']
 	    end
 	  end
 	end
@@ -175,16 +165,6 @@ class User < ActiveRecord::Base
 		authorizations.where(provider: 'twitter').where('token is not null').present?
 	end
 
-	def tumblr_enabled?
-		return true if self.tum_oauth_token and self.tum_oauth_secret
-		return false
-	end
-
-	def facebook_enabled?
-		return true if self.fb_oauth_token and self.fb_oauth_secret
-		return false
-	end
-
 	def twitter
 		if auth = authorizations.where(:provider => "twitter").first
 			return Twitter::Client.new(
@@ -194,18 +174,6 @@ class User < ActiveRecord::Base
 				:oauth_token_secret => auth.secret
 			)		
 		end
-	end
-
-	def tumblr
-		if self.tumblr_enabled?
-			client = Tumblife::Client.new(
-				:consumer_key => SERVICES['tumblr']['key'],
-				:consumer_secret => SERVICES['tumblr']['secret'],
-				:oauth_token => self.tum_oauth_token,
-				:oauth_token_secret => self.tum_oauth_secret
-			)
-		end
-		client
 	end
 
 	def dm_conversation_history_with_asker asker_id
