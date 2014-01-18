@@ -265,16 +265,7 @@ class FeedsController < ApplicationController
         end
       end
 
-      # misc
       @author = User.find @asker.author_id if @asker.author_id
-
-      if current_user and Post.create_split_test(current_user.id, 'other feeds panel shows related askers (=> regular)', 'false', 'true') == 'true'
-        subscribed = current_user.asker_follows.includes(:related_askers)
-        @related = subscribed.collect {|a| a.related_askers }.flatten.uniq.reject {|a| subscribed.include? a }.sample(3)
-      else
-        @related = Asker.select([:id, :twi_name, :description, :twi_profile_img_url])\
-          .where(:id => ACCOUNT_DATA.keys.sample(3)).to_a
-      end
 
       @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
       as_string ? (return render_to_string(:show)) : render(:show)
