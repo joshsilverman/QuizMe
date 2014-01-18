@@ -81,15 +81,6 @@ Quizmemanager::Application.routes.draw do
   get "/get_detailed_metrics" => 'askers#get_detailed_metrics'
   get "/graph/:party/:graph" => 'askers#graph'
   get "/get_retention_metrics" => 'askers#get_retention_metrics'
-  get "experiments" => 'experiments#index'
-  get "experiments/index_concluded"
-  get '/experiments/index_search_terms'
-  get '/experiments/index_concluded_search_terms'
-  post "experiments/conclude" => 'experiments#conclude'
-  post "experiments/show"
-  post "experiments/trigger" => 'experiments#trigger'
-  post "experiments/reset" => 'experiments#reset'
-  post "experiments/delete" => 'experiments#destroy'
 
   get "/posts/:publication_id/refer" => "posts#refer"
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
