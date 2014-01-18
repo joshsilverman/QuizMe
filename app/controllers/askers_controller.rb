@@ -10,7 +10,7 @@ class AskersController < ApplicationController
   caches_action :get_handle_metrics, :expires_in => 11.minutes
 
   def index
-    @askers = Asker.all
+    @askers = Asker.order(:subject).all
 
     respond_to do |format|
       format.html { admin? } # will redirect if not admin
@@ -56,7 +56,7 @@ class AskersController < ApplicationController
     recent_asker_ids = current_user.posts.order(created_at: :desc)
       .limit(50).pluck(:in_reply_to_user_id).uniq[0..4]
 
-    recent_askers = Asker.where(id: recent_asker_ids)
+    recent_askers = Asker.where(id: recent_asker_ids).order(:subject)
 
     respond_to do |format|
       format.json { render json: askers_to_json(recent_askers) }
@@ -133,6 +133,7 @@ class AskersController < ApplicationController
     askers.to_json(only: [
       :id,
       :twi_name, :twi_screen_name, :twi_profile_img_url,
+      :subject,
       :description, 
       :bg_image,
       :published])

@@ -19,7 +19,7 @@ if ($('.drawer .askers-recent').length > 0) {
 
     function AskerModel(asker) {
       var self = this;
-      self.twi_screen_name = asker.twi_screen_name
+      self.subject = asker.subject
       self.href = '/feeds/' + asker.id
     }
 
