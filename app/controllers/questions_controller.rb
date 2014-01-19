@@ -46,7 +46,7 @@ class QuestionsController < ApplicationController
     publications.each { |pub| posts += pub.posts.collect(&:id) }
     @actions = {params[:id].to_i => []}
     user_ids = []
-    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at ASC").includes(:user).each do |action|
+    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at DESC").includes(:user).each do |action|
       next if user_ids.include? action.user_id 
       user = action.user
       user_ids << user.id
