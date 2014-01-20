@@ -1265,4 +1265,16 @@ class Asker < User
     Mixpanel.track_event "badge", {distinct_id: user.id, badge: badge.title}  
     post
   end
+
+  def subject_url
+    _subject = subject.downcase
+    _subject = _subject.gsub(' ', '-')
+
+    _subject
+  end
+
+  def self.find_by_subject_url subject_url
+    _subject_url = subject_url.gsub('-', ' ')
+    Asker.where('subject ilike ?', _subject_url).first
+  end
 end

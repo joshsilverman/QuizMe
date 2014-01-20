@@ -115,5 +115,7 @@ Quizmemanager::Application.routes.draw do
   resources :mentions
   resources :exams
 
+  get ":subject(/:post_id(/:answer_id))" => "feeds#show"
+
   root :to => 'feeds#index'
 end

@@ -958,3 +958,35 @@ describe Asker, "#notify_badge_issued" do
     asker.notify_badge_issued(user, badge, options)
   end
 end
+
+describe Asker, "#subject_url" do
+  it "downcases subject" do
+    asker = Asker.new subject: "Biology"
+
+    asker.subject_url.must_equal 'biology'
+  end
+
+  it "replaces spaces with dashes" do
+    asker = Asker.new subject: "Harry Potter"
+
+    asker.subject_url.must_equal 'harry-potter'
+  end
+end
+
+describe Asker, ".find_by_subject_url" do
+  it "finds regardless of subject case" do
+    asker = Asker.create subject: "Biology"
+
+    found_asker = Asker.find_by_subject_url 'biology'
+
+    found_asker.must_equal asker
+  end
+
+  it "find multiword subjects" do
+    asker = Asker.create subject: "Harry Potter"
+
+    found_asker = Asker.find_by_subject_url 'harry-potter'
+
+    found_asker.must_equal asker
+  end
+end

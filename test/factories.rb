@@ -34,6 +34,7 @@ FactoryGirl.define do
     published true
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'QuizMeBio'
+    subject 'biology'
   end
 
   factory :email_asker do

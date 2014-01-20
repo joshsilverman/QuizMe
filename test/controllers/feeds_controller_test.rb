@@ -30,18 +30,46 @@ describe FeedsController do
 		@question_post = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
 	end
 
-	describe 'routing' do
-		it 'loads show when logged in' do
-			login_as @user
-			visit "/feeds/#{@asker.id}/#{@publication.id}"
+	describe '#show routing' do
+		it 'preserves publication id when redirecting' do
+			asker = create(:asker, subject: 'Biology')
+			question = create(:question)
+			pub = create(:publication, question: question)
+
+			visit "/feeds/#{asker.id}/#{pub.id}"
+
+			current_url.must_equal "http://www.example.com/biology/#{pub.id}"
+			status_code.must_equal 200
 		end
 
-		it 'loads show when not logged in' do
-			visit "/feeds/#{@asker.id}/#{@publication.id}"
+		it 'redirects to subject when logged in' do
+			login_as @user
+			asker = create(:asker, subject: 'Biology')
+
+			visit "/feeds/#{asker.id}"
+
+			current_url.must_equal "http://www.example.com/biology"
+			status_code.must_equal 200
+		end
+
+		it 'redirects to subject when not logged in' do
+			asker = create(:asker, subject: 'Biology')
+
+			visit "/feeds/#{asker.id}"
+
+			current_url.must_equal "http://www.example.com/biology"
+			status_code.must_equal 200
+		end
+
+		it 'routes to show based on subject' do
+			asker = create(:asker, subject: 'Biology')
+			visit "/biology"
+
+			status_code.must_equal 200
 		end
 	end
 
-	describe 'show' do
+	describe '#show' do
 		before :each do
 			Capybara.current_driver = :selenium
 			login_as(@user, :scope => :user)
