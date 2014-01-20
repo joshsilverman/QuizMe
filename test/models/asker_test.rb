@@ -148,7 +148,24 @@ describe Asker do
 			it "with a post" do
 				Timecop.travel(Time.now + 1.day)
 				Asker.reengage_inactive_users strategy: @strategy
-				Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
+
+				Post.reengage_inactive
+					.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+					.wont_be_empty
+			end
+
+			it "with correct link" do
+				Timecop.travel(Time.now + 1.day)
+				Asker.reengage_inactive_users strategy: @strategy
+
+				post = Post.reengage_inactive
+					.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+					.last
+
+				uri = URI.parse post.url
+				path = uri.path
+				
+				path.must_equal "/#{@asker.subject_url}/#{@publication.id}"
 			end
 
 			it "on the proper schedule" do 

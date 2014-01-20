@@ -269,9 +269,9 @@ class Asker < User
 
     if reengagement_type == :question 
       if asker and publication
-        long_url = "http://wisr.com/feeds/#{asker.id}/#{publication.id}"
+        long_url = "#{URL}/#{asker.subject_url}/#{publication.id}"
       else
-        long_url = "http://wisr.com/questions/#{question.id}"
+        long_url = "#{URL}/questions/#{question.id}"
       end
     end    
 
