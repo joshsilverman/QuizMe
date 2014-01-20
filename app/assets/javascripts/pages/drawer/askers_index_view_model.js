@@ -20,7 +20,7 @@ if ($('.drawer .askers-index').length > 0) {
     function AskerModel(asker) {
       var self = this;
       self.subject = asker.subject
-      self.href = '/feeds/' + asker.id
+      self.href = '/' + asker.subject_url
     }
 
     function AskersIndexViewModel() {
