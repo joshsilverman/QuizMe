@@ -9,7 +9,7 @@
 					.account_text
 						.name-wrapper
 							%h2
-								%span.name= @asker.twi_screen_name
+								%span.name= @asker.subject
 								- if current_user and (@asker.id == current_user.id or current_user.is_role?('admin'))
 									%ul.nav
 										%li
