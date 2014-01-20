@@ -164,7 +164,7 @@ describe Asker do
 
 				uri = URI.parse post.url
 				path = uri.path
-				
+
 				path.must_equal "/#{@asker.subject_url}/#{@publication.id}"
 			end
 
@@ -219,6 +219,19 @@ describe Asker do
         posts.count.must_equal 1
         post = posts.first
         post.question_id.must_be_nil and post.intention.must_equal 'solicit ugc'
+      end
+
+      it 'with an author request with correct link' do
+        Timecop.travel(Time.now + 1.day)
+        Asker.reengage_inactive_users strategy: @strategy, type: :author
+        posts = Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+        posts.count.must_equal 1
+        post = posts.first
+
+				uri = URI.parse post.url
+
+				uri.path.must_equal "/#{@asker.subject_url}"
+				uri.query.must_include "q=1"
       end
 
 			describe "with a question" do

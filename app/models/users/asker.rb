@@ -255,7 +255,9 @@ class Asker < User
       when :author
         asker = user.asker_follows.sample
         text = I18n.t("reengagements.author").sample
-        text.gsub! '<link>', "#{URL}/feeds/#{asker.id}?q=1"
+        long_url = "#{URL}/#{asker.subject_url}?q=1"
+        
+        text.gsub! '<link>', long_url
         intention = 'solicit ugc'
       end
     else
@@ -302,6 +304,7 @@ class Asker < User
     else
       asker.send_private_message(user, text, {
         posted_via_app: true,
+        long_url: long_url ? long_url : nil,
         requires_action: false,
         interaction_type: 4,
         link_type: "reengage",
