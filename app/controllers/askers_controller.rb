@@ -130,12 +130,21 @@ class AskersController < ApplicationController
   private
 
   def askers_to_json askers
-    askers.to_json(only: [
-      :id,
-      :twi_name, :twi_screen_name, :twi_profile_img_url,
-      :subject,
-      :description, 
-      :bg_image,
-      :published])
+    asker_hashes = []
+    askers.each do |asker|
+      asker_hash = {}
+      [:id,
+        :twi_name, :twi_screen_name, :twi_profile_img_url,
+        :subject, :subject_url,
+        :description, 
+        :bg_image,
+        :published].each do |attribute|
+
+        asker_hash[attribute] = asker.send attribute
+      end
+      asker_hashes << asker_hash
+    end
+
+    asker_hashes.to_json
   end
 end
