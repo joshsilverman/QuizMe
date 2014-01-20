@@ -7,8 +7,8 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
 SitemapGenerator::Sitemap.create(:create_index => false) do
 
   # # Generate feed links
-  User.askers.each do |asker|
-    add "/feeds/#{asker.id}"
+  Asker.published.each do |asker|
+    add "/#{asker.subject_url}"
   end
 
   # # Generate question page links
