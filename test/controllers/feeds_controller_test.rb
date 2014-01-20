@@ -61,6 +61,15 @@ describe FeedsController do
 			status_code.must_equal 200
 		end
 
+		it 'redirects to subject with same querystring' do
+			asker = create(:asker, subject: 'Biology')
+
+			visit "/feeds/#{asker.id}?a=1"
+
+			current_url.must_equal "http://www.example.com/biology?a=1"
+			status_code.must_equal 200
+		end
+
 		it 'routes to show based on subject' do
 			asker = create(:asker, subject: 'Biology')
 			visit "/biology"

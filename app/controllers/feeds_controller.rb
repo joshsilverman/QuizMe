@@ -249,6 +249,7 @@ class FeedsController < ApplicationController
       @asker = Asker.find(params[:id])
       redirect_url  = "/#{@asker.subject_url}"
       redirect_url += "/#{params[:post_id]}" if params[:post_id]
+      redirect_url += "?#{request.env['QUERY_STRING']}" if request.env['QUERY_STRING']
 
       redirect_to redirect_url
       redirect_called = true
