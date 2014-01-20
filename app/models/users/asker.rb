@@ -1267,7 +1267,8 @@ class Asker < User
   end
 
   def subject_url
-    _subject = subject.downcase
+    _subject = subject || ''
+    _subject = _subject.downcase
     _subject = _subject.gsub(' ', '-')
 
     _subject

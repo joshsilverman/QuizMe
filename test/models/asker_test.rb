@@ -966,6 +966,12 @@ describe Asker, "#subject_url" do
     asker.subject_url.must_equal 'biology'
   end
 
+  it "handles nil subject" do
+    asker = Asker.new subject: nil
+
+    asker.subject_url.must_equal ''
+  end
+
   it "replaces spaces with dashes" do
     asker = Asker.new subject: "Harry Potter"
 
