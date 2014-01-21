@@ -544,9 +544,8 @@ describe ModerationsController do
 			@moderator.update_attributes role: 'user'
 			@mod_path = '/moderations/manage'
 		end
-		it 'gives access to new moderators' do
-			create(:studyegg)
 
+		it 'gives access to new moderators' do
 			visit @mod_path
 
 			current_path.wont_equal @mod_path

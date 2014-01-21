@@ -15,11 +15,6 @@ FactoryGirl.define do
     factory :emailer do
       communication_preference 2
     end
-
-    factory :studyegg do
-      id 1
-      twi_screen_name 'studyegg'
-    end
   end
 
   factory :moderator do
