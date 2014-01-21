@@ -251,7 +251,7 @@ class FeedsController < ApplicationController
       redirect_url += "/#{params[:post_id]}" if params[:post_id]
       redirect_url += "?#{request.env['QUERY_STRING']}" if request.env['QUERY_STRING']
 
-      redirect_to redirect_url
+      redirect_to redirect_url, status: :moved_permanently
       redirect_called = true
     end
 
