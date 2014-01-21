@@ -5,7 +5,7 @@ describe AuthorizationsController do
 	before :each do 
 		Rails.cache.clear
 		@user = create(:user, twi_user_id: 1, role: 'moderator')
-		@wisr_asker = User.find(8765)
+		@wisr_asker = Asker.find(8765)
 	end
 
 	describe 'by token authentication' do
@@ -18,15 +18,23 @@ describe AuthorizationsController do
 
 		describe 'logs user in' do
 			it 'to proper page for moderator' do
-				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 1.week))
+				auth_mod_manage = authenticated_link("/moderations/manage", 
+					@user, 
+					(Time.now + 1.week))
+
 				visit auth_mod_manage
+
 				current_path.must_equal '/moderations/manage'
 			end
 
 			it 'to proper page for first time author' do
-				auth_mod_manage = authenticated_link("/feeds/#{@wisr_asker.id}?q=1", @user, (Time.now + 1.week))
+				auth_mod_manage = authenticated_link("/#{@wisr_asker.subject_url}?q=1", 
+					@user, 
+					(Time.now + 1.week))
+
 				visit auth_mod_manage
-				current_path.must_equal "/feeds/#{@wisr_asker.id}"
+				
+				current_path.must_equal "/#{@wisr_asker.subject_url}"
 			end
 
 			it 'to proper page for return author' do
