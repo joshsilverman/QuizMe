@@ -6,8 +6,8 @@
         .post.parent
           .content
             = image_tag(@asker.twi_profile_img_url, :class => "rounded")
-            %a{:href => "/feeds/#{@asker.id}"}
-              %h5= @asker.twi_screen_name
+            %a{:href => "/#{@asker.subject_url}"}
+              %h5= @asker.subject
             %a.twi_link{:href => "http://www.twitter.com/#{@asker.twi_screen_name}", :target => "_blank"}= "@#{@asker.twi_screen_name}"
 
             - if @new_question_page

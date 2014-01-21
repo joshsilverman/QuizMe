@@ -32,7 +32,7 @@ class QuestionsController < ApplicationController
 
   def show(posts = [])
     @question = Question.find(params[:id])
-    @asker = User.find(@question.created_for_asker_id)
+    @asker = Asker.find(@question.created_for_asker_id)
     publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")
     @publication = publications.first
     
