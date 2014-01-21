@@ -1,3 +1,9 @@
+studyegg:
+  id: 1
+  twi_screen_name: studyegg
+  role: admin
+  twi_profile_img_url: 'http://smileyface.com.notadomainyet'
+
 wisr:
   id: 8765
   twi_screen_name: wisr
