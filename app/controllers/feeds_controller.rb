@@ -72,7 +72,7 @@ class FeedsController < ApplicationController
       end
 
       if params[:post_id]
-        post_yield_template = Rails.cache.fetch("feeds/_publication/#{@asker.id}", expires_in: 24.hours, race_condition_ttl: 60) do
+        post_yield_template = Rails.cache.fetch("feeds/_publication/#{params[:post_id]}", expires_in: 24.hours, race_condition_ttl: 60) do
           publication = Publication.recent_by_asker_and_id @asker.id, params[:post_id]
           render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
         end
