@@ -54,20 +54,9 @@ Quizmemanager::Application.routes.draw do
   get "answer/index"
   get "answer/show"
 
-  get "feeds/index"
-  get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
-  get "feeds/:id/more/:last_post_id" => "feeds#more"
-  get "feeds/stream" => "feeds#stream"
 
   resource :moderations
   get "moderations/manage"
-
-
-  post "feeds/search"
-  get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
-  get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
-
-  get '/search' => 'feeds#index_with_search'
 
   get "/ask" => "feeds#ask"
   post "/respond_to_question" => "feeds#respond_to_question"
@@ -115,6 +104,15 @@ Quizmemanager::Application.routes.draw do
   resources :mentions
   resources :exams
 
+  get "feeds/index"
+  get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
+  get "feeds/:id/more/:last_post_id" => "feeds#more"
+  get "feeds/stream" => "feeds#stream"
+  post "feeds/search"
+  get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
+  get '/search' => 'feeds#index_with_search'
+
+  get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
   get ":subject(/:post_id(/:answer_id))" => "feeds#show"
 
   root :to => 'feeds#index'
