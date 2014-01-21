@@ -17,6 +17,8 @@
       .container.row
         = yield
 
+    = yield(:modals)
+
     - cache("_application_css_js", :expires_in => 1.hour) do
       = javascript_include_tag "application"
       = javascript_include_tag "http://code.jquery.com/jquery-migrate-1.2.1.min.js"
