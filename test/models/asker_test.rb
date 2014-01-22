@@ -972,6 +972,50 @@ describe Asker do
 	end		
 end
 
+describe Asker, ".mention_new_users" do
+  it "with intention new user question mention" do
+    asker = create(:asker)
+    publication = create(:publication, 
+      asker_id: asker.id,
+      question: create(:question))
+    asker_post = create(:post, 
+      user: asker,
+      publication: publication)
+
+    user = create(:user, learner_level: 'dm answer')
+    user_post = create(:post, 
+      in_reply_to_user_id: asker.id, 
+      user_id: user.id)
+
+    Asker.mention_new_users
+
+    Post.where(intention: 'new user question mention').count
+      .must_equal 1
+  end
+
+  it "with correct link" do
+    asker = create(:asker)
+    publication = create(:publication, 
+      asker_id: asker.id,
+      question: create(:question))
+    asker_post = create(:post, 
+      user: asker,
+      publication: publication)
+
+    user = create(:user, learner_level: 'dm answer')
+    user_post = create(:post, 
+      in_reply_to_user_id: asker.id, 
+      user_id: user.id)
+
+    Asker.mention_new_users
+
+    next_question = Post.where(intention: 'new user question mention').first
+    uri = URI.parse(next_question.url)
+
+    uri.path.must_equal "/#{asker.subject_url}/#{publication.id}"
+  end
+end
+
 describe Asker, "#notify_badge_issued" do
   it 'must call send_private_message with user and message with link' do
     asker = Asker.new

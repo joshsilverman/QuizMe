@@ -419,7 +419,7 @@ class Asker < User
         end
         asker.send_public_message("Next question! #{publication.question.text}", {
           :reply_to => user.twi_screen_name,
-          :long_url => "#{URL}/feeds/#{asker.id}/#{publication.id}", 
+          :long_url => "#{URL}/#{asker.subject_url}/#{publication.id}", 
           :interaction_type => 2, 
           :link_type => "mention_question", 
           :in_reply_to_user_id => user.id,
