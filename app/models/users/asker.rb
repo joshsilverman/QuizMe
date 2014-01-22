@@ -1132,16 +1132,9 @@ class Asker < User
       next unless publication = related_asker.publications.includes(:posts).published.order('updated_at DESC').limit(5).sample
       next unless post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
-      if Time.now.hour % 12 == 0
-        asker.send_public_message("Want me to publish YOUR questions? Click the link: wisr.com/feeds/#{asker.id}?q=1", {
-          :intention => 'solicit ugc',
-          :interaction_type => 2
-        })
-      end  
       sleep 1  
     end
   end
-
 
   ## Author followup
 
