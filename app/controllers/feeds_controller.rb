@@ -255,6 +255,11 @@ class FeedsController < ApplicationController
       redirect_called = true
     end
 
+    if @asker.nil?
+      redirect_to '/' 
+      redirect_called = true
+    end
+
     redirect_called
   end
 

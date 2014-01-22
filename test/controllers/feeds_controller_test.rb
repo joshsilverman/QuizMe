@@ -76,6 +76,14 @@ describe FeedsController do
 
 			status_code.must_equal 200
 		end
+
+		it 'redirects to root if no subject match' do
+			asker = create(:asker, subject: 'Biology')
+			visit "/blobology"
+
+			current_path.must_equal '/'
+			status_code.must_equal 200
+		end
 	end
 
 	describe '#show' do
