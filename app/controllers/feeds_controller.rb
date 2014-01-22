@@ -278,7 +278,7 @@ class FeedsController < ApplicationController
 
     # inject requested publication from params, render twi card
     @request_mod = false
-    if params[:post_id]
+    if params[:post_id] and current_user
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
       @requested_publication = @asker.publications.published.where(id: params[:post_id]).first
