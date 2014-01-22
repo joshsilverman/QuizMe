@@ -294,7 +294,7 @@ $ ->
 				target = $(".post[post_id=#{publication_id}]")
 
 		window.feed = new Feed
-		if target.length > 0
+		if target && target.length > 0
 			target.parents('.conversation').removeClass('hidden')
 			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand(0)
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
