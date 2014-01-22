@@ -1,5 +1,20 @@
 require 'test_helper'
 
+describe Post, ".publish" do
+  it "sends with correct url" do
+    asker = create(:asker)
+    question = create(:question)
+    publication = create(:publication, 
+      asker: asker,
+      question: question)
+
+    Post.publish("twitter", asker, publication)
+    uri = URI.parse Post.first.url
+
+    uri.path.must_equal "/#{asker.subject_url}/#{publication.id}"
+  end
+end
+
 describe Post, '#send_to_feed' do
   it 'calls Adapters::WisrFeed::Post with post' do
     post = FactoryGirl.create(:post)
