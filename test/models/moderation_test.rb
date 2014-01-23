@@ -113,6 +113,33 @@ describe Moderation do
 							Post.where(in_reply_to_post_id: @post.id, intention: 'grade').count.must_equal 0
 						end
 
+						it 'with correct link' do
+							moderator = create(:user, 
+								twi_user_id: 1, 
+								role: 'moderator', 
+								moderator_segment: 1)
+							create(:post_moderation, 
+								user_id: moderator.id, 
+								type_id: 3, 
+								post_id: @post.id)
+							moderator = create(:user, 
+								twi_user_id: 1, 
+								role: 'moderator', 
+								moderator_segment: 3)
+							create(:post_moderation, 
+								user_id: moderator.id, 
+								type_id: 3, 
+								post_id: @post.id)
+							@post.reload.correct.must_equal false
+							@response_post = Post.where(
+								in_reply_to_post_id: @post.id, 
+								intention: 'grade').first
+							@response_post.wont_be_nil
+
+							uri = URI.parse @response_post.url
+							uri.path.must_equal "/#{@asker.subject_url}/#{@publication.id}"
+						end
+
 						after :each do 
 							@post.requires_action.must_equal false
 							@post.moderation_trigger_type_id.must_equal 1

@@ -582,7 +582,7 @@ class Asker < User
     if options[:post_to_twitter]
       app_post = self.send_public_message(response_text, {
         :reply_to => answerer.twi_screen_name,
-        :long_url => "#{URL}/feeds/#{id}/#{publication.id}", 
+        :long_url => "#{URL}/#{subject_url}/#{publication.id}", 
         :interaction_type => 2, 
         :link_type => correct ? "cor" : "inc", 
         :link_to_parent => options[:link_to_parent], 
