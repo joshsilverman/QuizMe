@@ -24,8 +24,9 @@
 						#posts_more.border-color
 							%a{:href => "#"} Load more
 
-%a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
-	%img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}
+- content_for :mixpanel_badge do
+	%a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
+		%img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}
 
 - if current_user
 	= render :partial => "retweet_modal"

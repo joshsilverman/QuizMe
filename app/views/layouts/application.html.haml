@@ -18,6 +18,7 @@
         = yield
 
     = yield(:modals)
+    = yield(:mixpanel_badge) # appears on home page
 
     - cache("_application_css_js", :expires_in => 1.hour) do
       = javascript_include_tag "application"
