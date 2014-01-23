@@ -310,7 +310,7 @@ module ManageTwitterRelationships
       question_id: question.id,
       in_reply_to_user_id: user.id,
       publication_id: publication.id,
-      long_url: "#{URL}/feeds/#{id}/#{publication.id}", 
+      long_url: "#{URL}/#{subject_url}/#{publication.id}", 
       interaction_type: 2
     })
     Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }

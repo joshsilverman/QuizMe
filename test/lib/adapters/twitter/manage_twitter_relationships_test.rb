@@ -309,6 +309,36 @@ describe Asker, 'ManageTwitterRelationships' do
   end
 end
 
+describe Asker, 'ManageTwitterRelationships#send_targeted_mention' do
+  it 'sends targeted mention post' do
+    asker = create :asker
+    user = create :user
+
+    question = create :question
+    publication = create :publication, asker: asker, question: question
+    asker.stubs(:most_popular_question).returns(question)
+
+    asker.send_targeted_mention user
+
+    Post.count.must_equal 1
+    Post.first.intention.must_equal 'targeted mention'
+  end
+
+  it 'with correct url' do
+    asker = create :asker
+    user = create :user
+
+    question = create :question
+    publication = create :publication, asker: asker, question: question
+    asker.stubs(:most_popular_question).returns(question)
+
+    asker.send_targeted_mention user
+
+    uri = URI.parse Post.first.url
+    uri.path.must_equal "/#{asker.subject_url}/#{publication.id}"
+  end
+end
+
 describe Asker, 'ManageTwitterRelationships#followback' do
   before :each do
     @asker = create(:asker)
