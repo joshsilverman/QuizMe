@@ -15,18 +15,31 @@ describe Asker do
 
 	describe "responds to user answer" do
 		before :each do 
-			@conversation = create(:conversation, post: @question_status, publication: @publication)
-			@conversation.posts << @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+			@conversation = create(:conversation, 
+				post: @question_status, 
+				publication: @publication)
 
+			@conversation.posts << @user_response = create(:post, 
+				text: 'the correct answer, yo', 
+				user_id: @user.id, 
+				in_reply_to_user_id: @asker.id, 
+				interaction_type: 2, 
+				in_reply_to_question_id: @question.id)
 
 			@correct = [1, 2].sample == 1
-			@incorrect_answer = create(:answer, correct: false, text: 'the incorrect answer', question_id: @question.id)
+
+			@incorrect_answer = create(:answer, 
+				correct: false, 
+				text: 'the incorrect answer', 
+				question_id: @question.id)
 		end
 
 
 		it "with a post" do
 			@asker.app_response @user_response, @correct
-			@asker.posts.where("intention = 'grade' and in_reply_to_user_id = ?", @user.id).wont_be_empty
+			@asker.posts
+				.where("intention = 'grade' and in_reply_to_user_id = ?", @user.id)
+				.wont_be_empty
 		end
 
 		it "and marks the user's post as responded to" do 
