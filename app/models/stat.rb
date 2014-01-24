@@ -153,7 +153,7 @@ class Stat < ActiveRecord::Base
 
   def self.month_summary asker_id = nil, domain = 30
     display_data = {}
-    user_ids_by_date = Post.social.not_spam.not_us\
+    user_ids_by_date = Post.not_spam.not_us\
         .select(["to_char(posts.created_at, 'MM/DD') as created_at", "user_id", "interaction_type", "correct"])\
         .where("created_at > ? and created_at < ?", Date.today - (domain + 1).days, Date.today)\
         .order("created_at ASC")\
