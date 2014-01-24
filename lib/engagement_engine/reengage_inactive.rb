@@ -97,16 +97,13 @@ module EngagementEngine::ReengageInactive
       return false unless @question_sent_by_asker_counts[asker.id] < 25 # limit number of reengagements sent to 25 per session
       @question_sent_by_asker_counts[asker.id] += 1
 
-      # puts "send reengagement: '#{text}' to #{user.twi_screen_name}" 
-
       if reengagement_type == :question
-        asker.send_public_message(text, {
+        send_message(user, asker, text, {
           reply_to: user.twi_screen_name,
           long_url: long_url ? long_url : nil,
           in_reply_to_user_id: user.id,
           posted_via_app: true,
           requires_action: false,
-          interaction_type: 2,
           link_to_parent: false,
           link_type: "reengage",
           intention: intention,
@@ -140,6 +137,19 @@ module EngagementEngine::ReengageInactive
       sleep(1) if !Rails.env.test?
       
       return true
+    end
+
+    private
+
+    def send_message user, asker, text, options
+
+      if user.lifecycle_above? 1
+        options[:interaction_type] = 2
+        asker.send_public_message(text, options)
+      else
+        options[:interaction_type] = 4
+        asker.send_private_message(user, text, options)
+      end
     end
   end
 end
