@@ -55,11 +55,11 @@ class TwitterAsker < Asker
       end
     end
     return post 
-	end
+  end
 
-	def send_private_message recipient, text, options = {}
-	  sender = self
-    	
+  def send_private_message recipient, text, options = {}
+    sender = self
+      
     short_url = nil
     if options[:short_url]
       short_url = options[:short_url]
@@ -96,5 +96,5 @@ class TwitterAsker < Asker
       puts exception.message
     end    
     return post
-	end
+  end
 end
