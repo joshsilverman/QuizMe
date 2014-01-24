@@ -52,7 +52,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.dau_ids_by_date domain = 30
-    user_ids_by_date_raw = Post.social.not_us.not_spam.
+    user_ids_by_date_raw = Post.not_us.not_spam.
       where("created_at > ?", Date.today - (domain + 31).days).
       where("created_at < ?", Date.today).
       select(["to_char(posts.created_at, 'YYYY-MM-DD') as date_str", 
