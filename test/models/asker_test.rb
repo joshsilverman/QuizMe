@@ -813,12 +813,6 @@ describe Asker do
 	end		
 end
 
-describe Asker, "#reengage_edgers" do
-  it "reengages an edger" do
-    
-  end
-end
-
 describe Asker, ".mention_new_users" do
   it "with intention new user question mention" do
     asker = create(:asker)
