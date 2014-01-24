@@ -180,7 +180,7 @@ USER_TAG_SEARCH_TERMS = {
 }
 
 SEGMENT_HIERARCHY = {
-  1 => [7, 1, 2, 3, 4, 5, 6], 
+  1 => [7, 1, 2, 3, 4, 5, 6], #lifecycle segments
   2 => [7, 1, 2, 3, 4, 5, 6],
   3 => [],
   4 => [],
