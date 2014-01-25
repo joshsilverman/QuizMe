@@ -222,7 +222,7 @@ class Stat < ActiveRecord::Base
           .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
         slow_replies = replies.where("(posts.updated_at - posts.created_at > interval '24 hours')")\
           .select(["to_char(posts.created_at, 'YYYY-MM-DD')"]).group("to_char(posts.created_at, 'YYYY-MM-DD')").count
-        no_replies = Post.mentions.not_spam.not_us.where("posts.posted_via_app = ?", false)\
+        no_replies = Post.not_retweet.not_spam.not_us.where("posts.posted_via_app = ?", false)\
           .requires_action\
           .joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
           .where("parents.question_id IS NOT NULL")\
