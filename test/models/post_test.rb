@@ -27,6 +27,14 @@ describe Post, '#send_to_feed' do
   end
 end
 
+describe Post, "#link_to_question" do
+  it "method defined by module" do
+    dm = build(:dm, text: 'true')
+
+    dm.methods.must_include :link_to_question
+  end
+end
+
 describe Post, '#send_to_stream' do
   it 'calls stream socket' do
     post = FactoryGirl.create(:post)
