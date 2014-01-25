@@ -1,6 +1,7 @@
 class Asker < User
   include ManageTwitterRelationships
   include EngagementEngine::ReengageInactive
+  include EngagementEngine::AutoRespond 
   
   include AuthorizationsHelper
 
@@ -274,7 +275,15 @@ class Asker < User
         asker = askers.select { |a| a.id == user.posts.first.in_reply_to_user_id }.first
         next unless asker
         unless publication = popular_asker_publications[asker.id]
-          if popular_post = asker.posts.includes(:conversations => {:publication => :question}).where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?", 1.week.ago, asker.new_user_q_id).sort_by {|p| p.conversations.size}.last
+          popular_post = asker.posts
+            .includes(:conversations => {:publication => :question})
+            .where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?", 
+              1.week.ago, 
+              asker.new_user_q_id)
+            .references(:question)
+            .sort_by {|p| p.conversations.size}.last
+
+          if popular_post
             publication_id = popular_post.publication_id
           else
             publication_id = asker.posts.where("interaction_type = 1").order("created_at DESC").limit(1).first.publication_id
@@ -536,41 +545,6 @@ class Asker < User
     end
     response_text
   end
-
-
-  def auto_respond user_post
-    return unless !user_post.autocorrect.nil? and user_post.requires_action
-    
-    answerer = user_post.user  
-    if user_post.is_dm?
-      return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
-      return if user_post.is_moderatable? and rand <= 0.05 # return 5% of eligible posts for moderation
-      interval = Post.create_split_test(answerer.id, "DM autoresponse interval v2 (activity segment +)", "90", "120", "150", "180", "210")
-      Delayed::Job.enqueue(
-        TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.in_reply_to_question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
-        :run_at => interval.to_i.minutes.from_now
-      )
-      user_post.update_attribute :correct, user_post.autocorrect
-      learner_level = "dm answer"
-    else
-      return unless user_post.conversation.posts.grade.blank? # makes sure not to regrade already graded convos
-      return if user_post.is_moderatable? and rand <= 0.05 # return 5% of eligible posts for moderation
-      root_post = user_post.conversation.post
-      asker_response = app_response(user_post, user_post.autocorrect, {
-        :link_to_parent => false, 
-        :autoresponse => true,
-        :post_to_twitter => true,
-        :quote_user_answer => root_post.is_question_post? ? true : false,
-        :link_to_parent => root_post.is_question_post? ? false : true
-      })
-      conversation = user_post.conversation || Conversation.create(:publication_id => user_post.publication_id, :post_id => user_post.in_reply_to_post_id, :user_id => user_post.user_id)
-      conversation.posts << user_post
-      conversation.posts << asker_response
-      learner_level = "twitter answer"
-    end
-    after_answer_filter(answerer, user_post, :learner_level => learner_level)
-  end
-
 
   def after_answer_filter answerer, user_post, options = {}
     answerer.update_user_interactions({

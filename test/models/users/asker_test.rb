@@ -7,7 +7,7 @@ describe Asker do
 
 		@asker.followers << @user		
 
-		@question = create(:question, created_for_asker_id: @asker.id, status: 1)		
+		@question = create(:question, created_for_asker_id: @asker.id, status: 1)
 		@publication = create(:publication, question_id: @question.id)
 		@question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)		
 		Delayed::Worker.delay_jobs = false
@@ -68,22 +68,6 @@ describe Asker do
 			it "and quotes the user's post when they are correct" do
 				app_response = @asker.app_response @user_response, true, manager_response: true, quote_user_answer: true
 				app_response.text.include?(@user_response.text).must_equal true
-			end
-		end
-
-		describe 'from autoresponse' do
-			it 'automatically responds to autocorrected posts' do
-				@user_response.update_attributes(requires_action: true, autocorrect: true)
-				@asker.auto_respond(@user_response)
-				@user_response.reload.requires_action.must_equal false
-				@asker.posts.where(intention: 'grade', in_reply_to_post_id: @user_response.id).count.must_equal 1
-			end
-
-			it 'won\'t response to un-autocorrected posts' do
-				@user_response.update_attributes(requires_action: true, autocorrect: nil)
-				@asker.auto_respond(@user_response)
-				@user_response.reload.requires_action.must_equal true
-				@asker.posts.where(intention: 'grade', in_reply_to_post_id: @user_response.id).count.must_equal 0
 			end
 		end
 	end
@@ -871,6 +855,14 @@ describe Asker, "#notify_badge_issued" do
     asker.expects(:send_public_message).with(message, options)
 
     asker.notify_badge_issued(user, badge, options)
+  end
+end
+
+describe Asker, "#auto_respond" do
+  it "method exists" do
+    asker = Asker.new
+
+    asker.methods.must_include :auto_respond
   end
 end
 
