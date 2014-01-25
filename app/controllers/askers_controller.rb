@@ -10,7 +10,7 @@ class AskersController < ApplicationController
   caches_action :get_handle_metrics, :expires_in => 11.minutes
 
   def index
-    @askers = Asker.order(:subject).all
+    @askers = Asker.order(:subject).to_a
 
     respond_to do |format|
       format.html { admin? } # will redirect if not admin
