@@ -130,7 +130,7 @@ class Stat < ActiveRecord::Base
   end
 
   def self.active_user_during_period start_time, end_time = Time.now
-    post_user_ids_last_24_raw = Post.social.not_us.not_spam.
+    post_user_ids_last_24_raw = Post.not_us.not_spam.
       where("created_at > ?", 24.hour.ago).
       select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).
       group("to_char(posts.created_at, 'YY')").all
