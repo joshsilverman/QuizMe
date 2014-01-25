@@ -7,15 +7,17 @@ module EngagementEngine::AutoRespond
     if user_post.is_dm?
       return unless answerer.dm_conversation_history_with_asker(id).grade.blank?
       return if user_post.is_moderatable? and rand <= 0.05
-      interval = Post.create_split_test(
-        answerer.id, 
-        "DM autoresponse interval v2 (activity segment +)", 
-        "90", "120", "150", "180", "210")
-
-      Delayed::Job.enqueue(
-        TwitterPrivateMessage.new(self, answerer, generate_response(user_post.autocorrect, user_post.in_reply_to_question), {:in_reply_to_post_id => user_post.id, :intention => "dm autoresponse"}),
-        :run_at => interval.to_i.minutes.from_now)
       
+      interval = 210
+      
+      Delayed::Job.enqueue(
+        TwitterPrivateMessage.new(self, answerer, generate_response(
+            user_post.autocorrect, 
+            user_post.in_reply_to_question), 
+          { :in_reply_to_post_id => user_post.id, 
+            :intention => "dm autoresponse"}),
+        :run_at => interval.minutes.from_now)
+
       user_post.update_attribute :correct, user_post.autocorrect
       learner_level = "dm answer"
     else
