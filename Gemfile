@@ -47,6 +47,9 @@ end
 group :development, :test do
   gem 'pry'
   gem 'pry-nav'
+  gem "spring"
+  gem "guard"
+  gem "guard-minitest"
 end
 
 gem 'sass-rails', '~> 4.0.1'
