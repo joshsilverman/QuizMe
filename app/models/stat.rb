@@ -168,8 +168,8 @@ class Stat < ActiveRecord::Base
       .group("to_char(questions.created_at, 'MM/DD')").all.group_by{ |q| q.created_at }
 
 
-    display_data[:today] = Post.social.not_spam.not_us.where("created_at > ?", 24.hours.ago).count("distinct user_id")
-    display_data[:total] = Post.social.not_spam.not_us.where("created_at > ?", (24*domain).hours.ago).count("distinct user_id")
+    display_data[:today] = Post.not_spam.not_us.where("created_at > ?", 24.hours.ago).count("distinct user_id")
+    display_data[:total] = Post.not_spam.not_us.where("created_at > ?", (24*domain).hours.ago).count("distinct user_id")
 
     graph_data = {}
     user_ids_by_date.each do |date, posts|
