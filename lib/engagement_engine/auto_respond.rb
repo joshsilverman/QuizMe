@@ -1,16 +1,17 @@
 module EngagementEngine::AutoRespond
 
   def auto_respond user_post
+
     return unless !user_post.autocorrect.nil? and user_post.requires_action
-    
+
     answerer = user_post.user  
     if user_post.is_dm?
-      
+
       return if already_graded_dm? user_post, answerer
       return if user_post.is_moderatable? and rand <= 0.05
-      
+
       interval = 210
-      
+
       Delayed::Job.enqueue(
         TwitterPrivateMessage.new(self, answerer, generate_response(
             user_post.autocorrect, 
@@ -51,7 +52,8 @@ module EngagementEngine::AutoRespond
 
     already_graded = answerer.posts.dms.where('created_at > ?', question_post.created_at)
       .where(in_reply_to_question: question)
-      .where('correct IS NOT NULL')
+      .where('autocorrect IS NOT NULL')
+      .where(requires_action: false)
       .present?
 
     return already_graded
