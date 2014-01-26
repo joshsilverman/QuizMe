@@ -19,7 +19,7 @@ module EngagementEngine::AutoRespond
             intention: "grade"}),
         run_at: interval.minutes.from_now)
 
-      user_post.update_attribute :correct, user_post.autocorrect
+      user_post.update requires_action: false
       learner_level = "dm answer"
     else
       return unless user_post.conversation.posts.grade.blank?
