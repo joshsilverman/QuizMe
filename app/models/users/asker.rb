@@ -875,13 +875,14 @@ class Asker < User
 
       # Fire mixpanel answer event
       Mixpanel.track_event "answered", {
-        :distinct_id => answerer.id,
-        :time => user_post.created_at.to_i,
-        :account => self.twi_screen_name,
-        :type => "twitter",
-        :in_reply_to => in_reply_to,
-        :strategy => strategy,
-        :autoresponse => (options[:autoresponse].present? ? options[:autoresponse] : false)
+        distinct_id: answerer.id,
+        time: user_post.created_at.to_i,
+        account: self.twi_screen_name,
+        type: "twitter",
+        in_reply_to: in_reply_to,
+        strategy: strategy,
+        interaction_type: user_post.interaction_type,
+        autoresponse: (options[:autoresponse].present? ? options[:autoresponse] : false)
       }        
     end
 
