@@ -119,4 +119,15 @@ describe Asker, "EngagementEngine::AutoRespond#auto_respond" do
     
     @asker.posts.where(intention: 'grade').count.must_equal 2
   end
+
+  it 'updates metrics after dm auto respond' do
+    @user_response.update(
+      requires_action: true, 
+      autocorrect: true,
+      interaction_type: 4)
+
+    Mixpanel.expects(:track_event)
+
+    @asker.auto_respond(@user_response)
+  end
 end

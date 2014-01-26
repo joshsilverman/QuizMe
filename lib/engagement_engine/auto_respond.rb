@@ -41,7 +41,9 @@ module EngagementEngine::AutoRespond
       conversation.posts << asker_response
       learner_level = "twitter answer"
     end
+
     after_answer_filter(answerer, user_post, :learner_level => learner_level)
+    self.delay.update_metrics(answerer, user_post, nil, {autoresponse: true})
   end
 
   def already_graded_dm? user_post, answerer
