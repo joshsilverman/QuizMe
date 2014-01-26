@@ -12,13 +12,11 @@ module EngagementEngine::AutoRespond
 
       interval = 210
 
-      Delayed::Job.enqueue(
-        TwitterPrivateMessage.new(self, answerer, generate_response(
-            user_post.autocorrect, 
-            user_post.in_reply_to_question), 
-          { in_reply_to_post_id: user_post.id, 
-            intention: "grade"}),
-        run_at: interval.minutes.from_now)
+      TwitterPrivateMessage.new(self, answerer, generate_response(
+          user_post.autocorrect, 
+          user_post.in_reply_to_question), 
+        { in_reply_to_post_id: user_post.id, 
+          intention: "grade"})
 
       user_post.update requires_action: false
       learner_level = "dm answer"
