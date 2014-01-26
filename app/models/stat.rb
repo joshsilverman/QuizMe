@@ -133,16 +133,16 @@ class Stat < ActiveRecord::Base
     post_user_ids_last_24_raw = Post.not_us.not_spam.
       where("created_at > ?", 24.hour.ago).
       select(["to_char(posts.created_at, 'YY')", "array_to_string(array_agg(user_id),',')"]).
-      group("to_char(posts.created_at, 'YY')").all
+      group("to_char(posts.created_at, 'YY')").to_a
 
     moderation_user_ids_last_24_raw = Moderation.where("created_at > ?", 24.hour.ago).
       select(["to_char(moderations.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',')"]).
-      group("to_char(moderations.created_at, 'YY/MM/DD')").all
+      group("to_char(moderations.created_at, 'YY/MM/DD')").to_a
 
     question_ids_last_24_raw = Question.not_us.
       where("created_at > ?", 24.hour.ago).
       select(["to_char(questions.created_at, 'YY/MM/DD')", "array_to_string(array_agg(user_id),',') as user_ids"]).
-      group("to_char(questions.created_at, 'YY/MM/DD')").all        
+      group("to_char(questions.created_at, 'YY/MM/DD')").to_a        
 
     user_ids_last_24 = []
     user_ids_last_24 << post_user_ids_last_24_raw[0].array_to_string.split(',').uniq unless post_user_ids_last_24_raw.blank?
@@ -161,11 +161,11 @@ class Stat < ActiveRecord::Base
 
     moderation_user_ids_by_date = Moderation.where("created_at > ?", domain.days.ago)\
       .select(["to_char(moderations.created_at, 'MM/DD') as created_at", "array_to_string(array_agg(user_id),',') as user_ids"])\
-      .group("to_char(moderations.created_at, 'MM/DD')").all.group_by{ |m| m.created_at }
+      .group("to_char(moderations.created_at, 'MM/DD')").to_a.group_by{ |m| m.created_at }
 
     question_user_ids_by_date = Question.not_us.where("created_at > ?", domain.days.ago)\
       .select(["to_char(questions.created_at, 'MM/DD') as created_at", "array_to_string(array_agg(user_id),',') as user_ids"])\
-      .group("to_char(questions.created_at, 'MM/DD')").all.group_by{ |q| q.created_at }
+      .group("to_char(questions.created_at, 'MM/DD')").to_a.group_by{ |q| q.created_at }
 
 
     display_data[:today] = Post.not_spam.not_us.where("created_at > ?", 24.hours.ago).count("distinct user_id")
