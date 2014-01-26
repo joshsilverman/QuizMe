@@ -67,7 +67,10 @@ describe Asker, "EngagementEngine::AutoRespond#auto_respond" do
       interaction_type: 4)
 
     @asker.auto_respond(@user_response)
+
     @user_response.reload.requires_action.must_equal false
+    @user_response.intention.must_equal 'respond to question'
+
     @asker.posts.where(
         intention: 'grade', 
         in_reply_to_post_id: @user_response.id)

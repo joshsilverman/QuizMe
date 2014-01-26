@@ -18,7 +18,9 @@ module EngagementEngine::AutoRespond
         in_reply_to_post_id: user_post.id, 
         intention: "grade"})
 
-      user_post.update requires_action: false
+      user_post.update({
+        requires_action: false,
+        intention: 'respond to question'})
       learner_level = "dm answer"
     else
       return unless user_post.conversation.posts.grade.blank?
