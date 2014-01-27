@@ -42,7 +42,7 @@ describe Asker, 'ManageTwitterRelationships' do
           end
           total_follows << follows_today
         end
-        total_follows.sum.must_equal 21
+        total_follows.sum.must_equal 14
       end
     end
 
@@ -59,7 +59,7 @@ describe Asker, 'ManageTwitterRelationships' do
           end
           total_follows << follows_today
         end
-        total_follows.sum.must_equal 42
+        total_follows.sum.must_equal 36
       end
     end     
 
@@ -113,7 +113,7 @@ describe Asker, 'ManageTwitterRelationships' do
 
     it 'takes into account previous follows from today when calculating autofollow count' do
       autofollow_count = 0
-      while autofollow_count < 3
+      while autofollow_count < 2
         Timecop.travel(Time.now + 1.hour)
         autofollow_count = @asker.autofollow_count
       end

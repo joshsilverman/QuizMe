@@ -20,8 +20,8 @@ module ManageTwitterRelationships
   end
 
   def autofollow_count max_follows = nil
-    target_follow_count_avg = (followers.count / 150).floor + 2 # number of follows per day to shoot for
-    target_follow_count_avg = 6 if target_follow_count_avg > 6
+    target_follow_count_avg = (followers.count / 150).floor + 1 # number of follows per day to shoot for
+    target_follow_count_avg = 5 if target_follow_count_avg > 5
     scale = [0.0, 0.0, 1.6, 1.0, 1.8, 0.7, 1.9][((id + Time.now.wday + Time.now.to_date.cweek) % 7)] # pick a scale val for today
     max_follows = (target_follow_count_avg * scale).round # scale target avg
     # Check if we should follow today
