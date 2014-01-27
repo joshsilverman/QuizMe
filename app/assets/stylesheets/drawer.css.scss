@@ -6,7 +6,7 @@
   
   position:absolute;
   width:0;
-  overflow: none;
+  overflow-x: hidden;
 
   &.show {
     width:266px;
@@ -15,23 +15,23 @@
   }
 
   ul {
-    padding:50px 0;
-    margin:0;
+    padding:15px 0;
+    margin:0px;
     list-style-type: none;
-    width:100%;
+    width:254px;
     
     li {
       width:100%;
       padding:0px;
       color: #ccc;
       font-size:1.3em;
-      border-top: 1px solid rgba(255,255,255, 0.1);
+      margin:0px 5px;
+      border-bottom: 1px solid rgba(0,0,0, 0.15);
 
       a {
-        background: #3d414a;
         display: block;
-        color: #bbb;
-        padding:12px;
+        color: #aaa;
+        padding:18px 6px;
         cursor: pointer;
       }
 
@@ -41,13 +41,22 @@
 
       ul {
         padding:0px 0;
+        width:240px;
+        display:block;
+        margin:0px !important;
 
         li {
           font-size:.8em;
+          margin:0px 50px 0px 12px;
+
+          &:last-child {
+            border-bottom:none;
+          }
 
           a {
             background:transparent;
-            padding:12px 25px;
+            padding:12px 6px;
+            color: #bbb;
           }
         }
       }

@@ -27,8 +27,10 @@
     - if current_user
       %li
         %a Recent Topics
+      %li
         = render partial: 'drawer/askers_recent'
 
     %li
       %a All Topics
+    %li
       = render partial: 'drawer/askers_index'
