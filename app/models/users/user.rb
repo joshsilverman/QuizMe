@@ -315,7 +315,6 @@ class User < ActiveRecord::Base
     }
     classify
 		register_referrals
-		Post.trigger_split_test(id, "targeted mention script (joins)")
 	end
 
 	def classify matched_tags = []
@@ -329,17 +328,17 @@ class User < ActiveRecord::Base
 	end
 
 	def register_referrals 
-		followed_twi_user_ids = Post.twitter_request { User.find_by_twi_screen_name('Wisr').twitter.friend_ids(twi_user_id).ids } || [0]
-		referrers = User.not_asker.where("twi_user_id in (?)", followed_twi_user_ids)
+		followed_twi_user_ids = Post.twitter_request { 
+      User.find_by_twi_screen_name('Wisr')
+        .twitter.friend_ids(twi_user_id).ids } || [0]
+
+		referrers = User.not_asker
+      .where("twi_user_id in (?)", followed_twi_user_ids)
+
 		if referrers.present?
-			referrers.each { |referrer| 
-				Post.trigger_split_test(referrer.id, "Refer a friend script (follower joins)") 
-				Post.trigger_split_test(referrer.id, 'UGC published notification type (follower joins)')
-			}
       Mixpanel.track_event "referral joined", {
         distinct_id: id,
-        type: "twitter"
-      }     
+        type: "twitter"}     
 		end
 	end
 
