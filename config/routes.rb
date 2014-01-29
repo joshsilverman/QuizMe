@@ -102,7 +102,6 @@ Quizmemanager::Application.routes.draw do
 
   resources :posts
   resources :mentions
-  resources :exams
 
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"

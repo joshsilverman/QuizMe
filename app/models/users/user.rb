@@ -38,8 +38,6 @@ class User < ActiveRecord::Base
   has_many :followers, -> { where("relationships.active = ?", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
   has_many :followers_with_inactive, :through => :follower_relationships, :source => :follower
 
-  has_many :exams
-
   belongs_to :search_term, foreign_key: :search_term_topic_id, class_name: 'Topic'
 
   validates_format_of :email, :with => /[a-zA-Z0-9\_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+/, :if => Proc.new { |user| user.email.present? }
