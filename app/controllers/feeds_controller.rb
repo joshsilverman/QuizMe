@@ -281,7 +281,8 @@ class FeedsController < ApplicationController
     if params[:post_id] and current_user
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
-      @requested_publication = @asker.publications.published.where(id: params[:post_id]).first
+      @requested_publication = @asker.publications.published
+        .where(id: params[:post_id].force_encoding("UTF-8")).first
       if @requested_publication.present?
         @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
         question = @requested_publication.question
