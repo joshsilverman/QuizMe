@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 ruby '2.1.0'
+# RUBY_GC_MALLOC_LIMIT_MAX:     32000000
+# RUBY_GC_OLDMALLOC_LIMIT_MAX:  32000000
 
 gem 'pg'
 gem 'redis'
