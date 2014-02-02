@@ -141,26 +141,12 @@ class Post
 				@element.find(".expand").css("color", "#999") unless @expanded
 				@element.find(".answered_indicator").css("opacity", ".4") unless @expanded
 		)
-		@element.find(".tweet_button").on "click", (e) => 
+		@element.find(".answers h3").click (e) => 
+			answer = $(e.target)
 			if $("#user_name").val() != undefined
-				parent = $(e.target).parents(".answer_container").prev("h3")
-				@respond_to_question(parent.text(), parent.attr("answer_id"), parent.attr "correct")
+				@respond_to_question(answer.text(), answer.attr("answer_id"), answer.attr "correct")
 			else
-				element = $(e.target)
-				window.location.replace("/users/auth/twitter?answer_id=#{element.attr('answer_id')}&feed_id=#{element.attr('feed_id')}&post_id=#{element.attr('post_id')}&use_authorize=false")
-		answers = @element.find(".answers")
-		answers.accordion({
-			collapsible: true, 
-			autoHeight: false,
-			active: false, 
-			icons: false, 
-		})		
-		answers.on "accordionchange", (e, ui) => 
-			if ui.newHeader.length > 0
-				$(e.target).find("h3").removeClass("active_next")
-				$(ui.newHeader).nextAll('h3:first').toggleClass("active_next")
-			else
-				$(e.target).find("h3").removeClass("active_next")
+				window.location.replace("/users/auth/twitter?answer_id=#{answer.attr('answer_id')}&feed_id=#{answer.attr('feed_id')}&post_id=#{answer.attr('post_id')}&use_authorize=false")
 
 	expand: (duration = 200) =>
 		if @element.hasClass("active")
