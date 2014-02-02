@@ -86,10 +86,12 @@ describe Post, 'PostObserver#send_to_stream' do
     PostObserver.send(:new).send_to_stream post
   end
 
-  it "wont call send_to_stream if post is private" do
-    post = FactoryGirl.create :dm
+  it "should call send_to_stream if post is private but answers a question" do
+    post = FactoryGirl.create :dm,
+      in_reply_to_question_id: 123,
+      intention: 'respond to question'
 
-    post.expects(:send_to_stream).never
+    post.expects(:send_to_stream).once
 
     PostObserver.send(:new).send_to_stream post
   end

@@ -18,7 +18,6 @@ class PostObserver < ActiveRecord::Observer
   end
 
   def send_to_stream post
-    return if post.is_dm?
     return if post.in_reply_to_question_id.nil?
     return unless post.intention == 'respond to question'
 
