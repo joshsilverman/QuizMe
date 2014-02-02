@@ -12,8 +12,6 @@ describe FeedsController do
 		post.click unless post[:class].split(' ').include?('active')
 		assert post.has_selector?('.bottom_border')
 		post.all('h3').first.click
-		post.find('.tweet_button')
-		post.all('.tweet_button').first.click
 		assert post.has_selector?('.interactions')
 
 		return post
