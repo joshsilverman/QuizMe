@@ -183,21 +183,6 @@ describe FeedsController do
 	end
 end
 
-describe FeedsController, "#show_template" do
-  it 'handles illegal post characters' do
-		asker = create(:asker, subject: 'Biology')
-		user = create(:user)
-		feeds_controller = FeedsController.new
-		feeds_controller.instance_variable_set(:@asker, asker)
-		feeds_controller.stubs(:current_user).returns(user)
-		feeds_controller.stubs(:params).returns(
-			{post_id: "yummy\xE2 \xF0\x9F\x8D\x94 \x9F\x8D\x94"})
-		feeds_controller.expects(:render)
-
-		feeds_controller.send :show_template
-	end
-end
-
 describe FeedsController, "#index" do
   it "responds with 200" do
     get :index

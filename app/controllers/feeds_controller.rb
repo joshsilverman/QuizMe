@@ -62,6 +62,9 @@ class FeedsController < ApplicationController
   def show
     return if show_redirect
 
+    # sanitize url param
+    params[:post_id] = params[:post_id].force_encoding("UTF-8")
+
     if current_user
       show_template
     elsif !current_user and params[:q] == "1" and @asker
@@ -282,7 +285,7 @@ class FeedsController < ApplicationController
       @post_id = params[:post_id]
       @answer_id = params[:answer_id]
       @requested_publication = @asker.publications.published
-        .where(id: params[:post_id].force_encoding("UTF-8")).first
+        .where(id: params[:post_id]).first
       if @requested_publication.present?
         @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
         question = @requested_publication.question
