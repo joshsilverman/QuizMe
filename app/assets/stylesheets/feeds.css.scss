@@ -1094,131 +1094,21 @@
 			border-width: 1px;
 			border-style: solid;	
 			margin-top: 10px;
-			/*margin-left: 0px;*/
 			width: inherit;
 			margin-left: 56px;
 			margin-bottom: 5px;
+			background: #fdfdfd;
 
-			.ui-widget-content{
-				border-width: 0px !important;
-			}
-
-			.ui-accordion-header {
-				margin-top: 0px;
-				padding: 10px;
-				padding-left: 14px;
-				background: #fdfdfd;
-				border-color: #ddd;
-				border-width: 0px;
-				color: #333;
-				-webkit-border-radius: 5px;
-				-moz-border-radius: 5px;
-				border-radius: 5px;
-				z-index: 1;
-				word-wrap: break-word;
-			}
-
-			.ui-accordion-header.ui-state-active {
-				/*box-shadow: 0 2px 2px 0px #CCC;*/
-				border-bottom-width: 0px !important;
-				border-bottom-right-radius: 0px !important;
-				border-bottom-left-radius: 0px !important;
-			}
-
-			.ui-accordion-header.active_next {
-				/*box-shadow: 0 -2px 2px 0px #CCC;*/
-				border-top-right-radius: 0px !important;
-				border-top-left-radius: 0px !important;								
-			}
-
-			#question_container {
-				height: 100px;
+			h3 {
 				color:#555;
-				padding:4px;
+				padding:4px 12px;
+				font-size: 14px;
+				font-weight: normal;
+
+				&:hover {
+					background: #ddd;
+				}
 			}	
-
-			.answer_container {
-				width: 100%;
-				padding: 0px;
-				margin: 0px;
-				height: 140px;
-				
-				border-right: 0px solid #DDD !important;
-				border-left: 0px solid #DDD !important;
-				
-				.shadow-top, .shadow-bottom {
-					height: 4px;
-					left: 0;
-					position: absolute;
-					width: 100%;
-				}
-
-				.shadow-top {
-					-webkit-mask-image: -webkit-linear-gradient(left,transparent 0%,rgba(0,0,0,.8) 50%,transparent 100%),-webkit-linear-gradient(top,#000 1px,transparent 1px);
-					background-color: transparent;
-					background-image: -webkit-linear-gradient(top,rgba(0, 0, 0, .2),transparent);
-					background-image: -moz-linear-gradient(top,rgba(0, 0, 0, .2),transparent);
-					background-image: -ms-linear-gradient(top,rgba(0, 0, 0, .2),transparent);
-					background-image: -o-linear-gradient(top,rgba(0, 0, 0, .2),transparent);
-					background-image: linear-gradient(top,rgba(0, 0, 0, .2),transparent);
-					border-top: 1px solid rgba(0, 0, 0, .2);
-					top: 0;
-				}
-
-				.shadow-bottom {
-					-webkit-mask-image: -webkit-linear-gradient(left,transparent 0%,rgba(0,0,0,.8) 50%,transparent 100%),-webkit-linear-gradient(bottom,#000 1px,transparent 1px);
-					background-color: transparent;
-					background-image: -webkit-linear-gradient(bottom,rgba(0, 0, 0, .2),transparent);
-					background-image: -moz-linear-gradient(bottom,rgba(0, 0, 0, .2),transparent);
-					background-image: -ms-linear-gradient(bottom,rgba(0, 0, 0, .2),transparent);
-					background-image: -o-linear-gradient(bottom,rgba(0, 0, 0, .2),transparent);
-					background-image: linear-gradient(bottom,rgba(0, 0, 0, .2),transparent);
-					border-bottom: 1px solid rgba(0, 0, 0, .2);
-					bottom: 0;
-					border-radius: 0 0 5px 5px;
-				}
-
-				.tweet {
-					padding: 10px;
-					background-color:white;
-					height: 80px;
-					cursor: text;
-
-					* {
-						border:none;
-						box-shadow:none;
-						padding:none;
-						outline:none;
-					}
-
-					#answer {
-						color: #777;
-						word-wrap: break-word;
-					}
-
-					#account, #url {		
-						color:#999;
-					}								
-				}
-
-				.answer_controls {
-					padding: 5px;
-					height: 27px;
-					cursor: default;
-					background: #eeeeee;
-					border-top-width: 1px;
-					border-top-style: dotted;
-					border-top-color: #F0F0F0;
-					border-bottom-style: solid !important;
-					border-bottom-width: 1px !important;
-					border-bottom-color: #ddd !important;	
-
-					.btn {
-						float: right;
-						color: white;
-					}
-				}			
-			}
 		}
 	}
 
