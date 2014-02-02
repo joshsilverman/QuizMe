@@ -108,6 +108,7 @@ module EngagementEngine::ReengageInactive
           link_type: "reengage",
           intention: intention,
           include_answers: true,
+          include_url: true,
           publication_id: (publication ? publication.id : nil),  
           question_id: (question ? question.id : nil),
           is_reengagement: true
