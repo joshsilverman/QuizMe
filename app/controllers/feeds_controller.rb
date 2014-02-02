@@ -63,7 +63,9 @@ class FeedsController < ApplicationController
     return if show_redirect
 
     # sanitize url param
-    params[:post_id] = params[:post_id].force_encoding("UTF-8")
+    if params[:post_id]
+      params[:post_id] = params[:post_id].force_encoding("UTF-8")
+    end
 
     if current_user
       show_template
