@@ -7,6 +7,9 @@ TWI_SHORT_URL_LENGTH = 22 # variable occasionally increased by twitter: https://
 
 # @ugly, this should make use of Devise roles (wtf)
 ADMINS = (Rails.env.test? ? [999999999999999999] : [1, 3, 4, 11])
+WHITELISTED_MODERATORS = [
+    6 # DRathers - Jessi Royos
+  ]
 
 AUTOFOLLOW_ASKER_IDS = [32588, 36605, 35106] # Neuro, AmericanRev, Respiratory
 

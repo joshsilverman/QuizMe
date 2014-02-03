@@ -105,11 +105,11 @@ class Question < ActiveRecord::Base
   def self.requires_moderations moderator, options = {}
     moderator = moderator.becomes(Moderator)
     is_admin = ADMINS.include?(moderator.id)
+    whitelisted_mod = WHITELISTED_MODERATORS.include?(moderator.id)
 
-    unless is_admin
+    unless is_admin || whitelisted_mod
       return [] unless moderator.lifecycle_above?(3) # check if user is > regular
       return [] unless moderator.moderator_segment_above?(2) # greated than noob mod
-      # return [] unless moderator.questions.approved.count > 4 # check if user has written enough questions
     end
 
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
