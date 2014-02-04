@@ -144,8 +144,7 @@ class Question < ActiveRecord::Base
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.id NOT IN (?)", 
           question_ids_moderated_by_current_user)\
-        .where("questions.created_for_asker_id IN (?)", 
-          moderator.follows.where("role = 'asker'").collect(&:id))\
+        .where("questions.created_for_asker_id IN (?)", follows_ids)\
         .order('questions.created_at DESC')\
         .limit(requires_moderation_count)
     end

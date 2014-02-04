@@ -150,10 +150,14 @@ class Post < ActiveRecord::Base
     excluded_post_ids = (excluded_post_ids + post_ids_moderated_by_current_user).uniq
     excluded_post_ids = [0] if excluded_post_ids.empty?
     
+    whitelisted_mod = WHITELISTED_MODERATORS.include?(moderator.id)
+    follows_ids = moderator.follows.where("role = 'asker'").collect(&:id)
+    follows_ids = Asker.published_ids if whitelisted_mod
+
     Post.includes(:in_reply_to_question => :answers).moderatable\
       .joins("INNER JOIN posts as parents on parents.id = posts.in_reply_to_post_id")\
       .where("parents.question_id IS NOT NULL")\
-      .where("posts.in_reply_to_user_id IN (?)", moderator.follows.where("role = 'asker'").collect(&:id))\
+      .where("posts.in_reply_to_user_id IN (?)", follows_ids)\
       .where("posts.user_id <> ?", moderator.id)\
       .where("posts.id NOT IN (?)", excluded_post_ids)\
       .where('posts.created_at > ?', 30.days.ago)\
