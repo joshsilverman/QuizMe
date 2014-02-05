@@ -30,10 +30,6 @@ class @Feed
 		$(".activity img").tooltip()
 		$(".timeago").timeago()
 
-		$("#retweet_question").on "click", (e) => 
-			e.preventDefault()
-			$("#retweet_question").button("loading")
-			@retweet($(e.target))
 		mixpanel.track("page_loaded", {"account" : @name, "source": source, "user_name": @user_name, "type": "feed"})
 		mixpanel.track_links(".related_feed", "clicked_related", {"account" : @name, "source": source})
 		
@@ -57,22 +53,6 @@ class @Feed
 		$("#directory img").tooltip()
 
 	initialize_posts: (posts) => @posts.push(new Post post) for post in posts
-
-	retweet: (e) =>
-		id = e.attr 'publication_id'
-		params = 
-			"publication_id" : id
-		$.ajax "/posts/retweet",
-			type: 'POST',
-			data: params
-			complete: => 
-				$("#retweet_question_modal").modal('hide')	
-				$('#retweet_question').button('reset')
-			success: (e) => 
-				post = $(".post[post_id=#{id}]")
-				post.find(".icon-retweet").fadeIn()	
-				post.find(".retweet").remove()
-				mixpanel.track("retweet", {"account" : @name, "source": source, "user_name": window.feed.user_name, "type": "feed"})
 
 	show_more: => 
 		last_post_id = $(".post.parent:visible").last().attr "post_id"
@@ -123,12 +103,6 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.find(".retweet").on "click", => 
-			$("#retweet_question_modal").find("img").attr "src", @image_url
-			$("#retweet_question_modal").find("h5").text(@asker_name)
-			$("#retweet_question_modal").find("p").text(@question)
-			$("#retweet_question_modal").find("#retweet_question").attr "publication_id", @id
-			$("#retweet_question_modal").modal()	
 
 		@element.find(".answers h3").click (e) => 
 			answer = $(e.target)
