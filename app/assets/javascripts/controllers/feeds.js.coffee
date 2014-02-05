@@ -112,7 +112,6 @@ class Post
 	element: null
 	question: null
 	correct: null
-	expanded: false
 	asker_id: null
 	image_url: null
 	asker_name: null
@@ -124,59 +123,19 @@ class Post
 		@asker_id = @element.attr "asker_id"
 		@image_url = @element.find(".rounded").attr "src"
 		@asker_name = @element.find(".content h5").text()
-		@element.tappable (e) => @expand() unless $(e.target).parents('.after_answer').length > 0 or $(e.target).is("input") or $(e.target).hasClass("asker_link") or $(e.target).parents(".ui-dialog").length > 0 or $(e.target).parent(".answers").length > 0 or $(e.target).hasClass("answer_controls") or $(e.target).hasClass("tweet") or $(e.target).parent(".tweet").length > 0 or $(e.target).hasClass("btn") or $(e.target).hasClass("retweet") or $(e.target).hasClass("answer_link") or $(e.target).parent(".asker_link").length > 0 or $(e.target).parent(".question_via").length > 0
 		@element.find(".retweet").on "click", => 
 			$("#retweet_question_modal").find("img").attr "src", @image_url
 			$("#retweet_question_modal").find("h5").text(@asker_name)
 			$("#retweet_question_modal").find("p").text(@question)
 			$("#retweet_question_modal").find("#retweet_question").attr "publication_id", @id
 			$("#retweet_question_modal").modal()	
-		@element.hover(
-			=> 
-				@element.find(".retweet.rollover").css("visibility", "visible") if window.feed.user_name != undefined
-				@element.find(".expand").css("color", "#08C")
-				@element.find(".answered_indicator").css("opacity", ".6")
-			=> 
-				@element.find(".retweet.rollover").css("visibility", "hidden") unless @expanded
-				@element.find(".expand").css("color", "#999") unless @expanded
-				@element.find(".answered_indicator").css("opacity", ".4") unless @expanded
-		)
+
 		@element.find(".answers h3").click (e) => 
 			answer = $(e.target)
 			if $("#user_name").val() != undefined
 				@respond_to_question(answer.text(), answer.attr("answer_id"), answer.attr "correct")
 			else
 				window.location.replace("/users/auth/twitter?answer_id=#{answer.attr('answer_id')}&feed_id=#{answer.attr('feed_id')}&post_id=#{answer.attr('post_id')}&use_authorize=false")
-
-	expand: (duration = 200) =>
-		if @element.hasClass("active")
-			@expanded = false
-			@element.find(".expand").text("Answer")
-			@element.find(".subsidiaries, .loading, .answers").hide()
-			@element.find(".subsidiaries, .loading, .answers").hide()
-			if $(window).width() < 400 then @element.removeClass("active") else @element.toggleClass("active", duration)
-			@element.next(".conversation").removeClass("active_next")
-			@element.prev(".conversation").removeClass("active_prev")	
-			@element.find(".answered_indicator").css("opacity", ".4")
-		else 
-			# Mobile specific improvements
-			@expanded = true
-			@element.find(".retweet").css("visibility", "visible") if window.feed.user_name != undefined
-			@element.find(".expand").text("Collapse")
-			@element.find(".answered_indicator").css("opacity", ".6")
-			if $(window).width() < 400 
-				@element.find(".answers").show()
-				@element.find(".subsidiaries").show()
-				@element.addClass("active")
-				@element.next(".conversation").addClass("active_next")
-				@element.prev(".conversation").addClass("active_prev")
-			else
-				@element.find(".answers").slideToggle(duration)
-				@element.find(".subsidiaries").slideToggle(duration, => 
-					@element.toggleClass("active", duration)
-					@element.next(".conversation").addClass("active_next")
-					@element.prev(".conversation").addClass("active_prev")
-				)
 
 	respond_to_question: (text, answer_id, correct) =>
 		answers = @element.find(".answers")
@@ -282,6 +241,5 @@ $ ->
 		window.feed = new Feed
 		if target && target.length > 0
 			target.parents('.conversation').removeClass('hidden')
-			$.grep(window.feed.posts, (p) => p.id == publication_id)[0].expand(0)
 			target.find("h3[answer_id=#{$('#answer_id').val()}]").click()
 			$('html,body').animate({scrollTop: target.offset().top - 10}, 0);

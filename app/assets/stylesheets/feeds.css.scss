@@ -755,7 +755,7 @@
 		}
 	}				
 
-	.conversation.active {
+	.conversation {
 		margin: 10px 0px;
 		-webkit-border-radius: 5px !important;
 		-moz-border-radius: 5px !important;
@@ -766,27 +766,27 @@
 		border-bottom-width: 1px;
 	}
 
-	.conversation.active_prev {
-		-webkit-border-bottom-right-radius: 5px;
-		-moz-border-bottom-right-radius: 5px;
-		border-bottom-right-radius: 5px;	
-		-webkit-border-bottom-left-radius: 5px;
-		-moz-border-bottom-left-radius: 5px;
-		border-bottom-left-radius: 5px;						
-		border-bottom-style: solid;
-		border-bottom-width: 1px;
-	}
+	// .conversation {
+	// 	-webkit-border-bottom-right-radius: 5px;
+	// 	-moz-border-bottom-right-radius: 5px;
+	// 	border-bottom-right-radius: 5px;	
+	// 	-webkit-border-bottom-left-radius: 5px;
+	// 	-moz-border-bottom-left-radius: 5px;
+	// 	border-bottom-left-radius: 5px;						
+	// 	border-bottom-style: solid;
+	// 	border-bottom-width: 1px;
+	// }
 	
-	.conversation.active_next {
-		-webkit-border-top-right-radius: 5px;
-		-moz-border-top-right-radius: 5px;
-		border-top-right-radius: 5px;	
-		-webkit-border-top-left-radius: 5px;
-		-moz-border-top-left-radius: 5px;
-		border-top-left-radius: 5px;						
-		border-top-style: solid;
-		border-top-width: 1px;
-	}				
+	// .conversation {
+	// 	-webkit-border-top-right-radius: 5px;
+	// 	-moz-border-top-right-radius: 5px;
+	// 	border-top-right-radius: 5px;	
+	// 	-webkit-border-top-left-radius: 5px;
+	// 	-moz-border-top-left-radius: 5px;
+	// 	border-top-left-radius: 5px;						
+	// 	border-top-style: solid;
+	// 	border-top-width: 1px;
+	// }				
 }	
 
 .ui-dialog {
@@ -1183,7 +1183,7 @@
 	}
 }
 
-.conversation.active {
+.conversation {
 	.parent.answered {
 		border-bottom-width: 1px;
 	}
@@ -1291,23 +1291,21 @@
 
 				.actions {display: none;}
 
-				&.active {
-					margin:inherit;
-					border-top:inherit;
-					border-left: 3px #4d90f0 solid;
-					border-radius: 0px !important;
+				margin:inherit;
+				border-top:inherit;
+				border-left: 3px #4d90f0 solid;
+				border-radius: 0px !important;
 
-					.post .content {
-						margin-left: 56px;
+				.post .content {
+					margin-left: 56px;
 
-						img {
-							left:8px;
-						}
+					img {
+						left:8px;
 					}
+				}
 
-					.actions {
-						display: inherit;
-					}
+				.actions {
+					display: inherit;
 				}
 
 				&.dim {

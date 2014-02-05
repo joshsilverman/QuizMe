@@ -16,7 +16,7 @@
 		- @conversation = @responses[publication.id].first
 		- responded = true
 	.conversation.border-color{asker_id: @question_asker.id, question_id: publication.question.id, class: start_hidden}
-		.post.parent{:class => ("answered" if responded), :post_id => publication.id}
+		.post.parent.expand{:class => ("answered" if responded), :post_id => publication.id}
 			- if first = publication.posts.first
 				- if first.created_at < 1.day.ago
 					%p.time= time_formatter(first.created_at)
@@ -39,22 +39,16 @@
 					%a.asker_link{:href => "/feeds/#{@question_asker.id}"}
 						%h5= @question_asker.twi_screen_name
 
-				%p.question_text= publication.question.text.html_safe
-				.post_actions
-					%a.expand Answer
-					- unless retweeted or (current_user and !current_user.twitter_enabled?)
-						%a.retweet.rollover 
-							%i.icon-retweet
-							Retweet			
+				%p.question_text= publication.question.text.html_safe	
 
 			- unless responded
-				.answers.rounded.border{:style => "display: none;"}
+				.answers.rounded.border
 					- answers = publication.question.answers.shuffle
 					- count = answers.size
 					- answers.each_with_index do |answer, i|
 						%h3{:class => ("bottom_border" if i < (count - 1)), :correct => answer["correct"].to_s, :answer_id => answer.id, :feed_id => @index ? 1 : @question_asker.id, :post_id => publication.id, :answer_id => answer.id, :use_authorize => false}= answer.text.html_safe
 
-		.subsidiaries{:style => "display: none;"}
+		.subsidiaries
 			- if @conversation
 				- count = @conversation.posts.size
 				- @conversation.posts.order("created_at ASC").each_with_index do |response, i|
