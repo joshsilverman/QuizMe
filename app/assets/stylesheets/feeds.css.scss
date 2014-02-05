@@ -944,12 +944,6 @@
 		text-align: center;	
 		padding-top: 20px;					
 		background-color: whitesmoke;
-/*			-webkit-border-bottom-left-radius: 5px;
-		-moz-border-bottom-left-radius: 5px;
-		border-bottom-left-radius: 5px;
-		-webkit-border-bottom-right-radius: 5px;
-		-moz-border-bottom-right-radius: 5px;
-		border-bottom-right-radius: 5px;	*/
 		margin-bottom: 10px;							
 	}
 
@@ -960,15 +954,12 @@
 		padding-top: 20px;					
 		background-color: whitesmoke;
 		margin-top: -10px !important;
-		/*position: relative;	*/
-		/*bottom: 10px;*/
 		margin-bottom: 10px;	
 	}
 
 	.post {
 		padding: 10px;
 		position: relative;
-		cursor: pointer;
 
 		i, #activity_badge, #link_post {
 			float: right;
@@ -1098,6 +1089,7 @@
 			margin-left: 56px;
 			margin-bottom: 5px;
 			background: #fdfdfd;
+			cursor:pointer;
 
 			h3 {
 				color:#555;
@@ -1276,6 +1268,8 @@
 			}
 
 			.conversation {
+				cursor: pointer;
+
 				.content {
 					p {
 						padding:2px 0px;
@@ -1293,7 +1287,6 @@
 
 				margin:inherit;
 				border-top:inherit;
-				border-left: 3px #4d90f0 solid;
 				border-radius: 0px !important;
 
 				.post .content {
@@ -1304,8 +1297,12 @@
 					}
 				}
 
-				.actions {
-					display: inherit;
+				&.active {
+					border-left: 3px #4d90f0 solid;
+
+					.actions {
+						display: inherit;
+					}
 				}
 
 				&.dim {
