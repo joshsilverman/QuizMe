@@ -107,9 +107,7 @@ Quizmemanager::Application.routes.draw do
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
   get "feeds/stream" => "feeds#stream"
-  post "feeds/search"
   get "feeds/:id(/:post_id(/:answer_id))" => "feeds#show"
-  get '/search' => 'feeds#index_with_search'
 
   get "u/feeds/:id(/:post_id(/:answer_id))" => "feeds#show" # @deprecated route
   get ":subject(/:post_id(/:answer_id))" => "feeds#show"

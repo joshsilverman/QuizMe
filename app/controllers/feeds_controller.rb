@@ -38,27 +38,6 @@ class FeedsController < ApplicationController
     render 'index'
   end
 
-  def index_with_search 
-    @askers = Asker.where(published: true).order("id ASC")  
-    render 'index_with_search'
-  end
-
-  def search
-    @query = params['query']
-    questions = Question.where("text ilike ?", "%#{@query}%").where("status = 1").order('RANDOM()').limit 200
-    topics = Topic.includes(:users).where("name ilike ?", "%#{@query}%")
-
-    _publications = Publication.select(["question_id", "max(id) AS id"])\
-      .where("question_id IN (?)", questions.collect(&:id)).group('question_id').order('id DESC') #.limit 25
-    @publications = Publication.includes(:asker).where('id in (?)', _publications.collect(&:id)).order('created_at DESC')
-    
-    @suggested_askers = @publications.group_by{|o| o.asker_id}.sort_by {|k, v| v.count}.reverse\
-      .map{|k,v|v.first.asker}
-    @suggested_askers += topics.collect(&:users).flatten.uniq
-
-    render json: @suggested_askers.to_json
-  end
-
   def show
     return if show_redirect
 
