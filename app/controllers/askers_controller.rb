@@ -1,7 +1,7 @@
 class AskersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:questions]
 
-  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index, :recent]
+  before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index, :recent, :show]
   before_filter :authenticate_user!, :only => [:recent]
   
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
@@ -15,6 +15,21 @@ class AskersController < ApplicationController
     respond_to do |format|
       format.html { admin? } # will redirect if not admin
       format.json { render json: askers_to_json(@askers) }
+    end
+  end
+
+  def show
+    asker = Asker.find(params[:id])
+
+    respond_to do |format|
+      format.json do 
+        json = asker.to_json only: [
+          :twi_name, 
+          :twi_screen_name, 
+          :twi_profile_img_url]
+
+        render json: json
+      end
     end
   end
 

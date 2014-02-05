@@ -9,7 +9,9 @@
 
 				#left_column.span3
 					#left_column_container
-						#activity_stream.rounded.border-color.hidden-phone= render partial: "stream"
+						#activity_stream.rounded.border-color.hidden-phone
+							= render partial: "stream"
+
 						.clr
 						- if current_user
 							= render partial: "my_badges"
@@ -24,62 +26,11 @@
 									%a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
 										%i.icon-pencil
 										Post a Question
-								Questions
-						#feed_content
-							- if current_user
-								= render :partial => "feed"
-							- else
-								- requested_publication_id = (defined? @requested_publication and @requested_publication) ? @requested_publication.id : 0
 
-								- cache("_feed_unauthenticated-#{@asker.id}-#{requested_publication_id}", :expires_in => 20.minutes) do
-									= render :partial => "feed"
+								Questions
+
+						#feed_content
+							= render :partial => "feed"
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
-
-- content_for(:modals) do
-	= render :partial => "question_modal"
-
-#post_template.conversation.border-color{:style => "display: none;"}
-	.post.parent
-		#time
-			%p.time_ago= "time"			
-		%i.icon-share-alt{:style => "display: none;"}
-		.content
-			= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")
-			%h5= @asker.twi_screen_name
-			%p Post content
-		.answers.rounded.border{:style => "display: none;"}
-	.subsidiaries{:style => "display: none;"}
-	.interactions
-		/ = image_tag("", :class => "rounded interaction", :rel => "tooltip", :title => "answered", "data-placement" => "bottom")				
-	.loading{:style => "display: none;"}
-		Loading...
-
-#subsidiary_template.post{:style => "display: none;"}
-	.content
-		= image_tag(@asker.twi_profile_img_url, :class => "rounded asker")					
-		%h5= "User Name"
-		%p= "Post content"
-
-#answer_template.answer_container.input{:type => 'text', :style => "display: none;"}
-	.shadow-top
-	.tweet
-		%span#account= "@#{@asker.twi_screen_name}"
-		%span#answer= " Answer text"
-	.answer_controls
-		.tweet_button.btn.btn-primary Tweet!
-	.shadow-bottom
-
-= hidden_field_tag :post_id, @post_id
-= hidden_field_tag :answer_id, @answer_id
-= hidden_field_tag :user_name, current_user.twi_screen_name if current_user
-= hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
-= hidden_field_tag :question_form, @question_form
-= hidden_field_tag :request_mod, @request_mod
-
-= hidden_field_tag :feed_name, @asker.twi_screen_name
-= hidden_field_tag :feed_id, @asker.id
-
-- if @request_mod
-	= hidden_field_tag :requested_publication, @requested_publication.id

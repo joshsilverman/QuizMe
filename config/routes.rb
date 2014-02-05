@@ -4,7 +4,7 @@ Quizmemanager::Application.routes.draw do
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
 
-  resources :askers, except: [:show, :destroy] do
+  resources :askers, except: [:destroy] do
     collection do
       get :recent
     end
@@ -61,7 +61,6 @@ Quizmemanager::Application.routes.draw do
   get "/ask" => "feeds#ask"
   post "/respond_to_question" => "feeds#respond_to_question"
   post "/manager_post" => "feeds#manager_post"
-  post "/link_to_post" => "feeds#link_to_post"
   post "/create_split_test" => "feeds#create_split_test"
   post "/trigger_split_test" => "feeds#trigger_split_test"
 

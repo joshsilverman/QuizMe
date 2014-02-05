@@ -39,32 +39,14 @@ class FeedsController < ApplicationController
   end
 
   def show
-    return if show_redirect
-
-    # sanitize url param
-    if params[:post_id]
-      params[:post_id] = params[:post_id].force_encoding("UTF-8")
-    end
-
-    if current_user
-      show_template
-    elsif !current_user and params[:q] == "1" and @asker
-      redirect_to user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false)
-    else # post_yield
-      template = Rails.cache.fetch("wisr.com/feeds/#{@asker.id}", expires_in: [14,15,16].sample.minutes, race_condition_ttl: 60) do
-        show_template true 
+    respond_to do |format|
+      format.html { show_redirect }
+      format.json do 
+        publications = Publication.published
+          .order(created_at: :desc).limit(10)
+        
+        render json: publications.to_json 
       end
-
-      if params[:post_id]
-        post_yield_template = Rails.cache.fetch("feeds/_publication/#{params[:post_id]}", expires_in: 24.hours, race_condition_ttl: 60) do
-          publication = Publication.recent_by_asker_and_id @asker.id, params[:post_id]
-          render_to_string "feeds/_publication", layout: false, locals: {publication: publication, post_id: params[:post_id], answer_id: params[:answer_id]}
-        end
-        template = template.sub("<!--post_yield-->", post_yield_template)
-        render text: template
-        return
-      end
-      render text: template
     end
   end
 
@@ -98,58 +80,6 @@ class FeedsController < ApplicationController
     render json: filtered_posts
   end
 
-  def more
-    publication = Publication.includes(:posts).find(params[:last_post_id])
-    if params[:id].to_i > 0
-      @asker = User.asker(params[:id])
-      @publications = @asker.publications.includes(:posts).where("publications.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", publication.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
-    else  
-      post = publication.posts.where("interaction_type = 1").order("posts.created_at DESC").limit(1).first
-      if params[:filtered] == 'true'
-        @publications = Publication.includes([:asker, :posts, :question => [:answers, :user]])\
-          .published\
-          .where("asker_id in (?)", current_user.follows.collect(&:id))\
-          .where("posts.created_at < ?", post.created_at)\
-          .where("publications.id != ?", publication.id)\
-          .where("posts.interaction_type = 1")
-          .order("posts.created_at DESC")\
-          .limit(5)
-      else
-        @publications = Publication.includes(:posts).where("posts.created_at < ? and publications.id != ? and publications.published = ? and posts.interaction_type = 1", post.created_at, publication.id, true).order("posts.created_at DESC").limit(5).includes(:question => :answers)
-      end
-    end
-
-    @responses = []
-    if current_user     
-      @responses = Conversation.where(:user_id => current_user.id, :post_id => Post.select(:id).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).collect(&:id)).includes(:posts).group_by(&:publication_id) 
-    end
-    
-    posts = Post.select([:id, :created_at, :publication_id]).where(:provider => "twitter", :publication_id => @publications.collect(&:id)).order("created_at DESC")
-    
-    @actions = post_pub_map = {}
-    posts.each { |post| post_pub_map[post.id] = post.publication_id }
-    
-    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts.collect(&:id)).order("created_at ASC").includes(:user).group_by(&:in_reply_to_post_id).each do |post_id, post_activity|
-      @actions[post_pub_map[post_id]] = []
-      post_activity.each do |action|
-        @actions[post_pub_map[post_id]] << {
-          :user => {
-            :id => action.user.id,
-            :twi_screen_name => action.user.twi_screen_name,
-            :twi_profile_img_url => action.user.twi_profile_img_url
-          },
-          :interaction_type => action.interaction_type, 
-        }
-      end
-    end
-    @pub_grouped_posts = posts.group_by(&:publication_id)     
-    if @publications.blank?
-      render :json => false
-    else
-      render :partial => "feed"
-    end
-  end
-
   def respond_to_question
     publication = Publication.find(params[:publication_id])
     @question_asker = Asker.find(params[:asker_id])
@@ -179,36 +109,6 @@ class FeedsController < ApplicationController
     end
 
     render :partial => "conversation"
-  end
-
-  def link_to_post
-    if params[:link_to_pub_id] == "0"
-      post = Post.find(params[:post_id])
-      post.update_attributes in_reply_to_question_id: nil, in_reply_to_post_id: nil
-      render :json => post
-    else
-      post_to_link = Post.find(params[:post_id])
-      publication = Publication.find(params[:link_to_pub_id])
-      question = publication.question
-      root_post = publication.posts.last
-
-      post_to_link_to = publication.posts.where("in_reply_to_user_id is null").last
-      
-      conversation = Conversation.create(:post_id => root_post.id, :user_id => post_to_link.user_id ,:publication_id => publication.id)
-      post_to_link.update_attributes({
-        :in_reply_to_post_id => post_to_link_to.id,
-        :in_reply_to_question_id => question.id,
-        :conversation_id => conversation.id
-      })
-
-      Post.grader.grade post_to_link
-
-      #add manually linked label to have training data for auto-linking
-      tag = Tag.find_or_create_by(name: "manually-linked")
-      tag.posts << post_to_link
-
-      render :json => [post_to_link, post_to_link_to]
-    end
   end
 
   def create_split_test
@@ -245,38 +145,5 @@ class FeedsController < ApplicationController
     end
 
     redirect_called
-  end
-
-  # generates html generic feed - ie. /feeds/18
-  def show_template as_string = false
-    # publications, posts and user responses
-    @publications = Publication.recent_by_asker(@asker)
-    posts = Publication.recent_publication_posts_by_asker(@asker, @publications)
-
-    # user specific responses
-    @responses = (current_user ? Conversation.where(:user_id => current_user.id, :post_id => posts.collect(&:id)).includes(:posts).group_by(&:publication_id) : [])
-
-    # question activity
-    actions = Publication.recent_responses_by_asker(@asker, posts)
-    @actions = Post.recent_activity_on_posts(posts, actions) # this should be combined w/ above method
-
-    # inject requested publication from params, render twi card
-    @request_mod = false
-    if params[:post_id] and current_user
-      @post_id = params[:post_id]
-      @answer_id = params[:answer_id]
-      @requested_publication = @asker.publications.published
-        .where(id: params[:post_id]).first
-      if @requested_publication.present?
-        @publications.reverse!.push(@requested_publication).reverse! unless @requested_publication.blank? or @publications.include?(@requested_publication)   
-        question = @requested_publication.question
-        @request_mod = true if current_user and question.needs_feedback? and question.question_moderations.active.where(user_id: current_user.id).blank?
-      end
-    end
-
-    @author = User.find @asker.author_id if @asker.author_id
-
-    @question_form = ((params[:question_form] == "1" or params[:q] == "1") ? true : false)
-    as_string ? (return render_to_string(:show)) : render(:show)
   end
 end
