@@ -44,7 +44,7 @@ class FeedsController < ApplicationController
       format.json do 
         publications = Publication.published
           .order(created_at: :desc).limit(10)
-        
+
         render json: publications.to_json 
       end
     end
@@ -102,13 +102,7 @@ class FeedsController < ApplicationController
     user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
     @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
 
-    @request_email = false
-    if (current_user.email.blank? and (current_user.last_email_request_at.nil? or current_user.last_email_request_at < (Time.now - 30.days)))
-      @request_email = true
-      current_user.touch(:last_email_request_at)
-    end
-
-    render :partial => "conversation"
+    head :success
   end
 
   def create_split_test
