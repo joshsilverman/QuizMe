@@ -11,11 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140129002549) do
+ActiveRecord::Schema.define(version: 20140206143926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
+  enable_extension "pg_stat_statements"
 
   create_table "answers", force: true do |t|
     t.boolean  "correct"
@@ -188,6 +189,7 @@ ActiveRecord::Schema.define(version: 20140129002549) do
     t.boolean  "published",            default: false
     t.hstore   "_question"
     t.hstore   "_activity"
+    t.hstore   "_answers"
   end
 
   add_index "publications", ["asker_id"], name: "index_publications_on_asker_id", using: :btree

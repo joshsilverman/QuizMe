@@ -20,18 +20,16 @@ class Publication < ActiveRecord::Base
   def update_question question = nil
     question ||= Question.find question_id
 
+    as = {}
+    question.answers.each do |a|
+      as[a.id.to_s] = a.text
+    end
+
     assign_attributes(
       _question: {
-        question: question.text,
-        correct_answer: question.answers.correct.try(:text)
-      }
-    )
-
-    incorrect_answers = question.answers.incorrect
-      .sort { |a,b| a.text <=> b.text }
-    incorrect_answers.each_with_index do |incorrect_answer, i|
-      self._question["incorrect_answer_#{i}"] = incorrect_answer.text
-    end
+        text: question.text,
+        id: question.id},
+      _answers: as)
 
     save
   end
