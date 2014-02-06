@@ -36,7 +36,7 @@ describe Publication, '#update_activity' do
 end
 
 describe Publication, '#update_question' do
-  it "must set question and correct answer on publication" do
+  it "must set question text and question id on publication" do
     asker = Asker.create
     question = Question.create text: 'What up?', asker: asker
     answer = question.answers.create text: 'correct ans', correct: true
@@ -48,11 +48,11 @@ describe Publication, '#update_question' do
     publication.update(_question: nil)
     publication.update_question
     
-    publication.reload._question['question'].must_equal question.text
-    publication._question['correct_answer'].must_equal question.answers.correct.text
+    publication.reload._question['text'].must_equal question.text
+    publication._question['id'].must_equal question.id.to_s
   end
 
-  it "must set incorrect answers" do
+  it "must set answers with ids" do
     asker = Asker.create
     question = Question.create text: 'What up?', asker: asker
     ans_0 = question.answers.create text: 'incorrect ans 0', correct: false
@@ -67,8 +67,8 @@ describe Publication, '#update_question' do
     publication.update(_question: nil)
     publication.update_question
 
-    publication.reload._question['incorrect_answer_0'].must_equal ans_0.text
-    publication._question['incorrect_answer_1'].must_equal ans_1.text
-    publication._question['incorrect_answer_2'].must_equal ans_2.text
+    publication.reload._answers[ans_0.id.to_s].must_equal ans_0.text
+    publication.reload._answers[ans_1.id.to_s].must_equal ans_1.text
+    publication.reload._answers[ans_2.id.to_s].must_equal ans_2.text
   end
 end
