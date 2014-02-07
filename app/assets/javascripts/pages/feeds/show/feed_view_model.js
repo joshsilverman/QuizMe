@@ -1,9 +1,10 @@
 if ($('.feed_section').length > 0) {
   $(function() {
-    var feedViewModel, asker;
+    var feedViewModel, asker, askerId;
 
-    function init(subjectUrl, askerId) {
+    function init(subjectUrl, _askerId) {
       feedViewModel = new FeedViewModel();
+      askerId = _askerId
       ko.applyBindings(feedViewModel, $('.feed_section')[0]);
       
       $.getJSON("/askers/" + askerId + ".json", function(a) {
@@ -37,7 +38,11 @@ if ($('.feed_section').length > 0) {
 
       self.answers = [];
       _.each(publication._answers, function(text, id) {
-        if (text) self.answers.push(new AnswerViewModel(text, id));
+        attrs = {text: text,
+          id: parseInt(id),
+          publication_id: publication.id}
+
+        if (text) self.answers.push(new AnswerViewModel(attrs));
       });
       self.answers = _.shuffle(self.answers);
 
@@ -57,13 +62,23 @@ if ($('.feed_section').length > 0) {
       self.twiProfileImgUrl = asker.twi_profile_img_url;
     }
 
-    function AnswerViewModel(text, id) {
+    function AnswerViewModel(attrs) {
       var self = this;
-      self.text = text;
-      self.id = id;
-
+      self.text = attrs.text;
+      self.id = attrs.id;
+      self.publication_id = attrs.publication_id;
+      
       self.respondToQuestion = function() {
-        console.log('there');
+        params = {"asker_id" : askerId,
+          "publication_id" : self.publication_id,
+          "answer_id" : self.id};
+
+        console.log(params);
+
+        $.ajax('/respond_to_question', {
+          type: 'POST',
+          data: params,
+          success: function (response) {console.log(response)}});
       };
     }
 

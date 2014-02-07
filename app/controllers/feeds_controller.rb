@@ -88,23 +88,43 @@ class FeedsController < ApplicationController
     answer = Answer.includes(:question).find(params[:answer_id])
 
     if params[:publication_id] == session[:reengagement_publication_id] and session[:referring_user] and referring_user = User.find_by_twi_screen_name(session[:referring_user])
-      post = @question_asker.posts.reengage_inactive.where("publication_id = ? and in_reply_to_user_id = ?", params[:publication_id], referring_user.id).order("created_at DESC").limit(1).first
+      post = @question_asker.posts.reengage_inactive
+        .where("publication_id = ? and in_reply_to_user_id = ?", 
+          params[:publication_id], referring_user.id)
+        .order("created_at DESC").first
     else
-      post = answer.question.posts.statuses.order("created_at DESC").limit(1).first
+      post = answer.question.posts.statuses.order("created_at DESC").first
     end
-    post = Post.statuses.where(:publication_id => publication.id).order("created_at DESC").limit(1).first unless post
 
-    # Create conversation for posts
+    if !post
+      post = Post.statuses
+        .where(publication_id: publication.id)
+        .order("created_at DESC")
+        .limit(1).first
+    end
+
     @conversation = Conversation.create({
       :user_id => current_user.id,
       :post_id => post.id,
-      :publication_id => publication.id
-    })
+      :publication_id => publication.id})
     
-    user_post = current_user.app_answer(@question_asker, post, answer, { :conversation_id => @conversation.id, :in_reply_to_question_id => publication.question_id, :post_to_twitter => false })
-    @question_asker.app_response(user_post, answer.correct, { :conversation_id => @conversation.id, :post_to_twitter => false, :link_to_parent => true }) if user_post
+    user_post = current_user.app_answer(@question_asker, 
+      post, 
+      answer, 
+      { conversation_id: @conversation.id, 
+        in_reply_to_question_id: publication.question_id, 
+        post_to_twitter: false })
 
-    head :success
+    if user_post
+      @question_asker.app_response(
+        user_post, 
+        answer.correct, 
+        { conversation_id: @conversation.id, 
+          post_to_twitter: false, 
+          link_to_parent: true })
+    end
+
+    render json: user_post.correct
   end
 
   def create_split_test
