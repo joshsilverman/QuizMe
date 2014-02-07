@@ -62,6 +62,9 @@ if ($('.feed_section').length > 0) {
       self.text = text;
       self.id = id;
 
+      self.respondToQuestion = function() {
+        console.log('there');
+      };
     }
 
     function InteractionViewModel(screenName, imageSrc) {
