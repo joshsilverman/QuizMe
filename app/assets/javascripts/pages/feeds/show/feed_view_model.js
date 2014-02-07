@@ -28,26 +28,17 @@ if ($('.feed_section').length > 0) {
       var self = this;
       
       self.createdAt = publication.created_at;
-      self.question = publication._question.question;
+      self.question = publication._question.text;
 
       self.interactions = [];
       _.each(publication._activity, function(imageSrc, screenName) {
-        self.interactions.push(new InteractionModel(screenName, imageSrc));
+        self.interactions.push(new InteractionViewModel(screenName, imageSrc));
       });
 
-      self.answers = [
-        new AnswerModel(publication._question.correct_answer, true)];
-
-      _.each([
-        publication._question.incorrect_answer_0,
-        publication._question.incorrect_answer_1,
-        publication._question.incorrect_answer_2,
-        publication._question.incorrect_answer_3], function(answer) {
-
-        if (answer)
-          self.answers.push(new AnswerModel(answer, false));
+      self.answers = [];
+      _.each(publication._answers, function(text, id) {
+        if (text) self.answers.push(new AnswerViewModel(text, id));
       });
-
       self.answers = _.shuffle(self.answers);
 
       self.twiProfileImgUrl = ko.observable('');
@@ -66,13 +57,14 @@ if ($('.feed_section').length > 0) {
       self.twiProfileImgUrl = asker.twi_profile_img_url;
     }
 
-    function AnswerModel(text, correct) {
+    function AnswerViewModel(text, id) {
       var self = this;
-      self.correct = correct;
       self.text = text;
+      self.id = id;
+
     }
 
-    function InteractionModel(screenName, imageSrc) {
+    function InteractionViewModel(screenName, imageSrc) {
       var self = this;
       self.twiScreenName = screenName;
       self.twiProfileImgUrl = imageSrc;
