@@ -42,7 +42,9 @@ class FeedsController < ApplicationController
     respond_to do |format|
       format.html { show_redirect }
       format.json do 
-        publications = Publication.published
+        asker = Asker.find_by_subject_url params[:subject]
+
+        publications = asker.publications.published
           .order(created_at: :desc).limit(10)
 
         render json: publications.to_json 
