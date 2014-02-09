@@ -30,6 +30,7 @@ if ($('.feed_section').length > 0) {
       
       self.createdAt = publication.created_at;
       self.question = publication._question.text;
+      self.answered = undefined;
 
       self.interactions = [];
       _.each(publication._activity, function(imageSrc, screenName) {
@@ -42,7 +43,7 @@ if ($('.feed_section').length > 0) {
           id: parseInt(id),
           publication_id: publication.id}
 
-        if (text) self.answers.push(new AnswerViewModel(attrs));
+        if (text) self.answers.push(new AnswerViewModel(attrs, self));
       });
       self.answers = _.shuffle(self.answers);
 
@@ -62,24 +63,35 @@ if ($('.feed_section').length > 0) {
       self.twiProfileImgUrl = asker.twi_profile_img_url;
     }
 
-    function AnswerViewModel(attrs) {
+    function AnswerViewModel(attrs, feedPublication) {
       var self = this;
       self.text = attrs.text;
       self.id = attrs.id;
       self.publication_id = attrs.publication_id;
+      self.feedPublication = feedPublication;
+
+      self.grading = ko.observable(false);
+      self.correct = ko.observable(false);
+      self.incorrect = ko.observable(false);
       
       self.respondToQuestion = function() {
+        if (self.feedPublication.answered === true)
+          return;
+
         params = {"asker_id" : askerId,
           "publication_id" : self.publication_id,
           "answer_id" : self.id};
 
-        console.log(params);
+        self.grading(true);
+        $.post('/respond_to_question', params, self.renderResults);};
 
-        $.ajax('/respond_to_question', {
-          type: 'POST',
-          data: params,
-          success: function (response) {console.log(response)}});
-      };
+      self.renderResults = function(status) {
+        if (status) self.correct(true);
+        else self.incorrect(true);
+
+        self.grading(false);
+        self.feedPublication.answered = status;
+      }
     }
 
     function InteractionViewModel(screenName, imageSrc) {

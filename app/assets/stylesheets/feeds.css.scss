@@ -1104,6 +1104,21 @@
 				&:hover {
 					background: #ddd;
 				}
+
+				img {display: none;}
+
+				&.grading {
+					img {
+						padding: 6px 4px 0 0;
+						float:right;
+						height:inherit;
+						background:inherit;
+						opacity: .8;
+						display: inherit;
+					}	
+				}
+				&.correct {background-color:#cff8c4;}
+				&.incorrect {background-color:#f8c4c4;}
 			}	
 		}
 	}
@@ -1136,27 +1151,26 @@
 				height: 22px;
 			}
 
-			.fastest {
-				width: 42px;
-				display: inline-block;
-				padding-right: 6px;
-				padding-left: 2px;
-				border-right: 1px dotted #ddd;
-				padding-top: 5px;
-				height: inherit;
+			// .fastest {
+			// 	width: 42px;
+			// 	display: inline-block;
+			// 	padding-right: 6px;
+			// 	padding-left: 2px;
+			// 	border-right: 1px dotted #ddd;
+			// 	padding-top: 5px;
+			// 	height: inherit;
 
-				p {
-					display: inline;
-					color: #999;
-					top: 2px;
-					position: relative;
-				}
-			}
+			// 	p {
+			// 		display: inline;
+			// 		color: #999;
+			// 		top: 2px;
+			// 		position: relative;
+			// 	}
+			// }
 
 			.answerers {
 				display: inline;
 				padding-left: 5px;
-				/*border-right: 1px dotted #ddd;*/
 				padding-top: 5px;
 				height: inherit;		
 			}

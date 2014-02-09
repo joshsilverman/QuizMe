@@ -9,8 +9,10 @@
         %p.question_text{'data-bind' => 'text: question'}
 
       .answers.rounded.border{'data-bind' => "foreach: answers"}
-        %h3.bottom_border{'data-bind' => 'text: text, click: respondToQuestion'}
+        %h3.bottom_border{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
+          %span{'data-bind' => 'text: text'}
+          %img{src: '/assets/ajax-loader.gif'}
 
-    .activity_container
+    .activity_container{'data-bind' => 'visible: interactions.length > 0'}
       .interactions{'data-bind' => "foreach: interactions"}
         %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
