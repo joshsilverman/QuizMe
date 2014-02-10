@@ -10,6 +10,7 @@
 								= link_to "@#{@user.twi_screen_name}", "http://www.twitter.com/#{@user.twi_screen_name}", target: '_blank'
 						.activity
 							= render :partial => 'activity_feed'
+							
 				#left_column.span3.hidden-phone
 					#left_column_container
 						= render :partial => "feeds/subscriptions"

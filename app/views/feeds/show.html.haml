@@ -20,17 +20,7 @@
 
 				#right_column.span6
 					#posts.rounded
-						.header.border-color
-							%h3
-								.ugc
-									%a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
-										%i.icon-pencil
-										Post a Question
-
-								Questions
-
-						#feed_content
-							= render :partial => "feed"
+						= render :partial => "feed"
 
 						#posts_more.border-color
 							%a{:href => "#"} Load more
