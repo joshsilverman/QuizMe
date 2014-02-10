@@ -1,23 +1,21 @@
-if ($('.feed_section').length > 0) {
+if ($('#feed_content').length) {
   $(function() {
     var feedViewModel, asker, askerId;
 
     function init(subjectUrl, _askerId) {
       feedViewModel = new FeedViewModel();
       askerId = _askerId
-      ko.applyBindings(feedViewModel, $('.feed_section')[0]);
+      ko.applyBindings(feedViewModel, $('#feed_content')[0]);
       
       $.getJSON("/askers/" + askerId + ".json", function(a) {
         asker = new AskerModel(a);
 
-        ko.utils.arrayForEach(feedViewModel.feedPublications(), 
-          function(feedPublication) {
-
-          feedPublication.twiProfileImgUrl(asker.twiProfileImgUrl);
+        ko.utils.arrayForEach(feedViewModel.feedPublications(), function(pub) {
+          pub.twiProfileImgUrl(asker.twiProfileImgUrl);
         })
       })
 
-      $.getJSON("/" + subjectUrl + ".json", function(publication) {
+      $.getJSON(location.pathname + ".json", function(publication) {
         publication.forEach(function(publication) {
           var feedPublication = new FeedPublicationModel(publication);
           feedViewModel.feedPublications.push(feedPublication);
@@ -100,27 +98,7 @@ if ($('.feed_section').length > 0) {
       self.twiProfileImgUrl = imageSrc;
     }
 
-    // ko.bindingHandlers.timeago = {
-    //   update: function(element, valueAccessor) {
-    //     var value = ko.utils.unwrapObservable(valueAccessor());
-
-    //     var $this = $(element);
-    //     $this.attr('title', value);
-
-    //     if ($this.data('timeago')) {
-    //       var datetime = $.timeago.datetime($this);
-    //       var distance = (new Date().getTime() - datetime.getTime());
-    //       var inWords = $.timeago.inWords(distance);
-
-    //       $this.data('timeago', { 'datetime': datetime });
-    //       $this.text(inWords);
-    //     } else {
-    //       $this.timeago();
-    //     }
-    //   }
-    // };
-
-    init($('.feed_section').data('subject-url'),
-      $('.feed_section').data('asker-id'));
+    init($('#feed_content').data('subject-url'),
+      $('#feed_content').data('asker-id'));
   });
 }
