@@ -72,3 +72,44 @@ describe Publication, '#update_question' do
     publication.reload._answers[ans_2.id.to_s].must_equal ans_2.text
   end
 end
+
+describe Publication, ".inject_publication_by_id" do
+  it "returns an array of publications" do
+    publication = create :publication
+    publications = Publication.all
+
+    injected = Publication.inject_publication_by_id publications, nil
+
+    injected.to_a.must_equal publications.to_a
+  end
+
+  it "will inject publication as first element if valid id provided" do
+    publication = create :publication
+    publications = Publication.limit 1
+    injectable_publication = create :publication
+
+    injected = Publication.inject_publication_by_id(publications, 
+      injectable_publication.id.to_s)
+
+    injected.to_a.must_equal Publication.all.order(created_at: :desc).to_a
+  end
+
+  it "wont inject publication if the publication is included already" do
+    publication = create :publication
+    publications = Publication.limit 1
+
+    injected = Publication.inject_publication_by_id(publications, 
+      publication.id.to_s)
+
+    injected.to_a.must_equal Publication.all.order(created_at: :desc).to_a
+  end
+
+  it 'wont error on invalid id' do
+    publication = create :publication
+    publications = Publication.limit 1
+
+    injected = Publication.inject_publication_by_id(publications, 123123)
+
+    injected.to_a.must_equal Publication.all.order(created_at: :desc).to_a
+  end
+end

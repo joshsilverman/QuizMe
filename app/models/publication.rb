@@ -107,4 +107,18 @@ class Publication < ActiveRecord::Base
       Publication.where(:published => true).count
     end
   end
+
+  def self.inject_publication_by_id publications, injectable_id
+    return publications if injectable_id.nil?
+
+    injectable_id = injectable_id.to_s.force_encoding("UTF-8").to_i
+
+    publication_ids = publications.collect &:id
+    return publications if publication_ids.include? injectable_id
+
+    injectable_publication = Publication.where(id: injectable_id).first
+    return publications if injectable_publication.nil?
+
+    publications.unshift injectable_publication
+  end
 end

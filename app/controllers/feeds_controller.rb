@@ -46,6 +46,12 @@ class FeedsController < ApplicationController
 
         publications = asker.publications.published
           .order(created_at: :desc).limit(10)
+        
+        if params[:publication_id]
+          publications = Publication.inject_publication_by_id(
+            publications, 
+            params[:publication_id])
+        end
 
         render json: publications.to_json 
       end
@@ -148,8 +154,14 @@ class FeedsController < ApplicationController
     else
       @asker = Asker.find(params[:id])
       redirect_url  = "/#{@asker.subject_url}"
-      redirect_url += "/#{params[:post_id]}" if params[:post_id]
-      redirect_url += "?#{request.env['QUERY_STRING']}" if request.env['QUERY_STRING']
+
+      if params[:publication_id]
+        redirect_url += "/#{params[:publication_id]}"
+      end
+
+      if request.env['QUERY_STRING']
+        redirect_url += "?#{request.env['QUERY_STRING']}"
+      end
 
       redirect_to redirect_url, status: :moved_permanently
       redirect_called = true
