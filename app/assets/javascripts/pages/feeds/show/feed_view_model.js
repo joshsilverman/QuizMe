@@ -15,12 +15,8 @@ if ($('#feed_content').length) {
         })
       })
 
-      $.getJSON(location.pathname + ".json", function(publication) {
-        publication.forEach(function(publication) {
-          var feedPublication = new FeedPublicationModel(publication);
-          feedViewModel.feedPublications.push(feedPublication);
-        });
-      })
+      feedViewModel.loadPublications();
+      feedViewModel.initLoadMore();
     }
 
     function FeedPublicationModel(publication) {
@@ -52,8 +48,38 @@ if ($('#feed_content').length) {
     }
 
     function FeedViewModel() {
-      var self = this;
+      var self = this,
+        offset = 0,
+        loadingMore = true,
+        loadMoreBtn = $('#posts_more');
+
       self.feedPublications = ko.observableArray([]);
+
+      self.initLoadMore = function() {
+        $(window).on('DOMContentLoaded load resize scroll', 
+          _.throttle(self.loadMorePublications, 250, {leading: true})); 
+      }
+
+      self.loadMorePublications = function() {
+        if (!loadingMore && isElementInViewport(loadMoreBtn[0])) {
+          loadingMore = true;
+          offset += 10;
+          self.loadPublications();
+        }
+      }
+
+      self.loadPublications = function() {
+        path = location.pathname + ".json" + "?offset=" + offset;
+
+        $.getJSON(path, function(publication) {
+          publication.forEach(function(publication) {
+            var feedPublication = new FeedPublicationModel(publication);
+            self.feedPublications.push(feedPublication);
+          });
+          
+          loadingMore = false;
+        })
+      }
     }
 
     function AskerModel(asker) {
