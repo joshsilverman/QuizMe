@@ -768,29 +768,7 @@
 		border-top-width: 1px;
 		border-bottom-style: solid;
 		border-bottom-width: 1px;
-	}
-
-	// .conversation {
-	// 	-webkit-border-bottom-right-radius: 5px;
-	// 	-moz-border-bottom-right-radius: 5px;
-	// 	border-bottom-right-radius: 5px;	
-	// 	-webkit-border-bottom-left-radius: 5px;
-	// 	-moz-border-bottom-left-radius: 5px;
-	// 	border-bottom-left-radius: 5px;						
-	// 	border-bottom-style: solid;
-	// 	border-bottom-width: 1px;
-	// }
-	
-	// .conversation {
-	// 	-webkit-border-top-right-radius: 5px;
-	// 	-moz-border-top-right-radius: 5px;
-	// 	border-top-right-radius: 5px;	
-	// 	-webkit-border-top-left-radius: 5px;
-	// 	-moz-border-top-left-radius: 5px;
-	// 	border-top-left-radius: 5px;						
-	// 	border-top-style: solid;
-	// 	border-top-width: 1px;
-	// }				
+	}		
 }	
 
 .ui-dialog {
@@ -929,9 +907,18 @@
 	}	
 }
 
+.feed_section {
+	.conversation {
+		display: none;
+
+		&.visible {
+			display: inherit;
+		}
+	}
+}
+
 // generic conversation formatting
 .conversation {
-	//min-height: 140px;
 	background: white;
 	border-right-style: solid;
 	border-right-width: 1px;
@@ -939,10 +926,8 @@
 	border-left-width: 1px;
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
-	/*padding-bottom: 10px;*/
 
 	.loading {
-		/*border-top: 1px dotted #ddd;	*/
 		border-bottom: 1px dotted #ddd;	
 		height: 37px;
 		text-align: center;	
@@ -980,24 +965,11 @@
 
 		.time {
 			float: right;
-			margin: 0px;
-			margin-top: -3px !important;
+			margin: 1px 5px;
 			color: #999;
 		}
 
-		#time {
-			float: right;
-			margin-top: -4px;
-
-			.time_ago {
-				color: #999;
-			}				
-		}
-
 		#classify {
-			//position: absolute;
-			//top: 5px;
-			//right: 10px;
 
 			float: right;
 			margin: 0px;
