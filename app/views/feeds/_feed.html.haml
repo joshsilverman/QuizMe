@@ -1,18 +1,34 @@
-.feed_section{'data-subject-url' => @asker.subject_url,
-  'data-asker-id' => @asker.id,
-  'data-bind' => "foreach: feedPublications"}
+#feed_content{'data-subject-url' => @asker.subject_url,
+  'data-asker-id' => @asker.id,}
 
-  .conversation.border-color
-    .post
-      .content
-        %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
-        %p.question_text{'data-bind' => 'text: question'}
+  .header.border-color
+    %h3
+      .ugc
+        %a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
+          %i.icon-pencil
+          Post a Question
 
-      .answers.rounded.border{'data-bind' => "foreach: answers"}
-        %h3.bottom_border{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
-          %span{'data-bind' => 'text: text'}
-          %img{src: '/assets/ajax-loader.gif'}
+      Questions
 
-    .activity_container{'data-bind' => 'visible: interactions.length > 0'}
-      .interactions{'data-bind' => "foreach: interactions"}
-        %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
+      %img{src: '/assets/ajax-loader.gif',
+        'data-bind' => 'css: {hidden: feedPublications().length > 0}'}
+
+  .feed_section{'data-bind' => "foreach: feedPublications"}
+
+    .conversation.border-color{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}'}
+      .post
+        .time
+          %p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: createdAt"}
+          
+        .content
+          %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
+          %p.question_text{'data-bind' => 'text: question'}
+
+        .answers.rounded.border{'data-bind' => "foreach: answers"}
+          %h3.bottom_border{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
+            %span{'data-bind' => 'text: text'}
+            %img{src: '/assets/ajax-loader.gif'}
+
+      .activity_container{'data-bind' => 'visible: interactions.length > 0'}
+        .interactions{'data-bind' => "foreach: interactions"}
+          %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
