@@ -20,6 +20,7 @@ class PostObserver < ActiveRecord::Observer
   def send_to_stream post
     return if post.in_reply_to_question_id.nil?
     return unless post.intention == 'respond to question'
+    return if post.correct == false
 
     post.send_to_stream
   end

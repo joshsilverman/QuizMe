@@ -105,10 +105,21 @@ describe Post, 'PostObserver#send_to_stream' do
     PostObserver.send(:new).send_to_stream post
   end
 
-  it "wont call send_to_stream if intention not corrent" do
+  it "wont call send_to_stream if intention not correct" do
     post = FactoryGirl.create :post
     post.update in_reply_to_question_id: 123,
       intention: 'asdf'
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if answer not correct" do
+    post = FactoryGirl.create :post
+    post.update in_reply_to_question_id: 123,
+      intention: 'respond to question',
+      correct: false
 
     post.expects(:send_to_stream).never
 
