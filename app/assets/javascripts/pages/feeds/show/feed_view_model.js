@@ -58,6 +58,11 @@ if ($('#feed_content').length) {
       self.initLoadMore = function() {
         $(window).on('DOMContentLoaded load resize scroll', 
           _.throttle(self.loadMorePublications, 250, {leading: true})); 
+
+        $("#posts_more").on("click", function(e) {
+          e.preventDefault();
+          self.loadMorePublications();
+        });
       }
 
       self.loadMorePublications = function() {
@@ -76,7 +81,7 @@ if ($('#feed_content').length) {
             var feedPublication = new FeedPublicationModel(publication);
             self.feedPublications.push(feedPublication);
           });
-          
+
           loadingMore = false;
         })
       }
