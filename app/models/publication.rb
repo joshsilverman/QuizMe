@@ -92,20 +92,21 @@ class Publication < ActiveRecord::Base
     end
   end
 
-  def self.recent_responses_by_asker asker, posts
-    Rails.cache.fetch "publications_recent_responses_by_asker_#{asker.id}", :expires_in => 5.minutes do
-      Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at])\
-        .where(:in_reply_to_post_id => posts.collect(&:id))\
-        .order("created_at ASC")\
-        .includes(:user)\
-        .group_by(&:in_reply_to_post_id)
-    end
-  end
-
   def self.published_count
     Rails.cache.fetch('publications_published_count', :expires_in => 10.minutes) do
       Publication.where(:published => true).count
     end
+  end
+
+  def self.recent_responses_by_asker asker, injectable_id, offset = 0
+    publications = asker.publications.published
+      .order(created_at: :desc)
+      .limit(10).offset(offset)
+    return publications if injectable_id.nil?
+
+    Publication.inject_publication_by_id(
+      publications, 
+      injectable_id)
   end
 
   def self.inject_publication_by_id publications, injectable_id

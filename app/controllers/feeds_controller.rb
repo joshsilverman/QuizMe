@@ -43,15 +43,10 @@ class FeedsController < ApplicationController
       format.html { show_redirect }
       format.json do 
         asker = Asker.find_by_subject_url params[:subject]
+        offset = params['offset'] || 0
 
-        publications = asker.publications.published
-          .order(created_at: :desc).limit(10)
-        
-        if params[:publication_id]
-          publications = Publication.inject_publication_by_id(
-            publications, 
-            params[:publication_id])
-        end
+        publications = Publication.recent_responses_by_asker(asker, 
+          params[:publication_id], offset)
 
         render json: publications.to_json 
       end
