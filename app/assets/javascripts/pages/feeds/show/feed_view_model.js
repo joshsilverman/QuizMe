@@ -115,8 +115,10 @@ if ($('#feed_content').length) {
         $.post('/respond_to_question', params, self.renderResults);};
 
       self.renderResults = function(status) {
-        if (status) self.correct(true);
-        else self.incorrect(true);
+        if (status) {
+          self.correct(true);
+          $(document).trigger('increment', 'answerCount');
+        } else self.incorrect(true);
 
         self.grading(false);
         self.feedPublication.answered = status;
