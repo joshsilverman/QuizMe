@@ -1,5 +1,6 @@
 #feed_content{'data-subject-url' => @asker.subject_url,
-  'data-asker-id' => @asker.id,}
+  'data-asker-id' => @asker.id,
+  'data-current_user-id' => current_user.try(:id)}
 
   .header.border-color
     %h3

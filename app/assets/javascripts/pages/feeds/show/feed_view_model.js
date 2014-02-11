@@ -1,29 +1,51 @@
 if ($('#feed_content').length) {
   $(function() {
-    var feedViewModel, asker, askerId;
+    var correctQIds = [],
+      feedViewModel, asker, askerId, currentUserId;
 
-    function init(subjectUrl, _askerId) {
+    function init(subjectUrl, _askerId, _currentUserId) {
+      var correctQIdsPath;
+
       feedViewModel = new FeedViewModel();
-      askerId = _askerId
-      ko.applyBindings(feedViewModel, $('#feed_content')[0]);
+      askerId = _askerId;
+      currentUserId = _currentUserId;
       
-      $.getJSON("/askers/" + askerId + ".json", function(a) {
-        asker = new AskerModel(a);
+      self.loadAsker = function() {
+        $.getJSON("/askers/" + askerId + ".json", function(a) {
+          asker = new AskerModel(a);
 
-        ko.utils.arrayForEach(feedViewModel.feedPublications(), function(pub) {
-          pub.twiProfileImgUrl(asker.twiProfileImgUrl);
-        })
-      })
+          ko.utils.arrayForEach(feedViewModel.feedPublications(), function(pub) {
+            pub.twiProfileImgUrl(asker.twiProfileImgUrl);
+          });
+        });
+      }
+
+      self.loadCorrectQIds = function() {
+        if (!currentUserId) return;
+
+        correctQIdsPath = "/users/" + currentUserId + "/correct_question_ids.json"
+        $.getJSON(correctQIdsPath, function(_correctQIds) {
+          correctQIds = _correctQIds;
+          _.each(feedViewModel.feedPublications(), function(p) {p.markAnswered()});
+        });
+      };
+
+      ko.applyBindings(feedViewModel, $('#feed_content')[0]);
 
       feedViewModel.loadPublications();
       feedViewModel.initLoadMore();
+      self.loadCorrectQIds();
+      self.loadAsker();
     }
 
     function FeedPublicationModel(publication) {
       var self = this;
       
+      self.id = publication.id;
       self.createdAt = publication.created_at;
       self.question = publication._question.text;
+      self.questionId = parseInt(publication._question.id);
+      self.correctAnswerId = parseInt(publication._question.correct_answer_id);
       self.answered = undefined;
 
       self.interactions = [];
@@ -31,20 +53,39 @@ if ($('#feed_content').length) {
         self.interactions.push(new InteractionViewModel(screenName, imageSrc));
       });
 
-      self.answers = [];
-      _.each(publication._answers, function(text, id) {
-        attrs = {text: text,
-          id: parseInt(id),
-          publication_id: publication.id}
+      self.loadAnswers = function() {
+        self.answers = [];
+        _.each(publication._answers, function(text, id) {
+          attrs = {text: text,
+            id: parseInt(id),
+            publication_id: self.id}
 
-        if (text) self.answers.push(new AnswerViewModel(attrs, self));
-      });
-      self.answers = _.shuffle(self.answers);
-
-      self.twiProfileImgUrl = ko.observable('');
-      if (asker){
-        self.twiProfileImgUrl = ko.observable(asker.twiProfileImgUrl);
+          if (text) self.answers.push(new AnswerViewModel(attrs, self));
+        });
+        self.answers = _.shuffle(self.answers);
       }
+
+      self.loadProfileImg = function() {
+        self.twiProfileImgUrl = ko.observable('');
+        if (asker){
+          self.twiProfileImgUrl = ko.observable(asker.twiProfileImgUrl);
+        }
+      }
+
+      self.markAnswered = function() {
+        if (!_.contains(correctQIds, self.questionId)) return;
+
+        var correctAnswer = _.find(self.answers, function(answer) {
+          return answer.id === self.correctAnswerId;
+        });
+
+        self.answered = true;
+        correctAnswer.correct(true);
+      };
+
+      self.loadAnswers();
+      self.loadProfileImg();
+      self.markAnswered();
     }
 
     function FeedViewModel() {
@@ -94,6 +135,7 @@ if ($('#feed_content').length) {
 
     function AnswerViewModel(attrs, feedPublication) {
       var self = this;
+
       self.text = attrs.text;
       self.id = attrs.id;
       self.publication_id = attrs.publication_id;
@@ -104,8 +146,7 @@ if ($('#feed_content').length) {
       self.incorrect = ko.observable(false);
       
       self.respondToQuestion = function() {
-        if (self.feedPublication.answered === true)
-          return;
+        if (self.feedPublication.answered === true) return;
 
         params = {"asker_id" : askerId,
           "publication_id" : self.publication_id,
@@ -132,6 +173,7 @@ if ($('#feed_content').length) {
     }
 
     init($('#feed_content').data('subject-url'),
-      $('#feed_content').data('asker-id'));
+      $('#feed_content').data('asker-id'),
+      $('#feed_content').data('current_user-id'));
   });
 }
