@@ -15,7 +15,9 @@ Quizmemanager::Application.routes.draw do
   post '/askers/remove_related' => 'askers#remove_related'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
-  resources :users, only: [] do
+  resources :users, only: [:correct_question_ids] do
+    get :correct_question_ids
+
     resources :posts, only: [:answer_count] do
       collection do
         get :answer_count

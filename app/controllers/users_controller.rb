@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed]
+  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids]
+  before_filter :authenticate_user!, :only => [:correct_question_ids]
 
   def activity_feed
     @activity = current_user.activity(since: 1.month.ago)
@@ -20,5 +21,18 @@ class UsersController < ApplicationController
     user = User.find(params[:user_id])
     user.update_attribute :subscribed, false if user.email.downcase == params[:email].downcase
     render :json => user.subscribed
+  end
+
+  def correct_question_ids
+    respond_to do |format|
+      format.json do
+        user = User.find params[:user_id]
+        correct_question_ids = user.posts
+          .where(correct: true).where('in_reply_to_question_id IS NOT NULL')
+          .pluck(:in_reply_to_question_id)
+
+        render json: correct_question_ids.to_json
+      end
+    end
   end
 end
