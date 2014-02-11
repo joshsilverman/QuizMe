@@ -1,7 +1,7 @@
 if ($('#feed_content').length) {
   $(function() {
     var correctQIds = [],
-      feedViewModel, asker, askerId, currentUserId;
+      feedViewModel, askerId, currentUserId;
 
     function init(subjectUrl, _askerId, _currentUserId) {
       var correctQIdsPath;
@@ -9,16 +9,6 @@ if ($('#feed_content').length) {
       feedViewModel = new FeedViewModel();
       askerId = _askerId;
       currentUserId = _currentUserId;
-      
-      self.loadAsker = function() {
-        $.getJSON("/askers/" + askerId + ".json", function(a) {
-          asker = new AskerModel(a);
-
-          ko.utils.arrayForEach(feedViewModel.feedPublications(), function(pub) {
-            pub.twiProfileImgUrl(asker.twiProfileImgUrl);
-          });
-        });
-      }
 
       self.loadCorrectQIds = function() {
         if (!currentUserId) return;
@@ -35,7 +25,6 @@ if ($('#feed_content').length) {
       feedViewModel.loadPublications();
       feedViewModel.initLoadMore();
       self.loadCorrectQIds();
-      self.loadAsker();
     }
 
     function FeedPublicationModel(publication) {
@@ -46,12 +35,15 @@ if ($('#feed_content').length) {
       self.question = publication._question.text;
       self.questionId = parseInt(publication._question.id);
       self.correctAnswerId = parseInt(publication._question.correct_answer_id);
+      self.twiProfileImgUrl = publication._asker.twi_profile_img_url
       self.answered = undefined;
 
-      self.interactions = [];
-      _.each(publication._activity, function(imageSrc, screenName) {
-        self.interactions.push(new InteractionViewModel(screenName, imageSrc));
-      });
+      self.loadInteractions = function() {
+        self.interactions = [];
+        _.each(publication._activity, function(imageSrc, screenName) {
+          self.interactions.push(new InteractionViewModel(screenName, imageSrc));
+        });
+      }
 
       self.loadAnswers = function() {
         self.answers = [];
@@ -63,13 +55,6 @@ if ($('#feed_content').length) {
           if (text) self.answers.push(new AnswerViewModel(attrs, self));
         });
         self.answers = _.shuffle(self.answers);
-      }
-
-      self.loadProfileImg = function() {
-        self.twiProfileImgUrl = ko.observable('');
-        if (asker){
-          self.twiProfileImgUrl = ko.observable(asker.twiProfileImgUrl);
-        }
       }
 
       self.markAnswered = function() {
@@ -84,7 +69,7 @@ if ($('#feed_content').length) {
       };
 
       self.loadAnswers();
-      self.loadProfileImg();
+      self.loadInteractions();
       self.markAnswered();
     }
 
@@ -127,11 +112,6 @@ if ($('#feed_content').length) {
           loadingMore = false;
         })
       }
-    }
-
-    function AskerModel(asker) {
-      var self = this;
-      self.twiProfileImgUrl = asker.twi_profile_img_url;
     }
 
     function AnswerViewModel(attrs, feedPublication) {
