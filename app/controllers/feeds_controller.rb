@@ -5,37 +5,24 @@ class FeedsController < ApplicationController
   before_filter :set_session_variables, :only => [:show]
 
   def index
-    @index = true
-    @asker = User.find(1)
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]
-    @post_id = params[:post_id]
-    @answer_id = params[:answer_id]    
+    @asker = Asker.find(8765)
     @askers = Asker.where(published: true).order("id ASC")
-    @wisr = User.find(8765)
-    @directory = {}
-    @publications = Publication.recent
-    @responses = []
     
+    @directory = {}
     @askers.each do |asker| 
       next unless ACCOUNT_DATA[asker.id]
       (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
     end
 
-    posts = Publication.recent_publication_posts(@publications)
-    @actions = Post.recent_activity_on_posts(
-      posts, 
-      Publication.recent_responses(posts))
+    respond_to do |format|
+      format.html { render 'index' }
+      format.json do
+        offset = params['offset'] || 0
+        publications = Publication.recent(offset)
 
-    if current_user
-      @responses = Conversation.where(
-          :user_id => current_user.id, 
-          :post_id => posts.collect(&:id))
-        .includes(:posts)
-        .group_by(&:publication_id)
+        render json: publications.to_json 
+      end
     end
-
-    render 'index'
   end
 
   def show
@@ -45,7 +32,7 @@ class FeedsController < ApplicationController
         asker = Asker.find_by_subject_url params[:subject]
         offset = params['offset'] || 0
 
-        publications = Publication.recent_responses_by_asker(asker, 
+        publications = Publication.recent_by_asker(asker, 
           params[:publication_id], offset)
 
         render json: publications.to_json 

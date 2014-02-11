@@ -115,7 +115,8 @@ if ($('#feed_content').length) {
       }
 
       self.loadPublications = function() {
-        path = location.pathname + ".json" + "?offset=" + offset;
+        currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
+        path = currentPath + ".json" + "?offset=" + offset;
 
         $.getJSON(path, function(publication) {
           publication.forEach(function(publication) {

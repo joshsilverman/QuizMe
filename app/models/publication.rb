@@ -35,30 +35,6 @@ class Publication < ActiveRecord::Base
     save
   end
 
-  def self.recent
-    Rails.cache.fetch 'publications_recent' do
-      Publication.includes([:asker, :posts, :question => [:answers, :user]])\
-        .published\
-        .where("posts.interaction_type = 1", true)\
-        .where("posts.created_at > ?", 1.days.ago)\
-        .order("posts.created_at DESC")\
-        .limit(15)\
-        .includes(:question => :answers)\
-        .to_a
-    end
-  end
-
-  def self.recent_by_asker asker
-    Rails.cache.fetch "publications_recent_by_asker_#{asker.id}" do
-      asker.publications\
-        .published\
-        .includes([:asker, :posts, :question => [:answers, :user]])\
-        .where("posts.created_at > ? and posts.interaction_type = 1", 1.days.ago)\
-        .order("posts.created_at DESC")\
-        .to_a
-    end
-  end
-
   def self.recent_by_asker_and_id asker_id, id
     Publication.published.where(id: id, asker_id: asker_id)\
       .includes([:asker, :posts, :question => [:answers, :user]]).first
@@ -99,7 +75,13 @@ class Publication < ActiveRecord::Base
     end
   end
 
-  def self.recent_responses_by_asker asker, injectable_id, offset = 0
+  def self.recent offset = 0
+    publications = Publication.published
+      .order(created_at: :desc)
+      .limit(10).offset(offset)
+  end
+
+  def self.recent_by_asker asker, injectable_id, offset = 0
     publications = asker.publications.published
       .order(created_at: :desc)
       .limit(10).offset(offset)
