@@ -30,6 +30,9 @@ class Publication < ActiveRecord::Base
         text: question.text,
         id: question.id,
         correct_answer_id: question.answers.correct.try(:id)},
+      _asker: {
+        id: question.asker.id,
+        twi_profile_img_url: question.asker.twi_profile_img_url},
       _answers: as)
 
     save

@@ -68,6 +68,23 @@ describe Publication, '#update_question' do
       .must_equal question.answers.correct.id.to_s
   end
 
+  it "must set twi twi_profile_img_url of asker" do
+    asker = create :asker
+    question = Question.create text: 'What up?', asker: asker
+    answer = question.answers.create text: 'correct ans', correct: true
+    Question.stubs(:select_questions_to_post).returns [question.id]
+    asker.stubs(:posts_per_day).returns 5
+
+    PublicationQueue.enqueue_questions asker
+    publication = Publication.first
+    publication.update(_question: nil)
+    publication.update_question
+    
+    publication.reload._asker['id'].must_equal question.asker.id.to_s
+    publication.reload._asker['twi_profile_img_url']
+      .must_equal question.asker.twi_profile_img_url.to_s
+  end
+
   it "must set answers with ids" do
     asker = Asker.create
     question = Question.create text: 'What up?', asker: asker
