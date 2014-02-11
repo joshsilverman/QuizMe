@@ -28,7 +28,8 @@ class Publication < ActiveRecord::Base
     assign_attributes(
       _question: {
         text: question.text,
-        id: question.id},
+        id: question.id,
+        correct_answer_id: question.answers.correct.try(:id)},
       _answers: as)
 
     save

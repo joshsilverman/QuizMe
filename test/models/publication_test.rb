@@ -52,6 +52,22 @@ describe Publication, '#update_question' do
     publication._question['id'].must_equal question.id.to_s
   end
 
+  it "must set correct answer id" do
+    asker = Asker.create
+    question = Question.create text: 'What up?', asker: asker
+    answer = question.answers.create text: 'correct ans', correct: true
+    Question.stubs(:select_questions_to_post).returns [question.id]
+    asker.stubs(:posts_per_day).returns 5
+
+    PublicationQueue.enqueue_questions asker
+    publication = Publication.first
+    publication.update(_question: nil)
+    publication.update_question
+    
+    publication.reload._question['correct_answer_id']
+      .must_equal question.answers.correct.id.to_s
+  end
+
   it "must set answers with ids" do
     asker = Asker.create
     question = Question.create text: 'What up?', asker: asker
