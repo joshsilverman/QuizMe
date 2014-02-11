@@ -1,7 +1,8 @@
 #!/bin/bash
 
 function LastBackupName () { 
-  heroku pgbackups -a wisr | tail -n 50 | head -3 | tail -n 1 | cut -d" " -f 1
+  # heroku pgbackups -a wisr | tail -n 50 | head -3 | tail -n 1 | cut -d" " -f 1
+  heroku pgbackups -a wisr | tail -n 1 | cut -d" " -f 1
 }
 
 heroku pgbackups -a wisr >&2
