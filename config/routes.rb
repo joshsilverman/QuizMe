@@ -37,7 +37,6 @@ Quizmemanager::Application.routes.draw do
 
   get '/users/:id/activity' => 'users#activity'
   get '/users/activity_feed'
-  post '/users/add_email'
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
   
   post '/unsubscribe' => 'users#unsubscribe'
