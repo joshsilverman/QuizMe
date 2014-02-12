@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140212150251) do
+ActiveRecord::Schema.define(version: 20140212203530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -201,6 +201,7 @@ ActiveRecord::Schema.define(version: 20140212150251) do
     t.hstore   "_activity"
     t.hstore   "_answers"
     t.hstore   "_asker"
+    t.datetime "first_posted_at"
   end
 
   add_index "publications", ["asker_id"], name: "index_publications_on_asker_id", using: :btree
