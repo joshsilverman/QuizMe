@@ -16,21 +16,22 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for resource, redirect_to = nil
-    # return unless request.env["omniauth.params"]
-    omniauth_redirect_params = request.env["omniauth.params"]
-    if omniauth_redirect_params
-      if omniauth_redirect_params["feed_id"]
-        if omniauth_redirect_params['feed_id'] == "1"
-          redirect_to = "/feeds/index/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
+    oauth_params = request.env["omniauth.params"]
+    if oauth_params
+      if oauth_params["feed_id"]
+        if oauth_params['feed_id'] == "8765"
+          redirect_to = "/feeds/index/#{oauth_params['publication_id']}"
         else
-          if omniauth_redirect_params["q"] == "1"
-            redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}?q=1"
+          if oauth_params["q"] == "1"
+            redirect_to = "/feeds/#{oauth_params['feed_id']}?q=1"
           else
-            redirect_to = "/feeds/#{omniauth_redirect_params['feed_id']}/#{omniauth_redirect_params['post_id']}/#{omniauth_redirect_params['answer_id']}"
+            redirect_to = "/feeds/#{oauth_params['feed_id']}"\
+              + "/#{oauth_params['publication_id']}"\
+              + "/#{oauth_params['answer_id']}"
           end
         end      
-      elsif omniauth_redirect_params['asker_id']
-        redirect_to = "/askers/#{omniauth_redirect_params['asker_id']}/questions"
+      elsif oauth_params['asker_id']
+        redirect_to = "/askers/#{oauth_params['asker_id']}/questions"
       else
         redirect_to = request.env['omniauth.origin'] || session[:return_to] || root_path
       end

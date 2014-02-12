@@ -89,11 +89,12 @@ describe FeedsController do
 	describe '#show' do
 		before :each do
 			Capybara.current_driver = :selenium
-			login_as(@user, :scope => :user)
 		end
 
-		describe 'user answers question' do
+		describe 'click an answer when logged in' do
 			before :each do 
+				login_as(@user, :scope => :user)
+
 				visit "/#{@asker.subject_url}"
 				answer_question
 			end
@@ -106,6 +107,17 @@ describe FeedsController do
 			it 'responds to user post' do
 				grade_post = @asker.posts.where(intention: 'grade').first
 				grade_post.in_reply_to_user_id.must_equal @user.id
+			end
+		end
+
+		describe 'click an answer when not logged in' do
+			before :each do 
+				visit "/#{@asker.subject_url}"
+			end
+			
+			it 'takes user to authentication page' do
+				page.all('.conversation h3').first.click
+				current_path.must_equal '/oauth/authenticate'
 			end
 		end
 	end

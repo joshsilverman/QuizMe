@@ -128,6 +128,10 @@ if ($('#feed_content').length) {
       
       self.respondToQuestion = function() {
         if (self.feedPublication.answered === true) return;
+        if (!currentUserId) {
+          self.authenticate();
+          return;
+        }
 
         params = {"asker_id" : askerId,
           "publication_id" : self.publication_id,
@@ -144,6 +148,12 @@ if ($('#feed_content').length) {
 
         self.grading(false);
         self.feedPublication.answered = status;
+      }
+
+      self.authenticate = function() {
+        window.location.replace("/users/auth/twitter"
+          + "?feed_id=" + askerId
+          + "&publication_id=" + self.feedPublication.id)
       }
     }
 
