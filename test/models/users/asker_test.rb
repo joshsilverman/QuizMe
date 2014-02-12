@@ -916,7 +916,7 @@ describe Asker, '#publish_question' do
 
     asker.publish_question
 
-    publication.reload.first_posted_at.must_equal time
+    publication.reload.first_posted_at.to_i.must_equal time.to_i
   end
 
   it 'wont update first posted at if already set' do
@@ -934,6 +934,6 @@ describe Asker, '#publish_question' do
     Timecop.travel 1.hours
     asker.reload.publish_question
 
-    publication.reload.first_posted_at.must_equal time
+    publication.reload.first_posted_at.to_i.must_equal time.to_i
   end
 end
