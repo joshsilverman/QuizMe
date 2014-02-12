@@ -23,8 +23,8 @@ task :post_question => :environment do
     else
       interval = 3
     end
-    next unless (Time.now.hour % interval == 0)    
-    puts "Posting question for #{asker.twi_screen_name}"
+    next unless (Time.now.hour % interval == 0)
+    
     asker.publish_question()
     sleep 6
   end

@@ -29,7 +29,7 @@ class PublicationQueue < ActiveRecord::Base
     queued_pubs = question.publications.where("publication_queue_id IS NOT NULL")
 
     queued_pubs.each do |queued_pub|
-      queued_pub.update_attribute :publication_queue_id, nil
+      queued_pub.update :publication_queue_id, nil
     end
   end
 
@@ -38,9 +38,9 @@ class PublicationQueue < ActiveRecord::Base
       queue = asker.publication_queue
       queue.publications.where("published = ?", true).each do |pub|
         puts "Dequeue pub #{pub.id} for #{asker.twi_screen_name} and queue #{queue.id}"
-        pub.update_attribute :publication_queue_id, nil
+        pub.update :publication_queue_id, nil
       end
-      queue.update_attribute(:index, 0)
+      queue.update(:index, 0)
     end
   end
 
@@ -48,7 +48,7 @@ class PublicationQueue < ActiveRecord::Base
     if self.index < (posts_per_day - 1)
       self.increment :index
     else
-      self.update_attribute(:index, 0)
+      self.update(:index, 0)
     end
     self.save
   end
