@@ -126,11 +126,16 @@ class Asker < User
 
   def publish_question
     queue = self.publication_queue
+
     unless queue.blank?
       publication = queue.publications.order("id ASC")[queue.index]
       PROVIDERS.each { |provider| Post.publish(provider, self, publication) }
+
+      if publication.first_posted_at.nil?
+        publication.update first_posted_at: Time.now
+      end
+
       queue.increment_index(self.posts_per_day)
-      # Rails.cache.delete("askers:#{self.id}:show")
     end
   end
 

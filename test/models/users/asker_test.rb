@@ -903,3 +903,37 @@ describe Asker, ".find_by_subject_url" do
     found_asker.must_equal asker
   end
 end
+
+describe Asker, '#publish_question' do
+  it 'sets first posted at time' do
+    asker = create :asker, posts_per_day: 5
+    publication = create :publication
+    queue = PublicationQueue.create asker: asker
+    queue.publications.push publication
+
+    Timecop.freeze
+    time = Time.now
+
+    asker.publish_question
+
+    publication.reload.first_posted_at.must_equal time
+  end
+
+  it 'wont update first posted at if already set' do
+    asker = create :asker, posts_per_day: 5
+    publication = create :publication
+    queue = PublicationQueue.create asker: asker
+    queue.publications.push publication
+
+    Timecop.freeze
+    time = Time.now
+
+    asker.publish_question
+
+    queue.reload.update index: 0
+    Timecop.travel 1.hours
+    asker.reload.publish_question
+
+    publication.reload.first_posted_at.must_equal time
+  end
+end
