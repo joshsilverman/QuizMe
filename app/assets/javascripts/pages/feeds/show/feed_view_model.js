@@ -163,6 +163,26 @@ if ($('#feed_content').length) {
       self.twiProfileImgUrl = imageSrc;
     }
 
+    ko.bindingHandlers.timeago = {
+      update: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+
+        var $this = $(element);
+        $this.attr('title', value);
+
+        if ($this.data('timeago')) {
+          var datetime = $.timeago.datetime($this);
+          var distance = (new Date().getTime() - datetime.getTime());
+          var inWords = $.timeago.inWords(distance);
+
+          $this.data('timeago', { 'datetime': datetime });
+          $this.text(inWords);
+        } else {
+          $this.timeago();
+        }
+      }
+    };
+
     init($('#feed_content').data('subject-url'),
       $('#feed_content').data('asker-id'),
       $('#feed_content').data('current_user-id'));
