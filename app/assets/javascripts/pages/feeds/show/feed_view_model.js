@@ -27,6 +27,47 @@ if ($('#feed_content').length) {
       self.loadCorrectQIds();
     }
 
+    function FeedViewModel() {
+      var self = this,
+        offset = 0,
+        loadingMore = true,
+        loadMoreBtn = $('#posts_more');
+
+      self.feedPublications = ko.observableArray([]);
+
+      self.initLoadMore = function() {
+        $(window).on('DOMContentLoaded load resize scroll', 
+          _.throttle(self.loadMorePublications, 250, {leading: true})); 
+
+        $("#posts_more").on("click", function(e) {
+          e.preventDefault();
+          self.loadMorePublications();
+        });
+      }
+
+      self.loadMorePublications = function() {
+        if (!loadingMore && isElementInViewport(loadMoreBtn[0])) {
+          loadingMore = true;
+          offset += 10;
+          self.loadPublications();
+        }
+      }
+
+      self.loadPublications = function() {
+        currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
+        path = currentPath + ".json" + "?offset=" + offset;
+
+        $.getJSON(path, function(publication) {
+          publication.forEach(function(publication) {
+            var feedPublication = new FeedPublicationModel(publication);
+            self.feedPublications.push(feedPublication);
+          });
+
+          loadingMore = false;
+        })
+      }
+    }
+
     function FeedPublicationModel(publication) {
       var self = this;
       
@@ -71,47 +112,6 @@ if ($('#feed_content').length) {
       self.loadAnswers();
       self.loadInteractions();
       self.markAnswered();
-    }
-
-    function FeedViewModel() {
-      var self = this,
-        offset = 0,
-        loadingMore = true,
-        loadMoreBtn = $('#posts_more');
-
-      self.feedPublications = ko.observableArray([]);
-
-      self.initLoadMore = function() {
-        $(window).on('DOMContentLoaded load resize scroll', 
-          _.throttle(self.loadMorePublications, 250, {leading: true})); 
-
-        $("#posts_more").on("click", function(e) {
-          e.preventDefault();
-          self.loadMorePublications();
-        });
-      }
-
-      self.loadMorePublications = function() {
-        if (!loadingMore && isElementInViewport(loadMoreBtn[0])) {
-          loadingMore = true;
-          offset += 10;
-          self.loadPublications();
-        }
-      }
-
-      self.loadPublications = function() {
-        currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
-        path = currentPath + ".json" + "?offset=" + offset;
-
-        $.getJSON(path, function(publication) {
-          publication.forEach(function(publication) {
-            var feedPublication = new FeedPublicationModel(publication);
-            self.feedPublications.push(feedPublication);
-          });
-
-          loadingMore = false;
-        })
-      }
     }
 
     function AnswerViewModel(attrs, feedPublication) {
