@@ -31,7 +31,7 @@ if ($('#feed_content').length) {
       var self = this;
       
       self.id = publication.id;
-      self.createdAt = publication.created_at;
+      self.firstPostedAt = publication.first_posted_at;
       self.question = publication._question.text;
       self.questionId = parseInt(publication._question.id);
       self.correctAnswerId = parseInt(publication._question.correct_answer_id);

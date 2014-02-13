@@ -19,7 +19,7 @@
     .conversation.border-color{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}'}
       .post
         .time
-          %p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: createdAt"}
+          %p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: firstPostedAt"}
           
         .content
           %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}

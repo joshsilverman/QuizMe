@@ -80,13 +80,15 @@ class Publication < ActiveRecord::Base
 
   def self.recent offset = 0
     publications = Publication.published
-      .order(created_at: :desc)
+      .where('first_posted_at IS NOT NULL')
+      .order(first_posted_at: :desc)
       .limit(10).offset(offset)
   end
 
   def self.recent_by_asker asker, injectable_id, offset = 0
     publications = asker.publications.published
-      .order(created_at: :desc)
+      .where('first_posted_at IS NOT NULL')
+      .order(first_posted_at: :desc)
       .limit(10).offset(offset)
     return publications if injectable_id.nil?
 
