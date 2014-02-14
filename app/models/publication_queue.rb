@@ -3,7 +3,7 @@ class PublicationQueue < ActiveRecord::Base
   belongs_to :asker, :class_name => 'User', :foreign_key => 'asker_id'
 	
 	def self.enqueue_questions(asker)
-    queue = PublicationQueue.find_or_create_by_asker_id(asker.id)
+    queue = PublicationQueue.find_or_create_by(asker_id: asker.id)
     Question.select_questions_to_post(asker, 7).each do |question_id|
       break if queue.publications.count >= asker.posts_per_day
       self.enqueue_question(asker.id, question_id)
