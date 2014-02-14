@@ -168,14 +168,14 @@ module ManageTwitterRelationships
   def add_follow user, type_id = nil
     relationship = follow_relationships.find_or_initialize_by(followed_id: user.id)
     relationship.update_attributes(active: true, type_id: type_id, pending: false)
-    Mixpanel.track_event "add follow", { distinct_id: id, type_id: type_id }  
+    MP.track_event "add follow", { distinct_id: id, type_id: type_id }  
   end
 
   def remove_follow user
     relationship = follow_relationships.find_by(followed_id: user.id)
     if relationship
       relationship.update_attribute(:active, false) 
-      Mixpanel.track_event "remove follow", { distinct_id: id }
+      MP.track_event "remove follow", { distinct_id: id }
     end
   end  
 
@@ -313,7 +313,7 @@ module ManageTwitterRelationships
       long_url: "#{URL}/#{subject_url}/#{publication.id}", 
       interaction_type: 2
     })
-    Mixpanel.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
+    MP.track_event "targeted mention sent", { distinct_id: user.id, asker: twi_screen_name }
   end
 
   def targeted_mention_count

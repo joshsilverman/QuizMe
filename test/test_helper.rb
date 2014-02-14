@@ -44,7 +44,7 @@ class ActiveSupport::TestCase
 
     WebMock.disable_net_connect!(:allow => [/127\.0\.0\.1/, /twitter/])
     stub_request(:get, /mixpanel/)
-    Mixpanel.stubs :track_event
+    MP.stubs :track_event
     
     ActiveRecord::Base.observers.disable :all
   end

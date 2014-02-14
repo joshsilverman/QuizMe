@@ -22,7 +22,7 @@ class NudgeType < ActiveRecord::Base
     	})
     end
     if dm
-      Mixpanel.track_event "nudge sent", {
+      MP.track_event "nudge sent", {
         :distinct_id => user.id,
         :asker => asker.twi_screen_name,
         :client => client.twi_screen_name,
@@ -45,7 +45,7 @@ class NudgeType < ActiveRecord::Base
       end
       Post.trigger_split_test(user.id, "nudge followup (nudge conversion)")
 
-      Mixpanel.track_event "nudge conversion", {
+      MP.track_event "nudge conversion", {
         :distinct_id => user.id,
         :asker => asker.twi_screen_name,
         :client => client.twi_screen_name,

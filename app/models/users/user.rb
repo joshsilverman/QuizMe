@@ -307,7 +307,7 @@ class User < ActiveRecord::Base
 	end
 
 	def after_new_user_filter
-    Mixpanel.track_event "new user joined", {
+    MP.track_event "new user joined", {
       :distinct_id => id,
       :type => "twitter"
     }
@@ -334,7 +334,7 @@ class User < ActiveRecord::Base
       .where("twi_user_id in (?)", followed_twi_user_ids)
 
 		if referrers.present?
-      Mixpanel.track_event "referral joined", {
+      MP.track_event "referral joined", {
         distinct_id: id,
         type: "twitter"}     
 		end

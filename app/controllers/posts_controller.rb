@@ -21,7 +21,7 @@ class PostsController < ApplicationController
         :last_interaction_at => retweet_post.created_at
       })      
       
-      Mixpanel.track_event "in app retweet", { :distinct_id => current_user.id }  
+      MP.track_event "in app retweet", { :distinct_id => current_user.id }  
 			render :json => retweet
 		end
 	end

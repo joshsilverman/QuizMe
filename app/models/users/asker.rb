@@ -152,7 +152,7 @@ class Asker < User
       :question_id => question.id, 
       :intention => "initial question dm"})
 
-    Mixpanel.track_event "DM question to new follower", {
+    MP.track_event "DM question to new follower", {
       :distinct_id => user.id,
       :account => twi_screen_name,
       :backlog => options[:backlog] == true ? true : false
@@ -309,7 +309,7 @@ class Asker < User
           :link_to_parent => false,
           :question_id => publication.question.id    
         })
-        Mixpanel.track_event "new user question mention", {
+        MP.track_event "new user question mention", {
           :distinct_id => user.id, 
           :account => asker.twi_screen_name
         }
@@ -418,7 +418,7 @@ class Asker < User
       user_post.update_attribute(:correct, correct)
 
       # Will double count if we grade people again via DM
-      Mixpanel.track_event "answered", {
+      MP.track_event "answered", {
         :distinct_id => options[:in_reply_to_user_id],
         :time => user_post.created_at.to_i,
         :account => twi_screen_name,
@@ -651,7 +651,7 @@ class Asker < User
 
     user.update role: "moderator" unless user.is_role?('admin')
     self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
-    Mixpanel.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
+    MP.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
 
     true
   end
@@ -697,7 +697,7 @@ class Asker < User
       self.send_private_message(moderator, script, {
         :intention => "request question feedback"
       })
-      Mixpanel.track_event "request question feedback", { :distinct_id => moderator.id, :account => twi_screen_name }
+      MP.track_event "request question feedback", { :distinct_id => moderator.id, :account => twi_screen_name }
     end
   end
 
@@ -800,7 +800,7 @@ class Asker < User
     script.gsub! '<new handle>', in_progress_asker.twi_screen_name
 
     self.send_private_message(user, script, {intention: 'request new handle ugc', subject: 'Write a question?'})
-    Mixpanel.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
+    MP.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
   def nudge answerer
@@ -857,7 +857,7 @@ class Asker < User
       end
 
       # Fire mixpanel answer event
-      Mixpanel.track_event "answered", {
+      MP.track_event "answered", {
         :distinct_id => answerer.id,
         :account => self.twi_screen_name,
         :type => "app",
@@ -879,7 +879,7 @@ class Asker < User
       end
 
       # Fire mixpanel answer event
-      Mixpanel.track_event "answered", {
+      MP.track_event "answered", {
         distinct_id: answerer.id,
         time: user_post.created_at.to_i,
         account: self.twi_screen_name,
@@ -916,7 +916,7 @@ class Asker < User
       if Post.create_split_test(recipient.id, "weekly progress report email (=> superuser)", "false", "true") == "true"
         begin
           UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
-          Mixpanel.track_event "progress report email sent", { :distinct_id => recipient.id }
+          MP.track_event "progress report email sent", { :distinct_id => recipient.id }
         rescue Exception => exception
           puts "Failed to send progress report to #{recipient.email} (#{exception})"
         end         
@@ -1016,7 +1016,7 @@ class Asker < User
       end
 
       asker.send_private_message(user, script, {:intention => "author followup"})
-      Mixpanel.track_event "author followup sent", {:distinct_id => user_id}
+      MP.track_event "author followup sent", {:distinct_id => user_id}
     end
   end
 
@@ -1049,7 +1049,7 @@ class Asker < User
         user = User.find(recipient_id)
         script = "You have a chance to check out that link? What did you think?"
         asker.send_private_message(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
-        Mixpanel.track_event "nudge followup sent", {:distinct_id => user.id}
+        MP.track_event "nudge followup sent", {:distinct_id => user.id}
       end 
     end
   end
@@ -1103,7 +1103,7 @@ class Asker < User
     message = "@#{user.twi_screen_name} You earned the #{badge.title} badge, congratulations!"
 
     post = send_public_message message, options
-    Mixpanel.track_event "badge", {distinct_id: user.id, badge: badge.title}  
+    MP.track_event "badge", {distinct_id: user.id, badge: badge.title}  
     post
   end
 
