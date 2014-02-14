@@ -47,7 +47,7 @@ class PublicationQueue < ActiveRecord::Base
     if self.index < (posts_per_day - 1)
       self.increment :index
     else
-      self.update(:index, 0)
+      self.update index: 0
     end
     self.save
   end

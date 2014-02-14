@@ -86,11 +86,19 @@ describe PublicationQueue, ".clear_queue" do
 end
 
 describe PublicationQueue, "#increment_index" do
-  it "increments index when posts per day is greater than 0" do
+  it "increments index" do
     queue = PublicationQueue.create index: 0
 
     queue.increment_index 5
 
-    queue.index.must_equal 1
+    queue.reload.index.must_equal 1
+  end
+
+  it "resets index to 0 if whole queue has been cycled through" do
+    queue = PublicationQueue.create index: 2
+
+    queue.increment_index 3
+
+    queue.reload.index.must_equal 0
   end
 end
