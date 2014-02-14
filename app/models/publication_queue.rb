@@ -29,7 +29,7 @@ class PublicationQueue < ActiveRecord::Base
     queued_pubs = question.publications.where("publication_queue_id IS NOT NULL")
 
     queued_pubs.each do |queued_pub|
-      queued_pub.update :publication_queue_id, nil
+      queued_pub.update publication_queue_id: nil
     end
   end
 
@@ -37,10 +37,9 @@ class PublicationQueue < ActiveRecord::Base
     if asker and asker.publication_queue
       queue = asker.publication_queue
       queue.publications.where("published = ?", true).each do |pub|
-        puts "Dequeue pub #{pub.id} for #{asker.twi_screen_name} and queue #{queue.id}"
-        pub.update :publication_queue_id, nil
+        pub.update publication_queue_id: nil
       end
-      queue.update(:index, 0)
+      queue.update(index: 0)
     end
   end
 

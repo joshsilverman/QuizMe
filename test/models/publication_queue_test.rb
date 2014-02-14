@@ -56,3 +56,41 @@ describe PublicationQueue, ".enqueue_questions" do
     Publication.first._answers[ans_2.id.to_s].must_equal ans_2.text
   end
 end
+
+describe PublicationQueue, ".dequeue_question" do
+  it "updates publication queue id" do
+    asker = create :asker
+    question = create :question
+    publication = create :publication, publication_queue_id: 123
+    question.publications << publication
+
+    publication.publication_queue_id.wont_equal nil
+    PublicationQueue.dequeue_question asker.id, question.id
+
+    publication.reload.publication_queue_id.must_equal nil
+  end
+end
+
+describe PublicationQueue, ".clear_queue" do
+  it "updates publication queue id" do
+    asker = create :asker
+    queue = PublicationQueue.create asker: asker
+    publication = create :publication, publication_queue_id: 123
+    queue.publications << publication
+
+    publication.publication_queue_id.wont_equal nil
+    PublicationQueue.clear_queue asker
+
+    publication.reload.publication_queue_id.must_equal nil
+  end
+end
+
+describe PublicationQueue, "#increment_index" do
+  it "increments index when posts per day is greater than 0" do
+    queue = PublicationQueue.create index: 0
+
+    queue.increment_index 5
+
+    queue.index.must_equal 1
+  end
+end
