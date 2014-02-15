@@ -106,20 +106,20 @@ describe Post, '#send_to_publication' do
 
   it 'returns the latest publication if multiple publications exist' do
     question = Question.create
-    publication_0 = Publication.create 
+    publication_0 = Publication.create({ 
       question: question, 
       created_at: 4.days.ago,
-      published: true
+      published: true})
       
-    publication_1 = Publication.create 
+    publication_1 = Publication.create({ 
       question: question, 
       created_at: 1.day.ago,
-      published: true
+      published: true})
       
-    publication_2 = Publication.create 
+    publication_2 = Publication.create({ 
       question: question, 
       created_at: 2.days.ago,
-      published: true
+      published: true})
       
     post = Post.create in_reply_to_question: question
 
