@@ -149,6 +149,15 @@ class FeedsController < ApplicationController
       redirect_called = true
     end
 
+    if !current_user and params[:q] == "1" and @asker and !redirect_called
+      redirect_to user_omniauth_authorize_path(:twitter, 
+        :feed_id => @asker.id, 
+        :q => 1, 
+        :use_authorize => false)
+      
+      redirect_called = true
+    end
+
     if @asker.nil?
       redirect_to '/' 
       redirect_called = true

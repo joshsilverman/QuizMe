@@ -52,3 +52,5 @@
 
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user
 = hidden_field_tag :asker_id, @asker.id if @asker
+- if (params[:question_form] == "1" or params[:q] == "1")
+  = hidden_field_tag :question_form, true
