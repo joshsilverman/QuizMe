@@ -10,7 +10,6 @@ class NewQuestionModal
     $(".post_another").on "click", => @post_another()
 
   post_question: (text = null, post_id = null) =>
-    # return unless window.feed.correct > 9 or $('.is_author').length > 0
     $("#question_input").val(text) if text
     $("#post_question_modal").modal()
     $("#question_input").focus() unless $("#manager").length > 0

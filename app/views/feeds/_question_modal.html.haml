@@ -31,10 +31,12 @@
               %input{:type=>"text", :name => 'ianswer1', :placeholder => 'Incorrect answer'}>
         %a#add_answer
           %i.icon-plus
-          Add answer    
+          Add answer 
+
       .message.hide
         Your question was submitted, we'll get in touch when its posted! 
         %a.post_another Write another →
+
       .modal_conversation_history.hide
         .conversation
           .subsidiary.post
@@ -42,13 +44,12 @@
             .content                      
               = image_tag(@asker.twi_profile_img_url, :class => "rounded") if @asker
               %h5= "User name"
-              %p= "Conversation history"  
+              %p= "Conversation history"
+
     .modal-footer
-      / #approve_question.btn-group.hide
-      /   %button.btn.reject Reject    
-      /   %button.btn.btn-primary.accept Accept
       %a.btn.cancel{:href => "#", "data-dismiss" => "modal"} Cancel
       %a#submit_question.btn.btn-primary{:href => "#", "data-loading-text" => "Loading..."} Submit Question
+
 - # this may be duplicate hidden field however it's required to keep the newer
 - # views clean
 = hidden_field_tag :user_name, current_user.twi_screen_name if current_user

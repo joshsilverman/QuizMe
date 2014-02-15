@@ -1,28 +1,29 @@
 - if @asker
-	- content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
+  - content_for :title, "#{@asker.twi_screen_name} - #{@asker.description}"
 
 #post_feed
-	#feed_container
-		#wrapper
-			#feed.row
-				= render :partial => "account_info"
+  #feed_container
+    #wrapper
+      #feed.row
+        = render :partial => "account_info"
 
-				#left_column.span3
-					#left_column_container
-						#activity_stream.rounded.border-color.hidden-phone
-							= render partial: "stream"
+        #left_column.span3
+          #left_column_container
+            #activity_stream.rounded.border-color.hidden-phone
+              = render partial: "stream"
 
-						.clr
-						- if current_user
-							= render partial: "my_badges"
-						- else
-							= render partial: "my_badges_unauth"
+            .clr
+            - if current_user
+              = render partial: "my_badges"
+            - else
+              = render partial: "my_badges_unauth"
 
-				#right_column.span6
-					#posts.rounded
-						= render :partial => "feed"
+        #right_column.span6
+          #posts.rounded
+            = render :partial => "feed"
 
-						#posts_more.border-color
-							%a{:href => "#"} Load more
+            #posts_more.border-color
+              %a{:href => "#"} Load more
+
 - content_for(:modals) do
   = render :partial => "question_modal"
