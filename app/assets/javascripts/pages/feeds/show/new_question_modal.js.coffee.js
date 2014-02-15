@@ -51,7 +51,7 @@ class NewQuestionModal
         $("#submit_question").button("loading")
         data =
           "question" : $("#question_input").val()
-          "asker_id" : window.feed.id
+          "asker_id" : $("#asker_id").val()
           "status" : $("#status").val()
           "canswer" : $("#canswer input").val()
           "ianswer1" : $("#ianswer1 input").val()
