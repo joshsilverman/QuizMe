@@ -6,8 +6,8 @@ if ($('#feed_content').length) {
     function init(subjectUrl, _askerId, _currentUserId) {
       var correctQIdsPath;
 
-      feedViewModel = new FeedViewModel();
       askerId = _askerId;
+      feedViewModel = new FeedViewModel();
       currentUserId = _currentUserId;
 
       self.loadCorrectQIds = function() {
@@ -34,6 +34,7 @@ if ($('#feed_content').length) {
         loadMoreBtn = $('#posts_more');
 
       self.feedPublications = ko.observableArray([]);
+      self.askerId = askerId;
 
       self.initLoadMore = function() {
         $(window).on('DOMContentLoaded load resize scroll', 

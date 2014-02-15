@@ -234,6 +234,11 @@
 
 			.post_question {
 				cursor:pointer;
+				transition: opacity 1s;
+
+				&.invisible {
+					opacity: 0;
+				}
 			}
 		}
 

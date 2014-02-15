@@ -5,7 +5,12 @@
   .header.border-color
     %h3
       .ugc
-        %a.post_question{:href => (user_omniauth_authorize_path(:twitter, :feed_id => @asker.id, :q => 1, :use_authorize => false) unless current_user)}
+        %a.post_question.invisible{:href => (user_omniauth_authorize_path(:twitter,
+          :feed_id => @asker.id,
+          :q => 1,
+          :use_authorize => false) unless current_user),
+          'data-bind' => "css: {invisible: askerId == 8765}"}
+
           %i.icon-pencil
           Post a Question
 
