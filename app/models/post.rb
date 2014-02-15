@@ -369,7 +369,7 @@ class Post < ActiveRecord::Base
     if (in_reply_to_post.try(:intention) == 'request email') and (email_address = post.extract_email_address)
       u.update(email: email_address)
       asker.send_private_message(u, 'Thanks!', {intention: "thank", in_reply_to_post_id: post.id})
-      Mixpanel.track_event "added email address", { distinct_id: u.id }
+      MP.track_event "added email address", { distinct_id: u.id }
     end
 
     u.update_user_interactions({
@@ -664,7 +664,8 @@ class Post < ActiveRecord::Base
   end
 
   def send_to_publication
-    publication = Publication.where(question_id: in_reply_to_question_id)
+    publication = Publication.published
+      .where(question_id: in_reply_to_question_id)
       .order(created_at: :desc).first
     return if publication.nil?
 

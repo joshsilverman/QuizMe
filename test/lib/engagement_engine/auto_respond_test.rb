@@ -129,7 +129,7 @@ describe Asker, "EngagementEngine::AutoRespond#auto_respond" do
       autocorrect: true,
       interaction_type: 4)
 
-    Mixpanel.expects(:track_event)
+    MP.expects(:track_event)
 
     @asker.auto_respond(@user_response)
   end

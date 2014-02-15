@@ -45,7 +45,7 @@ class ModerationsController < ApplicationController
       response = (moderator.is_admin? or (previous_consensus and moderator.is_question_super_mod? and (moderation.type_id != 7)))
     end
 
-    Mixpanel.track_event "moderated", {
+    MP.track_event "moderated", {
       distinct_id: moderator.id,
       type: (params['post_id'].present? ? "post" : "question"),
       question_status: status

@@ -179,7 +179,7 @@ class QuestionsController < ApplicationController
 
       author = @question.user
 
-      Mixpanel.track_event "submitted question", {
+      MP.track_event "submitted question", {
         :distinct_id => user_id,
         :time => question_created_at ? question_created_at.to_i : @question.created_at.to_i,
         :type => params[:post_id].present? ? "post" : "form",

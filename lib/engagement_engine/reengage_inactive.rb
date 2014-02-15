@@ -126,7 +126,7 @@ module EngagementEngine::ReengageInactive
         })
       end
 
-      Mixpanel.track_event "reengage inactive", {
+      MP.track_event "reengage inactive", {
         distinct_id: user.id, 
         interval: options[:interval], 
         strategy: options[:strategy], 
