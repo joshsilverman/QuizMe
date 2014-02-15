@@ -664,7 +664,8 @@ class Post < ActiveRecord::Base
   end
 
   def send_to_publication
-    publication = Publication.where(question_id: in_reply_to_question_id)
+    publication = Publication.published
+      .where(question_id: in_reply_to_question_id)
       .order(created_at: :desc).first
     return if publication.nil?
 

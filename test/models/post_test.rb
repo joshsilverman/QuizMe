@@ -91,7 +91,7 @@ end
 describe Post, '#send_to_publication' do
   it 'calls update activity on correct publication with post' do
     question = Question.create
-    publication = Publication.create question: question
+    publication = Publication.create question: question, published: true
     post = Post.create in_reply_to_question: question
 
     Publication.any_instance.expects(:update_activity).with(post)
@@ -106,13 +106,35 @@ describe Post, '#send_to_publication' do
 
   it 'returns the latest publication if multiple publications exist' do
     question = Question.create
-    publication_0 = Publication.create question: question, created_at: 4.days.ago
-    publication_1 = Publication.create question: question, created_at: 1.day.ago
-    publication_2 = Publication.create question: question, created_at: 2.days.ago
+    publication_0 = Publication.create 
+      question: question, 
+      created_at: 4.days.ago,
+      published: true
+      
+    publication_1 = Publication.create 
+      question: question, 
+      created_at: 1.day.ago,
+      published: true
+      
+    publication_2 = Publication.create 
+      question: question, 
+      created_at: 2.days.ago,
+      published: true
+      
     post = Post.create in_reply_to_question: question
 
     Publication.any_instance.expects(:update_activity).with(post)
 
     post.send_to_publication.must_equal publication_1
+  end
+
+  it 'wont call update activity on pub if unpublished' do
+    question = Question.create
+    publication = Publication.create question: question
+    post = Post.create in_reply_to_question: question
+
+    Publication.any_instance.expects(:update_activity).with(post).never
+
+    post.send_to_publication
   end
 end
