@@ -84,12 +84,12 @@ gem 'roadie'
 gem 'best_in_place', github: 'bernat/best_in_place'
 gem 'mail'
 
-gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
 
+gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'amatch'
+
 gem 'sourcify', "~> 0.6.0.rc4"
-gem 'google_drive'
 gem 'pusher'
 
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
