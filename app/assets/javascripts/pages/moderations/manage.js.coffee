@@ -16,7 +16,6 @@ class ModerationsManage
 			$('.conversation').removeClass 'active'
 			$(this).addClass 'active'
 			
-		@hotkeys = new Hotkeys false
 		$("#post_question_modal #add_answer").on "click", @add_answer
 		$("#post_question_modal #submit_question").on "click", (e) =>
 			e.preventDefault()
@@ -46,7 +45,6 @@ class ModerationsManage
 		selected_type_id = elem.data 'type_id'
 		conversation = elem.closest('.conversation')
 		conversation.addClass "dim"
-		window.moderations_manage.hotkeys.prev() if conversation.nextAll(".conversation").length < 1
 		
 		params =
 			type_id: selected_type_id
@@ -137,7 +135,7 @@ class ModerationsManage
 			alert "Please enter at least one correct and incorrect answer!"
 			return false
 		else
-			return true	
+			return true
 
 $ ->
 	if $('.moderations_manage').length > 0
