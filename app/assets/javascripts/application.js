@@ -12,6 +12,7 @@
 //= require lib/knockout-3.0.0.min
 //= require lib/snap
 //= require lodash
+//= require moment
 
 //= require twitter/bootstrap
 //= require best_in_place
