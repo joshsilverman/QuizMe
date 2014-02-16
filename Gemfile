@@ -61,6 +61,7 @@ gem 'jquery-ui-rails'
 gem 'haml'
 gem 'twitter-bootstrap-rails', '2.1.1'
 gem 'jquery-rails'
+gem 'lodash-rails'
 
 gem 'devise', '3.0.4'
 gem 'omniauth'

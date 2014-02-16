@@ -11,6 +11,7 @@
 //= require lib/jquery.cookie
 //= require lib/knockout-3.0.0.min
 //= require lib/snap
+//= require lodash
 
 //= require twitter/bootstrap
 //= require best_in_place
