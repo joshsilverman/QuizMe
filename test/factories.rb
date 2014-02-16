@@ -104,6 +104,7 @@ FactoryGirl.define do
 
   factory :publication do
     published true
+    first_posted_at 5.minutes.ago
   end
 
   factory :conversation do

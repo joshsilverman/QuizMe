@@ -96,6 +96,7 @@ describe FeedsController do
 				login_as(@user, :scope => :user)
 
 				visit "/#{@asker.subject_url}"
+				
 				answer_question
 			end
 			
