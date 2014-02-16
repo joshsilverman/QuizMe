@@ -907,7 +907,7 @@ end
 describe Asker, '#publish_question' do
   it 'sets first posted at time' do
     asker = create :asker, posts_per_day: 5
-    publication = create :publication
+    publication = create :publication, first_posted_at: nil
     queue = PublicationQueue.create asker: asker
     queue.publications.push publication
 
@@ -921,7 +921,7 @@ describe Asker, '#publish_question' do
 
   it 'wont update first posted at if already set' do
     asker = create :asker, posts_per_day: 5
-    publication = create :publication
+    publication = create :publication, first_posted_at: nil
     queue = PublicationQueue.create asker: asker
     queue.publications.push publication
 
