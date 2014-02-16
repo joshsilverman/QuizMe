@@ -16,9 +16,6 @@
 
       Questions
 
-      %img{src: '/assets/ajax-loader.gif',
-        'data-bind' => 'css: {hidden: feedPublications().length > 0}'}
-
   .feed_section{'data-bind' => "foreach: feedPublications"}
 
     .conversation.border-color{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}'}
@@ -38,3 +35,10 @@
       .activity_container{'data-bind' => 'visible: interactions.length > 0'}
         .interactions{'data-bind' => "foreach: interactions"}
           %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
+
+  #posts_more.border-color
+    %a.disable{:href => "#",
+      'data-bind' => 'css: {disable: loadingMore()}'} Load more
+
+    %img{src: '/assets/ajax-loader.gif',
+      'data-bind' => 'css: {invisible: !loadingMore()}'}

@@ -30,9 +30,9 @@ if ($('#feed_content').length) {
     function FeedViewModel() {
       var self = this,
         offset = 0,
-        loadingMore = true,
         loadMoreBtn = $('#posts_more');
 
+      self.loadingMore = ko.observable(true),
       self.feedPublications = ko.observableArray([]);
       self.askerId = askerId;
 
@@ -47,8 +47,8 @@ if ($('#feed_content').length) {
       }
 
       self.loadMorePublications = function() {
-        if (!loadingMore && isElementInViewport(loadMoreBtn[0])) {
-          loadingMore = true;
+        if (!self.loadingMore() && isElementInViewport(loadMoreBtn[0])) {
+          self.loadingMore(true);
           offset += 10;
           self.loadPublications();
         }
@@ -64,7 +64,7 @@ if ($('#feed_content').length) {
             self.feedPublications.push(feedPublication);
           });
 
-          loadingMore = false;
+          self.loadingMore(false);
         })
       }
     }
