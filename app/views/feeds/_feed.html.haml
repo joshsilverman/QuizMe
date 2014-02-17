@@ -40,5 +40,6 @@
     %a.disable{:href => "#",
       'data-bind' => 'css: {disable: loadingMore()}'} Load more
 
-    %img{src: '/assets/ajax-loader.gif',
+    %img{src: '/assets/ajax-loader-retina.gif',
+      class: 'retina-ajax-loader',
       'data-bind' => 'css: {invisible: !loadingMore()}'}
