@@ -166,9 +166,9 @@ if ($('#feed_content').length) {
 
     ko.bindingHandlers.timeago = {
       update: function(element, valueAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor());
-
-        var $this = $(element);
+        var value = ko.utils.unwrapObservable(valueAccessor()),
+          $this = $(element);
+          
         $this.attr('title', value);
 
         if ($this.data('timeago')) {
