@@ -117,14 +117,44 @@ describe Publication, ".inject_publication_by_id" do
   end
 
   it "will inject publication as first element if valid id provided" do
-    publication = create :publication
+    asker = create :asker
+    question = create :question, asker: asker
+    publication = create :publication, question: question, asker: asker
     publications = Publication.limit 1
-    injectable_publication = create :publication
+    injectable_pub = create :publication, question: question, asker: asker
 
     injected = Publication.inject_publication_by_id(publications, 
-      injectable_publication.id.to_s)
+      injectable_pub.id.to_s)
 
     injected.to_a.must_equal Publication.all.order(created_at: :desc).to_a
+  end
+
+  it "will update publication if answers or asker nil" do
+    asker = create :asker
+    question = create :question, asker: asker
+    publication = create :publication, question: question, asker: asker
+    publications = Publication.limit 1
+    injectable_pub = create :publication, question: question, asker: asker
+
+    injected = Publication.inject_publication_by_id(publications, 
+      injectable_pub.id.to_s).first
+    
+    injected._answers.wont_be_nil
+    injected._asker.wont_be_nil
+  end
+
+  it "will set first posted at to created at if nil" do
+    asker = create :asker
+    question = create :question, asker: asker
+    publication = create :publication, question: question, asker: asker
+    publications = Publication.limit 1
+    injectable_pub = create :publication, question: question, asker: asker
+    injectable_pub.update first_posted_at: nil
+
+    injected = Publication.inject_publication_by_id(publications, 
+      injectable_pub.id.to_s).first
+
+    injected.first_posted_at.must_equal injected.created_at
   end
 
   it "wont inject publication if the publication is included already" do

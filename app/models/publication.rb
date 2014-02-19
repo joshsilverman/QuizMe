@@ -108,6 +108,18 @@ class Publication < ActiveRecord::Base
     injectable_publication = Publication.where(id: injectable_id).first
     return publications if injectable_publication.nil?
 
+    injectable_publication.verify_cache_present
+
     publications.unshift injectable_publication
+  end
+
+  def verify_cache_present
+    if !_answers or !_asker
+      update_question
+    end
+
+    if !first_posted_at
+      self.update first_posted_at: self.created_at
+    end
   end
 end
