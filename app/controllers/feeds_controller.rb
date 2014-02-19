@@ -40,12 +40,12 @@ class FeedsController < ApplicationController
     end
   end
 
-  def stream(user_followers = [])
+  def stream
     posts = Post.includes(:user, :in_reply_to_question, :in_reply_to_user)
       .where('in_reply_to_question_id IS NOT NULL')
       .where(intention: 'respond to question')
       .where(in_reply_to_user_id: Asker.ids)
-      .order(id: :desc).limit(50).to_a
+      .order(id: :desc).limit(100).to_a
 
     filtered_posts = []
     posts.each_with_index do |post, i|
@@ -67,7 +67,7 @@ class FeedsController < ApplicationController
       break if filtered_posts.count == 5
     end
 
-    render json: filtered_posts
+    render json: filtered_posts.to_json
   end
 
   def respond_to_question
