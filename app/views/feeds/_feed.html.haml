@@ -1,6 +1,7 @@
 #feed_content{'data-subject-url' => @asker.subject_url,
   'data-asker-id' => @asker.id,
-  'data-current_user-id' => current_user.try(:id)}
+  'data-current_user-id' => current_user.try(:id),
+  'data-publication-id' => params[:publication_id]}
 
   .header.border-color
     %h3
@@ -19,7 +20,7 @@
   .feed_section{'data-bind' => "foreach: feedPublications"}
 
     .conversation.border-color{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}'}
-      .post
+      .post{'data-bind' => 'attr: {"data-publication-id": id}'}
         .time
           %p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: firstPostedAt"}
           

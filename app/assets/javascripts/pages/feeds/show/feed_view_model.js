@@ -1,14 +1,15 @@
 if ($('#feed_content').length) {
   $(function() {
     var correctQIds = [],
-      feedViewModel, askerId, currentUserId;
+      feedViewModel, askerId, currentUserId, publicationId;
 
-    function init(subjectUrl, _askerId, _currentUserId) {
+    function init(subjectUrl, _askerId, _currentUserId, _publicationId) {
       var correctQIdsPath;
 
       askerId = _askerId;
       feedViewModel = new FeedViewModel();
       currentUserId = _currentUserId;
+      publicationId = _publicationId;
 
       self.loadCorrectQIds = function() {
         if (!currentUserId) return;
@@ -44,7 +45,7 @@ if ($('#feed_content').length) {
           e.preventDefault();
           self.loadMorePublications();
         });
-      }
+      };
 
       self.loadMorePublications = function() {
         if (!self.loadingMore() && isElementInViewport(loadMoreBtn[0])) {
@@ -52,7 +53,7 @@ if ($('#feed_content').length) {
           offset += 10;
           self.loadPublications();
         }
-      }
+      };
 
       self.loadPublications = function() {
         currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
@@ -65,8 +66,17 @@ if ($('#feed_content').length) {
           });
 
           self.loadingMore(false);
+          self.focusOnPublication();
         })
-      }
+      };
+
+      self.focusOnPublication = function() {
+        if (offset > 0) return;
+        if (!publicationId) return;
+
+        var pub = $('.post[data-publication-id=' + publicationId + ']');
+        $.scrollTo(pub);
+      };
     }
 
     function FeedPublicationModel(publication) {
@@ -186,6 +196,7 @@ if ($('#feed_content').length) {
 
     init($('#feed_content').data('subject-url'),
       $('#feed_content').data('asker-id'),
-      $('#feed_content').data('current_user-id'));
+      $('#feed_content').data('current_user-id'),
+      $('#feed_content').data('publication-id'));
   });
 }
