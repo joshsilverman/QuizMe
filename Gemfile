@@ -1,12 +1,10 @@
 source 'http://rubygems.org'
 ruby '2.0.0'
+gem 'unicorn'
+gem 'rails', '4.0.3'
 
 gem 'pg'
 gem 'redis'
-
-gem 'unicorn'
-gem 'rails', '~> 4.0.2'
-gem 'activesupport', '4.0.2'
 
 gem 'protected_attributes'
 gem 'rails-observers'
