@@ -89,6 +89,7 @@ gem 'amatch'
 
 gem 'sourcify', "~> 0.6.0.rc4"
 gem 'pusher'
+gem 'airbrake'
 
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
 
