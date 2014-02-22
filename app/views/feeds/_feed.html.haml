@@ -1,46 +1,20 @@
-#feed_content{'data-subject-url' => @asker.subject_url,
+.timeline-container{'data-subject-url' => @asker.subject_url,
   'data-asker-id' => @asker.id,
   'data-current_user-id' => current_user.try(:id),
   'data-publication-id' => params[:publication_id]}
 
-  .header.border-color
-    %h3
-      .ugc
-        %a.post_question.invisible{:href => (user_omniauth_authorize_path(:twitter,
-          :feed_id => @asker.id,
-          :q => 1,
-          :use_authorize => false) unless current_user),
-          'data-bind' => "css: {invisible: askerId == 8765}"}
+  %ul.timeline{'data-bind' => "foreach: feedPublications"}
+    %li{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id}'}
 
-          %i.icon-pencil
-          Post a Question
-
-      Questions
-
-  .feed_section{'data-bind' => "foreach: feedPublications"}
-
-    .conversation.border-color{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}'}
-      .post{'data-bind' => 'attr: {"data-publication-id": id}'}
-        .time
-          %p.time_ago.visible-desktop.timeago{"data-bind" => "timeago: firstPostedAt"}
+      %input.radio{type: 'radio'}
+      .relative
+        %span.timeago{"data-bind" => "timeago: firstPostedAt"}
+        %span.circle
           
-        .content
-          %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
-          %p.question_text{'data-bind' => 'text: question'}
+      .content
+        %h3{'data-bind' => 'text: question'}
 
-        .answers.rounded.border{'data-bind' => "foreach: answers"}
-          %h3.bottom_border{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
+        .answers{'data-bind' => "foreach: answers"}
+          .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
             %span{'data-bind' => 'text: text'}
             %img{src: '/assets/ajax-loader.gif'}
-
-      .activity_container{'data-bind' => 'visible: interactions.length > 0'}
-        .interactions{'data-bind' => "foreach: interactions"}
-          %img{'data-bind' => 'attr: {src: twiProfileImgUrl}'}
-
-  #posts_more.border-color
-    %a.disable{:href => "#",
-      'data-bind' => 'css: {disable: loadingMore()}'} Load more
-
-    %img{src: '/assets/ajax-loader-retina.gif',
-      class: 'retina-ajax-loader',
-      'data-bind' => 'css: {invisible: !loadingMore()}'}

@@ -12,10 +12,10 @@
   %body
     = render 'drawer/drawer'
 
-    .main-view{:style => ("background: #{@asker.bg_color || '#C4E0EC'} url(/assets/bg_images/#{@asker.bg_image}) no-repeat;" if @asker.try(:bg_image))}
+    .main-view
       = render 'layouts/header'
-      .container.row
-        = yield
+      / .container.row
+      = yield
 
     = yield(:modals)
     = yield(:mixpanel_badge) # appears on home page

@@ -1,35 +1,6 @@
-- user_id = current_user.nil? ? 0 : current_user.id
-- cache("_header-#{@asker.id}-#{user_id}", :expires_in => 10.minutes) do
-	#header.row.rounded.border-color.span6
-		#account_information
-			.container
-				.inner_container
-					.account_image
-						= image_tag(@asker.twi_profile_img_med_url, :class => "rounded")
-					.account_text
-						.name-wrapper
-							%h2
-								%span.name= @asker.subject
-								- if current_user and (@asker.id == current_user.id or current_user.is_role?('admin'))
-									%ul.nav
-										%li
-											.dropdown.nav-link
-												%a{:href => "#", 'data-target' => "#"} 
-													%i.icon-cog
-												
-												%ul.dropdown-menu{"aria-labelledby" => "dLabel", :role => "menu"}
-													%li
-														%a{:href => "/feeds/#{@asker.id}/manage"} Moderate
-													%li
-														%a{:href => "/askers/#{@asker.id}/edit"} Edit
-							.clr
-							
-						.clr
-						%a{:href => "http://twitter.com/#{@asker.twi_screen_name}", :target => "_blank"}
-							%h3= "@#{@asker.twi_screen_name}"
-						= @asker.description
-						- if @author
-							.credit
-								%i created by
-								= link_to "@#{@author.twi_screen_name}", "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"
-								%a{:href => "http://twitter.com/#{@author.twi_screen_name}", :target => "_blank"}= image_tag @author.twi_profile_img_url
+.topfold
+  .asker-photo
+    = image_tag @asker.twi_profile_img_med_url
+
+  .title
+    %h1= @asker.subject

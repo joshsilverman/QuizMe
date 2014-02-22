@@ -1,20 +1,31 @@
-.navbar.navbar-fixed-top
-  .navbar-inner
-    .container
-      %a.brand{:href => "/"} Wisr
-      .in.collapse
-        %ul.nav{:style => 'float:left;'}
-          %li.menu-toggle
-            =image_tag 'icons/mobile-nav.png'
+/ .navbar.navbar-fixed-top
+/   .navbar-inner
+/     .container
+/       %a.brand{:href => "/"} Wisr
+/       .in.collapse
+/         %ul.nav{:style => 'float:left;'}
+/           %li.menu-toggle
+/             =image_tag 'icons/mobile-nav.png'
 
-        %ul.nav{:style => 'float:right;'}     
-          - if current_user
-            %li
-              = hidden_field :current_user, :id
-              = render partial: 'header/quick_stats'
+/         %ul.nav{:style => 'float:right;'}     
+/           - if current_user
+/             %li
+/               = hidden_field :current_user, :id
+/               = render partial: 'header/quick_stats'
 
-            %li
-              %a.nav-link.logout{href: destroy_user_session_path, 'data-method' => :delete, rel: "nofollow"}
-                =image_tag 'icons/logout.png'
-          - else
-            %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
+/             %li
+/               %a.nav-link.logout{href: destroy_user_session_path, 'data-method' => :delete, rel: "nofollow"}
+/                 =image_tag 'icons/logout.png'
+/           - else
+/             %li= link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
+
+.header
+  .drawer-toggle
+    = image_tag 'icons/mobile-nav.png'
+  .sign-in
+    - if current_user
+      = hidden_field :current_user, :id
+      = render partial: 'header/quick_stats'
+    - else
+      = link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
+  .logo Wisr

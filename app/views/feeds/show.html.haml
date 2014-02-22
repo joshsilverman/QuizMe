@@ -1,26 +1,17 @@
 - if @asker
   - content_for :title, "#{@asker.subject} - Daily #{@asker.subject} Quiz Questions"
 
-#post_feed
-  #feed_container
-    #wrapper
-      #feed.row
-        = render :partial => "account_info"
+= render :partial => "account_info"
 
-        #left_column.span3
-          #left_column_container
-            #activity_stream.rounded.border-color.hidden-phone
-              = render partial: "stream"
+/ = render partial: "stream"
 
-            .clr
-            - if current_user
-              = render partial: "my_badges"
-            - else
-              = render partial: "my_badges_unauth"
+/ .clr
+/ - if current_user
+/   = render partial: "my_badges"
+/ - else
+/   = render partial: "my_badges_unauth"
 
-        #right_column.span6
-          #posts.rounded
-            = render :partial => "feed"
+= render :partial => "feed"
 
-- content_for(:modals) do
-  = render :partial => "question_modal"
+/ - content_for(:modals) do
+/   = render :partial => "question_modal"
