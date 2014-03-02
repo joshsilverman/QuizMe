@@ -28,8 +28,11 @@ $border_thin: 0px;
 
 .header {
   text-align: center;
-  background: rgba(0, 0, 0, 0.1);
+  background: darken(#7b93ea, 3%);
+  opacity:.9;
   height:40px;
+  position: relative;
+  z-index: 10;
 
   .drawer-toggle {
     padding: 10px;
@@ -43,7 +46,7 @@ $border_thin: 0px;
 
   .logo {
     display: inline-block;
-    color: $dimwhite;
+    color: $white;
     font-family: logofont;
     font-weight: 100;
     padding: 15px;
@@ -57,7 +60,7 @@ $border_thin: 0px;
     font-size: 90%;
 
     a {
-      color: $dimwhite;
+      color: $white;
     }
   }
 }
@@ -66,17 +69,19 @@ $border_thin: 0px;
 
 
 .main-view {
-  background: #33914a image-url('/assets/treeline.png') repeat-x;
-  font-family: 'Noto Sans', sans-serif
+  font-family: 'Noto Sans', sans-serif;
+  background: #67618d;
 }
 
 .topfold {
+  background: #67618d image-url('/assets/bg_images/nature.svg') repeat-x;
   color:$white;
   width:100%;
   font-weight: 100;
 
   .asker-photo {
     position:relative;
+    z-index: 15;
     margin-left: 12%;
 
     @media (max-width: 979px) {
@@ -88,16 +93,11 @@ $border_thin: 0px;
     }
 
     img {
-      border-radius:108px;
-      border:$border_thick solid #eee9dc;
-      margin-top: -15px;
-      position:relative;
-      z-index: 10;
-      width:200px;
-      margin-left: -80px;
+      margin-top: -20px;
+      height:200px;
 
       @media (max-width: 767px) {
-        border:$border_thin solid #eee9dc;
+        border:$border_thin solid $white;
         width:150px;
         margin-left: 15px;
         margin-top: -8px;
@@ -108,9 +108,7 @@ $border_thin: 0px;
   .title {
     margin-left: $max_left_gutter;
     margin-right:40%;
-    padding-left:175px;
     position: relative;
-    top: -90px;
 
     @media (max-width: 979px) {
       margin-left: $max979_left_gutter;
@@ -126,6 +124,10 @@ $border_thin: 0px;
       font-weight: normal;
       font-size:42px;
       color: $white;
+      display: inline;
+
+      position: relative;
+      top:60px;
 
       @media (max-width: 767px) {
         font-size:162%;
@@ -147,7 +149,6 @@ $border_thin: 0px;
 
 .timeline-container {
   position: relative;
-  top: -61px;
   margin: 0 34% 0 $max_left_gutter;
 
   @media (max-width: 979px) {
@@ -169,6 +170,10 @@ $border_thin: 0px;
   }
 
   .timeline {
+    position: relative;
+    top:-220px;
+    padding-top: 220px;
+
     list-style: none;
     border-left: $border_thick solid $white;
 
