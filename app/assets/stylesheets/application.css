@@ -6,7 +6,9 @@
 html {
   min-height:100%;
   height:100%;
+
   font-family: 'Noto Sans', sans-serif;
+  font-weight: 200;
 }
 
 body {
