@@ -3,15 +3,15 @@
 
 = render :partial => "account_info"
 
-/ = render partial: "stream"
-
 / .clr
 / - if current_user
 /   = render partial: "my_badges"
 / - else
 /   = render partial: "my_badges_unauth"
 
-= render :partial => "feed"
+= render partial: "stream"
+
+= render partial: "feed"
 
 / - content_for(:modals) do
 /   = render :partial => "question_modal"
