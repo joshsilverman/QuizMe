@@ -24,36 +24,3 @@
       = javascript_include_tag "application"
       = javascript_include_tag "http://code.jquery.com/jquery-migrate-1.2.1.min.js"
       = render :partial => "layouts/scripts"
-
-    - if Rails.env.test?
-      %script
-        jQuery.fn._delay = jQuery.fn.delay
-        jQuery.fn.delay = function() {
-        arguments[0] = 0
-        return jQuery.fn._delay.apply(this, arguments);
-        };
-
-        jQuery.fn._fadeIn = jQuery.fn.fadeIn
-        jQuery.fn.fadeIn = function() {
-        arguments[0] = 0
-        return jQuery.fn._fadeIn.apply(this, arguments);
-        };
-
-        jQuery.fn._fadeOut = jQuery.fn.fadeOut
-        jQuery.fn.fadeOut = function() {
-        arguments[0] = 0
-        return jQuery.fn._fadeOut.apply(this, arguments);
-        };
-
-        jQuery.fn._slideToggle = jQuery.fn.slideToggle
-        jQuery.fn.slideToggle = function() {
-        arguments[0] = 0
-        return jQuery.fn._slideToggle.apply(this, arguments);
-        };
-
-        jQuery.fn._animateClass = jQuery.fn.animateClass
-        jQuery.fn.animateClass = function() {
-        arguments[1] = 0
-        console.log(arguments);
-        return jQuery.fn._animateClass.apply(this, arguments);
-        };
