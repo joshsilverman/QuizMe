@@ -1,11 +1,11 @@
-if ($('#activity_stream:visible').length > 0) {
+if ($('.activity-stream:visible').length > 0) {
   $(function() {
     var streamViewModel;
 
     function init() {
       streamViewModel = new StreamViewModel();
 
-      ko.applyBindings(streamViewModel, $('#activity_stream')[0]);
+      ko.applyBindings(streamViewModel, $('.activity-stream')[0]);
 
       $.getJSON("/feeds/stream", function(posts) {
         posts.forEach(function(post) {
@@ -22,7 +22,7 @@ if ($('#activity_stream:visible').length > 0) {
 
       self.created_at = post.created_at;
       self.questionText = post.in_reply_to_question.text;
-      self.user_twi_screen_name = post.user.twi_screen_name;
+      self.user_twi_screen_name = ["@", post.user.twi_screen_name].join('');
       self.user_twi_profile_img_url = post.user.twi_profile_img_url;
 
       self.href = "/questions/" + post.in_reply_to_question.id;
@@ -55,7 +55,7 @@ if ($('#activity_stream:visible').length > 0) {
         var $this = $(element);
 
         $this.text(value);
-        $this.parent().dotdotdot({height: 55})
+        $this.dotdotdot({height: 55})
       }
     };
 
