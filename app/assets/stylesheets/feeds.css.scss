@@ -28,7 +28,7 @@ $border_thin: 0px;
 
 .header {
   text-align: center;
-  background: darken(#7b93ea, 3%);
+  background: darken(#7b93ea, 2%);
   opacity:.9;
   height:40px;
   position: relative;
@@ -187,6 +187,21 @@ $border_thin: 0px;
       position: relative;
       left: -4px;
 
+      .timeago {
+        width: 20%;
+        margin-top: -10px;
+        top: 50%;
+        left: -26%;
+        display: block;
+        position: absolute;
+        text-align: right;
+        font-size: 16px;
+
+        @media (max-width: 767px) {
+          display: none;
+        }
+      }
+
       .content {
         .answer {
           background: $dimwhite;
@@ -222,6 +237,65 @@ $border_thin: 0px;
   }
 }
 
+
+
+
+
+ul.activity-stream {
+  list-style: none;
+  width: 30%;
+  margin: 0 2% 0 65%;
+  position: absolute;
+  top: 245px;
+  background: $dimwhite;
+  border-radius: 0.5em;
+
+  @media (max-width: 979px) {
+    display: none;
+  }
+
+  li {
+    margin: 0;
+    left: -4px;
+
+    .content {
+      border-color: transparent;
+      padding-bottom:0;
+      background: none;
+      margin:0;
+
+      h3 {
+        color: $black;
+        padding-bottom: 0px;
+
+        .timeago {
+          float:right;
+          font-size:70%;
+          opacity:.85;
+        }
+      }
+
+      p {
+        max-height: 200px;
+        color: $black;
+        overflow: hidden;
+        margin: 0;
+        font-size: 90%;
+        line-height: 1.3em;
+        font-weight: 100;
+      }
+    }
+
+    &:last-child {
+      margin-bottom:20px;
+    }
+  }
+}
+
+
+
+
+
 .circle {
   margin-top: -10px;
   top: 50%;
@@ -235,21 +309,6 @@ $border_thin: 0px;
   position: absolute;
 
   @media (max-width: 767px){
-    display: none;
-  }
-}
-
-.timeago {
-  width: 20%;
-  margin-top: -10px;
-  top: 50%;
-  left: -26%;
-  display: block;
-  position: absolute;
-  text-align: right;
-  font-size: 16px;
-
-  @media (max-width: 767px) {
     display: none;
   }
 }
