@@ -1,102 +1,158 @@
-.navbar {
-  position:inherit;
-  margin: 0px;
+$bg: #339152;
+$white: #eee9dc;
+$dimwhite: #ccc;
+$black: #333333;
 
-  .brand {
-    text-shadow: none;
-    color:#777;
-    font-size: 25px;
+$dimwhite: #D5D1C5;
+$red: #f98262;
+$inner_gutter: 50px;
+
+$max_left_gutter: 12%;
+$max979_left_gutter: 16%;
+$max767_left_gutter: 0%;
+
+$border_thick: 8px;
+$border_medium: 4px;
+$border_thin: 0px;
+
+.header {
+  text-align: center;
+  background: darken(#7b93ea, 2%);
+  opacity:.9;
+  height:40px;
+  position: relative;
+  z-index: 10;
+
+  .drawer-toggle {
+    padding: 10px;
+    display: inline-block;
+    float: left;
+
+    img {
+      height: 20px;
+    }
+  }
+
+  .logo {
+    display: inline-block;
+    color: $white;
     font-family: logofont;
-    margin:0 auto;
-    display: block;
-    float:none;
-    width:54px;
-    margin-top: 4px;
-    margin-bottom: -49px;
+    font-weight: 100;
+    padding: 15px;
+    font-size: 160%;
   }
 
-  .left-nav {
-    margin-left:10px;
-  }
+  .sign-in {
+    display: inline-block;
+    float: right;
+    padding: 10px;
+    font-size: 90%;
 
-  .nav {
-    a, .nav-link, .brand {
-      padding: 12px 8px 9px;
-      cursor:pointer;
-    }
-
-    a.quick-stats {
-      padding: 6px; 
-      background:#f1f1f1;
-      transition: background 0.25s;
-      min-height: 28px;
-
-      &:hover {background:#f1f1f1;}
-      &.highlight {background:#FFFEB8;}
-
-      .profile-img {
-        height:30px;
-        margin-top:-2px;
-        margin-bottom:-2px;
-      }
-
-      .answer-count {
-        font-weight: bold;
-        opacity:0;
-      }
-
-      .quick-stat {
-        display: inline-block;
-        padding:4px 3px 0px;
-        position:relative;
-        top:2px;
-        cursor: pointer;
-        min-height: 10px;
-        opacity: 0;
-
-        &.visible {
-          opacity: 1;
-          transition: opacity 1s;
-        }
-      }
-
-      .circle {
-        border-radius: 50%;
-        width: 0px;
-        height: 0px;
-        display: inline-block;
-        border:solid #999 3px;
-        opacity:0;
-
-        &.visible {
-          opacity: 1;
-          transition: opacity 1s;
-        }
-      }
+    a {
+      color: $white;
     }
   }
 }
 
-.navbar {
-  .navbar-inner {
-    .container {
+// .navbar {
+//   position:inherit;
+//   margin: 0px;
 
-      .collapse {overflow: visible !important;}
+//   .brand {
+//     text-shadow: none;
+//     color:#777;
+//     font-size: 25px;
+//     font-family: logofont;
+//     margin:0 auto;
+//     display: block;
+//     float:none;
+//     width:54px;
+//     margin-top: 4px;
+//     margin-bottom: -49px;
+//   }
 
-      .sign_in {
-        float: right;
-        line-height: 38px;
-      }
+//   .left-nav {
+//     margin-left:10px;
+//   }
 
-      .logout, .menu-toggle {
-        margin:0px;
-        padding:10px 5px 10px 14px;
-        cursor: pointer;
+//   .nav {
+//     a, .nav-link, .brand {
+//       padding: 12px 8px 9px;
+//       cursor:pointer;
+//     }
 
-        img {
-          height:20px;
-        }
-      }
-    }
-  }
-}
+//     a.quick-stats {
+//       padding: 6px; 
+//       background:#f1f1f1;
+//       transition: background 0.25s;
+//       min-height: 28px;
+
+//       &:hover {background:#f1f1f1;}
+//       &.highlight {background:#FFFEB8;}
+
+//       .profile-img {
+//         height:30px;
+//         margin-top:-2px;
+//         margin-bottom:-2px;
+//       }
+
+//       .answer-count {
+//         font-weight: bold;
+//         opacity:0;
+//       }
+
+//       .quick-stat {
+//         display: inline-block;
+//         padding:4px 3px 0px;
+//         position:relative;
+//         top:2px;
+//         cursor: pointer;
+//         min-height: 10px;
+//         opacity: 0;
+
+//         &.visible {
+//           opacity: 1;
+//           transition: opacity 1s;
+//         }
+//       }
+
+//       .circle {
+//         border-radius: 50%;
+//         width: 0px;
+//         height: 0px;
+//         display: inline-block;
+//         border:solid #999 3px;
+//         opacity:0;
+
+//         &.visible {
+//           opacity: 1;
+//           transition: opacity 1s;
+//         }
+//       }
+//     }
+//   }
+// }
+
+// .navbar {
+//   .navbar-inner {
+//     .container {
+
+//       .collapse {overflow: visible !important;}
+
+//       .sign_in {
+//         float: right;
+//         line-height: 38px;
+//       }
+
+//       .logout, .menu-toggle {
+//         margin:0px;
+//         padding:10px 5px 10px 14px;
+//         cursor: pointer;
+
+//         img {
+//           height:20px;
+//         }
+//       }
+//     }
+//   }
+// }

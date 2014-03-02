@@ -22,57 +22,6 @@ $border_thick: 8px;
 $border_medium: 4px;
 $border_thin: 0px;
 
-
-
-
-
-.header {
-  text-align: center;
-  background: darken(#7b93ea, 2%);
-  opacity:.9;
-  height:40px;
-  position: relative;
-  z-index: 10;
-
-  .drawer-toggle {
-    padding: 10px;
-    display: inline-block;
-    float: left;
-
-    img {
-      height: 20px;
-    }
-  }
-
-  .logo {
-    display: inline-block;
-    color: $white;
-    font-family: logofont;
-    font-weight: 100;
-    padding: 15px;
-    font-size: 160%;
-  }
-
-  .sign-in {
-    display: inline-block;
-    float: right;
-    padding: 10px;
-    font-size: 90%;
-
-    a {
-      color: $white;
-    }
-  }
-}
-
-
-
-
-.main-view {
-  font-family: 'Noto Sans', sans-serif;
-  background: #67618d;
-}
-
 .topfold {
   background: #67618d image-url('/assets/bg_images/nature.svg') repeat-x;
   color:$white;
@@ -135,17 +84,6 @@ $border_thin: 0px;
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 .timeline-container {
   position: relative;
@@ -258,10 +196,6 @@ $border_thin: 0px;
     }
   }
 }
-
-
-
-
 
 ul.activity-stream {
   list-style: none;
