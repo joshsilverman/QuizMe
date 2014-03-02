@@ -187,7 +187,6 @@ if ($('.timeline-container').length) {
           var inWords = $.timeago.inWords(distance);
 
           $this.data('timeago', { 'datetime': datetime });
-          $this.text(inWords);
         } else {
           $this.timeago();
         }
