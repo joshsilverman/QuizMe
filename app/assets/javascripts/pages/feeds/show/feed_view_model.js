@@ -31,7 +31,7 @@ if ($('.timeline-container').length) {
     function FeedViewModel() {
       var self = this,
         offset = 0,
-        loadMoreBtn = $('#posts_more');
+        loadMoreBtn = $('.load-more');
 
       self.loadingMore = ko.observable(true),
       self.feedPublications = ko.observableArray([]);
@@ -40,11 +40,6 @@ if ($('.timeline-container').length) {
       self.initLoadMore = function() {
         $(window).on('DOMContentLoaded load resize scroll', 
           _.throttle(self.loadMorePublications, 250, {leading: true})); 
-
-        $("#posts_more").on("click", function(e) {
-          e.preventDefault();
-          self.loadMorePublications();
-        });
       };
 
       self.loadMorePublications = function() {
