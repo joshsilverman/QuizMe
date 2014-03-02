@@ -169,10 +169,13 @@ $border_thin: 0px;
     position:absolute;
   }
 
-  .timeline {
+  ul.timeline {
     position: relative;
-    top:-220px;
+    margin-top:-220px;
+    margin-bottom:0px;
+
     padding-top: 220px;
+    padding-bottom: 50px;
 
     list-style: none;
     border-left: $border_thick solid $white;
@@ -233,6 +236,25 @@ $border_thin: 0px;
           }
         }
       }
+    }
+  }
+
+  .load-more {
+    position: relative;
+    text-align: center;
+
+    margin-top: -110px;
+    padding-top: 60px;
+    padding-bottom: 18px;
+    visibility: hidden;
+
+    &.visible {
+      visibility:inherit;
+    }
+
+    img {
+      height: 32px;
+      width: 32px;
     }
   }
 }
