@@ -28,7 +28,7 @@ class FeedsController < ApplicationController
   def show
     respond_to do |format|
       format.html { show_redirect }
-      format.json do 
+      format.json do
         asker = Asker.find_by_subject_url params[:subject]
         offset = params['offset'] || 0
 
