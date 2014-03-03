@@ -173,16 +173,9 @@ if ($('.timeline-container').length) {
       update: function(element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor()),
           $this = $(element);
-          
-        $this.attr('title', value);
 
-        if ($this.data('timeago')) {
-          var datetime = $.timeago.datetime($this);
-          var distance = (new Date().getTime() - datetime.getTime());
-          var inWords = $.timeago.inWords(distance);
-
-          $this.data('timeago', { 'datetime': datetime });
-        } else {
+        if (!$this.data('timeago')) {
+          $this.attr('title', value);
           $this.timeago();
         }
       }
