@@ -14,7 +14,7 @@ $dimwhite: #D5D1C5;
 $red: #f98262;
 $inner_gutter: 50px;
 
-$max_left_gutter: 12%;
+$max_left_gutter: 10%;
 $max979_left_gutter: 16%;
 $max767_left_gutter: 0%;
 
@@ -87,7 +87,7 @@ $border_thin: 0px;
 
 .timeline-container {
   position: relative;
-  margin: 0 34% 0 $max_left_gutter;
+  margin: 0 33% 0 $max_left_gutter;
 
   @media (max-width: 979px) {
     margin: 0 -4% 0 $max979_left_gutter;
@@ -256,7 +256,7 @@ $border_thin: 0px;
 
 ul.activity-stream {
   list-style: none;
-  width: 30%;
+  width: 32%;
   margin: 0 2% 0 65%;
   position: absolute;
   top: 245px;
