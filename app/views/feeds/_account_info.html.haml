@@ -1,5 +1,10 @@
+.silhouette
 .topfold
 
+  %span.asker-photo= image_tag "quests/scholar.png" #@asker.twi_profile_img_med_url
+  
   .title
-    %span.asker-photo= image_tag "quests/scholar.png" #@asker.twi_profile_img_med_url
     %h1= @asker.subject
+    %h2
+      = precede '@' do
+        %a{href: "http://twitter.com/#{@asker.twi_screen_name}"}= @asker.twi_screen_name
