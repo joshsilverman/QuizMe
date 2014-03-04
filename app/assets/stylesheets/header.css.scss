@@ -27,6 +27,7 @@ $border_thin: 0px;
     padding: 10px;
     display: inline-block;
     float: left;
+    cursor: hand;
 
     img {
       height: 20px;
@@ -99,21 +100,10 @@ $border_thin: 0px;
     }
   }
 
-  .sign-in {
+  .sign-in, .sign-out {
     display: inline-block;
     float: right;
-    padding: 10px;
-    font-size: 90%;
-
-    a {
-      color: $white;
-    }
-  }
-
-  .sign-out {
-    display: inline-block;
-    float: right;
-    padding: 10px;
+    padding: 11px 12px;
     font-size: 90%;
 
     a {

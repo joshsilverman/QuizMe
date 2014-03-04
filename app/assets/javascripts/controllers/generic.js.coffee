@@ -8,7 +8,7 @@ $ ->
     element: $('.main-view')[0],
     disable: 'right',
     touchToDrag: false
-  $('.menu-toggle').on('click', -> snapper.open('left'))
+  $('.drawer-toggle').on('click', -> snapper.open('left'))
   
   snapper.on('animated', ->
     return if ($('.main-view').css('transform') != 'none')
