@@ -1,4 +1,15 @@
 module FeedsHelper
+	def silhouette_style
+		bg_color = @asker.styles["bg_color"] || '#67618d'
+		silhouette_image = @asker.styles["silhouette_image"] || '/assets/bg_images/nature.svg'
+
+		"background: #{bg_color} url(#{silhouette_image});"
+	end
+
+	def quest_image_tag
+		image_tag @asker.styles['quest_image'] || 'quests/scholar.png'
+	end
+
 	def eng_name(engagement_type)
 		case engagement_type
 		when 1 
