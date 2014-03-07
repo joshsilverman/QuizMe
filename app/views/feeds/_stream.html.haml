@@ -10,7 +10,7 @@
     / %a.stream_item{"data-bind" => "attr: {href: href}"}
     /   %li{"data-bind" => "fadeIn: questionText"}
 
-    .content
+    .content{'data-bind' => 'click: goToPub'}
       / %image.rounded.profile{"data-bind" => "attr: {src: user_twi_profile_img_url}"}
 
       %h3

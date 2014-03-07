@@ -304,6 +304,7 @@ ul.activity-stream {
       padding-bottom:0;
       background: none;
       margin:0;
+      cursor: pointer;
 
       h3 {
         color: $black;
@@ -324,6 +325,12 @@ ul.activity-stream {
         font-size: 90%;
         line-height: 1.3em;
         font-weight: 200;
+      }
+    }
+
+    .content:hover {
+      p {
+        text-decoration: underline;
       }
     }
 

@@ -25,6 +25,10 @@ if ($('.activity-stream:visible').length > 0) {
       self.user_twi_screen_name = ["@", post.user.twi_screen_name].join('');
       self.user_twi_profile_img_url = post.user.twi_profile_img_url;
 
+      self.goToPub = function() {
+        document.location.href = self.href;
+      };
+
       self.href = "/questions/" + post.in_reply_to_question.id;
     }
 
