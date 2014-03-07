@@ -1,13 +1,34 @@
 module FeedsHelper
 	def silhouette_style
 		bg_color = @asker.styles["bg_color"] || '#67618d'
-		silhouette_image = @asker.styles["silhouette_image"] || '/assets/bg_images/nature.svg'
+		silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
 
-		"background: #{bg_color} url(#{silhouette_image});"
+		"background: #{bg_color}; fill: #{silhouette_color};"
+	end
+
+	def embed_silhouette_image
+		silhouette_image = @asker.styles["silhouette_image"] || 'bg_images/nature.svg'
+
+	  file = File.open("app/assets/images/#{silhouette_image}", "rb")
+
+	  raw file.read
 	end
 
 	def quest_image_tag
 		image_tag @asker.styles['quest_image'] || 'quests/scholar.png'
+	end
+
+	def main_view_styles
+		bg_color = @asker.styles["bg_color"] || '#67618d'
+
+		"background: #{bg_color};"
+	end
+
+	def header_styles
+		silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
+		header_bg_color = darken_color silhouette_color, 1
+
+		"background: #{header_bg_color};"
 	end
 
 	def eng_name(engagement_type)
@@ -77,5 +98,18 @@ module FeedsHelper
 		end
 
 		return text, resource_link
+	end
+
+private
+
+	def darken_color(hex_color, amount=0.1)
+	  hex_color = hex_color.gsub('#','')
+	  rgb = hex_color.scan(/../).map {|color| color.hex}
+
+	  rgb[0] = (rgb[0].to_i * amount).round
+	  rgb[1] = (rgb[1].to_i * amount).round
+	  rgb[2] = (rgb[2].to_i * amount).round
+
+	  "#%02x%02x%02x" % rgb
 	end
 end

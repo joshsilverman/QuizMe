@@ -23,9 +23,16 @@ $border_medium: 4px;
 $border_thin: 0px;
 
 .silhouette {
-  background: #67618d image-url('/assets/bg_images/nature.svg') repeat-x;
   width:100%;
   height:100px;
+  white-space:nowrap;
+  overflow: hidden;
+  position:relative;
+  top: -1px;
+
+  svg {
+    height: 100px;
+  }
 }
 
 .topfold {

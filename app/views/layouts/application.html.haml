@@ -12,9 +12,8 @@
   %body
     = render 'drawer/drawer'
 
-    .main-view
+    .main-view{style: main_view_styles}
       = render 'layouts/header'
-      / .container.row
       = yield
 
     = yield(:modals)
