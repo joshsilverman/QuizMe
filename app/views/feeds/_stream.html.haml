@@ -3,7 +3,7 @@
   
   %ul{'data-bind' => "foreach: streamPosts"}
 
-    %li{'data-bind' => 'css: {visible: created_at}'}
+    %li{"data-bind" => "fadeIn: questionText"}
 
       .content{'data-bind' => 'click: goToPub'}
         %img.rounded.profile{"data-bind" => "attr: {src: user_twi_profile_img_url}"}

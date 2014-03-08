@@ -316,10 +316,15 @@ $border_thin: 0px;
     li {
       margin: 0;
       left: -4px;
-      display: none;
+      // display: none;
+      opacity: 0;
+      height:0;
 
-      &.visible {
-        display: inherit;
+      transition: height 1s, opacity 1500ms, padding 500ms;
+
+      &.appear {
+        opacity: 1;
+        height: inherit;
       }
 
       .content {
@@ -328,6 +333,7 @@ $border_thin: 0px;
         background: none;
         margin:0;
         cursor: pointer;
+        min-height: 20px;
 
         img {
           height:38px;
