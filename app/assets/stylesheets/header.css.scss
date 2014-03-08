@@ -7,7 +7,7 @@ $dimwhite: #D5D1C5;
 $red: #f98262;
 $inner_gutter: 50px;
 
-$max_left_gutter: 12%;
+$max_left_gutter: 10%;
 $max979_left_gutter: 16%;
 $max767_left_gutter: 0%;
 
@@ -41,6 +41,7 @@ $border_thin: 0px;
     font-weight: 100;
     padding: 15px;
     font-size: 160%;
+    position:absolute;
   }
 
   a.quick-stats {

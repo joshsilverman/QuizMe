@@ -1,15 +1,10 @@
 .activity-stream
   %h4 Activity
+  / =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
 
-  %ul{'data-bind' => "foreach: streamPosts, visible: (streamPosts().length > 0)"}
-    / .header
-    /   %h4
-    /     Activity  
+  %ul{'data-bind' => "foreach: streamPosts"}
 
-    /     %span{'data-bind' => "visible: streamPosts().length < 1"}
-    /       =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
-
-    %li
+    %li{'data-bind' => 'css: {visible: created_at}'}
       / %a.stream_item{"data-bind" => "attr: {href: href}"}
       /   %li{"data-bind" => "fadeIn: questionText"}
 
