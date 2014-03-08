@@ -1,22 +1,25 @@
-%ul.activity-stream{'data-bind' => "foreach: streamPosts, visible: (streamPosts().length > 0)"}
-  / .header
-  /   %h4
-  /     Activity  
+.activity-stream
+  %h4 Activity
 
-  /     %span{'data-bind' => "visible: streamPosts().length < 1"}
-  /       =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
+  %ul{'data-bind' => "foreach: streamPosts, visible: (streamPosts().length > 0)"}
+    / .header
+    /   %h4
+    /     Activity  
 
-  %li
-    / %a.stream_item{"data-bind" => "attr: {href: href}"}
-    /   %li{"data-bind" => "fadeIn: questionText"}
+    /     %span{'data-bind' => "visible: streamPosts().length < 1"}
+    /       =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
 
-    .content{'data-bind' => 'click: goToPub'}
-      / %image.rounded.profile{"data-bind" => "attr: {src: user_twi_profile_img_url}"}
+    %li
+      / %a.stream_item{"data-bind" => "attr: {href: href}"}
+      /   %li{"data-bind" => "fadeIn: questionText"}
 
-      %h3
-        %span{:style => "color: #333;", "data-bind" => "text: user_twi_screen_name"}
-        %span{:style => "color: #666;"} answered
+      .content{'data-bind' => 'click: goToPub'}
+        / %image.rounded.profile{"data-bind" => "attr: {src: user_twi_profile_img_url}"}
 
-        %span.timeago{"data-bind" => "timeago: created_at"}
+        %h3
+          %span{:style => "color: #333;", "data-bind" => "text: user_twi_screen_name"}
+          %span{:style => "color: #666;"} answered
 
-      %p{"data-bind" => "dotdotdot: questionText"}
+          %span.timeago{"data-bind" => "timeago: created_at"}
+
+        %p{"data-bind" => "dotdotdot: questionText"}

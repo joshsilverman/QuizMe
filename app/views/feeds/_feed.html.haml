@@ -17,7 +17,7 @@
         .answers{'data-bind' => "foreach: answers"}
           .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
             %span{'data-bind' => 'text: text'}
-            %img{src: '/assets/ajax-loader.gif'}
+            %img.loader{src: '/assets/ajax-loader.gif'}
 
   .load-more{'data-bind' => 'css: {visible: loadingMore()}'}
     =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
