@@ -36,12 +36,16 @@ $border_thin: 0px;
 
   .logo {
     display: inline-block;
-    color: $white;
-    font-family: logofont;
-    font-weight: 100;
     padding: 15px;
-    font-size: 160%;
     position:absolute;
+    
+    a {
+      font-family: logofont;
+      color: $white;
+      text-decoration: none;
+      font-size: 160%;
+      font-weight: 100;
+    }
   }
 
   a.quick-stats {
