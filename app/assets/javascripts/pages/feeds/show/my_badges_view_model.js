@@ -1,11 +1,11 @@
-if ($('#my_badges.authenticated:visible').length > 0) {
+if ($('.my-badges.authenticated:visible').length > 0) {
   $(function() {
     var myBadgesViewModel;
 
     function init() {
       myBadgesViewModel = new MyBadgesViewModel();
 
-      ko.applyBindings(myBadgesViewModel, $('#my_badges')[0]);
+      ko.applyBindings(myBadgesViewModel, $('.my-badges')[0]);
 
       $.getJSON("/issuances.json", function(issuances) {
         issuances = addNullBadge(issuances);
@@ -13,7 +13,6 @@ if ($('#my_badges.authenticated:visible').length > 0) {
           var badge = new BadgeModel(issuance);
           myBadgesViewModel.badges.push(badge);
         });
-        $('#my_badges ul').removeClass('hidden');
       })
     }
 

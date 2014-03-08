@@ -286,13 +286,17 @@ $border_thin: 0px;
   }
 }
 
-.activity-stream {
+.right-column {
   width: 32%;
   margin: 0 2% 0 65%;
   position: absolute;
   top: 245px;
+}
+
+.activity-stream, .my-badges {
   background: $dimwhite;
   border-radius: 0.5em;
+  margin-bottom:20px;
 
   @media (max-width: 979px) {
     display: none;
@@ -307,7 +311,7 @@ $border_thin: 0px;
   ul {
     list-style: none;
     margin: 0;
-    margin-bottom:20px;
+    padding-bottom:20px;
 
     li {
       margin: 0;
@@ -351,6 +355,10 @@ $border_thin: 0px;
           font-size: 90%;
           line-height: 1.3em;
           font-weight: 200;
+
+          .twitter-sign-in img {
+            height: inherit;
+          }
         }
       }
 
@@ -364,7 +372,7 @@ $border_thin: 0px;
 }
 
 
-.activity-stream, .timeline-container {
+.activity-stream, .timeline-container, .my-badges {
   .content {
     background: $white;
     color: $black;
