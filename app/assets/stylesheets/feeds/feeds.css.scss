@@ -115,7 +115,7 @@ $border_thin: 0px;
 
 .timeline-container {
   position: relative;
-  margin: 0 33% 0 $max_left_gutter;
+  margin: 0 28% 0 $max_left_gutter;
 
   @media (max-width: 979px) {
     margin: 0 -4% 0 $max979_left_gutter;
@@ -287,8 +287,8 @@ $border_thin: 0px;
 }
 
 .right-column {
-  width: 32%;
-  margin: 0 2% 0 65%;
+  width: 27%;
+  margin: 0 2% 0 70%;
   position: absolute;
   top: 245px;
 }
