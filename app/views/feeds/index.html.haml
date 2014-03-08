@@ -1,17 +1,11 @@
-#post_feed
-	#feed_container
-		#wrapper
-			#feed.row
-				= render :partial => "account_info"
+- if @asker
+  - content_for :title, "#{@asker.subject} - Daily #{@asker.subject} Quiz Questions"
 
-				#left_column.span3.hidden-phone
-					#left_column_container
-						- cache("_directory", :expires_in => 30.hour) do
-							= render :partial => "directory"
+= render partial: "account_info"
+= render partial: "feed"
 
-				#right_column.span6
-					#posts.rounded
-						= render :partial => "feed"
+.right-column
+  = render partial: "directory"
 
 
   %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}

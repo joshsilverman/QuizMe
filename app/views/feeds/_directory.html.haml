@@ -1,11 +1,17 @@
-#directory.rounded.border-color
-	.header{:style => "border-bottom-color: #ccc;"}
-		%h4
-			Learning Areas
-	- @directory.each_with_index do |(category, askers), i|
-		.directory_item{:class => ("border_bottom" if i < (@directory.size - 1))}
-			%h5= category
-			.asker_thumbnails
-				- askers.each do |asker|
-					%a{:href => "/feeds/#{asker.id}"}
-						= image_tag(asker.twi_profile_img_url, :class => "rounded", :rel => "tooltip", :title => "#{asker.twi_screen_name}", "data-placement" => "bottom")
+.directory
+  %h4 All subjects
+  
+  %ul
+
+    - @askers.each do |asker|
+      %a{href: asker.subject_url}
+        %li.appear
+
+          .content
+            %img.rounded.profile{src: asker.twi_profile_img_url}
+
+            %h3= asker.subject
+
+            %p= asker.description
+
+            .clearfix

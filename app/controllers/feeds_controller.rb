@@ -5,17 +5,11 @@ class FeedsController < ApplicationController
   before_filter :set_session_variables, :only => [:show]
 
   def index
-    @asker = Asker.find(8765)
-    @askers = Asker.where(published: true).order("id ASC")
-    
-    @directory = {}
-    @askers.each do |asker| 
-      next unless ACCOUNT_DATA[asker.id]
-      (@directory[ACCOUNT_DATA[asker.id][:category]] ||= []) << asker 
-    end
-
     respond_to do |format|
-      format.html { render 'index' }
+      format.html do
+        @asker = Asker.wisr
+        @askers = Asker.published.order(subject: :asc)
+      end
       format.json do
         offset = params['offset'] || 0
         publications = Publication.recent(offset)
@@ -29,7 +23,8 @@ class FeedsController < ApplicationController
     respond_to do |format|
       format.html { show_redirect }
       format.json do
-        asker = Asker.find_by_subject_url params[:subject]
+        subject = params[:subject] || 'wisr'
+        asker = Asker.find_by_subject_url subject
         offset = params['offset'] || 0
 
         publications = Publication.recent_by_asker(asker, 
@@ -131,8 +126,9 @@ class FeedsController < ApplicationController
   def show_redirect
     redirect_called = false
 
-    if params[:subject]
-      @asker = Asker.find_by_subject_url params[:subject]
+    subject = params[:subject] || 'wisr'
+    if subject
+      @asker = Asker.find_by_subject_url subject
     else
       @asker = Asker.find(params[:id])
       redirect_url  = "/#{@asker.subject_url}"

@@ -59,6 +59,10 @@ class Asker < User
     }
   end
 
+  def self.wisr
+    Asker.where(id: 8765).first
+  end
+
   def descriptions
     topics.descriptions
   end
