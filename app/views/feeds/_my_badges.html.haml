@@ -3,10 +3,11 @@
     My Badges
 
   %ul{'data-bind' => "foreach: badges"}
-    %li{'data-bind' => 'css: {visible: title}'}
-      .content
-        %img.rounded.profile{"data-bind" => "attr: {src: img_href}"}
+    %a{'data-bind' => "attr: {href: href}"}
+      %li{'data-bind' => 'css: {visible: title}'}
+        .content
+          %img.rounded.profile{"data-bind" => "attr: {src: img_href}"}
 
-        %h3{"data-bind" => "text: title"}
+          %h3{"data-bind" => "text: title"}
 
-        %p{"data-bind" => "dotdotdot: description"}
+          %p{"data-bind" => "dotdotdot: description"}    }
