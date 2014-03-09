@@ -12,7 +12,11 @@
         %span.circle
           
       .content
-        %h3{'data-bind' => 'text: question'}
+        %h3
+          %span
+            %a{'data-bind' => 'text: subject'}
+
+          %span{'data-bind' => 'text: question'}
 
         .answers{'data-bind' => "foreach: answers"}
           .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
