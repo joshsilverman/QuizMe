@@ -11,9 +11,11 @@
         Daily quiz questions about anything from science to Harry Potter!
 
       - else
-        = precede '@' do
-          %a{href: "http://twitter.com/#{@asker.twi_screen_name}"}= @asker.twi_screen_name
-
-        | Daily
+        Daily
         = @asker.subject
         quiz questions
+
+        | 
+        
+        = precede '@' do
+          %a{href: "http://twitter.com/#{@asker.twi_screen_name}"}= @asker.twi_screen_name

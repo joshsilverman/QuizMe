@@ -15,8 +15,8 @@ $red: #f98262;
 $inner_gutter: 50px;
 
 $max_left_gutter: 10%;
-$max979_left_gutter: 16%;
-$max767_left_gutter: 0%;
+$max979_left_gutter: 1.25%;
+$max767_left_gutter: -1%;
 
 $border_thick: 8px;
 $border_medium: 4px;
@@ -49,10 +49,6 @@ $border_thin: 0px;
     margin-left: $max_left_gutter + 6%;
     float:left;
 
-    @media (max-width: 979px) {
-      margin-left: $max979_left_gutter;
-    }
-
     @media (max-width: 767px) {
       margin-left: $max767_left_gutter;
     }
@@ -62,10 +58,19 @@ $border_thin: 0px;
       height:200px;
 
       @media (max-width: 767px) {
-        border:$border_thin solid $white;
-        width:150px;
+        height:170px;
+        margin-top: 10px;
         margin-left: 15px;
-        margin-top: -8px;
+      }
+
+      @media (max-width: 455px) {
+        margin-top: 25px;
+        height: 150px;
+      }
+
+      @media (max-width: 300px) {
+        margin-top: 75px;
+        height: 120px;
       }
     }
   }
@@ -75,16 +80,20 @@ $border_thin: 0px;
     float:left;
     margin-left: 5px;
     margin-top: 110px;
-    width:50%;
-
-    @media (max-width: 979px) {
-      margin-left: $max979_left_gutter;
-    }
+    width:61%;
 
     @media (max-width: 767px) {
-      margin-left: $max767_left_gutter;
-      padding-left:180px;
-      top: -50px;
+      width:70%;
+      margin-top: 100px;
+    }
+
+    @media (max-width: 650px) {
+      width:60%;
+    }
+
+    @media (max-width: 455px) {
+      margin-top: 90px;
+      width:54%;
     }
 
     h1, h2 {
@@ -100,15 +109,32 @@ $border_thin: 0px;
 
     h1 {
       font-size:42px;
+
+      @media (max-width: 767px) {
+        display: none;
+      }
     }
 
     h2 {
       font-weight: 100;
       font-size: 20px;
       line-height: 1.15em;
+      height:1.15em;
+
+      display: block;
+      width:100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       clear:both;
       margin-top: 15px;
+
+      @media (max-width: 767px) {
+        white-space: inherit;
+        overflow: visible;
+        font-size: 18px;
+      }
 
       a {
         color: $white;
@@ -127,7 +153,6 @@ $border_thin: 0px;
 
   @media (max-width: 767px) {
     margin: 0 2% 0 $max767_left_gutter;
-    top: 250px;
   }
 
   font-size: 100%;
