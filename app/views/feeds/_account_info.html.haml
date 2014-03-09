@@ -7,5 +7,13 @@
   .title
     %h1= @asker.subject
     %h2
-      = precede '@' do
-        %a{href: "http://twitter.com/#{@asker.twi_screen_name}"}= @asker.twi_screen_name
+      - if @asker.id == 8765
+        Daily quiz questions about anything from science to Harry Potter!
+
+      - else
+        = precede '@' do
+          %a{href: "http://twitter.com/#{@asker.twi_screen_name}"}= @asker.twi_screen_name
+
+        | Daily
+        = @asker.subject
+        quiz questions

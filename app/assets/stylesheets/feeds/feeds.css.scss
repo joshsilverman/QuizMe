@@ -75,6 +75,7 @@ $border_thin: 0px;
     float:left;
     margin-left: 5px;
     margin-top: 110px;
+    width:50%;
 
     @media (max-width: 979px) {
       margin-left: $max979_left_gutter;
@@ -90,6 +91,7 @@ $border_thin: 0px;
       font-weight: normal;
       color: $white;
       display: inline;
+      float:left;
 
       @media (max-width: 767px) {
         font-size:162%;
@@ -103,8 +105,10 @@ $border_thin: 0px;
     h2 {
       font-weight: 100;
       font-size: 20px;
-      float:left;
+      line-height: 1.15em;
+
       clear:both;
+      margin-top: 15px;
 
       a {
         color: $white;
@@ -137,7 +141,7 @@ $border_thin: 0px;
 
   ul.timeline {
     position: relative;
-    margin-top: -140px;
+    margin-top: -141px;
     margin-bottom: 0px;
 
     padding-top: 220px;
