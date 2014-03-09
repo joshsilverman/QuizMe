@@ -85,6 +85,8 @@ describe Publication, '#update_question' do
       .must_equal question.asker.twi_profile_img_url.to_s
     publication.reload._asker['subject']
       .must_equal question.asker.subject
+    publication.reload._asker['subject_url']
+      .must_equal question.asker.subject_url
   end
 
   it "must set answers with ids" do

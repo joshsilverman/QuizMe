@@ -33,7 +33,8 @@ class Publication < ActiveRecord::Base
       _asker: {
         id: question.asker.id,
         twi_profile_img_url: question.asker.twi_profile_img_url,
-        subject: question.asker.subject},
+        subject: question.asker.subject,
+        subject_url: question.asker.subject_url},
       _answers: as)
 
     save
