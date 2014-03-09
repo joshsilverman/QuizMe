@@ -411,6 +411,14 @@ $border_thin: 0px;
       padding: 18px 0 12px;
       color: #222;
       font-weight: 200;
+
+      .subject-label {
+        display: none;
+
+        &.visible {
+          display: inline;
+        }
+      }
     }
   }
 }
