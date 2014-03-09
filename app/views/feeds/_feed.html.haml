@@ -14,7 +14,7 @@
       .content
         %h3
           %span
-            %a{'data-bind' => 'text: subject'}
+            %a{'data-bind' => 'text: subject, attr: {href: subject_url}'}
 
           %span{'data-bind' => 'text: question'}
 

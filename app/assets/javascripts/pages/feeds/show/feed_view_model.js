@@ -82,8 +82,9 @@ if ($('.timeline-container').length) {
       self.question = publication._question.text;
       self.questionId = parseInt(publication._question.id);
       self.correctAnswerId = parseInt(publication._question.correct_answer_id);
-      self.twiProfileImgUrl = publication._asker.twi_profile_img_url
-      self.subject = [publication._asker.subject, ':'].join("")
+      self.twiProfileImgUrl = publication._asker.twi_profile_img_url;
+      self.subject = [publication._asker.subject, ':'].join("");
+      self.subject_url = publication._asker.subject_url;
       self.answered = undefined;
 
       self.loadInteractions = function() {
