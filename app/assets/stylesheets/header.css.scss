@@ -23,6 +23,10 @@ $border_thin: 0px;
   position: relative;
   z-index: 10;
 
+  @media (max-width: 650px) {
+    text-align: inherit;
+  }
+
   .drawer-toggle {
     padding: 10px;
     display: inline-block;
@@ -36,9 +40,14 @@ $border_thin: 0px;
 
   .logo {
     display: inline-block;
-    padding: 15px;
+    padding: 15px 0 0;
     position:absolute;
     
+    @media (max-width: 650px) {
+      position:inherit;
+      float: left;
+    }
+
     a {
       font-family: logofont;
       color: $white;
