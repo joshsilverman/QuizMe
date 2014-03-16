@@ -40,6 +40,7 @@ end
 group :development do
   gem 'quiet_assets'
   gem 'ruby-prof'
+  gem 'paleta'
 end
 
 group :development, :test do
