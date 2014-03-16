@@ -337,10 +337,11 @@ $border_thin: 0px;
   }
 
   h4 {
-    font-size: 20px;
+    font-size: 18px;
     padding: 20px 20px 0 70px;
     font-weight: 200;
   }
+
 
   ul {
     list-style: none;
@@ -350,7 +351,6 @@ $border_thin: 0px;
     li {
       margin: 0;
       left: -4px;
-      // display: none;
       opacity: 0;
       height:0;
 
@@ -382,10 +382,11 @@ $border_thin: 0px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          font-size: 15px;
 
           .timeago {
             float:right;
-            font-size:70%;
+            font-size:80%;
             opacity:.85;
           }
 
