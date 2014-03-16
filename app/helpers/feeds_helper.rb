@@ -25,10 +25,12 @@ module FeedsHelper
 
 	def quest_image_tag
 		if @asker.try :styles
-			image_tag @asker.styles['quest_image']
-		else 
-			'quests/scholar.png'
+			quest_image_url = @asker.styles['quest_image']
 		end
+
+		quest_image_url ||= 'quests/scholar.png'
+
+		image_tag quest_image_url
 	end
 
 	def main_view_styles
