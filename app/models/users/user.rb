@@ -92,7 +92,6 @@ class User < ActiveRecord::Base
 
   def self.tfind name
   	self.where('lower(twi_screen_name) = ?', name.downcase).first
-  	# self.find_by(twi_screen_name: name)
   end
 
   def is_admin? 
