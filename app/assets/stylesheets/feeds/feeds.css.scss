@@ -82,6 +82,11 @@ $border_thin: 0px;
     margin-top: 110px;
     width:61%;
 
+    @media (max-width: 992px) {
+      width:55%;
+      margin-top: 100px;
+    }
+
     @media (max-width: 767px) {
       width:70%;
       margin-top: 100px;
@@ -130,7 +135,7 @@ $border_thin: 0px;
       clear:both;
       margin-top: 15px;
 
-      @media (max-width: 767px) {
+      @media (max-width: 991px) {
         white-space: inherit;
         overflow: visible;
         font-size: 18px;
