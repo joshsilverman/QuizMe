@@ -4,6 +4,7 @@ class IssuancesController < ApplicationController
 
   def show
     @issuance = Issuance.includes(:badge, :user, :asker).find(params[:id])
+    @asker = @issuance.asker
 
     @json = @issuance.to_json(
       only: [:created_at],

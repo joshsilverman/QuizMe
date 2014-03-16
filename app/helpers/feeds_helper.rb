@@ -19,13 +19,22 @@ module FeedsHelper
 	end
 
 	def main_view_styles
-		bg_color = @asker.styles["bg_color"] || '#67618d'
+		if @asker
+			bg_color = @asker.styles["bg_color"] || '#67618d'
+		else
+			bg_color = '#67618d'
+		end
 
 		"background: #{bg_color};"
 	end
 
 	def header_styles
-		silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
+		if @asker
+			silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
+		else
+			silhouette_color = '#7b93ea'
+		end
+
 		header_bg_color = darken_color silhouette_color, 1
 
 		"background: #{header_bg_color};"
