@@ -12,4 +12,4 @@
         %p 
           Ask, answer, and grade questions!
 
-          %a.twitter-sign-in{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}= image_tag 'twitter/sign_in_button.png'
+  %a.twitter-sign-in{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}= image_tag 'twitter/sign_in_button.png'

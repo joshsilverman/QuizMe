@@ -399,10 +399,6 @@ $border_thin: 0px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-
-          .twitter-sign-in img {
-            height: inherit;
-          }
         }
       }
 
@@ -411,6 +407,15 @@ $border_thin: 0px;
           text-decoration: underline;
         }
       }
+    }
+  }
+
+  .twitter-sign-in {
+    padding: 0 0 15px 68px;
+    display: inline-block;
+
+    img {
+      height: inherit;
     }
   }
 }
