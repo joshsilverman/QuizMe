@@ -4,7 +4,7 @@
   'data-publication-id' => params[:publication_id]}
 
   %ul.timeline{'data-bind' => "foreach: feedPublications"}
-    %li{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id}'}
+    %li.feed-publication{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id, "question-id": questionId}'}
 
       %input.radio{type: 'radio'}
       .relative

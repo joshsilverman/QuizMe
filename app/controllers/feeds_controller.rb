@@ -126,7 +126,8 @@ class FeedsController < ApplicationController
   def show_redirect
     redirect_called = false
 
-    subject = params[:subject] || 'wisr'
+    subject = params[:subject]
+    
     if subject
       @asker = Asker.find_by_subject_url subject
     else

@@ -1,13 +1,22 @@
 module FeedsHelper
 	def silhouette_style
-		bg_color = @asker.styles["bg_color"] || '#67618d'
-		silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
+		if @asker.try :styles
+			bg_color = @asker.styles["bg_color"]
+			silhouette_color = @asker.styles["silhouette_color"]
+		end
+
+		bg_color ||= '#67618d'
+		silhouette_color ||= '#7b93ea'
 
 		"background: #{bg_color}; fill: #{silhouette_color};"
 	end
 
 	def embed_silhouette_image
-		silhouette_image = @asker.styles["silhouette_image"] || 'bg_images/nature.svg'
+		if @asker.try :styles
+			silhouette_image = @asker.styles["silhouette_image"]
+		end
+
+		silhouette_image ||= 'bg_images/nature.svg'
 
 	  file = File.open("app/assets/images/#{silhouette_image}", "rb")
 
@@ -15,25 +24,29 @@ module FeedsHelper
 	end
 
 	def quest_image_tag
-		image_tag @asker.styles['quest_image'] || 'quests/scholar.png'
+		if @asker.try :styles
+			image_tag @asker.styles['quest_image']
+		else 
+			'quests/scholar.png'
+		end
 	end
 
 	def main_view_styles
-		if @asker
-			bg_color = @asker.styles["bg_color"] || '#67618d'
-		else
-			bg_color = '#67618d'
+		if @asker.try :styles
+			bg_color = @asker.styles["bg_color"]
 		end
+
+		bg_color ||= '#67618d'
 
 		"background: #{bg_color};"
 	end
 
 	def header_styles
-		if @asker
+		if @asker.try :styles
 			silhouette_color = @asker.styles["silhouette_color"] || '#7b93ea'
-		else
-			silhouette_color = '#7b93ea'
 		end
+		
+		silhouette_color ||= '#7b93ea'
 
 		header_bg_color = darken_color silhouette_color, 1
 

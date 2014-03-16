@@ -4,15 +4,13 @@ describe FeedsController do
 
 	def answer_question id = nil
 		if id 
-			post = page.find(".conversation[question_id=\"#{id}\"]")
+			post = page.find(".feed-publication[question-id=\"#{id}\"]")
 		else
-			post = page.find('.conversation')
+			post = page.find('.feed-publication')
 		end
 
-		post.click unless post[:class].split(' ').include?('active')
-		assert post.has_selector?('.bottom_border')
-		post.all('h3').first.click
-		assert post.has_selector?('h3.correct, h3.incorrect')
+		post.all('.answer').first.click
+		assert post.has_selector?('.answer.correct, .answer.incorrect')
 
 		return post
 	end
@@ -96,7 +94,7 @@ describe FeedsController do
 				login_as(@user, :scope => :user)
 
 				visit "/#{@asker.subject_url}"
-				
+	
 				answer_question
 			end
 			
@@ -117,7 +115,7 @@ describe FeedsController do
 			end
 			
 			it 'takes user to authentication page' do
-				page.all('.conversation h3').first.click
+				page.all('.content .answer').first.click
 				current_path.must_equal '/oauth/authenticate'
 			end
 		end
