@@ -3,6 +3,15 @@
 	background-attachment:fixed;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-tap-highlight-color: transparent;
+
+  &.blur {
+      -webkit-filter: blur(35px);
+      -moz-filter: blur(35px);
+      -o-filter: blur(35px);
+      -ms-filter: blur(35px);
+      filter: blur(35px);
+      opacity: .5;
+  }
 }
 
 $bg: #339152;

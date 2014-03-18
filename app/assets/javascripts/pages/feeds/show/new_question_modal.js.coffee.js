@@ -5,16 +5,23 @@ class NewQuestionModal
         e.preventDefault()
         @post_question()
 
-    @post_question() if $("#question_form").val() == "true"
+    if $("#question_form").val() == "true"
+      @post_question()
   
     $(".post_another").on "click", => @post_another()
 
   post_question: (text = null, post_id = null) =>
     $("#question_input").val(text) if text
     $("#post_question_modal").modal()
+    $('.main-view').addClass 'blur'
+    
     $("#question_input").focus() unless $("#manager").length > 0
     $("#add_answer, #submit_question").off "click"
     $("#add_answer").on "click", => add_answer()
+
+    $("#post_question_modal").off 'hidden'
+    $("#post_question_modal").on 'hidden', ->
+      $('.main-view').removeClass 'blur'
     
     if post_id? # displays conversation history when mgr
       $(".modal_conversation_history").show()
