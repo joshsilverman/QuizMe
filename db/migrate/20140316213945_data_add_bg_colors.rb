@@ -3,31 +3,25 @@ class DataAddBgColors < ActiveRecord::Migration
     # don't run data migration in test env
     return if Rails.env.test?
 
-    colors = [
-      "8f5352", 
-      "9470bc", 
-      "414948", 
-      "d23e3c", 
-      "da9e45", 
-      "5598b4", 
-      "c96558", 
-      "af5857", 
-      "621e1d", 
-      "7c5d31", 
-      "54bcaf", 
-      "5ae2d1", 
-      "27675f"
-    ]
+    colors = {
+      'bg_images/nature.svg' => ['#2d0a19', '#9f9263'],
+      'bg_images/ww2.svg' => ['#161e3b', '#7d9ff9'],
+      'bg_images/village.svg' => ['#4d3522', '#c9b159'],
+      'bg_images/city.svg' => ['#342755', '#d17c77'],
+      'bg_images/brains.svg' => ['#305565', '#7e8589'],
+      'bg_images/tropics.svg' => ['#2d5e58', '#0a2547'],
+      'bg_images/england.svg' => ['#0f202a', '#7aa9c7'],
+      'bg_images/mountains.svg' => ['#153e61', '#328bd2'],
+      'bg_images/people.svg' => ['#521818', '#b57565']
+    }
 
     Asker.published.each do |asker|
-      bg_color = Paleta::Color.new(:hex, colors.sample)
-      bg_color.darken!(bg_color.lightness - 28)
-      silhouette_color = bg_color.complement.lighten 24
-
       styles = asker.styles || {}
+      path = styles['silhouette_image']
 
-      styles['bg_color'] = "##{bg_color.hex}"
-      styles['silhouette_color'] = "##{silhouette_color.hex}"
+      bg_color, silhouette_color = colors[path]
+      styles['silhouette_color'] = silhouette_color
+      styles['bg_color'] = bg_color
 
       asker.update styles: {}
       asker.update styles: styles
