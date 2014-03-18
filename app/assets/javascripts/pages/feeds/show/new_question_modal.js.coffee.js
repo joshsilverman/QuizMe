@@ -40,7 +40,7 @@ class NewQuestionModal
       submit()
 
     add_answer = ->
-      count = $(".answer").length
+      count = $("#post_question_modal .answer").length
       return if count > 3
       clone = $("#ianswer1").clone().attr("id", "ianswer#{count}").appendTo("#answers")
       clone.find("input").attr("name", "ianswer#{count}").val("").focus()
