@@ -829,6 +829,7 @@ class Asker < User
   ## Update metrics
 
   def update_metrics answerer, user_post, publication, options = {}
+    puts 'update metrics'
     in_reply_to = nil
     strategy = nil
     if user_post.posted_via_app
@@ -857,6 +858,7 @@ class Asker < User
       end
 
       # Fire mixpanel answer event
+      puts 'MP.track_event "answered"'
       MP.track_event "answered", {
         :distinct_id => answerer.id,
         :account => self.twi_screen_name,
