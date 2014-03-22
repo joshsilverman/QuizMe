@@ -645,10 +645,6 @@ class Post < ActiveRecord::Base
     interaction_type == 1 and publication_id.present?
   end
 
-  def send_to_feed
-    Adapters::WisrFeed::Post::save_or_update self
-  end
-
   def send_to_stream
     Pusher['stream'].trigger('answer', {
         "created_at" => created_at,
