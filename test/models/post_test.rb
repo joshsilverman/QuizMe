@@ -15,18 +15,6 @@ describe Post, ".publish" do
   end
 end
 
-describe Post, '#send_to_feed' do
-  it 'calls Adapters::WisrFeed::Post with post' do
-    post = FactoryGirl.create(:post)
-
-    Adapters::WisrFeed::Post.
-            expects(:save_or_update).
-            with(post)
-
-    post.send_to_feed
-  end
-end
-
 describe Post, "#link_to_question" do
   it "method defined by module" do
     dm = build(:dm, text: 'true')

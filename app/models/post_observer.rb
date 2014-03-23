@@ -1,7 +1,6 @@
 class PostObserver < ActiveRecord::Observer
   def after_save post
     segment_user post
-    send_to_feed post
     send_to_stream post
     send_to_publication post
   end
@@ -11,10 +10,6 @@ class PostObserver < ActiveRecord::Observer
     return if post.user.nil?
 
     post.user.delay.segment
-  end
-
-  def send_to_feed post
-    post.delay.send_to_feed
   end
 
   def send_to_stream post

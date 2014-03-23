@@ -4,25 +4,12 @@ describe Post, 'PostObserver#after_save' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
     Delayed::Worker.delay_jobs = false
-    stub_request(:post, /#{Adapters::WisrFeed::URL}/)
     stub_request(:get, /mixpanel/)
-  end
-
-  it "should call send_to_feed with post" do
-    post = FactoryGirl.build :post
-
-    PostObserver.any_instance.stubs(:send_to_stream)
-    PostObserver.any_instance.stubs(:segment_user)
-    PostObserver.any_instance.stubs(:send_to_publication)
-    PostObserver.any_instance.expects(:send_to_feed).with(post)
-
-    post.save
   end
 
   it "should call send_to_stream with post" do
     post = FactoryGirl.build :post
 
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:segment_user)
     PostObserver.any_instance.stubs(:send_to_publication)
     PostObserver.any_instance.expects(:send_to_stream).with(post)
@@ -33,7 +20,6 @@ describe Post, 'PostObserver#after_save' do
   it "should call segment_user with post" do
     post = FactoryGirl.build :post
 
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:send_to_publication)
     PostObserver.any_instance.expects(:segment_user).with(post)
@@ -44,7 +30,6 @@ describe Post, 'PostObserver#after_save' do
   it "should call send_to_publication with post" do
     post = FactoryGirl.build :post
 
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:segment_user)
     PostObserver.any_instance.expects(:send_to_publication).with(post)
@@ -55,23 +40,12 @@ describe Post, 'PostObserver#after_save' do
   it "should call send_to_publication with post after update too" do
     post = FactoryGirl.build :post
 
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:segment_user)
     PostObserver.any_instance.expects(:send_to_publication).with(post).twice
 
     post.save
     post.update text: 'hoot!'
-  end
-end
-
-describe Post, 'PostObserver#send_to_feed' do
-  it "should call send_to_feed on post object" do
-    post = FactoryGirl.create :post
-
-    post.expects(:send_to_feed)
-
-    PostObserver.send(:new).send_to_feed post
   end
 end
 
@@ -130,7 +104,6 @@ end
 describe Post, 'PostObserver#segment_user' do
   before :all do
     ActiveRecord::Base.observers.enable :post_observer
-    stub_request(:post, /#{Adapters::WisrFeed::URL}/)
   end
 
   it "should call segment on user object" do
@@ -138,7 +111,6 @@ describe Post, 'PostObserver#segment_user' do
     post = FactoryGirl.build :post, user: user
 
     User.any_instance.expects(:segment)
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:send_to_publication)
 
@@ -149,7 +121,6 @@ describe Post, 'PostObserver#segment_user' do
     post = FactoryGirl.build :post, user: nil
 
     User.any_instance.expects(:segment).never
-    PostObserver.any_instance.stubs(:send_to_feed)
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:send_to_publication)
 
