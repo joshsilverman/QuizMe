@@ -58,6 +58,8 @@ $border_thin: 0px;
   .asker-photo {
     z-index: 15;
     margin-left: $max_left_gutter + 6%;
+    position: relative;
+    float:left;
 
     @media (max-width: 767px) {
       margin-left: $max767_left_gutter;
@@ -89,6 +91,8 @@ $border_thin: 0px;
     margin-left: 5px;
     margin-top: 110px;
     width:61%;
+    position: relative;
+    float: left;
 
     @media (max-width: 992px) {
       width:55%;
