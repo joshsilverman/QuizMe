@@ -5,11 +5,11 @@
 	-webkit-tap-highlight-color: transparent;
 
   &.blur {
-      -webkit-filter: blur(35px);
-      -moz-filter: blur(35px);
-      -o-filter: blur(35px);
-      -ms-filter: blur(35px);
-      filter: blur(35px);
+      -webkit-filter: blur(3px);
+      -moz-filter: blur(3px);
+      -o-filter: blur(3px);
+      -ms-filter: blur(3px);
+      filter: blur(3px);
       opacity: .5;
   }
 }
