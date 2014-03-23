@@ -2,11 +2,13 @@
   - content_for :title, "Daily Quiz Questions"
 
 = render partial: "account_info"
-= render partial: "feed"
 
-.right-column
-  = render partial: "directory"
+.columns
+  = render partial: "feed"
+
+  .right-column
+    = render partial: "directory"
 
 
-  %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
-    %img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}
+    %a.mixpanel_badge.visible-desktop{:href => "https://mixpanel.com/f/partner"}
+      %img{:alt => "Mobile Analytics", :src => "//cdn.mxpnl.com/site_media/images/partner/badge_light.png"}

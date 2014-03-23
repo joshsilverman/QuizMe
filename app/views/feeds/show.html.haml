@@ -2,16 +2,18 @@
   - content_for :title, "Daily #{@asker.subject} Quiz Questions"
 
 = render partial: "account_info"
-= render partial: "feed"
 
-.right-column
+.columns
+  = render partial: "feed"
 
-  = render partial: "stream"
+  .right-column
 
-  - if current_user
-    = render partial: "my_badges"
-  - else
-    = render partial: "my_badges_unauth"
+    = render partial: "stream"
+
+    - if current_user
+      = render partial: "my_badges"
+    - else
+      = render partial: "my_badges_unauth"
 
 
 - content_for(:modals) do

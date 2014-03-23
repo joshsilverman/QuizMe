@@ -24,7 +24,7 @@ $red: #f98262;
 $inner_gutter: 50px;
 
 $max_left_gutter: 10%;
-$max979_left_gutter: 1.25%;
+$max979_left_gutter: 6%;
 $max767_left_gutter: -1%;
 
 $border_thick: 8px;
@@ -52,11 +52,12 @@ $border_thin: 0px;
   width:100%;
   top: 40px;
 
+  display:flex;
+  justify-content: start-flex;
+
   .asker-photo {
-    position:relative;
     z-index: 15;
     margin-left: $max_left_gutter + 6%;
-    float:left;
 
     @media (max-width: 767px) {
       margin-left: $max767_left_gutter;
@@ -85,8 +86,6 @@ $border_thin: 0px;
   }
 
   .title {
-    position: relative;
-    float:left;
     margin-left: 5px;
     margin-top: 110px;
     width:61%;
@@ -157,193 +156,211 @@ $border_thin: 0px;
   }
 }
 
-.timeline-container {
-  position: relative;
-  margin: 0 28% 0 $max_left_gutter;
+.columns {
+  display:flex;
+  justify-content: space-between;
 
-  @media (max-width: 979px) {
-    margin: 0 -4% 0 $max979_left_gutter;
-  }
-
-  @media (max-width: 767px) {
-    margin: 0 2% 0 $max767_left_gutter;
-  }
-
-  font-size: 100%;
-  color: $white;
-
-  h1 {
-    margin-left: 24.3%;
-    margin-top: 50px;
-    position:absolute;
-  }
-
-  ul.timeline {
+  .timeline-container {
     position: relative;
-    margin-top: -141px;
-    margin-bottom: 0px;
+    width:62%;
+    margin-left: $max_left_gutter;
 
-    padding-top: 220px;
-    padding-bottom: 50px;
-
-    list-style: none;
-    border-left: $border_thick solid $white;
-
+    @media (max-width: 979px) {
+      width:66%;
+      margin-left: $max979_left_gutter;
+    }
 
     @media (max-width: 767px) {
-      border-left: $border_thin solid $white;
+      width:99%;
+      margin-left: $max767_left_gutter;
     }
 
-    li {
-      margin: 25px 0;
-      position: relative;
-      left: -4px;
-      display: none;
+    font-size: 100%;
+    color: $white;
 
-      &.visible {
-        display:inherit;
+    h1 {
+      margin-left: 24.3%;
+      margin-top: 50px;
+      position:absolute;
+    }
+
+    ul.timeline {
+      position: relative;
+      margin-top: -141px;
+      margin-bottom: 0px;
+
+      padding-top: 220px;
+      padding-bottom: 50px;
+
+      list-style: none;
+      border-left: $border_thick solid $white;
+
+
+      @media (max-width: 767px) {
+        border-left: $border_thin solid $white;
       }
 
-      .radio {
+      li {
+        margin: 25px 0;
+        position: relative;
+        left: -4px;
         display: none;
 
-        @media (min-width: 768px) {
-          &.relative {
-            .circle {
-              background: $red;
+        &.visible {
+          display:inherit;
+        }
+
+        .radio {
+          display: none;
+
+          @media (min-width: 768px) {
+            &.relative {
+              .circle {
+                background: $red;
+              }
+            }
+
+            & ~ .content {
+              &:before, &:after {
+                content: "";
+                width: 0;
+                height: 0;
+                border: solid transparent;
+                position: absolute;
+                pointer-events: none;
+                right: 100%;
+              }
+
+              &:before {
+                border-right-color: inherit;
+                border-width: 20px;
+                top: 50%;
+                margin-top: -20px;
+              }
+
+              &:after {
+                border-right-color: $white;
+                border-width: 17px;
+                top: 50%;
+                margin-top: -17px;
+              }
             }
           }
+        }
 
-          & ~ .content {
-            &:before, &:after {
-              content: "";
-              width: 0;
-              height: 0;
-              border: solid transparent;
+        .relative {
+          .timeago {
+            width: 13%;
+            margin-top: -10px;
+            top: 50%;
+            left: -18%;
+            display: block;
+            position: absolute;
+            text-align: right;
+            font-size: 16px;
+
+            @media (max-width: 979px) {
+              width: 8%;
+              margin-top: -10px;
+              top: 50%;
+              left: -13%;
+              display: block;
               position: absolute;
-              pointer-events: none;
-              right: 100%;
+              text-align: right;
+              font-size: 14px;
             }
 
-            &:before {
-              border-right-color: inherit;
-              border-width: 20px;
-              top: 50%;
-              margin-top: -20px;
+            @media (max-width: 767px) {
+              display: none;
+            }
+          }
+
+          .circle {
+            margin-top: -10px;
+            top: 50%;
+            left: -10px;
+            width: 10px;
+            height: 10px;
+            background: $bg;
+            border: 5px solid $white;
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+
+            @media (max-width: 767px){
+              display: none;
+            }
+          }
+        }
+
+        .content {
+          .answer {
+            background: $dimwhite;
+            padding: $border_thick;
+            margin: 10px;
+            border-radius: 0.5em;
+            font-weight: 200;
+            font-size: 16px;
+
+            img {
+            	float:right;
+  						padding: 1px 4px 0 0;
+            	display:none;
             }
 
-            &:after {
-              border-right-color: $white;
-              border-width: 17px;
-              top: 50%;
-              margin-top: -17px;
+  					&.grading {
+  						img {
+  							opacity: .8;
+  							display: inherit;
+  						}	
+  					}
+
+  					&.correct {background-color:#a3de93;}
+  					&.incorrect {background-color:#f8c4c4;}
+  					
+            &:hover {
+              cursor: pointer;
+              background: rgba(0, 0, 0, 0.2);
             }
           }
         }
       }
+    }
 
-      .relative {
-        .timeago {
-          width: 13%;
-          margin-top: -10px;
-          top: 50%;
-          left: -18%;
-          display: block;
-          position: absolute;
-          text-align: right;
-          font-size: 16px;
+    .load-more {
+      position: relative;
+      text-align: center;
 
-          @media (max-width: 767px) {
-            display: none;
-          }
-        }
+      margin-top: 0px;
+      padding-bottom: 18px;
+      visibility: hidden;
 
-        .circle {
-          margin-top: -10px;
-          top: 50%;
-          left: -10px;
-          width: 10px;
-          height: 10px;
-          background: $bg;
-          border: 5px solid $white;
-          border-radius: 50%;
-          display: block;
-          position: absolute;
-
-          @media (max-width: 767px){
-            display: none;
-          }
-        }
+      &.visible {
+        visibility:inherit;
       }
 
-      .content {
-        .answer {
-          background: $dimwhite;
-          padding: $border_thick;
-          margin: 10px;
-          border-radius: 0.5em;
-          font-weight: 200;
-          font-size: 16px;
-
-          img {
-          	float:right;
-						padding: 1px 4px 0 0;
-          	display:none;
-          }
-
-					&.grading {
-						img {
-							opacity: .8;
-							display: inherit;
-						}	
-					}
-
-					&.correct {background-color:#a3de93;}
-					&.incorrect {background-color:#f8c4c4;}
-					
-          &:hover {
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.2);
-          }
-        }
+      img {
+        height: 32px;
+        width: 32px;
       }
     }
   }
 
-  .load-more {
-    position: relative;
-    text-align: center;
+  .right-column {
+    width: 29%;
+    margin: 0 4% 0 0;
+    padding-top: 104px;
 
-    margin-top: 0px;
-    padding-bottom: 18px;
-    visibility: hidden;
-
-    &.visible {
-      visibility:inherit;
-    }
-
-    img {
-      height: 32px;
-      width: 32px;
+    @media (max-width: 767px) {
+      display: none;
     }
   }
-}
-
-.right-column {
-  width: 27%;
-  margin: 0 2% 0 69%;
-  position: absolute;
-  top: 245px;
 }
 
 .activity-stream, .my-badges, .directory {
   background: $dimwhite;
   border-radius: 0.5em;
   margin-bottom:20px;
-
-  @media (max-width: 979px) {
-    display: none;
-  }
 
   h4 {
     font-size: 18px;
@@ -448,7 +465,7 @@ $border_thin: 0px;
     position: relative;
     border-color: $white;
 
-    margin-right: 8%;
+    margin-right: 4%;
     margin-left: 8%;
 
     @media (max-width: 767px) {
