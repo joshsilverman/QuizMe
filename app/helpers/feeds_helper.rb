@@ -5,7 +5,7 @@ module FeedsHelper
 			silhouette_color = @asker.styles["silhouette_color"]
 		end
 
-		bg_color ||= '#2e231e'
+		bg_color ||= '#202734'
 		silhouette_color ||= '#3a7ba6'
 
 		"background: #{bg_color}; fill: #{silhouette_color};"
@@ -38,7 +38,7 @@ module FeedsHelper
 			bg_color = @asker.styles["bg_color"]
 		end
 
-		bg_color ||= '#2e231e'
+		bg_color ||= '#202734'
 
 		"background: #{bg_color};"
 	end
