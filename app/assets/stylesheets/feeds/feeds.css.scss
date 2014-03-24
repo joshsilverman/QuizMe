@@ -23,8 +23,8 @@ $dimwhite: #D5D1C5;
 $red: #f98262;
 $inner_gutter: 50px;
 
-$max_left_gutter: 10%;
-$max979_left_gutter: 6%;
+$max_left_gutter: 5%;
+$max979_left_gutter: 4%;
 $max767_left_gutter: -1%;
 
 $border_thick: 8px;
@@ -298,6 +298,18 @@ $border_thin: 0px;
         }
 
         .content {
+          .timeago {
+            float:right;
+            opacity:.7;
+            font-size: 80%;
+            display: none;
+            padding-left: 10px;
+
+            @media (max-width: 767px) {
+              display: inline;
+            }
+          }
+
           .answer {
             background: $dimwhite;
             padding: $border_thick;

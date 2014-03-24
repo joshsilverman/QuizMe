@@ -83,4 +83,20 @@ function isElementInViewport (el) {
 
 puts = function(o) {console.log(o)}
 
+jQuery.timeago.settings.strings = {
+   prefixAgo: "",
+   prefixFromNow: "",
+   seconds: "30s",
+   minute: "1m",
+   minutes: "%dm",
+   hour: "1h",
+   hours: "%dh",
+   day: "1d",
+   days: "%dd",
+   month: "1m",
+   months: "%dm",
+   year: "1y",
+   years: "%dy"
+};
+
 js_check();

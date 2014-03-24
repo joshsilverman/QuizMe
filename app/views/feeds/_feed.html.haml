@@ -16,6 +16,7 @@
           %span.subject-label{'data-bind' => 'css: {visible: $parent.askerId == 8765}'}
             %a{'data-bind' => 'text: subject, attr: {href: subject_url}'}
 
+          %span.timeago{"data-bind" => "timeago: firstPostedAt"}
           %span{'data-bind' => 'text: question'}
 
         .answers{'data-bind' => "foreach: answers"}
