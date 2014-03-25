@@ -1,74 +1,34 @@
-- content_for :title, "#{@asker.twi_screen_name} - #{@question.text}"
+- if @asker
+  - content_for :title, "Daily #{@asker.subject} Quiz Questions"
 
-= render partial: 'feeds/silhouette'
+= render partial: "feeds/account_info"
 
-#feed_container.span10{:style => "float: none !important;"}
-  #wrapper{:style => "background: none !important;"}
-    #question.span6
-      .conversation.border-color
-        .post.parent
-          .content
-            = image_tag(@asker.twi_profile_img_url, :class => "rounded")
-            %a{:href => "/#{@asker.subject_url}"}
-              %h5= @asker.subject
-            %a.twi_link{:href => "http://www.twitter.com/#{@asker.twi_screen_name}", :target => "_blank"}= "@#{@asker.twi_screen_name}"
+.columns
+  = render partial: "feeds/feed"
 
-            - if @new_question_page
-              %a.twitter-follow-button{:href => "https://twitter.com/#{@asker.twi_screen_name}", "data-show-count" => "false", "data-show-screen-name" => "false", "data-size" => "large"}
-              %script
-                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  .timeline-container
+    %ul.timeline
+      %li.feed-publication
+      .content
+        %h3
+          %span.timeago{"data-bind" => "timeago: firstPostedAt"}
+          %span= @publication._question['text']
 
-          %h1= @question.text.html_safe
-          .answers.rounded.border.ui-accordion.ui-widget.ui-helper-reset
-            - answers = @question.answers.shuffle
-            - count = answers.size
-            - answers.each_with_index do |answer, i|
-              %h2.ui-accordion-header.ui-helper-reset.ui-state-default.ui-corner-all{:id => ('correct_answer' if (answer["correct"] and @show_answer)), :class => "#{('bottom_border' if i < (count - 1))} #{('incorrect_answer' if !answer['correct'] and @show_answer)}", :correct => answer["correct"].to_s, :answer_id => answer.id} 
-                - if answer["correct"] and @show_answer
-                  %i.icon-ok{:style => "color: green;"}
-                = answer.text.html_safe
-              .answer_container.input.ui-accordion-content.ui-helper-reset.ui-widget-content.ui-corner-bottom{type: 'text', style: 'display:none;'}
-                .shadow-top
-                .tweet
-                  %span#account= "@#{@asker.twi_screen_name}"
-                  %span#answer= answer.tweetable(@asker.twi_screen_name).html_safe
-                .answer_controls
-                  / %a.tweet_button.btn.btn-primary{:href => (user_omniauth_authorize_path(:twitter, :question_id => @question.id, :answer_id => answer.id, :use_authorize => false) unless current_user), :class => ("auth_link" unless current_user)} Tweet
-                  .tweet_button.btn.btn-primary{:question_id => @question.id, :answer_id => answer.id, :use_authorize => false, :class => ("auth_link" unless current_user)} Answer
+        .answers{'data-bind' => "foreach: answers"}
+          .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
+            %span{'data-bind' => 'text: text'}
+            %img{src: '/assets/ajax-loader.gif'}
+            
+  .right-column
 
-                .shadow-bottom
-        .subsidiaries{:style => "display: none;"}
-        .loading{:style => "display: none;"}
-          Loading...
 
-        - if @new_question_page and @question.resource_url =~ /^http:\/\/www.youtube.com\/embed\//
-          = render :partial => "show_more", :locals => {:post => @question}
-          .more{:style => "display: none;"}
-            %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
-        - else
-          .activity_container{:style => ("display: none;" unless @actions[@question.id].present?)}
-            .interactions
-              - if @actions[@question.id]
-                - @actions[@question.id].each do |interaction|
-                  = image_tag(interaction[:user][:twi_profile_img_url], :class => "rounded interaction profile", :rel => "tooltip", :title => "#{interaction[:user][:twi_screen_name]} #{(interaction[:interaction_type] == 2 ? 'answered' : 'retweeted')}", "data-placement" => "bottom", onerror: 'this.style.display = "none"')
+    = render partial: "feeds/stream"
 
-              - if current_user
-                = image_tag(current_user.twi_profile_img_url, :class => "rounded interaction user_answered", :rel => "tooltip", :title => "#{current_user.twi_screen_name} answered", "data-placement" => "bottom", :style => "display: none;")
+    - if current_user
+      = render partial: "feeds/my_badges"
+    - else
+      = render partial: "feeds/my_badges_unauth"
 
-        .more{:style => "display: none;"}
-          %a.answer_more{:href => "/feeds/#{@asker.id}"} Answer more questions!
 
-#subsidiary_template.post{:style => "display: none;"}
-  .content
-    = image_tag(@asker.twi_profile_img_url, :class => "rounded")  
-    %h5= "User Name"
-    %p= "Post content"
-
-= hidden_field_tag :asker_id, @asker.id
-= hidden_field_tag :question_id, @question.id
-= hidden_field_tag :user_img, current_user.twi_profile_img_url if current_user
-= hidden_field_tag :user_name, current_user.twi_screen_name if current_user
-= hidden_field_tag :feed_name, @asker.twi_screen_name
-= hidden_field_tag :publication_id, @publication.id
-= hidden_field_tag :answer_id, @answer_id
-= hidden_field_tag :show_answer, @show_answer
+- content_for(:modals) do
+  = render :partial => "feeds/question_modal"

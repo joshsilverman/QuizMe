@@ -30,39 +30,57 @@ class QuestionsController < ApplicationController
     @pending_count = @all_questions.where(:status => 0).count
   end
 
-  def show(posts = [])
-    @question = Question.find(params[:id])
-    @asker = Asker.find(@question.created_for_asker_id)
-    publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")
-    @publication = publications.first
+  def show()
+    @publication = Publication.published
+      .where(question_id: params[:id])
+      .order(created_at: :desc).first
+    @asker = Asker.find(@publication.asker_id)
+
+    respond_to do |format|
+      format.html do
+        # show_redirect
+      end
+
+      format.json do
+        redirect_to controller: :feeds,
+          action: :show,
+          format: :json,
+          subject: @asker.subject_url
+      end
+    end
+
+    # @question = Question.find(params[:id])
+    # @asker = Asker.find(@question.created_for_asker_id)
+    # publications = Publication.includes(:posts).where(:question_id => params[:id], :published => true).order("created_at DESC")
+    # @publication = publications.first
     
-    if params[:slug].nil?
-      redirect_to "/questions/#{params[:id]}/#{@question.slug}"
-      return
-    end
-    is_follow_up = params[:lt] == "follow_up"
-    @show_answer = true unless is_follow_up #!params[:ans].nil?
+    # if params[:slug].nil?
+    #   redirect_to "/questions/#{params[:id]}/#{@question.slug}"
+    #   return
+    # end
+    # is_follow_up = params[:lt] == "follow_up"
+    # @show_answer = true unless is_follow_up #!params[:ans].nil?
 
-    publications.each { |pub| posts += pub.posts.collect(&:id) }
-    @actions = {params[:id].to_i => []}
-    user_ids = []
-    Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at DESC").includes(:user).each do |action|
-      next if user_ids.include? action.user_id 
-      user = action.user
-      user_ids << user.id
-      @actions[params[:id].to_i]  << {
-        :user => {
-          :id => user.id,
-          :twi_screen_name => user.twi_screen_name,
-          :twi_profile_img_url => user.twi_profile_img_url
-        },
-        :interaction_type => action.interaction_type
-      }
-    end
-    redirect_to "/feeds/#{@asker.id}" unless (@question and @publication)
+    # publications.each { |pub| posts += pub.posts.collect(&:id) }
+    # @actions = {params[:id].to_i => []}
+    # user_ids = []
+    # Post.select([:user_id, :interaction_type, :in_reply_to_post_id, :created_at]).where(:in_reply_to_post_id => posts).order("created_at DESC").includes(:user).each do |action|
+    #   next if user_ids.include? action.user_id 
+    #   user = action.user
+    #   user_ids << user.id
+    #   @actions[params[:id].to_i]  << {
+    #     :user => {
+    #       :id => user.id,
+    #       :twi_screen_name => user.twi_screen_name,
+    #       :twi_profile_img_url => user.twi_profile_img_url
+    #     },
+    #     :interaction_type => action.interaction_type
+    #   }
+    # end
+    # redirect_to "/feeds/#{@asker.id}" unless (@question and @publication)
 
-    opts = ['no follow button or video', 'follow button and video']
-    @new_question_page = ab_test("Better question pages (=> follow)", opts[0], opts[1]) == opts[1] ? true : false
+    # opts = ['no follow button or video', 'follow button and video']
+    # @new_question_page = ab_test("Better question pages (=> follow)", opts[0], opts[1]) == opts[1] ? true : false
   end
 
   def new
