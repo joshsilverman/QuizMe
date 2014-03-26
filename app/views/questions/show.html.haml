@@ -4,24 +4,21 @@
 = render partial: "feeds/account_info"
 
 .columns
-  = render partial: "feeds/feed"
-
-  .timeline-container
-    %ul.timeline
-      %li.feed-publication
+  - content_for :question do
+    %li.feed-publication.visible.questions-show{'data-publication-id' => @publication.id}
       .content
         %h3
-          %span.timeago{"data-bind" => "timeago: firstPostedAt"}
           %span= @publication._question['text']
 
-        .answers{'data-bind' => "foreach: answers"}
-          .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
-            %span{'data-bind' => 'text: text'}
-            %img{src: '/assets/ajax-loader.gif'}
-            
+        - @publication._answers.each do |id, answer_text|
+          .answers
+            .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}', answer_id: id}
+              %span= answer_text
+              %img{src: '/assets/ajax-loader.gif'}
+
+  = render partial: "feeds/feed"
+
   .right-column
-
-
     = render partial: "feeds/stream"
 
     - if current_user

@@ -1,4 +1,4 @@
-if ($('.timeline-container').length) {
+if ($('.feed-view').length) {
   $(function() {
     var correctQIds = [],
       feedViewModel, askerId, currentUserId, publicationId;
@@ -21,7 +21,7 @@ if ($('.timeline-container').length) {
         });
       };
 
-      ko.applyBindings(feedViewModel, $('.timeline-container')[0]);
+      ko.applyBindings(feedViewModel, $('.feed-view')[0]);
 
       feedViewModel.loadPublications();
       feedViewModel.initLoadMore();
@@ -183,9 +183,9 @@ if ($('.timeline-container').length) {
       }
     };
 
-    init($('.timeline-container').data('subject-url'),
-      $('.timeline-container').data('asker-id'),
-      $('.timeline-container').data('current_user-id'),
-      $('.timeline-container').data('publication-id'));
+    init($('.feed-view').data('subject-url'),
+      $('.feed-view').data('asker-id'),
+      $('.feed-view').data('current_user-id'),
+      $('.feed-view').data('publication-id'));
   });
 }

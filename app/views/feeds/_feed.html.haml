@@ -1,28 +1,32 @@
-.timeline-container{'data-subject-url' => @asker.subject_url,
-  'data-asker-id' => @asker.id,
-  'data-current_user-id' => current_user.try(:id),
-  'data-publication-id' => params[:publication_id]}
+.timeline-container
+  %ul.timeline
+    = yield :question
 
-  %ul.timeline{'data-bind' => "foreach: feedPublications"}
-    %li.feed-publication{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id, "question-id": questionId}'}
+    .feed-view{'data-bind' => "foreach: feedPublications", 
+      'data-subject-url' => @asker.subject_url,
+      'data-asker-id' => @asker.id,
+      'data-current_user-id' => current_user.try(:id),
+      'data-publication-id' => params[:publication_id]}
 
-      %input.radio{type: 'radio'}
-      .relative
-        %span.timeago{"data-bind" => "timeago: firstPostedAt"}
-        %span.circle
-          
-      .content
-        %h3
-          %span.subject-label{'data-bind' => 'css: {visible: $parent.askerId == 8765}'}
-            %a{'data-bind' => 'text: subject, attr: {href: subject_url}'}
+      %li.feed-publication{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id, "question-id": questionId}'}
 
+        %input.radio{type: 'radio'}
+        .relative
           %span.timeago{"data-bind" => "timeago: firstPostedAt"}
-          %span{'data-bind' => 'text: question'}
+          %span.circle
+            
+        .content
+          %h3
+            %span.subject-label{'data-bind' => 'css: {visible: $parent.askerId == 8765}'}
+              %a{'data-bind' => 'text: subject, attr: {href: subject_url}'}
 
-        .answers{'data-bind' => "foreach: answers"}
-          .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
-            %span{'data-bind' => 'text: text'}
-            %img{src: '/assets/ajax-loader.gif'}
+            %span.timeago{"data-bind" => "timeago: firstPostedAt"}
+            %span{'data-bind' => 'text: question'}
+
+          .answers{'data-bind' => "foreach: answers"}
+            .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}'}
+              %span{'data-bind' => 'text: text'}
+              %img{src: '/assets/ajax-loader.gif'}
 
   .load-more{'data-bind' => 'css: {visible: loadingMore()}'}
     =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'
