@@ -341,23 +341,22 @@ $border_thin: 0px;
           }
         }
       }
-    }
+      .load-more {
+        position: relative;
+        text-align: center;
 
-    .load-more {
-      position: relative;
-      text-align: center;
+        margin-top: 50px;
+        padding-bottom: 18px;
+        visibility: hidden;
 
-      margin-top: 0px;
-      padding-bottom: 18px;
-      visibility: hidden;
+        &.visible {
+          visibility:inherit;
+        }
 
-      &.visible {
-        visibility:inherit;
-      }
-
-      img {
-        height: 32px;
-        width: 32px;
+        img {
+          height: 32px;
+          width: 32px;
+        }
       }
     }
   }
