@@ -6,7 +6,7 @@
 .columns
   - content_for :question do
     %li.feed-publication.visible.questions-show{'data-publication-id' => @publication.id}
-      .content
+      .content.active
         %h3
           %span= @publication._question['text']
 

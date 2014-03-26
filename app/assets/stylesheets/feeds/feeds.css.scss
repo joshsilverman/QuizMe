@@ -14,7 +14,7 @@
   }
 }
 
-$bg: #339152;
+$bg: #57af72;
 $white: #eee9dc;
 $dimwhite: #ccc;
 $black: #333333;
@@ -298,6 +298,8 @@ $border_thin: 0px;
         }
 
         .content {
+          &.active{ border: 8px #fbc370 solid; }
+
           .timeago {
             float:right;
             opacity:.7;
@@ -331,8 +333,8 @@ $border_thin: 0px;
   						}	
   					}
 
-  					&.correct {background-color:#a3de93;}
-  					&.incorrect {background-color:#f8c4c4;}
+  					&.correct {background-color:#86ca9b !important;}
+  					&.incorrect {background-color:#f8c4c4 !important;}
   					
             &:hover {
               cursor: pointer;
