@@ -86,7 +86,7 @@ puts = function(o) {console.log(o)}
 jQuery.timeago.settings.strings = {
    prefixAgo: "",
    prefixFromNow: "",
-   seconds: "30s",
+   seconds: "just now",
    minute: "1m",
    minutes: "%dm",
    hour: "1h",
