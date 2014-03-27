@@ -30,10 +30,12 @@ class QuestionsController < ApplicationController
     @pending_count = @all_questions.where(:status => 0).count
   end
 
-  def show()
+  def show
     @publication = Publication.published
       .where(question_id: params[:id])
       .order(created_at: :desc).first
+    @publication.verify_cache_present
+    
     @asker = Asker.find(@publication.asker_id)
 
     respond_to do |format|
