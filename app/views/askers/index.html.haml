@@ -1,8 +1,8 @@
 :css
-  .main-view {background:white;}
+  .main-view {background:white !important;}
   .navbar-fixed-top .container {width: 100%;}
 
-.askers-index.span12
+.askers-index
   .page-header
     %h1= t '.title', :default => 'Askers'
 
@@ -15,6 +15,7 @@
         %th
         %th
         %th Handle
+        %th Subject
         %th Actions
         %th Warnings
 
@@ -23,6 +24,7 @@
           %td= i + 1
           %td= image_tag(asker.twi_profile_img_url)
           %td= link_to asker.twi_name, "/feeds/#{asker.id}"
+          %td= best_in_place asker, :subject
           %td
             %a{:href => "/askers/#{asker.id}/edit"} Edit
             &nbsp;|&nbsp;
