@@ -1,9 +1,9 @@
-- cache [@asker, current_user, params[:publication_id]] do
+- cache ['show.html.haml', @asker, current_user, params[:publication_id]] do
 
   - if @asker
     - content_for :title, "Daily #{@asker.subject} Quiz Questions"
 
-  - cache @asker do
+  - cache ['account_info', @asker] do
     = render partial: "feeds/account_info"
 
   .columns
