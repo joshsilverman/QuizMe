@@ -8,7 +8,20 @@ describe QuestionsController do
 		@question = create(:question, created_for_asker_id: @asker.id, status: -1, user: @author, inaccurate: true, ungrammatical: true, bad_answers: true)
 	end
 
-	describe 'update' do
+	describe '#show' do
+		it 'gets with status 200' do
+			pub = create :publication, question: @question, asker: @asker
+			get :show, id: @question.id
+			response.status.must_equal 200
+		end
+
+		it 'redirects to home if no publication for question' do
+			get :show, id: @question.id
+			response.status.must_equal 302
+		end
+	end
+
+	describe '#update' do
 		before :each do
 			Capybara.current_driver = :selenium
 			login_as @author			

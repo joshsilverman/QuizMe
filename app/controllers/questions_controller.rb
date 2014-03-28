@@ -34,6 +34,12 @@ class QuestionsController < ApplicationController
     @publication = Publication.published
       .where(question_id: params[:id])
       .order(created_at: :desc).first
+    
+    if !@publication
+      redirect_to '/' 
+      return
+    end
+
     @publication.verify_cache_present
 
     @asker = Asker.find(@publication.asker_id)
