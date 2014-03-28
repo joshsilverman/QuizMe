@@ -19,20 +19,6 @@ class Asker < User
 
   scope :published, -> { where("published = ?", true) }
 
-  # cached queries
-  def get_stats
-    question_count, questions_answered, follower_count = Rails.cache.fetch "stats_by_asker_#{id}", :expires_in => 1.day, :race_condition_ttl => 15 do
-      question_count = publications.select(:id).where(:published => true).size
-      questions_answered = Post.where("in_reply_to_user_id = ? and correct is not null", id).count
-      follower_count = followers.size
-      [question_count, questions_answered, follower_count]
-    end
-    return [question_count, questions_answered, follower_count]
-  end
-
-  def self.by_twi_screen_name
-    Rails.cache.fetch('askers_by_twi_screen_name', :expires_in => 5.minutes){Asker.order("twi_screen_name ASC").all}
-  end
 
   def self.ids
     Rails.cache.fetch('asker_ids', :expires_in => 5.minutes){Asker.all.collect(&:id)}
@@ -40,10 +26,6 @@ class Asker < User
 
   def self.published_ids
     Rails.cache.fetch('published_asker_ids', :expires_in => 5.minutes){Asker.published.collect(&:id)}
-  end
-
-  def self.twi_screen_names
-    Rails.cache.fetch('asker_twi_screen_names', :expires_in => 5.minutes){Asker.published.collect(&:twi_screen_name)}
   end
 
   def self.askers_with_id_and_twi_screen_name
@@ -77,29 +59,6 @@ class Asker < User
 
   def categories
     topics.categories
-  end    
-
-  def unresponded_count
-    posts = Post.where("posts.requires_action = ? 
-      AND posts.in_reply_to_user_id = ? 
-      AND (posts.spam is null or posts.spam = ?) 
-      AND posts.user_id not in (?)", true, id, false, Asker.ids)
-    count = posts.not_spam.where("interaction_type = 2").count
-    count += posts.not_spam.where("interaction_type = 4")
-      .count(:user_id, :distinct => true)
-
-    count
-  end
-
-  def self.unresponded_counts
-    mention_counts = Post.mentions.requires_action.not_us.not_spam.not_ugc.group('in_reply_to_user_id').count
-    dm_counts = Post.not_ugc.not_us.dms.requires_action.not_spam.group('in_reply_to_user_id').count :user_id, :distinct => true
-
-    counts = {}
-    Asker.ids.each{|id| counts[id] = 0}
-    counts = counts.merge(mention_counts)
-    counts = counts.merge(dm_counts){|key, v1, v2| v1 + v2}
-    counts
   end
 
   def send_public_message text, options = {}
