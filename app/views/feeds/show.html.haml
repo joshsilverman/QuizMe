@@ -1,20 +1,23 @@
-- if @asker
-  - content_for :title, "Daily #{@asker.subject} Quiz Questions"
+- cache [@asker, current_user, params[:publication_id]] do
 
-= render partial: "feeds/account_info"
+  - if @asker
+    - content_for :title, "Daily #{@asker.subject} Quiz Questions"
 
-.columns
-  = render partial: "feeds/feed"
+  - cache @asker do
+    = render partial: "feeds/account_info"
 
-  .right-column
+  .columns
+    = render partial: "feeds/feed"
 
-    = render partial: "feeds/stream"
+    .right-column
 
-    - if current_user
-      = render partial: "feeds/my_badges"
-    - else
-      = render partial: "feeds/my_badges_unauth"
+      = render partial: "feeds/stream"
+
+      - if current_user
+        = render partial: "feeds/my_badges"
+      - else
+        = render partial: "feeds/my_badges_unauth"
 
 
-- content_for(:modals) do
-  = render :partial => "feeds/question_modal"
+  - content_for(:modals) do
+    = render :partial => "feeds/question_modal"

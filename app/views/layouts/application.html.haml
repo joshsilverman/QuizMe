@@ -10,10 +10,12 @@
     = yield(:meta)
 
   %body
-    = render 'drawer/drawer'
+    - cache current_user do
+      = render 'drawer/drawer'
 
     .main-view{style: main_view_styles}
-      = render 'layouts/header'
+      - cache current_user do
+        = render 'layouts/header'
       = yield
 
     = yield(:modals)

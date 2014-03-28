@@ -1079,7 +1079,9 @@ class Asker < User
   end
 
   def self.find_by_subject_url subject_url
-    _subject_url = subject_url.gsub('-', ' ')
-    Asker.where('subject ilike ?', _subject_url).first
+    Rails.cache.fetch("Asker.find_by_subject_url(#{subject_url})", :expires_in => 1.hour) do
+      _subject_url = subject_url.gsub('-', ' ')
+      Asker.where('subject ilike ?', _subject_url).first
+    end
   end
 end
