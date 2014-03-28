@@ -10,11 +10,11 @@
     = yield(:meta)
 
   %body
-    - cache ['layouts/application.html.haml', 'drawer', current_user] do
+    - cache ['drawer', current_user] do
       = render 'drawer/drawer'
 
     .main-view{style: main_view_styles}
-      - cache ['layouts/application.html.haml', 'header', current_user] do
+      - cache ['header', current_user, @asker] do
         = render 'layouts/header'
       = yield
 
