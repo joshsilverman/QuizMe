@@ -1,0 +1,16 @@
+.lessons{'data-askerId' => @asker.id}
+  %h4 Quizzes
+  
+  %ul{'data-bind' => "foreach: lessons"}
+
+    %li.appear
+      .content{'dataa-bind' => 'click: goToPub'}
+        %img.rounded.profile{"dataa-bind" => "attr: {src: user_twi_profile_img_url}", |
+          "src" => "http://localhost:3000/assets/badges/moderators/mod-badges_04.png"}
+
+        %h3
+          %span{:style => "color: #666;"} 0 / 9 questions complete
+
+          %span.timeago{"dataa-bind" => "timeago: created_at"}
+
+        %p{"data-bind" => "dotdotdot: name"}

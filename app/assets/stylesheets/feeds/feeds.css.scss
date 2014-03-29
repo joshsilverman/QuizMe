@@ -374,7 +374,7 @@ $border_thin: 0px;
   }
 }
 
-.activity-stream, .my-badges, .directory {
+.activity-stream, .my-badges, .directory, .lessons {
   background: $dimwhite;
   border-radius: 0.5em;
   margin-bottom:20px;
@@ -470,7 +470,7 @@ $border_thin: 0px;
 }
 
 
-.activity-stream, .timeline-container, .my-badges, .directory {
+.activity-stream, .timeline-container, .my-badges, .directory, .lessons {
   .content {
     background: $white;
     color: $black;
