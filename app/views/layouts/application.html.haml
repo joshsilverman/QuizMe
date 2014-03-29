@@ -10,17 +10,15 @@
     = yield(:meta)
 
   %body
-    - cache ['drawer', current_user] do
-      = render 'drawer/drawer'
+    = render 'drawer/drawer'
 
     .main-view{style: main_view_styles}
-      - cache ['header', current_user, @asker] do
-        = render 'layouts/header'
+      = render 'layouts/header'
       = yield
 
     = yield(:modals)
 
-    - cache("_application_css_js", :expires_in => 1.hour) do
+    - cache("_application_css_js") do
       = javascript_include_tag "application"
       = javascript_include_tag "http://code.jquery.com/jquery-migrate-1.2.1.min.js"
       = render :partial => "layouts/scripts"
