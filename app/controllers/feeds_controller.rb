@@ -27,10 +27,10 @@ class FeedsController < ApplicationController
         asker = Asker.find_by_subject_url subject
         offset = params['offset'] || 0
 
-        publications = Publication.recent_by_asker(asker, 
+        publications_json = Publication.recent_by_asker_json(asker, 
           params[:publication_id], offset)
 
-        render json: publications.to_json 
+        render json: publications_json 
       end
     end
   end

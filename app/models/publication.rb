@@ -47,16 +47,23 @@ class Publication < ActiveRecord::Base
       .limit(10).offset(offset)
   end
 
-  def self.recent_by_asker asker, injectable_id, offset = 0
-    publications = asker.publications.published
-      .where('first_posted_at IS NOT NULL')
-      .order(first_posted_at: :desc)
-      .limit(10).offset(offset)
-    return publications if injectable_id.nil?
+  def self.recent_by_asker_json asker, injectable_id, offset = 0
+    Rails.cache.fetch("Asker.recent_by_asker_json(#{asker.id}, #{injectable_id}, #{offset})", 
+      expires_in: 10.minutes) do
+      
+      publications = asker.publications.published
+        .where('first_posted_at IS NOT NULL')
+        .order(first_posted_at: :desc)
+        .limit(10).offset(offset)
 
-    Publication.inject_publication_by_id(
-      publications, 
-      injectable_id)
+      if injectable_id.nil?
+        publications.to_json
+      else
+        Publication.inject_publication_by_id(
+          publications, 
+          injectable_id).to_json
+      end
+    end
   end
 
   def self.inject_publication_by_id publications, injectable_id
