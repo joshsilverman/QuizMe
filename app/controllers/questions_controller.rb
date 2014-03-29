@@ -52,7 +52,8 @@ class QuestionsController < ApplicationController
         redirect_to controller: :feeds,
           action: :show,
           format: :json,
-          subject: @asker.subject_url
+          subject: @asker.subject_url,
+          offset: params[:offset]
       end
     end
   end
