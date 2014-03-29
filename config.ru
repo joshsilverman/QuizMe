@@ -2,3 +2,8 @@
 
 require ::File.expand_path('../config/environment',  __FILE__)
 run Quizmemanager::Application
+
+GC_FREQUENCY = 40
+require_dependency 'unicorn/oob_gc'
+GC.disable # Don't run GC during requests
+use Unicorn::OobGC, GC_FREQUENCY # Only GC once every GC_FREQUENCY requests
