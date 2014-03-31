@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 ruby '2.1.0'
 gem 'puma'
 gem 'rails', '4.0.3'
+gem 'gctools', '~> 0.2.3'
 
 gem 'pg'
 gem 'redis'

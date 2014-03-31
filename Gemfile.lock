@@ -135,6 +135,7 @@ GEM
       nokogiri (~> 1.5)
       ruby-hmac
     formatador (0.2.4)
+    gctools (0.2.3)
     guard (2.3.0)
       formatador (>= 0.2.4)
       listen (~> 2.1)
@@ -403,6 +404,7 @@ DEPENDENCIES
   devise (= 3.0.4)
   factory_girl_rails
   fog
+  gctools (~> 0.2.3)
   guard
   guard-minitest
   haml
