@@ -48,6 +48,8 @@ class Publication < ActiveRecord::Base
   end
 
   def self.recent_by_asker_json asker, injectable_id, offset = 0
+    return '' if !asker
+
     Rails.cache.fetch("Asker.recent_by_asker_json(#{asker.id}, #{injectable_id}, #{offset})", 
       expires_in: 10.minutes) do
       
