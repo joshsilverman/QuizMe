@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140329030626) do
+ActiveRecord::Schema.define(version: 20140402014009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -228,6 +228,8 @@ ActiveRecord::Schema.define(version: 20140329030626) do
     t.boolean  "bad_answers"
     t.integer  "moderation_trigger_type_id"
     t.boolean  "needs_edits"
+    t.hstore   "_answers"
+    t.integer  "_correct_answer_id"
   end
 
   add_index "questions", ["created_for_asker_id"], name: "index_questions_on_created_for_asker_id", using: :btree

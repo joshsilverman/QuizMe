@@ -209,4 +209,17 @@ class Question < ActiveRecord::Base
   def text_with_answers
     "#{text} (#{answers.shuffle.collect {|a| a.text}.join('; ')})"
   end
+
+  def update_answers
+    as = {}
+    answers.each do |a|
+      as[a.id.to_s] = a.text
+    end
+
+    assign_attributes(
+      _correct_answer_id: answers.correct.try(:id),
+      _answers: as)
+    
+    save
+  end
 end
