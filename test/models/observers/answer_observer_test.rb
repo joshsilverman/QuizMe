@@ -8,6 +8,8 @@ describe AnswerObserver, "#after_save" do
 
   it "calls #update_answers" do
     question = FactoryGirl.create :question
+    Delayed::Worker.new.work_off
+    
     Question.last._answers.wont_be_nil
   end
 end
