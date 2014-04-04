@@ -15,13 +15,21 @@ class TopicsController < ApplicationController
   end
 
   def show
+    @asker = Asker.find_by_subject_url params[:subject]
+
     respond_to do |format|
-      format.html { render nothing: true }
+      format.html do
+      end
+
       format.json do
-        lesson = Topic.lessons
-          .where(name: params[:name]).includes(:questions).first
-          
-        render json: lesson.to_json(include: :questions)
+        lesson = Topic.find_by_topic_url params[:name]
+
+        if lesson
+          questions = lesson.questions.approved  
+          render json: questions.to_json
+        else
+          head status: 404
+        end 
       end
     end
   end
