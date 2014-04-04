@@ -1,0 +1,19 @@
+- if @asker
+  - content_for :title, "Daily #{@asker.subject} Quiz Questions"
+
+= render partial: "feeds/account_info"
+
+.columns
+  = render partial: "feeds/feed"
+
+  .right-column
+    = render partial: "feeds/stream"
+
+    - if current_user
+      = render partial: "feeds/my_badges"
+    - else
+      = render partial: "feeds/my_badges_unauth"
+
+
+- content_for(:modals) do
+  = render :partial => "feeds/question_modal"
