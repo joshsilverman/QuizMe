@@ -30,4 +30,19 @@ class Topic < ActiveRecord::Base
 		correctly_answered_questions = Question.joins(:in_reply_to_posts).where('questions.id' => question_ids).where('posts.user_id' => user.id, 'posts.correct' => true).group('questions.id')
 		correctly_answered_questions.to_a.count / question_count.to_f
 	end
+
+  def topic_url
+    _name = name || ''
+    _name = _name.downcase
+    _name = _name.gsub(' ', '-')
+
+    _name
+  end
+
+  def self.find_by_topic_url topic_url
+    Rails.cache.fetch("Topic.find_by_topic_url(#{topic_url})", :expires_in => 3.hour) do
+      _topic_url = topic_url.gsub('-', ' ')
+      Topic.where('name ilike ?', _topic_url).first
+    end
+  end
 end

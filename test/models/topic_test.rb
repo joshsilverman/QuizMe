@@ -41,3 +41,39 @@ describe Topic do
 		end
 	end
 end
+
+describe Topic, "#topic_url" do
+  it "downcases topic" do
+    topic = Topic.new name: "Mitosis"
+
+    topic.topic_url.must_equal 'mitosis'
+  end
+
+  it "handles nil topic" do
+    topic = Topic.new name: nil
+
+    topic.topic_url.must_equal ''
+  end
+
+  it "replaces spaces with dashes" do
+    topic = Topic.new name: "Mitosis and Mieosis"
+
+    topic.topic_url.must_equal 'mitosis-and-mieosis'
+  end
+end
+
+describe Topic, ".find_by_topic_url" do
+  it "finds regardless of topic name case" do
+    topic = Topic.create name: "Mitosis"
+
+    found_topic = Topic.find_by_topic_url 'mitosis'
+    found_topic.must_equal topic
+  end
+
+  it "find multiword topics" do
+    topic = Topic.create name: "Mitosis and Mieosis"
+
+    found_topic = Topic.find_by_topic_url 'mitosis-and-mieosis'
+    found_topic.must_equal topic
+  end
+end

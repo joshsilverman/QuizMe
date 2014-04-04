@@ -3,8 +3,7 @@
   - if @asker
     - content_for :title, "Daily #{@asker.subject} Quiz Questions"
 
-  - cache ['account_info', @asker] do
-    = render partial: "feeds/account_info"
+  = render partial: "feeds/account_info"
 
   .columns
     = render partial: "feeds/feed"

@@ -33,7 +33,8 @@ module Quizmemanager
         :question_observer, 
         :post_moderation_observer, 
         :question_moderation_observer,
-        :transition_observer
+        :transition_observer,
+        :answer_observer
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
