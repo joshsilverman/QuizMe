@@ -13,10 +13,11 @@ describe TopicsController do
       asker = create :asker
       create(:lesson).askers << asker
       create(:lesson).askers << asker
+      create(:lesson).askers << asker
 
       get :index, format: :json, asker_id: asker.id
-
-      JSON.parse(response.body).count.must_equal 2
+      
+      JSON.parse(response.body)["topics"].count.must_equal 3
     end
 
     it "returns json with only lessons" do
@@ -26,7 +27,7 @@ describe TopicsController do
 
       get :index, format: :json, asker_id: asker.id, scope: 'lessons'
 
-      JSON.parse(response.body).count.must_equal 1
+      JSON.parse(response.body)["topics"].count.must_equal 1
     end
   end
 
