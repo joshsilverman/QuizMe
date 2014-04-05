@@ -32,21 +32,21 @@ describe TopicsController do
 
   describe "#show" do
     it "returns status 200" do
+      asker = create :asker, subject: 'biology'
       get :show, subject: 'biology', name: 'mitosis'
 
       response.status.must_equal 200
     end
 
     it "returns lesson with questions json" do
-      asker = create :asker
+      asker = create :asker, subject: 'biology'
       lesson = create(:lesson, :with_questions)
       lesson.askers << asker
 
       get :show, subject: 'biology', name: lesson.name, format: :json
-      ret_lesson = JSON.parse(response.body)
+      question_json = JSON.parse(response.body)
 
-      ret_lesson['name'].must_equal lesson.name
-      ret_lesson['questions'].count.must_equal 3
+      question_json.count.must_equal 3
     end
   end
 end
