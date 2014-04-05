@@ -6,7 +6,7 @@
   
   .title
     %h1
-      %a{href: "/#@asker.subject"}= @asker.subject
+      %a{href: "/#{@asker.subject_url}"}= @asker.subject
     %h2
       - if @lesson
         = @lesson.name

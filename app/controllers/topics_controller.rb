@@ -2,14 +2,15 @@ class TopicsController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        asker = Asker.find params[:asker_id]
-        topics = asker.topics
+        @asker = Asker.find params[:asker_id]
+        topics = @asker.topics
 
         if params[:scope] == 'lessons'
           topics = topics.lessons
         end
 
-        render json: topics.to_json
+        render json: topics.order(id: :asc),
+          meta: {subject_url: @asker.subject_url}
       end
     end
   end
@@ -27,8 +28,7 @@ class TopicsController < ApplicationController
           questions = @lesson.questions.approved  
           render json: questions, 
             each_serializer: QuestionAsPublicationSerializer,
-            root: false,
-            meta: {_asker: @asker}
+            root: false
         else
           head status: 404
         end 

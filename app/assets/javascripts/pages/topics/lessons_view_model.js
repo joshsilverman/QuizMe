@@ -1,6 +1,6 @@
 if ($('.lessons:visible').length > 0) {
   $(function() {
-    var lessonsViewModel, askerId;
+    var lessonsViewModel, askerId, subjectUrl;
 
     function init(_askerId) {
       askerId = _askerId;
@@ -9,7 +9,8 @@ if ($('.lessons:visible').length > 0) {
       ko.applyBindings(lessonsViewModel, $('.lessons')[0]);
 
       $.getJSON("/topics?scope=lessons&asker_id=" + askerId, function(lessons) {
-        lessons.forEach(function(lesson) {
+        subjectUrl = lessons['meta']['subject_url']
+        lessons['topics'].forEach(function(lesson) {
           var lessonModel = new LessonModel(lesson);
           lessonsViewModel.lessons.push(lessonModel);
         });
@@ -21,11 +22,11 @@ if ($('.lessons:visible').length > 0) {
 
       self.name = lesson.name;
 
-      // self.goToPub = function() {
-      //   document.location.href = self.href;
-      // };
+      self.goToLesson = function() {
+        document.location.href = self.href;
+      };
 
-      // self.href = "/questions/" + lesson.in_reply_to_question.id;
+      self.href = "/" + subjectUrl + "/" + lesson.topic_url + "/quiz";
     }
 
     function LessonsViewModel() {
