@@ -14,7 +14,7 @@
           %input.radio{type: 'radio'}
           .relative
             %span.timeago{"data-bind" => "timeago: firstPostedAt"}
-            %span.circle
+            %span.circle{"data-bind" => "text: $index() + 1"}
               
           .content
             %h3

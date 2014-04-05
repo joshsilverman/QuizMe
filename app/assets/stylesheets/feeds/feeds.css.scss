@@ -127,6 +127,14 @@ $border_thin: 0px;
     h1 {
       font-size:42px;
 
+      a {
+        color:#ddd;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+
       @media (max-width: 767px) {
         display: none;
       }
@@ -290,6 +298,7 @@ $border_thin: 0px;
             border-radius: 50%;
             display: block;
             position: absolute;
+            color:rgba(0,0,0,0);
 
             @media (max-width: 767px){
               display: none;
@@ -359,6 +368,21 @@ $border_thin: 0px;
           height: 32px;
           width: 32px;
         }
+      }
+    }
+  }
+
+  &.quiz {
+    .timeline-container {
+      ul.timeline li .relative .circle {
+        height:30px;
+        width:30px;
+        left: -20px;
+        margin-top: -20px;
+        text-align: center;
+        color:white;
+        line-height: 1.9em;
+        background: #444
       }
     }
   }
