@@ -11,6 +11,10 @@ class Topic < ActiveRecord::Base
 	scope :courses, -> { where("type_id = 5") }
 	scope :lessons, -> { where("type_id = 6") }
 
+  validates_format_of :name, :with => /\A[a-zA-Z0-9\s\+\,\(\)\:]+\Z/
+  validates :name, uniqueness: true
+  validates :name, presence: true
+
 	def lessons # returns a course's lessons
 		return nil unless type_id == 5
 		questions.includes(:topics).collect { |q| q.topics.select { |t| t.type_id == 6 } }.flatten.uniq
