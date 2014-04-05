@@ -202,7 +202,6 @@ $border_thin: 0px;
       margin-bottom: 0px;
 
       padding-top: 220px;
-      padding-bottom: 50px;
 
       list-style: none;
       border-left: $border_thick solid $white;
@@ -466,8 +465,6 @@ $border_thin: 0px;
           font-size: 90%;
           line-height: 1.3em;
           font-weight: 200;
-
-          // height:27px;
           max-height: 36px;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -526,6 +523,22 @@ $border_thin: 0px;
           display: inline;
         }
       }
+    }
+  }
+}
+
+.lessons {
+  ul li .content {
+    span {
+      width: 32px;
+      margin: 15px 10px 0px 0;
+      float: left;
+      text-align: right;
+    }
+
+    p {
+      margin: 15px 0 0px;
+      padding-left: 6px;
     }
   }
 }

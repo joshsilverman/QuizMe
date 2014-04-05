@@ -5,10 +5,6 @@
 
     %li.appear
       .content{'data-bind' => 'click: goToLesson'}
-        %img.rounded.profile{"dataa-bind" => "attr: {src: user_twi_profile_img_url}", |
-          "src" => "http://localhost:3000/assets/badges/moderators/mod-badges_04.png"}
-
-        %h3
-          %span.timeago{"dataa-bind" => "timeago: created_at"}
+        %span{"data-bind" => 'text: $index() + 1 + "."'}
 
         %p{"data-bind" => "dotdotdot: name"}
