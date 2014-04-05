@@ -16,16 +16,15 @@ class TopicsController < ApplicationController
 
   def show
     @asker = Asker.find_by_subject_url params[:subject]
+    @lesson = Topic.find_by_topic_url params[:name]
 
     respond_to do |format|
       format.html do
       end
 
       format.json do
-        lesson = Topic.find_by_topic_url params[:name]
-
-        if lesson
-          questions = lesson.questions.approved  
+        if @lesson
+          questions = @lesson.questions.approved  
           render json: questions, 
             each_serializer: QuestionAsPublicationSerializer,
             root: false,

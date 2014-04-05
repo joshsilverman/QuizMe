@@ -39,7 +39,7 @@ if ($('.feed-view').length) {
 
       self.initLoadMore = function() {
         var path = location.pathname.replace(/\/$/, '').split('/')
-        if (_.last(path) == "lesson") return;
+        if (_.last(path) == "quiz") return;
 
         $(window).on('DOMContentLoaded load resize scroll', 
           _.throttle(self.loadMorePublications, 250, {leading: true})); 

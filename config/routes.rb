@@ -38,7 +38,7 @@ Quizmemanager::Application.routes.draw do
   end
 
   resources :topics, only: [:index]
-  get ':subject/:name/lesson' => 'topics#show'
+  get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'
   get '/users/activity_feed'

@@ -7,7 +7,11 @@
   .title
     %h1= @asker.subject
     %h2
-      - if @asker.id == 8765
+      - if @lesson
+        = @lesson.name
+        Quiz
+
+      - elsif @asker.id == 8765
         Daily quiz questions about anything from science to Harry Potter!
 
       - else
