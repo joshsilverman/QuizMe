@@ -34,7 +34,10 @@ describe TopicsController do
   describe "#show" do
     it "returns status 200" do
       asker = create :asker, subject: 'biology'
-      get :show, subject: 'biology', name: 'mitosis'
+      topic = create :lesson
+      asker.topics << topic
+      
+      get :show, subject: 'biology', name: topic.name
 
       response.status.must_equal 200
     end
