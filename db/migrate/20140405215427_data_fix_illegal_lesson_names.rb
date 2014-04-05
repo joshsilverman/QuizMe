@@ -11,7 +11,10 @@ class DataFixIllegalLessonNames < ActiveRecord::Migration
 
     illegal_lesson_ids_names.each do |id, name|
       lesson = Topic.find_by(id: id)
-      lesson.update name: name
+
+      if lesson
+        lesson.update name: name
+      end
     end
   end
 end
