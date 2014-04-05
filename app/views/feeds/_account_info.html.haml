@@ -5,7 +5,8 @@
   %span.asker-photo= quest_image_tag
   
   .title
-    %h1= @asker.subject
+    %h1
+      %a{href: "/#@asker.subject"}= @asker.subject
     %h2
       - if @lesson
         = @lesson.name
