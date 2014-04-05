@@ -123,7 +123,7 @@ FactoryGirl.define do
   end 
 
   factory :topic do
-    name 'great topic name!'
+    name 'great topic name'
 
     factory :search_term do
       type_id 3
