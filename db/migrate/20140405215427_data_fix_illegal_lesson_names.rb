@@ -10,7 +10,7 @@ class DataFixIllegalLessonNames < ActiveRecord::Migration
       [393, "Sex Linked Traits"]]
 
     illegal_lesson_ids_names.each do |id, name|
-      lesson = Topic.find(id)
+      lesson = Topic.find_by(id: id)
       lesson.update name: name
     end
   end
