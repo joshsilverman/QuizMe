@@ -18,7 +18,9 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for resource, redirect_to = nil
     oauth_params = request.env["omniauth.params"]
     if oauth_params
-      if oauth_params["feed_id"]
+      if oauth_params["redirect_to"]
+        redirect_to = oauth_params["redirect_to"]
+      elsif oauth_params["feed_id"]
         if oauth_params['feed_id'] == "8765"
           redirect_to = "/feeds/index/#{oauth_params['publication_id']}"
         else
