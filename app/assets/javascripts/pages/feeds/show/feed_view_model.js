@@ -161,10 +161,7 @@ if ($('.feed-view').length) {
       }
 
       self.authenticate = function() {
-        window.location.replace("/users/auth/twitter"
-          + "?feed_id=" + askerId
-          + "&publication_id=" + self.feedPublication.id
-          + "&redirect_to="  + encodeURIComponent(location.pathname))
+        window.location.replace("/users/auth/twitter")
       }
     }
 
