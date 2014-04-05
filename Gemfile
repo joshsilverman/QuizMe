@@ -12,6 +12,7 @@ gem 'rails-observers'
 gem 'actionpack-page_caching'
 gem 'actionpack-action_caching'
 gem 'activerecord-deprecated_finders'
+gem "active_model_serializers"
 
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 

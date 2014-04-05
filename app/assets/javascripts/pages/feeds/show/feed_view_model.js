@@ -38,6 +38,9 @@ if ($('.feed-view').length) {
       self.askerId = askerId;
 
       self.initLoadMore = function() {
+        var path = location.pathname.replace(/\/$/, '').split('/')
+        if (_.last(path) == "lesson") return;
+
         $(window).on('DOMContentLoaded load resize scroll', 
           _.throttle(self.loadMorePublications, 250, {leading: true})); 
       };
@@ -82,7 +85,6 @@ if ($('.feed-view').length) {
       self.question = publication._question.text;
       self.questionId = parseInt(publication._question.id);
       self.correctAnswerId = parseInt(publication._question.correct_answer_id);
-      self.twiProfileImgUrl = publication._asker.twi_profile_img_url;
       self.subject = [publication._asker.subject, ':'].join("");
       self.subject_url = publication._asker.subject_url;
       self.answered = undefined;

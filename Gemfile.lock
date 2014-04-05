@@ -39,6 +39,8 @@ GEM
       actionpack (>= 4.0.0, < 5.0)
     actionpack-page_caching (1.0.2)
       actionpack (>= 4.0.0, < 5)
+    active_model_serializers (0.8.1)
+      activemodel (>= 3.0)
     activemodel (4.0.3)
       activesupport (= 4.0.3)
       builder (~> 3.1.0)
@@ -388,6 +390,7 @@ DEPENDENCIES
   actionmailer (~> 4.0.2)
   actionpack-action_caching
   actionpack-page_caching
+  active_model_serializers
   activerecord-deprecated_finders
   airbrake
   amatch

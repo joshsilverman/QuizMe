@@ -26,7 +26,10 @@ class TopicsController < ApplicationController
 
         if lesson
           questions = lesson.questions.approved  
-          render json: questions.to_json
+          render json: questions, 
+            each_serializer: QuestionAsPublicationSerializer,
+            root: false,
+            meta: {_asker: @asker}
         else
           head status: 404
         end 
