@@ -1,5 +1,5 @@
 - if @asker
-  - content_for :title, "Daily #{@asker.subject} Quiz Questions"
+  - content_for :title, "#{@lesson.name} Quiz | #{@asker.subject}"
 
 = render partial: "feeds/account_info"
 
