@@ -528,6 +528,12 @@ $border_thin: 0px;
 }
 
 .lessons {
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+
   ul li .content {
     span {
       width: 32px;

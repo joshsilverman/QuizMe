@@ -1,4 +1,4 @@
-.lessons{'data-askerId' => @asker.id}
+.lessons{'data-askerId' => @asker.id, 'data-bind' => 'css: {visible: lessons().length}'}
   %h4 Quizzes
   
   %ul{'data-bind' => "foreach: lessons"}
