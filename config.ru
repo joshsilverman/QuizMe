@@ -2,6 +2,3 @@
 
 require ::File.expand_path('../config/environment',  __FILE__)
 run Quizmemanager::Application
-
-require 'gctools/oobgc'
-GC::OOB.run()
