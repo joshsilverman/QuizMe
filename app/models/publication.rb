@@ -7,6 +7,15 @@ class Publication < ActiveRecord::Base
 
   scope :published, -> { where("publications.published = ?", true) }
 
+  def self.find_or_create_by_question_id question_id, asker_id = nil
+    publication = Publication.where(question_id: question_id).published.last
+
+    publication ||= Publication.create(
+        question_id: question_id,
+        asker_id: asker_id
+      )
+  end
+
   def update_activity post
     user = post.user
     activity = self._activity || {}

@@ -1,5 +1,39 @@
 require 'test_helper'
 
+describe Publication, "#find_or_create_by_question_id" do
+  it "returns a publication if question publication exists" do
+    question = create :question
+    publication = create :publication
+    publication.update question: question
+
+    found_publication = Publication.find_or_create_by_question_id question.id
+    found_publication.must_equal publication
+  end
+
+  it "returns a new publication if question publication doesn't exists" do
+    question = create :question
+
+    found_publication = Publication.find_or_create_by_question_id question.id
+    found_publication.question_id.must_equal question.id
+  end
+
+  it "wont create new publication if one already exists" do
+    question = create :question
+    publication = create :publication
+    publication.update question: question
+
+    found_publication = Publication.find_or_create_by_question_id question.id
+    Publication.count.must_equal 1
+  end
+
+  it "returns a publication associated with proper asker if passed asker_id" do
+    question = create :question
+
+    found_publication = Publication.find_or_create_by_question_id question.id, 123
+    found_publication.asker_id.must_equal 123
+  end
+end
+
 describe Publication, '#update_activity' do
   it "must set activity and twi profile image on publication" do
     user = create :user
