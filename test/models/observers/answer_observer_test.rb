@@ -7,9 +7,21 @@ describe AnswerObserver, "#after_save" do
   end
 
   it "calls #update_answers" do
-    question = FactoryGirl.create :question
+    question = Question.create
+    answer = Answer.create
+    question.answers << answer
+
     Delayed::Worker.new.work_off
     
     Question.last._answers.wont_be_nil
   end
+
+  it "wont call #update_answers if answer has no question" do
+    question = Question.create
+    answer = Answer.create
+    
+    Delayed::Worker.new.work_off
+    
+    Question.last._answers.must_be_nil
+  end  
 end
