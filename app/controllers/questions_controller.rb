@@ -42,7 +42,8 @@ class QuestionsController < ApplicationController
 
     @publication.verify_cache_present
 
-    @asker = Asker.find(@publication.asker_id)
+    @asker = Asker.find_by(id: @publication.asker_id)
+    redirect_to '/' if !@asker
 
     respond_to do |format|
       format.html do
