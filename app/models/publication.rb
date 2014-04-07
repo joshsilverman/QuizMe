@@ -45,7 +45,10 @@ class Publication < ActiveRecord::Base
         twi_profile_img_url: question.asker.twi_profile_img_url,
         subject: question.asker.subject,
         subject_url: question.asker.subject_url},
-      _answers: as)
+      _answers: as,
+      _lesson: {
+        name: question.lessons.first.try(:name),
+        topic_url: question.lessons.first.try(:topic_url)})
 
     save
   end

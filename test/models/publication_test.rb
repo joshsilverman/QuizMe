@@ -142,6 +142,25 @@ describe Publication, '#update_question' do
     publication.reload._answers[ans_1.id.to_s].must_equal ans_1.text
     publication.reload._answers[ans_2.id.to_s].must_equal ans_2.text
   end
+
+  it "must set a lesson name and url if one exists" do
+    asker = Asker.create
+    question = Question.create text: 'What up?', asker: asker
+    answer = question.answers.create text: 'correct ans', correct: true
+    lesson = create :lesson
+    lesson.questions << question
+
+    Question.stubs(:select_questions_to_post).returns [question.id]
+    asker.stubs(:posts_per_day).returns 5
+
+    PublicationQueue.enqueue_questions asker
+    publication = Publication.first
+    publication.update(_question: nil)
+    publication.update_question
+    
+    publication.reload._lesson['name'].must_equal lesson.name
+    publication.reload._lesson['topic_url'].must_equal lesson.topic_url
+  end
 end
 
 describe Publication, ".inject_publication_by_id" do
