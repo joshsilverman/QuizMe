@@ -28,6 +28,7 @@ class Publication < ActiveRecord::Base
 
   def update_question question = nil
     question ||= Question.find question_id
+    return if !question.asker
 
     as = {}
     question.answers.each do |a|
