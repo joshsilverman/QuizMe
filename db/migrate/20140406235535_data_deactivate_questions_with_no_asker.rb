@@ -30,7 +30,7 @@ class DataDeactivateQuestionsWithNoAsker < ActiveRecord::Migration
         3279, 3281, 3285, 3288, 3292, 3294, 3296]
 
     deprecate_question_ids.each do |id|
-      question = Question.find id
+      question = Question.find_by id: id
       return if !question
       return if question.asker
 
