@@ -29,5 +29,9 @@
                 %span{'data-bind' => 'text: text'}
                 %img{src: '/assets/ajax-loader.gif'}
 
+            %h4.hidden{'data-bind' => 'css: {hidden: !quizName}'}
+              Take the full 
+              %a{'data-bind' => 'text: quizName, attr: {href: quizHref}'}
+
       .load-more{'data-bind' => 'css: {visible: loadingMore()}'}
         =image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'

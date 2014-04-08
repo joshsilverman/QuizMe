@@ -88,6 +88,8 @@ if ($('.feed-view').length) {
       self.subject = [publication._asker.subject, ':'].join("");
       self.subject_url = publication._asker.subject_url;
       self.answered = undefined;
+      self.quizHref = null;
+      self.quizName = null;
 
       self.loadInteractions = function() {
         self.interactions = [];
@@ -119,9 +121,20 @@ if ($('.feed-view').length) {
         correctAnswer.correct(true);
       };
 
+      self.setQuizAttrs = function() {
+        if (!publication._lesson) return;
+        if (!publication._lesson.name) return;
+
+        self.quizName = publication._lesson.name + ' Quiz'
+        self.quizHref = '/' + self.subject_url 
+          + '/' + publication._lesson.topic_url
+          + '/quiz';
+      };
+
       self.loadAnswers();
       self.loadInteractions();
       self.markAnswered();
+      self.setQuizAttrs();
     }
 
     function AnswerViewModel(attrs, feedPublication) {
