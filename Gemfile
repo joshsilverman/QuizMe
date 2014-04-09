@@ -2,7 +2,6 @@ source 'http://rubygems.org'
 ruby '2.1.1'
 gem 'puma'
 gem 'rails', '4.0.3'
-
 gem 'pg'
 gem 'redis'
 
@@ -94,5 +93,3 @@ gem 'pusher'
 gem 'airbrake'
 
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
-
-gem 'd3_rails', '3.2.6.a'

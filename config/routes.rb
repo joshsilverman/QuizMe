@@ -10,9 +10,6 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  get '/askers/edit_graph' => 'askers#edit_graph'
-  post '/askers/add_related' => 'askers#add_related'
-  post '/askers/remove_related' => 'askers#remove_related'
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
   resources :users, only: [:correct_question_ids] do

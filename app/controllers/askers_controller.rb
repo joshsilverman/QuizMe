@@ -96,28 +96,6 @@ class AskersController < ApplicationController
     end
   end
 
-  def edit_graph
-    @askers = {}
-    Asker.includes(:related_askers).each do |asker|
-      @askers[asker.id] ||= { twi_screen_name: asker.twi_screen_name }
-      asker.related_askers.each do |related_asker|
-        (@askers[asker.id][:related_asker_ids] ||= []) << related_asker.id
-      end
-    end
-  end
-
-  def add_related
-    asker = Asker.find(params[:asker_id])
-    related_asker = Asker.find(params[:related_asker_id])
-    asker.related_askers << related_asker unless asker.related_askers.include? related_asker
-    render :nothing => true
-  end
-
-  def remove_related
-    Asker.find(params[:asker_id]).related_askers.delete Asker.find(params[:related_asker_id])
-    render :nothing => true
-  end
-
   def questions
     if !current_user
       redirect_to user_omniauth_authorize_path(:twitter, :use_authorize => false, :asker_id => params[:id]) unless current_user
