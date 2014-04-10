@@ -27,7 +27,7 @@ Quizmemanager::Application.configure do
   config.logger = Logger.new('/dev/null')
   config.logger.level = Logger.const_get(
     ENV['LOG_LEVEL'] ? ENV['LOG_LEVEL'].upcase : 'DEBUG'
-  )  
+  )
 end
 
 Pusher.app_id = '62265'

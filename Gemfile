@@ -12,6 +12,8 @@ gem 'actionpack-action_caching'
 gem 'activerecord-deprecated_finders'
 gem "active_model_serializers"
 
+gem 'delayed_job_active_record', '~> 4.0.0.beta2'
+
 gem "rspec-rails",'2.8.1', :group => [:test, :development]
 
 group :test do
@@ -92,4 +94,4 @@ gem 'sourcify', "~> 0.6.0.rc4"
 gem 'pusher'
 gem 'airbrake'
 
-gem 'delayed_job_active_record', '~> 4.0.0.beta2'
+gem 'prerender_rails'

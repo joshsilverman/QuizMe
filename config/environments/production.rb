@@ -67,4 +67,7 @@ Quizmemanager::Application.configure do
   config.active_support.deprecation = :notify
 
   config.action_mailer.default_url_options = { :host => 'wisr.com' }
+
+  # Prerender pages when fetched by search engines
+  config.middleware.use Rack::Prerender, prerender_token: 'HxsTdGIHtQUDeQ8R9XGg'
 end
