@@ -25,3 +25,6 @@ $ ->
   snapper.on('animating', -> $('.drawer').addClass('show'))
   snapper.on('open', -> $('.drawer').addClass('show'))
   snapper.on('drag', -> $('.drawer').addClass('show'))
+
+  if $('.starscape').length
+    $(window).stellar();

@@ -9,6 +9,7 @@
 //= require jquery.ui.autocomplete
 //= require jquery.ui.datepicker
 //= require lib/jquery.cookie
+//= require lib/jquery.stellar
 //= require lib/knockout-3.0.0.min
 //= require lib/snap
 //= require lodash

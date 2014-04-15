@@ -552,3 +552,37 @@ $border_thin: 0px;
     }
   }
 }
+
+.starscape {
+  position: relative;
+  height:580px;
+  width: 100%;
+  overflow: visible;
+
+  div {
+    height:580px;
+    width: 100%;
+    position: absolute;
+  }
+
+  .galaxy {background: image-url('home/galaxy.jpg');}
+  .stars {background: image-url('home/stars.png');}
+  .smallplanets {background: image-url('home/smallplanets.png');}
+  .planet {background: image-url('home/planet.png'); height:584px;}
+
+  .quest {
+    background: image-url('home/quest.png');
+    background-size: 160px;
+    background-repeat: no-repeat;
+    height:280px;
+    width: 200px;
+    top:310px;
+    left:550px;
+  }
+}
+
+.columns.home {
+  background-color: #5e3847;
+  position: relative;
+  z-index: 10;
+}
