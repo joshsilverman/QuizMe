@@ -27,4 +27,4 @@ $ ->
   snapper.on('drag', -> $('.drawer').addClass('show'))
 
   if $('.starscape').length
-    $(window).stellar();
+    $(window).stellar(horizontalScrolling: false);
