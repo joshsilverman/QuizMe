@@ -6,7 +6,7 @@ module FeedsHelper
 		end
 
 		bg_color ||= '#202734'
-		silhouette_color ||= '#3a7ba6'
+		silhouette_color ||= '#292935'
 
 		"background: #{bg_color}; fill: #{silhouette_color};"
 	end
@@ -45,10 +45,10 @@ module FeedsHelper
 
 	def header_styles
 		if @asker.try :styles
-			silhouette_color = @asker.styles["silhouette_color"] || '#3a7ba6'
+			silhouette_color = @asker.styles["silhouette_color"] || '#292935'
 		end
 		
-		silhouette_color ||= '#3a7ba6'
+		silhouette_color ||= '#292935'
 
 		header_bg_color = darken_color silhouette_color, 1
 

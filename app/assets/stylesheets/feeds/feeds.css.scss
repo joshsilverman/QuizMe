@@ -577,7 +577,7 @@ $border_thin: 0px;
     height:280px;
     width: 200px;
     top:310px;
-    left:550px;
+    left:180px;
   }
 }
 
@@ -585,4 +585,13 @@ $border_thin: 0px;
   background-color: #5e3847;
   position: relative;
   z-index: 10;
+
+  ul.timeline {
+    margin-top: -620px;
+    padding-top: 625px;
+  }
+
+  .right-column {
+    padding-top: 30px;
+  }
 }
