@@ -616,8 +616,9 @@ $border_thin: 0px;
   z-index: 10;
 
   ul.timeline {
-    margin-top: -620px;
-    padding-top: 625px;
+    position: relative;
+    top: -620px;
+    padding-top: 766px;
   }
 
   .right-column {
