@@ -27,4 +27,8 @@ $ ->
   snapper.on('drag', -> $('.drawer').addClass('show'))
 
   if $('.starscape').length
-    $(window).stellar(horizontalScrolling: false);
+    ua = navigator.userAgent
+    isMobileWebkit = /WebKit/.test(ua) && /Mobile/.test(ua);
+
+    if (!isMobileWebkit)
+      $(window).stellar(horizontalScrolling: false);
