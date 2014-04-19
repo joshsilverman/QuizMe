@@ -1,4 +1,6 @@
 class Question < ActiveRecord::Base
+  include QuestionbaseImporter
+
 	has_many :posts
   has_many :in_reply_to_posts, :class_name => 'Post', :foreign_key => 'in_reply_to_question_id'
 

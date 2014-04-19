@@ -14,6 +14,7 @@ module Quizmemanager
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/lib/classifiers)
+    config.autoload_paths += %W(#{config.root}/lib/importers)
     config.autoload_paths += %W(#{config.root}/lib/adapters/twitter)
     config.autoload_paths += %W(#{config.root}/lib/adapters/email)
     config.autoload_paths += %W(#{config.root}/lib/adapters/wisr_feed/*.rb)
