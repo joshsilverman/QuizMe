@@ -77,3 +77,12 @@ describe Topic, ".find_by_topic_url" do
     found_topic.must_equal topic
   end
 end
+
+describe Topic, ".strip_illegal_chars_from_name" do
+  it "strips dashes" do
+    name = Topic.strip_illegal_chars_from_name 'hey - ya'
+    topic = Topic.new name: name
+
+    topic.valid?.must_equal true
+  end
+end

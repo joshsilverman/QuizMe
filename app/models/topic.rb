@@ -49,4 +49,10 @@ class Topic < ActiveRecord::Base
       Topic.where('name ilike ?', _topic_url).first
     end
   end
+
+  def self.strip_illegal_chars_from_name name
+    return if name.nil?
+
+    name.gsub('-', ' ')
+  end
 end
