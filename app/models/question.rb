@@ -89,7 +89,11 @@ class Question < ActiveRecord::Base
   end
 
   def slug_text
-    return self.text.gsub(' ', '-').gsub('&quot;', '').gsub(/[^0-9A-Za-z\-_]/, '').gsub(/-\z/, "")[0..69]
+    self.text
+      .gsub(' ', '-')
+      .gsub('&quot;', '')
+      .gsub(/[^0-9A-Za-z\-_]/, '')
+      .gsub(/-\z/, "")[0..69]
   end
 
   def generate_slug
