@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140407125229) do
+ActiveRecord::Schema.define(version: 20140419034140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -219,7 +219,6 @@ ActiveRecord::Schema.define(version: 20140407125229) do
     t.integer  "created_for_asker_id"
     t.boolean  "priority",                   default: false
     t.string   "hashtag"
-    t.integer  "seeder_id"
     t.text     "resource_url"
     t.string   "slug"
     t.string   "hint"
@@ -231,6 +230,7 @@ ActiveRecord::Schema.define(version: 20140407125229) do
     t.boolean  "needs_edits"
     t.hstore   "_answers"
     t.integer  "_correct_answer_id"
+    t.integer  "questionbase_id"
   end
 
   add_index "questions", ["created_for_asker_id"], name: "index_questions_on_created_for_asker_id", using: :btree
