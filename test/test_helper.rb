@@ -26,6 +26,7 @@ class ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
 
   Rails.logger.level = 0
+  fixtures :all
   DatabaseCleaner.strategy = :transaction
 
   before :each do
