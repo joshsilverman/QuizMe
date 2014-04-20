@@ -26,8 +26,13 @@ class ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
 
   Rails.logger.level = 0
-  fixtures :all
+
+  self.use_transactional_fixtures = false
+  self.use_instantiated_fixtures = false
+  DatabaseCleaner.clean_with :truncation
   DatabaseCleaner.strategy = :transaction
+
+  fixtures :all
 
   before :each do
     if !self.class.ancestors.include? ActionController::TestCase
@@ -50,21 +55,6 @@ class ActiveSupport::TestCase
     if !self.class.ancestors.include? ActionController::TestCase
       DatabaseCleaner.clean
     end
-  end
-end
-
-class Minitest::Spec
-  include FactoryGirl::Syntax::Methods
-  DatabaseCleaner.strategy = :transaction
-
-  before :each do
-    DatabaseCleaner.start
-    ActiveRecord::Base.observers.disable :all
-  end
-
-  after :each do
-    Timecop.return
-    DatabaseCleaner.clean
   end
 end
 
