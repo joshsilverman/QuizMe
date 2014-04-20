@@ -14,19 +14,16 @@ gem "active_model_serializers"
 
 gem 'delayed_job_active_record', '~> 4.0.0.beta2'
 
-gem "rspec-rails",'2.8.1', :group => [:test, :development]
-
 group :test do
+  gem "rspec-rails",'2.8.1'
   gem 'capybara'
   gem 'minitest-rails-capybara'
   gem 'capybara_minitest_spec'
-  gem 'launchy'
   gem 'factory_girl_rails'
   gem 'turn'
   gem "database_cleaner"
   gem 'timecop'
   gem 'selenium-webdriver', "~> 2.38.0"
-  
   gem 'mocha'
   gem 'webmock'
 end
@@ -53,6 +50,8 @@ group :development, :test do
   gem "guard-minitest"
 end
 
+gem 'rails_admin'
+
 gem 'sass-rails', '~> 4.0.1'
 gem 'coffee-rails', '~> 4.0.1'
 gem 'uglifier', '>= 2.1.1'
@@ -68,6 +67,7 @@ gem 'momentjs-rails'
 gem 'devise', '3.0.4'
 gem 'omniauth'
 gem 'omniauth-twitter'
+gem 'cancan'
 
 gem 'oj'
 
@@ -93,5 +93,3 @@ gem 'amatch'
 gem 'sourcify', "~> 0.6.0.rc4"
 gem 'pusher'
 gem 'airbrake'
-
-gem 'prerender_rails'

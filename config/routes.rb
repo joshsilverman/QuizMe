@@ -1,4 +1,7 @@
 Quizmemanager::Application.routes.draw do
+  
+  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+
   get "/users/sign_up" => redirect("/")
   get "/users/sign_in" => redirect("/")
   
