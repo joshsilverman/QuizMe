@@ -11,7 +11,7 @@ require "minitest/rails/capybara"
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
 
-class ActiveSupport::TestCase
+class MiniTest::Spec
   include Warden::Test::Helpers
   Warden.test_mode!
 
@@ -27,12 +27,8 @@ class ActiveSupport::TestCase
 
   Rails.logger.level = 0
 
-  self.use_transactional_fixtures = false
-  self.use_instantiated_fixtures = false
   DatabaseCleaner.clean_with :truncation
   DatabaseCleaner.strategy = :transaction
-
-  fixtures :all
 
   before :each do
     if !self.class.ancestors.include? ActionController::TestCase
