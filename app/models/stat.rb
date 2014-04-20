@@ -1,4 +1,4 @@
-class Stat
+class Stat < ActiveRecord::Base
   include ActiveModel::Validations
   include ActiveModel::Conversion
   extend ActiveModel::Naming
