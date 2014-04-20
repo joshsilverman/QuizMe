@@ -11,7 +11,7 @@ require "minitest/rails/capybara"
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
 
-class MiniTest::Spec
+class ActiveSupport::TestCase
   include Warden::Test::Helpers
   Warden.test_mode!
 
@@ -51,6 +51,21 @@ class MiniTest::Spec
     if !self.class.ancestors.include? ActionController::TestCase
       DatabaseCleaner.clean
     end
+  end
+end
+
+class Minitest::Spec
+  include FactoryGirl::Syntax::Methods
+  DatabaseCleaner.strategy = :transaction
+
+  before :each do
+    DatabaseCleaner.start
+    ActiveRecord::Base.observers.disable :all
+  end
+
+  after :each do
+    Timecop.return
+    DatabaseCleaner.clean
   end
 end
 
