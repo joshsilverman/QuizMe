@@ -54,7 +54,8 @@ module QuestionbaseImporter
 
       question.update(
         text: question_hash['question'], 
-        created_for_asker_id: asker_id)
+        created_for_asker_id: asker_id,
+        status: 1)
 
       lesson_topic.questions << question
 
