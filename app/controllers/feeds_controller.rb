@@ -89,6 +89,11 @@ class FeedsController < ApplicationController
         .limit(1).first
     end
 
+    post ||= Post.create(
+      publication_id: publication.id,
+      question: question,
+      user: @question_asker)
+
     @conversation = Conversation.create({
       :user_id => current_user.id,
       :post_id => post.id,
