@@ -406,10 +406,14 @@ class Asker < User
 
   # rename public_response
   def app_response user_post, correct, options = {}
-    publication = user_post.conversation.try(:publication) || user_post.parent.try(:publication)
+    publication = user_post.conversation.try(:publication) 
+
     answerer = user_post.user
     question = user_post.link_to_question
     resource_url = nil
+    
+    publication ||= user_post.parent.try(:publication)
+    publication ||= Publication.find_or_create_by_question_id question.id, self.id
 
     if options[:response_text].present?
       response_text = options[:response_text]
