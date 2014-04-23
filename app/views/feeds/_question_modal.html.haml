@@ -1,7 +1,7 @@
 - cache("_question_modal-#{@asker.id}", :expires_in => 10.minutes) do
   #post_question_modal.modal.hide
     .modal-header
-      %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+      %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} x
       - if  @asker
         %h3= "Post a Question on #{@asker.twi_screen_name}"
       - else
@@ -35,7 +35,7 @@
 
       .message.hide
         Your question was submitted, we'll get in touch when its posted! 
-        %a.post_another Write another →
+        %a.post_another Write another >
 
       .modal_conversation_history.hide
         .conversation
