@@ -228,13 +228,6 @@ class QuestionsController < ApplicationController
     render :partial => "answers"
   end
 
-  def manage
-    all_questions = Question.where('status = 0').includes(:answers, :publications, :asker).order("questions.id DESC")
-    @questions = all_questions.where('moderation_trigger_type_id is not null').page(params[:page]).per(25)
-    @moderated_count = @questions.count
-    @pending_count = all_questions.count - @questions.count
-  end
-
   def count
     count = Question.where(user_id: params[:user_id]).count
 

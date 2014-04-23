@@ -82,7 +82,6 @@ Quizmemanager::Application.routes.draw do
 
   get "/questions/answers/:question_id" => "questions#display_answers"
 
-  get "questions/manage" => "questions#manage"
   get "questions/asker/:asker_id" => "questions#index"
 
   resources :questions
