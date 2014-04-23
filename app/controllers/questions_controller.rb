@@ -223,21 +223,6 @@ class QuestionsController < ApplicationController
     render :json => question.status, :status => 200
   end
 
-  def export
-    @questions = Question.all
-    respond_to :json
-  end
-
-  def enqueue
-    PublicationQueue.enqueue_question params[:asker_id], params[:question_id]
-    redirect_to "/questions/asker/#{params[:asker_id]}"
-  end
-
-  def dequeue
-    PublicationQueue.dequeue_question params[:asker_id], params[:question_id]
-    redirect_to "/questions/asker/#{params[:asker_id]}"
-  end
-
   def display_answers
     @question = Question.includes(:answers).find(params[:question_id])
     render :partial => "answers"

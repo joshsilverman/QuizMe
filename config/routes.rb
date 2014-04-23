@@ -80,9 +80,6 @@ Quizmemanager::Application.routes.draw do
   post "posts/respond_to_post"
   post "posts/retweet"
 
-  get "questions/enqueue/:asker_id/:question_id" => "questions#enqueue"
-  get "questions/dequeue/:asker_id/:question_id" => "questions#dequeue"
-
   get "/questions/answers/:question_id" => "questions#display_answers"
 
   get "questions/manage" => "questions#manage"
