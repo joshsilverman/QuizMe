@@ -80,8 +80,6 @@ Quizmemanager::Application.routes.draw do
   post "posts/respond_to_post"
   post "posts/retweet"
 
-  get "/questions/answers/:question_id" => "questions#display_answers"
-
   get "questions/asker/:asker_id" => "questions#index"
 
   resources :questions

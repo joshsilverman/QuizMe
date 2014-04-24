@@ -223,11 +223,6 @@ class QuestionsController < ApplicationController
     render :json => question.status, :status => 200
   end
 
-  def display_answers
-    @question = Question.includes(:answers).find(params[:question_id])
-    render :partial => "answers"
-  end
-
   def count
     count = Question.where(user_id: params[:user_id]).count
 
