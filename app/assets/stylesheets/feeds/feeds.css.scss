@@ -474,6 +474,12 @@ $border_thin: 0px;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
+        .completeness {
+          float:right;
+          font-size:80%;
+          opacity:.85;
+        }
       }
 
       .content:hover {
