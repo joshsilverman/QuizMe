@@ -1,4 +1,6 @@
 class TopicsController < ApplicationController
+  before_filter :authenticate_user!, :except => [:index, :show]
+
   def index
     respond_to do |format|
       format.json do
@@ -34,5 +36,15 @@ class TopicsController < ApplicationController
         end 
       end
     end
+  end
+
+  def answered_counts
+    records = current_user.posts.where(correct: true).where('in_reply_to_question_id IS NOT NULL').select(['count(distinct questions.id) as question_count', 'questions_topics.topic_id as topic_id']).joins(in_reply_to_question: :questions_topics).group(['questions_topics.topic_id'])
+    lesson_counts = {}
+    records.each do |record|
+      lesson_counts[record.topic_id] = record.question_count
+    end
+    lesson_counts
+    render json: lesson_counts
   end
 end

@@ -37,7 +37,11 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :topics, only: [:index]
+  resources :topics, only: [:index] do
+    collection do
+      get :answered_counts
+    end
+  end
   get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'

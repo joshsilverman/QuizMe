@@ -54,3 +54,82 @@ describe TopicsController do
     end
   end
 end
+
+describe TopicsController, "#answered_counts" do
+  it "responds to json" do
+    user = create :user
+    sign_in user
+
+    get :answered_counts, format: :json
+
+    response.status.must_equal 200
+  end
+
+  it "responds with count if question answered in lesson" do
+    user = create :user
+    lesson = create :lesson, :with_questions
+    question = lesson.questions.first
+    correct_response = create :correct_response, 
+      in_reply_to_question: question,
+      user: user
+
+    sign_in user
+
+    get :answered_counts, format: :json
+    answered_counts = JSON.parse(response.body)
+    
+    answered_counts.count.must_equal 1
+    answered_counts.values.first.must_equal 1
+  end
+
+  it "responds with count if multiple questions answered in lesson" do
+    user = create :user
+    lesson = create :lesson, :with_questions
+    question1 = lesson.questions[0]
+    question2 = lesson.questions[1]
+
+    correct_response1 = create :correct_response, 
+      in_reply_to_question: question1,
+      user: user
+
+    correct_response2 = create :correct_response, 
+      in_reply_to_question: question2,
+      user: user
+
+    sign_in user
+
+    get :answered_counts, format: :json
+    answered_counts = JSON.parse(response.body)
+    
+    answered_counts.count.must_equal 1
+    answered_counts.values.first.must_equal 2
+  end
+
+  it "wont count duplicate answers to same question lesson" do
+    user = create :user
+    lesson = create :lesson, :with_questions
+    question = lesson.questions[0]
+
+    correct_response1 = create :correct_response, 
+      in_reply_to_question: question,
+      user: user
+
+    correct_response2 = create :correct_response, 
+      in_reply_to_question: question,
+      user: user
+
+    sign_in user
+
+    get :answered_counts, format: :json
+    answered_counts = JSON.parse(response.body)
+    
+    answered_counts.count.must_equal 1
+    answered_counts.values.first.must_equal 1
+  end
+
+  it "redirects if no current user" do
+    get :answered_counts, format: :json
+
+    response.status.must_equal 401
+  end
+end
