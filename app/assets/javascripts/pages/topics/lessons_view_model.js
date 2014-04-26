@@ -21,6 +21,7 @@ if ($('.lessons:visible').length > 0) {
       var self = this;
 
       self.name = lesson.name;
+      self.completeness = lesson._question_count;
 
       self.goToLesson = function() {
         document.location.href = self.href;
