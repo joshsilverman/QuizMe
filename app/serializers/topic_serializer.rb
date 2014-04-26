@@ -1,7 +1,3 @@
 class TopicSerializer < ActiveModel::Serializer
-  attributes :id, :name, :topic_url
-
-  def topic_url
-    object.topic_url
-  end
+  attributes :id, :name, :topic_url, :_question_count
 end
