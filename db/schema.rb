@@ -303,7 +303,7 @@ ActiveRecord::Schema.define(version: 20140425124252) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "type_id"
-    t.integer  "questions_count", default: 0
+    t.integer  "_question_count", default: 0
   end
 
   create_table "transitions", force: true do |t|

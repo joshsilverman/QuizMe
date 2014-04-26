@@ -8,7 +8,8 @@ class Question < ActiveRecord::Base
   has_many :publications
   has_many :question_moderations
   
-  has_and_belongs_to_many :topics, -> { uniq }
+  has_many :topics, -> { uniq }, through: :questions_topics, :dependent => :destroy
+  has_many :questions_topics, :dependent => :destroy
 
   belongs_to :user
   belongs_to :asker, :foreign_key => :created_for_asker_id

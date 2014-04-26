@@ -1,7 +1,9 @@
 class Topic < ActiveRecord::Base
 	has_many :search_term_users, foreign_key: :search_term_topic_id, class_name: 'User'
 
-	has_and_belongs_to_many :questions, -> { uniq }
+  has_many :questions, -> { uniq }, through: :questions_topics, :dependent => :destroy
+  has_many :questions_topics, :dependent => :destroy
+
 	has_and_belongs_to_many :askers, -> { uniq }, join_table: :askers_topics
 
 	scope :descriptions, -> { where("type_id = 1") } # can be dropped into a sentence like: "Learn about ___." 

@@ -31,7 +31,8 @@ module Quizmemanager
 
     # Activate observers that should always be running.
     config.active_record.observers = :post_observer, 
-        :question_observer, 
+        :question_observer,
+        :questions_topic_observer,
         :post_moderation_observer, 
         :question_moderation_observer,
         :transition_observer,
