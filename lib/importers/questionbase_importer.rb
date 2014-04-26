@@ -57,7 +57,9 @@ module QuestionbaseImporter
         created_for_asker_id: asker_id,
         status: 1)
 
-      lesson_topic.questions << question
+      if !lesson_topic.questions.include?(question)
+        lesson_topic.questions << question
+      end
 
       find_or_create_answers question, question_hash['answers']
     end
