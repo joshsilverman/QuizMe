@@ -4,14 +4,11 @@ class Post < ActiveRecord::Base
 	belongs_to :question
   belongs_to :in_reply_to_question, :class_name => 'Question', :foreign_key => 'in_reply_to_question_id'
   belongs_to :in_reply_to_user, :class_name => 'User', :foreign_key => 'in_reply_to_user_id'
-  # has_one :question
   
   belongs_to :user
   has_and_belongs_to_many :tags, -> { uniq }
   belongs_to :asker, -> { where(role: 'asker') }, foreign_key: 'user_id'
   belongs_to :nudge_type
-  # has_many :comments, :conditions => { :published => true }
-  # belongs_to :asker, :class_name => "User", :foreign_key => 'asker_id'
 
   belongs_to :publication
   belongs_to :conversation
