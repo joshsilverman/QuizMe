@@ -15,12 +15,10 @@ if ($('.lessons:visible').length > 0) {
           lessonsViewModel.lessons.push(lessonModel);
         });
 
-        $.getJSON("/topics/answered_counts", function(answered_counts) {
-          ko.utils.arrayForEach(lessonsViewModel.lessons(), function(lesson) {
-            lesson.answered_count(answered_counts[lesson.id] || 0)
-          });
-        });
+        lessonsViewModel.update_answered_count();
       })
+
+      $(document).on('increment', lessonsViewModel.update_answered_count);
     }
 
     function LessonModel(lesson) {
@@ -42,6 +40,15 @@ if ($('.lessons:visible').length > 0) {
       var self = this;
 
       self.lessons = ko.observableArray([]);
+
+      self.update_answered_count = function() {
+        $.getJSON("/topics/answered_counts", function(answered_counts) {
+          console.log('update answered_counts');
+          ko.utils.arrayForEach(self.lessons(), function(lesson) {
+            lesson.answered_count(answered_counts[lesson.id] || 0)
+          });
+        });
+      }
     }
 
     ko.bindingHandlers.dotdotdot = {
