@@ -11,8 +11,10 @@ if ($('.lessons:visible').length > 0) {
       $.getJSON("/topics?scope=lessons&asker_id=" + askerId, function(lessons) {
         subjectUrl = lessons['meta']['subject_url']
         lessons['topics'].forEach(function(lesson) {
-          var lessonModel = new LessonModel(lesson);
-          lessonsViewModel.lessons.push(lessonModel);
+          if (lesson._question_count > 4) {
+            var lessonModel = new LessonModel(lesson);
+            lessonsViewModel.lessons.push(lessonModel);
+          }
         });
 
         lessonsViewModel.update_answered_count();
