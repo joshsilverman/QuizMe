@@ -6,4 +6,10 @@ class QuestionObserver < ActiveRecord::Observer
       question.asker.delay.request_feedback_on_question(question)
     end
   end
+
+  def after_save question
+    question.topics.lessons.each do |lesson|
+      lesson.update_question_count
+    end
+  end
 end
