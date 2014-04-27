@@ -101,6 +101,27 @@ describe Question, "#import_course_from_questionbase" do
     Question.last.answers.first.text.must_equal 'una cerveza'
   end
 
+  it "sets question status to approved if > 1 answers" do
+    Question.stubs(:get_course).returns course
+    Question.stubs(:get_chapter).returns chapter
+
+    Question.import_course_from_questionbase 123, asker.id
+
+    Question.last.status.must_equal 1
+  end
+
+  it "sets question status to pending if < 2 answers" do
+    Question.stubs(:get_course).returns course
+    chapter_with_question_without_answers = chapter
+    chapter_with_question_without_answers = 
+      chapter['questions'][0]['question']['answers'] = []
+    Question.stubs(:get_chapter).returns chapter
+
+    Question.import_course_from_questionbase 123, asker.id
+
+    Question.last.status.must_equal 0
+  end
+
   it "will update answer if they change on reimport" do
     Question.stubs(:get_course).returns course
     Question.stubs(:get_chapter).returns chapter

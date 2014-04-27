@@ -57,13 +57,14 @@ module QuestionbaseImporter
       question.update(
         text: question_hash['question'], 
         created_for_asker_id: asker_id,
-        status: 1)
+        status: 0)
 
       if !lesson_topic.questions.include?(question)
         lesson_topic.questions << question
       end
 
       find_or_create_answers question, question_hash['answers']
+      question.update(status: 1) if question.answers.count > 1
     end
 
     def find_or_create_answers question, answers_hash
