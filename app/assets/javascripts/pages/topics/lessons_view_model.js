@@ -14,14 +14,22 @@ if ($('.lessons:visible').length > 0) {
           var lessonModel = new LessonModel(lesson);
           lessonsViewModel.lessons.push(lessonModel);
         });
+
+        $.getJSON("/topics/answered_counts", function(answered_counts) {
+          ko.utils.arrayForEach(lessonsViewModel.lessons(), function(lesson) {
+            lesson.answered_count(answered_counts[lesson.id] || 0)
+          });
+        });
       })
     }
 
     function LessonModel(lesson) {
       var self = this;
 
+      self.id = lesson.id
       self.name = lesson.name;
-      self.completeness = lesson._question_count;
+      self.answered_count = ko.observable('');
+      self._question_count = lesson._question_count;
 
       self.goToLesson = function() {
         document.location.href = self.href;

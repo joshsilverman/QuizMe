@@ -545,8 +545,8 @@ $border_thin: 0px;
   }
 
   ul li .content {
-    span {
-      width: 32px;
+    > span {
+      width: 42px;
       margin: 15px 10px 0px 0;
       float: left;
       text-align: right;

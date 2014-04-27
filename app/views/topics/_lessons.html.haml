@@ -7,6 +7,9 @@
       .content{'data-bind' => 'click: goToLesson'}
         %span{"data-bind" => 'text: $index() + 1 + "."'}
 
-        %span.completeness{'data-bind' => 'text: completeness'}
+        %span.completeness
+          %span{'data-bind' => 'text: answered_count()'}
+          \/
+          %span{'data-bind' => 'text: _question_count'}
 
         %p{"data-bind" => "dotdotdot: name"}
