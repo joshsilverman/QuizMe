@@ -50,6 +50,15 @@ describe Question, "#import_course_from_questionbase" do
     Question.import_course_from_questionbase 123, asker.id
   end
 
+  it "stores course id on topic model" do
+    Question.expects(:get_course).returns course
+    Question.expects(:get_chapter).returns chapter
+
+    Question.import_course_from_questionbase 123, asker.id
+
+    Topic.lessons.last.questionbase_id.must_equal 3
+  end
+
   it "creates a new question" do
     Question.stubs(:get_course).returns course
     Question.stubs(:get_chapter).returns chapter

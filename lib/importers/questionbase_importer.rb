@@ -18,10 +18,12 @@ module QuestionbaseImporter
       
       course['chapters'].each do |chapter|
         lesson = get_chapter chapter['chapter']['id']
-        lesson_topic = Topic.find_or_create_by(
-          name: Topic.strip_illegal_chars_from_name(lesson['name']), 
+        lesson_topic = Topic.find_or_initialize_by(
+          questionbase_id: chapter['chapter']['id'],
           type_id: 6)
 
+        lesson_topic.name = Topic.strip_illegal_chars_from_name(lesson['name'])
+        lesson_topic.save
         lesson_topic.askers << asker
         
         lesson['questions'].each do |question|
