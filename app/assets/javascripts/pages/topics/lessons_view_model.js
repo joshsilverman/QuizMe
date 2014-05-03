@@ -1,9 +1,10 @@
 if ($('.lessons:visible').length > 0) {
   $(function() {
-    var lessonsViewModel, askerId, subjectUrl;
+    var lessonsViewModel, askerId, subjectUrl, currentUserId;
 
-    function init(_askerId) {
+    function init(_askerId, _currentUserId) {
       askerId = _askerId;
+      currentUserId = _currentUserId;
       lessonsViewModel = new LessonsViewModel();
 
       ko.applyBindings(lessonsViewModel, $('.lessons')[0]);
@@ -44,6 +45,8 @@ if ($('.lessons:visible').length > 0) {
       self.lessons = ko.observableArray([]);
 
       self.update_answered_count = function() {
+        if (!currentUserId) return;
+        
         $.getJSON("/topics/answered_counts", function(answered_counts) {
           console.log('update answered_counts');
           ko.utils.arrayForEach(self.lessons(), function(lesson) {
@@ -72,6 +75,6 @@ if ($('.lessons:visible').length > 0) {
       }
     };
 
-    init($('.lessons').data('askerid'));
+    init($('.lessons').data('askerid'), $('.feed-view').data('current_user-id'));
   });
 }
