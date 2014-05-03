@@ -9,7 +9,7 @@
 
         %span.completeness
           %span{'data-bind' => 'text: answered_count()'}
-          \/
+          %span{'data-bind' => 'visible: answered_count() !== ""'} /
           %span{'data-bind' => 'text: _question_count'}
 
         %p{"data-bind" => "dotdotdot: name"}
