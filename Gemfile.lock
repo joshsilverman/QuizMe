@@ -454,7 +454,7 @@ DEPENDENCIES
   roadie
   rspec-rails (= 2.8.1)
   ruby-prof
-  sass-rails (~> 4.0.1)
+  sass-rails (~> 4.0.0)
   selenium-webdriver (~> 2.38.0)
   sitemap_generator
   sourcify (~> 0.6.0.rc4)
