@@ -92,4 +92,3 @@ gem 'amatch'
 
 gem 'sourcify', "~> 0.6.0.rc4"
 gem 'pusher'
-gem 'airbrake'
