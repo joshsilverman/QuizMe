@@ -124,11 +124,11 @@ class EmailAsker < Asker
   end
 
   def detect_in_reply_to_post_id text, user
-    if match = text.match(/http:\/\/wisr.com\/feeds\/([0-9]+)\/([0-9]+)/)
+    if match = text.match(/#{URL}\/feeds\/([0-9]+)\/([0-9]+)/)
       url, asker_id, pub_id = match.to_a
       post_id = Publication.find(pub_id.to_i).posts.where("interaction_type = 5").where(in_reply_to_user_id: user.id).last.try(:id)
       return (id == asker_id.to_i and post_id) ? post_id : nil
-    elsif match = text.match(/http:\/\/wisr.com\/questions\/([0-9]+)/)
+    elsif match = text.match(/#{URL}\/questions\/([0-9]+)/)
       return Post.email.where(question_id: match[1], in_reply_to_user_id: user.id).last.try(:id)
     else
     end

@@ -40,7 +40,8 @@ describe EmailAskersController do
 		end
 
 		it 'with correct conversation' do
-			(conversation = @email_question_post.conversations.last).wont_be_nil
+			conversation = @email_question_post.conversations.last
+			conversation.wont_be_nil
 			@email_answer.conversation_id.must_equal conversation.id
 		end
 
