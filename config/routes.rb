@@ -2,6 +2,12 @@ Quizmemanager::Application.routes.draw do
   
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
+  constraints subdomain: false do
+    if Rails.env.production?
+      get ':any', to: redirect(subdomain: 'www', path: '/%{any}'), any: /.*/
+    end
+  end
+
   get "/users/sign_up" => redirect("/")
   get "/users/sign_in" => redirect("/")
   
