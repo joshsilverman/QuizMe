@@ -167,7 +167,7 @@ class Asker < User
   def next_question user, options = {}
     question = select_question(user)
     publication = question.publications.order("created_at DESC").first
-    long_url = publication ? "http://wisr.com/feeds/#{id}/#{publication.id}" : nil
+    long_url = publication ? "#{URL}/feeds/#{id}/#{publication.id}" : nil
     if options[:type] == :private # Not tested yet...
       self.send_private_message(user, question.text, {
         posted_via_app: true,
@@ -290,7 +290,7 @@ class Asker < User
     followup_post = EmailPrivateMessage.new(self, user, script, {
       in_reply_to_user_id: user.id,
       intention: 'correct answer follow up',
-      long_url: "http://wisr.com/feeds/#{id}/#{publication.id}",
+      long_url: "#{URL}/feeds/#{id}/#{publication.id}",
       publication_id: publication.id,
       posted_via_app: true, 
       requires_action: false,
@@ -323,7 +323,7 @@ class Asker < User
       :reply_to => user.twi_screen_name,
       :in_reply_to_user_id => user.id,
       :intention => 'incorrect answer follow up',
-      :long_url => "http://wisr.com/questions/#{question.id}/#{question.slug}",
+      :long_url => "#{URL}/questions/#{question.id}/#{question.slug}",
       :publication_id => publication.id,
       :posted_via_app => true, 
       :requires_action => false,
@@ -613,7 +613,7 @@ class Asker < User
       ].sample  
     end
 
-    link = authenticated_link('http://wisr.com/moderations/manage', user, (Time.now + 1.week))
+    link = authenticated_link("#{URL}/moderations/manage", user, (Time.now + 1.week))
     script.gsub! '<link>', link
 
     user.update role: "moderator" unless user.is_role?('admin')

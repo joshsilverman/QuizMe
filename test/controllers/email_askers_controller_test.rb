@@ -20,7 +20,7 @@ describe EmailAskersController do
 		@email_question_post = @email_asker.posts.where(intention: 'reengage inactive', in_reply_to_user_id: @emailer.id).first
 
 		@next_question = @email_question_post.question
-		text = "#{@next_question.answers.correct.text}\r\nhttp://wisr.com/questions/#{@next_question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
+		text = "#{@next_question.answers.correct.text}\r\n#{URL}/questions/#{@next_question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
 		@email_answer_params = {to: @email_asker.email, from: @emailer.email, text: text}
 		post "save_private_response", @email_answer_params
 		@email_answer = @emailer.posts.where(in_reply_to_user_id: @email_asker.id).last
@@ -51,7 +51,7 @@ describe EmailAskersController do
 
 		describe 'and responds' do
       it 'includes a followup question on grade' do
-        text = "#{@question.answers.correct.text}\r\nhttp://wisr.com/questions/#{@question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
+        text = "#{@question.answers.correct.text}\r\n#{URL}/questions/#{@question.id}?s=email&lt=reengage&c=QuizMeBio&t=scottie"
         post "save_private_response", {to: @email_asker.email, from: @emailer.email, text: text}
         ActionMailer::Base.deliveries.last.body.raw_source.include?("Next question:")
       end		

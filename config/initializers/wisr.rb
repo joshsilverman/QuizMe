@@ -16,7 +16,7 @@ WHITELISTED_MODERATORS = [
 AUTOFOLLOW_ASKER_IDS = [32588, 36605, 35106] # Neuro, AmericanRev, Respiratory
 
 if Rails.env.production?
-  URL = "http://wisr.com"
+  URL = "https://www.wisr.com"
 else
   URL = "http://localhost:3000"
 end
