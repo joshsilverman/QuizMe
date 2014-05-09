@@ -4,6 +4,12 @@ class ApplicationController < ActionController::Base
   before_filter :split_user
   before_filter :preload_models
 
+  force_ssl if: :ssl_configured?
+
+  def ssl_configured?
+    Rails.env.production?
+  end
+
   def check_for_authentication_token
     if !current_user and params["a"]
       auth_hash = Rack::Utils.parse_nested_query(Base64.decode64(params["a"]))
