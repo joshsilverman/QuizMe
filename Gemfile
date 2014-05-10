@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 ruby '2.1.1'
 gem 'puma'
-gem 'rails', '4.0.5'
+gem 'rails', '4.1.1'
 gem 'pg'
 gem 'redis'
 
@@ -12,7 +12,7 @@ gem 'actionpack-action_caching'
 gem 'activerecord-deprecated_finders'
 gem "active_model_serializers"
 
-gem 'delayed_job_active_record', '~> 4.0.0.beta2'
+gem 'delayed_job_active_record'
 
 group :test do
   gem "rspec-rails",'2.8.1'
@@ -50,7 +50,7 @@ group :development, :test do
   gem "guard-minitest"
 end
 
-gem 'rails_admin'
+gem 'rails_admin', '0.6.2'
 
 gem 'sass-rails', '~> 4.0.2'
 gem 'coffee-rails', '~> 4.0.1'
@@ -75,7 +75,7 @@ gem 'twitter', '4.8.1'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
-gem 'actionmailer', '~> 4.0.2'
+gem 'actionmailer'
 gem 'newrelic_rpm'
 gem 'mixpanel', '1.1.3'
 gem 'sitemap_generator'
