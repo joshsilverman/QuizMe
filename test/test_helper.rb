@@ -4,9 +4,8 @@ require "rails/test_help"
 require "minitest"
 require "minitest/rails"
 require "minitest/autorun"
-# require "capybara/rails"
-# require 'database_cleaner'
-# require "minitest/rails/capybara"
+require "capybara/rails"
+require 'database_cleaner'
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
 
