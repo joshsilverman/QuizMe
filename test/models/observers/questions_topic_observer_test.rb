@@ -33,6 +33,7 @@ describe Topic, "#_question_count" do
   end
 
   it "decrements question removed from collection" do
+    Question.count.must_equal 0
     question = Question.create status: 1
     topic = create :lesson
 
@@ -50,6 +51,7 @@ describe Topic, "#_question_count" do
   end
 
   it "updates count if question destroyed" do
+    Question.count.must_equal 0
     question = Question.create status: 1
     topic = create :lesson
 
