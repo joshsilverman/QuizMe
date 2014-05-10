@@ -17,10 +17,10 @@ gem 'delayed_job_active_record'
 group :test do
   gem "rspec-rails",'2.8.1'
   gem 'capybara'
-  gem 'minitest-rails-capybara'
-  gem 'capybara_minitest_spec'
+  gem 'capybara_minitest_spec', github: 'ordinaryzelig/capybara_minitest_spec'
+  gem 'minitest-rails'
+
   gem 'factory_girl_rails'
-  gem 'turn'
   gem "database_cleaner"
   gem 'timecop'
   gem 'selenium-webdriver', "~> 2.38.0"

@@ -7,6 +7,14 @@ GIT
       rails (>= 3.1)
 
 GIT
+  remote: git://github.com/ordinaryzelig/capybara_minitest_spec.git
+  revision: 0f5501e5de4a357bd91e680981ecdfa64e63ed5b
+  specs:
+    capybara_minitest_spec (1.0.2)
+      capybara (>= 2)
+      minitest (>= 2)
+
+GIT
   remote: https://github.com/bderusha/split
   revision: ebba7abb64510ece709d353d841f3e4464557d9d
   specs:
@@ -62,7 +70,6 @@ GEM
     addressable (2.3.6)
     amatch (0.2.11)
       tins (~> 0.3)
-    ansi (1.4.3)
     arel (5.0.1.20140414130214)
     bcrypt-ruby (3.0.1)
     builder (3.2.2)
@@ -73,9 +80,6 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-    capybara_minitest_spec (1.0.1)
-      capybara (>= 2)
-      minitest (>= 2)
     carrierwave (0.9.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -186,20 +190,9 @@ GEM
     mime-types (1.25.1)
     mini_portile (0.5.2)
     minitest (5.3.3)
-    minitest-capybara (0.6.1)
-      capybara (~> 2.1.0)
-      minitest (~> 5.0)
-      rake
-    minitest-metadata (0.5.0)
-      minitest (>= 4.7, < 6.0)
     minitest-rails (2.0.1)
       minitest (>= 5.3.3, < 6.0)
       railties (~> 4.1)
-    minitest-rails-capybara (2.0.0)
-      capybara (~> 2.0)
-      minitest-capybara (~> 0.6.1)
-      minitest-metadata (~> 0.5.0)
-      minitest-rails (~> 2.0.0)
     mixpanel (1.1.3)
       escape
       json
@@ -377,8 +370,6 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    turn (0.9.6)
-      ansi
     twitter (4.8.1)
       faraday (~> 0.8, < 0.10)
       multi_json (~> 1.0)
@@ -416,7 +407,7 @@ DEPENDENCIES
   best_in_place!
   cancan
   capybara
-  capybara_minitest_spec
+  capybara_minitest_spec!
   carrierwave
   coffee-rails (~> 4.0.1)
   dalli (= 2.6.4)
@@ -436,7 +427,7 @@ DEPENDENCIES
   lodash-rails
   mail
   memcachier
-  minitest-rails-capybara
+  minitest-rails
   mixpanel (= 1.1.3)
   mocha
   momentjs-rails
@@ -469,7 +460,6 @@ DEPENDENCIES
   spring
   stuff-classifier!
   timecop
-  turn
   twitter (= 4.8.1)
   twitter-bootstrap-rails (= 2.1.1)
   uglifier (>= 2.1.1)
