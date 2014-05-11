@@ -230,7 +230,9 @@ class Post < ActiveRecord::Base
     # set default ordering of text entities in tweet
     entity_order = [:in_reply_to_user, :text, :question_backlink, :hashtag, :resource_backlink]
     # set how each entity should be displayed
-    formatting = {:in_reply_to_user => "@{content}", :hashtag => "\#{content}", :resource_backlink => "Learn more at {content}"}
+    formatting = {in_reply_to_user: "@{content}", 
+      hashtag: "\#{content}", 
+      resource_backlink: "Learn more at {content}"}
 
     # select entities in use for this tweet (always includes text)
     tweet_format = entity_order.select { |entity| entity == :text or options[entity].present? }
