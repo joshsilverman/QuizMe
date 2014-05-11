@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-ruby '2.1.1'
+ruby '2.1.2'
 gem 'puma'
 gem 'rails', '4.1.1'
 gem 'pg'
@@ -59,7 +59,8 @@ gem "less-rails"
 
 gem 'jquery-ui-rails'
 gem 'haml'
-gem 'twitter-bootstrap-rails', '2.1.1'
+gem 'twitter-bootstrap-rails'
+gem 'therubyracer'
 gem 'jquery-rails'
 gem 'lodash-rails'
 gem 'momentjs-rails'
