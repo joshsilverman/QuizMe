@@ -1,13 +1,11 @@
-require 'rubygems'
-
 ENV["RAILS_ENV"] = "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rails/test_help"
-require "minitest/autorun"
+require "minitest"
 require "minitest/rails"
+require "minitest/autorun"
 require "capybara/rails"
 require 'database_cleaner'
-require "minitest/rails/capybara"
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
 

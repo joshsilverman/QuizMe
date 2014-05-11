@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe AnswerObserver, "#after_save" do
+describe Answer, "AnswerObserver#after_save" do
   before :each do
     ActiveRecord::Base.observers.disable :all
     ActiveRecord::Base.observers.enable :answer_observer

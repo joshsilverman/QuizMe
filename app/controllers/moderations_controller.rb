@@ -8,7 +8,7 @@ class ModerationsController < ApplicationController
     if params[:edits] == 'true'
       @moderatables = Question
         .requires_moderations(moderator, {needs_edits_only: true})
-        .sort_by {|m| m.created_at }.reverse
+        .to_a.sort_by {|m| m.created_at }.reverse
     elsif params[:all] == 'true' and moderator.is_admin?
       @moderatables = Question.where('status = 0')
         .where('needs_edits is null and publishable is null')
@@ -17,7 +17,7 @@ class ModerationsController < ApplicationController
       question = Question.where(id: params[:question_id]).first
       @moderatables = (question and question.needs_feedback?) ? [question] : []
     else
-      @moderatables = Post.requires_moderations(moderator).sort_by {|m| m.created_at }.reverse
+      @moderatables = Post.requires_moderations(moderator).to_a.sort_by {|m| m.created_at }.reverse
       Question.requires_moderations(moderator).each { |question| @moderatables.insert(rand(@moderatables.length), question) }
     end
 
@@ -25,7 +25,7 @@ class ModerationsController < ApplicationController
     @asker = User.find 8765
     @oneinbox = true
     @askers_by_id = Hash[*Asker.select([:id, :twi_screen_name, :twi_profile_img_url]).map{|a| [a.id, {twi_screen_name: a.twi_screen_name, twi_profile_img_url: a.twi_profile_img_url}]}.flatten]
-    @asker_twi_screen_names = Asker.askers_with_id_and_twi_screen_name.sort_by! { |a| a.twi_screen_name.downcase }.each { |a| a.twi_screen_name = a.twi_screen_name.downcase }
+    @asker_twi_screen_names = Asker.askers_with_id_and_twi_screen_name.to_a.sort_by! { |a| a.twi_screen_name.downcase }.each { |a| a.twi_screen_name = a.twi_screen_name.downcase }
     @display_notifications = Post.create_split_test(moderator.id, 'grading on mod manage displays actions via growl (mod => regular)', 'false', 'true')
   end
 
