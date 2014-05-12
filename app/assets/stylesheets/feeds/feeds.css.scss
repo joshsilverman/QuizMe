@@ -25,7 +25,7 @@ $inner_gutter: 50px;
 
 $max_left_gutter: 5%;
 $max979_left_gutter: 4%;
-$max767_left_gutter: -1%;
+$max767_left_gutter: -7px;
 
 $border_thick: 8px;
 $border_medium: 4px;
@@ -168,6 +168,21 @@ $border_thin: 0px;
   }
 }
 
+.timeline-container {
+  ul.timeline {
+    padding-top: 220px;
+    top: -141px;
+  }
+}
+.phone-variant {
+  .timeline-container {
+    ul.timeline {
+      padding-top: 1px;
+      top:0px;
+    }
+  }
+}
+
 .columns {
   display:flex;
   justify-content: space-between;
@@ -199,9 +214,6 @@ $border_thin: 0px;
     ul.timeline {
       position: relative;
       margin-bottom: 0px;
-
-      padding-top: 220px;
-      top: -141px;
 
       list-style: none;
       border-left: $border_thick solid $white;
