@@ -4,6 +4,14 @@ class FeedsController < ApplicationController
   before_filter :admin?, :only => [:manager_response]
   before_filter :set_session_variables, :only => [:show]
 
+  before_action :set_variant
+
+  def set_variant
+    if request.headers['HTTP_WISR_VARIANT']
+      request.variant = request.headers['HTTP_WISR_VARIANT'].to_sym
+    end
+  end
+
   def index
     respond_to do |format|
       format.html do
@@ -21,7 +29,13 @@ class FeedsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html { show_redirect }
+      format.html.phone do
+        show_redirect
+        render :show, layout: 'phone'
+      end
+
+      format.html.none { show_redirect }
+
       format.json do
         subject = params[:subject] || 'wisr'
         asker = Asker.find_by_subject_url subject
