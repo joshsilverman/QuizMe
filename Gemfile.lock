@@ -170,7 +170,7 @@ GEM
       rails
     less (2.2.2)
       commonjs (~> 0.2.6)
-    less-rails (2.2.2)
+    less-rails (2.2.6)
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
@@ -423,7 +423,7 @@ DEPENDENCIES
   jquery-ui-rails
   kaminari
   kaminari-bootstrap
-  less-rails (= 2.2.2)
+  less-rails
   lodash-rails
   mail
   memcachier
@@ -459,7 +459,6 @@ DEPENDENCIES
   split!
   spring
   stuff-classifier!
-  therubyracer (= 0.10.1)
   timecop
   twitter (= 4.8.1)
   twitter-bootstrap-rails (= 2.1.1)
