@@ -168,11 +168,11 @@ GEM
     kaminari-bootstrap (3.0.1)
       kaminari (>= 0.13.0)
       rails
-    less (2.5.0)
-      commonjs (~> 0.2.7)
-    less-rails (2.5.0)
+    less (2.2.2)
+      commonjs (~> 0.2.6)
+    less-rails (2.2.2)
       actionpack (>= 3.1)
-      less (~> 2.5.0)
+      less (~> 2.2.0)
     libv8 (3.16.14.3)
     listen (2.4.0)
       celluloid (>= 0.15.2)
@@ -425,7 +425,7 @@ DEPENDENCIES
   jquery-ui-rails
   kaminari
   kaminari-bootstrap
-  less-rails
+  less-rails (= 2.2.2)
   lodash-rails
   mail
   memcachier
@@ -464,6 +464,6 @@ DEPENDENCIES
   therubyracer
   timecop
   twitter (= 4.8.1)
-  twitter-bootstrap-rails
+  twitter-bootstrap-rails (= 2.2.8)
   uglifier (>= 2.1.1)
   webmock
