@@ -130,7 +130,8 @@ class AskersController < ApplicationController
         :twi_name, :twi_screen_name, :twi_profile_img_url,
         :subject, :subject_url,
         :description, 
-        :published].each do |attribute|
+        :published,
+        :styles].each do |attribute|
 
         asker_hash[attribute] = asker.send attribute
       end
