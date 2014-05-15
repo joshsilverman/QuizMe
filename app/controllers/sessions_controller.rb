@@ -14,5 +14,13 @@ class SessionsController < Devise::SessionsController
     # choose random asker for styling
     @asker = Asker.published.sample
     @asker.subject = 'Sign In'
+
+    respond_to do |format|
+      format.html.phone do
+        render :show, layout: 'phone'
+      end
+      
+      format.html.none {}
+    end
   end
 end
