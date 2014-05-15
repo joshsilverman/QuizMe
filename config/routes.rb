@@ -9,9 +9,8 @@ Quizmemanager::Application.routes.draw do
   end
 
   get "/users/sign_up" => redirect("/")
-  get "/users/sign_in" => redirect("/")
   
-  devise_for :users, :controllers => { :omniauth_callbacks => "authorizations" }
+  devise_for :users, :controllers => { :omniauth_callbacks => "authorizations", sessions: :sessions }
 
   resources :askers, except: [:destroy] do
     collection do

@@ -1,0 +1,39 @@
+.sessions-new {
+  .topfold {
+    max-width: 400px;
+    margin: auto;
+    position: relative;
+    top:30px;
+
+    .asker-photo {
+      margin-left: 45px
+    }
+
+    .title {
+      display:none;
+    }
+  }
+
+  .login-container {
+    margin: auto;
+    padding:15px;
+    margin-top: 10px;
+    max-width: 400px;
+
+    .login {
+      h3 {
+        padding-left: 30px;
+        font-size: 20px;
+      }
+
+      ul li a.twitter-sign-in {
+        padding-left: 30px;
+        display: inline-block;
+
+        img {
+          height: inherit;
+        }
+      }
+    }
+  }
+}

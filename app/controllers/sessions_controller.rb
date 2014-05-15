@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class SessionsController < Devise::SessionsController
 
   def confirm_js
     if Rails.env.test?
@@ -10,4 +10,9 @@ class SessionsController < ApplicationController
     render :nothing => true
   end
 
+  def new
+    # choose random asker for styling
+    @asker = Asker.published.sample
+    @asker.subject = 'Sign In'
+  end
 end
