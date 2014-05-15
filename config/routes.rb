@@ -101,7 +101,10 @@ Quizmemanager::Application.routes.draw do
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
 
-  get "/confirm_js" => "sessions#confirm_js"
+  scope :devise do
+    get "/confirm_js" => "sessions#confirm_js"
+  end
+
   get '/sitemap' => 'pages#sitemap'
 
   post "/email_askers/save_private_response"
