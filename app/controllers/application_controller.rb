@@ -3,11 +3,18 @@ class ApplicationController < ActionController::Base
   before_filter :referrer_data
   before_filter :split_user
   before_filter :preload_models
+  before_action :set_variant
 
   force_ssl if: :ssl_configured?
 
   def ssl_configured?
     Rails.env.production?
+  end
+  
+  def set_variant
+    if request.headers['HTTP_WISR_VARIANT']
+      request.variant = request.headers['HTTP_WISR_VARIANT'].to_sym
+    end
   end
 
   def check_for_authentication_token
