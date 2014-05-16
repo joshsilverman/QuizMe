@@ -416,6 +416,7 @@ DEPENDENCIES
   devise (= 3.0.4)
   factory_girl_rails
   fog
+  font-awesome-rails
   guard
   guard-minitest
   haml

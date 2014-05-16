@@ -60,6 +60,7 @@ gem "less-rails"
 gem 'jquery-ui-rails'
 gem 'haml'
 gem 'twitter-bootstrap-rails', '2.1.1'
+gem "font-awesome-rails"
 gem 'jquery-rails'
 gem 'lodash-rails'
 gem 'momentjs-rails'
