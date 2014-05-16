@@ -1,7 +1,26 @@
 class AuthorizationsController < ApplicationController
 
   def twitter
-  	oauthorize "twitter"
+    provider = "twitter"
+    @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
+
+    if @user
+      MP.track_event "authorized app", {
+      	distinct_id: @user.id, 
+      	service: provider,
+      	variant: request.variant}
+      
+      respond_to do |format|
+        format.html.phone {
+          render text: 'authenticated'
+        }
+
+        format.html.none do
+        	sign_in_and_redirect @user, :event => :authentication
+        end
+      end
+    end 
+
   end
 
   def failure
@@ -13,15 +32,6 @@ class AuthorizationsController < ApplicationController
   end
 
   private
-
-  	def oauthorize provider
-	    if @user = find_for_ouath(provider, env["omniauth.auth"], current_user)
-	      # session["devise.#{provider.downcase}_data"] = env["omniauth.auth"]
-	      MP.track_event "authorized app", {:distinct_id => @user.id, :service => provider}
-	      sign_in_and_redirect @user, :event => :authentication
-	    end   
-  	end
-
 	  def find_for_ouath provider, auth_hash, resource
 	    user, email, name, uid, auth_attr, user_attr = nil, nil, nil, {}, {}
 	    case provider

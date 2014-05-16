@@ -8,6 +8,6 @@
           .content
             %h3 Sign into Wisr:
 
-            %a.login-btn{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}
+            %a.login-btn{href: user_omniauth_authorize_path(:twitter, use_authorize: false, variant: request.variant)}
               %i.fa.fa-twitter
               | Connect with Twitter
