@@ -3,10 +3,10 @@
     max-width: 400px;
     margin: auto;
     position: relative;
-    top:30px;
+    top:0px;
 
     .asker-photo {
-      margin-left: 45px
+      margin-left: 15px
     }
 
     .title {
@@ -17,21 +17,34 @@
   .login-container {
     margin: auto;
     padding:15px;
-    margin-top: 10px;
+    margin-top: -25px;
     max-width: 400px;
 
     .login {
+      background-color: #eee9dc;
       h3 {
-        padding-left: 30px;
-        font-size: 20px;
+        font-size: 18px;
+        line-height: 27px;
+        padding-bottom: 15px;
       }
 
-      ul li a.twitter-sign-in {
-        padding-left: 30px;
-        display: inline-block;
+      ul li .login-btn {
+        display: block;
 
-        img {
-          height: inherit;
+        background: #d5d1c5;
+        color: #333333;
+        padding: 8px;
+        margin: 10px;
+        border-radius: 0.5em;
+        font-weight: 200;
+        font-size: 16px;
+        border:none;
+        box-shadow: none;
+
+        &:hover {
+          text-decoration: none;
+          cursor: pointer;
+          background: rgba(0, 0, 0, 0.2);
         }
       }
     }

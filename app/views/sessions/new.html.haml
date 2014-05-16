@@ -6,6 +6,8 @@
       %ul
         %li.appear
           .content
-            %h3 Sign in
+            %h3 Sign into Wisr:
 
-            %a.twitter-sign-in{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}= image_tag 'twitter/sign_in_button.png'
+            %a.login-btn{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}
+              %i.fa.fa-twitter
+              | Connect with Twitter
