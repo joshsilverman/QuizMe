@@ -17,7 +17,7 @@ class SessionsController < Devise::SessionsController
 
     respond_to do |format|
       format.html.phone do
-        render :show, layout: 'phone'
+        render :new, layout: 'phone'
       end
       
       format.html.none {}

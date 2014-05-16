@@ -2,11 +2,13 @@
   .topfold {
     max-width: 400px;
     margin: auto;
-    position: relative;
-    top:0px;
+    min-height:10px;
+    position: inherit;
 
     .asker-photo {
-      margin-left: 15px
+      padding-top: 55px;
+      margin-left: 15px;
+      display:none;
     }
 
     .title {
@@ -17,7 +19,7 @@
   .login-container {
     margin: auto;
     padding:15px;
-    margin-top: -25px;
+    padding-top: 75px;
     max-width: 400px;
 
     .login {
