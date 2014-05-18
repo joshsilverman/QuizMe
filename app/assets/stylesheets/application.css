@@ -70,3 +70,7 @@ body {
   width:16px;
   opacity:.9;
 }
+
+.phone-variant .phone-variant-hide {
+  display: none;
+}
