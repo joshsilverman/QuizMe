@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 ruby '2.1.1'
 gem 'puma'
+gem 'puma_worker_killer'
 gem 'rails', '4.1.1'
 gem 'pg'
 gem 'redis'
