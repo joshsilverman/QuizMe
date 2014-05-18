@@ -1,4 +1,5 @@
 class AuthorizationsController < ApplicationController
+  include AuthorizationsHelper
 
   def twitter
     provider = "twitter"
@@ -12,7 +13,7 @@ class AuthorizationsController < ApplicationController
       
       respond_to do |format|
         format.html.phone {
-          render text: 'authenticated'
+          render text: expireable_auth_token(@user, Time.now + 10.years)
         }
 
         format.html.none do
