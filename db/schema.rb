@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140427142316) do
+ActiveRecord::Schema.define(version: 20140520124719) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -281,6 +281,7 @@ ActiveRecord::Schema.define(version: 20140427142316) do
     t.integer  "type_id"
     t.boolean  "active",      default: true
     t.boolean  "pending",     default: false
+    t.integer  "channel"
   end
 
   add_index "relationships", ["followed_id"], name: "index_relationships_on_followed_id", using: :btree

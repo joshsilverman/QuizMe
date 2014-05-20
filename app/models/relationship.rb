@@ -14,4 +14,7 @@ class Relationship < ActiveRecord::Base
 
   scope :active, -> { where("relationships.active = ?", true) }
   scope :inactive, -> { where("relationships.active = ?", false) }
+
+  scope :twitter, -> { where("relationships.channel = 0") }
+  scope :wisr, -> { where("relationships.channel = 1") }
 end
