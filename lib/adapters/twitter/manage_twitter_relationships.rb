@@ -33,7 +33,9 @@ module ManageTwitterRelationships
     return 0 if Time.now.hour > ((id + Time.now.wday + Time.now.to_date.cweek) % 6 + 18)
     # Check if we've already followed enough users today
     
-    follows_count_today = follow_relationships.where("created_at > ?", Time.now.beginning_of_day).where("type_id is null or type_id = ?", 2).count
+    follows_count_today = follow_relationships.twitter
+      .where("created_at > ?", Time.now.beginning_of_day)
+      .where("type_id is null or type_id = ?", 2).count
     max_follows = max_follows - follows_count_today
     return 0 if max_follows < 1
 

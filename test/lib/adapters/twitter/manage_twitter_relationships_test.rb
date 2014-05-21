@@ -121,6 +121,21 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.add_follow(create(:user), 2)
       @asker.reload.autofollow_count.must_equal(autofollow_count - 1)
     end
+
+    it 'only looks at twitter follows' do
+      autofollow_count = 0
+      while autofollow_count < 2
+        Timecop.travel(Time.now + 1.hour)
+        autofollow_count = @asker.autofollow_count
+      end
+      
+      @asker.autofollow_count.must_equal 2
+      @asker.add_follow(create(:user), 2, Relationship::WISR)
+      @asker.reload.autofollow_count.must_equal 2
+
+      @asker.add_follow(create(:user), 2)
+      @asker.reload.autofollow_count.must_equal 1
+    end
   end
 
   describe "updates followers" do
