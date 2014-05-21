@@ -1,12 +1,62 @@
 require 'test_helper'
 
-describe User, 'CRUD' do
+describe User do
   describe '#save' do
     it 'saves records with large :twi_user_id' do
       user = User.find_or_create_by(twi_user_id: 2210874654)
 
       user.valid?.must_equal true
     end
+  end
+end
+
+describe User, '#follow_relationships' do
+  let (:asker) { create :asker }
+  let (:john) { create :user }
+  let (:sam) { create :user }
+
+  it 'includes both twitter and wisr channel follows' do
+    relationship = Relationship.create(
+      follower: asker,
+      followed: john,
+      channel: Relationship::TWITTER)
+
+    relationship = Relationship.create(
+      follower: asker,
+      followed: sam,
+      channel: Relationship::WISR)
+
+    asker.follow_relationships.count.must_equal 2
+  end
+
+  it '.twitter excludes wisr channel follows' do
+    relationship = Relationship.create(
+      follower: asker,
+      followed: john,
+      channel: Relationship::TWITTER)
+
+    relationship = Relationship.create(
+      follower: asker,
+      followed: sam,
+      channel: Relationship::WISR)
+
+    asker.follow_relationships.twitter.count.must_equal 1
+    asker.follow_relationships.twitter.first.followed_id.must_equal john.id
+  end
+
+  it '.wisr excludes twitter channel follows' do
+    relationship = Relationship.create(
+      follower: asker,
+      followed: john,
+      channel: Relationship::TWITTER)
+
+    relationship = Relationship.create(
+      follower: asker,
+      followed: sam,
+      channel: Relationship::WISR)
+
+    asker.follow_relationships.wisr.count.must_equal 1
+    asker.follow_relationships.wisr.first.followed_id.must_equal sam.id
   end
 end
 
