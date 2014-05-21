@@ -8,6 +8,6 @@ describe Relationship do
     relationship = Relationship.create(
       follower: user,
       followed: asker,
-      channel: 1)
+      channel: Relationship::WISR)
   end
 end
