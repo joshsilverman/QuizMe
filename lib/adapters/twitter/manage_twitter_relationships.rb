@@ -137,11 +137,16 @@ module ManageTwitterRelationships
   end
 
   def unfollow_nonreciprocal twi_follows_ids, max_unfollows, limit = 30.days.ago
-    nonreciprocal_followers = User.where(twi_user_id: (twi_follows_ids - followers.collect(&:twi_user_id)))
+    nonreciprocal_followers = User
+      .where(twi_user_id: (twi_follows_ids - followers.collect(&:twi_user_id)))
     nonreciprocal_follower_ids = nonreciprocal_followers.collect(&:id)
     nonreciprocal_follower_ids = [0] if nonreciprocal_follower_ids.empty?
-    follow_relationships.active.where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids).sample(max_unfollows).each do |nonreciprocal_relationship|
-      user = nonreciprocal_followers.select { |u| u.id == nonreciprocal_relationship.followed_id }.first
+    follow_relationships.active
+      .where('updated_at < ? AND followed_id IN (?)', limit, nonreciprocal_follower_ids)
+      .sample(max_unfollows).each do |nonreciprocal_relationship|
+
+      user = nonreciprocal_followers.select { |u| 
+        u.id == nonreciprocal_relationship.followed_id }.first
       response = Post.twitter_request { twitter.unfollow(user.twi_user_id) }
       if response.present?
         remove_follow(user)
