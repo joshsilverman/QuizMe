@@ -6,7 +6,8 @@ describe Asker, 'ManageTwitterRelationships' do
     @asker = create(:asker)
     @user = create(:user, twi_user_id: 1)
 
-    @asker.followers << @user   
+    @asker.followers << @user
+    @asker.follower_relationships.update_all(channel: Relationship::TWITTER) 
 
     @question = create(:question, created_for_asker_id: @asker.id, status: 1)   
     @publication = create(:publication, question_id: @question.id)
@@ -111,6 +112,19 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.reload.follows.count.must_equal 6
     end
 
+    it "sets correct twitter channel for autofollows" do
+      @asker.follows.count.must_equal 0
+      twi_user_ids = (5..10).to_a
+      
+      Post.stubs(:twitter_request).returns([1])
+
+      @asker.followback(@asker.followers.collect(&:twi_user_id))
+      @asker.reload.follows.count.must_equal 1
+      @asker.send_autofollows(twi_user_ids, 5, { force: true })
+      @asker.reload.follows.count.must_equal 6
+      @asker.follow_relationships.twitter.count.must_equal 6
+    end
+
     it 'takes into account previous follows from today when calculating autofollow count' do
       autofollow_count = 0
       while autofollow_count < 2
@@ -145,6 +159,8 @@ describe Asker, 'ManageTwitterRelationships' do
       wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
       @asker.update_followers(twi_follower_ids, wisr_follower_ids)
       @asker.reload.followers.count.must_equal 2
+      @asker.follower_relationships.count.must_equal 2
+      @asker.follower_relationships.twitter.count.must_equal 2
     end
 
     it "follows new follower back" do
@@ -152,11 +168,13 @@ describe Asker, 'ManageTwitterRelationships' do
       twi_follower_ids = [@new_user.twi_user_id]
       wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
       twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+      @asker.follow_relationships.twitter.count.must_equal 0
 
       Post.stubs(:twitter_request).returns([1])
 
       @asker.followback(twi_follower_ids)
       @asker.reload.follows.must_include @new_user
+      @asker.follow_relationships.reload.twitter.count.must_equal 1
     end
 
     it "sets correct type_id for user followback" do

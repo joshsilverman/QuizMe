@@ -167,9 +167,13 @@ module ManageTwitterRelationships
     end
   end 
 
-  def add_follow user, type_id = nil
+  def add_follow user, type_id = nil, channel = Relationship::TWITTER
     relationship = follow_relationships.find_or_initialize_by(followed_id: user.id)
-    relationship.update_attributes(active: true, type_id: type_id, pending: false)
+    relationship.update_attributes(
+      active: true, 
+      type_id: type_id, 
+      pending: false,
+      channel: channel)
     MP.track_event "add follow", { distinct_id: id, type_id: type_id }  
   end
 
@@ -217,11 +221,12 @@ module ManageTwitterRelationships
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
       user = existing_users.select { |u| u.twi_user_id == twi_user_id }.first
       user = User.find_or_create_by(twi_user_id: twi_user_id) if user.blank?
-
       if asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
         next
       elsif twi_pending_ids.include? twi_user_id # Skip followback -- request pending
-        follow_relationships.find_or_initialize_by(followed_id: user.id).update_attribute :pending, true
+        follow_relationships.find_or_initialize_by(followed_id: user.id)
+          .update(pending: true,
+            channel: Relationship::TWITTER)
         next
       elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.type_id == 4 }.present? # Skip followback -- account was suspended (?)
         next
@@ -237,7 +242,11 @@ module ManageTwitterRelationships
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil? # possible suspended acct, setting relationship to suspended
         puts "Twitter Error: Could not follow (suspended?) user #{twi_user_id} from #{id}"
-        follow_relationships.find_or_initialize_by(followed_id: user.id).update_attributes(type_id: 4, active: false) 
+        follow_relationships.find_or_initialize_by(followed_id: user.id)
+          .update_attributes(
+            type_id: 4, 
+            active: false,
+            channel: Relationship::TWITTER) 
         next
       elsif response.empty?
         puts "Twitter Error: Could not followback user #{twi_user_id} from #{id}"
@@ -248,9 +257,13 @@ module ManageTwitterRelationships
     end
   end
 
-  def add_follower user, type_id = nil
+  def add_follower user, type_id = nil, channel = Relationship::TWITTER
     relationship = follower_relationships.find_or_initialize_by(follower_id: user.id)
-    relationship.update_attributes(active: true, type_id: type_id, pending: false)
+    relationship.update(
+      active: true, 
+      type_id: type_id, 
+      pending: false,
+      channel: Relationship::TWITTER)
     send_new_user_question(user)
     user.segment
   end
