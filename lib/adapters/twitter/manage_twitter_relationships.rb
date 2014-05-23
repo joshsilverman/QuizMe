@@ -176,7 +176,8 @@ module ManageTwitterRelationships
   end 
 
   def add_follow user, type_id = nil, channel = Relationship::TWITTER
-    relationship = follow_relationships.find_or_initialize_by(followed_id: user.id)
+    relationship = follow_relationships
+      .find_or_initialize_by(followed_id: user.id)
     relationship.update_attributes(
       active: true, 
       type_id: type_id, 
@@ -195,7 +196,9 @@ module ManageTwitterRelationships
 
   def request_and_update_followers
     twi_follower_ids = Post.twitter_request { twitter.follower_ids.ids }
-    update_followers(twi_follower_ids, followers.collect(&:twi_user_id)) if twi_follower_ids.present?
+    if twi_follower_ids.present?
+      update_followers(twi_follower_ids, followers.collect(&:twi_user_id))
+    end
   end
 
   def update_followers twi_follower_ids, wisr_follower_ids
@@ -207,8 +210,18 @@ module ManageTwitterRelationships
       add_follower(follower, follower_type_id)
     end
 
-    # Remove unfollowers from asker follow association    
-    User.where("twi_user_id in (?)", (wisr_follower_ids - twi_follower_ids)).each { |unfollowed_user| remove_follower(unfollowed_user) }
+    # Remove unfollowers from asker follow association
+    not_following_over_twitter_ids = wisr_follower_ids - twi_follower_ids
+
+    following_over_wisr_channel_ids = Relationship.wisr
+      .where(followed_id: id).pluck(:follower_id)
+    following_over_wisr_twitter_ids = User
+      .where('id IN (?)', following_over_wisr_channel_ids).pluck(:twi_user_id)
+
+    removeable_ids = not_following_over_twitter_ids - following_over_wisr_twitter_ids
+    User.where("twi_user_id in (?)", removeable_ids).each do |unfollowed_user| 
+      remove_follower(unfollowed_user)
+    end
 
     twi_follower_ids 
   end 

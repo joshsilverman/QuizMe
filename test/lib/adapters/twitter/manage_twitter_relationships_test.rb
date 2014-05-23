@@ -232,13 +232,31 @@ describe Asker, 'ManageTwitterRelationships' do
       relationship.reload.active.must_equal true
     end
 
-    it "removes unfollowers" do
+    it "removes twitter unfollowers" do
       twi_follower_ids = []
-      wisr_follower_ids = @asker.followers.collect(&:twi_user_id)       
+      wisr_follower_ids = @asker.followers.pluck(:twi_user_id)  
+      Relationship.where(followed_id: @asker.id, follower_id: @user.id).first
+        .update channel: Relationship::TWITTER
+
       @asker.update_followers(twi_follower_ids, wisr_follower_ids)
       @asker = @asker.reload
       @asker.followers.count.must_equal 0
       @asker.follower_relationships.count.must_equal 1
+      @asker.follower_relationships.twitter.count.must_equal 1
+    end
+
+    it "wont remove wisr unfollowers" do
+      Relationship.where(followed_id: @asker.id, follower_id: @user.id).first
+        .update channel: Relationship::WISR
+
+      twi_follower_ids = []
+      wisr_follower_ids = @asker.followers.collect(&:twi_user_id) 
+
+      @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+      @asker = @asker.reload
+      @asker.followers.count.must_equal 1
+      @asker.follower_relationships.count.must_equal 1
+      @asker.follower_relationships.wisr.count.must_equal 1
     end
   end
 

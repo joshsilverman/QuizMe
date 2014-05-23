@@ -6,7 +6,7 @@ FactoryGirl.define do
     password "password"
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'ScottiePippen'
-    sequence(:twi_user_id) {|n| n}
+    sequence(:twi_user_id) {|n| n + 10000}
 
     factory :admin do
       role 'admin'
