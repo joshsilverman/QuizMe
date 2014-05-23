@@ -251,7 +251,7 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.reload.follows.count.must_equal 2        
     end
 
-    it "removes unfollows" do
+    it "removes unfollows (regardless of channel)" do
       @asker.follows << @new_user
       twi_follows_ids = []
       wisr_follows_ids = @asker.follows.collect(&:twi_user_id)        

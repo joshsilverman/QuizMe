@@ -130,8 +130,11 @@ module ManageTwitterRelationships
       add_follow(User.find_or_create_by(twi_user_id: (new_user_twi_id))) # Should have a type_id?     
     end
 
-    # Remove unfollows from asker follow association    
-    User.where("twi_user_id in (?)", (wisr_follows_ids - twi_follows_ids)).each { |unfollowed_user| remove_follow(unfollowed_user) }
+    # Remove unfollows from asker follow association
+    removeable_ids = wisr_follows_ids - twi_follows_ids    
+    User.where("twi_user_id in (?)", removeable_ids).each do |unfollowed_user| 
+      remove_follow(unfollowed_user)
+    end
     
     twi_follows_ids 
   end
