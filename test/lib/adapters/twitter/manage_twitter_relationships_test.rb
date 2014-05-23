@@ -245,7 +245,7 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.follower_relationships.twitter.count.must_equal 1
     end
 
-    it "wont remove wisr unfollowers" do
+    it "wont remove wisr channel follower" do
       Relationship.where(followed_id: @asker.id, follower_id: @user.id).first
         .update channel: Relationship::WISR
 
@@ -257,6 +257,56 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.followers.count.must_equal 1
       @asker.follower_relationships.count.must_equal 1
       @asker.follower_relationships.wisr.count.must_equal 1
+    end
+
+    it "wont remove wisr channel followers (with multiple followers of different types)" do
+      6.times do |n|
+        Relationship.create({ 
+          follower_id: create(:user).id,
+          followed_id: @asker.id,
+          channel: (n % 2)})
+      end
+
+      twi_channel_follower_user_ids = Relationship.twitter.where(followed_id: @asker.id).pluck :follower_id
+      twi_channel_follower_twi_ids = User.where(id: twi_channel_follower_user_ids).pluck :twi_user_id
+      wisr_channel_follower_twi_ids = @asker.followers.collect(&:twi_user_id) 
+
+      @asker.update_followers(twi_channel_follower_twi_ids, wisr_channel_follower_twi_ids)
+
+      @asker = @asker.reload
+      @asker.followers.count.must_equal 7
+      @asker.follower_relationships.count.must_equal 7
+      @asker.follower_relationships.wisr.count.must_equal 3
+      @asker.follower_relationships.twitter.count.must_equal 4
+    end
+
+    it "wont remove wisr channel followers and will remove select twi channel followers" do
+      6.times do |n|
+        Relationship.create({ 
+          follower_id: create(:user).id,
+          followed_id: @asker.id,
+          channel: (n % 2)})
+      end
+
+      twi_channel_follower_user_ids = Relationship.twitter.where(followed_id: @asker.id).pluck :follower_id
+      twi_channel_follower_twi_ids = User.where(id: twi_channel_follower_user_ids).pluck :twi_user_id
+      wisr_channel_follower_twi_ids = @asker.followers.collect(&:twi_user_id)
+
+      twi_channel_follower_twi_ids_subset = twi_channel_follower_twi_ids.sort[2..-1]
+      unfollowers = User.where twi_user_id: twi_channel_follower_twi_ids.sort[0..1]
+
+      @asker.update_followers(twi_channel_follower_twi_ids_subset, wisr_channel_follower_twi_ids)
+
+      @asker = @asker.reload
+      @asker.followers.count.must_equal 5
+      @asker.follower_relationships.count.must_equal 7
+      @asker.follower_relationships.wisr.count.must_equal 3
+      @asker.follower_relationships.twitter.count.must_equal 4
+      @asker.follower_relationships.twitter.active.count.must_equal 2
+
+      unfollowers.count.must_equal 2
+      @asker.followers.wont_include unfollowers.first
+      @asker.followers.wont_include unfollowers.last
     end
   end
 
