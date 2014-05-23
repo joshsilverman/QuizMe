@@ -112,7 +112,7 @@ describe Asker, 'ManageTwitterRelationships' do
       @asker.reload.follows.count.must_equal 6
     end
 
-    it "sets correct twitter channel for autofollows" do
+    it "sets correct twitter channel for followbacks" do
       @asker.follows.count.must_equal 0
       twi_user_ids = (5..10).to_a
       
@@ -120,9 +120,19 @@ describe Asker, 'ManageTwitterRelationships' do
 
       @asker.followback(@asker.followers.collect(&:twi_user_id))
       @asker.reload.follows.count.must_equal 1
+      @asker.follow_relationships.count.must_equal 1
+      @asker.follow_relationships.twitter.count.must_equal 1
+    end
+
+    it "sets correct twitter channel for autofollows" do
+      @asker.follows.count.must_equal 0
+      twi_user_ids = (5..10).to_a
+      
+      Post.stubs(:twitter_request).returns([1])
+
       @asker.send_autofollows(twi_user_ids, 5, { force: true })
-      @asker.reload.follows.count.must_equal 6
-      @asker.follow_relationships.twitter.count.must_equal 6
+      @asker.reload.follows.count.must_equal 5
+      @asker.follow_relationships.twitter.count.must_equal 5
     end
 
     it 'takes into account previous follows from today when calculating autofollow count' do
