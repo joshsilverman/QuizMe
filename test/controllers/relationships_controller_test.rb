@@ -65,3 +65,20 @@ describe RelationshipsController, "#create" do
     Relationship.active.count.must_equal 1
   end
 end
+
+describe RelationshipsController, "#destroy" do
+  let(:user) { create :user }
+  let(:asker) { create :asker }
+
+  it "deactives relationship" do
+    relationship = Relationship.create({
+      follower_id: user.id, 
+      followed_id: asker.id,
+      channel: Relationship::WISR})
+
+    delete :destroy, id: relationship.id
+
+    Relationship.count.must_equal 1
+    Relationship.active.count.must_equal 0
+  end
+end

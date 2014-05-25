@@ -48,7 +48,7 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :relationships, only: [:create]
+  resources :relationships, only: [:create, :destroy]
 
   get ':subject/:name/quiz' => 'topics#show'
 
