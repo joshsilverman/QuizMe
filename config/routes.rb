@@ -47,6 +47,9 @@ Quizmemanager::Application.routes.draw do
       get :answered_counts
     end
   end
+
+  resources :relationships, only: [:create]
+
   get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'
