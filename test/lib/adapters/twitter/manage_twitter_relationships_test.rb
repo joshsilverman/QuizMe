@@ -465,6 +465,18 @@ describe Asker, 'ManageTwitterRelationships#followback' do
     @new_user = create(:user, twi_user_id: 2)
   end
 
+  it 'follows user back' do
+    @asker.follows.must_be_empty
+    twi_follower_ids = [@new_user.twi_user_id]
+    wisr_follower_ids = @asker.followers.collect(&:twi_user_id)
+    twi_follower_ids = @asker.update_followers(twi_follower_ids, wisr_follower_ids)
+
+    Post.stubs(:twitter_request).returns(twi_follower_ids)
+
+    @asker.followback(twi_follower_ids)
+    @asker.reload.follows.must_include @new_user
+  end
+
   it 'wont call add_follow if follow request returns empty' do
     @asker.follows.must_be_empty
     twi_follower_ids = [@new_user.twi_user_id]
