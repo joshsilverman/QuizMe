@@ -62,6 +62,7 @@ describe RelationshipsController, "#create" do
     response.status.must_equal 200
 
     Relationship.count.must_equal 1
+    Relationship.first.wisr?.must_equal true
     Relationship.active.count.must_equal 1
   end
 end
@@ -80,5 +81,19 @@ describe RelationshipsController, "#destroy" do
 
     Relationship.count.must_equal 1
     Relationship.active.count.must_equal 0
+  end
+
+  it "wont deactivate relationship through twitter channel" do
+    relationship = Relationship.create({
+      follower_id: user.id, 
+      followed_id: asker.id,
+      channel: Relationship::TWITTER})
+
+    delete :destroy, id: relationship.id
+    response.status.must_equal 400
+
+    Relationship.count.must_equal 1
+    Relationship.first.twitter?.must_equal true
+    Relationship.active.count.must_equal 1
   end
 end

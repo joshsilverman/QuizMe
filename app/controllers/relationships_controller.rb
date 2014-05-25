@@ -14,10 +14,13 @@ class RelationshipsController < ApplicationController
 
   def destroy
     relationship = Relationship.find(params[:id])
-    relationship.active = false
 
-    if relationship.save
+    if relationship.wisr?
+      relationship.active = false
+      relationship.save
       head 200
+    else
+      head 400
     end
   end
 end

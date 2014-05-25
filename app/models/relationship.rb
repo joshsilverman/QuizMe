@@ -20,4 +20,12 @@ class Relationship < ActiveRecord::Base
 
   scope :twitter, -> { where("relationships.channel = ?", TWITTER) }
   scope :wisr, -> { where("relationships.channel = ?", WISR) }
+
+  def twitter?
+    channel == TWITTER
+  end
+
+  def wisr?
+    channel == WISR
+  end
 end
