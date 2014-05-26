@@ -64,7 +64,7 @@ describe UsersController, "#wisr_follow_ids" do
       follower_id: user.id,
       channel: Relationship::WISR})
 
-    get :wisr_follow_ids, user_id: user.id, format: :json
+    get :wisr_follow_ids, format: :json
     returned_ids = JSON.parse response.body
 
     response.status.must_equal 200
@@ -80,7 +80,7 @@ describe UsersController, "#wisr_follow_ids" do
       follower_id: user.id,
       channel: Relationship::TWITTER})
 
-    get :wisr_follow_ids, user_id: user.id, format: :json
+    get :wisr_follow_ids, format: :json
     returned_ids = JSON.parse response.body
 
     response.status.must_equal 200
@@ -96,10 +96,22 @@ describe UsersController, "#wisr_follow_ids" do
       active: false,
       channel: Relationship::WISR})
 
-    get :wisr_follow_ids, user_id: user.id, format: :json
+    get :wisr_follow_ids, format: :json
     returned_ids = JSON.parse response.body
 
     response.status.must_equal 200
     returned_ids.count.must_equal 0
+  end
+
+  it "redirects if not authenticated" do
+    Relationship.create({
+      followed_id: asker.id,
+      follower_id: user.id,
+      active: false,
+      channel: Relationship::WISR})
+
+    get :wisr_follow_ids, format: :json
+
+    response.status.must_equal 401
   end
 end

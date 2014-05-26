@@ -37,12 +37,10 @@ class UsersController < ApplicationController
   end
 
   def wisr_follow_ids
-    user = User.find(params[:user_id])
-
     respond_to do |format|
       format.json do
         ids = Relationship.active
-          .where({follower_id: user.id, 
+          .where({follower_id: current_user.id, 
             channel: Relationship::WISR})
           .pluck(:followed_id)
 

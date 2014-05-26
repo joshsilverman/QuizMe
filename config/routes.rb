@@ -22,7 +22,10 @@ Quizmemanager::Application.routes.draw do
 
   resources :users, only: [:correct_question_ids] do
     get :correct_question_ids
-    get :wisr_follow_ids
+
+    collection do
+      get :wisr_follow_ids
+    end
 
     resources :posts, only: [:answer_count] do
       collection do
