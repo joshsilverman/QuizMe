@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
-  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids]
-  before_filter :authenticate_user!, :only => [:correct_question_ids]
+  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids]
+  before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids]
 
   def activity_feed
     @activity = current_user.activity(since: 1.month.ago)
@@ -32,6 +32,21 @@ class UsersController < ApplicationController
           .pluck(:in_reply_to_question_id)
 
         render json: correct_question_ids.to_json
+      end
+    end
+  end
+
+  def wisr_follow_ids
+    user = User.find(params[:user_id])
+
+    respond_to do |format|
+      format.json do
+        ids = Relationship.active
+          .where({follower_id: user.id, 
+            channel: Relationship::WISR})
+          .pluck(:followed_id)
+
+        render json: ids.to_json
       end
     end
   end

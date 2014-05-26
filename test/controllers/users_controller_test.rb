@@ -51,3 +51,55 @@ describe UsersController, '#correct_question_ids' do
     JSON.parse(response.body).must_equal []
   end
 end
+
+describe UsersController, "#wisr_follow_ids" do
+  let(:user) { create :user }
+  let(:asker) { create :asker }
+
+  it "returns list of follow ids" do
+    sign_in user
+
+    Relationship.create({
+      followed_id: asker.id,
+      follower_id: user.id,
+      channel: Relationship::WISR})
+
+    get :wisr_follow_ids, user_id: user.id, format: :json
+    returned_ids = JSON.parse response.body
+
+    response.status.must_equal 200
+    returned_ids.count.must_equal 1
+    returned_ids.first.must_equal asker.id
+  end
+
+  it "wont return followers followed via twitter channel" do
+    sign_in user
+
+    Relationship.create({
+      followed_id: asker.id,
+      follower_id: user.id,
+      channel: Relationship::TWITTER})
+
+    get :wisr_follow_ids, user_id: user.id, format: :json
+    returned_ids = JSON.parse response.body
+
+    response.status.must_equal 200
+    returned_ids.count.must_equal 0
+  end
+
+  it "wont return inactive relationships" do
+    sign_in user
+
+    Relationship.create({
+      followed_id: asker.id,
+      follower_id: user.id,
+      active: false,
+      channel: Relationship::WISR})
+
+    get :wisr_follow_ids, user_id: user.id, format: :json
+    returned_ids = JSON.parse response.body
+
+    response.status.must_equal 200
+    returned_ids.count.must_equal 0
+  end
+end
