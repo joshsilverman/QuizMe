@@ -1,7 +1,10 @@
 class RelationshipsController < ApplicationController
+  prepend_before_filter :check_for_authentication_token
+  before_filter :authenticate_user!
+
   def create
     relationship = Relationship.find_or_initialize_by({
-      follower_id: params[:follower_id], 
+      follower_id: current_user.id,
       followed_id: params[:followed_id],
       channel: Relationship::WISR})
 
@@ -13,9 +16,10 @@ class RelationshipsController < ApplicationController
   end
 
   def destroy
-    relationship = Relationship.find(params[:id])
+    relationship = Relationship.where(id: params[:id])
+      .where(follower_id: current_user.id).first
 
-    if relationship.wisr?
+    if relationship.try :wisr?
       relationship.active = false
       relationship.save
       head 200

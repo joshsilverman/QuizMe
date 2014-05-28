@@ -5,7 +5,9 @@ describe RelationshipsController, "#create" do
   let(:asker) { create :asker }
 
   it "persists new relationship" do
-    post :create, follower_id: user.id, followed_id: asker
+    sign_in user
+    post :create, followed_id: asker.id
+    response.status.must_equal 200
 
     Relationship.count.must_equal 1
     relationship = Relationship.last
@@ -15,10 +17,11 @@ describe RelationshipsController, "#create" do
   end
 
   it "wont recreate the same relationship" do
-    post :create, follower_id: user.id, followed_id: asker
+    sign_in user
+    post :create, followed_id: asker
     response.status.must_equal 200
 
-    post :create, follower_id: user.id, followed_id: asker
+    post :create, followed_id: asker
     response.status.must_equal 200
 
     Relationship.count.must_equal 1
@@ -33,7 +36,8 @@ describe RelationshipsController, "#create" do
       followed_id: asker.id,
       channel: Relationship::TWITTER})
 
-    post :create, follower_id: user.id, followed_id: asker
+    sign_in user
+    post :create, followed_id: asker
     response.status.must_equal 200
 
     Relationship.count.must_equal 2
@@ -58,12 +62,31 @@ describe RelationshipsController, "#create" do
 
     Relationship.active.count.must_equal 0
 
-    post :create, follower_id: user.id, followed_id: asker
+    sign_in user
+    post :create, followed_id: asker
     response.status.must_equal 200
 
     Relationship.count.must_equal 1
     Relationship.first.wisr?.must_equal true
     Relationship.active.count.must_equal 1
+  end
+
+  it "responds with redirect if not authenticated" do
+    post :create, follower_id: user.id, followed_id: asker
+
+    Relationship.count.must_equal 0
+    response.status.must_equal 302
+  end
+
+  it "always sets the follower to current_user" do
+    sign_in user
+    post :create, follower_id: 123, followed_id: asker.id
+
+    Relationship.count.must_equal 1
+    relationship = Relationship.last
+    relationship.follower_id.must_equal user.id
+    relationship.followed_id.must_equal asker.id
+    relationship.channel.must_equal Relationship::WISR
   end
 end
 
@@ -71,7 +94,7 @@ describe RelationshipsController, "#destroy" do
   let(:user) { create :user }
   let(:asker) { create :asker }
 
-  it "deactives relationship" do
+  it "responds with redirect if not authenticated" do
     relationship = Relationship.create({
       follower_id: user.id, 
       followed_id: asker.id,
@@ -79,8 +102,33 @@ describe RelationshipsController, "#destroy" do
 
     delete :destroy, id: relationship.id
 
+    response.status.must_equal 302
+  end
+
+  it "deactives relationship" do
+    relationship = Relationship.create({
+      follower_id: user.id, 
+      followed_id: asker.id,
+      channel: Relationship::WISR})
+
+    sign_in user
+    delete :destroy, id: relationship.id
+
     Relationship.count.must_equal 1
     Relationship.active.count.must_equal 0
+  end
+
+  it "wont deactivate relationship where current user not follower" do
+    relationship = Relationship.create({
+      follower_id: 123, 
+      followed_id: asker.id,
+      channel: Relationship::WISR})
+
+    sign_in user
+    delete :destroy, id: relationship.id
+
+    Relationship.count.must_equal 1
+    Relationship.active.count.must_equal 1
   end
 
   it "wont deactivate relationship through twitter channel" do
@@ -89,6 +137,7 @@ describe RelationshipsController, "#destroy" do
       followed_id: asker.id,
       channel: Relationship::TWITTER})
 
+    sign_in user
     delete :destroy, id: relationship.id
     response.status.must_equal 400
 
