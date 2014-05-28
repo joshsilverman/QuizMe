@@ -12,6 +12,8 @@ class RelationshipsController < ApplicationController
 
     if relationship.save
       head 200
+    else
+      head 400
     end
   end
 
