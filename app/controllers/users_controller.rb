@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  prepend_before_filter :check_for_authentication_token, :only => [:wisr_follow_ids]
   before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids]
   before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids]
 
