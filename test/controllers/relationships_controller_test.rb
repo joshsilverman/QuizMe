@@ -100,7 +100,7 @@ describe RelationshipsController, "#destroy" do
       followed_id: asker.id,
       channel: Relationship::WISR})
 
-    delete :destroy, id: relationship.id
+    put :deactivate, followed_id: relationship.followed_id
 
     response.status.must_equal 302
   end
@@ -112,7 +112,7 @@ describe RelationshipsController, "#destroy" do
       channel: Relationship::WISR})
 
     sign_in user
-    delete :destroy, id: relationship.id
+    put :deactivate, followed_id: relationship.followed_id
 
     Relationship.count.must_equal 1
     Relationship.active.count.must_equal 0
@@ -125,7 +125,7 @@ describe RelationshipsController, "#destroy" do
       channel: Relationship::WISR})
 
     sign_in user
-    delete :destroy, id: relationship.id
+    put :deactivate, followed_id: relationship.followed_id
 
     Relationship.count.must_equal 1
     Relationship.active.count.must_equal 1
@@ -138,7 +138,7 @@ describe RelationshipsController, "#destroy" do
       channel: Relationship::TWITTER})
 
     sign_in user
-    delete :destroy, id: relationship.id
+    put :deactivate, followed_id: relationship.followed_id
     response.status.must_equal 400
 
     Relationship.count.must_equal 1

@@ -52,7 +52,11 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :relationships, only: [:create, :destroy]
+  resources :relationships, only: [:create] do
+    collection do
+      put 'deactivate'
+    end
+  end
 
   get ':subject/:name/quiz' => 'topics#show'
 

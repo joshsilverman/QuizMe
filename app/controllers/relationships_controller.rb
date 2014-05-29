@@ -18,8 +18,9 @@ class RelationshipsController < ApplicationController
     end
   end
 
-  def destroy
-    relationship = Relationship.where(id: params[:id])
+  def deactivate
+    relationship = Relationship
+      .where(followed_id: params[:followed_id])
       .where(follower_id: current_user.id).first
 
     if relationship.try :wisr?
