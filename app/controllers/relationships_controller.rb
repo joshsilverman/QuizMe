@@ -1,6 +1,7 @@
 class RelationshipsController < ApplicationController
   prepend_before_filter :check_for_authentication_token
   before_filter :authenticate_user!
+  protect_from_forgery except: [:create, :destroy]
 
   def create
     relationship = Relationship.find_or_initialize_by({
