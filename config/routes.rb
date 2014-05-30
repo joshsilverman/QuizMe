@@ -54,7 +54,7 @@ Quizmemanager::Application.routes.draw do
 
   resources :relationships, only: [:create] do
     collection do
-      put 'deactivate'
+      post 'deactivate'
     end
   end
 
