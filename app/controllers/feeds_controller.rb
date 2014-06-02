@@ -6,11 +6,26 @@ class FeedsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.html do
+      format.html.phone do
+        @asker = Asker.wisr
+        render :show, layout: 'phone'
+      end
+
+      format.html.none do
         @asker = Asker.wisr
         @askers = Asker.published.order(subject: :asc)
       end
-      format.json do
+
+      format.json.phone do
+        offset = params['offset'] || 0
+        followed_ids = current_user.wisr_follows.pluck(:followed_id)
+        publication_scoped = Publication.where(asker_id: followed_ids)
+        publications = publication_scoped.recent(offset)
+
+        render json: publications.to_json 
+      end
+
+      format.json.none do
         offset = params['offset'] || 0
         publications = Publication.recent(offset)
 

@@ -27,13 +27,13 @@ class User < ActiveRecord::Base
   has_many :badges, -> { uniq }, :through => :issuances
   has_many :issuances
 
-  # has_many :relationships, :foreign_key => :follower_id, :dependent => :destroy
   has_many :follow_relationships, :foreign_key => :follower_id, :class_name => 'Relationship', :dependent => :destroy
-  has_many :follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed # ["relationships.active = ?", true]
   has_many :follows_with_inactive, :through => :follow_relationships, :source => :followed
   has_many :asker_follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed, class_name: 'Asker' # ["relationships.active = ?", true], 
+  has_many :follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed
+  has_many :wisr_follows, -> { where("relationships.active = ?", true).where("relationships.channel = ?", Relationship::WISR) }, 
+    through: :follow_relationships, source: :followed
 
-  # has_many :reverse_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :follower_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :followers, -> { where("relationships.active = ?", true) }, :through => :follower_relationships, :source => :follower #, :conditions => ["relationships.active = ?", true]
   has_many :followers_with_inactive, :through => :follower_relationships, :source => :follower

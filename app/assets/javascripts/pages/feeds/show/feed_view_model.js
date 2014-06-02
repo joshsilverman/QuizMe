@@ -56,6 +56,7 @@ if ($('.feed-view').length) {
       self.loadPublications = function() {
         currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
         path = currentPath + ".json" + "?offset=" + offset;
+        path = path + "&" + location.search.replace(/^\?/, '');
 
         $.getJSON(path, function(publication) {
           publication.forEach(function(publication) {
