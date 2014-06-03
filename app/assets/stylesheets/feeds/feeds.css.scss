@@ -179,6 +179,18 @@ $border_thin: 0px;
     ul.timeline {
       padding-top: 1px;
       top:0px;
+
+      .feed-view {
+        li.feed-publication {
+          .content {
+            .subject-label {
+              a {
+                pointer-events: none;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
