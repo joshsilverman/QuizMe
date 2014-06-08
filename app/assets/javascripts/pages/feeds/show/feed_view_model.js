@@ -33,7 +33,7 @@ if ($('.feed-view').length) {
         offset = 0,
         loadMoreBtn = $('.load-more');
 
-      self.loadingMore = ko.observable(true),
+      self.loadingMore = ko.observable(false);
       self.feedPublications = ko.observableArray([]);
       self.askerId = askerId;
 
@@ -47,7 +47,8 @@ if ($('.feed-view').length) {
 
       self.loadMorePublications = function() {
         if (!self.loadingMore() && isElementInViewport(loadMoreBtn[0])) {
-          self.loadingMore(true);
+          if (offset > 10)
+            self.loadingMore(true);
           offset += 10;
           self.loadPublications();
         }
