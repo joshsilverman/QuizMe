@@ -89,7 +89,7 @@ if ($('.feed-view').length) {
       self.correctAnswerId = parseInt(publication._question.correct_answer_id);
       self.subject = [publication._asker.subject, ':'].join("");
       self.subject_url = publication._asker.subject_url;
-      self.answered = undefined;
+      self.answered = ko.observable(false);
       self.quizHref = null;
       self.quizName = null;
 
@@ -119,7 +119,7 @@ if ($('.feed-view').length) {
           return answer.id === self.correctAnswerId;
         });
 
-        self.answered = true;
+        self.answered(true);
         correctAnswer.correct(true);
       };
 
@@ -131,6 +131,15 @@ if ($('.feed-view').length) {
         self.quizHref = '/' + self.subject_url 
           + '/' + publication._lesson.topic_url
           + '/quiz';
+      };
+
+      self.tellAnswer = function() {
+        var correctAnswer = _.find(self.answers, function(answer) {
+          return answer.id === self.correctAnswerId;
+        });
+
+        self.answered(true);
+        correctAnswer.correct(true);
       };
 
       self.loadAnswers();
@@ -152,7 +161,7 @@ if ($('.feed-view').length) {
       self.incorrect = ko.observable(false);
       
       self.respondToQuestion = function() {
-        if (self.feedPublication.answered === true) return;
+        if (self.feedPublication.answered() === true) return;
         if (!currentUserId) {
           self.authenticate();
           return;
@@ -172,7 +181,7 @@ if ($('.feed-view').length) {
         } else self.incorrect(true);
 
         self.grading(false);
-        self.feedPublication.answered = status;
+        self.feedPublication.answered(status);
       }
 
       self.authenticate = function() {
