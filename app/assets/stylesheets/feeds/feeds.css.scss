@@ -590,7 +590,7 @@ $border_thin: 0px;
 
 .starscape {
   position: relative;
-  height:580px;
+  height:450px;
   width: 100%;
   overflow: visible;
 
@@ -603,8 +603,17 @@ $border_thin: 0px;
 
   .galaxy {background: image-url('home/galaxy.jpg');}
   .stars {background: image-url('home/stars.png');}
-  .smallplanets {background: image-url('home/smallplanets.png');}
-  .planet {background: image-url('home/planet.png'); height:584px;}
+  
+  .smallplanets {
+    background: image-url('home/smallplanets.png');
+    top:-10px;
+  }
+
+  .planet {
+    background: image-url('home/planet.png'); 
+    height:584px;
+    top:-130px;
+  }
 
   .headline {
     font-family: logofont;
@@ -618,7 +627,7 @@ $border_thin: 0px;
     color: $white;
     text-shadow: 0 0 0.2em #333;
     font-size: 450%;
-    top:190px;
+    top:130px;
     left:0;
 
     @media (max-width: 992px) {
@@ -640,7 +649,7 @@ $border_thin: 0px;
     background-repeat: no-repeat;
     height:280px;
     width: 200px;
-    top:310px;
+    top:200px;
     left:12%;
   }
 }
