@@ -144,6 +144,7 @@ if ($('.feed-view').length) {
 
         self.toldAnswer(true);
         self.answered(true);
+        mixpanel.track("I dont know");
       };
 
       self.loadAnswers();
