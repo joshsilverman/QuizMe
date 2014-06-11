@@ -350,6 +350,7 @@ $border_thin: 0px;
           }
 
           .answer {
+            transition: background .2s, opacity .2s;
             background: $dimwhite;
             padding: $border_thick;
             margin: 10px;
@@ -376,6 +377,11 @@ $border_thin: 0px;
             &:hover {
               cursor: pointer;
               background: rgba(0, 0, 0, 0.2);
+            }
+
+            &.disabled {
+              opacity: .3;
+              cursor: auto;
             }
           }
         }
