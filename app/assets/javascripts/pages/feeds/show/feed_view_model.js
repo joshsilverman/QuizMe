@@ -55,12 +55,14 @@ if ($('.feed-view').length) {
         }
       };
 
-      self.loadPublications = function(callback) {
+      self.loadPublications = function(beforeRender, afterRender) {
         currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
         path = currentPath + ".json" + "?offset=" + offset;
         path = path + "&" + location.search.replace(/^\?/, '');
 
         $.getJSON(path, function(publication) {
+          if (beforeRender) {beforeRender()}
+
           publication.forEach(function(publication) {
             var feedPublication = new FeedPublicationModel(publication);
             self.feedPublications.push(feedPublication);
@@ -68,7 +70,8 @@ if ($('.feed-view').length) {
 
           self.loadingMore(false);
           self.focusOnPublication();
-          if (callback) {callback()}
+
+          if (afterRender) {afterRender()}
         })
       };
 
@@ -81,11 +84,10 @@ if ($('.feed-view').length) {
       };
 
       self.refresh = function() {
-        self.offset = 0;
-        self.feedPublications([])
-        self.loadPublications(function() {
-          window.location.href = 'ios://refreshed'
-        });
+        offset = 0;
+        self.loadPublications(
+          function() {self.feedPublications([])},
+          function() {window.location.href = 'ios://refreshed'});
       };
     }
 
