@@ -3,6 +3,7 @@ class RegistrationsController < Devise::RegistrationsController
   def new
     self.resource = resource_class.new(devise_parameter_sanitizer.for(:sign_in))
     clean_up_passwords(resource)
+    @asker = Asker.published.sample
 
     respond_to do |format|
       format.html.phone do

@@ -1,17 +1,31 @@
-%h2 Sign up
-= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f|
-  = devise_error_messages!
-  %div
-    = f.label :email
-    %br
-    = f.email_field :email, :autofocus => true
-  %div
-    = f.label :password
-    %br
-    = f.password_field :password
-  %div
-    = f.label :password_confirmation
-    %br
-    = f.password_field :password_confirmation
-  %div= f.submit "Sign up"
-= render "devise/shared/links"
+.sessions-new
+  = render partial: "feeds/account_info"
+
+  .login-container
+    .login
+      %ul
+        %li.appear
+          .content
+            %h3 Sign into Wisr:
+
+            %a.login-btn{href: user_omniauth_authorize_path(:twitter, use_authorize: false, variant: request.variant)}
+              %i.fa.fa-twitter
+              | Connect with Twitter
+
+        %li.appear 
+          = form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f|
+            = devise_error_messages!
+            %div
+              = f.label :email
+              %br
+              = f.email_field :email, :autofocus => true
+            %div
+              = f.label :password
+              %br
+              = f.password_field :password
+            %div
+              = f.label :password_confirmation
+              %br
+              = f.password_field :password_confirmation
+            %div= f.submit "Sign up"
+          / = render "devise/shared/links"
