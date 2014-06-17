@@ -7,10 +7,8 @@ Quizmemanager::Application.routes.draw do
       get ':any', to: redirect(subdomain: 'www', path: '/%{any}'), any: /.*/
     end
   end
-
-  get "/users/sign_up" => redirect("/")
   
-  devise_for :users, :controllers => { :omniauth_callbacks => "authorizations", sessions: :sessions }
+  devise_for :users, :controllers => { :omniauth_callbacks => "authorizations", sessions: :sessions, registrations: :registrations }
 
   resources :askers, except: [:destroy] do
     collection do
