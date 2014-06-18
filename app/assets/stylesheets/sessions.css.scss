@@ -31,6 +31,22 @@
         padding-bottom: 15px;
       }
 
+      .divider {
+        color: rgba(0,0,0,.7);
+        font-weight:600;
+        text-align: center;
+        margin:0 0 20px;
+      }
+
+      .dash {
+        width:20px;
+        height:.2em;
+        border-top:solid 1px;
+        display:inline-block;
+        border-color: rgba(0,0,0,.5);
+        margin:0 2px;
+      }
+
       ul li .login-btn {
         display: block;
 
@@ -43,11 +59,43 @@
         font-size: 17px;
         border:none;
         box-shadow: none;
+        display: block;
 
         &:hover {
           text-decoration: none;
           cursor: pointer;
           background: rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      ul li {
+        input[type=email], input[type=password] {
+          width: 90%;
+          margin: 5px 3%;
+          font-size: 17px;
+          height:1.6em;
+          line-height:1.6em;
+          padding:4px 4px;
+          font-weight: 300;
+          color: rgb(51, 51, 51);
+        }
+
+        .login-btn.login-btn-email {
+          .fa {
+            position: relative;
+            top:1px;
+          }
+
+          input {
+            background-color: transparent;
+            border:none;
+            font-size: inherit;
+            font-weight: inherit;
+            padding:0;
+            position: relative;
+            top:-1px;
+            color: rgb(51, 51, 51);
+          }
         }
       }
     }
