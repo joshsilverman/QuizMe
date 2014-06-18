@@ -122,10 +122,14 @@
 }
 
 .phone-variant {
-  .login {
-    ul li .content h3 {
-      height: 0;
-      color: transparent;
+  .sessions-new .login-container {
+    padding-top: 10px;
+
+    .login {
+      ul li .content h3 {
+        height: 0;
+        color: transparent;
+      }
     }
   }
 }
