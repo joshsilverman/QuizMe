@@ -16,6 +16,8 @@ class RegistrationsController < Devise::RegistrationsController
 
   def create
     user = nil
+    @asker = Asker.published.sample
+    
     User.transaction do
       super
 
