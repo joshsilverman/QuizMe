@@ -15,6 +15,9 @@ class SessionsController < Devise::SessionsController
     @asker = Asker.published.sample
     @asker.subject = 'Sign In'
 
+    self.resource = resource_class.new(sign_in_params)
+    clean_up_passwords(resource)
+
     respond_to do |format|
       format.html.phone do
         render :new, layout: 'phone'

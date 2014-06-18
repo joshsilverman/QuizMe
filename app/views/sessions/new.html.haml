@@ -11,3 +11,23 @@
             %a.login-btn{href: user_omniauth_authorize_path(:twitter, use_authorize: false, variant: request.variant)}
               %i.fa.fa-twitter
               | Connect with Twitter
+
+      .divider
+        %span.dash
+        or 
+        %span.dash
+
+      %ul
+        %li.appear 
+          .content
+            = form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
+              = devise_error_messages!
+              %div
+                = f.email_field :email, placeholder: 'Email'
+              %div
+                = f.password_field :password, placeholder: 'Password'
+
+              %a.login-btn.login-btn-email
+                %i.fa.fa-envelope
+                | 
+                = f.submit "Sign in with Email"
