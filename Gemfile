@@ -65,8 +65,6 @@ gem "font-awesome-rails"
 gem 'jquery-rails'
 gem 'lodash-rails'
 gem 'momentjs-rails'
-gem 'turbolinks'
-gem 'jquery-turbolinks'
 
 gem 'devise', '3.0.4'
 gem 'omniauth'

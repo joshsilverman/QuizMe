@@ -5,11 +5,9 @@
 // the compiled file.
 //
 //= require jquery
-//= require jquery.turbolinks
 //= require jquery_ujs
 //= require jquery.ui.autocomplete
 //= require jquery.ui.datepicker
-//= require turbolinks
 //= require lib/jquery.cookie
 //= require lib/jquery.stellar
 //= require lib/knockout-3.0.0.min
