@@ -29,6 +29,8 @@ FactoryGirl.define do
     published true
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'QuizMeBio'
+    email 'a@a.com'
+    password 'abcdefgh'
     subject 'biology'
   end
 

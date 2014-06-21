@@ -27,6 +27,7 @@ describe RegistrationsController, "create" do
   end
 
   it "wont change com pref if user doesnt save" do
+    create :asker
     @request.env["devise.mapping"] = Devise.mappings[:user]
 
     post(:create, user: {email: 'c@c.com', 
