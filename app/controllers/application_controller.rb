@@ -14,7 +14,6 @@ class ApplicationController < ActionController::Base
   def set_variant
     if request.headers['HTTP_WISR_VARIANT']
       request.variant = request.headers['HTTP_WISR_VARIANT'].to_sym
-      session[:variant] = request.headers['HTTP_WISR_VARIANT']
     elsif session[:variant]
       request.variant = session[:variant].to_sym
     elsif params[:variant]
@@ -23,6 +22,10 @@ class ApplicationController < ActionController::Base
       else
         request.variant = params[:variant].to_sym
       end
+    end
+
+    if request.variant
+      session[:variant] = request.variant.first.to_s
     end
   end
 

@@ -15,29 +15,28 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def create
-    user = nil
     @asker = Asker.published.sample
-    
-    User.transaction do
-      super
+    build_resource(sign_up_params)
 
-      last_user = User.last
-      if last_user.email == params[:user][:email]
-        user = last_user
-      end
+    if request.variant and request.variant.include? :phone
+      resource.communication_preference = 3
+    else
+      resource.communication_preference = 2
     end
 
-    respond_to do |format|
-      format.html.phone do
-        if user
-          user.update communication_preference: 3
-        end
+    if resource.save
+      if resource.active_for_authentication?
+        sign_up(resource_name, resource)
+        respond_with resource, :location => after_sign_up_path_for(resource)
+      else
+        expire_session_data_after_sign_in!
+        respond_with resource, :location => after_inactive_sign_up_path_for(resource)
       end
-
-      format.html.none do
-        if user
-          user.update communication_preference: 2
-        end
+    else
+      clean_up_passwords resource
+      respond_to do |format|
+        format.html.phone { render :new, layout: 'phone' }
+        format.html.none { render :new }
       end
     end
   end
