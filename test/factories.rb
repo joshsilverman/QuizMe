@@ -2,11 +2,11 @@ FactoryGirl.define do
 
   factory :user do
     role 'user'
-    email 'joshs.silverman@gmail.com'
+    sequence(:email) { |n| "joshs.silverman+#{n}@gmail.com" }
     password "password"
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'ScottiePippen'
-    sequence(:twi_user_id) {|n| n + 10000}
+    sequence(:twi_user_id) { |n| n + 10000 }
 
     factory :admin do
       role 'admin'
@@ -14,6 +14,10 @@ FactoryGirl.define do
 
     factory :emailer do
       communication_preference 2
+    end
+
+    factory :iphoner do
+      communication_preference 3
     end
   end
 
@@ -29,7 +33,7 @@ FactoryGirl.define do
     published true
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'QuizMeBio'
-    email 'a@a.com'
+    sequence(:email) { |n| "#{n}@a.com" }
     password 'abcdefgh'
     subject 'biology'
   end
