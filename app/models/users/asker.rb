@@ -69,8 +69,8 @@ class Asker < User
       self.becomes(TwitterAsker).send_public_message(text, options, recipient)
     when 2
       self.becomes(EmailAsker).send_public_message(text, options, recipient)
-    # when 
-    #   self.becomes(EmailAsker).send_public_message(text, options, recipient)
+    when 3
+      self.becomes(IphoneAsker).send_public_message(text, options, recipient)
     else
       raise 'no public send method for that communication preference'
     end
@@ -84,6 +84,8 @@ class Asker < User
       self.becomes(TwitterAsker).send_private_message(recipient, text, options)
     when 2
       self.becomes(EmailAsker).send_private_message(recipient, text, options)
+    when 3
+      self.becomes(IphoneAsker).send_private_message(recipient, text, options)
     else
       raise 'no private send method for that communication preference'
     end
