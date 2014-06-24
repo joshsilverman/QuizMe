@@ -1,8 +1,8 @@
 require 'test_helper'
 
 describe IphoneAsker do
-  let(:asker) do 
-    asker = create :asker
+  let(:asker) do
+    asker = create(:asker).becomes(IphoneAsker)
     asker.followers << iphoner
     asker
   end
@@ -61,33 +61,43 @@ describe IphoneAsker do
   end
 
   describe 'follows up on correct answer' do
+    let(:publication) { create(:publication, question_id: question.id) }
+
     before :each do 
-      @question_email = create(:email, user_id: asker.id, question_id: question.id, publication_id: publication.id, in_reply_to_user_id: iphoner.id)
-      @conversation = create(:conversation, post: @question_email, publication: publication)
+      @conversation = create(:conversation, publication_id: publication.id)
+      @user_response = create(:post, 
+          text: 'the incorrect answer', 
+          user_id: iphoner.id, 
+          in_reply_to_user_id: asker.id, 
+          interaction_type: 2, 
+          in_reply_to_question_id: question.id)
+      @conversation.posts << @user_response
+
       Delayed::Worker.delay_jobs = true
+      Delayed::Worker.new.work_off
+    end
+
+    it 'never' do
+      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 0
+      asker.app_response @user_response, false
+      16.times do
+        Delayed::Worker.new.work_off
+        Timecop.travel(Time.now + 1.day)
+      end
+      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 1
     end
 
     it 'if user changes communication preference' do
-      @iphoner_response.update correct: false, autocorrect: false
-      @conversation.posts << response
-      asker.auto_respond(response, iphoner)
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 0
-      Timecop.travel(Time.now + 1.day)
-      Delayed::Worker.new.work_off
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 0
-    end
-
-
-    it 'with tweet' do
       iphoner.update communication_preference: 1
+      asker.becomes(Asker)
 
-      @iphoner_response.update correct: false, autocorrect: false
-      @conversation.posts << response
-      asker.auto_respond(response, iphoner)
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 0
-      Timecop.travel(Time.now + 1.day)
-      Delayed::Worker.new.work_off
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 1      
+      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 0
+      asker.app_response @user_response, false
+      16.times do
+        Delayed::Worker.new.work_off
+        Timecop.travel(Time.now + 1.day)
+      end
+      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 1
     end
   end
 end
