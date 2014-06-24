@@ -84,12 +84,12 @@ describe IphoneAsker do
         Delayed::Worker.new.work_off
         Timecop.travel(Time.now + 1.day)
       end
-      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 1
+      asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 0
     end
 
     it 'if user changes communication preference' do
       iphoner.update communication_preference: 1
-      asker.becomes(Asker)
+      asker = Asker.last
 
       asker.posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ?", iphoner.id).count.must_equal 0
       asker.app_response @user_response, false
