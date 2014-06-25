@@ -2,8 +2,8 @@ require "test_helper"
 
 describe Issuance, "#batch_back_issue_moderation_badges" do
   it "should issue new born mod badge to moderator level 1" do
-    moderator = Moderator.create moderator_segment: 1
-    asker = Asker.create role: 'asker'
+    moderator = create :moderator, moderator_segment: 1
+    asker = create :asker
     post = moderator.posts.create in_reply_to_user_id: asker.id
     moderation = moderator.moderations.create post_id: post.id
     badge = Badge.create to_segment: 1, segment_type: 5
@@ -17,8 +17,8 @@ describe Issuance, "#batch_back_issue_moderation_badges" do
   end
 
   it "wont reissue a badge" do
-    moderator = Moderator.create moderator_segment: 1
-    asker = Asker.create role: 'asker'
+    moderator = create :moderator, moderator_segment: 1
+    asker = create :asker
     post = moderator.posts.create in_reply_to_user_id: asker.id
     moderation = moderator.moderations.create post_id: post.id
     badge = Badge.create to_segment: 1, segment_type: 5
@@ -30,8 +30,8 @@ describe Issuance, "#batch_back_issue_moderation_badges" do
   end
 
   it "should issue 5 badges if level 5 with no previous badges" do
-    moderator = Moderator.create moderator_segment: 5
-    asker = Asker.create role: 'asker'
+    moderator = create :moderator, moderator_segment: 5
+    asker = create :asker
     post = moderator.posts.create in_reply_to_user_id: asker.id
     moderation = moderator.moderations.create post_id: post.id
     badge_1 = Badge.create to_segment: 1, segment_type: 5
@@ -53,8 +53,8 @@ describe Issuance, "#batch_back_issue_moderation_badges" do
   end
 
   it "wont issue a badge if no post moderation" do
-    moderator = Moderator.create moderator_segment: 1
-    asker = Asker.create role: 'asker'
+    moderator = create :moderator, moderator_segment: 1
+    asker = create :asker
     moderation = moderator.moderations.create
     badge = Badge.create to_segment: 1, segment_type: 5
 
@@ -64,8 +64,8 @@ describe Issuance, "#batch_back_issue_moderation_badges" do
   end
 
   it "wont issue a badge if post moderation exists but last moderation was for question" do
-    moderator = Moderator.create moderator_segment: 1
-    asker = Asker.create role: 'asker'
+    moderator = create :moderator, moderator_segment: 1
+    asker = create :asker
     post = moderator.posts.create in_reply_to_user_id: asker.id
     moderation = moderator.moderations.create post_id: post.id
     moderation = moderator.moderations.create
