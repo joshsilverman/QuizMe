@@ -26,6 +26,8 @@ FactoryGirl.define do
     published true
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'leroy moderator'
+    sequence(:email) { |n| "mod#{n}@a.com" }
+    password 'abcdefgh'
   end 
   
   factory :asker do
@@ -33,7 +35,7 @@ FactoryGirl.define do
     published true
     twi_profile_img_url 'abc.jpg'
     twi_screen_name 'QuizMeBio'
-    sequence(:email) { |n| "#{n}@a.com" }
+    sequence(:email) { |n| "ask#{n}@a.com" }
     password 'abcdefgh'
     subject 'biology'
   end
