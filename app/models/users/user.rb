@@ -90,6 +90,18 @@ class User < ActiveRecord::Base
   scope :iphoners, -> { where(:communication_preference => 3) }
   # scope :whatsappers, -> { where(:communication_preference => 4) }
 
+  def password_required?
+    email_required?
+  end
+
+  def email_required?
+    if communication_preference == 2 || communication_preference == 3
+      true
+    else
+      false
+    end
+  end
+
   def self.tfind name
   	self.where('lower(twi_screen_name) = ?', name.downcase).first
   end
