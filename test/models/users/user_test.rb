@@ -40,6 +40,14 @@ describe User, '#valid?' do
     user.valid?.must_equal false
     user.errors.keys.count.must_equal 1
   end
+
+  it 'invalid if email already taken' do
+    create(:user, email: 'a@a.com')
+    user = build(:user, email: 'a@a.com')
+
+    user.valid?.must_equal false
+    user.errors[:email].first.must_equal "has already been taken"
+  end
 end
 
 describe User, '#follow_relationships' do
