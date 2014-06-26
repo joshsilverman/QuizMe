@@ -130,7 +130,7 @@ describe Asker, 'ManageTwitterRelationships' do
       
       Post.stubs(:twitter_request).returns([1])
 
-      @asker.send_autofollows(twi_user_ids, 5, { force: true })
+      @asker.send_autofollows(twi_user_ids, 5, {force: true})
       @asker.reload.follows.count.must_equal 5
       @asker.follow_relationships.twitter.count.must_equal 5
     end
