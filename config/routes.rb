@@ -23,6 +23,7 @@ Quizmemanager::Application.routes.draw do
 
     collection do
       get :wisr_follow_ids
+      get :auth_token
     end
 
     resources :posts, only: [:answer_count] do
@@ -55,6 +56,11 @@ Quizmemanager::Application.routes.draw do
       post 'deactivate'
     end
   end
+
+  scope :devise do
+    get "/confirm_js" => "sessions#confirm_js"
+  end
+
 
   get ':subject/:name/quiz' => 'topics#show'
 
@@ -109,10 +115,6 @@ Quizmemanager::Application.routes.draw do
 
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
-
-  scope :devise do
-    get "/confirm_js" => "sessions#confirm_js"
-  end
 
   get '/sitemap' => 'pages#sitemap'
 

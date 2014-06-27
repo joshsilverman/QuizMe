@@ -23,7 +23,7 @@ describe User, '#valid?' do
     user.errors.keys.count.must_equal 2
   end
 
-  it 'invalid if email !nil, communication_preference iphoner, password nil' do
+  it 'invalid if email !nil, communication_preference iphoner, password nil, encrypted password, nil' do
     user = build(:user, 
         email: 'a@a.com', 
         password: nil, 
@@ -32,6 +32,17 @@ describe User, '#valid?' do
     user.valid?.must_equal false
     user.errors[:password].wont_be_nil
     user.errors.keys.count.must_equal 1
+  end
+
+  it 'valid if email !nil, communication_preference iphoner, password nil, encrypted password, !nil' do
+    user = User.new( 
+        email: 'a@a.com', 
+        password: nil, 
+        encrypted_password: 'abc', 
+        communication_preference: 3)
+
+    user.save validate: false
+    user.update(authentication_token: '123').must_equal true
   end
 
   it 'invalid if email is invalid' do

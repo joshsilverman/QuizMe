@@ -115,3 +115,18 @@ describe UsersController, "#wisr_follow_ids" do
     response.status.must_equal 401
   end
 end
+
+describe UsersController, "#auth_token" do
+  let(:user) { create :user }
+
+  it "returns 200 if user authenticated" do
+    sign_in user
+    get :auth_token
+    response.status.must_equal 200
+  end
+
+  it "redirects if user not authenticated" do
+    get :auth_token
+    response.status.must_equal 302
+  end
+end

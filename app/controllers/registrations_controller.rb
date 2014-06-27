@@ -23,11 +23,20 @@ class RegistrationsController < Devise::RegistrationsController
     else
       resource.communication_preference = 2
     end
-
+    
     if resource.save
       if resource.active_for_authentication?
         sign_up(resource_name, resource)
-        respond_with resource, :location => after_sign_up_path_for(resource)
+
+        respond_to do |format|
+          format.html.phone do
+            redirect_to controller: 'users', action: 'auth_token'
+          end
+          
+          format.html.none do 
+            respond_with resource, :location => after_sign_up_path_for(resource)
+          end
+        end
       else
         expire_session_data_after_sign_in!
         respond_with resource, :location => after_inactive_sign_up_path_for(resource)

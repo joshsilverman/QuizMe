@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:wisr_follow_ids]
-  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids]
-  before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids]
+  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids, :auth_token]
+  before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids, :auth_token]
+  
+  include AuthorizationsHelper
 
   def activity_feed
     @activity = current_user.activity(since: 1.month.ago)
@@ -48,5 +50,9 @@ class UsersController < ApplicationController
         render json: ids.to_json
       end
     end
+  end
+
+  def auth_token
+    render text: expireable_auth_token(current_user, Time.now + 10.years)
   end
 end

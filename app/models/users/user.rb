@@ -91,6 +91,7 @@ class User < ActiveRecord::Base
   # scope :whatsappers, -> { where(:communication_preference => 4) }
 
   def password_required?
+    return false if encrypted_password and encrypted_password.length > 0
     email_required?
   end
 

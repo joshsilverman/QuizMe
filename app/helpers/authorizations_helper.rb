@@ -9,11 +9,9 @@ module AuthorizationsHelper
 		return url
 	end
 
-private
-
   def expireable_auth_token user, expires_at
     if user.authentication_token.nil?
-      user.update(authentication_token: user.reset_authentication_token)
+      user.update!(authentication_token: user.reset_authentication_token)
     end
 
     query = {
