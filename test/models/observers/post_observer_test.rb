@@ -99,6 +99,38 @@ describe Post, 'PostObserver#send_to_stream' do
 
     PostObserver.send(:new).send_to_stream post
   end
+
+  it "will call send_to_stream if tweeter" do
+    user = create :user, communication_preference: 1
+    post = FactoryGirl.create :post
+    post.update in_reply_to_question_id: 123,
+      intention: 'respond to question'
+
+    post.expects(:send_to_stream)
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if iphoner" do
+    user = create :user, communication_preference: 3
+    post = FactoryGirl.create :post, user: user
+    post.update in_reply_to_question_id: 123,
+      intention: 'respond to question'
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
+
+  it "wont call send_to_stream if no user" do
+    post = FactoryGirl.create :post, user: nil
+    post.update in_reply_to_question_id: 123,
+      intention: 'respond to question'
+
+    post.expects(:send_to_stream).never
+
+    PostObserver.send(:new).send_to_stream post
+  end
 end
 
 describe Post, 'PostObserver#segment_user' do

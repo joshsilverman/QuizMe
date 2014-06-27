@@ -17,6 +17,9 @@ class PostObserver < ActiveRecord::Observer
     return unless post.intention == 'respond to question'
     return if post.correct == false
 
+    return if post.user.nil?
+    return if post.user.communication_preference != 1
+
     post.send_to_stream
   end
 
