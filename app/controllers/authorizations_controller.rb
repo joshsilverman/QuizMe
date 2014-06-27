@@ -87,7 +87,7 @@ class AuthorizationsController < ApplicationController
 	  def find_or_create_oauth_by_email email
 	    unless user = User.find_by(email: email)
 	      user = User.new(:email => email, :password => Devise.friendly_token[0,20]) 
-	      user.save
+	      user.save!
 	    end
 	    user
 	  end

@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :validatable
-  devise :database_authenticatable, :registerable,
+  devise :database_authenticatable, :registerable, :validatable,
          :recoverable, :timeoutable, :trackable, 
          :omniauthable, :token_authenticatable, :rememberable # error on remember_expired? if rememberable removed, 
 
@@ -87,8 +87,20 @@ class User < ActiveRecord::Base
   # communication preference scopes
   scope :tweeters, -> { where(:communication_preference => 1) }
   scope :emailers, -> { where(:communication_preference => 2) }
-  # scope :texters, -> { where(:communication_preference => 3) }
+  scope :iphoners, -> { where(:communication_preference => 3) }
   # scope :whatsappers, -> { where(:communication_preference => 4) }
+
+  def password_required?
+    email_required?
+  end
+
+  def email_required?
+    if communication_preference == 2 || communication_preference == 3
+      true
+    else
+      false
+    end
+  end
 
   def self.tfind name
   	self.where('lower(twi_screen_name) = ?', name.downcase).first

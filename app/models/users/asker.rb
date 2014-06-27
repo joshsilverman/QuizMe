@@ -65,10 +65,12 @@ class Asker < User
     recipient = User.where(id: options[:in_reply_to_user_id]).first
     communication_preference = recipient.blank? ? 1 : recipient.communication_preference
     case communication_preference
-    when 2
-      self.becomes(EmailAsker).send_public_message(text, options, recipient)
     when 1
       self.becomes(TwitterAsker).send_public_message(text, options, recipient)
+    when 2
+      self.becomes(EmailAsker).send_public_message(text, options, recipient)
+    when 3
+      self.becomes(IphoneAsker).send_public_message(text, options, recipient)
     else
       raise 'no public send method for that communication preference'
     end
@@ -82,6 +84,8 @@ class Asker < User
       self.becomes(TwitterAsker).send_private_message(recipient, text, options)
     when 2
       self.becomes(EmailAsker).send_private_message(recipient, text, options)
+    when 3
+      self.becomes(IphoneAsker).send_private_message(recipient, text, options)
     else
       raise 'no private send method for that communication preference'
     end

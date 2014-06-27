@@ -1,12 +1,52 @@
 require 'test_helper'
 
-describe User do
-  describe '#save' do
-    it 'saves records with large :twi_user_id' do
-      user = User.find_or_create_by(twi_user_id: 2210874654)
+describe User, '#save' do
+  it 'saves empty user obj' do
+    user = User.new
 
-      user.valid?.must_equal true
-    end
+    user.valid?.must_equal true
+  end
+end
+
+describe User, '#valid?' do
+  it 'valid if email is nil and communication_preference is tweeter' do
+    user = build :user, email: nil, password: nil
+    user.valid?.must_equal true
+  end
+
+  it 'invalid if email is nil and communication_preference is iphoner' do
+    user = build :user, email: nil, password: nil, communication_preference: 3
+
+    user.valid?.must_equal false
+    user.errors[:email].wont_be_nil
+    user.errors[:password].wont_be_nil
+    user.errors.keys.count.must_equal 2
+  end
+
+  it 'invalid if email !nil, communication_preference iphoner, password nil' do
+    user = build(:user, 
+        email: 'a@a.com', 
+        password: nil, 
+        communication_preference: 3)
+
+    user.valid?.must_equal false
+    user.errors[:password].wont_be_nil
+    user.errors.keys.count.must_equal 1
+  end
+
+  it 'invalid if email is invalid' do
+    user = build(:user, email: 'aa.com')
+
+    user.valid?.must_equal false
+    user.errors.keys.count.must_equal 1
+  end
+
+  it 'invalid if email already taken' do
+    create(:user, email: 'a@a.com')
+    user = build(:user, email: 'a@a.com')
+
+    user.valid?.must_equal false
+    user.errors[:email].first.must_equal "has already been taken"
   end
 end
 

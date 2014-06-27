@@ -13,7 +13,7 @@ end
 describe IssuancesController, "#index" do
   it "must return 200" do
     issuance = Issuance.create
-    user = User.create
+    user = create :user
     sign_in user
 
     get :index, format: :json
@@ -23,7 +23,7 @@ describe IssuancesController, "#index" do
 
   it "must return unauthorized status if no current_user" do
     issuance = Issuance.create
-    user = User.create
+    user = create :user
 
     get :index, format: :json
 

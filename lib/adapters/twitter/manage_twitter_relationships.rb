@@ -66,7 +66,8 @@ module ManageTwitterRelationships
       response = Post.twitter_request { twitter.follow(twi_user_id) }
 
       if response.present? or options[:force]
-        user = User.find_or_create_by(twi_user_id: (twi_user_id))
+        user = User.find_or_initialize_by(twi_user_id: (twi_user_id))
+        user.save!
         if options[:search_term_source] and search_term = options[:search_term_source][twi_user_id]
           user.update_attribute(:search_term_topic_id, search_term.id)
           if !options[:force] and search_terms.size > 1

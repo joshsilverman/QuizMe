@@ -2,8 +2,8 @@ require "test_helper"
 
 describe ModeratorTransition, "#issue_badge" do
   it "must create issuance" do
-    user = User.create
-    asker = Asker.create(role: 'asker')
+    user = create :user
+    asker = create :asker
     transition = ModeratorTransition.create(user:user, to_segment:1)
     expected_badge = Badge.create(to_segment:1, segment_type:5)
 
@@ -16,8 +16,8 @@ describe ModeratorTransition, "#issue_badge" do
   end
 
   it "wont issue twice" do
-    user = User.create
-    asker = Asker.create(role: 'asker')
+    user = create :user
+    asker = create :asker
     transition = ModeratorTransition.create(user:user, to_segment:1)
     expected_badge = Badge.create(to_segment:1, segment_type:5)
 
@@ -30,8 +30,8 @@ describe ModeratorTransition, "#issue_badge" do
   end
 
   it "must notify user" do
-    user = User.create
-    asker = Asker.create(role: 'asker')
+    user = create :user
+    asker = create :asker
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(post_id:post.id, user_id:user.id)
     moderation_transition = ModeratorTransition.new(user:user, to_segment:1)
@@ -51,8 +51,8 @@ describe ModeratorTransition, "#issue_badge" do
   end
 
   it "wont notify user if issuance fails" do
-    user = User.create
-    asker = Asker.create(role: 'asker')
+    user = create :user
+    asker = create :asker
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(post_id:post.id, user_id:user.id)
     moderation_transition = ModeratorTransition.new(user:user, to_segment:1)
@@ -67,7 +67,7 @@ end
 
 describe ModeratorTransition, "#select_badge" do
   it "must select beginner badge if transition to segment 1" do
-    user = User.create
+    user = create :user
     transition = ModeratorTransition.create(user: user, to_segment:1)
     expected_badge = Badge.create(to_segment: 1, segment_type:5)
 
@@ -75,7 +75,7 @@ describe ModeratorTransition, "#select_badge" do
   end
 
   it "must select regular badge if transition to segment 3" do
-    user = User.create
+    user = create :user
     transition = ModeratorTransition.create(user: user, to_segment:3)
     expected_badge = Badge.create(to_segment: 3, segment_type:5)
 
@@ -83,7 +83,7 @@ describe ModeratorTransition, "#select_badge" do
   end
 
   it "wont select a badge with wrong segment type" do
-    user = User.create
+    user = create :user
     transition = ModeratorTransition.create(user: user, to_segment:1)
     wrong_badge = Badge.create(to_segment:1, segment_type:4)
 
@@ -93,8 +93,8 @@ end
 
 describe ModeratorTransition, "#last_active_asker" do
   it "returns nil if no last asker if no post associated with last mod" do
-    moderator = Moderator.create
-    asker = Asker.create(role: 'asker')
+    moderator = create :moderator
+    asker = create :asker
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(user_id:moderator.id)
     moderation_transition = ModeratorTransition.new(user:moderator)
@@ -103,8 +103,8 @@ describe ModeratorTransition, "#last_active_asker" do
   end
 
   it "returns the last asker that the user moderated for if post moderation" do
-    moderator = Moderator.create
-    asker = Asker.create(role: 'asker')
+    moderator = create :moderator
+    asker = create :asker
     post = Post.create(in_reply_to_user: asker)
     moderation = Moderation.create(post_id:post.id, user_id:moderator.id)
     moderation_transition = ModeratorTransition.new(user:moderator)
@@ -113,8 +113,8 @@ describe ModeratorTransition, "#last_active_asker" do
   end
 
   it "returns the last asker that the user moderated for if question mod" do
-    moderator = Moderator.create
-    asker = Asker.create(role: 'asker')
+    moderator = create :moderator
+    asker = create :asker
     question = Question.create created_for_asker_id: asker.id
     moderation = Moderation.create(
       question_id:question.id, 

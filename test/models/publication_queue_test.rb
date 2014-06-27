@@ -2,7 +2,7 @@ require 'test_helper'
 
 describe PublicationQueue, ".enqueue_questions" do
   it "has correct basic attrs" do
-    asker = Asker.create
+    asker = create :asker
     question = Question.create text: 'What up?', asker: asker
     Question.stubs(:select_questions_to_post).returns [question.id]
     asker.stubs(:posts_per_day).returns 5
@@ -15,7 +15,7 @@ describe PublicationQueue, ".enqueue_questions" do
   end
 
   it "stores question in hstore cache" do
-    asker = Asker.create
+    asker = create :asker
     question = Question.create text: 'What up?', asker: asker
     Question.stubs(:select_questions_to_post).returns [question.id]
     asker.stubs(:posts_per_day).returns 5
@@ -27,7 +27,7 @@ describe PublicationQueue, ".enqueue_questions" do
   end
 
   it "stores correct answer in hstore cache" do
-    asker = Asker.create
+    asker = create :asker
     question = Question.create text: 'What up?', asker: asker
     answer = question.answers.create text: 'correct ans', correct: true
     Question.stubs(:select_questions_to_post).returns [question.id]
@@ -40,7 +40,7 @@ describe PublicationQueue, ".enqueue_questions" do
   end
 
   it "stores incorrect answers in hstore cache" do
-    asker = Asker.create
+    asker = create :asker
     question = Question.create text: 'What up?', asker: asker
     ans_0 = question.answers.create text: 'incorrect ans 0', correct: false
     ans_1 = question.answers.create text: 'incorrect ans 1', correct: false
