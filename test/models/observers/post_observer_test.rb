@@ -100,8 +100,8 @@ describe Post, 'PostObserver#send_to_stream' do
     PostObserver.send(:new).send_to_stream post
   end
 
-  it "will call send_to_stream if tweeter" do
-    user = create :user, communication_preference: 1
+  it "will call send_to_stream if twi_screen_name" do
+    user = create :user, twi_screen_name: 'joey'
     post = FactoryGirl.create :post
     post.update in_reply_to_question_id: 123,
       intention: 'respond to question'
@@ -111,8 +111,8 @@ describe Post, 'PostObserver#send_to_stream' do
     PostObserver.send(:new).send_to_stream post
   end
 
-  it "wont call send_to_stream if iphoner" do
-    user = create :user, communication_preference: 3
+  it "wont call send_to_stream if no twi_screen_name" do
+    user = create :user, twi_screen_name: nil
     post = FactoryGirl.create :post, user: user
     post.update in_reply_to_question_id: 123,
       intention: 'respond to question'

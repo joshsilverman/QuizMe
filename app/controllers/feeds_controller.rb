@@ -67,6 +67,7 @@ class FeedsController < ApplicationController
     posts.each_with_index do |post, i|
       prev_post_user_id = posts[i - 1].try(:user_id)
       next if prev_post_user_id == post.user_id
+      next if post.user.twi_screen_name.nil?
 
       filtered_posts << {
         created_at: post.created_at,

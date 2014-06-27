@@ -18,7 +18,7 @@ class PostObserver < ActiveRecord::Observer
     return if post.correct == false
 
     return if post.user.nil?
-    return if post.user.communication_preference != 1
+    return if post.user.twi_screen_name.nil?
 
     post.send_to_stream
   end
