@@ -1,7 +1,6 @@
 class ModerationsManage
 	constructor: ->
 		@askers = $.parseJSON($("#askers").val())
-		@display_notifications = $('#display_notifications').val()
 
 		$(".quick-reply").on "click", @quick_reply
 
@@ -61,7 +60,6 @@ class ModerationsManage
 
 	notify: (conversation, type_id) =>
 		return if type_id == false
-		return unless @display_notifications == 'true'
 		user_name = conversation.find(".content h5").text().trim().split(" ")[0]
 		switch type_id
 			when null then text = "Thanks, I'll confirm that and get it out shortly!"
