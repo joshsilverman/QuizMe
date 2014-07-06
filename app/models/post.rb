@@ -190,23 +190,9 @@ class Post < ActiveRecord::Base
         Rails.cache.delete "publications_recent_by_asker_#{asker.id}"
         
         if via.present? and question.priority
-          option = Post.create_split_test(question.user_id, 'UGC published notification type (follower joins)', 
-            'Simple notification',
-            'Retweet web intent',
-            'Any friends I can send it to?'
-          )
-          case option
-          when 'Simple notification'
-            text = "Hey, a question you wrote was just published on @#{asker.twi_screen_name}!"
-            include_url = true
-          when 'Retweet web intent'
-            text = "I just published a question you wrote! Retweet it here:"
-            long_url = "https://twitter.com/intent/retweet?tweet_id=#{question_post.provider_post_id}"
-            include_url = true
-          when 'Any friends I can send it to?'
-            text = "I just published a question you wrote! Do you have any friends I could send it to?"
-            include_url = false
-          end
+          text = "I just published a question you wrote! Retweet it here:"
+          long_url = "https://twitter.com/intent/retweet?tweet_id=#{question_post.provider_post_id}"
+          include_url = true
 
           asker.send_public_message(text, {
             :reply_to => via, 
