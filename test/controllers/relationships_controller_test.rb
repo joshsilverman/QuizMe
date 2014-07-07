@@ -90,7 +90,7 @@ describe RelationshipsController, "#create" do
   end
 end
 
-describe RelationshipsController, "#destroy" do
+describe RelationshipsController, "#deactivate" do
   let(:user) { create :user }
   let(:asker) { create :asker }
 
