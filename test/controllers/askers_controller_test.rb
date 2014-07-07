@@ -81,8 +81,8 @@ describe AskersController, '#index' do
 end
 
 describe AskersController, '#recent' do
-  it "renders with status 302 when not lgged in" do
-    get :recent
+  it "renders with status 302 when not logged in" do
+    get :recent, format: :json
     response.status.must_equal 302
   end
 
