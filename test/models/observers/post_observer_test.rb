@@ -1,7 +1,7 @@
 require 'test_helper'
 
 describe Post, 'PostObserver#after_save' do
-  before :all do
+  before do
     ActiveRecord::Base.observers.enable :post_observer
     Delayed::Worker.delay_jobs = false
     stub_request(:get, /mixpanel/)
@@ -134,7 +134,7 @@ describe Post, 'PostObserver#send_to_stream' do
 end
 
 describe Post, 'PostObserver#segment_user' do
-  before :all do
+  before do
     ActiveRecord::Base.observers.enable :post_observer
   end
 
@@ -161,6 +161,11 @@ describe Post, 'PostObserver#segment_user' do
 end
 
 describe Post, 'PostObserver#send_to_publication' do
+  before do
+    ActiveRecord::Base.observers.enable :post_observer
+    Delayed::Worker.delay_jobs = false
+  end
+
   it "should call send_to_publication on post object" do
     post = FactoryGirl.create :post
 
