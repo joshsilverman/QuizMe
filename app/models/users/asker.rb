@@ -359,20 +359,16 @@ class Asker < User
     user = user_post.user
     conversation = options[:conversation]
     if correct.nil?
-     response_text = options[:message]
+      response_text = options[:message]
+      response_text = options[:message].gsub("@#{options[:username]}", "")
+
+      #  @todo remove if exception not thrown
       if response_text == "Refer a friend?"
-        response_text = Post.create_split_test(user.id, "Refer a friend script (follower joins)", 
-          "Do you have any friends/classmates that would also be interested?",
-          "Could you share with a couple of friends/classmates please?"
-        )
-      else
-        response_text = options[:message].gsub("@#{options[:username]}", "")
-      end
+        throw "Refer a friend not fully cleaned up"
+      end     
 
       response_post = self.delay.send_private_message(user, response_text, {
-        :conversation_id => conversation.id,
-        :intention => options[:message] == "Refer a friend?" ? 'refer a friend' : nil
-      })
+        :conversation_id => conversation.id})
     else
       if options[:tell]
         answer_text = Answer.where("question_id = ? and correct = ?", user_post.in_reply_to_question_id, true).first.text
