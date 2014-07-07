@@ -24,7 +24,7 @@ module EngagementEngine::ReengageInactive
       @question_sent_by_asker_counts = {}
       user_ids_to_last_active_at.each do |user_id, last_active_at|
         unless options[:strategy]
-          strategy_string = Post.create_split_test(user_id, "reengagement intervals (age > 15 days)", "1/2/4/8", "1/2/4/8/15", "1/2/4/8/15/30")
+          strategy_string = "1/2/4/8/15/30"
           strategy = strategy_string.split("/").map { |e| e.to_i }
         end 
 
