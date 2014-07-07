@@ -83,7 +83,7 @@ end
 describe AskersController, '#recent' do
   it "renders with status 302 when not logged in" do
     get :recent, format: :json
-    response.status.must_equal 302
+    response.status.must_equal 401
   end
 
   it "renders with status 200 to json format when logged in" do
