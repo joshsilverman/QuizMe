@@ -14,6 +14,9 @@ class RelationshipsController < ApplicationController
     if relationship.save
       head 200
     else
+      puts relationship.valid?
+      puts relationship.errors
+      puts current_user
       head 400
     end
   end
