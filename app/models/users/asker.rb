@@ -465,35 +465,15 @@ class Asker < User
     end
   end
 
-  def format_manager_response user_post, correct, answerer, publication, question, options = {} # augment manager responses with links, RTs, hints
-    response_text = ""
-    resource_url = nil
-    # split test hints for questions with hints that aren't posted through the app
-    if question = user_post.in_reply_to_question and question.hint.present? and !user_post.posted_via_app
-      test_name = "Hint when incorrect (answers question correctly later)"
-      if correct # attempt to trigger
-        previous_answers = question.in_reply_to_posts\
-          .where('posts.user_id = ?', answerer.id)\
-          .where('posts.created_at < ?', user_post.created_at)
-        if previous_answers.present?
-          Post.trigger_split_test(answerer.id, test_name)
-        end
-      else 
-        if Post.create_split_test(answerer.id, test_name, 'false', 'true') == 'true'
-          response_text = "#{INCORRECT.sample} Hint: #{question.hint}"
-        end
-      end
-    end 
-
-    if response_text.blank?
-      response_text = generate_response(correct, question)
-      if correct and options[:quote_user_answer]
-        cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
-        cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
-        response_text += " RT '#{cleaned_user_post}'" 
-      elsif !correct
-        resource_url = publication.question.resource_url if publication.question.resource_url
-      end
+  def format_manager_response user_post, correct, answerer, publication, question, options = {}
+    response_text = generate_response(correct, question)
+    if correct and options[:quote_user_answer]
+      cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
+      cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
+      response_text += " RT '#{cleaned_user_post}'" 
+      resource_url = nil
+    elsif !correct
+      resource_url = publication.question.resource_url if publication.question.resource_url
     end
 
     [response_text, resource_url]
