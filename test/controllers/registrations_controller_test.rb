@@ -4,13 +4,13 @@ describe RegistrationsController, "create" do
   it "creates a new user" do
     @request.env["devise.mapping"] = Devise.mappings[:user]
 
-    post(:create, user: {email: 'a123@a.com', 
+    post = post(:create, user: {email: 'a123@a.com', 
         password: 'abcabcabc', 
         password_confirmation: 'abcabcabc'})
 
     user = User.emailers.last
     user.wont_be_nil
-    user.email.must_equal 'a@a.com'
+    user.email.must_equal 'a123@a.com'
   end
 
   it "creates user with com preference iphoner if sent from phone variant" do
