@@ -14,7 +14,6 @@ class RelationshipsController < ApplicationController
     if relationship.save
       head 200
     else
-      binding.pry
       head 400
     end
   end
