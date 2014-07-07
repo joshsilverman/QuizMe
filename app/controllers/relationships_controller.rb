@@ -11,7 +11,7 @@ class RelationshipsController < ApplicationController
 
     relationship.active = true
 
-    if relationship.save
+    if relationship.save!
       head 200
     else
       head 400
