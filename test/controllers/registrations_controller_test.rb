@@ -4,7 +4,7 @@ describe RegistrationsController, "create" do
   it "creates a new user" do
     @request.env["devise.mapping"] = Devise.mappings[:user]
 
-    post(:create, user: {email: 'a@a.com', 
+    post(:create, user: {email: 'a123@a.com', 
         password: 'abcabcabc', 
         password_confirmation: 'abcabcabc'})
 
