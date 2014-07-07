@@ -663,11 +663,7 @@ class Asker < User
     llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
     return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
     
-    script = Post.create_split_test(user.id, "ugc script v4.0", 
-      "You know this material pretty well, how about writing a question or two? Enter it at <link>", 
-      "I'd love to have you write a question or two for this handle... if you would, enter it at <link>"
-    )
-
+    script = "You know this material pretty well, how about writing a question or two? Enter it at <link>"
     question_count = user.get_my_questions_answered_this_week_count
 
     if user.is_author?
