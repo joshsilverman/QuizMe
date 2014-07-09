@@ -678,10 +678,10 @@ class Asker < User
         ].sample
       end
 
-      request_type = Post.create_split_test(user.id, 'followup ugc request type (=> superuser)', 'mention', 'dm', 'dm with auth link')
+      request_type = 'mention'
       link = "www.wisr.com/askers/#{id}/questions"
     else
-      request_type = Post.create_split_test(user.id, 'first ugc request type (writes a question)', 'mention', 'dm', 'dm with auth link')
+      request_type = 'dm'
       link = "www.wisr.com/feeds/#{id}?q=1"
     end
 
@@ -727,10 +727,8 @@ class Asker < User
     return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
     
     ## ALL MUST ***NOT*** CONTAIN 'MORE' FOR TEST TO PASS
-    script = Post.create_split_test(user.id, 'new handle ugc request script v2 (=> add question)', 
-      "Hey, we're working on questions for @<new handle>, could you add one? <link>",
-      "We're making @<new handle>, could you write a question for it? <link>"
-    )
+    script = ["Hey, we're working on questions for @<new handle>, could you add one? <link>",
+              "We're making @<new handle>, could you write a question for it? <link>"].sample
     
     # overwrite script if user has added UGC to this handle before
     ## ALL MUST CONTAIN 'MORE' FOR TEST TO PASS

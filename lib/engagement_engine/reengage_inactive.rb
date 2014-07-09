@@ -51,36 +51,27 @@ module EngagementEngine::ReengageInactive
       user = User.find user_id
       return false unless (Asker.published_ids & user.asker_follows.collect(&:id)).present? # make sure there are published askers to reengage from
 
-      if options[:type].present? or Post.create_split_test(user.id, 'include solicitations as reengagements (=> advanced)', 'false', 'true') == 'true'
-        asker, question, publication, text, long_url = nil, nil, nil, nil, nil
-        reengagement_type = options[:type] || user.pick_reengagement_type(options[:last_active_at])
-        case reengagement_type
-        when :question
-          return false unless asker = user.select_reengagement_asker
-          return false unless question = asker.select_question(user)
-          text = question.text
-          publication = question.publications.published.order("created_at DESC").first
-          intention = 'reengage inactive'
-        when :moderation
-          asker = user.asker_follows.sample
-          text = I18n.t("reengagements.moderation").sample
-          text.gsub! '<link>', asker.authenticated_link("#{URL}/moderations/manage", user, (Time.now + 1.week))
-          intention = 'request mod'
-        when :author
-          asker = user.asker_follows.sample
-          text = I18n.t("reengagements.author").sample
-          long_url = "#{URL}/#{asker.subject_url}?q=1"
-          
-          text.gsub! '<link>', long_url
-          intention = 'solicit ugc'
-        end
-      else
-        reengagement_type = :question
+      asker, question, publication, text, long_url = nil, nil, nil, nil, nil
+      reengagement_type = options[:type] || user.pick_reengagement_type(options[:last_active_at])
+      case reengagement_type
+      when :question
         return false unless asker = user.select_reengagement_asker
-        return false unless question = asker.select_question(user)      
+        return false unless question = asker.select_question(user)
         text = question.text
-        intention = 'reengage inactive'
         publication = question.publications.published.order("created_at DESC").first
+        intention = 'reengage inactive'
+      when :moderation
+        asker = user.asker_follows.sample
+        text = I18n.t("reengagements.moderation").sample
+        text.gsub! '<link>', asker.authenticated_link("#{URL}/moderations/manage", user, (Time.now + 1.week))
+        intention = 'request mod'
+      when :author
+        asker = user.asker_follows.sample
+        text = I18n.t("reengagements.author").sample
+        long_url = "#{URL}/#{asker.subject_url}?q=1"
+        
+        text.gsub! '<link>', long_url
+        intention = 'solicit ugc'
       end
 
       if reengagement_type == :question 
