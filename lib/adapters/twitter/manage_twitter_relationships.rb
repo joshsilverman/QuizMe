@@ -70,9 +70,6 @@ module ManageTwitterRelationships
         user.save!
         if options[:search_term_source] and search_term = options[:search_term_source][twi_user_id]
           user.update_attribute(:search_term_topic_id, search_term.id)
-          if !options[:force] and search_terms.size > 1
-            Post.create_split_test_and_enroll_with_alternative(user.id, "#{twi_screen_name} search terms (=> advanced)", search_term.name, *search_terms.collect(&:name))
-          end
         end
         add_follow(user, 2)
       else
