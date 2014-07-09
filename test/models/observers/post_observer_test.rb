@@ -136,6 +136,7 @@ end
 describe Post, 'PostObserver#segment_user' do
   before do
     ActiveRecord::Base.observers.enable :post_observer
+    Delayed::Worker.delay_jobs = false
   end
 
   it "should call segment on user object" do
