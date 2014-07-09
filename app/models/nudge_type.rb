@@ -39,11 +39,9 @@ class NudgeType < ActiveRecord::Base
     if nudges_received.present? 
       if nudges_received.select { |n| n.converted }.blank? # no converted nudges, first time conversion
         nudges_received.each { |nudge| nudge.update_attribute :converted, true }
-        Post.trigger_split_test(user.id, "SATHabit copy (click-through) < 123 >") if client.id == 14699
       else # already has converted nudges, repeat conversion
         is_repeat_conversion = true
       end
-      Post.trigger_split_test(user.id, "nudge followup (nudge conversion)")
 
       MP.track_event "nudge conversion", {
         :distinct_id => user.id,
