@@ -330,18 +330,13 @@ module ManageTwitterRelationships
   end
 
   def send_targeted_mention user
-    script = Post.create_split_test(user.id, 'targeted mention script (joins)', '<just question>', 'Pop quiz:')
-    script = '' if script == '<just question>'
-
     question = most_popular_question
     return unless question
 
     publication = question.publications.published.order("created_at DESC").first
     return unless publication
 
-    script = "#{script} #{question.text}".strip
-
-    self.send_public_message(script, { 
+    self.send_public_message(question.text, { 
       reply_to: user.twi_screen_name, 
       intention: 'targeted mention', 
       question_id: question.id,
