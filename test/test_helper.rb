@@ -59,6 +59,11 @@ end
 class ActionController::TestCase
   include Devise::TestHelpers
 
+  before do
+    # Capybara.reset_session!
+    sign_out :user
+  end
+
   after :each do
     DatabaseCleaner.clean_with :truncation
   end
