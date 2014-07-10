@@ -815,7 +815,6 @@ class Asker < User
       parent_post = user_post.parent
       if parent_post.present?
         if parent_post.intention == 'reengage inactive' or parent_post.is_reengagement == true
-          Post.trigger_split_test(answerer.id, 'reengage last week inactive') 
           strategy = answerer.get_experiment_option("reengagement intervals (age > 15 days)") if answerer.enrolled_in_experiment?("reengagement intervals (age > 15 days)")
           in_reply_to = "reengage inactive"
         elsif parent_post.intention == 'incorrect answer follow up'
@@ -837,9 +836,6 @@ class Asker < User
         autoresponse: (options[:autoresponse].present? ? options[:autoresponse] : false)
       }        
     end
-
-    # Events/triggers where posted_via_app doesn't matter
-    Post.trigger_split_test(answerer.id, "reengagement intervals (age > 15 days)") if  answerer.age_greater_than 15.days 
   end
 
   ## Weekly progress reports
