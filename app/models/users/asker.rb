@@ -871,9 +871,8 @@ class Asker < User
       asker, text = Asker.compose_progress_report(recipient, asker_hash)
       next unless asker and text
       
-      if asker.followers.include?(recipient) and Post.create_split_test(recipient.id, "weekly progress report", "false", "true") == "true"
+      if asker.followers.include?(recipient)
         asker.send_private_message(recipient, text, {:intention => "progress report"})
-        # puts "sending: '#{text}' to #{recipient.twi_screen_name} from #{asker.twi_screen_name}"
         sleep 1
       end
     end
