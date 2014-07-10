@@ -412,22 +412,13 @@ class User < ActiveRecord::Base
     when 2 #to noob
       comment = no_comment
     when 3 #to regular
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        no_comment, 
-        "I'm going to start sending a weekly progress report, what's your email address?"
-      )
+      comment = "I'm going to start sending a weekly progress report, what's your email address?"
     	intention = 'request email'
     when 4 #to advanced - suggestions?
-      comment = Post.create_split_test(id, to_seg_test_name[to_segment], 
-        no_comment, 
-        "You're off to a strong start. How can I make this better?"
-      )
-      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
+      comment = "You're off to a strong start. How can I make this better?"
     when 5 #to pro - great commitment
       comment = "Fantastic dedication to this material."
-      Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     when 6 #to superuser
-	    Post.trigger_split_test(id, to_seg_test_name[to_segment - 1])
     end
 
     unless comment == no_comment or comment.nil?
@@ -452,7 +443,6 @@ class User < ActiveRecord::Base
 	def segment
 		update_lifecycle_segment
 		update_activity_segment
-		Post.trigger_split_test(id, "Personalized reengagement question (age > 15 days)") if age_greater_than 15.days
 	end
 
 	# Lifecycle checks - include UGC reqs?
