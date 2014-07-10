@@ -756,13 +756,12 @@ class Asker < User
     return unless client and nudge_type = client.nudge_types.automatic.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
 
     if client.id == 14699
-      nudge_type = NudgeType.find_by_text(Post.create_split_test(answerer.id, "SATHabit copy (click-through) < 123 >", 
+      nudge_type = NudgeType.find_by_text([
         "You're doing really well! I offer a much more comprehensive (free) course here: {link}",
         "Nice work so far! You can practice with customized questions at: {link}",
         "Want to see how you would score on the SAT? Check it out: {link}",
         "Hey, if you're interested, you can get a personalized SAT question of the day at {link}",
-        "You've answered {x} questions, with just {25-x} more you could have gotten an SAT score! Get one here: {link}"
-      ))
+        "You've answered {x} questions, with just {25-x} more you could have gotten an SAT score! Get one here: {link}"].sample)
       if nudge_type.text.include? "{x}"
         question_count = answerer.posts.answers.where(:in_reply_to_user_id => id).size
         nudge_type.text = nudge_type.text.gsub "{x}", question_count.to_s
