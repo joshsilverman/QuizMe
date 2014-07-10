@@ -8,6 +8,9 @@ require "capybara/rails"
 require 'database_cleaner'
 require 'active_support/testing/setup_and_teardown'
 require 'webmock/minitest'
+require "minitest/reporters"
+
+Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
 class ActiveSupport::TestCase
   include Warden::Test::Helpers

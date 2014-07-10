@@ -20,6 +20,7 @@ group :test do
   gem 'capybara'
   gem 'capybara_minitest_spec', github: 'ordinaryzelig/capybara_minitest_spec'
   gem 'minitest-rails'
+  gem 'minitest-reporters'
 
   gem 'factory_girl_rails'
   gem "database_cleaner"
