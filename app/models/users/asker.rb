@@ -949,17 +949,13 @@ class Asker < User
       script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
       asker.send_private_message(user, script, {:intention => "author followup"})
       
-      if Post.create_split_test(user.id, 'author followup type (return ugc submission)', 'write another here', 'direct to dashboard') == 'write another here'
-        script = "#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)"
-      else
-        script = "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"
-      end
+      script = ["#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)",
+                "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"].sample
 
       asker.send_private_message(user, script, {:intention => "author followup"})
       MP.track_event "author followup sent", {:distinct_id => user_id}
     end
   end
-
 
   # Nudge followups
 
@@ -985,12 +981,10 @@ class Asker < User
       asker = Asker.find(recipient_data[:asker_id])
       next unless asker.published
       
-      if Post.create_split_test(recipient_id, "nudge followup (nudge conversion)", "false", "true") == "true"
-        user = User.find(recipient_id)
-        script = "You have a chance to check out that link? What did you think?"
-        asker.send_private_message(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
-        MP.track_event "nudge followup sent", {:distinct_id => user.id}
-      end 
+      user = User.find(recipient_id)
+      script = "You have a chance to check out that link? What did you think?"
+      asker.send_private_message(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
+      MP.track_event "nudge followup sent", {:distinct_id => user.id}
     end
   end
 
