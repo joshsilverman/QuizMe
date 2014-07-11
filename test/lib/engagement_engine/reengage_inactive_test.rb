@@ -228,6 +228,16 @@ describe Asker, "#reengage_inactive_users" do
       post.question_id.wont_be_nil and post.intention.must_equal 'reengage inactive'
     end
 
+    it 'unless max reengagements hit' do
+      Asker.stubs(:max_hourly_reengagements).returns(0)
+
+      Timecop.travel(Time.now + 1.day)
+      Asker.reengage_inactive_users strategy: @strategy, type: :question
+      posts = Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id)
+      
+      posts.count.must_equal 0
+    end
+
     it 'with a moderation request' do
       Timecop.travel(Time.now + 1.day)
       Asker.reengage_inactive_users strategy: @strategy, type: :moderation

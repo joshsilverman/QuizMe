@@ -5,6 +5,10 @@ module EngagementEngine::ReengageInactive
   end
 
   module ClassMethods
+    def max_hourly_reengagements
+      40
+    end
+
     def reengage_inactive_users options = {}
       start_time = Time.find_zone('UTC').parse('2013-03-25 9am')
       days_since_start_time = ((Time.now - start_time) / 1.day.to_i).to_i
@@ -22,7 +26,10 @@ module EngagementEngine::ReengageInactive
         .group("in_reply_to_user_id").map{|p| [p.in_reply_to_user_id, p.last_reengaged_at]}.flatten]
 
       @question_sent_by_asker_counts = {}
+      reengagements_sent = 0
       user_ids_to_last_active_at.each do |user_id, last_active_at|
+        break if reengagements_sent >= max_hourly_reengagements
+
         unless options[:strategy]
           strategy_string = "2/4/8/15/30"
           strategy = strategy_string.split("/").map { |e| e.to_i }
@@ -44,6 +51,7 @@ module EngagementEngine::ReengageInactive
         is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
         
         Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog, last_active_at: last_active_at, type: options[:type]}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+        reengagements_sent += 1
       end
     end 
 
