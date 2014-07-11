@@ -50,8 +50,11 @@ module EngagementEngine::ReengageInactive
 
         is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
         
-        Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog, last_active_at: last_active_at, type: options[:type]}) if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
-        reengagements_sent += 1
+        if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
+          if Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog, last_active_at: last_active_at, type: options[:type]})
+            reengagements_sent += 1
+          end
+        end
       end
     end 
 
