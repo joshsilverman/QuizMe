@@ -804,17 +804,12 @@ class Asker < User
       end
 
       # Fire mixpanel answer event
-      type = "web"
-      if request.variant and request.variant.include? :phone
-        type = 'iPhone'
-      end
-
       MP.track_event "answered", {
         :distinct_id => answerer.id,
         :account => self.twi_screen_name,
-        :type => type,
+        :type => "app",
         :in_reply_to => in_reply_to,
-        :strategy => strategy,
+        :strategy => strategy
       }
     else
       parent_post = user_post.parent
