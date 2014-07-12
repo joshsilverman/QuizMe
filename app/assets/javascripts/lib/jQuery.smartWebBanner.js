@@ -12,20 +12,6 @@
 		var iPhone = navigator.userAgent.match(/iPhone/i) != null; // Check if using an iPhone
 		var Safari = (/Safari/i).test(navigator.appVersion) && !(/CriOS/i).test(navigator.appVersion); // Check if using Safari (making sure to exclude Chrome for iOS)
 		var standalone = navigator.standalone; // Check if it's already a standalone web app or running within a webui view of an app (not mobile safari)
-		// Detect iOS version
-		function iOSversion(){ // From http://stackoverflow.com/a/14223920
-			if(iPhone||iPad){ // Must be iOS device, otherwise returns an error
-				var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-				return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
-			}else{
-				return false;
-			}
-		}
-		var ver = iOSversion();
-		if(ver[0] <= 6) // They're running iOS 6 or earlier
-			var iOS7 = false;
-		else // Mark iOS 7 styling as true. This will need to be revisited if a new style is introduced in a future version of iOS.
-			var iOS7 = true;
 
 		// Find out about the website itself
 		var origHtmlMargin = parseFloat($('html').css('margin-top')); // Get the original margin-top of the HTML element so we can take that into account
@@ -66,10 +52,7 @@
 			if(opts.showFree)
 				$('#smartWebBanner').addClass('free');
 			if(opts.theme.toLowerCase() == 'auto'){
-				if(iOS7)
-					$('#smartWebBanner,#swb-instructions').addClass('ios7');
-				else
-					$('#smartWebBanner,#swb-instructions').addClass('ios6');
+				$('#smartWebBanner,#swb-instructions').addClass('ios7');
 			}
 			if(opts.theme.toLowerCase() == 'ios 7')
 				$('#smartWebBanner,#swb-instructions').addClass('ios7');
