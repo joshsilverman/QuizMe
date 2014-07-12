@@ -10,7 +10,7 @@
 		// Find out about the device being used
 		var iPad = navigator.userAgent.match(/iPad/i) != null; // Check if using an iPad
 		var iPhone = navigator.userAgent.match(/iPhone/i) != null; // Check if using an iPhone
-		var Safari = (/Safari/i).test(navigator.appVersion) && !(/CriOS/i).test(navigator.appVersion); // Check if using Safari (making sure to exclude Chrome for iOS)
+		var Safari = (/Safari/i).test(navigator.appVersion) || (/AppleWebKit/i).test(navigator.appVersion); // Check if using Safari (making sure to exclude Chrome for iOS)
 		var standalone = navigator.standalone; // Check if it's already a standalone web app or running within a webui view of an app (not mobile safari)
 
 		// Find out about the website itself
