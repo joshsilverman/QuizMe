@@ -57,17 +57,11 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  scope :devise do
-    get "/confirm_js" => "sessions#confirm_js"
-  end
-
-
   get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'
   get '/users/activity_feed'
   get '/users/:id/unsubscribe' => 'users#unsubscribe_form'
-  
   post '/unsubscribe' => 'users#unsubscribe'
   get '/progress_report' => 'users#progress_report'
 
