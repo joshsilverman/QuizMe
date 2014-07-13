@@ -3,5 +3,5 @@ deployment:
     branch: master
     commands:
       - git push git@heroku.com:wisr.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate -a wisr
       - heroku run bundle exec rake cache:clear -a wisr
-      - heroku run rake airbrake:deploy TO=production -a wisr
