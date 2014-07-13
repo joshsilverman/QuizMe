@@ -1,5 +1,7 @@
 deployment:
   production:
     branch: master
-    heroku:
-      appname: wisr
+    commands:
+      - git push git@heroku.com:wisr.git $CIRCLE_SHA1:master
+      - heroku run bundle exec rake cache:clear -a wisr
+      - heroku run rake airbrake:deploy TO=production -a wisr
