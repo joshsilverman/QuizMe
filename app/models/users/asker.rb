@@ -455,18 +455,12 @@ class Asker < User
       update_aggregate_activity_cache(answerer, correct)
     end
 
-    if request.variant and request.variant.include? :phone
-      type = 'iPhone'
-    else
-      type = "web"
-    end
-
     if app_post
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
       self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       self.delay.update_metrics(answerer, user_post, publication, {
         autoresponse: options[:autoresponse], 
-        type: type})
+        type: options[:type]})
       return app_post
     else
       return false
@@ -837,7 +831,7 @@ class Asker < User
         distinct_id: answerer.id,
         time: user_post.created_at.to_i,
         account: self.twi_screen_name,
-        type: options[:type],
+        type: 'twitter',
         in_reply_to: in_reply_to,
         strategy: strategy,
         interaction_type: user_post.interaction_type,

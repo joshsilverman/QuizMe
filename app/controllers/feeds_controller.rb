@@ -129,12 +129,19 @@ class FeedsController < ApplicationController
         post_to_twitter: false })
 
     if user_post
+      if request.variant and request.variant.include? :phone
+        type = 'iPhone'
+      else
+        type = "web"
+      end
+
       @question_asker.app_response(
         user_post, 
-        answer.correct, 
-        { conversation_id: @conversation.id, 
+        answer.correct, { 
+          conversation_id: @conversation.id, 
           post_to_twitter: false, 
-          link_to_parent: true })
+          link_to_parent: true,
+          type: type})
     end
 
     render json: user_post.correct
