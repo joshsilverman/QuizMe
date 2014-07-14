@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
-  before_filter :admin?, :except => [:nudge_redirect, :refer, :retweet, :answer_count]
+  before_filter :authenticate_user!, except: []
+  before_filter :admin?, except: [:nudge_redirect, :refer, :retweet, :answer_count, :reengage_inactive]
 
 	def retweet
 		return unless params[:publication_id]
@@ -25,6 +26,9 @@ class PostsController < ApplicationController
 			render :json => retweet
 		end
 	end
+
+  def reengage_inactive
+  end
 
   def refer
   	publication = Publication.includes(:question).find(params[:publication_id])

@@ -57,6 +57,17 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
+  resources :posts do
+    collection do
+      get 'reengage_inactive'
+    end
+  end
+
+  get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
+  get "/posts/:publication_id/refer" => "posts#refer"
+  post "posts/respond_to_post"
+  post "posts/retweet"
+
   get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'
@@ -76,7 +87,6 @@ Quizmemanager::Application.routes.draw do
   get "answer/index"
   get "answer/show"
 
-
   resource :moderations
   get "moderations/manage"
 
@@ -89,12 +99,6 @@ Quizmemanager::Application.routes.draw do
   get "/get_detailed_metrics" => 'askers#get_detailed_metrics'
   get "/graph/:party/:graph" => 'askers#graph'
   get "/get_retention_metrics" => 'askers#get_retention_metrics'
-
-  get "/posts/:publication_id/refer" => "posts#refer"
-  get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
-
-  post "posts/respond_to_post"
-  post "posts/retweet"
 
   get "questions/asker/:asker_id" => "questions#index"
 
@@ -112,7 +116,6 @@ Quizmemanager::Application.routes.draw do
 
   post "/email_askers/save_private_response"
 
-  resources :posts
   resources :mentions
 
   get "feeds/index"
