@@ -28,6 +28,16 @@ class PostsController < ApplicationController
 	end
 
   def reengage_inactive
+    posts = Post.where(in_reply_to_user_id: current_user.id)
+      .reengage_inactive.order(created_at: :desc).limit(10)
+
+    respond_to do |format|
+      format.json do
+        render json: posts, 
+          each_serializer: PostAsPublicationSerializer,
+          root: false
+      end
+    end
   end
 
   def refer
