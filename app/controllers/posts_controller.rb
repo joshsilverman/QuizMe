@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :authenticate_user!, except: []
+  before_filter :authenticate_user!, except: [:answer_count]
   before_filter :admin?, except: [:nudge_redirect, :refer, :retweet, :answer_count, :reengage_inactive]
 
 	def retweet
