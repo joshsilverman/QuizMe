@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   before_filter :authenticate_user!, except: [:answer_count]
-  before_filter :admin?, except: [:nudge_redirect, :refer, :retweet, :answer_count, :reengage_inactive]
+  before_filter :admin?, except: [:nudge_redirect, :refer, :retweet, :answer_count, :recent_reengage_inactive]
 
 	def retweet
 		return unless params[:publication_id]
@@ -27,7 +27,7 @@ class PostsController < ApplicationController
 		end
 	end
 
-  def reengage_inactive
+  def recent_reengage_inactive
     posts = Post.where(in_reply_to_user_id: current_user.id)
       .reengage_inactive.order(created_at: :desc).limit(10)
 

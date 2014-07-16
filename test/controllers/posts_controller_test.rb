@@ -10,7 +10,7 @@ describe PostsController, "#answer_count" do
   end
 end
 
-describe PostsController, "#reengage_inactive" do
+describe PostsController, "#recent_reengage_inactive" do
   let(:user) { create :user }
   let(:asker) { create :asker }
   let(:question) { create :question }
@@ -24,7 +24,7 @@ describe PostsController, "#reengage_inactive" do
   it "returns error if no user authenticated" do
     post
 
-    get :reengage_inactive, format: :json
+    get :recent_reengage_inactive, format: :json
     response.status.must_equal(401)
   end
 
@@ -32,7 +32,7 @@ describe PostsController, "#reengage_inactive" do
     post
     sign_in user
 
-    get :reengage_inactive, format: :json
+    get :recent_reengage_inactive, format: :json
     response.status.must_equal(200)
 
     json = JSON.parse response.body
@@ -42,7 +42,5 @@ describe PostsController, "#reengage_inactive" do
     json.first['_answers'].values.must_include 'the correct answer'
     json.first['_question']['text'].must_be_kind_of String
     json.first['_question']['id'].must_equal question.id
-
-    1.must_equal 2
   end
 end

@@ -59,7 +59,7 @@ Quizmemanager::Application.routes.draw do
 
   resources :posts do
     collection do
-      get 'reengage_inactive'
+      get 'recent_reengage_inactive'
     end
   end
 
