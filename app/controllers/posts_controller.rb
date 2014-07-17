@@ -29,7 +29,8 @@ class PostsController < ApplicationController
 
   def recent_reengage_inactive
     posts = Post.where(in_reply_to_user_id: current_user.id)
-      .reengage_inactive.order(created_at: :desc).limit(10)
+      .includes(:user, question: :answers)
+      .reengage_inactive.order(created_at: :desc).limit(1)
 
     respond_to do |format|
       format.json do

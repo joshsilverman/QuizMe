@@ -1,5 +1,9 @@
 class PostAsPublicationSerializer < ActiveModel::Serializer
-  attributes :question_id, :asker_id, :_answers, :_question, :_asker
+  attributes :question_id, :asker_id, :_answers, :_question, :_asker, :first_posted_at
+
+  def first_posted_at
+    object.created_at
+  end
 
   def asker_id
     object.user_id
@@ -28,7 +32,8 @@ class PostAsPublicationSerializer < ActiveModel::Serializer
 
   def _asker
     {
-      id: object.user_id
+      id: object.user_id,
+      subject: object.user.subject
     } 
   end
 end

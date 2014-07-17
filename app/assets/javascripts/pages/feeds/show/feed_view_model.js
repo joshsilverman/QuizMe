@@ -25,6 +25,7 @@ if ($('.feed-view').length) {
       $(window).on('ios:refresh', feedViewModel.refresh);
 
       feedViewModel.loadPublications();
+      feedViewModel.loadRecentReengageInactive();
       feedViewModel.initLoadMore();
       self.loadCorrectQIds();
     }
@@ -56,6 +57,8 @@ if ($('.feed-view').length) {
       };
 
       self.loadPublications = function(beforeRender, afterRender) {
+        var path; 
+
         currentPath = location.pathname.replace(/\/$/, '') || 'feeds/index'; 
         path = currentPath + ".json" + "?offset=" + offset;
         path = path + "&" + location.search.replace(/^\?/, '');
@@ -72,6 +75,18 @@ if ($('.feed-view').length) {
           self.focusOnPublication();
 
           if (afterRender) {afterRender()}
+        })
+      };
+
+      self.loadRecentReengageInactive = function() {
+        var path = "/posts/recent_reengage_inactive.json";
+        if (location.pathname != '/') return;
+
+        $.getJSON(path, function(publication) {
+          publication.forEach(function(publication) {
+            var feedPublication = new FeedPublicationModel(publication);
+            self.feedPublications.unshift(feedPublication);
+          });
         })
       };
 
