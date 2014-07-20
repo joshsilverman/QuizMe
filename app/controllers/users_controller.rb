@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   prepend_before_filter :check_for_authentication_token, :only => [:wisr_follow_ids]
-  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids, :auth_token]
-  before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids, :auth_token]
+  before_filter :admin?, :except => [:questions, :unsubscribe, :unsubscribe_form, :asker_questions, :activity, :activity_feed, :correct_question_ids, :wisr_follow_ids, :auth_token, :register_device_token]
+  before_filter :authenticate_user!, :only => [:correct_question_ids, :wisr_follow_ids, :auth_token, :register_device_token]
   
   include AuthorizationsHelper
 
@@ -14,6 +14,21 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @activity = @user.activity(since: 1.month.ago)
     @subscribed = Asker.includes(:related_askers).where("id in (?)", @user.follows.collect(&:id))
+  end
+
+  def register_device_token
+    if params[:token].nil?
+      head 400
+    else 
+      current_user.device_token = params[:token]
+      current_user.communication_preference = 3
+
+      if current_user.save
+        head 200
+      else
+        head 400
+      end
+    end
   end
 
   def unsubscribe_form

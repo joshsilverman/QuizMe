@@ -130,3 +130,40 @@ describe UsersController, "#auth_token" do
     response.status.must_equal 302
   end
 end
+
+describe UsersController, '#register_device_token' do
+  let(:user) { create :user }
+
+  it 'persists device_token' do
+    sign_in user
+    post :register_device_token, token: 'abc'
+
+    response.status.must_equal 200
+    user.reload.device_token.must_equal 'abc'
+  end
+
+  it 'changes communication_preference to iphoner' do
+    sign_in user
+    user.communication_preference.wont_equal 3
+
+    post :register_device_token, token: 'abc'
+
+    user.reload.communication_preference.must_equal 3
+    user.reload.device_token.must_equal 'abc'
+  end
+
+  it 'wont persist if nil' do
+    sign_in user
+    user.communication_preference.must_equal 1
+
+    post :register_device_token
+
+    user.reload.communication_preference.must_equal 1
+    user.reload.device_token.must_equal nil
+  end
+
+  it 'returns error status if not authenticated' do
+    post :register_device_token, token: 'abc'
+    response.status.must_equal 302
+  end
+end

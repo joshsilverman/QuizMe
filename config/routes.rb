@@ -18,12 +18,13 @@ Quizmemanager::Application.routes.draw do
 
   get '/askers/:id/questions(/:user_id)' => 'askers#questions'
 
-  resources :users, only: [:correct_question_ids] do
+  resources :users, only: [:correct_question_ids, :register_device_token] do
     get :correct_question_ids
 
     collection do
       get :wisr_follow_ids
       get :auth_token
+      post :register_device_token
     end
 
     resources :posts, only: [:answer_count] do
