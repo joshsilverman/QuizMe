@@ -96,7 +96,9 @@ class User < ActiveRecord::Base
   end
 
   def email_required?
-    if communication_preference == 2 || communication_preference == 3
+    if communication_preference == 2
+      true
+    elsif communication_preference == 3 and device_token.nil?
       true
     else
       false

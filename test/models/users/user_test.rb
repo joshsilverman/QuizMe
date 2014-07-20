@@ -23,6 +23,16 @@ describe User, '#valid?' do
     user.errors.keys.count.must_equal 2
   end
 
+  it 'valid if email nil, communication_preference is iphoner, device token present' do
+    user = build :user, 
+      email: nil, 
+      password: nil, 
+      communication_preference: 3,
+      device_token: 'abc'
+
+    user.valid?.must_equal true
+  end
+
   it 'invalid if email !nil, communication_preference iphoner, password nil, encrypted password, nil' do
     user = build(:user, 
         email: 'a@a.com', 
