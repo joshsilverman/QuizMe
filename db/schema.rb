@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140525041422) do
+ActiveRecord::Schema.define(version: 20140719170505) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -361,6 +361,7 @@ ActiveRecord::Schema.define(version: 20140525041422) do
     t.datetime "last_followback_failure"
     t.string   "subject"
     t.hstore   "styles"
+    t.string   "device_token"
   end
 
   add_index "users", ["author_id"], name: "index_users_on_author_id", using: :btree

@@ -41,20 +41,53 @@ describe IphoneAsker do
   end
 
   describe '#send_public_message' do
-    it 'wont send' do
+    it 'wont send push notification if no device token' do
+      iphoner.update device_token: nil
+
       Asker.reengage_inactive_users strategy: strategy
       asker.posts.reengage_inactive.where(in_reply_to_user_id: iphoner).count.must_equal 0
+    end
+
+    it 'will send push notification' do
+      iphoner.update device_token: '<08a26d39 05745ffc f0e98d05 65ce8764 d03bae59 6f1f09f2 f4848a52 099b2f91>'
+
+      Asker.reengage_inactive_users strategy: strategy
+      asker.posts.reengage_inactive.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
     end
   end
 
   describe '#send_private_message' do
-    it 'wont send' do
+    it 'will push to APNS' do
+      iphoner.update device_token: '<08a26d39 05745ffc f0e98d05 65ce8764 d03bae59 6f1f09f2 f4848a52 099b2f91>'
+
+      APN.expects :push
+
       Asker.reengage_inactive_users strategy: strategy
-      asker.posts.reengage_inactive.where(in_reply_to_user_id: iphoner).count.must_equal 0
+    end
+
+    it 'will create new reengage_inactive post' do
+      iphoner.update device_token: '<08a26d39 05745ffc f0e98d05 65ce8764 d03bae59 6f1f09f2 f4848a52 099b2f91>'
+
+      APN.stubs :push
+      
+      Asker.reengage_inactive_users strategy: strategy
+      asker.posts.reengage_inactive.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
+    end
+
+
+    it 'wont create new reengage_inactive post or push if no device_token' do
+      iphoner.update device_token: nil
+
+      APN.expects(:push).never
+      
+      Asker.reengage_inactive_users strategy: strategy
+      asker.posts.reengage_inactive.apns.where(in_reply_to_user_id: iphoner).count.must_equal 0
     end
 
     it 'sends if communication preference changes' do
+      iphoner.update device_token: nil
       iphoner.update communication_preference: 1
+
       Asker.reengage_inactive_users strategy: strategy
       asker.posts.reengage_inactive.where(in_reply_to_user_id: iphoner.reload).count.must_equal 1
     end    

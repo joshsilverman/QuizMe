@@ -97,6 +97,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.0)
+    commander (4.2.0)
+      highline (~> 1.6.11)
     commonjs (0.2.7)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
@@ -155,7 +157,11 @@ GEM
     haml (4.0.5)
       tilt
     hashie (2.0.5)
+    highline (1.6.21)
     hike (1.2.3)
+    houston (2.1.0)
+      commander (~> 4.1)
+      json
     httpclient (2.3.4.1)
     i18n (0.6.9)
     jquery-rails (3.1.0)
@@ -431,6 +437,7 @@ DEPENDENCIES
   guard
   guard-minitest
   haml
+  houston
   jquery-rails
   jquery-ui-rails
   kaminari

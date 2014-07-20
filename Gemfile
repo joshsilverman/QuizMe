@@ -75,6 +75,7 @@ gem 'cancan'
 gem 'oj'
 
 gem 'twitter', '4.8.1'
+gem 'houston'
 
 gem 'kaminari'
 gem 'kaminari-bootstrap'
