@@ -54,6 +54,20 @@ describe IphoneAsker do
       Asker.reengage_inactive_users strategy: strategy
       asker.posts.reengage_inactive.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
     end
+
+    it 'wont send if intention is to send aggregate activity' do
+      iphoner.update device_token: 'abc'
+
+      asker.send_public_message 'abc', {intention: 'post aggregate activity'}, iphoner
+      asker.posts.apns.where(in_reply_to_user_id: iphoner).count.must_equal 0
+    end
+
+    it 'will send if intention is to reengage' do
+      iphoner.update device_token: 'abc'
+
+      asker.send_public_message 'abc', {intention: 'reengage inactive'}, iphoner
+      asker.posts.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
+    end
   end
 
   describe '#send_private_message' do
