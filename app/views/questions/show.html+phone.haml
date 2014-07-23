@@ -1,0 +1,14 @@
+.columns
+  - content_for :question do
+    %li.feed-publication.visible.questions-show{'data-publication-id' => @publication.id}
+      .content.active
+        %h3
+          %span= @publication._question['text']
+
+        - @publication._answers.each do |id, answer_text|
+          .answers
+            .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading()}', answer_id: id}
+              %span= answer_text
+              %img{src: '/assets/ajax-loader.gif'}
+
+  = render partial: "feeds/feed"

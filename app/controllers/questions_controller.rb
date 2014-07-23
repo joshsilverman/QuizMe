@@ -46,8 +46,11 @@ class QuestionsController < ApplicationController
     redirect_to '/' if !@asker
 
     respond_to do |format|
-      format.html do
+      format.html.phone do
+        render :show, layout: 'phone'
       end
+
+      format.html.none { }
 
       format.json do
         redirect_to controller: :feeds,
