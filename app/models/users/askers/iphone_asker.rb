@@ -21,7 +21,8 @@ class IphoneAsker < Asker
       notification.custom_data = {
         path: "question", 
         question_id: options[:question_id], 
-        asker_id: self.id}
+        asker_id: self.id,
+        bg_color: self.styles['bg_color'].gsub('#', '')}
     end
 
     APN.push(notification)
