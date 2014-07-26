@@ -17,6 +17,13 @@ class IphoneAsker < Asker
     notification = Houston::Notification.new(device: recipient.device_token)
     notification.alert = text
 
+    if options[:question_id]
+      notification.custom_data = {
+        path: "question", 
+        question_id: options[:question_id], 
+        asker_id: self.id}
+    end
+
     APN.push(notification)
 
     Post.create(
