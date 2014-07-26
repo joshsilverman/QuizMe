@@ -18,11 +18,14 @@ class IphoneAsker < Asker
     notification.alert = text
 
     if options[:question_id]
+      bg_color = '292935'
+      bg_color = self.styles['bg_color'].gsub('#', '') if self.styles
+
       notification.custom_data = {
         path: "question", 
         question_id: options[:question_id], 
         asker_id: self.id,
-        bg_color: self.styles['bg_color'].gsub('#', '')}
+        bg_color: bg_color}
     end
 
     APN.push(notification)
