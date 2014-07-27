@@ -1,6 +1,6 @@
 class IphoneAsker < Asker
 
-  INTENTION_BLACKLIST = ['post aggregate activity']
+  INTENTION_WHITELIST = ['incorrect answer follow up', 'reengage inactive']
 
 	def send_public_message text, options = {}, recipient = nil
     if recipient
@@ -12,7 +12,7 @@ class IphoneAsker < Asker
 
 	def send_private_message recipient, text, options = {}
     return nil if recipient.device_token.nil?
-    return nil if INTENTION_BLACKLIST.include? options[:intention]
+    return nil if !INTENTION_WHITELIST.include?(options[:intention])
 
     notification = Houston::Notification.new(device: recipient.device_token)
     notification.alert = text

@@ -68,6 +68,13 @@ describe IphoneAsker do
       asker.send_public_message 'abc', {intention: 'reengage inactive'}, iphoner
       asker.posts.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
     end
+
+    it 'will send if intention is to followup on incorrect answer' do
+      iphoner.update device_token: 'abc'
+
+      asker.send_public_message 'abc', {intention: "incorrect answer follow up"}, iphoner
+      asker.posts.apns.where(in_reply_to_user_id: iphoner).count.must_equal 1
+    end
   end
 
   describe '#send_private_message' do
