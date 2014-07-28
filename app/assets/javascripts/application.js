@@ -79,6 +79,55 @@ setTimeout(
   })}, 800
 )
 
+$(function() {
+  var isMobileWebkit, ua;
+  $('.dropdown a').dropdown();
+  $('.best_in_place').best_in_place();
+  $('.dropdown-toggle').dropdown();
+  $('.has-tooltip').tooltip();
+  if ($('body.phone-variant').length === 0) {
+    window.snapper = new Snap({
+      element: $('.main-view')[0],
+      disable: 'right',
+      touchToDrag: false
+    });
+    $('.drawer-toggle').on('click', function() {
+      return snapper.open('left');
+    });
+    snapper.on('animated', function() {
+      if ($('.main-view').css('transform') !== 'none') {
+        return;
+      }
+      return $('.drawer').removeClass('show');
+    });
+    setInterval(function() {
+      if ($('.main-view').css('transform') !== 'none' && $('.main-view').css('transform') !== 'matrix(1, 0, 0, 1, 0, 0)') {
+        return;
+      }
+      return $('.drawer').removeClass('show');
+    }, 10);
+    snapper.on('animating', function() {
+      return $('.drawer').addClass('show');
+    });
+    snapper.on('open', function() {
+      return $('.drawer').addClass('show');
+    });
+    snapper.on('drag', function() {
+      return $('.drawer').addClass('show');
+    });
+    
+  }
+  if ($('.starscape').length) {
+    ua = navigator.userAgent;
+    isMobileWebkit = /WebKit/.test(ua) && /Mobile/.test(ua);
+    if (!isMobileWebkit) {
+      $(window).stellar({
+        horizontalScrolling: false
+      });
+    }
+  }
+});
+
 jQuery.timeago.settings.strings = {
    prefixAgo: "",
    prefixFromNow: "",
