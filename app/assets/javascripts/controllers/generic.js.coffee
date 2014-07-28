@@ -5,6 +5,7 @@ $ ->
   $('.has-tooltip').tooltip()
 
   if ($('body.phone-variant').length == 0)
+    
     window.snapper = new Snap
       element: $('.main-view')[0],
       disable: 'right',
