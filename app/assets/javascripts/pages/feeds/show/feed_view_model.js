@@ -1,11 +1,9 @@
 if ($('.feed-view').length) {
   $(function() {
     var correctQIds = [],
-      feedViewModel, askerId, currentUserId, publicationId;
+      feedViewModel, askerId, currentUserId, publicationId, correctQIdsPath;
 
     function init(subjectUrl, _askerId, _currentUserId, _publicationId) {
-      var correctQIdsPath;
-
       askerId = _askerId;
       feedViewModel = new FeedViewModel();
       currentUserId = _currentUserId;
@@ -100,9 +98,12 @@ if ($('.feed-view').length) {
 
       self.refresh = function() {
         offset = 0;
-        self.loadPublications(
-          function() {self.feedPublications([])},
-          function() {window.location.href = 'ios://refreshed'});
+        $.getJSON(correctQIdsPath, function(_correctQIds) {
+          correctQIds = _correctQIds;
+          self.loadPublications(
+            function() {self.feedPublications([])},
+            function() {window.location.href = 'ios://refreshed'});
+        });
       };
     }
 
