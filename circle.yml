@@ -1,7 +1,0 @@
-deployment:
-  production:
-    branch: master
-    commands:
-      - git push git@heroku.com:wisr.git $CIRCLE_SHA1:master
-      - heroku run bundle exec rake db:migrate -a wisr
-      - heroku run bundle exec rake cache:clear -a wisr
