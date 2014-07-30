@@ -4,7 +4,6 @@ gem 'puma'
 gem 'puma_worker_killer'
 gem 'rails', '4.1.4'
 gem 'pg'
-gem 'redis'
 gem 'heroku-api'
 
 gem 'protected_attributes'
@@ -89,9 +88,6 @@ gem 'fog'
 gem 'roadie'
 gem 'best_in_place', github: 'bernat/best_in_place'
 gem 'mail'
-
-gem 'split', :git => 'https://github.com/bderusha/split' #, :require => 'split/dashboard' #, :path => '~/Documents/RoR/gems/split'
-
 gem 'stuff-classifier', :git => 'https://github.com/henghonglee/stuff-classifier' # no sqlite dependency #'git://github.com/alexandru/stuff-classifier.git'
 gem 'amatch'
 

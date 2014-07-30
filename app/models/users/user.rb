@@ -303,23 +303,6 @@ class User < ActiveRecord::Base
   	Post.answers.where("created_at > ? and in_reply_to_question_id in (?)", 1.week.ago, questions.collect(&:id)).count
   end
 
-	def enrolled_in_experiment? experiment_name
-		experiments = Split.redis.hkeys("user_store:#{self.id}").map { |e| e.split(":")[0] }
-		experiments.include? experiment_name
-	end
-
-	def get_experiment_option experiment_name
-		experiments = Split.redis.hkeys("user_store:#{self.id}").map { |e| e.split(":")[0] }
-		if experiments.include? experiment_name
-			experiment = Split::Experiment.find(experiment_name)
-			ab_user = Split::RedisStore.new(Split.redis) 
-			ab_user.set_id(id)
-			return ab_user.get_key(experiment.key) if experiment.key
-		else
-			return false
-		end
-	end
-
 	def after_new_user_filter
     MP.track_event "new user joined", {
       :distinct_id => id,

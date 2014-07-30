@@ -1,6 +1,6 @@
 class EmailAskersController < ApplicationController
 	# skip filters designed for humans
-	skip_before_filter :referrer_data, :split_user
+	skip_before_filter :referrer_data
 
   def save_private_response
     begin

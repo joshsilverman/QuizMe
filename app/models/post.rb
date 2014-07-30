@@ -512,8 +512,6 @@ class Post < ActiveRecord::Base
     end
     return value   
   end
-  
-  extend Split::Helper
 
   def self.is_safe_api_call?(block)
     return true if Rails.env.production?
