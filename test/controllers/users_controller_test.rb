@@ -167,3 +167,36 @@ describe UsersController, '#register_device_token' do
     response.status.must_equal 302
   end
 end
+
+describe UsersController, "#me" do
+  let(:user) { create :user }
+
+  it "returns 200 if user authenticated" do
+    sign_in user
+    get :me, format: :json
+    response.status.must_equal 200
+  end
+
+  it "returns 40x if not authenticated" do
+    get :me, format: :json
+    response.status.must_equal 401
+  end
+
+  it 'includes email, id, name, etc. fields' do
+    sign_in user
+    get :me, format: :json
+    
+    response_json_keys = JSON.parse(response.body).keys
+    response_json_keys.must_include "id"
+    response_json_keys.must_include "email"
+    response_json_keys.must_include "twi_screen_name"
+  end
+
+  it 'excludes role, etc. fields' do
+    sign_in user
+    get :me, format: :json
+    
+    response_json_keys = JSON.parse(response.body).keys
+    response_json_keys.wont_include "role"
+  end
+end
