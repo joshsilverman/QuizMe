@@ -9,6 +9,9 @@ Quizmemanager::Application.routes.draw do
   end
   
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations", sessions: :sessions, registrations: :registrations }
+  devise_scope :user do
+    get 'users/sign_out' => 'sessions#destroy'
+  end
 
   resources :askers, except: [:destroy] do
     collection do
