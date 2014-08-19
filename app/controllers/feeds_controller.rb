@@ -1,4 +1,5 @@
 class FeedsController < ApplicationController
+  skip_before_filter :verify_authenticity_token, :only => [:respond_to_question]
   prepend_before_filter :check_for_authentication_token, :only => [:show, :index]
   before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :search] 
   before_filter :admin?, :only => [:manager_response]

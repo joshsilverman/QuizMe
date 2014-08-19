@@ -5,6 +5,7 @@ gem 'puma_worker_killer'
 gem 'rails', '4.1.4'
 gem 'pg'
 gem 'heroku-api'
+gem 'rack-cors'
 
 gem 'protected_attributes'
 gem 'rails-observers'
