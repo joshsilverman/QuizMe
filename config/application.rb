@@ -66,7 +66,7 @@ module Quizmemanager
 
     config.middleware.insert 0, Rack::Cors do
       allow do
-        origins ['https://*.wisr.com', 'http://*.dev.localhost']
+        origins ['https://feed.wisr.com', 'http://ng.dev.localhost']
         resource '*', :headers => :any, :methods => [:get, :post, :options]
       end
     end
