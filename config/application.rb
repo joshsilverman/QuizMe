@@ -63,5 +63,12 @@ module Quizmemanager
 
     # config.active_record.default_timezone = :local
     # config.active_record.time_zone_aware_attributes = false 
+
+    config.middleware.insert 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
   end
 end
