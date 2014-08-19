@@ -6,7 +6,7 @@ run Quizmemanager::Application
 require 'rack/cors'
 use Rack::Cors do
   allow do
-    origins ['http://*.dev.localhost', 'https://www.wisr.com']
+    origins '*'
     resource '*', :headers => :any, :methods => [:get, :post, :options]
   end
 end
