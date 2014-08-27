@@ -121,8 +121,6 @@ Quizmemanager::Application.routes.draw do
 
   post "/email_askers/save_private_response"
 
-  resources :mentions
-
   get "feeds/index"
   get "feeds/index(/:post_id(/:answer_id))" => "feeds#index"
   get "feeds/:id/more/:last_post_id" => "feeds#more"
