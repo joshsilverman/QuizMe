@@ -607,7 +607,10 @@ $border_thin: 0px;
     display: block;
   }
 
-  .galaxy {background: image-url('home/galaxy.jpg');}
+  .galaxy {
+    top:-27px;
+    background: image-url('home/galaxy.jpg');
+  }
   .stars {background: image-url('home/stars.png');}
   
   .smallplanets {
