@@ -16,9 +16,11 @@ WHITELISTED_MODERATORS = [
 AUTOFOLLOW_ASKER_IDS = [32588, 36605, 35106] # Neuro, AmericanRev, Respiratory
 
 if Rails.env.production?
+  FEED_URL = "https://feed.wisr.com"
   URL = "https://www.wisr.com"
 else
-  URL = "http://localhost:3000"
+  FEED_URL = "http://ng.dev.localhost"
+  URL = "http://dev.localhost"
 end
 
 TWI_DEV_SAFE_API_CALLS = [
