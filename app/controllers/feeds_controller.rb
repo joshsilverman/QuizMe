@@ -13,7 +13,8 @@ class FeedsController < ApplicationController
       end
 
       format.html.none do
-        redirect_to FEED_URL, status: 301
+        @asker = Asker.wisr
+        @askers = Asker.published.order(subject: :asc)
       end
 
       format.json.phone do
@@ -41,13 +42,7 @@ class FeedsController < ApplicationController
         render :show, layout: 'phone'
       end
 
-      format.html.none { 
-        redirected = show_redirect 
-        if !redirected
-          url = "#{FEED_URL}#{request.fullpath}"
-          redirect_to url, status: 301
-        end
-      }
+      format.html.none { show_redirect }
 
       format.json do
         subject = params[:subject] || 'wisr'
