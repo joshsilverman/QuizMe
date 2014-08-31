@@ -34,92 +34,95 @@ describe FeedsController do
       question = create(:question)
       pub = create(:publication, question: question)
 
-      visit "/feeds/#{asker.id}/#{pub.id}"
+      get :show, id: asker.id, publication_id: pub.id
 
-      current_url.must_equal "http://www.example.com/biology/#{pub.id}"
-      status_code.must_equal 200
+      response.header['Location'].must_equal "http://test.host/biology/#{pub.id}?"
+      response.status.must_equal 301
     end
 
     it 'redirects to subject when logged in' do
       login_as @user
       asker = create(:asker, subject: 'Biology')
 
-      visit "/feeds/#{asker.id}"
+      get :show, id: asker.id
 
-      current_url.must_equal "http://www.example.com/biology"
-      status_code.must_equal 200
+      response.header['Location'].must_equal "http://test.host/biology?"
+      response.status.must_equal 301
     end
 
     it 'redirects to subject when not logged in' do
       asker = create(:asker, subject: 'Biology')
 
-      visit "/feeds/#{asker.id}"
+      get :show, id: asker.id
 
-      current_url.must_equal "http://www.example.com/biology"
-      status_code.must_equal 200
-    end
-
-    it 'redirects to subject with same querystring' do
-      asker = create(:asker, subject: 'Biology')
-
-      visit "/feeds/#{asker.id}?a=1"
-
-      current_url.must_equal "http://www.example.com/biology?a=1"
-      status_code.must_equal 200
-    end
-
-    it 'routes to show based on subject' do
-      asker = create(:asker, subject: 'Biology')
-      visit "/biology"
-
-      status_code.must_equal 200
+      response.header['Location'].must_equal "http://test.host/biology?"
+      response.status.must_equal 301
     end
 
     it 'redirects to root if no subject match' do
       asker = create(:asker, subject: 'Biology')
-      visit "/blobology"
+      
+      get :show, subject: "/blobology"
 
-      current_path.must_equal '/'
-      status_code.must_equal 200
+      response.header['Location'].must_equal "http://test.host/"
+      response.status.must_equal 302
+    end
+
+    it 'redirects to the angular show based on subject' do
+      asker = create(:asker, subject: 'Biology')
+
+      get :show, subject: asker.subject_url
+
+      response.header['Location'].must_equal "http://ng.dev.localhost/biology"
+      response.status.must_equal 301
+    end
+
+    it 'redirects to the angular index based' do
+      asker = create(:asker, subject: 'Biology')
+
+      get :index
+
+      response.header['Location'].must_equal "http://ng.dev.localhost"
+      response.status.must_equal 301
     end
   end
 
-  describe '#show' do
-    before :each do
-      Capybara.current_driver = :selenium
-    end
+  # describe '#show' do
+  #   before :each do
+  #     Capybara.current_driver = :selenium
+  #   end
 
-    describe 'click an answer when logged in' do
-      before :each do 
-        login_as(@user, :scope => :user)
+  #   describe 'click an answer when logged in' do
+  #     before :each do 
+  #       login_as(@user, :scope => :user)
 
-        visit "/#{@asker.subject_url}"
+  #       visit "/#{@asker.subject_url}"
   
-        answer_question
-      end
+  #       answer_question
+  #     end
       
-      it 'creates user post' do
-        user_response = @user.posts.where(intention: 'respond to question').first
-        user_response.in_reply_to_post_id.must_equal @question_post.id
-      end
+  #     it 'creates user post' do
+  #       user_response = @user.posts.where(intention: 'respond to question').first
+  #       user_response.in_reply_to_post_id.must_equal @question_post.id
+  #     end
 
-      it 'responds to user post' do
-        grade_post = @asker.posts.where(intention: 'grade').first
-        grade_post.in_reply_to_user_id.must_equal @user.id
-      end
-    end
+  #     it 'responds to user post' do
+  #       grade_post = @asker.posts.where(intention: 'grade').first
+  #       grade_post.in_reply_to_user_id.must_equal @user.id
+  #     end
+  #   end
 
-    describe 'click an answer when not logged in' do
-      before :each do 
-        visit "/#{@asker.subject_url}"
-      end
+  #   describe 'click an answer when not logged in' do
+  #     before :each do 
+  #       visit "/#{@asker.subject_url}"
+  #     end
       
-      it 'takes user to authentication page' do
-        page.all('.content .answer').first.click
-        current_path.must_equal '/oauth/authenticate'
-      end
-    end
-  end
+  #     it 'takes user to authentication page' do
+  #       page.all('.content .answer').first.click
+  #       current_path.must_equal '/oauth/authenticate'
+  #     end
+  #   end
+  # end
 end
 
 describe FeedsController, "#respond_to_question" do
@@ -140,12 +143,5 @@ describe FeedsController, "#respond_to_question" do
     post.wont_be_nil
     post.question_id.must_equal q.id
     post.user_id.must_equal asker.id
-  end
-end
-
-describe FeedsController, "#index" do
-  it "responds with 200" do
-    get :index
-    response.status.must_equal 200
   end
 end
