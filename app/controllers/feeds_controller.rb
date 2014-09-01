@@ -13,7 +13,8 @@ class FeedsController < ApplicationController
       end
 
       format.html.none do
-        redirect_to FEED_URL, status: 301
+        url = "#{FEED_URL}#{request.fullpath}"
+        redirect_to url, status: 301
       end
 
       format.json.phone do
