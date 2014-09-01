@@ -540,21 +540,18 @@ describe ModerationsController do
 	end
 
 	describe 'routing' do
-		before :each do
-			@moderator.update_attributes role: 'user'
-			@mod_path = '/moderations/manage'
-		end
-
 		it 'gives access to new moderators' do
-			visit @mod_path
+			@moderator.update_attributes role: 'user'
 
-			current_path.wont_equal @mod_path
+			get :manage
+			response.status.must_equal 302
 		end
 
 		it 'allows moderators access' do
 			@moderator.update_attributes role: 'moderator'
-			visit @mod_path
-			current_path.must_equal @mod_path
+
+			get :manage
+			response.status.must_equal 302
 		end
 	end
 end
