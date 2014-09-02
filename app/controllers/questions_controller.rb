@@ -1,4 +1,5 @@
 class QuestionsController < ApplicationController
+  skip_before_filter :verify_authenticity_token, :only => [:save_question_and_answers]
   before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers, :count]
   before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
@@ -34,9 +35,9 @@ class QuestionsController < ApplicationController
     @publication = Publication.published
       .where(question_id: params[:id])
       .order(created_at: :desc).first
-    
+
     if !@publication
-      redirect_to '/' 
+      redirect_to '/'
       return
     end
 
@@ -98,7 +99,7 @@ class QuestionsController < ApplicationController
   def update
     @question = Question.find(params[:id])
     @question.update inaccurate: nil, ungrammatical: nil
-    params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker' 
+    params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker'
 
     redirect_to "/" unless @question
     respond_to do |format|
@@ -149,27 +150,27 @@ class QuestionsController < ApplicationController
       @question.text = params[:question]
       @question.priority = true
       @question.status = 1
-      @question.save      
+      @question.save
     else # new question
       user_id = current_user.id
-      question_created_at = nil  
+      question_created_at = nil
       asker_id = nil
 
       if params[:post_id] # For questions generated from user posts
-        ugc_post = Post.find(params[:post_id]) 
+        ugc_post = Post.find(params[:post_id])
         # ugc_post.tags.delete(Tag.find_by(name: "ugc"))
         user_id = ugc_post.user_id
         question_created_at = ugc_post.created_at
         asker_id = ugc_post.in_reply_to_user_id
       else
         asker_id = params[:asker_id]
-      end 
-      asker = Asker.find(asker_id) 
+      end
+      asker = Asker.find(asker_id)
 
       @question = Question.create({
         :text => params[:question],
-        :user_id => user_id, 
-        :priority => true, 
+        :user_id => user_id,
+        :priority => true,
         :created_for_asker_id => asker.id,
         :status => 0
       })
@@ -207,15 +208,15 @@ class QuestionsController < ApplicationController
     end
 
     current_user.update_user_interactions({
-      :learner_level => "author", 
+      :learner_level => "author",
       :last_interaction_at => @question.created_at
-    })        
+    })
 
     render :json => @question
   end
 
   def moderate
-    @questions = Question.where(:status => 0)    
+    @questions = Question.where(:status => 0)
   end
 
   def moderate_update
