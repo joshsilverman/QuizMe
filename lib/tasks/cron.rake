@@ -24,7 +24,7 @@ task :post_question => :environment do
       interval = 3
     end
     next unless (Time.now.hour % interval == 0)
-    
+
     asker.publish_question()
     sleep 6
   end
@@ -45,11 +45,11 @@ task :reengage_inactive_users => :environment do
   Asker.send_nudge_followups()
 end
 
-task :engage_new_users => :environment do 
+task :engage_new_users => :environment do
   Asker.engage_new_users()
 end
 
-task :post_aggregate_activity => :environment do 
+task :post_aggregate_activity => :environment do
   Asker.post_aggregate_activity()
 end
 
@@ -68,24 +68,7 @@ end
 task :retweet_related => :environment do
   if Time.now.hour % 2 == 0
     Asker.retweet_related()
-  end
-  if Time.now.hour % 9 == 0 and UNDER_CONSTRUCTION_HANDLES.present?
-    UNDER_CONSTRUCTION_HANDLES.each do |new_handle_id|
-      new_asker = Asker.find(new_handle_id)
-      questions_remaining = (30 - new_asker.questions.size)
-      if questions_remaining > 0
-        ACCOUNT_DATA[new_handle_id][:retweet].each do |asker_id|
-          a = Asker.find(asker_id)
-          a.send_public_message("We need #{questions_remaining} more questions to launch #{new_asker.twi_screen_name}! Help by writing one here: wisr.com/feeds/#{new_handle_id}?q=1", {
-            :intention => 'solicit ugc',
-            :interaction_type => 2
-          })
-        end
-      else
-        puts "Enough questions for #{new_asker.twi_screen_name}!"
-      end
-    end
-  end      
+  end     
 end
 
 task :schedule_targeted_mentions => :environment do
