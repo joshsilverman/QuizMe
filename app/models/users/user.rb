@@ -3,8 +3,8 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :validatable
   devise :database_authenticatable, :registerable, :validatable,
-         :recoverable, :timeoutable, :trackable, 
-         :omniauthable, :token_authenticatable, :rememberable # error on remember_expired? if rememberable removed, 
+         :recoverable, :timeoutable, :trackable,
+         :omniauthable, :token_authenticatable, :rememberable # error on remember_expired? if rememberable removed,
 
   def timeout_in
   	1.year
@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :password_confirmation, :remember_me
   has_and_belongs_to_many :tags, -> { uniq }
-  
+
   has_many :authorizations, :dependent => :destroy
 	has_many :questions
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
@@ -23,15 +23,15 @@ class User < ActiveRecord::Base
 	has_many :publications, :foreign_key => 'asker_id'
 	has_many :engagements, :class_name => 'Post', :foreign_key => 'in_reply_to_user_id'
 	has_one :publication_queue, :foreign_key => 'asker_id'
-	
+
   has_many :badges, -> { uniq }, :through => :issuances
   has_many :issuances
 
   has_many :follow_relationships, :foreign_key => :follower_id, :class_name => 'Relationship', :dependent => :destroy
   has_many :follows_with_inactive, :through => :follow_relationships, :source => :followed
-  has_many :asker_follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed, class_name: 'Asker' # ["relationships.active = ?", true], 
+  has_many :asker_follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed, class_name: 'Asker' # ["relationships.active = ?", true],
   has_many :follows, -> { where("relationships.active = ?", true) }, through: :follow_relationships, source: :followed
-  has_many :wisr_follows, -> { where("relationships.active = ?", true).where("relationships.channel = ?", Relationship::WISR) }, 
+  has_many :wisr_follows, -> { where("relationships.active = ?", true).where("relationships.channel = ?", Relationship::WISR) },
     through: :follow_relationships, source: :followed
 
   has_many :follower_relationships, :foreign_key => :followed_id, :class_name => 'Relationship', :dependent => :destroy
@@ -109,7 +109,7 @@ class User < ActiveRecord::Base
   	self.where('lower(twi_screen_name) = ?', name.downcase).first
   end
 
-  def is_admin? 
+  def is_admin?
   	ADMINS.include?(id)
   end
 
@@ -128,7 +128,7 @@ class User < ActiveRecord::Base
 	def self.create_with_omniauth(auth)
 	  create! do |user|
 	  	provider = auth['provider']
-	    
+
 	    case provider
 	    when 'twitter'
 		    user.twi_user_id = auth["uid"]
@@ -184,7 +184,7 @@ class User < ActiveRecord::Base
 				:consumer_secret => SERVICES['twitter']['secret'],
 				:oauth_token => auth.token,
 				:oauth_token_secret => auth.secret
-			)		
+			)
 		end
 	end
 
@@ -198,32 +198,32 @@ class User < ActiveRecord::Base
 		if options[:post_to_twitter]
       user_post = self.send_public_message(answer.text, {
         :reply_to => asker.twi_screen_name,
-        :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}", 
-        :interaction_type => 2, 
-        :link_type => answer.correct ? "cor" : "inc", 
-        :in_reply_to_post_id => post.id, 
+        :long_url => "#{URL}/feeds/#{asker.id}/#{post.publication_id}",
+        :interaction_type => 2,
+        :link_type => answer.correct ? "cor" : "inc",
+        :in_reply_to_post_id => post.id,
         :in_reply_to_user_id => asker.id,
-        :link_to_parent => false, 
+        :link_to_parent => false,
         :correct => answer.correct,
         :intention => 'respond to question',
         :conversation_id => options[:conversation_id],
         :in_reply_to_question_id => options[:in_reply_to_question_id]
-      })     
+      })
     else
 	    user_post = Post.create({
 	      :user_id => self.id,
 	      :provider => 'wisr',
 	      :text => answer.text,
-	      :in_reply_to_post_id => post.id, 
+	      :in_reply_to_post_id => post.id,
 	      :in_reply_to_user_id => asker.id,
-	      :posted_via_app => true, 
+	      :posted_via_app => true,
 	      :requires_action => false,
 	      :interaction_type => 2,
 	      :correct => answer.correct,
 	      :intention => 'respond to question',
 	      :conversation_id => options[:conversation_id],
 	      :in_reply_to_question_id => options[:in_reply_to_question_id]
-	    })  
+	    })
 		end
 
     user_post
@@ -243,10 +243,10 @@ class User < ActiveRecord::Base
 		params.delete :learner_level unless params[:learner_level] and (learner_level.blank? or LEARNER_LEVELS.index(params[:learner_level]) > LEARNER_LEVELS.index(learner_level))
 		params.delete :last_interaction_at unless params[:last_interaction_at] and (last_interaction_at.blank? or params[:last_interaction_at] > last_interaction_at)
 		params.delete :last_answer_at unless params[:last_answer_at] and (last_answer_at.blank? or params[:last_answer_at] > last_answer_at)
-		self.update_attributes params	
+		self.update_attributes params
 	end
 
-	# Following two methods should be combined in the future... 
+	# Following two methods should be combined in the future...
 	def activity options = {} # for activity feed
 		options.reverse_merge!(:since => 1.month.ago)
 
@@ -257,20 +257,20 @@ class User < ActiveRecord::Base
 
     mods = self.becomes(Moderator).post_moderations.includes(:post => :in_reply_to_user)\
       .where("created_at > ?", options[:since])\
-      .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}  
+      .map {|m| {created_at: m.created_at, verb: 'moderated', text: m.post.text, profile_image_url: m.post.in_reply_to_user.twi_profile_img_url, twi_screen_name: m.post.in_reply_to_user.twi_screen_name}}
 
     ugc = questions.includes(:asker)\
       .ugc.where("status != -1")\
       .where("created_at > ?", options[:since])\
       .map {|q| {created_at: q.created_at, verb: 'wrote', text: q.text, profile_image_url: q.asker.twi_profile_img_url, href: "/askers/#{q.created_for_asker_id}/questions", twi_screen_name: q.asker.twi_screen_name}}
 
-    (answers + mods + ugc).sort_by { |e| e[:created_at] }.reverse		
+    (answers + mods + ugc).sort_by { |e| e[:created_at] }.reverse
 	end
 
 	def activity_summary options = {} # used for generating progress reports
 		options.reverse_merge!(:since => 99.years.ago)
 		activity_hash = {}
-		
+
 		answers = {}
     posts.answers.where('created_at > ?', options[:since]).group_by(&:in_reply_to_user_id).each do |asker_id, period_posts|
       answers[asker_id] = {:count => 0, :correct => 0}
@@ -314,16 +314,16 @@ class User < ActiveRecord::Base
 
 	def classify matched_tags = []
 		USER_TAG_SEARCH_TERMS.each do |tag_name, terms|
-			terms.each do |term| 
+			terms.each do |term|
 				matched_tags << tag_name if twi_screen_name and twi_screen_name.include? term
-				matched_tags << tag_name if description and description.include? term 
+				matched_tags << tag_name if description and description.include? term
 			end
 		end
 		Tag.where('name in (?)', matched_tags).each { |matched_tag| tags << matched_tag } if matched_tags.present?
 	end
 
-	def register_referrals 
-		followed_twi_user_ids = Post.twitter_request { 
+	def register_referrals
+		followed_twi_user_ids = Post.twitter_request {
       User.find_by_twi_screen_name('Wisr')
         .twitter.friend_ids(twi_user_id).ids } || [0]
 
@@ -333,7 +333,7 @@ class User < ActiveRecord::Base
 		if referrers.present?
       MP.track_event "referral joined", {
         distinct_id: id,
-        type: "twitter"}     
+        type: "twitter"}
 		end
 	end
 
@@ -367,14 +367,14 @@ class User < ActiveRecord::Base
       :from_segment => from_segment,
       :to_segment => to_segment,
       :comment => comment
-    })  
+    })
 
     after_new_user_filter if transition.segment_type == 1 and transition.from_segment.blank? and transition.to_segment.present?
 	end
 
   def lifecycle_transition_comment to_segment
     return nil if has_received_transition_to_comment?(1, to_segment) # make sure user hasn't already received a comment for this transition or one above
-    
+
     #find asker
     asker = Asker.find_by(id: posts.order("created_at DESC").first.in_reply_to_user_id)
     return nil if asker.nil?
@@ -415,7 +415,7 @@ class User < ActiveRecord::Base
   end
 
 	def self.update_segments
-		User.find_in_batches(conditions: ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS], batch_size: 200) do |group| 
+		User.find_in_batches(conditions: ["twi_screen_name is not null and role != 'asker' and id not in (?)", ADMINS], batch_size: 200) do |group|
 			group.each { |user| user.segment }
 		end
 	end
@@ -436,15 +436,15 @@ class User < ActiveRecord::Base
 		if is_superuser?
 			level = 6
 		elsif is_pro?
-			level = 5			
+			level = 5
 		elsif is_advanced?
 			level = 4
 		elsif is_regular?
 			level = 3
 		elsif is_noob?
-			level = 2		
+			level = 2
 		elsif is_edger?
-			level = 1	
+			level = 1
 		elsif is_interested?
 			level = 7
 		else
@@ -453,7 +453,7 @@ class User < ActiveRecord::Base
 
 		transition :lifecycle, level if level
 	end
-	
+
 	def is_interested? # has shared or commented
 		@posts.not_spam.size > 0
 	end
@@ -481,7 +481,7 @@ class User < ActiveRecord::Base
 	def is_pro?
 		enough_posts = true if @posts.answers.size > 19
 		enough_frequency = true if number_of_weeks_with_answers > 2 and number_of_days_with_answers > 4
-		enough_posts and enough_frequency		
+		enough_posts and enough_frequency
 	end
 
 	def is_superuser?
@@ -491,7 +491,7 @@ class User < ActiveRecord::Base
 	end
 
 	# Activity checks
-	def update_activity_segment	
+	def update_activity_segment
 		@posts = posts
 		if is_unfollowed?
 			level = 7
@@ -550,7 +550,7 @@ class User < ActiveRecord::Base
 
   def number_of_days_with_answers options = {}
   	user_posts = options[:posts].present? ? options[:posts] : posts
-    user_posts.answers.group_by {|p| p.created_at.strftime('%D-%y')}.size    
+    user_posts.answers.group_by {|p| p.created_at.strftime('%D-%y')}.size
   end
 
   def interaction_type_grouped_posts
@@ -582,7 +582,7 @@ class User < ActiveRecord::Base
 
   def pick_reengagement_type last_active_at
   	question_prevalence_by_sent_count = { 0 => 1.0, 1 => 0.8, 2 => 1.0, 3 => 0.8, 4 => 1.0, 5 => 0.8 }
-  	valid_non_question_types = [:moderation, :author]
+  	valid_non_question_types = [:moderation]
   	reengagements_sent = Post.reengage_inactive.where("in_reply_to_user_id = ? and created_at > ?", id, last_active_at).count
   	valid_non_question_types.delete(:moderation) unless Post.requires_moderations(self).present?
   	if rand < (question_prevalence_by_sent_count[reengagements_sent] || 1 )
@@ -622,5 +622,5 @@ class User < ActiveRecord::Base
       .merge!(question_user_ids_to_last_active_at) { |key, v1, v2| v1 > v2 ? v1 : v2 }
 
     return user_ids_to_last_active_at
-  end  
+  end
 end

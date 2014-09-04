@@ -33,10 +33,10 @@ module EngagementEngine::ReengageInactive
         unless options[:strategy]
           strategy_string = "1/2/4" # /8/15/30
           strategy = strategy_string.split("/").map { |e| e.to_i }
-        end 
+        end
 
         last_reengaged_at = user_ids_to_last_reengaged_at[user_id] || 1000.years.ago
-        
+
         aggregate_intervals = 0
         ideal_last_reengage_at = nil
         strategy.each do |interval|
@@ -49,14 +49,14 @@ module EngagementEngine::ReengageInactive
         end
 
         is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
-        
+
         if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
           if Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog, last_active_at: last_active_at, type: options[:type]})
             reengagements_sent += 1
           end
         end
       end
-    end 
+    end
 
     def reengage_user user_id, options = {}
       user = User.find user_id
@@ -77,21 +77,17 @@ module EngagementEngine::ReengageInactive
         text.gsub! '<link>', asker.authenticated_link("#{URL}/moderations/manage", user, (Time.now + 1.week))
         intention = 'request mod'
       when :author
-        asker = user.asker_follows.sample
-        text = I18n.t("reengagements.author").sample
-        long_url = "#{URL}/#{asker.subject_url}?q=1"
-        
-        text.gsub! '<link>', long_url
-        intention = 'solicit ugc'
+        # @deprecated on 09/04/2014 remove after error stops being raised
+        raise "call to deprecated 'solicit ugc'"
       end
 
-      if reengagement_type == :question 
+      if reengagement_type == :question
         if asker and publication
           long_url = "#{URL}/#{asker.subject_url}/#{publication.id}"
         else
           long_url = "#{URL}/questions/#{question.id}"
         end
-      end    
+      end
 
       return false unless asker and text
 
@@ -111,7 +107,7 @@ module EngagementEngine::ReengageInactive
           intention: intention,
           include_answers: true,
           include_url: true,
-          publication_id: (publication ? publication.id : nil),  
+          publication_id: (publication ? publication.id : nil),
           question_id: (question ? question.id : nil),
           is_reengagement: true
         })
@@ -129,16 +125,16 @@ module EngagementEngine::ReengageInactive
       end
 
       MP.track_event "reengage inactive", {
-        distinct_id: user.id, 
-        interval: options[:interval], 
-        strategy: options[:strategy], 
+        distinct_id: user.id,
+        interval: options[:interval],
+        strategy: options[:strategy],
         backlog: options[:is_backlog],
         asker: asker.twi_screen_name,
         type: reengagement_type
       }
 
       sleep(1) if !Rails.env.test?
-      
+
       return true
     end
 
