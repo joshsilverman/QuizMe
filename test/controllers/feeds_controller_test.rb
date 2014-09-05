@@ -3,7 +3,7 @@ require 'test_helper'
 describe FeedsController do
 
   def answer_question id = nil
-    if id 
+    if id
       post = page.find(".feed-publication[question-id=\"#{id}\"]")
     else
       post = page.find('.feed-publication')
@@ -15,17 +15,17 @@ describe FeedsController do
     return post
   end
 
-  before :each do 
+  before :each do
     @user = create :user
     @admin = create :admin
     @asker = create :asker
-    @asker.followers << @user 
+    @asker.followers << @user
 
     @question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
     @publication = create(:publication, question: @question, asker: @asker, published: true)
     @publication.update_question
 
-    @question_post = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)   
+    @question_post = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)
   end
 
   describe '#show routing' do
@@ -61,7 +61,7 @@ describe FeedsController do
 
     it 'redirects to root if no subject match' do
       asker = create(:asker, subject: 'Biology')
-      
+
       get :show, subject: "/blobology"
 
       response.header['Location'].must_equal "http://test.host/"
@@ -77,12 +77,21 @@ describe FeedsController do
       response.status.must_equal 301
     end
 
-    it 'redirects to the angular index based' do
+    it 'redirects to the angular index' do
       asker = create(:asker, subject: 'Biology')
 
       get :index
 
       response.header['Location'].must_equal "http://ng.dev.localhost"
+      response.status.must_equal 301
+    end
+
+    it 'redirects to the angular index with query string' do
+      asker = create(:asker, subject: 'Biology')
+
+      get :index, query_string: 'query_string'
+
+      response.header['Location'].must_equal "http://ng.dev.localhost?query_string=query_string"
       response.status.must_equal 301
     end
   end
@@ -93,14 +102,14 @@ describe FeedsController do
   #   end
 
   #   describe 'click an answer when logged in' do
-  #     before :each do 
+  #     before :each do
   #       login_as(@user, :scope => :user)
 
   #       visit "/#{@asker.subject_url}"
-  
+
   #       answer_question
   #     end
-      
+
   #     it 'creates user post' do
   #       user_response = @user.posts.where(intention: 'respond to question').first
   #       user_response.in_reply_to_post_id.must_equal @question_post.id
@@ -113,10 +122,10 @@ describe FeedsController do
   #   end
 
   #   describe 'click an answer when not logged in' do
-  #     before :each do 
+  #     before :each do
   #       visit "/#{@asker.subject_url}"
   #     end
-      
+
   #     it 'takes user to authentication page' do
   #       page.all('.content .answer').first.click
   #       current_path.must_equal '/oauth/authenticate'
@@ -133,7 +142,7 @@ describe FeedsController, "#respond_to_question" do
     q = create :question, asker: asker
 
     sign_in user
-    post(:respond_to_question, 
+    post(:respond_to_question,
       asker_id: asker.id,
       answer_id: q.answers.first)
 
