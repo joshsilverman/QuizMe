@@ -1,8 +1,8 @@
 require 'test_helper'
 
-describe AuthorizationsController do	
-  
-	before :each do 
+describe AuthorizationsController do
+
+	before :each do
 		Rails.cache.clear
 		@user = create(:user, twi_user_id: 1, role: 'moderator')
 		@wisr_asker = Asker.find(8765)
@@ -11,15 +11,15 @@ describe AuthorizationsController do
 	describe 'by token authentication' do
 		include AuthorizationsHelper
 
-		before :each do 
+		before :each do
 			Capybara.current_driver = :selenium
 			@url = "http://#{Capybara.current_session.server.host}:#{Capybara.current_session.server.port}"
 		end
 
 		describe 'logs user in' do
 			it 'to proper page for moderator' do
-				auth_mod_manage = authenticated_link("/moderations/manage", 
-					@user, 
+				auth_mod_manage = authenticated_link("/moderations/manage",
+					@user,
 					(Time.now + 1.week))
 
 				visit auth_mod_manage
@@ -27,24 +27,14 @@ describe AuthorizationsController do
 				current_path.must_equal '/moderations/manage'
 			end
 
-			it 'to proper page for first time author' do
-				auth_mod_manage = authenticated_link("/#{@wisr_asker.subject_url}?q=1", 
-					@user, 
-					(Time.now + 1.week))
-
-				visit auth_mod_manage
-				
-				current_path.must_equal "/#{@wisr_asker.subject_url}"
-			end
-
 			it 'to proper page for return author' do
 				auth_mod_manage = authenticated_link("/askers/#{@wisr_asker.id}/questions", @user, (Time.now + 1.week))
 				visit auth_mod_manage
 				current_path.must_equal "/askers/#{@wisr_asker.id}/questions"
-			end						
+			end
 
 			it 'maintains other url parameters' do
-				auth_mod_manage = authenticated_link("/moderations/manage?s=twi&t=user_name", @user, (Time.now + 1.week))			
+				auth_mod_manage = authenticated_link("/moderations/manage?s=twi&t=user_name", @user, (Time.now + 1.week))
 				visit auth_mod_manage
 				params = Rack::Utils.parse_query(URI(current_url).query)
 				params["s"].must_equal 'twi'
@@ -56,7 +46,7 @@ describe AuthorizationsController do
 				current_path.must_equal '/oauth/authenticate'
 			end
 
-			it 'unless no user with authentication token found' do 
+			it 'unless no user with authentication token found' do
 				auth_mod_manage = authenticated_link("/moderations/manage?s=twi&t=user_name", @user, (Time.now + 1.week))
 				@user.update_attribute :authentication_token, @user.reset_authentication_token
 				visit auth_mod_manage
@@ -66,10 +56,10 @@ describe AuthorizationsController do
 			it 'unless link is expired' do
 				## NOTE: there's a conflict with timecop and omniauth - the timestamp associated w/ the auth
 				## request is set to a future time and twi rejects it + returns a 401 before redirecting to
-				## from /users/auth/twitter to /oauth/authenticate. 
+				## from /users/auth/twitter to /oauth/authenticate.
 				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
 				3.times do |i|
-					# Capybara.reset_session! # using reset_session! results in periodic 401 errors when running the full suite 
+					# Capybara.reset_session! # using reset_session! results in periodic 401 errors when running the full suite
 					session = Capybara::Session.new(:selenium)
 					Timecop.travel(Time.now + 1.day)
 					session.visit "#{@url}#{auth_mod_manage}"
@@ -92,7 +82,7 @@ describe AuthorizationsController do
 
 				visit auth_mod_manage
 				current_path.wont_equal '/moderations/manage'
-			end	
+			end
 
 			it 'retains authentication for other pages that require authentication' do
 				auth_mod_manage = authenticated_link("/moderations/manage", @user, (Time.now + 3.days))
