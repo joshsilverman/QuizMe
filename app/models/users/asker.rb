@@ -1,8 +1,8 @@
 class Asker < User
   include ManageTwitterRelationships
   include EngagementEngine::ReengageInactive
-  include EngagementEngine::AutoRespond 
-  
+  include EngagementEngine::AutoRespond
+
   include AuthorizationsHelper
 
   belongs_to :client
@@ -33,7 +33,7 @@ class Asker < User
   end
 
   def self.in_progress_askers
-    Rails.cache.fetch('in_progress_askers', :expires_in => 1.hour){ 
+    Rails.cache.fetch('in_progress_askers', :expires_in => 1.hour){
       Asker.includes(:questions)\
         .select('"users".*')\
         .where("users.published is null")\
@@ -75,7 +75,7 @@ class Asker < User
       raise 'no public send method for that communication preference'
     end
   end
-  
+
   def send_private_message recipient, text, options = {}
     recipient ||= User.where(id: options[:in_reply_to_user_id]).first
     communication_preference = recipient.blank? ? 1 : recipient.communication_preference
@@ -112,11 +112,11 @@ class Asker < User
     question = most_popular_question :character_limit => (140 - dm_text.size), exclude_strings: ["the following"]
 
     dm_text += question.text
-    answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})" 
+    answers = " (#{question.answers.shuffle.collect {|a| a.text}.join('; ')})"
     dm_text += answers if (INCLUDE_ANSWERS.include?(id) and ((dm_text + answers).size < 141) and !question.text.include?("T/F") and !question.text.include?("T:F"))
 
     self.send_private_message(user, dm_text, {
-      :question_id => question.id, 
+      :question_id => question.id,
       :intention => "initial question dm"})
 
     MP.track_event "DM question to new follower", {
@@ -137,8 +137,8 @@ class Asker < User
           script = Asker.get_aggregate_post_response_script(asker_cache[:count], asker_cache[:correct])
           asker.send_public_message(script, {
             :reply_to => user_cache[:twi_screen_name],
-            :interaction_type => 2, 
-            :link_type => "agg", 
+            :interaction_type => 2,
+            :link_type => "agg",
             :in_reply_to_user_id => user_id,
             :intention => 'post aggregate activity'
           })
@@ -163,7 +163,7 @@ class Asker < User
     else
       script = AGGREGATE_POST_RESPONSES[:one_answer].sample
     end
-    script 
+    script
   end
 
   # @todo route all question through this method -- including reengage user
@@ -181,7 +181,7 @@ class Asker < User
         in_reply_to_user_id: user.id,
         include_answers: true,
         is_reengagement: true,
-        publication_id: (publication ? publication.id : nil),  
+        publication_id: (publication ? publication.id : nil),
         question_id: (question ? question.id : nil),
         long_url: long_url
       })
@@ -196,11 +196,11 @@ class Asker < User
         link_type: options[:link_type],
         intention: options[:intention],
         include_answers: true,
-        publication_id: (publication ? publication.id : nil),  
+        publication_id: (publication ? publication.id : nil),
         question_id: (question ? question.id : nil),
         long_url: long_url
       })
-    end   
+    end
   end
 
   def select_question user
@@ -213,7 +213,7 @@ class Asker < User
       .where("in_reply_to_user_id = ?", user.id)\
       .where("question_id is not null")\
       .collect(&:question_id)\
-      .uniq    
+      .uniq
 
     # filter out answered and recently sent question ids if possible
     question_ids = scored_questions.keys - user.questions_answered_ids_by_asker(id) # get unanswered questions
@@ -249,8 +249,8 @@ class Asker < User
         unless publication = popular_asker_publications[asker.id]
           popular_post = asker.posts
             .includes(:conversations => {:publication => :question})
-            .where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?", 
-              1.week.ago, 
+            .where("posts.created_at > ? and posts.interaction_type = 1 and questions.id <> ?",
+              1.week.ago,
               asker.new_user_q_id)
             .references(:question)
             .sort_by {|p| p.conversations.size}.last
@@ -265,22 +265,22 @@ class Asker < User
         end
         asker.send_public_message("Next question! #{publication.question.text}", {
           :reply_to => user.twi_screen_name,
-          :long_url => "#{URL}/#{asker.subject_url}/#{publication.id}", 
-          :interaction_type => 2, 
-          :link_type => "mention_question", 
+          :long_url => "#{URL}/#{asker.subject_url}/#{publication.id}",
+          :interaction_type => 2,
+          :link_type => "mention_question",
           :in_reply_to_user_id => user.id,
           :publication_id => publication.id,
           :intention => "new user question mention",
           :posted_via_app => true,
           :requires_action => false,
           :link_to_parent => false,
-          :question_id => publication.question.id    
+          :question_id => publication.question.id
         })
         MP.track_event "new user question mention", {
-          :distinct_id => user.id, 
+          :distinct_id => user.id,
           :account => asker.twi_screen_name
         }
-      end 
+      end
     end
   end
 
@@ -296,14 +296,14 @@ class Asker < User
       intention: 'correct answer follow up',
       long_url: "#{URL}/feeds/#{id}/#{publication.id}",
       publication_id: publication.id,
-      posted_via_app: true, 
+      posted_via_app: true,
       requires_action: false,
       link_to_parent: false,
       link_type: "follow_up",
       include_answers: false,
       question_id: question.id,
       subject: 'Followup'
-    })  
+    })
 
     Delayed::Job.enqueue(
       followup_post,
@@ -313,11 +313,11 @@ class Asker < User
 
   def schedule_incorrect_answer_followup user_post
     return false unless question = user_post.in_reply_to_question and publication = user_post.conversation.try(:publication)
-    return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user_post.user_id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month    
-    return false if Delayed::Job.where(attempts: 0).select { |dj| 
-        fj = YAML.load(dj.handler).instance_values 
-        fj['options'].present? and fj['options'][:intention] == 'incorrect answer follow up' and fj['sender'].id == id and fj['options'][:in_reply_to_user_id] == user_post.user_id 
-      }.present? # check if already have scheduled followup    
+    return false if posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and question_id = ? and created_at > ?", user_post.user_id, question.id, Time.now - 30.days).present? # check that haven't followed up with them on this question in the past month
+    return false if Delayed::Job.where(attempts: 0).select { |dj|
+        fj = YAML.load(dj.handler).instance_values
+        fj['options'].present? and fj['options'][:intention] == 'incorrect answer follow up' and fj['sender'].id == id and fj['options'][:in_reply_to_user_id] == user_post.user_id
+      }.present? # check if already have scheduled followup
     last_followup = posts.where("intention = 'incorrect answer follow up' and in_reply_to_user_id = ? and created_at > ?", user_post.user_id, 1.week.ago).order("created_at ASC").last
     return false if last_followup.present? and !Post.exists?(:in_reply_to_user_id => id, :user_id => user_post.user_id, :in_reply_to_post_id => last_followup.id) # check no unresponded followup from past week
 
@@ -329,13 +329,13 @@ class Asker < User
       :intention => 'incorrect answer follow up',
       :long_url => "#{URL}/questions/#{question.id}/#{question.slug}",
       :publication_id => publication.id,
-      :posted_via_app => true, 
+      :posted_via_app => true,
       :requires_action => false,
       :interaction_type => 2,
       :link_to_parent => false,
       :link_type => "follow_up",
       :include_answers => true,
-      :question_id => question.id      
+      :question_id => question.id
     })
 
     Delayed::Job.enqueue(
@@ -365,7 +365,7 @@ class Asker < User
       #  @todo remove if exception not thrown
       if response_text == "Refer a friend?"
         throw "Refer a friend not fully cleaned up"
-      end     
+      end
 
       response_post = self.delay.send_private_message(user, response_text, {
         :conversation_id => conversation.id})
@@ -390,10 +390,10 @@ class Asker < User
       }
 
       user.update_user_interactions({
-        :learner_level => "dm answer", 
+        :learner_level => "dm answer",
         :last_interaction_at => user_post.created_at,
         :last_answer_at => user_post.created_at
-      }) 
+      })
 
       response_post = self.delay.send_private_message(user, response_text, {
         :conversation_id => conversation.id,
@@ -406,12 +406,12 @@ class Asker < User
 
   # rename public_response
   def app_response user_post, correct, options = {}
-    publication = user_post.conversation.try(:publication) 
+    publication = user_post.conversation.try(:publication)
 
     answerer = user_post.user
     question = user_post.link_to_question
     resource_url = nil
-    
+
     publication ||= user_post.parent.try(:publication)
     publication ||= Publication.find_or_create_by_question_id question.id, self.id
 
@@ -428,17 +428,17 @@ class Asker < User
     if options[:post_to_twitter]
       app_post = self.send_public_message(response_text, {
         :reply_to => answerer.twi_screen_name,
-        :long_url => "#{URL}/#{subject_url}/#{publication.id}", 
-        :interaction_type => 2, 
-        :link_type => correct ? "cor" : "inc", 
-        :link_to_parent => options[:link_to_parent], 
-        :in_reply_to_post_id => user_post.id, 
+        :long_url => "#{URL}/#{subject_url}/#{publication.id}",
+        :interaction_type => 2,
+        :link_type => correct ? "cor" : "inc",
+        :link_to_parent => options[:link_to_parent],
+        :in_reply_to_post_id => user_post.id,
         :in_reply_to_user_id => answerer.id,
         :resource_url => resource_url,
         :wisr_question => publication.question.resource_url ? false : true,
         :intention => 'grade',
         :conversation_id => options[:conversation_id]
-      })   
+      })
     else
       app_post = Post.create({
         :user_id => id,
@@ -446,7 +446,7 @@ class Asker < User
         :text => response_text,
         :in_reply_to_post_id => user_post.id,
         :in_reply_to_user_id => answerer.id,
-        :posted_via_app => true, 
+        :posted_via_app => true,
         :requires_action => false,
         :interaction_type => 2,
         :intention => 'grade',
@@ -459,7 +459,7 @@ class Asker < User
       user_post.update_attributes(:requires_action => false, :correct => correct) unless user_post.posted_via_app
       self.delay.after_answer_filter(answerer, user_post, {:learner_level => user_post.posted_via_app ? "feed answer" : "twitter answer"})
       self.delay.update_metrics(answerer, user_post, publication, {
-        autoresponse: options[:autoresponse], 
+        autoresponse: options[:autoresponse],
         type: options[:type]})
       return app_post
     else
@@ -472,7 +472,7 @@ class Asker < User
     if correct and options[:quote_user_answer]
       cleaned_user_post = user_post.text.gsub /@[A-Za-z0-9_]* /, ""
       cleaned_user_post = "#{cleaned_user_post[0..47]}..." if cleaned_user_post.size > 50
-      response_text += " RT '#{cleaned_user_post}'" 
+      response_text += " RT '#{cleaned_user_post}'"
       resource_url = nil
     elsif !correct
       resource_url = publication.question.resource_url if publication.question.resource_url
@@ -483,7 +483,7 @@ class Asker < User
 
   def generate_response(correct, question, tell = false)
     response_text = ''
-    if correct 
+    if correct
       response_text = "#{CORRECT.sample} #{COMPLEMENT.sample}"
     else
       answer = Answer.where("question_id = ? and correct = ?", question.id, true).first
@@ -502,26 +502,26 @@ class Asker < User
 
   def after_answer_filter answerer, user_post, options = {}
     answerer.update_user_interactions({
-      :learner_level => options[:learner_level], 
+      :learner_level => options[:learner_level],
       :last_interaction_at => user_post.created_at,
       :last_answer_at => user_post.created_at
     })
     nudge(answerer)
     if user_post.correct == false and question = user_post.in_reply_to_question
-      schedule_incorrect_answer_followup(user_post) 
+      schedule_incorrect_answer_followup(user_post)
     elsif user_post.correct == true and user_post.in_reply_to_question
       schedule_correct_answer_followup(user_post)
     end
     after_answer_action(answerer)
-  end 
+  end
 
   def after_answer_action answerer
     return unless can_send_requests_to_user?(answerer)
 
     actions = [
-      Proc.new {|answerer| request_new_question(answerer)}, # recurring
-      Proc.new {|answerer| request_mod(answerer)}, # recurring
-      Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
+      # Proc.new {|answerer| request_new_question(answerer)}, # recurring
+      Proc.new {|answerer| request_mod(answerer)} #, # recurring
+      # Proc.new {|answerer| request_new_handle_ugc(answerer)} # recurring
     ]
     # this is a hack to cut down on extremely slow tests
     actions = actions.shuffle unless Rails.env.test?
@@ -563,9 +563,9 @@ class Asker < User
 
     ## ALL MUST ***NOT*** CONTAIN MORE FOR TEST TO PASS
     script = [
-      "If you would, grade a few answers here <link>", 
-      "Have a look at a few answers here from other users: <link>", 
-      "Help grade other users here: <link>", 
+      "If you would, grade a few answers here <link>",
+      "Have a look at a few answers here from other users: <link>",
+      "Help grade other users here: <link>",
       "Could you help grade a few from other users? <link>",
       "Would you mind grading a few from others? <link>",
 
@@ -592,7 +592,7 @@ class Asker < User
         "Could you help grade a few more? <link>",
         "Would you grade a few more answers? <link>",
         "Would you mind grading a few more? <link>"
-      ].sample  
+      ].sample
     end
 
     link = authenticated_link("#{URL}/moderations/manage", user, (Time.now + 1.week))
@@ -600,7 +600,7 @@ class Asker < User
 
     user.update role: "moderator" unless user.is_role?('admin')
     self.send_private_message(user, script, {intention: 'request mod', subject: 'Moderate?'})
-    MP.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}    
+    MP.track_event "request mod", {:distinct_id => user.id, :account => self.twi_screen_name}
 
     true
   end
@@ -622,7 +622,7 @@ class Asker < User
       .where('created_at > ?', 1.week.ago)\
       .select([:intention, :in_reply_to_user_id, :created_at])\
       .collect(&:in_reply_to_user_id)
-    recently_active_question_moderators.reject! do |moderator| 
+    recently_active_question_moderators.reject! do |moderator|
       user_ids_with_recent_feedback_requests.include?(moderator.id)
     end
 
@@ -631,7 +631,7 @@ class Asker < User
       .where("intention like ? or intention like ?", '%request%', '%solicit%')
       .order("created_at DESC")\
       .collect(&:in_reply_to_user_id)
-    recently_active_question_moderators.reject! do |moderator| 
+    recently_active_question_moderators.reject! do |moderator|
       user_ids_with_recent_requests.include?(moderator.id)
     end
 
@@ -651,107 +651,11 @@ class Asker < User
       self.send_private_message(moderator, script, {
         :intention => "request question feedback"
       })
-      
-      MP.track_event("request question feedback", 
-          distinct_id: moderator.id, 
+
+      MP.track_event("request question feedback",
+          distinct_id: moderator.id,
           account: twi_screen_name)
     end
-  end
-
-  def request_new_question user
-    return false if user.posts.where("correct = ? and in_reply_to_user_id = ?", true, id).size < 10
-    return false if Post.where("in_reply_to_user_id = ? and intention = 'solicit ugc' and created_at > ?", user.id, 2.weeks.ago).size > 0 # we haven't asked them in the past two weeks
-    
-    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'solicit ugc').order('created_at DESC').limit(2)[1]
-    return false if llast_solicitation.present? and questions.where("user_id = ? and created_at > ?", user.id, llast_solicitation.created_at).count < 1 # the user hasn't received more than one uncompleted solicitation    
-    
-    script = "You know this material pretty well, how about writing a question or two? Enter it at <link>"
-    question_count = user.get_my_questions_answered_this_week_count
-
-    if user.is_author?
-      if question_count > 2
-        script = [
-          "<last_week> Do you have a sec to write a few more? <link>", "<last_week> Have a second to write a few more? <link>", "<last_week> Have a sec to write a few more? <link>", "<last_week> Thanks for contributing! If you'd like to add more: <link>", "<last_week> Would you to write a couple more? <link>", "<last_week> Would you write a few more? <link>", "<last_week> Would you mind writing a few more? <link>", "<last_week> Any more you'd like to add? <link>"
-        ].sample
-        script.gsub! "<last_week>", "#{question_count} answers to your question(s) last week!"
-      else
-        script = [
-          "Do you have a sec to write a few more questions? <link>", "Have a second to write a few more questions? <link>", "Have a sec to write a few more questions? <link>", "If you'd like to add more questions: <link>", "Could I trouble you to write a couple more questions? <link>", "Would you write a few more questions? <link>", "Would you mind writing a few more questions? <link>", "Any more questions you'd like to add? <link>"
-        ].sample
-      end
-
-      request_type = 'mention'
-      link = "www.wisr.com/askers/#{id}/questions"
-    else
-      request_type = 'dm'
-      link = "www.wisr.com/feeds/#{id}?q=1"
-    end
-
-    case request_type
-    when 'mention'
-      script.gsub! "<link>", link
-      self.send_public_message(script, {
-        :reply_to => user.twi_screen_name,
-        :in_reply_to_user_id => user.id,
-        :intention => 'solicit ugc',
-        :interaction_type => 2,
-        :subject => 'Write a question?'
-      })      
-    when 'dm'
-      script.gsub! "<link>", link
-      self.send_private_message(user, script, {
-        :intention => "solicit ugc",
-        :subject => 'Write a question?'
-      })
-    when 'dm with auth link'
-      link = authenticated_link(link, user, (Time.now + 1.week))
-      script.gsub! "<link>", link
-      self.send_private_message(user, script, {
-        :intention => "solicit ugc",
-        :subject => 'Write a question?'
-      })
-    end
-    
-    return true
-  end
-
-  def request_new_handle_ugc user
-    return false unless user.lifecycle_above? 2
-    return false if Post.where("in_reply_to_user_id = ? and intention = 'request new handle ugc' and created_at > ?", user.id, 1.week.ago).size > 0 # we haven't asked them in the past week
-    in_progress_askers = Asker.in_progress_askers
-    user_askers_with_enough_answers_ids = user.posts.answers\
-      .where("in_reply_to_user_id in (?)", in_progress_askers.collect(&:related_askers).flatten.collect(&:id))\
-      .group("in_reply_to_user_id")\
-      .count.select {|k, v| v > 10}.keys
-    in_progress_asker = in_progress_askers.select { |asker| (user_askers_with_enough_answers_ids & asker.related_askers.collect(&:id)).present? }.sample
-    return false if in_progress_asker.blank? # user has answered enough questions on a related handle in the past month
-    llast_solicitation = Post.where(in_reply_to_user_id: user.id).where(:intention => 'request new handle ugc').order('created_at DESC').limit(2)[1]
-    return false if llast_solicitation.present? and Question.where("user_id = ? and created_at > ? and created_for_asker_id = ?", user.id, llast_solicitation.created_at, in_progress_asker.id).count < 1 # the user hasn't received more than one uncompleted solicitation
-    
-    ## ALL MUST ***NOT*** CONTAIN 'MORE' FOR TEST TO PASS
-    script = ["Hey, we're working on questions for @<new handle>, could you add one? <link>",
-              "We're making @<new handle>, could you write a question for it? <link>"].sample
-    
-    # overwrite script if user has added UGC to this handle before
-    ## ALL MUST CONTAIN 'MORE' FOR TEST TO PASS
-    if Question.exists?(user_id: user.id, created_for_asker_id: in_progress_asker.id)
-      script = [
-        "Do you have a sec to write a few more questions for @<new handle>? <link>",
-        "Have a second to write a few more questions for @<new handle>? <link>",
-        "Thanks again for contributing questions. Could you write a few more? <link>",
-        "Have a sec to write a few more questions? <link>",
-        "Could I trouble you to write a couple more questions for @<new handle>? <link>",
-        "Would you write a few more questions for @<new handle>? <link>",
-        "Would you mind writing a few more questions for @<new handle>? <link>",
-        "We're looking for more questions for @<new handle>. Can you write a couple? <link>"
-      ].sample
-    end
-
-    script.gsub! '<link>', "http://www.wisr.com/askers/#{in_progress_asker.id}/questions"
-    script.gsub! '<new handle>', in_progress_asker.twi_screen_name
-
-    self.send_private_message(user, script, {intention: 'request new handle ugc', subject: 'Write a question?'})
-    MP.track_event "request new handle ugc", {:distinct_id => user.id, :account => twi_screen_name, :in_progress_asker => in_progress_asker.twi_screen_name}
   end
 
   def nudge answerer
@@ -770,7 +674,7 @@ class Asker < User
         nudge_type.text = nudge_type.text.gsub "{25-x}", (25 - question_count).to_s
       end
       nudge_type.send_to(self, answerer)
-      
+
     else
       nudge_type.send_to(self, answerer)
     end
@@ -792,7 +696,7 @@ class Asker < User
       unless in_reply_to
         last_followup = Post.where("intention = ? and in_reply_to_user_id = ? and publication_id = ?", 'incorrect answer follow up', answerer.id, publication.id).order("created_at DESC").limit(1).first
         if last_followup.present? and Post.joins(:conversation).where("posts.id <> ? and posts.user_id = ? and posts.correct is not null and posts.created_at > ? and conversations.publication_id = ?", user_post.id,  answerer.id, last_followup.created_at, publication.id).blank?
-          in_reply_to = "incorrect answer follow up" 
+          in_reply_to = "incorrect answer follow up"
         end
       end
 
@@ -818,7 +722,7 @@ class Asker < User
         if parent_post.intention == 'reengage inactive' or parent_post.is_reengagement == true
           in_reply_to = "reengage inactive"
         elsif parent_post.intention == 'incorrect answer follow up'
-          in_reply_to = "incorrect answer follow up" 
+          in_reply_to = "incorrect answer follow up"
         elsif parent_post.intention == 'new user question mention'
           in_reply_to = "new follower question mention"
         end
@@ -834,7 +738,7 @@ class Asker < User
         strategy: strategy,
         interaction_type: user_post.interaction_type,
         autoresponse: (options[:autoresponse].present? ? options[:autoresponse] : false)
-      }        
+      }
     end
   end
 
@@ -857,7 +761,7 @@ class Asker < User
     asker_hash = Asker.published.group_by(&:id)
     recipients.each do |recipient|
       begin
-        UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver 
+        UserMailer.progress_report(recipient, recipient.activity_summary(since: 1.week.ago, include_ugc: true, include_progress: true), asker_hash).deliver
         MP.track_event "progress report email sent", { :distinct_id => recipient.id }
       rescue Exception => exception
         puts "Failed to send progress report to #{recipient.email} (#{exception})"
@@ -870,7 +774,7 @@ class Asker < User
     recipients.each do |recipient|
       asker, text = Asker.compose_progress_report(recipient, asker_hash)
       next unless asker and text
-      
+
       if asker.followers.include?(recipient)
         asker.send_private_message(recipient, text, {:intention => "progress report"})
         sleep 1
@@ -917,7 +821,7 @@ class Asker < User
       next unless publication = related_asker.publications.includes(:posts).published.order('updated_at DESC').limit(5).sample
       next unless post = publication.posts.statuses.sample
       Post.twitter_request { asker.twitter.retweet(post.provider_post_id) }
-      sleep 1  
+      sleep 1
     end
   end
 
@@ -948,7 +852,7 @@ class Asker < User
       script = "So far, #{question_data[:answered_count]} people have answered your question "
       script += ((question_data[:text].size + 2) > (140 - script.size)) ? "'#{question_data[:text][0..(140 - 6 - script.size)]}...'" : "'#{question_data[:text]}'"
       asker.send_private_message(user, script, {:intention => "author followup"})
-      
+
       script = ["#{PROGRESS_COMPLEMENTS.sample} Write another here: wisr.com/feeds/#{asker.id}?q=1 (or DM it to me)",
                 "Check out your dashboard here: #{URL}/askers/#{asker.id}/questions"].sample
 
@@ -969,7 +873,7 @@ class Asker < User
     nudge_recipient_ids = nudges.collect(&:in_reply_to_user_id).uniq
     nudge_response_user_ids = Post.where("user_id in (?) and in_reply_to_post_id in (?)", nudge_recipient_ids, nudges.collect(&:id)).collect(&:user_id).uniq
     already_followed_up_user_ids = Post.where("intention = ? and in_reply_to_user_id in (?)", 'nudge followup', nudge_recipient_ids).collect(&:in_reply_to_user_id).uniq
-    nudges.each do |nudge| 
+    nudges.each do |nudge|
       next if (nudge_response_user_ids + already_followed_up_user_ids).include? nudge.in_reply_to_user_id # filter out users who have responded to our nudge or who have already been followed up with
       recipient_hash[nudge.in_reply_to_user_id] = {converted: nudge.converted, asker_id: nudge.user_id, post_id: nudge.id}
     end
@@ -980,7 +884,7 @@ class Asker < User
     recipient_hash.each do |recipient_id, recipient_data|
       asker = Asker.find(recipient_data[:asker_id])
       next unless asker.published
-      
+
       user = User.find(recipient_id)
       script = "You have a chance to check out that link? What did you think?"
       asker.send_private_message(user, script, {intention: "nudge followup", in_reply_to_post_id: recipient_data[:post_id]})
@@ -1037,7 +941,7 @@ class Asker < User
     message = "@#{user.twi_screen_name} You earned the #{badge.title} badge, congratulations!"
 
     post = send_public_message message, options
-    MP.track_event "badge", {distinct_id: user.id, badge: badge.title}  
+    MP.track_event "badge", {distinct_id: user.id, badge: badge.title}
     post
   end
 
