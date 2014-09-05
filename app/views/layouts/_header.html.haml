@@ -9,7 +9,7 @@
 
   - else
     .sign-in
-      = link_to "Sign in with Twitter", user_omniauth_authorize_path(:twitter, :use_authorize => false), :class => (current_user ? "nav-link" : "auth_link nav-link")
+      %a.auth_link.nav-link{href: '/users/sign_in'} Sign in
 
-  .logo 
+  .logo
     %a{href: '/'} Wisr
