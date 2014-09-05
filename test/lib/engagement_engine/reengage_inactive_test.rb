@@ -118,7 +118,7 @@ describe Asker, "#reengage_inactive_users" do
       end
 
       Post.reengage_inactive.where(:user_id => @asker.id,
-        :in_reply_to_user_id => @user.id).count.must_equal 3
+        :in_reply_to_user_id => @user.id).count.must_be :<=, 3
     end
 
     it "moderated a post" do
