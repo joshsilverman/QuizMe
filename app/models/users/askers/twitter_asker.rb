@@ -22,7 +22,7 @@ class TwitterAsker < Asker
     failure_message = "Tweet from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
 
     if options[:in_reply_to_post_id] and options[:link_to_parent]
-      parent_post = Post.find(options[:in_reply_to_post_id]) 
+      parent_post = Post.find(options[:in_reply_to_post_id])
       twitter_response = Post.twitter_request(failure_message) { sender.twitter.update(tweet, {'in_reply_to_status_id' => parent_post.provider_post_id.to_i}) }
     else
       twitter_response = Post.twitter_request(failure_message) { sender.twitter.update(tweet) }
@@ -38,7 +38,7 @@ class TwitterAsker < Asker
         :conversation_id => options[:conversation_id],
         :publication_id => options[:publication_id],
         :url => options[:long_url] ? short_url : nil,
-        :posted_via_app => true, 
+        :posted_via_app => true,
         :requires_action => (options[:requires_action].present? ? options[:requires_action] : false),
         :interaction_type => options[:interaction_type] || 2,
         :correct => options[:correct],
@@ -48,23 +48,23 @@ class TwitterAsker < Asker
         :is_reengagement => options[:is_reengagement]
       )
       Post.find(options[:in_reply_to_post_id]).update(requires_action: false) if options[:in_reply_to_post_id]
-      
+
       if options[:publication_id]
         publication = Publication.find(options[:publication_id])
         publication.posts << post
       end
     end
-    return post 
+    return post
   end
 
   def send_private_message recipient, text, options = {}
     sender = self
-      
+
     short_url = nil
     if options[:short_url]
       short_url = options[:short_url]
     elsif options[:long_url]
-      short_url = Post.format_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, recipient.twi_screen_name) 
+      short_url = Post.format_url(options[:long_url], 'twi', options[:link_type], sender.twi_screen_name, recipient.twi_screen_name)
     end
 
     text = "#{text} #{short_url}" if options[:include_url] and short_url
@@ -94,7 +94,7 @@ class TwitterAsker < Asker
     rescue Exception => exception
       puts "exception in DM user"
       puts exception.message
-    end    
+    end
     return post
   end
 end
