@@ -1,5 +1,5 @@
 Quizmemanager::Application.routes.draw do
-  
+
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   constraints subdomain: false do
@@ -7,7 +7,7 @@ Quizmemanager::Application.routes.draw do
       get ':any', to: redirect(subdomain: 'www', path: '/%{any}'), any: /.*/
     end
   end
-  
+
   devise_for :users, :controllers => { :omniauth_callbacks => "authorizations", sessions: :sessions, registrations: :registrations }
   devise_scope :user do
     get 'users/sign_out' => 'sessions#destroy'
@@ -67,6 +67,8 @@ Quizmemanager::Application.routes.draw do
       get 'recent_reengage_inactive'
     end
   end
+
+  resources :publications, only: [:show]
 
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
   get "/posts/:publication_id/refer" => "posts#refer"
