@@ -1,7 +1,7 @@
 class FeedsController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:respond_to_question]
   prepend_before_filter :check_for_authentication_token, :only => [:show, :index]
-  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :search]
+  before_filter :authenticate_user!, :except => [:index, :index_with_search, :show, :stream, :more, :new]
   before_filter :admin?, :only => [:manager_response]
   before_filter :set_session_variables, :only => [:show]
 
@@ -60,6 +60,29 @@ class FeedsController < ApplicationController
           params[:publication_id], offset)
 
         render json: publications_json
+      end
+    end
+  end
+
+  def new
+    respond_to do |format|
+      format.json do
+        subject = params[:subject] || 'wisr'
+        asker = Asker.find_by_subject_url subject
+        offset = params['offset'] || 0
+
+        if asker
+          new_questions = Question
+            .where(created_for_asker_id: asker.id)
+            .order(created_at: :desc)
+            .limit(10).offset(offset)
+
+          render json: new_questions,
+            each_serializer: QuestionAsPublicationSerializer,
+            root: false
+        else
+          head 404
+        end
       end
     end
   end

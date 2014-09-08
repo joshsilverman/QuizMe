@@ -1,20 +1,6 @@
 require 'test_helper'
 
 describe FeedsController do
-
-  def answer_question id = nil
-    if id
-      post = page.find(".feed-publication[question-id=\"#{id}\"]")
-    else
-      post = page.find('.feed-publication')
-    end
-
-    post.all('.answer').first.click
-    assert post.has_selector?('.answer.correct, .answer.incorrect')
-
-    return post
-  end
-
   before :each do
     @user = create :user
     @admin = create :admin
@@ -96,42 +82,38 @@ describe FeedsController do
     end
   end
 
-  # describe '#show' do
-  #   before :each do
-  #     Capybara.current_driver = :selenium
-  #   end
+  describe '#new' do
+    it 'returns questions formatted as publications' do
+      get :new, subject: @asker.subject_url, format: :json
 
-  #   describe 'click an answer when logged in' do
-  #     before :each do
-  #       login_as(@user, :scope => :user)
+      response.status.must_equal 200
+      JSON.parse(response.body).first['_question'].wont_be_nil
+    end
 
-  #       visit "/#{@asker.subject_url}"
+    it 'restricts based on subject_url' do
+      get :new, subject: 'different_subject', format: :json
 
-  #       answer_question
-  #     end
+      response.status.must_equal 404
+    end
 
-  #     it 'creates user post' do
-  #       user_response = @user.posts.where(intention: 'respond to question').first
-  #       user_response.in_reply_to_post_id.must_equal @question_post.id
-  #     end
+    it 'shows all new qs including ones that have not been published' do
+      @question.update status: 0
 
-  #     it 'responds to user post' do
-  #       grade_post = @asker.posts.where(intention: 'grade').first
-  #       grade_post.in_reply_to_user_id.must_equal @user.id
-  #     end
-  #   end
+      get :new, subject: @asker.subject_url, format: :json
 
-  #   describe 'click an answer when not logged in' do
-  #     before :each do
-  #       visit "/#{@asker.subject_url}"
-  #     end
+      response.status.must_equal 200
+      JSON.parse(response.body).count.must_equal 1
+    end
 
-  #     it 'takes user to authentication page' do
-  #       page.all('.content .answer').first.click
-  #       current_path.must_equal '/oauth/authenticate'
-  #     end
-  #   end
-  # end
+    it 'accepts offset' do
+      @question.update status: 0
+
+      get :new, subject: @asker.subject_url, offset: 10, format: :json
+
+      response.status.must_equal 200
+      JSON.parse(response.body).count.must_equal 0
+    end
+  end
 end
 
 describe FeedsController, "#respond_to_question" do

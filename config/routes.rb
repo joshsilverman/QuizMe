@@ -131,7 +131,9 @@ Quizmemanager::Application.routes.draw do
 
   get "u/feeds/:id(/:publication_id(/:answer_id))" => "feeds#show" # @deprecated route
   get "index" => "feeds#index"
+  get ":subject/new" => "feeds#new"
   get ":subject(/:publication_id(/:answer_id))" => "feeds#show"
+
 
   root :to => 'feeds#index'
 end
