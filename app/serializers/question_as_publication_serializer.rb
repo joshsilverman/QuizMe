@@ -1,5 +1,5 @@
 class QuestionAsPublicationSerializer < ActiveModel::Serializer
-  attributes :question_id, :asker_id, :_answers, :_question, :_asker
+  attributes :question_id, :asker_id, :_answers, :_question, :_asker, :created_at
 
   def question_id
     object.id
@@ -20,6 +20,6 @@ class QuestionAsPublicationSerializer < ActiveModel::Serializer
   def _asker
     {
       id: object.created_for_asker_id
-    } 
+    }
   end
 end
