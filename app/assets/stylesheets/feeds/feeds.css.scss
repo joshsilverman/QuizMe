@@ -144,7 +144,7 @@ $border_thin: 0px;
       font-weight: 300;
       font-size: 20px;
       line-height: 1.15em;
-      height:1.15em;
+      height:3em;
 
       display: block;
       width:100%;
@@ -164,6 +164,18 @@ $border_thin: 0px;
       a {
         color: $white;
       }
+
+			.feed-selection {
+				margin-top:10px;
+				a {
+					font-weight: 100;
+					font-size: 16px;
+
+					&.active-feed {
+						font-weight: 300;
+					}
+				}
+			}
     }
   }
 }
@@ -368,12 +380,12 @@ $border_thin: 0px;
   						img {
   							opacity: .8;
   							display: inherit;
-  						}	
+  						}
   					}
 
   					&.correct {background-color:#86ca9b !important;}
   					&.incorrect {background-color:#f8c4c4 !important;}
-  					
+
             &:hover {
               cursor: pointer;
               background: rgba(0, 0, 0, 0.2);
@@ -612,14 +624,14 @@ $border_thin: 0px;
     background: image-url('home/galaxy.jpg');
   }
   .stars {background: image-url('home/stars.png');}
-  
+
   .smallplanets {
     background: image-url('home/smallplanets.png');
     top:-10px;
   }
 
   .planet {
-    background: image-url('home/planet.png'); 
+    background: image-url('home/planet.png');
     height:584px;
     top:-130px;
   }
