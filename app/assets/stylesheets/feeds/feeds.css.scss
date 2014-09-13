@@ -359,6 +359,21 @@ $border_thin: 0px;
           h3 {
             font-size: 18px;
             font-weight: 300;
+
+						input {
+							font-size: inherit;
+							font-weight: inherit;
+							padding: .3em;
+							margin: inherit;
+							color: inherit;
+							outline: none;
+							border: none;
+							opacity: .98;
+							width: 100%;
+							box-sizing: border-box;
+							border-radius:4px;
+							line-height:inherit;
+						}
           }
 
           .answer {
@@ -395,6 +410,21 @@ $border_thin: 0px;
               opacity: .3;
               cursor: auto;
             }
+
+						input {
+							font-size: inherit;
+							font-weight: inherit;
+							padding: .3em;
+							box-sizing: border-box;
+							margin: inherit;
+							color: inherit;
+							outline: none;
+							border: none;
+							opacity: .98;
+							width: 100%;
+							border-radius:4px;
+							line-height:inherit;
+						}
           }
         }
 
@@ -506,7 +536,6 @@ $border_thin: 0px;
             font-size:80%;
             opacity:.85;
           }
-
         }
 
         p {
