@@ -24,7 +24,7 @@ describe QuestionsController do
 	describe '#update' do
 		before :each do
 			Capybara.current_driver = :selenium
-			login_as @author			
+			login_as @author
 			visit "/askers/#{@asker.id}/questions"
 		end
 
@@ -59,7 +59,88 @@ describe QuestionsController, "#count" do
   	question = create :question, user_id: user.id
 
     get :count, user_id: user.id, format: :json
-    
+
     response.body.must_equal('1')
   end
+end
+
+describe QuestionsController, "#save_question_and_answers" do
+	let(:user) { create(:user) }
+	let(:asker) { create(:asker) }
+
+	let(:params) {
+		{ asker_id: asker.id,
+			question: 'What is the what?',
+			canswer: 'The what'
+		}
+	}
+
+	it "creates a new question" do
+		sign_in user
+
+		post :save_question_and_answers, params
+
+		response.status.must_equal 200
+		Question.count.must_equal 1
+	end
+
+	it "creates a correct answer" do
+		sign_in user
+
+		post :save_question_and_answers, params
+
+		response.status.must_equal 200
+		Answer.count.must_equal 1
+		Answer.first.text.must_equal "The what"
+	end
+
+	it "wont create a new question if user not authed" do
+		post :save_question_and_answers, params
+
+		response.status.must_equal 302
+		Question.count.must_equal 0
+	end
+
+	it "wont create a new question if user no question passed" do
+		sign_in user
+		params.delete :question
+
+		post :save_question_and_answers, params
+
+		Question.count.must_equal 0
+	end
+
+
+	it "wont create a new question if user no correct answer passed" do
+		sign_in user
+		params.delete :canswer
+
+		post :save_question_and_answers, params
+
+		Question.count.must_equal 0
+	end
+
+	it "will set status to unapproved" do
+		sign_in user
+		post :save_question_and_answers, params
+
+		Question.last.status.must_equal 0
+	end
+
+	it "will save incorrect answer" do
+		sign_in user
+		params[:ianswer1] = "The who"
+
+		post :save_question_and_answers, params
+		Answer.count.must_equal 2
+		Answer.where(text: "The who").count.must_equal 1
+	end
+
+	it "will ignore blank answer"do
+		sign_in user
+		params[:ianswer1] = ""
+
+		post :save_question_and_answers, params
+		Answer.count.must_equal 1
+	end
 end
