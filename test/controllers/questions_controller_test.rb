@@ -143,4 +143,12 @@ describe QuestionsController, "#save_question_and_answers" do
 		post :save_question_and_answers, params
 		Answer.count.must_equal 1
 	end
+
+	it "will cache answers"do
+		sign_in user
+		params[:ianswer1] = ""
+
+		post :save_question_and_answers, params
+		Question.last._answers.wont_equal nil
+	end
 end

@@ -210,6 +210,9 @@ class QuestionsController < ApplicationController
       end
     end
 
+    #update cache synchronously - will also be run async
+    @question.update_answers
+
     current_user.update_user_interactions({
       :learner_level => "author",
       :last_interaction_at => @question.created_at
