@@ -27,13 +27,14 @@ class TopicsController < ApplicationController
 
       format.json do
         if @lesson
-          questions = @lesson.questions.approved  
-          render json: questions, 
+          questions = @lesson.questions.approved
+          render json: questions,
             each_serializer: QuestionAsPublicationSerializer,
-            root: false
+            root: false,
+            lesson: @lesson
         else
           head status: 404
-        end 
+        end
       end
     end
   end
