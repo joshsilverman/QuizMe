@@ -70,6 +70,12 @@ Quizmemanager::Application.routes.draw do
 
   resources :publications, only: [:show]
 
+  resources :variants, only: [:current] do
+    collection do
+      get 'current'
+    end
+  end
+
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
   get "/posts/:publication_id/refer" => "posts#refer"
   post "posts/respond_to_post"
