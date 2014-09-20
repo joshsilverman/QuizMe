@@ -16,7 +16,7 @@ describe TopicsController do
       create(:lesson).askers << asker
 
       get :index, format: :json, asker_id: asker.id
-      
+
       JSON.parse(response.body)["topics"].count.must_equal 3
     end
 
@@ -32,14 +32,9 @@ describe TopicsController do
   end
 
   describe "#show" do
-    it "returns status 200" do
-      asker = create :asker, subject: 'biology'
-      topic = create :lesson
-      asker.topics << topic
-      
-      get :show, subject: 'biology', name: topic.name
-
-      response.status.must_equal 200
+    it "redirects to ng" do
+      get :show, subject: 'biology', name: 'cats'
+      response.status.must_equal 301
     end
 
     it "returns lesson with questions json" do
@@ -69,7 +64,7 @@ describe TopicsController, "#answered_counts" do
     user = create :user
     lesson = create :lesson, :with_questions
     question = lesson.questions.first
-    correct_response = create :correct_response, 
+    correct_response = create :correct_response,
       in_reply_to_question: question,
       user: user
 
@@ -77,7 +72,7 @@ describe TopicsController, "#answered_counts" do
 
     get :answered_counts, format: :json
     answered_counts = JSON.parse(response.body)
-    
+
     answered_counts.count.must_equal 1
     answered_counts.values.first.must_equal 1
   end
@@ -88,11 +83,11 @@ describe TopicsController, "#answered_counts" do
     question1 = lesson.questions[0]
     question2 = lesson.questions[1]
 
-    correct_response1 = create :correct_response, 
+    correct_response1 = create :correct_response,
       in_reply_to_question: question1,
       user: user
 
-    correct_response2 = create :correct_response, 
+    correct_response2 = create :correct_response,
       in_reply_to_question: question2,
       user: user
 
@@ -100,7 +95,7 @@ describe TopicsController, "#answered_counts" do
 
     get :answered_counts, format: :json
     answered_counts = JSON.parse(response.body)
-    
+
     answered_counts.count.must_equal 1
     answered_counts.values.first.must_equal 2
   end
@@ -110,11 +105,11 @@ describe TopicsController, "#answered_counts" do
     lesson = create :lesson, :with_questions
     question = lesson.questions[0]
 
-    correct_response1 = create :correct_response, 
+    correct_response1 = create :correct_response,
       in_reply_to_question: question,
       user: user
 
-    correct_response2 = create :correct_response, 
+    correct_response2 = create :correct_response,
       in_reply_to_question: question,
       user: user
 
@@ -122,7 +117,7 @@ describe TopicsController, "#answered_counts" do
 
     get :answered_counts, format: :json
     answered_counts = JSON.parse(response.body)
-    
+
     answered_counts.count.must_equal 1
     answered_counts.values.first.must_equal 1
   end
