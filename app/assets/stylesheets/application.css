@@ -19,6 +19,8 @@ body {
   height:100%;
 }
 
+a.disabled { pointer-events: none; }
+
 .main-view {
   background: #67618d;
   box-shadow: 20px 0px 50px #000;
