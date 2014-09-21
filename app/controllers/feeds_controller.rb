@@ -7,12 +7,7 @@ class FeedsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.html.phone do
-        @asker = Asker.wisr
-        render :show, layout: 'phone'
-      end
-
-      format.html.none do
+      format.html do
         query_string = request.query_string.empty? ? "" : "?#{request.query_string}"
         url = "#{FEED_URL}#{query_string}"
         redirect_to url, status: 301
@@ -38,12 +33,7 @@ class FeedsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html.phone do
-        show_redirect
-        render :show, layout: 'phone'
-      end
-
-      format.html.none {
+      format.html {
         redirected = show_redirect
         if !redirected
           url = "#{FEED_URL}#{request.fullpath}"
