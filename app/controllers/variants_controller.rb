@@ -1,11 +1,11 @@
 class VariantsController < ApplicationController
 
   def current
-    variant = ""
+    variant = {}
     if request.variant.present?
-      variant = request.variant.first.to_s
+      variant = {name: request.variant.first.to_s}
     end
 
-    render text: variant
+    render json: variant
   end
 end
