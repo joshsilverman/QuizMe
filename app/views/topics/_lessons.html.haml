@@ -1,0 +1,15 @@
+.lessons{'data-askerId' => @asker.id, 'data-bind' => 'css: {visible: lessons().length}'}
+  %h4 Quizzes
+  
+  %ul{'data-bind' => "foreach: lessons"}
+
+    %li.appear
+      .content{'data-bind' => 'click: goToLesson'}
+        %span{"data-bind" => 'text: $index() + 1 + "."'}
+
+        %span.completeness
+          %span{'data-bind' => 'text: answered_count()'}
+          %span{'data-bind' => 'visible: answered_count() !== ""'} /
+          %span{'data-bind' => 'text: _question_count'}
+
+        %p{"data-bind" => "dotdotdot: name"}

@@ -1,0 +1,42 @@
+.timeline-container
+  %ul.timeline
+    = yield :question
+
+    .feed-view{'data-subject-url' => @asker.subject_url,
+      'data-asker-id' => @asker.id,
+      'data-current_user-id' => current_user.try(:id),
+      'data-publication-id' => params[:publication_id]}
+
+      %div{'data-bind' => "foreach: {data: feedPublications, as:'feedPublication'}"}
+
+        %li.feed-publication{'data-bind' => 'css: {visible: $root.feedPublications().length > 0}, attr: {"data-publication-id": id, "question-id": questionId}'}
+
+          %input.radio{type: 'radio'}
+          .relative
+            %span.timeago{"data-bind" => "timeago: firstPostedAt"}
+            %span.circle{"data-bind" => "text: $index() + 1"}
+              
+          .content
+            %h3
+              %span.subject-label{'data-bind' => 'css: {visible: $parent.askerId == 8765}'}
+                %a{'data-bind' => 'text: subject, attr: {href: subject_url}'}
+
+              %span.timeago{"data-bind" => "timeago: firstPostedAt"}
+              %span{'data-bind' => 'text: question'}
+
+            .answers
+              %div{'data-bind' => "foreach: feedPublication.answers"}
+                .answer{'data-bind' => 'click: respondToQuestion, css: {correct: correct(), incorrect: incorrect(), grading: grading(), disabled: disabled()}'}
+                  %span{'data-bind' => 'text: text'}
+                  %img{src: '/assets/ajax-loader.gif'}
+
+              .answer{'data-bind' => 'click: feedPublication.tellAnswer, css: {hidden: feedPublication.answered()}'}
+                %span
+                  I don't know
+
+            %h4.hidden.phone-variant-hide{'data-bind' => 'css: {hidden: !quizName}'}
+              Take the full 
+              %a{'data-bind' => 'text: quizName, attr: {href: quizHref}'}
+
+      .load-more{'data-bind' => 'css: {visible: loadingMore()}'}
+        .phone-variant-hide=image_tag "ajax-loader-retina.gif", class: 'retina-ajax-loader'

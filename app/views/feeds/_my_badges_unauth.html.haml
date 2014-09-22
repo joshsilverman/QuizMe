@@ -1,0 +1,15 @@
+.my-badges
+  %h4
+    My Badges
+
+  %ul
+    %li.appear
+      .content
+        %img.rounded.profile{src: "/assets/badges/moderators/mod-badges_05.png"}
+        
+        %h3 Start earning badges
+
+        %p 
+          Ask, answer, and grade questions!
+
+  %a.twitter-sign-in{href: user_omniauth_authorize_path(:twitter, use_authorize: false), class: (current_user ? "nav-link" : "auth_link nav-link")}= image_tag 'twitter/sign_in_button.png'

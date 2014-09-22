@@ -1,0 +1,13 @@
+.my-badges.authenticated
+  %h4
+    My Badges
+
+  %ul{'data-bind' => "foreach: badges"}
+    %a{'data-bind' => "attr: {href: href}"}
+      %li{'data-bind' => 'css: {appear: title}'}
+        .content
+          %img.rounded.profile{"data-bind" => "attr: {src: img_href}"}
+
+          %h3{"data-bind" => "text: title"}
+
+          %p{"data-bind" => "dotdotdot: description"}    }

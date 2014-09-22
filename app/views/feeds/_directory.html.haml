@@ -1,0 +1,17 @@
+.directory
+  %h4 All subjects
+  
+  %ul
+
+    - @askers.each do |asker|
+      %a{href: asker.subject_url}
+        %li.appear
+
+          .content
+            %img.rounded.profile{src: asker.twi_profile_img_url}
+
+            %h3= asker.subject
+
+            %p= asker.description
+
+            .clearfix
