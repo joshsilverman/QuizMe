@@ -710,11 +710,12 @@ class Asker < User
 
       # Fire mixpanel answer event
       MP.track_event "answered", {
-      distinct_id: answerer.id,
-      account: self.twi_screen_name,
-      type: options[:type],
-      in_reply_to: in_reply_to,
-      strategy: strategy
+        distinct_id: answerer.id,
+        account: self.twi_screen_name,
+        type: options[:type],
+        in_reply_to: in_reply_to,
+        strategy: strategy,
+        question_status: user_post.in_reply_to_question.status
       }
     else
       parent_post = user_post.parent
