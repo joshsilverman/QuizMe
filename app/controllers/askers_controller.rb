@@ -3,14 +3,22 @@ class AskersController < ApplicationController
 
   before_filter :admin?, :except => [:dashboard, :get_core_metrics, :graph, :questions, :index, :recent, :show]
   before_filter :authenticate_user!, :only => [:recent]
-  
+
   before_filter :yc_admin?, :only => [:dashboard, :get_core_metrics, :graph]
 
   caches_action :get_core_by_handle, :expires_in => 7.minutes
   caches_action :get_handle_metrics, :expires_in => 11.minutes
 
   def index
-    @askers = Asker.order(:subject).to_a
+    @askers = Asker.order(:subject)
+
+    if params[:published] == 'true'
+      @askers = @askers.where(published: true)
+    elsif params[:published] == 'false'
+      @askers = @askers.where(published: false)
+    end
+
+    @askers = @askers.to_a
 
     respond_to do |format|
       format.html { admin? } # will redirect if not admin
@@ -22,10 +30,10 @@ class AskersController < ApplicationController
     asker = Asker.find(params[:id])
 
     respond_to do |format|
-      format.json do 
+      format.json do
         json = asker.to_json only: [
-          :twi_name, 
-          :twi_screen_name, 
+          :twi_name,
+          :twi_screen_name,
           :twi_profile_img_url]
 
         render json: json
@@ -55,7 +63,7 @@ class AskersController < ApplicationController
       profile = {:description => params[:asker][:description]}
       @asker.twitter.update_profile profile
     end
-    
+
     if params[:asker][:published] == "true"
       PublicationQueue.enqueue_questions @asker
     end
@@ -80,7 +88,7 @@ class AskersController < ApplicationController
 
   def dashboard
     @askers = User.askers
-  end 
+  end
 
   def graph
     @domain = params[:domain] || 30
@@ -88,7 +96,7 @@ class AskersController < ApplicationController
 
     name = "graph_#{params[:graph]}"
     @data = Stat.send name, @domain
-    
+
     if params[:party] == 'core'
       render json: @data
     else
@@ -104,7 +112,7 @@ class AskersController < ApplicationController
       @questions = @asker.questions.includes(:answers, :user).order("questions.id DESC").page(params[:page]).per(15)
       @question_count = @asker.questions.group("status").count
       [-1, 0, 1].each { |status| @question_count[status] ||= 0 }
-      
+
       @requested_user_id = nil
       if params[:user_id] and (users_questions = @questions.where(user_id: params[:user_id])).present?
         @requested_user_id = params[:user_id]
@@ -116,9 +124,9 @@ class AskersController < ApplicationController
       contributor_ids_with_count = @asker.questions.approved.group("user_id").count
       contributors.shuffle.each do |user|
         @contributors << {twi_screen_name: user.twi_screen_name, twi_profile_img_url: user.twi_profile_img_url, count: contributor_ids_with_count[user.id]}
-      end      
+      end
     end
-  end  
+  end
 
   private
 
@@ -129,7 +137,7 @@ class AskersController < ApplicationController
       [:id,
         :twi_name, :twi_screen_name, :twi_profile_img_url,
         :subject, :subject_url,
-        :description, 
+        :description,
         :published,
         :styles].each do |attribute|
 
