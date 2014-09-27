@@ -481,6 +481,10 @@ $border_thin: 0px;
   }
 
   .right-column {
+		flex:1;
+		-webkit-box-flex: 1;
+		-webkit-flex: 1;
+
     margin: 0 4% 0 0;
     padding-top: 104px;
 
