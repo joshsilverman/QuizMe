@@ -9,6 +9,7 @@ describe Asker, "#reengage_inactive_users" do
     @asker.followers << @user
 
     @question = create(:question, created_for_asker_id: @asker.id, status: 1)
+    @old_question = create(:question, created_for_asker_id: @asker.id, status: 1)
     @publication = create(:publication, question_id: @question.id)
     @question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)
     Delayed::Worker.delay_jobs = false
@@ -24,7 +25,7 @@ describe Asker, "#reengage_inactive_users" do
         user: @user,
         in_reply_to_user_id: @asker.id,
         interaction_type: 2,
-        in_reply_to_question_id: @question.id,
+        in_reply_to_question_id: @old_question.id,
         correct: true)
 
       Timecop.travel(Time.now + 1.day)
@@ -44,7 +45,7 @@ describe Asker, "#reengage_inactive_users" do
         user: @user,
         in_reply_to_user_id: @asker.id,
         interaction_type: 2,
-        in_reply_to_question_id: @question.id,
+        in_reply_to_question_id: @old_question.id,
         correct: true)
 
       Timecop.travel(Time.now + 1.day)
@@ -65,7 +66,7 @@ describe Asker, "#reengage_inactive_users" do
         user: @user,
         in_reply_to_user_id: @asker.id,
         interaction_type: 4,
-        in_reply_to_question_id: @question.id,
+        in_reply_to_question_id: @old_question.id,
         correct: true)
 
       Timecop.travel(Time.now + 1.day)
@@ -85,7 +86,7 @@ describe Asker, "#reengage_inactive_users" do
         user: @user,
         in_reply_to_user_id: @asker.id,
         interaction_type: 4,
-        in_reply_to_question_id: @question.id,
+        in_reply_to_question_id: @old_question.id,
         correct: true)
 
       Timecop.travel(Time.now + 1.day)
@@ -106,7 +107,7 @@ describe Asker, "#reengage_inactive_users" do
         user: @user,
         in_reply_to_user_id: @asker.id,
         interaction_type: 4,
-        in_reply_to_question_id: @question.id,
+        in_reply_to_question_id: @old_question.id,
         correct: true)
 
       Post.reengage_inactive.where(:user_id => @asker.id,
@@ -144,7 +145,7 @@ describe Asker, "#reengage_inactive_users" do
     end
 
     it "gone inactive" do
-      create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id, correct: true)
+      create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @old_question.id, correct: true)
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
 
@@ -163,7 +164,7 @@ describe Asker, "#reengage_inactive_users" do
     before :each do
       @strategy = [1, 2, 4, 8]
 
-      @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
+      @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @old_question.id)
       @user_response.update_attribute :correct, true
       @user.update_attributes last_answer_at: @user_response.created_at, last_interaction_at: @user_response.created_at, activity_segment: nil
 

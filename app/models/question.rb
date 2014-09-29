@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
   has_many :answers
   has_many :publications
   has_many :question_moderations
-  
+
   has_many :topics, -> { uniq }, through: :questions_topics, :dependent => :destroy
   has_many :questions_topics, :dependent => :destroy
 
@@ -49,12 +49,12 @@ class Question < ActiveRecord::Base
     # Fill queue with non-priority questions, non recent question
     if queue.size < asker.posts_per_day
       non_priority_questions = asker.questions.approved.not_priority
-      
+
       recent_question_ids = asker.publications\
         .where("question_id is not null and published = ?", true)\
         .where("created_at > ?", num_days_back_to_exclude.days.ago)\
         .collect(&:question_id)
-      recent_question_ids = [0] if recent_question_ids.blank? 
+      recent_question_ids = [0] if recent_question_ids.blank?
 
       queue += non_priority_questions.where("id not in (?)", recent_question_ids).sample(asker.posts_per_day - queue.size).collect(&:id)
 
@@ -120,7 +120,7 @@ class Question < ActiveRecord::Base
     end
 
     question_ids_moderated_by_current_user = moderator.question_moderations.collect(&:question_id)
-    question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?    
+    question_ids_moderated_by_current_user = [0] if question_ids_moderated_by_current_user.empty?
 
     is_supermod = moderator.is_question_super_mod?
     requires_edit_count = is_supermod ? 2 : 0
@@ -138,7 +138,7 @@ class Question < ActiveRecord::Base
 
       questions << Question.where('moderation_trigger_type_id != 2 or moderation_trigger_type_id is null')\
         .where('needs_edits is not null or publishable is not null')\
-        .where("questions.id NOT IN (?)", 
+        .where("questions.id NOT IN (?)",
           question_ids_moderated_by_current_user)\
         .where("questions.user_id <> ?", moderator.id)\
         .where("questions.created_for_asker_id IN (?)", follows_ids)\
@@ -149,7 +149,7 @@ class Question < ActiveRecord::Base
         .where('moderation_trigger_type_id is null')\
         .where('needs_edits is null and publishable is null')\
         .where("questions.user_id <> ?", moderator.id)\
-        .where("questions.id NOT IN (?)", 
+        .where("questions.id NOT IN (?)",
           question_ids_moderated_by_current_user)\
         .where("questions.created_for_asker_id IN (?)", follows_ids)\
         .order('questions.created_at DESC')\
@@ -166,53 +166,6 @@ class Question < ActiveRecord::Base
       .ugc
   end
 
-  def self.score_questions popularity_index = {}, scores = {}
-    Rails.cache.fetch 'scored_questions', :expires_in => 30.minutes do
-      questions_with_publication_count = Question.approved\
-        .select(["questions.*", "count(publications.id) as publication_count"])\
-        .joins(:publications)\
-        .includes(:answers)\
-        .group("questions.id")
-
-      question_answered_counts = Post.joins("LEFT OUTER JOIN posts AS parents on parents.id = posts.in_reply_to_post_id")\
-        .where("parents.interaction_type = 1")\
-        .where("posts.in_reply_to_question_id is not null")\
-        .answers\
-        .social\
-        .group("posts.in_reply_to_question_id")\
-        .count 
-
-      # build question popularity index - status answers per publication
-      questions_with_publication_count.each { |q| popularity_index[q.id] = question_answered_counts[q.id].to_f / q.publication_count.to_f }
-
-      # mark most popular 25% of questions
-      popular_question_ids = popularity_index.sort_by {|k,v| v}.reverse[0..(popularity_index.size * 0.25).ceil].collect { |e| e[0] }
-
-      # score questions / build score hash
-      questions_with_publication_count.each do |q| 
-        scores[q.created_for_asker_id] ||= {}
-        scores[q.created_for_asker_id][q.id] = q.score(popular_question_ids.include? q.id)
-      end
-
-      scores
-    end
-  end
-
-  def score is_popular, score = 0
-    score += 2 if is_popular #is popular
-    score += 1 if !Asker.ids.include? user_id # is ugc
-    score += 1 if resource_url.present? # has resource
-    score += 1 if hint.present? # has hint
-    score += 1 if created_at > 2.weeks.ago # is recent
-    
-    message_length = TWI_MAX_SCREEN_NAME_LENGTH + 1 + text.size + 1 + TWI_SHORT_URL_LENGTH
-    message_length_with_answers = TWI_MAX_SCREEN_NAME_LENGTH + 1 + text_with_answers.size + 1 + TWI_SHORT_URL_LENGTH
-    score += 1 if message_length < 140 # fits into tweet
-    score += 1 if message_length < 80 # is short
-    score += 1 unless INCLUDE_ANSWERS.include?(id) and message_length_with_answers > 140 # unless handle should include answers, but doesn't fit
-    score
-  end
-
   def text_with_answers
     "#{text} (#{answers.shuffle.collect {|a| a.text}.join('; ')})"
   end
@@ -226,7 +179,7 @@ class Question < ActiveRecord::Base
     assign_attributes(
       _correct_answer_id: answers.correct.try(:id),
       _answers: as)
-    
+
     save
   end
 end

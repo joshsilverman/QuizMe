@@ -700,3 +700,50 @@ describe Asker, '#publish_question' do
     publication.reload.first_posted_at.to_i.must_equal time.to_i
   end
 end
+
+describe Asker, '#select_question' do
+	let(:user) { create :user }
+	let(:asker) { create :asker }
+	let(:question) { create :question, asker: asker, status: 1 }
+	let(:publication) { create :publication, asker: asker, question: question }
+	let(:answer_post) { create :post, user: user, in_reply_to_question: question }
+	let(:reengagement_post) { create :post, user: asker, in_reply_to_user: user, is_reengagement: true }
+
+	it 'selects a question' do
+		publication
+		selected_question = asker.select_question user
+
+		selected_question.must_equal question
+	end
+
+	it 'selects a question that has been published' do
+		question
+		selected_question = asker.select_question user
+
+		selected_question.must_equal nil
+	end
+
+	it 'wont select question the user has already answered' do
+		publication
+		answer_post
+		selected_question = asker.select_question user
+
+		selected_question.must_equal nil
+	end
+
+	it 'wont select question the user has already been reengaged with' do
+		publication
+		reengagement_post
+		selected_question = asker.select_question user
+
+		selected_question.must_equal nil
+	end
+
+	it 'wont send unnapproved questions' do
+		publication
+		question.update status: nil
+		selected_question = asker.select_question user
+
+		selected_question.must_equal nil
+	end
+end

@@ -204,26 +204,19 @@ class Asker < User
   end
 
   def select_question user
-    scored_questions = Question.score_questions
-    scored_questions = scored_questions[id]
-    return nil if scored_questions.nil?
+    answered_question_ids = user.posts
+      .where('in_reply_to_question_id IS NOT NULL')
+      .pluck(:in_reply_to_question_id)
+    reengagement_question_ids = posts
+      .where(in_reply_to_user: user)
+      .where(is_reengagement: true)
+      .pluck(:question_id)
+    excluded_ids = answered_question_ids + reengagement_question_ids + [0]
 
-    reengagement_question_ids = posts\
-      .reengage_inactive\
-      .where("in_reply_to_user_id = ?", user.id)\
-      .where("question_id is not null")\
-      .collect(&:question_id)\
-      .uniq
-
-    # filter out answered and recently sent question ids if possible
-    question_ids = scored_questions.keys - user.questions_answered_ids_by_asker(id) # get unanswered questions
-    question_ids = scored_questions.keys if question_ids.blank? # degrade to using answered questions
-    question_ids = question_ids.reject { |id| reengagement_question_ids.include? user.id } if (question_ids - reengagement_question_ids).present? # filter questions sent recently as reengagments but not answered
-
-    score_grouped_question_ids = question_ids.group_by { |question_id| scored_questions[question_id] }
-
-    # select question from highest scoring question group
-    Question.includes(:publications).find(score_grouped_question_ids.max[1].sample)
+    questions.where('questions.id NOT IN (?)', excluded_ids)
+      .approved
+      .joins(:publications)
+      .order('random()').first
   end
 
   def self.engage_new_users
