@@ -1,21 +1,24 @@
 require 'test_helper'
 
-describe EmailAsker do  
+describe EmailAsker do
   let(:course) {create(:course, :with_lessons)}
   let(:lessons) {course.lessons.sort}
-  let(:asker) do 
+  let(:asker) do
     asker = course.askers.first.becomes(EmailAsker)
     asker.followers << emailer
     asker
   end
-  let(:emailer) {create(:emailer, twi_user_id: 1)}
-  let(:non_emailer) {create(:user)}
-  let(:question) {create(:question, created_for_asker_id: asker.id, status: 1)}
-  let(:strategy) {[1, 2, 4, 8]}
-  let(:publication) {create(:publication, question_id: question.id)}
+  let(:emailer) { create(:emailer, twi_user_id: 1) }
+  let(:non_emailer) { create(:user) }
+  let(:strategy) { [1, 2, 4, 8] }
+  let(:question) { create(:question, created_for_asker_id: asker.id, status: 1) }
+  let(:publication) { create(:publication, question_id: question.id) }
+
+  let(:another_question) { create(:question, created_for_asker_id: asker.id, status: 1) }
+  let(:another_publication) { create(:publication, question_id: another_question.id) }
 
   before :each do
-    @question_status = create(:post, user_id: asker.id, interaction_type: 1, question_id: question.id, publication_id: publication.id)   
+    @question_status = create(:post, user_id: asker.id, interaction_type: 1, question_id: question.id, publication_id: publication.id)
 
     @emailer_response = create(:post, text: 'the correct answer, yo', user_id: emailer.id, in_reply_to_user_id: asker.id, interaction_type: 5, in_reply_to_question_id: question.id)
     @emailer_response.update_attributes created_at: (strategy.first + 1).days.ago, correct: true
@@ -43,6 +46,8 @@ describe EmailAsker do
     end
 
     it 'is not used when communication preference is set for Twitter' do
+      another_publication
+      
       emailer.update_attributes communication_preference: 1
       Timecop.travel 3.days
       Asker.reengage_inactive_users strategy: strategy
@@ -58,7 +63,7 @@ describe EmailAsker do
   end
 
   describe 'follows up on correct answer' do
-    before :each do 
+    before :each do
       @question_email = create(:email, user_id: asker.id, question_id: question.id, publication_id: publication.id, in_reply_to_user_id: emailer.id)
       @conversation = create(:conversation, post: @question_email, publication: publication)
       Delayed::Worker.delay_jobs = true
@@ -79,13 +84,13 @@ describe EmailAsker do
       asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 0
       Timecop.travel(Time.now + 1.day)
       Delayed::Worker.new.work_off
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 1      
+      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 1
     end
 
     it 'only if email version' do
       @conversation = FactoryGirl.create(:conversation, publication_id: publication.id)
       @user_response = FactoryGirl.create(:post, text: 'the incorrect answer', user_id: emailer.id, in_reply_to_user_id: asker.id, interaction_type: 2, in_reply_to_question_id: question.id, in_reply_to_post_id: @question_status.id)
-      @conversation.posts << @user_response     
+      @conversation.posts << @user_response
 
       asker.posts.where("intention = 'correct answer follow up' and in_reply_to_user_id = ?", emailer.id).count.must_equal 0
       asker.app_response @user_response, true
@@ -102,7 +107,7 @@ describe EmailAsker do
       asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 0
       Timecop.travel(Time.now + 1.day)
       Delayed::Worker.new.work_off
-      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 1      
+      asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').count.must_equal 1
 
       followup = asker.reload.posts.where(question_id: question.id, intention: 'correct answer follow up').first
       @conversation.posts << response = create(:email, in_reply_to_question_id: question.id, in_reply_to_post_id: followup.id, autocorrect: true, requires_action: true)
