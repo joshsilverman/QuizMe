@@ -15,11 +15,15 @@ describe AskersController do
     asker.followers << non_emailer
     non_emailer
   end
-  let(:author) {create(:user)}
-  let(:question) {asker.questions.first}
-  let(:publication) {create(:publication, question_id: question.id)}
-  let(:reengage_inactive_post) {create(:post, user_id: asker.id, interaction_type: 5, question_id: question.id, publication_id: publication.id, in_reply_to_user: emailer)}
-  let(:user_response) {create(:post, user_id: emailer.id, in_reply_to_user_id: asker.id, interaction_type: 5, in_reply_to_question_id: question.id, correct: true)}
+  let(:author) { create(:user) }
+  let(:question) { asker.questions.first }
+  let(:publication) { create(:publication, question_id: question.id) }
+
+  let(:another_question) { create :question, asker: asker, status: 1 }
+  let(:another_publication) { create(:publication, question_id: another_question.id) }
+
+  let(:reengage_inactive_post) { create(:post, user_id: asker.id, interaction_type: 5, question_id: question.id, publication_id: publication.id, in_reply_to_user: emailer) }
+  let(:user_response) { create(:post, user_id: emailer.id, in_reply_to_user_id: asker.id, interaction_type: 5, in_reply_to_question_id: question.id, correct: true) }
 
   describe 'reengages inactive' do
     it 'emailer with correct question' do
@@ -32,6 +36,8 @@ describe AskersController do
     end
 
     it 'non emailer with correct question' do
+      another_publication
+
       create(:post, user_id: asker.id, interaction_type: 1, question_id: question.id, publication_id: publication.id)
       lesson = course.lessons.sort.first
       lesson.questions.sort[0..1].each { |question| create(:email_response, user: non_emailer, in_reply_to_user: asker, in_reply_to_question: question, correct: true) }
