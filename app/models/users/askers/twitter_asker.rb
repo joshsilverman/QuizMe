@@ -19,7 +19,7 @@ class TwitterAsker < Asker
       :sender_id => sender.id
     })
 
-    failure_message = "Tweet from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
+    failure_message = "Tweet (#{options[:intention]}) from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
 
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id])
@@ -70,7 +70,7 @@ class TwitterAsker < Asker
     text = "#{text} #{short_url}" if options[:include_url] and short_url
 
     begin
-      failure_message = "DM from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
+      failure_message = "DM (#{options[:intention]}) from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
 
       res = Post.twitter_request { sender.twitter.direct_message_create(recipient.twi_user_id, text) }
       post = Post.create(
