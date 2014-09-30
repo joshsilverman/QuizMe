@@ -53,6 +53,30 @@ class TwitterAsker < Asker
         publication = Publication.find(options[:publication_id])
         publication.posts << post
       end
+
+			if options[:is_reengagement]
+				MP.track_event "reengaged inactive", {
+					success: true,
+					distinct_id: user.id,
+					interval: options[:interval],
+					strategy: options[:strategy],
+					backlog: options[:is_backlog],
+					asker: asker.twi_screen_name,
+					type: reengagement_type
+				}
+			end
+		else
+			if options[:is_reengagement]
+				MP.track_event "reengaged inactive", {
+					success: false,
+					distinct_id: user.id,
+					interval: options[:interval],
+					strategy: options[:strategy],
+					backlog: options[:is_backlog],
+					asker: asker.twi_screen_name,
+					type: reengagement_type
+				}
+			end
     end
     return post
   end
