@@ -72,7 +72,7 @@ class TwitterAsker < Asker
     begin
       failure_message = "DM (#{options[:intention]}, #{options[:is_reengagement]}) from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
 
-      res = Post.twitter_request { sender.twitter.direct_message_create(recipient.twi_user_id, text) }
+      res = Post.twitter_request(failure_message) { sender.twitter.direct_message_create(recipient.twi_user_id, text) }
       post = Post.create(
         :user_id => sender.id,
         :provider => 'twitter',
