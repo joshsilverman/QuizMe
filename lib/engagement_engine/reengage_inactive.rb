@@ -142,13 +142,13 @@ module EngagementEngine::ReengageInactive
 
     def send_message user, asker, text, options
 
-      if user.lifecycle_above? 1
+      # if user.lifecycle_above? 1
         options[:interaction_type] = 2
         asker.send_public_message(text, options)
-      else
-        options[:interaction_type] = 4
-        asker.send_private_message(user, text, options)
-      end
+      # else
+      #   options[:interaction_type] = 4
+      #   asker.send_private_message(user, text, options)
+      # end
     end
   end
 end
