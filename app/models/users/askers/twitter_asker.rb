@@ -57,24 +57,22 @@ class TwitterAsker < Asker
 			if options[:is_reengagement]
 				MP.track_event "reengaged inactive", {
 					success: true,
-					distinct_id: user.id,
+					distinct_id: recipient.id,
 					interval: options[:interval],
 					strategy: options[:strategy],
 					backlog: options[:is_backlog],
-					asker: asker.twi_screen_name,
-					type: reengagement_type
+					asker: self.twi_screen_name
 				}
 			end
 		else
 			if options[:is_reengagement]
 				MP.track_event "reengaged inactive", {
 					success: false,
-					distinct_id: user.id,
+					distinct_id: recipient.id,
 					interval: options[:interval],
 					strategy: options[:strategy],
 					backlog: options[:is_backlog],
-					asker: asker.twi_screen_name,
-					type: reengagement_type
+					asker: self.twi_screen_name
 				}
 			end
     end
