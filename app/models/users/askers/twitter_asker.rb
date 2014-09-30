@@ -19,7 +19,7 @@ class TwitterAsker < Asker
       :sender_id => sender.id
     })
 
-    failure_message = "Tweet (#{options[:intention]}, #{options[:is_reengagement]}) from #{twi_screen_name} to #{recipient.try(:twi_screen_name)}: #{text}"
+    failure_message = "Tweet (#{options[:intention]}, #{options[:is_reengagement]}) from #{twi_screen_name} to #{options[:reply_to]}: #{text}"
 
     if options[:in_reply_to_post_id] and options[:link_to_parent]
       parent_post = Post.find(options[:in_reply_to_post_id])
