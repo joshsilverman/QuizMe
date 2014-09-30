@@ -47,9 +47,9 @@ describe EmailAsker do
 
     it 'is not used when communication preference is set for Twitter' do
       another_publication
-      
-      emailer.update_attributes communication_preference: 1
-      Timecop.travel 3.days
+
+      emailer.update communication_preference: 1
+      Timecop.travel 4.days
       Asker.reengage_inactive_users strategy: strategy
       posts = asker.posts.reengage_inactive.where(in_reply_to_user_id: emailer).sort
       posts.count.must_equal 2
