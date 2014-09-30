@@ -54,10 +54,10 @@ class TwitterAsker < Asker
         publication.posts << post
       end
 
-			if options[:is_reengagement] and recipient
+			if options[:is_reengagement]
 				MP.track_event "reengaged inactive", {
 					success: true,
-					distinct_id: recipient.id,
+					distinct_id: options[:in_reply_to_user_id],
 					interval: options[:interval],
 					strategy: options[:strategy],
 					backlog: options[:is_backlog],
@@ -65,10 +65,10 @@ class TwitterAsker < Asker
 				}
 			end
 		else
-			if options[:is_reengagement] and recipient
+			if options[:is_reengagement]
 				MP.track_event "reengaged inactive", {
 					success: false,
-					distinct_id: recipient.id,
+					distinct_id: options[:in_reply_to_user_id],
 					interval: options[:interval],
 					strategy: options[:strategy],
 					backlog: options[:is_backlog],
