@@ -24,9 +24,9 @@ describe User, '#valid?' do
   end
 
   it 'valid if email nil, communication_preference is iphoner, device token present' do
-    user = build :user, 
-      email: nil, 
-      password: nil, 
+    user = build :user,
+      email: nil,
+      password: nil,
       communication_preference: 3,
       device_token: 'abc'
 
@@ -34,9 +34,9 @@ describe User, '#valid?' do
   end
 
   it 'invalid if email !nil, communication_preference iphoner, password nil, encrypted password, nil' do
-    user = build(:user, 
-        email: 'a@a.com', 
-        password: nil, 
+    user = build(:user,
+        email: 'a@a.com',
+        password: nil,
         communication_preference: 3)
 
     user.valid?.must_equal false
@@ -45,10 +45,10 @@ describe User, '#valid?' do
   end
 
   it 'valid if email !nil, communication_preference iphoner, password nil, encrypted password, !nil' do
-    user = User.new( 
-        email: 'a@a.com', 
-        password: nil, 
-        encrypted_password: 'abc', 
+    user = User.new(
+        email: 'a@a.com',
+        password: nil,
+        encrypted_password: 'abc',
         communication_preference: 3)
 
     user.save validate: false
@@ -121,19 +121,19 @@ describe User, '#follow_relationships' do
   end
 end
 
-describe User do  
-  before :each do 
+describe User do
+  before :each do
     Rails.cache.clear
     ActiveRecord::Base.observers.enable :post_moderation_observer
 
     @asker = create(:asker)
     @user = create(:user, twi_user_id: 1)
 
-    @asker.followers << @user   
+    @asker.followers << @user
 
-    @question = create(:question, created_for_asker_id: @asker.id, status: 1)   
+    @question = create(:question, created_for_asker_id: @asker.id, status: 1)
     @publication = create(:publication, question_id: @question.id)
-    @question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)   
+    @question_status = create(:post, user_id: @asker.id, interaction_type: 1, question_id: @question.id, publication_id: @publication.id)
 
     @user_response = create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @question.id)
   end
@@ -152,7 +152,7 @@ describe User do
           create(:correct_response, user: @user)
           @user.segment
 
-          if i >= 28 
+          if i >= 28
             @user.reload.lifecycle_above? 5
           elsif i >= 14
             @user.reload.lifecycle_above? 4
@@ -165,7 +165,7 @@ describe User do
           Timecop.travel(Time.now + 1.day)
         end
       end
-    end 
+    end
 
     describe "post moderation" do
       before :each do
@@ -174,27 +174,27 @@ describe User do
         @asker = FactoryGirl.create(:asker)
         @asker.followers << [@user, @moderator]
 
-        @question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)    
+        @question = FactoryGirl.create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)
         @publication = FactoryGirl.create(:publication, question: @question, asker: @asker)
-        @post_question = FactoryGirl.create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)   
+        @post_question = FactoryGirl.create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)
         @conversation = FactoryGirl.create(:conversation, post: @post_question, publication: @publication)
       end
 
       it 'to supermod only if high enough lifecycle segment' do
-        100.times do 
-          post = FactoryGirl.create :post, 
-            user: @user, 
-            requires_action: true, 
+        100.times do
+          post = FactoryGirl.create :post,
+            user: @user,
+            requires_action: true,
             in_reply_to_post_id: @post_question.id,
             in_reply_to_user_id: @asker.id,
             in_reply_to_question_id: @question.id,
-            interaction_type: 2, 
+            interaction_type: 2,
             conversation: @conversation
           FactoryGirl.create(:post_moderation, type_id:1, accepted: true, user_id: @moderator.id, post_id: post.id)
-        end   
+        end
         @moderator.is_super_mod?.must_equal false
         @moderator.update_attribute :lifecycle_segment, 5
-        @moderator.is_super_mod?.must_equal true    
+        @moderator.is_super_mod?.must_equal true
       end
 
       it 'segment between edger => super mod with enough posts' do
@@ -206,29 +206,29 @@ describe User do
           i > 15 ? @moderator.is_advanced_mod?.must_equal(true) : @moderator.is_advanced_mod?.must_equal(false)
           i > 30 ? @moderator.is_super_mod?.must_equal(true) : @moderator.is_super_mod?.must_equal(false)
 
-          post = create :post, 
-            user: @user, 
-            requires_action: true, 
+          post = create :post,
+            user: @user,
+            requires_action: true,
             in_reply_to_post_id: @post_question.id,
             in_reply_to_user_id: @asker.id,
             in_reply_to_question_id: @question.id,
-            interaction_type: 2, 
+            interaction_type: 2,
             conversation: @conversation
           moderation = create(:post_moderation, type_id:1, user_id: @moderator.id, post_id: post.id)
           moderation.update_attribute :accepted, true
           @moderator.update_attribute :lifecycle_segment, 5
-        end 
-      end 
+        end
+      end
 
       it 'segment between edger => super mod with enough acceptance' do
-        100.times do 
-          post = FactoryGirl.create :post, 
-            user: @user, 
-            requires_action: true, 
+        100.times do
+          post = FactoryGirl.create :post,
+            user: @user,
+            requires_action: true,
             in_reply_to_post_id: @post_question.id,
             in_reply_to_user_id: @asker.id,
             in_reply_to_question_id: @question.id,
-            interaction_type: 2, 
+            interaction_type: 2,
             conversation: @conversation
           @user.segment
 
@@ -244,7 +244,7 @@ describe User do
           @moderator.is_advanced_mod?.must_equal(true) if i > 79
           @moderator.is_super_mod?.must_equal(true) if i > 89
         end
-      end           
+      end
     end
   end
 end
@@ -265,7 +265,7 @@ describe User, "#select_reengagement_asker" do
 
   it 'will return a responded to asker if exists' do
     asker.followers << user
-    create(:correct_response, 
+    create(:correct_response,
       user: user,
       in_reply_to_user_id: asker.id)
     user.select_reengagement_asker.must_equal twitter_asker
@@ -278,17 +278,52 @@ describe User, "#select_reengagement_asker" do
       _asker.followers << user
       askers << _asker
 
-      create(:correct_response, 
+      create(:correct_response,
         user: user,
         in_reply_to_user_id: _asker.id)
     end
 
     most_popular = askers.sample.becomes TwitterAsker
 
-    response_to_asker = create(:correct_response, 
+    response_to_asker = create(:correct_response,
       user: user,
       in_reply_to_user_id: most_popular.id)
 
     user.select_reengagement_asker.must_equal most_popular
+  end
+end
+
+describe User, "#contactable?" do
+  let(:user) { create :user }
+  let(:emailer) { create :emailer }
+  let(:iphoner) { create :iphoner }
+
+  it "will return true for twitter user with user name" do
+    user.contactable?.must_equal true
+  end
+
+  it "will return false for twitter user with no user name" do
+    user.update twi_screen_name: nil
+    user.contactable?.must_equal false
+  end
+
+  it "will return true for email user with email address" do
+    emailer.update email: 'a@a.com'
+    emailer.contactable?.must_equal true
+  end
+
+  it "will return false for email user with no email address" do
+    emailer.update email: nil
+    emailer.contactable?.must_equal false
+  end
+
+  it "will return true for iphone user with device token" do
+    iphoner.update device_token: 123
+    iphoner.contactable?.must_equal true
+  end
+
+  it "will return false for iphone user with no device token" do
+    iphoner.update device_token: nil
+    iphoner.contactable?.must_equal false
   end
 end

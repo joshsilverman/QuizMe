@@ -623,4 +623,14 @@ class User < ActiveRecord::Base
 
     return user_ids_to_last_active_at
   end
+
+  def contactable?
+    if communication_preference == 1
+      twi_screen_name.present?
+    elsif communication_preference == 2
+      email.present?
+    elsif communication_preference == 3
+      device_token.present?
+    end
+  end
 end
