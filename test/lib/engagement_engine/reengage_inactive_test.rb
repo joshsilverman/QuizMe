@@ -76,27 +76,27 @@ describe Asker, "#reengage_inactive_users" do
         :in_reply_to_user_id => @user.id).wont_be_empty
     end
 
-    # it "answered a question via dm with a dm" do
-    #   Asker.reengage_inactive_users strategy: @strategy
-    #   Post.reengage_inactive.where(:user_id => @asker.id,
-    #     :in_reply_to_user_id => @user.id).must_be_empty
-    #   @user.update lifecycle_segment: 1
-    #
-    #   create(:post, text: 'the correct answer, yo',
-    #     user: @user,
-    #     in_reply_to_user_id: @asker.id,
-    #     interaction_type: 4,
-    #     in_reply_to_question_id: @old_question.id,
-    #     correct: true)
-    #
-    #   Timecop.travel(Time.now + 1.day)
-    #
-    #   Asker.reengage_inactive_users strategy: @strategy
-    #         reengagement = Post.reengage_inactive.where(:user_id => @asker.id,
-    #     :in_reply_to_user_id => @user.id).first
-    #
-    #   reengagement.interaction_type.must_equal 4
-    # end
+    it "answered a question via dm with a dm" do
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => @user.id).must_be_empty
+      @user.update lifecycle_segment: 1
+
+      create(:post, text: 'the correct answer, yo',
+        user: @user,
+        in_reply_to_user_id: @asker.id,
+        interaction_type: 4,
+        in_reply_to_question_id: @old_question.id,
+        correct: true)
+
+      Timecop.travel(Time.now + 1.day)
+
+      Asker.reengage_inactive_users strategy: @strategy
+            reengagement = Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => @user.id).first
+
+      reengagement.interaction_type.must_equal 4
+    end
 
     it "wont overengage if a user suddenly enters reengagement flow" do
       Asker.reengage_inactive_users strategy: [1,2,4,8]
