@@ -11,6 +11,14 @@ class IphoneAsker < Asker
 	end
 
 	def send_private_message recipient, text, options = {}
+    if options[:is_reengagement]
+      MP.track_event "reengaged inactive (iphone_asker#send_public_message)", {
+        token_nil: recipient.device_token.nil?,
+        intention: options[:intention],
+        not_white_listed_intention: !INTENTION_WHITELIST.include?(options[:intention])
+      }
+    end
+
     return nil if recipient.device_token.nil?
     return nil if !INTENTION_WHITELIST.include?(options[:intention])
 
@@ -22,8 +30,8 @@ class IphoneAsker < Asker
       bg_color = self.styles['bg_color'].gsub('#', '') if self.styles
 
       notification.custom_data = {
-        path: "question", 
-        question_id: options[:question_id], 
+        path: "question",
+        question_id: options[:question_id],
         asker_id: self.id,
         bg_color: bg_color}
     end
@@ -42,7 +50,7 @@ class IphoneAsker < Asker
       :interaction_type => 6,
       :intention => options[:intention],
       :nudge_type_id => options[:nudge_type_id],
-      :question_id => options[:question_id], 
+      :question_id => options[:question_id],
       :publication_id => options[:publication_id],
       :is_reengagement => options[:is_reengagement]
     )
