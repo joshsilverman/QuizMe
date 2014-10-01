@@ -15,8 +15,8 @@ describe Asker, "#reengage_inactive_users" do
     Delayed::Worker.delay_jobs = false
   end
 
-  describe "that have" do
-    it "answered a question via mention" do
+  describe "for twitter users" do
+    it "reengages users who answered a question via mention" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id,
         :in_reply_to_user_id => @user.id).must_be_empty
@@ -35,7 +35,7 @@ describe Asker, "#reengage_inactive_users" do
         :in_reply_to_user_id => @user.id).wont_be_empty
     end
 
-    it "answered a question via mention with a mention" do
+    it "reengages user who answered a question via mention with a mention" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id,
         :in_reply_to_user_id => @user.id).must_be_empty
@@ -57,7 +57,7 @@ describe Asker, "#reengage_inactive_users" do
       reengagement.interaction_type.must_equal 2
     end
 
-    it "answered a question via dm" do
+    it "reengages user who answered a question via dm" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id,
         :in_reply_to_user_id => @user.id).must_be_empty
@@ -76,7 +76,7 @@ describe Asker, "#reengage_inactive_users" do
         :in_reply_to_user_id => @user.id).wont_be_empty
     end
 
-    it "answered a question via dm with a dm" do
+    it "reengages users who answered a question via dm with a dm" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id,
         :in_reply_to_user_id => @user.id).must_be_empty
@@ -122,7 +122,7 @@ describe Asker, "#reengage_inactive_users" do
         :in_reply_to_user_id => @user.id).count.must_be :<=, 3
     end
 
-    it "moderated a post" do
+    it "reengages user who have moderated a post" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).must_be_empty
 
@@ -133,7 +133,7 @@ describe Asker, "#reengage_inactive_users" do
       Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).wont_be_empty
     end
 
-    it "written a question" do
+    it "reengages user who have written a question" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).must_be_empty
 
@@ -144,7 +144,7 @@ describe Asker, "#reengage_inactive_users" do
       Post.reengage_inactive.where(user_id: @asker.id, in_reply_to_user_id: @user.id).wont_be_empty
     end
 
-    it "gone inactive" do
+    it "reengages users who have gone inactive" do
       create(:post, text: 'the correct answer, yo', user_id: @user.id, in_reply_to_user_id: @asker.id, interaction_type: 2, in_reply_to_question_id: @old_question.id, correct: true)
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).must_be_empty
@@ -157,6 +157,56 @@ describe Asker, "#reengage_inactive_users" do
       Timecop.travel(Time.now + 1.day)
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
+    end
+  end
+
+  describe "iphoners" do
+    let(:iphoner) {
+      iphoner = create :iphoner
+      @asker.followers << iphoner
+      iphoner
+    }
+
+    it "reengages iphoner with device token" do
+      iphoner
+
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => iphoner.id).must_be_empty
+
+      create(:post, text: 'the correct answer, yo',
+        user: iphoner,
+        in_reply_to_user_id: @asker.id,
+        interaction_type: 2,
+        in_reply_to_question_id: @old_question.id,
+        correct: true)
+
+      Timecop.travel(Time.now + 1.day)
+
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => iphoner.id).wont_be_empty
+    end
+
+    it "wont reengage iphoner with no device token" do
+      iphoner.update device_token: nil
+
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => iphoner.id).must_be_empty
+
+      create(:post, text: 'the correct answer, yo',
+        user: iphoner,
+        in_reply_to_user_id: @asker.id,
+        interaction_type: 2,
+        in_reply_to_question_id: @old_question.id,
+        correct: true)
+
+      Timecop.travel(Time.now + 1.day)
+
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => iphoner.id).must_be_empty
     end
   end
 

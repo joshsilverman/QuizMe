@@ -17,6 +17,7 @@ FactoryGirl.define do
     end
 
     factory :iphoner do
+      device_token 123
       communication_preference 3
     end
   end
@@ -28,8 +29,8 @@ FactoryGirl.define do
     twi_screen_name 'leroy moderator'
     sequence(:email) { |n| "mod#{n}@a.com" }
     password 'abcdefgh'
-  end 
-  
+  end
+
   factory :asker do
     role 'asker'
     published true
@@ -108,7 +109,7 @@ FactoryGirl.define do
       correct false
       text ['red herring', 'not me', 'me me me... j/k', 'Im right, trust me'].sample
     end
-  end 
+  end
 
   factory :publication do
     published true
@@ -128,14 +129,14 @@ FactoryGirl.define do
 
   factory :question_moderation do
     # type_id 1
-  end 
+  end
 
   factory :topic do
     name 'great topic name'
 
     factory :search_term do
       type_id 3
-    end   
+    end
 
     factory :lesson do
       sequence(:name) {|n| "lesson #{n}" }
@@ -154,7 +155,7 @@ FactoryGirl.define do
 
       trait :with_lessons do
         after(:create) do |course|
-          3.times do 
+          3.times do
             lesson = create(:lesson, :with_questions, askers: course.askers)
             lesson.questions.each {|q| course.questions << q}
           end
@@ -166,5 +167,5 @@ FactoryGirl.define do
       end
     end
 
-  end 
+  end
 end
