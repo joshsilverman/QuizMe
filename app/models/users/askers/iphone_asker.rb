@@ -15,6 +15,7 @@ class IphoneAsker < Asker
       MP.track_event "reengaged inactive (iphone_asker#send_public_message)", {
         token_nil: recipient.device_token.nil?,
         intention: options[:intention],
+        twi_screen_name: recipient.twi_screen_name,
         not_white_listed_intention: !INTENTION_WHITELIST.include?(options[:intention])
       }
     end
