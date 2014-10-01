@@ -64,18 +64,6 @@ class Asker < User
   def send_public_message text, options = {}
     recipient = User.where(id: options[:in_reply_to_user_id]).first
     communication_preference = recipient.blank? ? 1 : recipient.communication_preference
-
-    if options[:is_reengagement]
-      MP.track_event "reengaged inactive (parent - send_public_message called)", {
-        communication_preference: communication_preference,
-        distinct_id: options[:in_reply_to_user_id],
-        interval: options[:interval],
-        strategy: options[:strategy],
-        backlog: options[:is_backlog],
-        asker: self.twi_screen_name
-      }
-    end
-    
     case communication_preference
     when 1
       self.becomes(TwitterAsker).send_public_message(text, options, recipient)
