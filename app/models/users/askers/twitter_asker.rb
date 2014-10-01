@@ -1,6 +1,17 @@
 class TwitterAsker < Asker
 
 	def send_public_message text, options = {}, recipient = nil
+		if options[:is_reengagement]
+			MP.track_event "reengaged inactive (send_public_message called)", {
+				success: true,
+				distinct_id: options[:in_reply_to_user_id],
+				interval: options[:interval],
+				strategy: options[:strategy],
+				backlog: options[:is_backlog],
+				asker: self.twi_screen_name
+			}
+		end
+
     sender = self
 
     options[:resource_url] = options[:resource_url].gsub(/\/embed\/([^\?]*)\?start=([0-9]+)&end=[0-9]+/,'/watch?v=\\1&t=\\2') if options[:resource_url] =~ /^http:\/\/www.youtube.com\/embed\//
