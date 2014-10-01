@@ -601,7 +601,7 @@ class User < ActiveRecord::Base
   	question_ids.uniq
   end
 
-  def self.get_ids_to_last_active_at period
+  def self.get_ids_to_last_active_at period = 365
     user_ids_to_last_active_at = Hash[*Post.not_spam.answers.not_asker.where('posts.interaction_type IN (2,3,4,5)')\
       .select(["user_id", "max(created_at) as last_active_at"])\
       .where("created_at > ?", period.days.ago)\

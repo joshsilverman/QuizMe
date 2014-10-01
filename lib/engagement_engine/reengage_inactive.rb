@@ -10,14 +10,10 @@ module EngagementEngine::ReengageInactive
     end
 
     def reengage_inactive_users options = {}
-      start_time = Time.find_zone('UTC').parse('2013-03-25 9am')
-      days_since_start_time = ((Time.now - start_time) / 1.day.to_i).to_i
-      period = 20 + (days_since_start_time * 3)
-
       strategy = options[:strategy]
       strategy_string = options[:strategy].join "/" if strategy
 
-      user_ids_to_last_active_at = User.get_ids_to_last_active_at(period)
+      user_ids_to_last_active_at = User.get_ids_to_last_active_at
 
       user_ids_to_last_reengaged_at = Hash[*Post.not_spam\
         .reengage_inactive\
@@ -48,10 +44,8 @@ module EngagementEngine::ReengageInactive
           end
         end
 
-        is_backlog = ((last_active_at < (start_time - 20.days)) ? true : false)
-
         if (ideal_last_reengage_at and (last_reengaged_at < ideal_last_reengage_at))
-          if Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, is_backlog: is_backlog, last_active_at: last_active_at, type: options[:type]})
+          if Asker.reengage_user(user_id, {strategy: strategy_string, interval: aggregate_intervals, last_active_at: last_active_at, type: options[:type]})
             reengagements_sent += 1
           end
         end
@@ -128,7 +122,6 @@ module EngagementEngine::ReengageInactive
         distinct_id: user.id,
         interval: options[:interval],
         strategy: options[:strategy],
-        backlog: options[:is_backlog],
         asker: asker.twi_screen_name,
         type: reengagement_type
       }
