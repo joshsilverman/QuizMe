@@ -6,7 +6,7 @@ module EngagementEngine::ReengageInactive
 
   module ClassMethods
     def max_hourly_reengagements
-      50
+      55
     end
 
     def reengage_inactive_users options = {}
@@ -27,7 +27,7 @@ module EngagementEngine::ReengageInactive
         break if reengagements_sent >= max_hourly_reengagements
 
         unless options[:strategy]
-          strategy_string = "1/2/4/8/15/30"
+          strategy_string = "1/2/4/8"
           strategy = strategy_string.split("/").map { |e| e.to_i }
         end
 
