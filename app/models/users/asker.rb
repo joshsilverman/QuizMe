@@ -598,59 +598,6 @@ class Asker < User
     true
   end
 
-  def request_feedback_on_question question
-    # find mods who have been active recently
-    recently_active_user_ids = Asker.get_ids_to_last_active_at(7).keys
-    recently_active_moderators = moderators
-      .where('users.id != ?', question.user_id || 0)
-      .select { |moderator| recently_active_user_ids.include?(moderator.id) }
-    recently_active_question_moderators = Moderator
-      .where(id: recently_active_moderators.collect(&:id))
-      .joins(:question_moderations)
-      .readonly(false).uniq.to_a
-
-    # exclude mods who recently received a feedback request in the past week
-    user_ids_with_recent_feedback_requests = posts
-      .where(intention: 'request question feedback')\
-      .where('created_at > ?', 1.week.ago)\
-      .select([:intention, :in_reply_to_user_id, :created_at])\
-      .collect(&:in_reply_to_user_id)
-    recently_active_question_moderators.reject! do |moderator|
-      user_ids_with_recent_feedback_requests.include?(moderator.id)
-    end
-
-    # exclude mods who have received any type of request in the past three days
-    user_ids_with_recent_requests = posts.where("created_at > ?", 3.days.ago)
-      .where("intention like ? or intention like ?", '%request%', '%solicit%')
-      .order("created_at DESC")\
-      .collect(&:in_reply_to_user_id)
-    recently_active_question_moderators.reject! do |moderator|
-      user_ids_with_recent_requests.include?(moderator.id)
-    end
-
-    link = "http://www.wisr.com/moderations/manage?question_id=#{question.id}"
-
-    recently_active_question_moderators.sample(3).each do |moderator|
-      script = [
-        "Somebody wrote a question, could you edit it? <link>",
-        "Another user just authored a question, could you check it? <link>",
-        "Could you see if one of our new questions needs to be edited? <link>",
-        "Would you mind taking a look at a new question we'd like to add? <link>",
-        "Do you mind looking at a question one of our users recently wrote? <link>"
-      ].sample
-
-      link_with_token = authenticated_link(link, moderator, (Time.now + 1.week))
-      script.gsub! "<link>", link_with_token
-      self.send_private_message(moderator, script, {
-        :intention => "request question feedback"
-      })
-
-      MP.track_event("request question feedback",
-          distinct_id: moderator.id,
-          account: twi_screen_name)
-    end
-  end
-
   def nudge answerer
     return unless client and nudge_type = client.nudge_types.automatic.active.sample and answerer.nudge_types.blank? and answerer.posts.answers.where(:correct => true, :in_reply_to_user_id => id).size > 2 and answerer.is_follower_of?(self)
 

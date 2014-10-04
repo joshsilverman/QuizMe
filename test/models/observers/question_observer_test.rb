@@ -10,19 +10,19 @@ describe Question, "QuestionObserver#after_create" do
     ActiveRecord::Base.observers.enable :question_observer
   end
 
-  it "calls request_feedback_on_question" do
-    Delayed::Worker.delay_jobs = false
-    Asker.any_instance.expects :request_feedback_on_question
+  # it "calls request_feedback_on_question" do
+  #   Delayed::Worker.delay_jobs = false
+  #   Asker.any_instance.expects :request_feedback_on_question
 
-    question_with_user
-  end
+  #   question_with_user
+  # end
 
-  it "wont call request_feedback_on_question if no user id" do
-    Delayed::Worker.delay_jobs = false
-    Asker.any_instance.expects(:request_feedback_on_question).never
+  # it "wont call request_feedback_on_question if no user id" do
+  #   Delayed::Worker.delay_jobs = false
+  #   Asker.any_instance.expects(:request_feedback_on_question).never
     
-    question_without_user
-  end
+  #   question_without_user
+  # end
 end
 
 describe Question, "QuestionObserver#after_save" do
