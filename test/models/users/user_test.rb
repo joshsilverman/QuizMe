@@ -327,3 +327,43 @@ describe User, "#contactable?" do
     iphoner.contactable?.must_equal false
   end
 end
+
+describe User, "#has_recently_submitted_multiple_questions" do
+  let(:user) { create :user }
+  
+  let(:recent) { 6.hours.ago }
+
+  it "returns false if user has never posted question" do
+    user.has_recently_submitted_multiple_questions.must_equal false
+  end
+
+  it 'returns false if no recent question posted' do
+    old_q = create :question, user: user
+    Timecop.travel 1.day
+
+    user.has_recently_submitted_multiple_questions.must_equal false
+  end
+
+  it 'returns false if one recent question posted' do
+    new_q = create :question, user: user
+    Timecop.travel 2.hours
+    
+    user.has_recently_submitted_multiple_questions.must_equal false
+  end
+
+  it 'returns true if multiple recent question posted' do
+    new_q = create :question, user: user
+    new_q = create :question, user: user
+    Timecop.travel 2.hours
+    
+    user.has_recently_submitted_multiple_questions.must_equal true
+  end
+
+  it 'allows caller to redefine recent' do
+    new_q = create :question, user: user
+    new_q = create :question, user: user
+    Timecop.travel 2.hours
+    
+    user.has_recently_submitted_multiple_questions(1.hour).must_equal false
+  end
+end

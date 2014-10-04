@@ -182,4 +182,27 @@ class Question < ActiveRecord::Base
 
     save
   end
+
+  def post
+    return if user.nil?
+    return if user.twi_screen_name.nil?
+    return if asker.nil?
+    return if user.has_recently_submitted_multiple_questions(1.hour)
+
+    msg = "New question from @#{user.twi_screen_name}: #{text}"
+    url = "#{FEED_URL}/#{asker.subject_url}/#{recent_publication.id}"
+
+    asker.send_public_message msg, {long_url: url}
+  end
+
+  def recent_publication
+    pub = publications.order(created_at: :desc).first
+    
+    if !pub
+      pub = publications.create asker: asker
+      pub.update_question
+    end
+
+    pub
+  end
 end

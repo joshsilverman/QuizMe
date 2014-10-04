@@ -633,4 +633,8 @@ class User < ActiveRecord::Base
       device_token.present?
     end
   end
+
+  def has_recently_submitted_multiple_questions recent_deadline = 5.hours
+    questions.where('created_at > ?', recent_deadline.ago).count > 1
+  end
 end

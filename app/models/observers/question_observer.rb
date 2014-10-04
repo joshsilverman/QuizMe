@@ -1,7 +1,7 @@
 class QuestionObserver < ActiveRecord::Observer
   def after_create(question)
     return if question.user_id.nil?
-    # question.asker.delay.request_feedback_on_question(question)
+    question.delay.post
   end
 
   def after_save question
