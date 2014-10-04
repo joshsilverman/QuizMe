@@ -256,7 +256,7 @@ $border_thin: 0px;
       }
 
       li {
-        margin: 25px 0;
+        margin: 25px 0 28px;
         position: relative;
         left: -4px;
         display: none;
@@ -266,7 +266,30 @@ $border_thin: 0px;
         }
 
 				.new-question {
-					margin-top: 25px;
+					margin-top: 12px;
+
+					.content {
+						background: rgba(248,243,230,.92);
+						border-color: rgba(248,243,230,0);
+					}
+
+					&:before {
+						content: "";
+						width: 0;
+						height: 0;
+						border: solid transparent;
+						position: relative;
+						pointer-events: none;
+
+						border-bottom-color: rgba(248,243,230,.92);
+						border-width: 18px;
+						top: -18px;
+						left: 12%;
+
+						@media (max-width: 767px) {
+							left:30px;
+						}
+					}
 				}
 
         .radio {
