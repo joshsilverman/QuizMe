@@ -293,15 +293,7 @@ $border_thin: 0px;
               &:before {
                 border-right-color: inherit;
                 border-width: 20px;
-                top: 50%;
-                margin-top: -20px;
-              }
-
-              &:after {
-                border-right-color: $white;
-                border-width: 17px;
-                top: 50%;
-                margin-top: -17px;
+                top: 28px;
               }
             }
           }
@@ -310,8 +302,7 @@ $border_thin: 0px;
         .relative {
           .timeago {
             width: 13%;
-            margin-top: -10px;
-            top: 50%;
+            top: 40px;
             left: -18%;
             display: block;
             position: absolute;
@@ -320,8 +311,7 @@ $border_thin: 0px;
 
             @media (max-width: 979px) {
               width: 8%;
-              margin-top: -10px;
-              top: 50%;
+              top: 40px;
               left: -13%;
               display: block;
               position: absolute;
@@ -335,8 +325,7 @@ $border_thin: 0px;
           }
 
           .circle {
-            margin-top: -10px;
-            top: 50%;
+            top: 40px;
             left: -10px;
             width: 10px;
             height: 10px;
