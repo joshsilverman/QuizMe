@@ -49,11 +49,14 @@ describe Question, "#post" do
     question_without_user.post
   end
 
-  it 'posts with link' do
+  it 'posts with link and question' do
     publication
 
     msg = "New question from @#{user.twi_screen_name}: #{question.text}"
-    options = {long_url: "#{FEED_URL}/#{asker.subject_url}/#{publication.id}"}
+    options = {
+      long_url: "#{FEED_URL}/#{asker.subject_url}/#{publication.id}",
+      question_id: question.id
+    }
     Asker.any_instance.expects(:send_public_message).with msg, options
     question.post
   end

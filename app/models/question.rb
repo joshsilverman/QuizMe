@@ -192,7 +192,10 @@ class Question < ActiveRecord::Base
     msg = "New question from @#{user.twi_screen_name}: #{text}"
     url = "#{FEED_URL}/#{asker.subject_url}/#{recent_publication.id}"
 
-    asker.send_public_message msg, {long_url: url}
+    asker.send_public_message msg, {
+      long_url: url,
+      question_id: id
+    }
   end
 
   def recent_publication
