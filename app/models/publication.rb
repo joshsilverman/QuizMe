@@ -39,7 +39,8 @@ class Publication < ActiveRecord::Base
       _question: {
         text: question.text,
         id: question.id,
-        correct_answer_id: question.answers.correct.try(:id)},
+        correct_answer_id: question.answers.correct.try(:id),
+        author_twi_screen_name: question.user.try(:twi_screen_name)},
       _asker: {
         id: question.asker.id,
         twi_profile_img_url: question.asker.twi_profile_img_url,

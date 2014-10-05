@@ -161,6 +161,27 @@ describe Publication, '#update_question' do
     publication.reload._lesson['name'].must_equal lesson.name
     publication.reload._lesson['topic_url'].must_equal lesson.topic_url
   end
+
+  it "must set author info if present" do
+    user = create :user
+    asker = create :asker
+    question = create :question, user: user, asker: asker
+    publication = create :publication, question: question
+
+    publication.update_question
+    
+    publication.reload._question['author_twi_screen_name'].wont_be_nil
+  end
+
+  it "wont set author info if not present" do
+    asker = create :asker
+    question = create :question, asker: asker
+    publication = create :publication, question: question
+
+    publication.update_question
+    
+    publication.reload._question['author_twi_screen_name'].must_be_nil
+  end
 end
 
 describe Publication, ".inject_publication_by_id" do
