@@ -162,7 +162,7 @@ describe Publication, '#update_question' do
     publication.reload._lesson['topic_url'].must_equal lesson.topic_url
   end
 
-  it "must set author info if present" do
+  it "must set author and created at info if present" do
     user = create :user
     asker = create :asker
     question = create :question, user: user, asker: asker
@@ -171,6 +171,7 @@ describe Publication, '#update_question' do
     publication.update_question
     
     publication.reload._question['author_twi_screen_name'].wont_be_nil
+    publication.reload._question['created_at'].wont_be_nil
   end
 
   it "wont set author info if not present" do
