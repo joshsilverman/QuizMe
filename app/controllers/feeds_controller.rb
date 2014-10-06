@@ -65,6 +65,7 @@ class FeedsController < ApplicationController
           new_questions = Question
             .where(created_for_asker_id: asker.id)
             .order(created_at: :desc)
+            .includes(:user)
             .limit(10).offset(offset)
 
           render json: new_questions,

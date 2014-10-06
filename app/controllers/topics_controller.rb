@@ -28,7 +28,7 @@ class TopicsController < ApplicationController
         @lesson = Topic.find_by_topic_url params[:name]
 
         if @lesson
-          questions = @lesson.questions.approved
+          questions = @lesson.questions.approved.includes(:user)
           render json: questions,
             each_serializer: QuestionAsPublicationSerializer,
             root: false,

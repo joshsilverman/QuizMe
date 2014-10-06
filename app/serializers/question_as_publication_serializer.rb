@@ -13,7 +13,9 @@ class QuestionAsPublicationSerializer < ActiveModel::Serializer
     {
       id: object.id,
       text: object.text,
-      correct_answer_id: object._correct_answer_id
+      correct_answer_id: object._correct_answer_id,
+      author_twi_screen_name: object.user.try(:twi_screen_name),
+      created_at: object.created_at
     }
   end
 
