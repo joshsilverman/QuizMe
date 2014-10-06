@@ -16,6 +16,7 @@
 
 $bg: #57af72;
 $white: #f8f3e6;
+$white_90: rgba(248, 243, 230, .9);
 $dimwhite: #ccc;
 $black: #333333;
 
@@ -606,14 +607,14 @@ $border_thin: 0px;
 
 
 .activity-stream, .timeline-container, .my-badges, .directory, .lessons, .login {
-  .content {
+  .content, .meta-info {
     background: $white;
     color: $black;
 
-    padding: 0 20px 15px;
+    padding: 0 20px 10px;
     border-width: 2px;
     border-style: solid;
-    border-radius: 0.5em;
+    border-radius: 0.5em 0.5em 0 0;
     position: relative;
     border-color: $white;
 
@@ -637,6 +638,26 @@ $border_thin: 0px;
           display: inline;
         }
       }
+    }
+  }
+
+  .meta-info {
+    border-radius: 0 0 0.5em 0.5em;
+    padding: .5em 0 0 0;
+
+    * { display: none }
+  }
+
+  .meta-info-present {
+    padding: 20px 20px;
+    background: $white_90;
+    color: #555;
+
+    * { display: inherit }
+
+    .byline {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }
