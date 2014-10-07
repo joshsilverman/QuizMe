@@ -367,7 +367,10 @@ $border_thin: 0px;
         }
 
         .content {
-          &.active{ border: 8px #fbc370 solid; }
+          &.active{ 
+            border:  #fbc370 solid; 
+            border-width: 8px 8px 0 8px;
+          }
 
           .timeago {
             float:right;
@@ -646,6 +649,11 @@ $border_thin: 0px;
     padding: .5em 0 0 0;
 
     * { display: none }
+
+    &.active{ 
+      border:  #fbc370 solid; 
+      border-width: 0 8px 8px 8px;
+    }
   }
 
   .meta-info-present {
