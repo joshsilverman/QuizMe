@@ -208,4 +208,11 @@ class Question < ActiveRecord::Base
 
     pub
   end
+
+  def update_answer_counts
+    update(_answer_counts: {
+        correct: in_reply_to_posts.correct_answers.count('DISTINCT(posts.user_id)'),
+        incorrect: in_reply_to_posts.incorrect_answers.count('DISTINCT(posts.user_id)')
+      })
+  end
 end

@@ -107,3 +107,61 @@ describe Question, "#recent_publication" do
     recent_pub._asker.wont_be_nil
   end
 end
+
+describe Question, "update_answer_counts" do
+  let(:asker) { create :asker }
+  let(:user) { create :user }
+  let(:another_user) { create :user }
+  let(:question) { create :question, asker: asker, user: user }
+  let(:publication) { create :publication, question: question }
+
+  it "updates count whith correct answer" do
+    create :post, in_reply_to_question: question, correct: true
+
+    question.update_answer_counts
+
+    question._answer_counts.wont_be_nil
+    question._answer_counts['correct'].must_equal "1"
+    question._answer_counts['incorrect'].must_equal "0"
+  end
+
+  it "updates count whith in correct answer" do
+    create :post, in_reply_to_question: question, correct: false
+
+    question.update_answer_counts
+
+    question._answer_counts.wont_be_nil
+    question._answer_counts['correct'].must_equal "0"
+    question._answer_counts['incorrect'].must_equal "1"
+  end
+
+  it "ignores non answer in reply to posts" do
+    create :post, in_reply_to_question: question
+
+    question.update_answer_counts
+
+    question._answer_counts.wont_be_nil
+    question._answer_counts['correct'].must_equal "0"
+    question._answer_counts['incorrect'].must_equal "0"
+  end
+
+  it "wont double count with answers from multiple users" do
+    create :post, in_reply_to_question: question, correct: true, user: user
+    create :post, in_reply_to_question: question, correct: true, user: another_user
+
+    question.update_answer_counts
+
+    question._answer_counts.wont_be_nil
+    question._answer_counts['correct'].must_equal "2"
+  end
+
+  it "wont double count answer from same user" do
+    create :post, in_reply_to_question: question, correct: true, user: user
+    create :post, in_reply_to_question: question, correct: true, user: user
+
+    question.update_answer_counts
+
+    question._answer_counts.wont_be_nil
+    question._answer_counts['correct'].must_equal "1"
+  end
+end
