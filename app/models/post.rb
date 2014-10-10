@@ -27,7 +27,10 @@ class Post < ActiveRecord::Base
   scope :not_asker, -> { where('posts.user_id NOT IN (?)', Asker.ids.empty? ? [0] : Asker.ids) }
   scope :us, -> { where('posts.user_id IN (?)', Asker.ids + ADMINS) }
   scope :social, -> { where('posts.interaction_type IN (2,3)') }
+
   scope :answers, -> { where('posts.correct is not null') }
+  scope :correct_answers, -> { where('posts.correct = ?', true) }
+  scope :incorrect_answers, -> { where('posts.correct = ?', false) }
 
   scope :ugc, -> { where("posts.id in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
   scope :not_ugc, -> { where("posts.id not in (select post_id from posts_tags where posts_tags.tag_id = ?)", Tag.find_by_name('ugc')) }
