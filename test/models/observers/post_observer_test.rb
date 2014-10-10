@@ -12,6 +12,7 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:segment_user)
     PostObserver.any_instance.stubs(:send_to_publication)
+    PostObserver.any_instance.stubs(:send_to_question)
     PostObserver.any_instance.expects(:send_to_stream).with(post)
 
     post.save
@@ -22,6 +23,7 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:send_to_publication)
+    PostObserver.any_instance.stubs(:send_to_question)
     PostObserver.any_instance.expects(:segment_user).with(post)
 
     post.save
@@ -32,6 +34,7 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.stubs(:send_to_question)
     PostObserver.any_instance.expects(:send_to_publication).with(post)
 
     post.save
@@ -42,10 +45,22 @@ describe Post, 'PostObserver#after_save' do
 
     PostObserver.any_instance.stubs(:send_to_stream)
     PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.stubs(:send_to_question)
     PostObserver.any_instance.expects(:send_to_publication).with(post).twice
 
     post.save
     post.update text: 'hoot!'
+  end
+
+  it "should call send_to_question after update too" do
+    post = FactoryGirl.build :post
+
+    PostObserver.any_instance.stubs(:send_to_stream)
+    PostObserver.any_instance.stubs(:segment_user)
+    PostObserver.any_instance.stubs(:send_to_publication)
+    PostObserver.any_instance.expects(:send_to_question)
+
+    post.save
   end
 end
 
@@ -173,5 +188,26 @@ describe Post, 'PostObserver#send_to_publication' do
     post.expects(:send_to_publication)
 
     PostObserver.send(:new).send_to_publication post
+  end
+end
+
+describe Post, 'PostObserver#send_to_question' do
+  before do
+    ActiveRecord::Base.observers.enable :post_observer
+    Delayed::Worker.delay_jobs = false
+  end
+
+  it "should call send_to_question on post object" do
+    question = create(:question)
+    post = create :post, in_reply_to_question: question
+
+    question.expects(:update_answer_counts)
+
+    PostObserver.send(:new).send_to_question post
+  end
+
+  it "wont call send_to_question if post has no question" do
+    post = FactoryGirl.create :post
+    PostObserver.send(:new).send_to_question post
   end
 end

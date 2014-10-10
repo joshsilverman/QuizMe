@@ -3,6 +3,7 @@ class PostObserver < ActiveRecord::Observer
     segment_user post
     send_to_stream post
     send_to_publication post
+    send_to_question post
   end
 
   def segment_user post
@@ -25,5 +26,11 @@ class PostObserver < ActiveRecord::Observer
 
   def send_to_publication post
     post.delay.send_to_publication
+  end
+
+  def send_to_question post
+    return if post.in_reply_to_question_id.nil?
+
+    post.in_reply_to_question.delay.update_answer_counts
   end
 end
