@@ -8,5 +8,7 @@ class QuestionObserver < ActiveRecord::Observer
     question.topics.lessons.each do |lesson|
       lesson.update_question_count
     end
+
+    question.send_answer_counts_to_publication
   end
 end

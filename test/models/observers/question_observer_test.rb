@@ -26,16 +26,22 @@ describe Question, "QuestionObserver#after_create" do
 end
 
 describe Question, "QuestionObserver#after_save" do
+  let(:asker) { create :asker }
+  let(:question) { create :question, :approved }
+
   before do
     ActiveRecord::Base.observers.enable :questions_topic_observer
     ActiveRecord::Base.observers.enable :question_observer
   end
 
   it "calls update_question on questions topics" do
-    asker = create :asker
+    asker
     lesson = create :lesson
     lesson.askers << asker
-    question = create :question, :approved
+
+    Question.any_instance.stubs :send_answer_counts_to_publication
+    question
+    
     lesson.questions << question
 
     lesson.reload._question_count.must_equal 1
@@ -43,5 +49,10 @@ describe Question, "QuestionObserver#after_save" do
     question.update status: 0
 
     lesson.reload._question_count.must_equal 0
+  end
+
+  it "calls send_answer_counts_to_publication on save" do
+    Question.any_instance.expects :send_answer_counts_to_publication
+    question
   end
 end
