@@ -165,3 +165,29 @@ describe Question, "update_answer_counts" do
     question._answer_counts['correct'].must_equal "1"
   end
 end
+
+describe Question, "send_answer_counts_to_publication" do
+  let(:asker) { create :asker }
+  let(:user) { create :user }
+  let(:question) { create :question, asker: asker, user: user }
+  let(:publication) { create :publication, question: question }
+  let(:counts) { {"correct" => "1", "incorrect" => "2"} }
+
+  it "copies answer counts into publication" do
+    publication.update published: true 
+
+    question.update _answer_counts: counts
+    question.send_answer_counts_to_publication
+
+    publication.reload._answer_counts.must_equal counts
+  end
+
+  it "wont copy answer counts into unpublished publication" do
+    publication.update published: false 
+
+    question.update _answer_counts: counts
+    question.send_answer_counts_to_publication
+
+    publication.reload._answer_counts.must_be_nil
+  end
+end

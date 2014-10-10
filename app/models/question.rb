@@ -215,4 +215,13 @@ class Question < ActiveRecord::Base
         incorrect: in_reply_to_posts.incorrect_answers.count('DISTINCT(posts.user_id)')
       })
   end
+
+  def send_answer_counts_to_publication
+    publication = Publication.published
+      .where(question_id: id)
+      .order(created_at: :desc).first
+    return if publication.nil?
+
+    publication.update _answer_counts: _answer_counts
+  end
 end
