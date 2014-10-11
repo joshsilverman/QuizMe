@@ -664,7 +664,8 @@ $border_thin: 0px;
 
     * { display: inherit }
 
-    .byline {
+    .byline, .answer-stats {
+      line-height: 1.9em;
       display: flex;
       justify-content: space-between;
     }
