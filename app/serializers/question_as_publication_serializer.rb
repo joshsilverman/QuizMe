@@ -1,5 +1,5 @@
 class QuestionAsPublicationSerializer < ActiveModel::Serializer
-  attributes :question_id, :asker_id, :_answers, :_question, :_asker, :_lesson, :created_at
+  attributes :question_id, :asker_id, :_answers, :_question, :_answer_counts, :_asker, :_lesson, :created_at
 
   def question_id
     object.id
