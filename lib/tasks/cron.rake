@@ -17,11 +17,11 @@ end
 task :post_question => :environment do
   Asker.published.each do |asker|
     if asker.posts_per_day > 5
-      interval = 1
-    elsif asker.posts_per_day > 4
       interval = 2
-    else
+    elsif asker.posts_per_day > 4
       interval = 3
+    else
+      interval = 4
     end
     next unless (Time.now.hour % interval == 0)
 
