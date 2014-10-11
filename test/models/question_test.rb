@@ -67,6 +67,26 @@ describe Question, "#post" do
     another_question
     question.post
   end
+
+  it 'creates a publication' do
+    Timecop.freeze
+    question.post
+
+    Publication.count.must_equal 2
+
+    pub = Publication.last
+    pub.asker.id.must_equal asker.id
+    pub.question.must_equal question
+    pub._question.wont_be_nil
+    pub._asker.wont_be_nil
+    pub._answers.wont_be_nil
+    pub._lesson.wont_be_nil
+
+    pub.published.must_equal true
+    pub.first_posted_at.must_equal Time.now
+
+    Post.last.publication_id = pub.id
+  end
 end
 
 describe Question, "#recent_publication" do
