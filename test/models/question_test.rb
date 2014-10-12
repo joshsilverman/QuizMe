@@ -83,7 +83,7 @@ describe Question, "#post" do
     pub._lesson.wont_be_nil
 
     pub.published.must_equal true
-    pub.first_posted_at.must_equal Time.now
+    pub.first_posted_at.to_i.must_equal Time.now.to_i
 
     Post.last.publication_id = pub.id
   end
