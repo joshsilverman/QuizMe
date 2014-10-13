@@ -113,8 +113,6 @@ Quizmemanager::Application.routes.draw do
   get "/graph/:party/:graph" => 'askers#graph'
   get "/get_retention_metrics" => 'askers#get_retention_metrics'
 
-  get "questions/asker/:asker_id" => "questions#index"
-
   resources :questions
   post "questions/save_question_and_answers"
   post 'questions/update_question_and_answers'

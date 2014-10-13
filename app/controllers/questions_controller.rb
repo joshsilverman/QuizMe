@@ -4,33 +4,6 @@ class QuestionsController < ApplicationController
   before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
 
-
-  def index
-    params[:asker_id] = nil if params[:asker_id] == '0'
-
-    if current_user.is_role? 'admin'
-      @questions = Question
-    else
-      @questions = current_user.questions
-    end
-
-    if params[:asker_id]
-      @asker = Asker.find params[:asker_id]
-      @questions = @questions.where(:created_for_asker_id => params[:asker_id])
-    else
-      @questions = @questions
-    end
-
-    @all_questions = @questions.includes(:answers, :publications, :asker).order("questions.id DESC")
-    @questions_enqueued = @questions.includes(:answers, :publications, :asker).joins(:publications, :asker).where("publications.publication_queue_id IS NOT NULL").order("questions.id ASC")
-    @questions = @questions.includes(:answers, :publications, :asker).where("publications.publication_queue_id IS NULL").order("questions.id DESC").page(params[:page]).per(25)
-
-    @questions_hash = Hash[@all_questions.collect{|q| [q.id, q]}]
-    @handle_data = User.askers.collect{|h| [h.twi_screen_name, h.id]}
-    @approved_count = @all_questions.where(:status => 1).count
-    @pending_count = @all_questions.where(:status => 0).count
-  end
-
   def show
     @publication = Publication.published
       .where(question_id: params[:id])
