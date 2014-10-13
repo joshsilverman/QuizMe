@@ -1,7 +1,7 @@
 class QuestionsController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:save_question_and_answers]
   before_filter :authenticate_user!, :except => [:refer, :show, :display_answers, :count]
-  before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
+  before_filter :admin?, :only => [:index, :moderate, :moderate_update, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
 
   def show
@@ -36,23 +36,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def edit
-    @question = current_user.questions.find(params[:id])
-    redirect_to "/" unless @question
-  end
-
-  def create
-    @question = Question.new(params[:question])
-
-    respond_to do |format|
-      if @question.save
-        format.json { render json: @question, status: :created, location: @question }
-      else
-        format.json { render json: @question.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
   def update
     @question = Question.find(params[:id])
     @question.update inaccurate: nil, ungrammatical: nil
@@ -61,23 +44,10 @@ class QuestionsController < ApplicationController
     redirect_to "/" unless @question
     respond_to do |format|
       if @question.update_attributes(params[:question])
-        format.html { redirect_to @question, notice: 'Question was successfully updated.' }
         format.json { head :ok }
       else
-        format.html { render action: "edit" }
         format.json { render json: @question.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  def destroy
-    @question = current_user.questions.find(params[:id])
-    redirect_to "/" unless @question
-    @question.destroy
-
-    respond_to do |format|
-      format.html { redirect_to questions_url }
-      format.json { head :ok }
     end
   end
 
