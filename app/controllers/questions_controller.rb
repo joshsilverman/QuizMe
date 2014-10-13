@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:save_question_and_answers]
-  before_filter :authenticate_user!, :except => [:new, :refer, :show, :display_answers, :count]
+  before_filter :authenticate_user!, :except => [:refer, :show, :display_answers, :count]
   before_filter :admin?, :only => [:index, :moderate, :moderate_update, :import, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
 
@@ -36,20 +36,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def new
-    @asker = User.asker(params[:asker_id])
-    topic = @asker.topics.first
-    @topic_tag = topic.id if topic
-    @asker_id = @asker.id
-    @question = Question.new
-    @success = params[:success] if params[:success]
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @question }
-    end
-  end
-
   def edit
     @question = current_user.questions.find(params[:id])
     redirect_to "/" unless @question
@@ -60,10 +46,8 @@ class QuestionsController < ApplicationController
 
     respond_to do |format|
       if @question.save
-        format.html { redirect_to @question, notice: 'Question was successfully created.' }
         format.json { render json: @question, status: :created, location: @question }
       else
-        format.html { render action: "new" }
         format.json { render json: @question.errors, status: :unprocessable_entity }
       end
     end

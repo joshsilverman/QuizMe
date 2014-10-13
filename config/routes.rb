@@ -118,7 +118,6 @@ Quizmemanager::Application.routes.draw do
   post 'questions/update_question_and_answers'
   get "questions/:id" => "questions#show"
   get "questions/:id/:slug" => "questions#show"
-  get "questions/new/:asker_id" => "questions#new"
 
   get "/moderate" => "questions#moderate"
   post "/moderate/update" => "questions#moderate_update"
