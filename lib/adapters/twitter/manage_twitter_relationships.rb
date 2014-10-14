@@ -236,6 +236,8 @@ module ManageTwitterRelationships
       .where("followed_id in (?)", existing_users.collect(&:id))
       .group_by(&:followed_id)
 
+    puts "existing_users #{existing_users.count}"
+
     twi_ids_to_followback.each do |twi_user_id| # should be doing the following instead, tests need to be updated: (followers - follows).each do |user|
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
       user = existing_users.select { |u| u.twi_user_id == twi_user_id }.first
