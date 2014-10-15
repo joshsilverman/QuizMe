@@ -231,17 +231,18 @@ module ManageTwitterRelationships
     i = 0
 
     twi_ids_to_followback = (twi_follower_ids - follows.collect(&:twi_user_id))
-    existing_users = User.where("twi_user_id in (?)", twi_ids_to_followback)
+    existing_users_ids_twi_user_ids = User.where("twi_user_id in (?)", twi_ids_to_followback).pluck(:id, :twi_user_id)
+    existing_users_ids = existing_users_ids_twi_user_ids.map {|el| el[0]}
     asker_follow_relationships = follow_relationships
-      .where("followed_id in (?)", existing_users.collect(&:id))
+      .where("followed_id in (?)", existing_users_ids)
       .group_by(&:followed_id)
-
-    puts "existing_users #{existing_users.count}"
 
     twi_ids_to_followback.each do |twi_user_id| # should be doing the following instead, tests need to be updated: (followers - follows).each do |user|
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
-      user = existing_users.select { |u| u.twi_user_id == twi_user_id }.first
-      user = User.find_or_create_by(twi_user_id: twi_user_id) if user.blank?
+      user_id = existing_users_ids_twi_user_ids.select { |el| el[1] == twi_user_id }[0][0]
+      user = User.where(id: user_id).first
+
+      user ||= User.find_or_create_by(twi_user_id: twi_user_id)
       if asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
         next
       elsif twi_pending_ids.include? twi_user_id # Skip followback -- request pending
