@@ -239,20 +239,25 @@ module ManageTwitterRelationships
 
     twi_ids_to_followback.each do |twi_user_id| # should be doing the following instead, tests need to be updated: (followers - follows).each do |user|
       ## THIS IS THE SOURCE OF THE EXCESSIVE USER LOADS
-      user_id = existing_users_ids_twi_user_ids.select { |el| el[1] == twi_user_id }[0][0]
-      user = User.where(id: user_id).first
+      user_id_pair = existing_users_ids_twi_user_ids.select { |el| el[1] == twi_user_id }[0]
+      if (user_id_pair)
+        user_id = user_id_pair[0]
+      else
+        user_id = User.find_or_create_by(twi_user_id: twi_user_id).pluck :id
+      end
 
-      user ||= User.find_or_create_by(twi_user_id: twi_user_id)
-      if asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
+      # user = User.where(id: user_id).first
+
+      if asker_follow_relationships[user_id] and asker_follow_relationships[user_id].select { |r| r.pending == true }.present? # Skip followback again -- request pending
         next
       elsif twi_pending_ids.include? twi_user_id # Skip followback -- request pending
-        follow_relationships.find_or_initialize_by(followed_id: user.id)
+        follow_relationships.find_or_initialize_by(followed_id: user_id)
           .update(pending: true,
             channel: Relationship::TWITTER)
         next
-      elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.type_id == 4 }.present? # Skip followback -- account was suspended (?)
+      elsif asker_follow_relationships[user_id] and asker_follow_relationships[user_id].select { |r| r.type_id == 4 }.present? # Skip followback -- account was suspended (?)
         next
-      elsif asker_follow_relationships[user.id] and asker_follow_relationships[user.id].select { |r| r.active == false }.present? # Skip followback -- user was inactive unfollowed
+      elsif asker_follow_relationships[user_id] and asker_follow_relationships[user_id].select { |r| r.active == false }.present? # Skip followback -- user was inactive unfollowed
         next
       end
 
@@ -264,7 +269,7 @@ module ManageTwitterRelationships
       response = Post.twitter_request { twitter.follow(twi_user_id) }
       if response.nil? # possible suspended acct, setting relationship to suspended
         puts "Twitter Error: Could not follow (suspended?) user #{twi_user_id} from #{id}"
-        follow_relationships.find_or_initialize_by(followed_id: user.id)
+        follow_relationships.find_or_initialize_by(followed_id: user_id)
           .update_attributes(
             type_id: 4, 
             active: false,
@@ -275,6 +280,8 @@ module ManageTwitterRelationships
         update(last_followback_failure: Time.now)
         next
       end
+      
+      user = User.find(user_id)
       add_follow(user, 1)
     end
   end
