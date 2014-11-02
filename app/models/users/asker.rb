@@ -210,6 +210,7 @@ class Asker < User
     reengagement_question_ids = posts
       .where(in_reply_to_user: user)
       .where(is_reengagement: true)
+      .where('question_id IS NOT NULL')
       .pluck(:question_id)
     excluded_ids = answered_question_ids + reengagement_question_ids + [0]
 

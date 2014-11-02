@@ -585,7 +585,7 @@ describe Asker, '#select_question' do
 	let(:question) { create :question, asker: asker, status: 1 }
 	let(:publication) { create :publication, asker: asker, question: question }
 	let(:answer_post) { create :post, user: user, in_reply_to_question: question }
-	let(:reengagement_post) { create :post, user: asker, in_reply_to_user: user, is_reengagement: true }
+	let(:reengagement_post) { create :post, user: asker, in_reply_to_user: user, is_reengagement: true, question: question }
 
 	it 'selects a question' do
 		publication
@@ -599,6 +599,19 @@ describe Asker, '#select_question' do
 		selected_question = asker.select_question user
 
 		selected_question.must_equal nil
+	end
+
+	it 'selects a question even if a there is a post with a nil question id' do
+		publication
+		create(:post, 
+			user: asker, 
+			in_reply_to_user: user, 
+			is_reengagement: true, 
+			question_id: nil)
+
+		selected_question = asker.select_question user
+
+		selected_question.must_equal question
 	end
 
 	it 'wont select question the user has already answered' do

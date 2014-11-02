@@ -55,7 +55,7 @@ module EngagementEngine::ReengageInactive
     def reengage_user user_id, options = {}
       user = User.find user_id
       return false if !user.contactable?
-      return false unless (Asker.published_ids & user.asker_follows.collect(&:id)).present? # make sure there are published askers to reengage from
+      return false unless (Asker.published_ids && user.asker_follows.collect(&:id)).present? # make sure there are published askers to reengage from
 
       asker, question, publication, text, long_url = nil, nil, nil, nil, nil
       reengagement_type = options[:type] || user.pick_reengagement_type(options[:last_active_at])
