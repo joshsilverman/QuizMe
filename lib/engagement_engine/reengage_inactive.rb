@@ -6,7 +6,7 @@ module EngagementEngine::ReengageInactive
 
   module ClassMethods
     def max_hourly_reengagements
-      90
+      50
     end
 
     def reengage_inactive_users options = {}
