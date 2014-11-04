@@ -409,10 +409,12 @@ class User < ActiveRecord::Base
 	end
 
 
-	def segment
-		update_lifecycle_segment
-		update_activity_segment
-	end
+  def segment
+    puts "start segmenting #{id}"
+    update_lifecycle_segment
+    update_activity_segment
+    puts "completed segmenting #{id}"
+  end
 
 	# Lifecycle checks - include UGC reqs?
 	def update_lifecycle_segment
