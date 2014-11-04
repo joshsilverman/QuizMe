@@ -15,6 +15,7 @@ gem 'activerecord-deprecated_finders'
 gem "active_model_serializers"
 
 gem 'delayed_job_active_record'
+gem "hirefire-resource"
 
 group :test do
   gem "rspec-rails",'2.8.1'

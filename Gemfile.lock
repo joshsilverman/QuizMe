@@ -153,6 +153,7 @@ GEM
       multi_json (~> 1.8)
     highline (1.6.21)
     hike (1.2.3)
+    hirefire-resource (0.3.4)
     houston (2.1.0)
       commander (~> 4.1)
       json
@@ -424,6 +425,7 @@ DEPENDENCIES
   guard-minitest
   haml
   heroku-api
+  hirefire-resource
   houston
   jquery-rails
   jquery-ui-rails
