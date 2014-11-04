@@ -309,7 +309,6 @@ class User < ActiveRecord::Base
       :type => "twitter"
     }
     classify
-		register_referrals
 	end
 
 	def classify matched_tags = []
@@ -320,21 +319,6 @@ class User < ActiveRecord::Base
 			end
 		end
 		Tag.where('name in (?)', matched_tags).each { |matched_tag| tags << matched_tag } if matched_tags.present?
-	end
-
-	def register_referrals
-		followed_twi_user_ids = Post.twitter_request {
-      User.find_by_twi_screen_name('Wisr')
-        .twitter.friend_ids(twi_user_id).ids } || [0]
-
-		referrers = User.not_asker
-      .where("twi_user_id in (?)", followed_twi_user_ids)
-
-		if referrers.present?
-      MP.track_event "referral joined", {
-        distinct_id: id,
-        type: "twitter"}
-		end
 	end
 
 	# Segmentation methods
