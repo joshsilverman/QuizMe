@@ -506,7 +506,7 @@ class Asker < User
     elsif user_post.correct == true and user_post.in_reply_to_question
       schedule_correct_answer_followup(user_post)
     end
-    after_answer_action(answerer)
+    # after_answer_action(answerer)
   end
 
   def after_answer_action answerer
