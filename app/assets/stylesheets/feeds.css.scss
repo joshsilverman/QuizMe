@@ -670,6 +670,25 @@ $border_thin: 0px;
       display: flex;
       justify-content: space-between;
     }
+
+    .rating {
+      line-height: 1.9em;
+
+      .rating-container {
+        position: relative;
+        top:1px;
+        display: inline-block;
+
+        .icon {
+          display: inline-block;
+
+          span {
+            display: none;
+          }
+        }
+      }
+
+    }
   }
 }
 
