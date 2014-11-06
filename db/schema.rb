@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141009213610) do
+ActiveRecord::Schema.define(version: 20141106124927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -259,6 +259,17 @@ ActiveRecord::Schema.define(version: 20141009213610) do
   end
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], name: "index_rails_admin_histories", using: :btree
+
+  create_table "ratings", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "question_id"
+    t.integer  "score"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ratings", ["question_id"], name: "index_ratings_on_question_id", using: :btree
+  add_index "ratings", ["user_id"], name: "index_ratings_on_user_id", using: :btree
 
   create_table "related_askers", id: false, force: true do |t|
     t.integer "asker_id"
