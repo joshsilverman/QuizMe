@@ -1,5 +1,6 @@
 Quizmemanager::Application.routes.draw do
 
+
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   constraints subdomain: false do
@@ -75,6 +76,8 @@ Quizmemanager::Application.routes.draw do
       get 'current'
     end
   end
+
+  resources :ratings, only: [:create]
 
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
   get "/posts/:publication_id/refer" => "posts#refer"
