@@ -411,12 +411,10 @@ class User < ActiveRecord::Base
 
 
   def segment
-    puts "start segmenting #{id}"
     return if role == 'asker'
 
     update_lifecycle_segment
     update_activity_segment
-    puts "completed segmenting #{id}"
   end
 
 	# Lifecycle checks - include UGC reqs?
