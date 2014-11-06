@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
 
   has_many :authorizations, :dependent => :destroy
 	has_many :questions
+  has_many :ratings
 	has_many :askables, :class_name => 'Question', :foreign_key => 'created_for_asker_id'
 	has_many :transitions
 	has_many :stats, :foreign_key => 'asker_id'

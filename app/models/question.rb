@@ -7,6 +7,7 @@ class Question < ActiveRecord::Base
   has_many :answers
   has_many :publications
   has_many :question_moderations
+  has_many :ratings
 
   has_many :topics, -> { uniq }, through: :questions_topics, :dependent => :destroy
   has_many :questions_topics, :dependent => :destroy
