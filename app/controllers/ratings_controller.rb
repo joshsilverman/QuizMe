@@ -1,5 +1,6 @@
 class RatingsController < ApplicationController
   before_filter :authenticate_user!
+  skip_before_filter :verify_authenticity_token
 
   def create
     @rating = Rating.find_or_initialize_by(
