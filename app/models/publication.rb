@@ -35,13 +35,18 @@ class Publication < ActiveRecord::Base
       as[a.id.to_s] = a.text
     end
 
+    rating = question._rating ? question._rating['score']: ''
+    rating_count = question._rating ? question._rating['count']: '0'
+
     assign_attributes(
       _question: {
         text: question.text,
         id: question.id,
         correct_answer_id: question.answers.correct.try(:id),
         author_twi_screen_name: question.user.try(:twi_screen_name),
-        created_at: question.created_at},
+        created_at: question.created_at,
+        rating: rating,
+        rating_count: rating_count},
       _asker: {
         id: question.asker.id,
         twi_profile_img_url: question.asker.twi_profile_img_url,

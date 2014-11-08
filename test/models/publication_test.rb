@@ -183,6 +183,30 @@ describe Publication, '#update_question' do
     
     publication.reload._question['author_twi_screen_name'].must_be_nil
   end
+
+  it "must set rating and rating count" do
+    asker = create :asker
+    question = create(:question, {
+      asker: asker, 
+      _rating: {'score' => '5.0', 'count' => '1'}})
+    publication = create :publication, question: question
+
+    publication.update_question
+    
+    publication.reload._question['rating'].must_equal '5.0'
+    publication.reload._question['rating_count'].must_equal '1'
+  end
+
+  it "must defaults rating and rating count inteligently if no rating on question" do
+    asker = create :asker
+    question = create(:question, {asker: asker})
+    publication = create :publication, question: question
+
+    publication.update_question
+    
+    publication.reload._question['rating'].must_equal ''
+    publication.reload._question['rating_count'].must_equal '0'
+  end
 end
 
 describe Publication, ".inject_publication_by_id" do

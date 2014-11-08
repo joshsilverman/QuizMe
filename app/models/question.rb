@@ -228,6 +228,22 @@ class Question < ActiveRecord::Base
       })
   end
 
+  def update_rating
+    scores = ratings.pluck(:score)
+    count = scores.count
+
+    if (count > 0)
+      score = scores.inject(0) { |val, memo| memo += val }.to_f / count
+    else
+      score = ''
+    end
+
+    update _rating: {
+      score: score,
+      count: count
+    }
+  end
+
   def send_answer_counts_to_publication
     publication = Publication.published
       .where(question_id: id)
