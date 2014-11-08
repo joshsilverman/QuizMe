@@ -678,6 +678,7 @@ $border_thin: 0px;
         position: relative;
         top:1px;
         display: inline-block;
+        opacity: .9;
 
         .icon {
           display: inline-block;
@@ -688,6 +689,10 @@ $border_thin: 0px;
         }
       }
 
+      .numeric-rating {
+        display: inline;
+        font-style: italic;
+      }
     }
   }
 }
