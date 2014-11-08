@@ -116,6 +116,9 @@ FactoryGirl.define do
     first_posted_at 5.minutes.ago
   end
 
+  factory :rating do
+  end
+
   factory :conversation do
   end
 

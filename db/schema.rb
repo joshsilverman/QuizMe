@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141106124927) do
+ActiveRecord::Schema.define(version: 20141108152927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,6 +235,7 @@ ActiveRecord::Schema.define(version: 20141106124927) do
     t.integer  "_correct_answer_id"
     t.integer  "questionbase_id"
     t.hstore   "_answer_counts"
+    t.hstore   "_rating"
   end
 
   add_index "questions", ["created_for_asker_id"], name: "index_questions_on_created_for_asker_id", using: :btree
