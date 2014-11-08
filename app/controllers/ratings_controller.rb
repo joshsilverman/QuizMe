@@ -15,6 +15,10 @@ class RatingsController < ApplicationController
     end
   end
 
+  def index
+    render json: current_user.ratings.to_json
+  end
+
   private
     def rating_params
       params.permit(:score, :question_id)

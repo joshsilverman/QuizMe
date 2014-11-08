@@ -77,7 +77,7 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :ratings, only: [:create]
+  resources :ratings, only: [:create, :index]
 
   get "/nudge/:id/:user_id/:asker_id" => "posts#nudge_redirect"
   get "/posts/:publication_id/refer" => "posts#refer"

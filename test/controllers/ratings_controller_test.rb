@@ -42,3 +42,27 @@ describe RatingsController, '#create' do
     Rating.last.score.must_equal 4
   end
 end
+
+describe RatingsController, '#index' do
+  let(:user) { create :user }
+  let(:question) { create :question }
+  let(:rating) { create :rating, user: user, question: question, score: 3 }
+
+  it "returns 401 if not authenticated" do
+    get :index, format: :json
+
+    response.status.must_equal 401
+  end
+
+  it 'returns an array of rating objects' do
+    sign_in user
+    rating
+    get :index, format: :json
+
+    ratings = JSON.parse(response.body)
+
+    ratings.count.must_equal 1
+    ratings.first['question_id'].must_equal question.id
+    response.status.must_equal 200
+  end
+end
