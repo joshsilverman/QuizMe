@@ -211,3 +211,34 @@ describe Question, "send_answer_counts_to_publication" do
     publication.reload._answer_counts.must_be_nil
   end
 end
+
+describe Question, "update_rating" do
+  let(:user) { create :user }
+  let(:question) { create :question }
+  let(:rating) { create :rating, question: question, user: user, score: score }
+  let(:score) { 3 }
+
+  it "stores count and score" do
+    rating
+    question.update_rating
+
+    question._rating['count'].must_equal '1'
+    question._rating['score'].must_equal '3.0'
+  end
+
+  it "proper return when no ratings yet" do
+    question.update_rating
+
+    question._rating['count'].must_equal '0'
+    question._rating['score'].must_equal ''
+  end
+
+  it "averages correctly and increments count" do
+    rating
+    create :rating, question: question, user_id: 123, score: 4
+    question.update_rating
+
+    question._rating['count'].must_equal '2'
+    question._rating['score'].must_equal '3.5'
+  end
+end
