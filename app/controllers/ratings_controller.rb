@@ -9,6 +9,11 @@ class RatingsController < ApplicationController
     @rating.score = rating_params[:score]
 
     if @rating.save
+      MP.track_event "rated question", {
+        distinct_id: current_user.id,
+        score: @rating.score,
+        question_id: rating_params[:question_id]}
+
       head 200
     else
       head 400
