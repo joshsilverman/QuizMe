@@ -242,3 +242,21 @@ describe Question, "update_rating" do
     question._rating['score'].must_equal '3.5'
   end
 end
+
+describe Question, "send_rating_to_publication" do
+  let(:user) { create :user }
+  let(:asker) { create :asker }
+  let(:question) { create :question, asker: asker }
+  let(:publication) { create :publication, question: question }
+  let(:score) { 3 }
+
+  it "sends new rating to publication" do
+    publication
+    question._rating = {score: '3.0'}
+    question.save
+
+    question.send_rating_to_publication
+
+    publication.reload._question['rating'].must_equal '3.0'
+  end
+end

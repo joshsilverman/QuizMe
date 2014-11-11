@@ -252,4 +252,13 @@ class Question < ActiveRecord::Base
 
     publication.update _answer_counts: _answer_counts
   end
+
+  def send_rating_to_publication
+    publication = Publication.published
+      .where(question_id: id)
+      .order(created_at: :desc).first
+    return if publication.nil?
+
+    publication.update_question self
+  end
 end
