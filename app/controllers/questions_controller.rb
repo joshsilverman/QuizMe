@@ -24,7 +24,10 @@ class QuestionsController < ApplicationController
         render :show, layout: 'phone'
       end
 
-      format.html.none { }
+      format.html.none do
+        url = "#{FEED_URL}/#{@asker.subject_url}/#{@publication.id}"
+        redirect_to url, status: 301
+      end
 
       format.json do
         redirect_to controller: :feeds,
