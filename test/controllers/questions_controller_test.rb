@@ -9,10 +9,11 @@ describe QuestionsController do
 	end
 
 	describe '#show' do
-		it 'gets with status 200' do
+		it 'gets with status 301 and redirects to new feed' do
 			pub = create :publication, question: @question, asker: @asker
 			get :show, id: @question.id
-			response.status.must_equal 200
+			response.status.must_equal 301
+			response.location.must_equal "http://ng.dev.localhost/#{@asker.subject_url}/#{pub.id}"
 		end
 
 		it 'redirects to home if no publication for question' do
