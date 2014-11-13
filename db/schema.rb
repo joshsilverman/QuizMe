@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141108152927) do
+ActiveRecord::Schema.define(version: 20141113132755) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -321,6 +321,9 @@ ActiveRecord::Schema.define(version: 20141108152927) do
     t.integer  "type_id"
     t.integer  "_question_count", default: 0
     t.integer  "questionbase_id"
+    t.integer  "user_id"
+    t.integer  "asker_id"
+    t.boolean  "published"
   end
 
   create_table "transitions", force: true do |t|
