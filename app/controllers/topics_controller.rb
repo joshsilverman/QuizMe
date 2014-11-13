@@ -17,6 +17,25 @@ class TopicsController < ApplicationController
     end
   end
 
+  def create
+    respond_to do |f|
+      f.json do
+        topic = Topic.new(
+          type_id: 6, 
+          published: false, 
+          user_id: current_user.id, 
+          asker_id: params[:asker_id], 
+          name: params[:name])
+
+        if topic.save
+          render json: topic.to_json
+        else
+          render json: topic.errors
+        end
+      end
+    end
+  end
+
   def show
     respond_to do |format|
       format.html do

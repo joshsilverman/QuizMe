@@ -128,3 +128,47 @@ describe TopicsController, "#answered_counts" do
     response.status.must_equal 401
   end
 end
+
+describe TopicsController, "#create" do
+  let(:user) { create :user }
+
+  it "creates new lesson with correct fkeys" do
+    sign_in user
+
+    get :create, format: :json, asker_id: 123, name: 'hello'
+
+    quiz = Topic.lessons.first
+
+    response.status.must_equal 200
+    Topic.lessons.count.must_equal 1
+    quiz.type_id.must_equal 6
+    quiz.user_id.must_equal user.id
+    quiz.asker_id.must_equal 123
+  end
+
+  it "401's if not authed" do
+    get :create, format: :json, asker_id: 123, name: 'hello'
+
+    response.status.must_equal 401
+  end
+
+  it "marks as not yet published" do
+    sign_in user
+
+    get :create, format: :json, asker_id: 123, name: 'hello'
+    response.status.must_equal 200
+
+    Topic.lessons.last.published.must_equal false
+  end
+
+  it "returns id" do
+    sign_in user
+
+    get :create, format: :json, asker_id: 123, name: 'hello'
+
+    quiz = Topic.lessons.first
+
+    new_quiz_hash = JSON.parse(response.body)
+    new_quiz_hash['id'].wont_be_nil
+  end
+end
