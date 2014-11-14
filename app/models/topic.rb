@@ -14,7 +14,7 @@ class Topic < ActiveRecord::Base
 	scope :lessons, -> { where("type_id = 6") }
 
   validates_format_of :name, :with => /\A[a-zA-Z0-9\s\+\,\(\)\:]+\Z/
-  validates :name, uniqueness: true
+  validates :name, uniqueness: true, if: Proc.new { |t| t.published }
   validates :name, presence: true
 
 	def lessons # returns a course's lessons

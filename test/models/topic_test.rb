@@ -86,3 +86,20 @@ describe Topic, ".strip_illegal_chars_from_name" do
     topic.valid?.must_equal true
   end
 end
+
+describe Topic, "#validates :name, uniqueness: true" do
+  it "ensures uniquess when published" do
+    first_topic = Topic.create! name: 'bob', published: true
+    second_topic = Topic.new name: 'bob', published: true
+
+    second_topic.valid?.must_equal false
+    second_topic.errors[:name].empty?.must_equal false
+  end
+
+  it "wont ensures uniquess when not published" do
+    first_topic = Topic.create! name: 'bob', published: false
+    second_topic = Topic.new name: 'bob', published: false
+
+    second_topic.valid?.must_equal true
+  end
+end
