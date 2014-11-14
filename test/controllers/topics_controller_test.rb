@@ -135,7 +135,7 @@ describe TopicsController, "#create" do
   it "creates new lesson with correct fkeys" do
     sign_in user
 
-    get :create, format: :json, asker_id: 123, name: 'hello'
+    get :create, format: :json, asker_id: 123, name: 'hello', type_id: 6
 
     quiz = Topic.lessons.first
 
@@ -147,7 +147,7 @@ describe TopicsController, "#create" do
   end
 
   it "401's if not authed" do
-    get :create, format: :json, asker_id: 123, name: 'hello'
+    get :create, format: :json, asker_id: 123, name: 'hello', type_id: 6
 
     response.status.must_equal 401
   end
@@ -155,7 +155,7 @@ describe TopicsController, "#create" do
   it "marks as not yet published" do
     sign_in user
 
-    get :create, format: :json, asker_id: 123, name: 'hello'
+    get :create, format: :json, asker_id: 123, name: 'hello', type_id: 6
     response.status.must_equal 200
 
     Topic.lessons.last.published.must_equal false
@@ -164,7 +164,7 @@ describe TopicsController, "#create" do
   it "returns id" do
     sign_in user
 
-    get :create, format: :json, asker_id: 123, name: 'hello'
+    get :create, format: :json, asker_id: 123, name: 'hello', type_id: 6
 
     quiz = Topic.lessons.first
 

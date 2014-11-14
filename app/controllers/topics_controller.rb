@@ -1,5 +1,6 @@
 class TopicsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
+  skip_before_filter :verify_authenticity_token, :only => [:create]
 
   def index
     respond_to do |format|
@@ -21,7 +22,7 @@ class TopicsController < ApplicationController
     respond_to do |f|
       f.json do
         topic = Topic.new(
-          type_id: 6, 
+          type_id: params[:type_id], 
           published: false, 
           user_id: current_user.id, 
           asker_id: params[:asker_id], 
@@ -30,7 +31,7 @@ class TopicsController < ApplicationController
         if topic.save
           render json: topic.to_json
         else
-          render json: topic.errors
+          render status: 400, json: topic.errors
         end
       end
     end
