@@ -51,7 +51,7 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :topics, only: [:index, :create] do
+  resources :topics, only: [:index, :create, :show] do
     collection do
       get :answered_counts
     end

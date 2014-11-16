@@ -46,6 +46,7 @@ class TopicsController < ApplicationController
 
       format.json do
         @lesson = Topic.find_by_topic_url params[:name]
+        @lesson ||= Topic.find params[:id]
 
         if @lesson
           questions = @lesson.questions.approved.includes(:user)

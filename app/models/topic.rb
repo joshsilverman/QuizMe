@@ -51,6 +51,7 @@ class Topic < ActiveRecord::Base
   end
 
   def self.find_by_topic_url topic_url
+    return if topic_url.nil?
     Rails.cache.fetch("Topic.find_by_topic_url(#{topic_url})", :expires_in => 3.hour) do
       _topic_url = topic_url.gsub('-', ' ')
       Topic.where('name ilike ?', _topic_url).first
