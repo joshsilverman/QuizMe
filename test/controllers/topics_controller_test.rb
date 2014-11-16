@@ -192,3 +192,34 @@ describe TopicsController, "#create" do
     new_quiz_hash['id'].wont_be_nil
   end
 end
+
+describe TopicsController, "#update" do
+  let(:user) { create :user }
+  let(:quiz) { create :lesson }
+
+  it "updates lesson name" do
+    sign_in user
+
+    patch :update, format: :json, name: 'hello', id: quiz.id
+
+    response.status.must_equal 200
+    Topic.lessons.count.must_equal 1
+    quiz.reload.name.must_equal 'hello'
+  end
+
+  it "wont save unpermitted params" do
+    sign_in user
+
+    patch :update, format: :json, type_id: 5, id: quiz.id
+
+    response.status.must_equal 200
+    Topic.lessons.count.must_equal 1
+    quiz.reload.type_id.must_equal 6
+  end
+
+  it "401's if not authed" do
+    patch :update, format: :json, name: 'hello', id: quiz.id
+
+    response.status.must_equal 401
+  end
+end

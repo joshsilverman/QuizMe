@@ -51,11 +51,12 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :topics, only: [:index, :create, :show] do
+  resources :topics, only: [:index, :create, :show, :update] do
     collection do
       get :answered_counts
     end
   end
+  get ':subject/:name/quiz' => 'topics#show'
 
   resources :relationships, only: [:create] do
     collection do
@@ -83,8 +84,6 @@ Quizmemanager::Application.routes.draw do
   get "/posts/:publication_id/refer" => "posts#refer"
   post "posts/respond_to_post"
   post "posts/retweet"
-
-  get ':subject/:name/quiz' => 'topics#show'
 
   get '/users/:id/activity' => 'users#activity'
   get '/users/activity_feed'
