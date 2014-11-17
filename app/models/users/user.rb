@@ -553,10 +553,9 @@ class User < ActiveRecord::Base
       .answers\
       .where("in_reply_to_user_id in (?)", follows.collect(&:id))\
       .where("in_reply_to_user_id in (?)", Asker.published_ids)\
-      .select(["user_id", "count(in_reply_to_user_id)"])\
-      .group("in_reply_to_user_id")\
-      .count("user_id")
-    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.max_by{|k,v| v}.first))
+      .select(["user_id", "DISTINCT(in_reply_to_user_id)"])\
+      .pluck("in_reply_to_user_id")
+    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.sample))
     return nil if asker.nil?
 
     # change Asker subclass according to communication preference

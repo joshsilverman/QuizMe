@@ -270,27 +270,6 @@ describe User, "#select_reengagement_asker" do
       in_reply_to_user_id: asker.id)
     user.select_reengagement_asker.must_equal twitter_asker
   end
-
-  it 'will return most responded to asker' do
-    askers = []
-    5.times do
-      _asker = create :asker
-      _asker.followers << user
-      askers << _asker
-
-      create(:correct_response,
-        user: user,
-        in_reply_to_user_id: _asker.id)
-    end
-
-    most_popular = askers.sample.becomes TwitterAsker
-
-    response_to_asker = create(:correct_response,
-      user: user,
-      in_reply_to_user_id: most_popular.id)
-
-    user.select_reengagement_asker.must_equal most_popular
-  end
 end
 
 describe User, "#contactable?" do
