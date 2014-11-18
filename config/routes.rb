@@ -51,12 +51,14 @@ Quizmemanager::Application.routes.draw do
     end
   end
 
-  resources :topics, only: [:index, :create, :show, :update] do
+  resources :topics, only: [:index, :show] do
     collection do
       get :answered_counts
     end
   end
   get ':subject/:name/quiz' => 'topics#show'
+
+  resources :lessons, only: [:create, :show, :update]
 
   resources :relationships, only: [:create] do
     collection do

@@ -18,40 +18,6 @@ class TopicsController < ApplicationController
     end
   end
 
-  def create
-    respond_to do |f|
-      f.json do
-        topic = Topic.new(
-          type_id: params[:type_id], 
-          published: false, 
-          user_id: current_user.id, 
-          asker_id: params[:asker_id], 
-          name: params[:name])
-
-        if topic.save
-          render json: topic.to_json
-        else
-          render status: 400, json: topic.errors
-        end
-      end
-    end
-  end
-
-  def update
-    respond_to do |f|
-      f.json do
-        topic = Topic.find(params[:id])
-        safe_params = params.permit(:name, :published)
-
-        if topic.update safe_params
-          render json: topic.to_json
-        else
-          render status: 400, json: topic.errors
-        end
-      end
-    end
-  end
-
   def show
     respond_to do |format|
       format.html do
