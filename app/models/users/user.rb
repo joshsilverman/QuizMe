@@ -555,7 +555,7 @@ class User < ActiveRecord::Base
       .where("in_reply_to_user_id in (?)", Asker.published_ids)\
       .select(["user_id", "DISTINCT(in_reply_to_user_id)"])\
       .pluck("in_reply_to_user_id")
-    asker = (answer_count_by_asker.empty? ? asker_follows.sample : Asker.find(answer_count_by_asker.sample))
+    asker = (answer_count_by_asker.empty? ? asker_follows.published.sample : Asker.find(answer_count_by_asker.sample))
     return nil if asker.nil?
 
     # change Asker subclass according to communication preference

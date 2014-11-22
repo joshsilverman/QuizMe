@@ -259,6 +259,12 @@ describe User, "#select_reengagement_asker" do
     user.select_reengagement_asker.must_equal twitter_asker
   end
 
+  it 'wont return a followed asker if asker is not published' do
+    asker.followers << user
+    asker.update published: false
+    user.select_reengagement_asker.must_equal nil
+  end
+
   it 'will return nil if no followed asker and no responded to asker' do
     user.select_reengagement_asker.must_equal nil
   end
