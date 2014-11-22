@@ -20,6 +20,13 @@ describe QuestionsController do
 			get :show, id: @question.id
 			response.status.must_equal 302
 		end
+
+		it 'redirects to home if no asker for question pub' do
+			@asker.update role: 'user'
+			pub = create :publication, question: @question, asker: @asker
+			get :show, id: @question.id
+			response.status.must_equal 302
+		end
 	end
 
 	describe '#update' do

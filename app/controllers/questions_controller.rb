@@ -17,7 +17,10 @@ class QuestionsController < ApplicationController
     @publication.verify_cache_present
 
     @asker = Asker.find_by(id: @publication.asker_id)
-    redirect_to '/' if !@asker
+    if !@asker
+      redirect_to '/'
+      return
+    end
 
     respond_to do |format|
       format.html.phone do
