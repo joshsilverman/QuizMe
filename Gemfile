@@ -27,7 +27,7 @@ group :test do
   gem 'factory_girl_rails'
   gem "database_cleaner"
   gem 'timecop'
-  gem 'selenium-webdriver', "~> 2.38.0"
+  gem 'selenium-webdriver'
   gem 'mocha'
   gem 'webmock'
 end
