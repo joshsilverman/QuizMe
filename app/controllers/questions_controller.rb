@@ -57,16 +57,12 @@ class QuestionsController < ApplicationController
       params[:question].each { |k,v| params[k] = v }
     end
 
-    params[:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker'
-
-    safe_params = params.permit(:text, :topic_id, :user_id, :status, 
-        :created_for_asker_id, :priority, :hashtag, :resource_url, :slug, 
-        :hint, :publishable, :inaccurate, :ungrammatical, :bad_answers, 
-        :moderation_trigger_type_id, :needs_edits)
+    safe_params = params.permit(:text, :resource_url, :hint)
+    safe_params[:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker'
 
     respond_to do |format|
       if @question.update(safe_params)
-        format.json { head :ok }
+        format.json { render json: @question.to_json }
       else
         format.json { render json: @question.errors, status: :unprocessable_entity }
       end

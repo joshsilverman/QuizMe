@@ -69,6 +69,13 @@ describe QuestionsController, '#update' do
     question.reload.text.must_equal "yoyos on the go"
   end
 
+  it 'returns question object' do
+    sign_in author
+    question.update(status: 1)
+    put :update, format: :json, id: question.id, text: "yoyos on the go"
+    JSON.parse(response.body)['id'].to_i.must_equal question.id
+  end
+
   it 'updates if admin' do
     sign_in admin
     question.update(status: 1)
