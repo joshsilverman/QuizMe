@@ -32,6 +32,7 @@ end
 describe QuestionsController, '#update' do
   let (:author) { create(:user, twi_user_id: 1, role: 'user') }
   let (:admin) { create(:admin) }
+  let (:hacker) { create(:user) }
 
   let (:asker) { 
     a = create(:asker) 
@@ -58,6 +59,30 @@ describe QuestionsController, '#update' do
     question.update(status: 1)
     put :update, id: question.id, question: {text: "yoyos"}, format: :json
     question.reload.status.must_equal 0
+    question.text.must_equal "yoyos"
+  end
+
+  it 'updates question when attributes arent in question key' do
+    sign_in author
+    question.update(status: 1)
+    put :update, format: :json, id: question.id, text: "yoyos on the go"
+    question.reload.text.must_equal "yoyos on the go"
+  end
+
+  it 'updates if admin' do
+    sign_in admin
+    question.update(status: 1)
+    put :update, id: question.id, question: {text: "burgers"}, format: :json
+    response.status.must_equal 200
+    question.reload.text.must_equal "burgers"
+  end
+
+  it 'wont update if neither admin nor content author' do
+    sign_in hacker
+    question.update(status: 1)
+    put :update, id: question.id, question: {text: "burgers"}, format: :json
+    response.status.must_equal 422
+    question.reload.text.wont_equal "burgers"
   end
 
   it 'wont set question to pending when edited by admin' do

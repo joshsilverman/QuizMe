@@ -43,13 +43,29 @@ class QuestionsController < ApplicationController
   end
 
   def update
-    @question = Question.find(params[:id])
-    @question.update inaccurate: nil, ungrammatical: nil
-    params[:question][:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker'
+    @question = current_user.questions.where(id: params[:id]).first
+    @question ||= Question.find(params[:id]) if current_user.is_role? "admin"
+    if !@question
+      head :unprocessable_entity
+      return
+    end
 
-    redirect_to "/" unless @question
+    @question.update inaccurate: nil, ungrammatical: nil
+
+    # normalize incoming data
+    if params[:question]
+      params[:question].each { |k,v| params[k] = v }
+    end
+
+    params[:status] = 0 unless current_user.is_role? 'admin' or current_user.is_role? 'asker'
+
+    safe_params = params.permit(:text, :topic_id, :user_id, :status, 
+        :created_for_asker_id, :priority, :hashtag, :resource_url, :slug, 
+        :hint, :publishable, :inaccurate, :ungrammatical, :bad_answers, 
+        :moderation_trigger_type_id, :needs_edits)
+
     respond_to do |format|
-      if @question.update_attributes(params[:question])
+      if @question.update(safe_params)
         format.json { head :ok }
       else
         format.json { render json: @question.errors, status: :unprocessable_entity }
