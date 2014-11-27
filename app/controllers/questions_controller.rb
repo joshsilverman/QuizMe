@@ -54,7 +54,9 @@ class QuestionsController < ApplicationController
 
     respond_to do |format|
       format.json do
-        render json: question.to_json
+        render json: question,
+          serializer: QuestionAsPublicationSerializer,
+          root: false
       end
     end
   end

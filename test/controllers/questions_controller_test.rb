@@ -84,7 +84,7 @@ describe QuestionsController, '#create' do
     sign_in author
     Question.count.must_equal 0
     post :create, format: :json
-    JSON.parse(response.body)['id'].wont_be_nil
+    JSON.parse(response.body)['question_id'].wont_be_nil
   end
 end
 
