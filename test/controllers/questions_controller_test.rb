@@ -29,6 +29,65 @@ describe QuestionsController, '#show' do
   end
 end
 
+describe QuestionsController, '#create' do
+  let (:author) { create(:user, twi_user_id: 1, role: 'user') }
+  let (:admin) { create(:admin) }
+  let (:hacker) { create(:user) }
+
+  let (:asker) { 
+    a = create(:asker) 
+    a.followers << author
+    a
+  }
+
+  let (:lesson) { create :lesson, user_id: author.id }
+
+  it 'creates a new question attributed to current user' do
+    sign_in author
+    Question.count.must_equal 0
+    post :create, asker_id: asker.id, format: :json
+    author.questions.count.must_equal 1
+    author.questions.last.asker.id.must_equal asker.id
+  end
+
+  it 'returns 401 if user not authenticated' do
+    post :create, format: :json
+    response.status.must_equal 401
+    Question.count.must_equal 0
+  end
+
+  it 'creates initial correct answer and incorrect answer' do
+    sign_in author
+    post :create, format: :json
+
+    question = Question.last
+    question.answers.correct.wont_be_nil
+    question.answers.incorrect.count.must_equal 1
+  end
+
+  it 'creates question with lesson association' do
+    sign_in author
+    lesson.questions.count.must_equal 0
+    post :create, format: :json, lesson_id: lesson.id
+    lesson.questions.count.must_equal 1
+  end
+
+  it 'wont allow user who doesnt own lesson to create question for that lesson' do
+    sign_in hacker
+    lesson.questions.count.must_equal 0
+    post :create, format: :json, lesson_id: lesson.id
+    lesson.questions.count.must_equal 0
+    hacker.questions.count.must_equal 1
+  end
+
+  it 'returns the newly created question' do
+    sign_in author
+    Question.count.must_equal 0
+    post :create, format: :json
+    JSON.parse(response.body)['id'].wont_be_nil
+  end
+end
+
 describe QuestionsController, '#update' do
   let (:author) { create(:user, twi_user_id: 1, role: 'user') }
   let (:admin) { create(:admin) }

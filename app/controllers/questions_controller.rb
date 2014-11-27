@@ -42,6 +42,23 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def create 
+    question = current_user.questions.create! created_for_asker_id: params[:asker_id]
+    question.answers.create! correct: true
+    question.answers.create! correct: false
+
+    if params[:lesson_id]
+      lesson = current_user.lessons.where(id: params[:lesson_id]).first
+      lesson.questions << question if lesson
+    end
+
+    respond_to do |format|
+      format.json do
+        render json: question.to_json
+      end
+    end
+  end
+
   def update
     @question = current_user.questions.where(id: params[:id]).first
     @question ||= Question.find(params[:id]) if current_user.is_role? "admin"
