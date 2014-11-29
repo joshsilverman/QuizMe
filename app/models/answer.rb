@@ -2,6 +2,23 @@ class Answer < ActiveRecord::Base
 	include ActionView::Helpers::TextHelper
 	belongs_to :question
 
+
+	validates :question_id, presence: true
+	validate :one_correct_answer_per_question
+
+	def one_correct_answer_per_question
+		return if !correct
+
+		question = Question.where(id: question_id).first
+		preexisting_correct_answers = question.answers
+			.where(correct: true)
+			.where('answers.id <> ?', id || 0)
+			
+		if question and preexisting_correct_answers.present?
+			errors.add(:correct, 'Cannot have multiple correct answers')
+		end
+	end
+
 	def self.correct
 		where(:correct => true).first
 	end
