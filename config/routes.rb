@@ -95,14 +95,6 @@ Quizmemanager::Application.routes.draw do
 
   resources :issuances, only: [:show, :index]
 
-  resources :answers
-  get "answer/new"
-  get "answer/create"
-  get "answer/update"
-  get "answer/edit"
-  get "answer/destroy"
-  get "answer/index"
-  get "answer/show"
 
   resource :moderations
   get "moderations/manage"
@@ -118,6 +110,7 @@ Quizmemanager::Application.routes.draw do
   get "/get_retention_metrics" => 'askers#get_retention_metrics'
 
   resources :questions
+  resources :answers, only: [:create, :update]
   post "questions/save_question_and_answers"
   post 'questions/update_question_and_answers'
   get "questions/:id" => "questions#show"

@@ -72,3 +72,68 @@ describe AnswersController, '#update' do
     JSON.parse(response.body)['id'].to_i.must_equal answer.id
   end
 end
+
+describe AnswersController, '#create' do
+  let (:author) { create(:user, twi_user_id: 1, role: 'user') }
+  let (:admin) { create(:admin) }
+  let (:hacker) { create(:user) }
+
+  let (:asker) { 
+    a = create(:asker) 
+    a.followers << author
+    a
+  }
+
+  let (:question) { create(:question, created_for_asker_id: asker.id, status: -1, user: author, inaccurate: true, ungrammatical: true, bad_answers: true) }
+  let (:answer) { question.answers.first }
+
+  it 'creates a new answer by author' do
+    sign_in author
+    question.answers.incorrect.count.must_equal 3
+    post :create, question_id: question.id, correct: false, format: :json
+    question.answers.incorrect.count.must_equal 4
+  end
+
+  it 'will return a serialized version of new object' do
+    sign_in author
+    post :create, question_id: question.id, text: 'Tesseract', format: :json
+    answer = JSON.parse(response.body)
+    answer['id'].wont_be_nil
+    answer['text'].must_equal 'Tesseract'
+  end
+
+  it 'wont create answer without question' do
+    sign_in author
+    post :create, format: :json
+    response.status.must_equal 422
+  end
+
+  it 'wont create multiple correct answer' do
+    sign_in author
+    question.answers.correct.wont_be_nil
+    post :create, question_id: question.id, correct: true, format: :json
+    
+    answer = JSON.parse(response.body)
+    answer['correct'].wont_be_nil
+  end
+
+  it 'allows admin to also create answer' do
+    sign_in admin
+    question.answers.incorrect.count.must_equal 3
+    post :create, question_id: question.id, correct: false, format: :json
+    question.answers.incorrect.count.must_equal 4
+  end
+
+  it 'wont allow non admin non author to create answer' do
+    sign_in hacker
+    question.answers.incorrect.count.must_equal 3
+    post :create, question_id: question.id, correct: false, format: :json
+    question.answers.incorrect.count.must_equal 3
+  end
+
+  it 'leads to immediate cache update' do
+    sign_in author
+    post :create, question_id: question.id, correct: false, format: :json
+    question.reload._answers.wont_be_nil
+  end
+end
