@@ -71,6 +71,17 @@ describe AnswersController, '#update' do
     question.reload.bad_answers.must_equal nil
     JSON.parse(response.body)['id'].to_i.must_equal answer.id
   end
+
+  it 'leads to immediate cache update' do
+    ActiveRecord::Base.observers.disable :all
+    ActiveRecord::Base.observers.enable :answer_observer
+
+    sign_in author
+    question.update!(bad_answers: true)
+    put :update, id: answer.id, answer: {text: "yoyos"}, format: :json
+
+    question.reload._answers.wont_be_nil
+  end
 end
 
 describe AnswersController, '#create' do
@@ -132,6 +143,9 @@ describe AnswersController, '#create' do
   end
 
   it 'leads to immediate cache update' do
+    ActiveRecord::Base.observers.disable :all
+    ActiveRecord::Base.observers.enable :answer_observer
+
     sign_in author
     post :create, question_id: question.id, correct: false, format: :json
     question.reload._answers.wont_be_nil

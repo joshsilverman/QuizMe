@@ -1,5 +1,5 @@
 class AnswersController < ApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:update]
+  skip_before_filter :verify_authenticity_token, :only => [:create, :update]
   before_filter :authenticate_user!
 
   def create
@@ -14,7 +14,6 @@ class AnswersController < ApplicationController
 
         safe_params = params.permit(:text, :correct)
         answer = question.answers.new safe_params
-        question.update_answers
         if answer.save
           render json: answer
         else
