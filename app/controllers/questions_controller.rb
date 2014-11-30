@@ -52,7 +52,6 @@ class QuestionsController < ApplicationController
       lesson.questions << question if lesson
     end
 
-    question.update_answers
     respond_to do |format|
       format.json do
         render json: question,

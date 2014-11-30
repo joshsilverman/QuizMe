@@ -86,6 +86,15 @@ describe QuestionsController, '#create' do
     post :create, format: :json
     JSON.parse(response.body)['question_id'].wont_be_nil
   end
+
+  it 'warms answer cache created question' do
+    ActiveRecord::Base.observers.enable :answer_observer
+    
+    sign_in author
+    Question.count.must_equal 0
+    post :create, format: :json
+    Question.last._answers.wont_be_nil
+  end
 end
 
 describe QuestionsController, '#update' do
