@@ -26,6 +26,7 @@ end
 
 describe LessonsController, "#create" do
   let(:user) { create :user }
+  let(:asker) { create :asker }
 
   it "creates new lesson with correct fkeys" do
     sign_in user
@@ -69,16 +70,22 @@ describe LessonsController, "#create" do
 
   it "creates first question" do
     sign_in user
+    ActiveRecord::Base.observers.enable :answer_observer
 
-    get :create, format: :json, asker_id: 123, name: 'hello', type_id: 6
+    get :create, format: :json, asker_id: asker.id, name: 'hello', type_id: 6
     response.status.must_equal 200
 
     Topic.lessons.count.must_equal 1
     quiz = Topic.lessons.last
     quiz.published.must_equal false
     quiz.questions.count.must_equal 1
+
     question = quiz.questions.first
     question.user.must_equal user
+    question.asker.must_equal asker
+    question.answers.correct.wont_be_nil
+    question.answers.incorrect.count.must_equal 1
+    question._answers.wont_be_nil
   end
 end
 

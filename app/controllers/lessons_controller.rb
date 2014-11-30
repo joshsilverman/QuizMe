@@ -17,11 +17,13 @@ class LessonsController < ApplicationController
           return
         end
 
-        if topic.questions.create user: current_user
-          render json: topic.to_json
-        else
-         render status: 400, json: topic.errors
-        end
+        question = topic.questions.create!(
+          created_for_asker_id: params[:asker_id], 
+          user: current_user)
+        question.answers.create! correct: true
+        question.answers.create! correct: false
+
+        render json: topic.to_json
       end
     end
   end
