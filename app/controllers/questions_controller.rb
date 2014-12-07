@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:save_question_and_answers, :update, :create]
+  skip_before_filter :verify_authenticity_token, :only => [:save_question_and_answers, :update, :create, :destroy]
   before_filter :authenticate_user!, :except => [:refer, :show, :display_answers, :count]
   before_filter :admin?, :only => [:index, :moderate, :moderate_update, :enqueue, :dequeue, :manage]
   before_filter :author?, :only => [:enqueue, :dequeue]
