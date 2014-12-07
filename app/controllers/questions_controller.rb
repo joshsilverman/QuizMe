@@ -169,9 +169,11 @@ class QuestionsController < ApplicationController
     end
 
     #correct answer save
-    @answer = Answer.find_or_create_by(id: params[:canswer_id])
-    @answer.update_attributes(:text => params[:canswer], :correct => true)
-    @question.answers << @answer
+    @answer = Answer.find_or_initialize_by(id: params[:canswer_id])
+    @answer.update(
+      question: @question,
+      text: params[:canswer], 
+      correct: true)
 
     #other answers save
     [:ianswer1, :ianswer2, :ianswer3].each do |answer_key|
