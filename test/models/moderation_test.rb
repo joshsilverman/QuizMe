@@ -55,7 +55,6 @@ describe Moderation do
 			@asker = create(:asker)
 			@asker.followers << [@user, @moderator]
 			@question = create(:question, created_for_asker_id: @asker.id, status: 1, user: @user)		
-			@question.answers << create(:answer, correct: true)
 			@publication = create(:publication, question: @question, asker: @asker)
 			@post_question = create(:post, user_id: @asker.id, interaction_type: 1, question: @question, publication: @publication)		
 			@conversation = create(:conversation, post: @post_question, publication: @publication)
