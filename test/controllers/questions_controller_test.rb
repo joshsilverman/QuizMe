@@ -29,6 +29,59 @@ describe QuestionsController, '#show' do
   end
 end
 
+describe QuestionsController, '#destroy' do
+  let (:author) { create(:user, twi_user_id: 1, role: 'user') }
+  let (:admin) { create(:admin) }
+  let (:hacker) { create(:user) }
+  let (:question) { create(:question, user: author) }
+
+  let (:asker) { 
+    a = create(:asker) 
+    a.followers << author
+    a
+  }
+
+  let (:lesson) { create :lesson, user_id: author.id }
+
+  it 'redirects if not authenticated' do
+    author
+    question
+
+    delete :destroy, id: question.id, format: :json
+    response.status.must_equal 401
+  end
+
+  it 'author can delete own question' do
+    sign_in author
+    question
+
+    delete :destroy, id: question.id, format: :json
+    response.status.must_equal 200
+
+    Question.where(id: question.id).first.must_be_nil
+  end
+
+  it 'non-author can\'t delete own question' do
+    sign_in hacker
+    question
+
+    delete :destroy, id: question.id, format: :json
+    response.status.must_equal 422
+
+    Question.where(id: question.id).first.wont_be_nil
+  end
+
+  it 'admin can delete question' do
+    sign_in admin
+    question
+
+    delete :destroy, id: question.id, format: :json
+    response.status.must_equal 200
+
+    Question.where(id: question.id).first.must_be_nil
+  end
+end
+
 describe QuestionsController, '#create' do
   let (:author) { create(:user, twi_user_id: 1, role: 'user') }
   let (:admin) { create(:admin) }

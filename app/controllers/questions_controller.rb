@@ -88,6 +88,21 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def destroy
+    question = current_user.questions.where(id: params[:id]).first
+    question ||= Question.find(params[:id]) if current_user.is_role? 'admin'
+
+    respond_to do |format|
+      format.json do
+        if question and question.destroy
+          head :ok
+        else
+          head :unprocessable_entity
+        end
+      end
+    end
+  end
+
   def update_question_and_answers
     question = Question.includes(:answers).find(params[:question_id])
     question.update(text: params[:text], status: 0)
