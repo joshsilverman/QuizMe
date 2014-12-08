@@ -869,3 +869,29 @@ body:not(.phone-variant) .columns.home {
     }
   }
 }
+
+quiz-question {
+  .answers {
+    .answer, span {
+      &.correct, &.incorrect {
+        &:hover {
+          cursor: default !important;
+        }
+      }
+
+      &.incorrect
+        input {
+          width:calc(100% - 25px) !important;
+        }
+
+      .delete-answer {
+        cursor: pointer;
+        width:25px;
+        color:white;
+        padding: 4px;
+        position: relative;
+        top: 2PX;
+      }
+    }
+  }
+}
