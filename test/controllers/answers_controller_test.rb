@@ -116,7 +116,7 @@ describe AnswersController, '#create' do
   it 'wont create answer without question' do
     sign_in author
     post :create, format: :json
-    response.status.must_equal 422
+    response.status.must_equal 401
   end
 
   it 'wont create multiple correct answer' do
