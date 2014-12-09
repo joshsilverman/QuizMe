@@ -110,7 +110,7 @@ Quizmemanager::Application.routes.draw do
   get "/get_retention_metrics" => 'askers#get_retention_metrics'
 
   resources :questions
-  resources :answers, only: [:create, :update]
+  resources :answers, only: [:create, :update, :destroy]
   post "questions/save_question_and_answers"
   post 'questions/update_question_and_answers'
   get "questions/:id" => "questions#show"

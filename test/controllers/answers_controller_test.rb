@@ -151,3 +151,48 @@ describe AnswersController, '#create' do
     question.reload._answers.wont_be_nil
   end
 end
+
+describe AnswersController, '#destroy' do
+  let (:author) { create(:user, twi_user_id: 1, role: 'user') }
+  let (:admin) { create(:admin) }
+  let (:hacker) { create(:user) }
+
+  let (:asker) { 
+    a = create(:asker) 
+    a.followers << author
+    a
+  }
+
+  let (:question) { create(:question, created_for_asker_id: asker.id, status: -1, user: author, inaccurate: true, ungrammatical: true, bad_answers: true) }
+  let (:answer) { question.answers.first }
+
+  it 'wont destroy answer if unauthorized' do
+    delete :destroy, id: answer.id, format: :json
+    response.status.must_equal 401
+    Answer.where(id: answer.id).first.wont_be_nil
+  end
+
+  it 'destroys answer when requested by asker' do
+    sign_in author
+    delete :destroy, id: answer.id, format: :json
+
+    response.status.must_equal 200
+    Answer.where(id: answer.id).first.must_be_nil
+  end
+
+  it 'wont destroy an answer when requested by non author' do
+    sign_in hacker
+    delete :destroy, id: answer.id, format: :json
+
+    response.status.must_equal 401
+    Answer.where(id: answer.id).first.wont_be_nil
+  end
+
+  it 'will destroy an answer when requested by admin' do
+    sign_in admin
+    delete :destroy, id: answer.id, format: :json
+
+    response.status.must_equal 200
+    Answer.where(id: answer.id).first.must_be_nil
+  end
+end

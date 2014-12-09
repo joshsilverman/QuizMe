@@ -1,6 +1,7 @@
 class AnswersController < ApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:create, :update]
+  skip_before_filter :verify_authenticity_token, :only => [:create, :update, :destroy]
   before_filter :authenticate_user!
+  before_filter :verify_author!, only: [:destroy]
 
   def create
     respond_to do |format|
@@ -46,6 +47,31 @@ class AnswersController < ApplicationController
       render json: answer
     else
       render json: answer.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    answer = Answer.find(params[:id])
+
+    respond_to do |format|
+      format.json do
+        if answer.destroy
+          head :ok
+        else
+          head :unprocessable_entity
+        end
+      end
+    end
+  end
+
+  private
+
+  def verify_author!
+    answer = Answer.find(params[:id])
+    if current_user.questions.where(id: answer.question_id).first
+    elsif current_user.is_role? 'admin'
+    else
+      head :unauthorized
     end
   end
 end
