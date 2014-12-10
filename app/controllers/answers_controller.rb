@@ -46,6 +46,7 @@ class AnswersController < ApplicationController
     respond_to do |format|
       format.json do
         if answer.destroy
+          answer.question.update_answers
           head :ok
         else
           head :unprocessable_entity
