@@ -183,8 +183,8 @@ $border_thin: 0px;
 
 .timeline-container {
   ul.timeline {
-    padding-top: 220px;
-    top: -141px;
+    // padding-top: 80px;
+    // top: -141px;
   }
 }
 .phone-variant {
@@ -251,6 +251,16 @@ $border_thin: 0px;
       list-style: none;
       border-left: $border_thick solid $white;
 
+      &::before {
+        content: '';
+        height: 150px;
+        width: $border_thick;
+        display: block;
+        top: 0px;
+        left: (-$border_thick);
+        position: absolute;
+        background: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgb(52, 39, 85) 100%);
+      }
 
       @media (max-width: 767px) {
         border-left: $border_thin solid $white;
@@ -857,6 +867,7 @@ body:not(.phone-variant) .columns.home {
 .new-question.content {
   background: none;
   border:none;
+  padding: 20px 20px 50px;
 
   a {
     font-size: 24px;
