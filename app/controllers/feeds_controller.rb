@@ -64,6 +64,7 @@ class FeedsController < ApplicationController
         if asker
           new_questions = Question
             .where(created_for_asker_id: asker.id)
+            .where('text IS NOT NULL')
             .order(created_at: :desc)
             .includes(:user)
             .limit(10).offset(offset)
