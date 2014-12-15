@@ -12,6 +12,8 @@ class Topic < ActiveRecord::Base
 	scope :categories, -> { where("type_id = 4") }
 	scope :courses, -> { where("type_id = 5") }
 	scope :lessons, -> { where("type_id = 6") }
+  scope :published, -> { where("published = true") }
+  scope :unpublished, -> { where("published <> true OR published IS NULL") }
 
   validates_format_of :name, :with => /\A[a-zA-Z0-9\s\+\,\(\)\:]+\Z/
   validates :name, uniqueness: true, if: Proc.new { |t| t.published }

@@ -90,6 +90,7 @@ FactoryGirl.define do
     sequence(:text) {|n| "#{n}Where on the myosin does ATP bond to?"}
 
     trait(:approved) {status 1}
+    trait(:unapproved) {status nil}
 
     after(:create) do |question|
       create :correct_answer, question: question
