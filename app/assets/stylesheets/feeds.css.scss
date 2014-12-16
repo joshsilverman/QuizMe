@@ -239,14 +239,16 @@ $border_thin: 0px;
       list-style: none;
       border-left: $border_thick solid $white;
 
-      &::before {
-        content: '';
-        height: 150px;
-        width: $border_thick;
-        display: block;
-        top: 0px;
-        left: (-$border_thick);
-        position: absolute;
+      @media (min-width: 768px) {
+        &::before {
+          content: '';
+          height: 150px;
+          width: $border_thick;
+          display: block;
+          top: 0px;
+          left: (-$border_thick);
+          position: absolute;
+        }
       }
 
       @media (max-width: 767px) {
