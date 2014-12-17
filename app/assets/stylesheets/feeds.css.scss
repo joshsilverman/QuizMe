@@ -249,6 +249,16 @@ $border_thin: 0px;
           left: (-$border_thick);
           position: absolute;
         }
+
+        &::after {
+          content: '';
+          height: 150px;
+          width: $border_thick;
+          display: block;
+          bottom: 0px;
+          left: (-$border_thick);
+          position: absolute;
+        }
       }
 
       @media (max-width: 767px) {
