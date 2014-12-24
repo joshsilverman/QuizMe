@@ -177,7 +177,7 @@ describe UsersController, "#me" do
     response.status.must_equal 200
   end
 
-  it "returns 40x if not authenticated" do
+  it "returns 401 if not authenticated" do
     get :me, format: :json
     response.status.must_equal 401
   end
