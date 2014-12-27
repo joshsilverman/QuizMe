@@ -53,7 +53,8 @@ module EngagementEngine::ReengageInactive
     end
 
     def reengage_user user_id, options = {}
-      user = User.find user_id
+      user = User.where(id: user_id).first
+      return false if user.nil?
       return false if !user.contactable?
       return false unless (Asker.published_ids && user.asker_follows.collect(&:id)).present? # make sure there are published askers to reengage from
 

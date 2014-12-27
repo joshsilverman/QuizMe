@@ -158,6 +158,25 @@ describe Asker, "#reengage_inactive_users" do
       Asker.reengage_inactive_users strategy: @strategy
       Post.reengage_inactive.where(:user_id => @asker.id, :in_reply_to_user_id => @user.id).wont_be_empty
     end
+
+    it "wont reengage if user has been deleted" do
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => @user.id).must_be_empty
+
+      create(:post, text: 'the correct answer, yo',
+        user_id: 123456,
+        in_reply_to_user_id: @asker.id,
+        interaction_type: 2,
+        in_reply_to_question_id: @old_question.id,
+        correct: true)
+
+      Timecop.travel(Time.now + 1.day)
+
+      Asker.reengage_inactive_users strategy: @strategy
+      Post.reengage_inactive.where(:user_id => @asker.id,
+        :in_reply_to_user_id => @user.id).must_be_empty
+    end
   end
 
   describe "iphoners" do
