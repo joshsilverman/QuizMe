@@ -646,6 +646,11 @@ $border_thin: 0px;
       h2 {
         color: $white;
         font-weight: 500;
+
+        a {
+          color: $white;
+          font-weight: 300;
+        }
       }
 
       .feed-selection {
