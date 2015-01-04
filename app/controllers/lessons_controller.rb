@@ -29,9 +29,16 @@ class LessonsController < ApplicationController
   end
 
   def update
+    topic = current_user.lessons.where(id: params[:id]).first
+    topic ||= Topic.find(params[:id]) if current_user.is_role? 'admin'
+
+    if topic.nil?
+      head :unauthorized
+      return
+    end
+    
     respond_to do |f|
       f.json do
-        topic = Topic.find(params[:id])
         safe_params = params.permit(:name, :published)
 
         if topic.update safe_params

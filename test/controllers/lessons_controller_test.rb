@@ -91,7 +91,9 @@ end
 
 describe LessonsController, "#update" do
   let(:user) { create :user }
-  let(:quiz) { create :lesson }
+  let(:hacker) { create :user }
+  let(:admin) { create :admin }
+  let(:quiz) { create :lesson, user_id: user.id }
 
   it "updates lesson name" do
     sign_in user
@@ -117,5 +119,25 @@ describe LessonsController, "#update" do
     patch :update, format: :json, name: 'hello', id: quiz.id
 
     response.status.must_equal 401
+  end
+
+  it "wont allow non owner non admin to edit title" do
+    sign_in hacker
+
+    patch :update, format: :json, name: 'hello', id: quiz.id
+
+    response.status.must_equal 401
+    Topic.lessons.count.must_equal 1
+    quiz.reload.name.wont_equal 'hello'
+  end
+
+  it "allows non owner but admin to edit" do
+    sign_in admin
+
+    patch :update, format: :json, name: 'hello', id: quiz.id
+
+    response.status.must_equal 200
+    Topic.lessons.count.must_equal 1
+    quiz.reload.name.must_equal 'hello'
   end
 end
