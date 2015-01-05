@@ -855,6 +855,7 @@ body:not(.phone-variant) .columns.home {
   .content {
     background: none;
     border:none;
+    min-height: 85px;
 
     h2 {
       color: $white;
@@ -892,6 +893,20 @@ body:not(.phone-variant) .columns.home {
 
         &:hover {
           opacity: 1;        
+        }
+      }
+
+      .locked {
+        color: #f8f3e6;
+        font-style: italic;
+        opacity:0.7;
+
+        .lock {
+          height:20px;
+          top: -2px;
+          position: relative;
+          padding: 4px;
+          content:url('icons/lock.svg');
         }
       }
     }
