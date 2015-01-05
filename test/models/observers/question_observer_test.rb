@@ -42,13 +42,11 @@ describe Question, "QuestionObserver#after_save" do
     Question.any_instance.stubs :send_answer_counts_to_publication
     question
     
+    lesson.reload._question_count.must_equal 0
+    
     lesson.questions << question
 
     lesson.reload._question_count.must_equal 1
-
-    question.update status: 0
-
-    lesson.reload._question_count.must_equal 0
   end
 
   it "calls send_answer_counts_to_publication on save" do
