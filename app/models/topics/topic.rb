@@ -48,7 +48,7 @@ class Topic < ActiveRecord::Base
   end
 
   def update_question_count
-    question_count = questions.approved.count
+    question_count = questions.count
     update _question_count: question_count
   end
 
