@@ -5,16 +5,21 @@ class LessonsController < ApplicationController
   def create
     respond_to do |f|
       f.json do
+        asker = Asker.where(id: params[:asker_id]).first
         topic = Topic.new(
           type_id: params[:type_id], 
           published: false, 
           user_id: current_user.id, 
-          asker_id: params[:asker_id], 
+          asker_id: params[:asker_id],
           name: params[:name])
 
         if !topic.save 
           render status: 400, json: topic.errors
           return
+        end
+
+        if asker
+          asker.topics << topic
         end
 
         question = topic.questions.create!(

@@ -57,6 +57,16 @@ describe LessonsController, "#create" do
     Topic.lessons.last.published.must_equal false
   end
 
+  it "assigns to topics through join table" do
+    sign_in user
+    asker.topics.count.must_equal 0
+
+    get :create, format: :json, asker_id: asker.id, name: 'hello', type_id: 6
+    response.status.must_equal 200
+
+    asker.topics.count.must_equal 1
+  end
+
   it "returns id" do
     sign_in user
 
