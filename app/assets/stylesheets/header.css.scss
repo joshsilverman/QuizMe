@@ -63,6 +63,15 @@ $border_thin: 0px;
     font-size: 90%;
     cursor: pointer;
 
+    .new {
+      position: relative;
+      top: -5px;
+      font-weight:300;
+      cursor: default;
+
+      text-decoration: none !important;
+    }
+
     a {
       color: $white;
     }
