@@ -7,13 +7,13 @@ class LessonsController < ApplicationController
       f.json do
         asker = Asker.where(id: params[:asker_id]).first
         topic = Topic.new(
-          type_id: params[:type_id], 
-          published: false, 
-          user_id: current_user.id, 
+          type_id: params[:type_id],
+          published: false,
+          user_id: current_user.id,
           asker_id: params[:asker_id],
           name: params[:name])
 
-        if !topic.save 
+        if !topic.save
           render status: 400, json: topic.errors
           return
         end
@@ -23,10 +23,19 @@ class LessonsController < ApplicationController
         end
 
         question = topic.questions.create!(
-          created_for_asker_id: params[:asker_id], 
+          created_for_asker_id: params[:asker_id],
           user: current_user)
         question.answers.create! correct: true
         question.answers.create! correct: false
+
+        MP.track_event "quiz created", {
+          distinct_id: topic.id,
+          type_id: params[:type_id],
+          published: false,
+          user_id: current_user.id,
+          asker_id: params[:asker_id],
+          name: params[:name]
+        }
 
         render json: topic.to_json
       end
@@ -41,7 +50,7 @@ class LessonsController < ApplicationController
       head :unauthorized
       return
     end
-    
+
     respond_to do |f|
       f.json do
         safe_params = params.permit(:name, :published)
