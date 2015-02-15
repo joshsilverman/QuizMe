@@ -68,7 +68,7 @@ describe Topic, "#_question_count" do
     Topic.count.must_equal 1
   end
 
-  it "scopes by question status" do
+  it "wont scope by question status" do
     question = Question.create status: 0
     topic = create :lesson
 
@@ -77,6 +77,6 @@ describe Topic, "#_question_count" do
     topic.questions << question
     topic.reload
 
-    topic._question_count.must_equal 0
+    topic._question_count.must_equal 1
   end
 end
