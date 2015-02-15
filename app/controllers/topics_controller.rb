@@ -30,7 +30,7 @@ class TopicsController < ApplicationController
         @lesson ||= Topic.find params[:id]
 
         if @lesson
-          questions = @lesson.questions.approved.includes(:user)
+          questions = @lesson.questions.includes(:user)
           render json: questions,
             each_serializer: QuestionAsPublicationSerializer,
             root: false,
