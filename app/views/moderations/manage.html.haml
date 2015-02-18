@@ -10,7 +10,7 @@
 						%li
 							.box.top What is this?
 						%li
-							.guidelines 
+							.guidelines
 								%div Dear Superuser,
 								%p
 									You're one of the most active learners asking/answering questions through our handles. Thank you!
@@ -20,26 +20,26 @@
 								%div Guidelines
 								%p
 									For responses:
-									%ul 
-										%li 
+									%ul
+										%li
 											Click one of
 											%span{style: 'font-weight: bold;'} Correct/Incorrect/Tell answer.
-										%li 
-											Click 
+										%li
+											Click
 											%span{style: 'font-weight: bold;'} Ignore this
 											if the post doesn't need a response.
-										%li 
+										%li
 											Click
 											%span{style: 'font-weight: bold;'} Not sure
 											If you don't know what to do with it.
 								%p
 									For questions:
-									%ul 
-										%li 
-											Click 
+									%ul
+										%li
+											Click
 											%span{style: 'font-weight: bold;'} Publish It!
-											if you think we should start tweeting it. 
-										%li 
+											if you think we should start tweeting it.
+										%li
 											If the question needs work, let us know what type by clicking
 											%span{style: 'font-weight: bold;'} Incorrect/Grammar/Bad Answers.
 											You can select multiple.
@@ -67,7 +67,7 @@
 											%h5
 												%span= "#{post.user.twi_screen_name} → #{post.in_reply_to_user.twi_screen_name}"
 											.question.hide
-												%i 
+												%i
 													Q. #{question.text}
 													- if correct.present?
 														%br
@@ -89,12 +89,12 @@
 												%span.label.label-success{style: 'float: right; position: relative; right: 5px; bottom: 3px;'} Publishable
 										.content
 											%i.question_icon.icon-pencil
-											/ %i.question_icon.icon-question-sign										
+											/ %i.question_icon.icon-question-sign
 											/ = image_tag(question.user.twi_profile_img_url, :class => "rounded")
 											%h5
 												%span= "#{question.user.twi_screen_name} → #{question.asker.twi_screen_name}"
 											.question
-												%p= question.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
+												%p= (question.text || '').gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe
 											.answer_area.hide
 												- question.answers.sort{|a, b| (b.correct ? 1 : 0)  <=> (a.correct ? 1 : 0) }.each_with_index do |answer, i|
 													%p.answer{answer_id: answer.id}
@@ -103,7 +103,7 @@
 														- if owner
 															= best_in_place answer, :text, :type => :input
 														- else
-															#{answer.text.gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe}	
+															#{(answer.text || '').gsub(/<|>/, '').gsub(/@[a-zA-Z0-9_]+ /, '').html_safe}
 										= render :partial => "question_moderation_actions", :locals => {:post => post, :question => question}
 						.show_more
 							- if @posts.count < 10
